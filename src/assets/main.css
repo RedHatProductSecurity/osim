@@ -1,35 +1,48 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
+  display: flex;
+  flex-direction: column;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
+.irw-home {
+  display: flex;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.irw-home, .irw-logo {
+  max-height: 100%;
+  object-fit: contain;
+  background-size: contain;
+  height: 100%;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+.irw-header {
+  flex: 0 1 auto;
+  max-height: 80px;
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+  display: flex;
+  /*flex-direction: column;*/
+  justify-content: space-between;
+  padding-bottom: 20px;
 }
+
+.irw-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.irw-incident-filter {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.container {
+  display: flex;
+}
+
+.irw-user-profile .irw-user-profile-picture {
+  font-size: 2rem;
+}
+

@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterView} from 'vue-router'
+import Navbar from './components/Navbar.vue'
 </script>
 
 <template>
   <header>
+    <Navbar v-if="!$route.meta.hideNavbar"/>
   </header>
-
-  <RouterView />
+  <RouterView/>
 </template>
 
 <style scoped>
