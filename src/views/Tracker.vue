@@ -20,7 +20,7 @@ export default defineComponent({
 </script>
 <template>
   <main>
-    <div class="align-items-center">
+    <div class="align-items-center mt-5 mt-5">
       <div class="d-flex justify-content-center mb-3">
         <button class="btn btn-primary me-3" @click="selectedView = 'issue'">Issue Details</button>
         <button class="btn btn-outline-primary" @click="selectedView = 'flaw'">Flaw Details</button>
