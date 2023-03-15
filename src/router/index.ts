@@ -2,6 +2,8 @@ import {createRouter, createWebHistory} from 'vue-router'
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import IssueDetails from '../views/IssueDetails.vue';
+import FlawView from '../views/FlawView.vue';
+import Tracker from '../views/Tracker.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +25,17 @@ const router = createRouter({
       meta: {
         hideNavbar: true,
       },
+    },
+    {
+      path: '/tracker',
+      name: 'tracker',
+      component: Tracker,
+    },
+
+    {
+      path: '/flaw-details',
+      name: 'flaw-details',
+      component: FlawView,
     },
     // {
     //   path: '/about/:id',
