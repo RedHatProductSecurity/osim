@@ -70,7 +70,7 @@ export default defineComponent({
         <ObjectView />
         <DescriptionView />
         <AffectsView v-if="affects" :affects="affects" />
-        <div class="card mt-3">
+        <div class="card">
           <div class="card-body">
             <div class="d-flex justify-content-end align-items-center">
               <div class="form-check me-3">
