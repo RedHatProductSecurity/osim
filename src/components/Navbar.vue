@@ -22,13 +22,13 @@ const userStore = useUserStore();
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <RouterLink class="nav-link active" to="/login">Login</RouterLink>
+          <RouterLink class="nav-link" to="/">Index</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/about">About</RouterLink>
+          <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/ir-web-ui">IR Web UI</RouterLink>
+          <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>
         </li>
       </ul>
       <div class="osim-search">
