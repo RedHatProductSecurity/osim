@@ -5,7 +5,11 @@ import App from './App.vue'
 import router from './router'
 
 import 'bootstrap/scss/bootstrap.scss'
+import 'bootstrap-icons/font/bootstrap-icons.scss'
+
 import './assets/main.css'
+
+import 'bootstrap/js/index.esm.js'
 
 const app = createApp(App)
 const pinia = createPinia();
