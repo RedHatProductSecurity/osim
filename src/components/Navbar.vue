@@ -1,40 +1,86 @@
 <script setup lang="ts">
-import RedHatLogo from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
+import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
+// import RedHatLogo from '@/components/icons/RedHatLogo.vue';
 import {RouterLink} from 'vue-router'
+import {useUserStore} from '@/stores/UserStore';
+
+const userStore = useUserStore();
 </script>
 
 <template>
-  <nav class="navbar">
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container-fluid">
-      <RouterLink to="/" class="navbar-brand">
-        <img :src="RedHatLogo" alt="Red Hat Logo" class="osim-logo"/>AAAA
+      <RouterLink to="/" class="navbar-brand osim-home-link">
+        <!--<RedHatLogo class="osim-logo"/>-->
+        <img :src="RedHatLogoSvg"
+             alt="Red Hat Logo"
+             class="d-inline-block align-text-top me-auto osim-logo"
+             height="64"
+        />
+        <div class="ms-auto">OSIM</div>
       </RouterLink>
-    </div>
-    <div class="osim-nav">
-      <div>Queue Management</div>
-      <div>User Management</div>
-    </div>
-    <RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/login">Login</RouterLink>
-    <RouterLink to="/about">About</RouterLink>
-    <RouterLink to="/ir-web-ui">IR Web UI</RouterLink>
-    <div class="osim-search">
-      <label>
-        Search Incidents
-        <input type="text" placeholder="Search Incidents"/>
-      </label>
-    </div>
-    <div class="osim-user-profile">
-      <i class="bi-person osim-user-profile-picture"></i>
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <RouterLink class="nav-link active" to="/login">Login</RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink class="nav-link" to="/about">About</RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink class="nav-link" to="/ir-web-ui">IR Web UI</RouterLink>
+        </li>
+      </ul>
+      <div class="osim-search">
+        <form role="search">
+          <input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws"/>
+        </form>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle osim-user-profile" data-bs-toggle="dropdown"
+                aria-expanded="false">
+          {{ userStore.jwt.user }}
+          <i class="bi-person-circle osim-user-profile-picture"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button class="dropdown-item" type="button" @click.prevent="userStore.logout">Logout</button>
+          </li>
+        </ul>
+      </div>
+
     </div>
   </nav>
 </template>
 
-<style scoped>
+<style>
+
+.navbar {
+  /*height: 64px;*/
+}
+
+.osim-home-link {
+  /*height: 64px;*/
+  /*height: 100%;*/
+}
 
 .osim-logo {
+  /*height: 100%;*/
   max-height: 100%;
-  object-fit: contain;
-  height: 100%;
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.osim-logo-text {
+  display: inline-block;
+}
+
+.osim-user-profile .osim-user-profile-picture {
+  /*font-size: 2rem;*/
+}
+
+.osim-logo-container {
+  height: 64px;
 }
 </style>
