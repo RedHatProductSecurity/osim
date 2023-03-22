@@ -12,7 +12,9 @@
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "generate-openapi-client": "openapi-generator-cli generate -i osidb-3.0.0.oas3.json --output src/generated-client -g typescript-axios",
+    "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
