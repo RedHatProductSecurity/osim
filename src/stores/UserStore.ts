@@ -16,6 +16,7 @@ export const useUserStore = defineStore('UserStore', () => {
   if (storedUserStore != null) {
     try {
       storedUserStore = JSON.parse(storedUserStore);
+      // @ts-ignore
       jwt.value = storedUserStore.jwt;
     } catch (e) {
       console.error('Unable to restore the UserStore from sessionStorage', e);

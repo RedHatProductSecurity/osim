@@ -41,7 +41,7 @@ export default defineComponent({
     ];
 
     const requestReview = false;
-    const pushToMirte = false;
+    const pushToMitre = false;
     const markPublic = false;
 
     function reject() {
@@ -55,7 +55,7 @@ export default defineComponent({
     return {
       affects,
       requestReview,
-      pushToMirte,
+      pushToMitre,
       markPublic,
       reject,
       submit
@@ -78,8 +78,8 @@ export default defineComponent({
                 <label class="form-check-label" for="request-review">Request Review</label>
               </div>
               <div class="form-check me-3">
-                <input class="form-check-input" type="checkbox" id="push-to-mirte" v-model="pushToMirte">
-                <label class="form-check-label" for="push-to-mirte">Push to Mirte</label>
+                <input class="form-check-input" type="checkbox" id="push-to-mitre" v-model="pushToMitre">
+                <label class="form-check-label" for="push-to-mitre">Push to MITRE</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="mark-public" v-model="markPublic">
