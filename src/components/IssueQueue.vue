@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <div class="irw-content container">
-    <div class="irw-incident-filter">
+  <div class="osim-content container">
+    <div class="osim-incident-filter">
       <label>
         Filter By
         <select>
@@ -15,7 +15,7 @@
         </select>
       </label>
     </div>
-    <div class="irw-incident-list">
+    <div class="osim-incident-list">
       <table class="table">
         <thead>
         <tr>

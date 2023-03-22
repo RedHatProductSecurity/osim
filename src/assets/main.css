@@ -5,18 +5,18 @@
   flex-direction: column;
 }
 
-.irw-home {
+.osim-home {
   display: flex;
 }
 
-.irw-home, .irw-logo {
+.osim-home, .osim-logo {
   max-height: 100%;
   object-fit: contain;
   background-size: contain;
   height: 100%;
 }
 
-.irw-header {
+.osim-header {
   flex: 0 1 auto;
   max-height: 80px;
 
@@ -26,13 +26,13 @@
   padding-bottom: 20px;
 }
 
-.irw-content {
+.osim-content {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 }
 
-.irw-incident-filter {
+.osim-incident-filter {
   display: flex;
   justify-content: space-between;
 
@@ -42,7 +42,7 @@
   display: flex;
 }
 
-.irw-user-profile .irw-user-profile-picture {
+.osim-user-profile .osim-user-profile-picture {
   font-size: 2rem;
 }
 

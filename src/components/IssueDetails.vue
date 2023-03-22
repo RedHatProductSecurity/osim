@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="irw-content container">
+  <div class="osim-content container">
     <div class="row">
       <ul class="nav nav-tabs">
         <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Issue Details</a></li>
@@ -14,28 +14,28 @@
     <div class="row">
       <div class="col">
         <div class="row">
-          <div class="col-4 irw-detail-id-group">
-            <div class="irw-detail-id">ID: 123456</div>
-            <div class="irw-detail-status">Status: New</div>
-            <div class="irw-detail-source">Source: SNOW</div>
+          <div class="col-4 osim-detail-id-group">
+            <div class="osim-detail-id">ID: 123456</div>
+            <div class="osim-detail-status">Status: New</div>
+            <div class="osim-detail-source">Source: SNOW</div>
           </div>
-          <div class="col-4 irw-detail-ts-group">
-            <div class="irw-detail-create-ts">Create_ts: 1/2/23 01:11</div>
-            <div class="irw-detail-last-update-ts">Last_update_ts: 1/2/23 01:11</div>
+          <div class="col-4 osim-detail-ts-group">
+            <div class="osim-detail-create-ts">Create_ts: 1/2/23 01:11</div>
+            <div class="osim-detail-last-update-ts">Last_update_ts: 1/2/23 01:11</div>
           </div>
-          <div class="col-4 irw-detail-assigned-group">
-            <div class="irw-detail-assigned-to">Assigned To: Cloud Platform</div>
-            <div class="irw-detail-assigned-person">Assigned Person: Nick</div>
+          <div class="col-4 osim-detail-assigned-group">
+            <div class="osim-detail-assigned-to">Assigned To: Cloud Platform</div>
+            <div class="osim-detail-assigned-person">Assigned Person: Nick</div>
           </div>
         </div>
         <div class="row">
-          <div class="irw-detail-title">Title: Question about CVE-2023-123456</div>
+          <div class="osim-detail-title">Title: Question about CVE-2023-123456</div>
         </div>
         <div class="row">
-          <div class="irw-detail-reported-by">Reported By: Stefan</div>
+          <div class="osim-detail-reported-by">Reported By: Stefan</div>
         </div>
 
-        <div class="row irw-detail-issue-description">
+        <div class="row osim-detail-issue-description">
           <div>
             <label for="issueDescription">Issue Description</label>
             <textarea class="form-control" name="issue-description" id="issueDescription" cols="30"
@@ -54,7 +54,7 @@
     </div>
 
 
-    <div class="irw-incident-filter">
+    <div class="osim-incident-filter">
       <label>
         Filter By
         <select>
@@ -65,7 +65,7 @@
         </select>
       </label>
     </div>
-    <div class="irw-incident-list">
+    <div class="osim-incident-list">
       <table class="table">
         <thead>
         <tr>
