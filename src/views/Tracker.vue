@@ -1,11 +1,11 @@
 <script lang="ts">
-import IssueView from '../views/IssueDetails.vue';
+import FlawDetailView from '../views/FlawDetailView.vue';
 import FlawView from '../views/FlawView.vue';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   components: {
-    IssueView,
+    FlawDetailView,
     FlawView,
   },
   
