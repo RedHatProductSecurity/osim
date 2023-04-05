@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
-import IssueDetails from '../views/IssueDetails.vue';
+import FlawDetailView from '../views/FlawDetailView.vue';
 import FlawView from '../views/FlawView.vue';
 import Tracker from '../views/Tracker.vue';
 import {useUserStore} from '@/stores/UserStore';
@@ -17,7 +17,7 @@ const router = createRouter({
     {
       path: '/issue-details',
       name: 'issue-details',
-      component: IssueDetails,
+      component: FlawDetailView,
     },
     {
       path: '/login',
