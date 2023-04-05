@@ -3,7 +3,7 @@ import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
 import FlawView from '../views/FlawView.vue';
-import Tracker from '../views/Tracker.vue';
+import TrackerView from '../views/TrackerView.vue';
 import {useUserStore} from '@/stores/UserStore';
 
 const router = createRouter({
@@ -30,7 +30,7 @@ const router = createRouter({
     {
       path: '/tracker',
       name: 'tracker',
-      component: Tracker,
+      component: TrackerView,
     },
 
     {
