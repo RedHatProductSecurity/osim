@@ -2,7 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
-import FlawView from '../views/FlawView.vue';
 import TrackerView from '../views/TrackerView.vue';
 import {useUserStore} from '@/stores/UserStore';
 
@@ -15,8 +14,9 @@ const router = createRouter({
       component: IndexView,
     },
     {
-      path: '/issue-details',
-      name: 'issue-details',
+      path: '/flaws/:id',
+      name: 'flaw-details',
+      props: true,
       component: FlawDetailView,
     },
     {
@@ -33,11 +33,12 @@ const router = createRouter({
       component: TrackerView,
     },
 
-    {
-      path: '/flaw-details',
-      name: 'flaw-details',
-      component: FlawView,
-    },
+    // {
+    //   path: '/flaw-details',
+    //   name: 'flaw-details',
+    //   component: FlawView,
+    // },
+
     // {
     //   path: '/about/:id',
     //   name: 'about',
