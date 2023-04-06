@@ -1,10 +1,23 @@
 <script setup lang="ts">
-import axios from 'axios'
-import {ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue';
+import {getFlaws} from '@/services/FlawService'
+
+
 
 const issues = ref([]);
 
-let selectedAll = false;
+let issueFilter = ref('');
+let filteredIssues = computed(() => {
+  if (issueFilter.value.length === 0) {
+    return issues.value;
+  }
+  const filterCaseInsensitive = issueFilter.value.toLowerCase();
+  return issues.value.filter(issue => {
+    // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
+    return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
+  });
+});
+
 const mockIssues = [
   {
     id: '123456',
@@ -40,22 +53,37 @@ const mockIssues = [
   },
 ]
 
-function toggleSelectAll() {
+function toggleSelectAll(selectedAll: boolean) {
+  selectedIssues.push()
   for (let i = 0; i < selectedIssues.length; i++) {
     selectedIssues[i] = selectedAll;
   }
 }
 
-const selectedIssues = mockIssues.map(() => false);
+let isSelectAllIndeterminate = computed(() => {
+  return selectedIssues.some(
+      (it) => it !== selectedIssues[0]
+  )
+})
+let isSelectAllChecked = computed(() => {
+  return selectedIssues.every(it => it);
+})
 
-axios.get('http://127.0.0.1:4010/osidb/api/v1/flaws?bz_id=999.1777106091507&changed_after=2016-05-25T04%3A00%3A00.0Z&changed_before=1953-04-15T05%3A00%3A00.0Z&created_dt=1997-02-22T05%3A00%3A00.0Z&cve_id=suscipit,quia,dignissimos&cvss2=nobis&cvss2_score=-3.12820402011057e%2B38&cvss3=nam&cvss3_score=2.2240193839647933e%2B38&cwe_id=reprehenderit&description=sed&embargoed=false&exclude_fields=pariatur&flaw_meta_type=enim,sed,enim&impact=LOW&include_fields=et,quisquam,sunt,aut&include_meta_attr=ullam,libero,at,alias&reported_dt=1972-11-30T00%3A00%3A00.0Z&resolution=DUPLICATE&search=unde&source=PHP&state=NEW&statement=sunt&summary=maiores&title=reprehenderit&tracker_ids=eum,cum,at,odio,a&type=WEAKNESS&unembargo_dt=1949-12-22T00%3A00%3A00.0Z&updated_dt=1973-03-16T05%3A00%3A00.0Z&uuid=c605cdc8-0f63-c5ec-d32d-75c184147eba')
-    .then(response => {
-      console.log('axios got: ', response.data);
+let selectedIssues = reactive(filteredIssues.value.map(() => false));
 
-    })
-    .catch(err => {
-      console.error('axios error: ', err);
-    })
+onMounted(() => {
+  getFlaws()
+      .then(response => {
+        console.log('axios got: ', response.data);
+        issues.value = response.data.results;
+
+      })
+      .catch(err => {
+        console.error('axios error: ', err);
+      })
+
+})
+
 
 </script>
 
@@ -63,36 +91,46 @@ axios.get('http://127.0.0.1:4010/osidb/api/v1/flaws?bz_id=999.1777106091507&chan
   <div class="osim-content container">
     <div class="osim-incident-filter">
       <label>
-        Filter By
-        <select>
-          <option value="Issues assigned to Me">Issues assigned to Me</option>
-          <option value="Issues assigned to team but unowned">Issues assigned to team but unowned</option>
-          <option value="Oldest">Oldest</option>
-          <option value="Newest">Newest</option>
-        </select>
+        <!--Filter By-->
+        <!--<select>-->
+        <!--  <option value="Issues assigned to Me">Issues assigned to Me</option>-->
+        <!--  <option value="Issues assigned to team but unowned">Issues assigned to team but unowned</option>-->
+        <!--  <option value="Oldest">Oldest</option>-->
+        <!--  <option value="Newest">Newest</option>-->
+        <!--</select>-->
+
+        <input type="text" v-model="issueFilter" class="form-text form-control" placeholder="Filter Issues/Flaws"/>
       </label>
     </div>
     <div class="osim-incident-list">
       <table class="table">
         <thead>
         <tr>
-          <th><input type="checkbox" @click="toggleSelectAll(selectedAll)" v-model="selectedAll" class="form-check-input" aria-label="Select All Issues in Table"></th>
+          <th><input type="checkbox"
+                     :indeterminate="isSelectAllIndeterminate"
+                     :checked="isSelectAllChecked"
+                     @input="toggleSelectAll($event.target.checked)"
+                     aria-label="Select All Issues in Table">
+          </th>
           <th>ID</th>
           <th>Source</th>
-          <th>Create_ts</th>
+          <th>created_dt</th>
           <th>Title</th>
-          <th>Status</th>
+          <th>State</th>
           <th>Assigned</th>
         </tr>
         </thead>
         <tbody class="table-group-divider">
-        <tr v-for="(issue, index) of mockIssues">
-          <td><input type="checkbox" v-model="selectedIssues[index]" class="form-check-input" aria-label="Select Issue"></td>
-          <td><RouterLink to="/issue-details">{{ issue.id }}</RouterLink></td>
+        <tr v-for="(issue, index) of filteredIssues">
+          <td><input type="checkbox" v-model="selectedIssues[index]" class="form-check-input" aria-label="Select Issue">
+          </td>
+          <td>
+            <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id }}</RouterLink>
+          </td>
           <td>{{ issue.source }}</td>
-          <td>{{ issue.create_ts }}</td>
+          <td>{{ issue.created_dt }}</td>
           <td>{{ issue.title }}</td>
-          <td>{{ issue.status }}</td>
+          <td>{{ issue.state }}</td>
           <td>{{ issue.assigned }}</td>
         </tr>
         </tbody>
