@@ -3,65 +3,54 @@ import ObjectView from '../components/ObjectView.vue';
 import DescriptionView from '../components/DescriptionView.vue';
 import AffectsView from '../components/ObjectArray.vue';
 import CommentsView from '../components/Comments.vue';
-</script>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+defineProps<{
+  flaw: object,
+}>();
 
-export default defineComponent({
-  data() {
-    const affects = [
-      {
-        uuid: 'example-uuid-1',
-        flaw: 'example-flaw-1',
-        type: 'example-type-1',
-        ps_module: 'example-module-1',
-        ps_component: 'example-component-1',
-        cvss3_score: '7.8',
-        trackers: 'example-tracker-1'
-      },
-      {
-        uuid: 'example-uuid-2',
-        flaw: 'example-flaw-2',
-        type: 'example-type-2',
-        ps_module: 'example-module-2',
-        ps_component: 'example-component-2',
-        cvss3_score: '9.3',
-        trackers: 'example-tracker-2'
-      },
-      {
-        uuid: 'example-uuid-2',
-        flaw: 'example-flaw-2',
-        type: 'example-type-2',
-        ps_module: 'example-module-2',
-        ps_component: 'example-component-2',
-        cvss3_score: '9.3',
-        trackers: 'example-tracker-2'
-      }
-    ];
-
-    const requestReview = false;
-    const pushToMitre = false;
-    const markPublic = false;
-
-    function reject() {
-      console.log('Reject clicked');
-    }
-
-    function submit() {
-      console.log('Submit clicked');
-    }
-
-    return {
-      affects,
-      requestReview,
-      pushToMitre,
-      markPublic,
-      reject,
-      submit
-    }
+const affects = [
+  {
+    uuid: 'example-uuid-1',
+    flaw: 'example-flaw-1',
+    type: 'example-type-1',
+    ps_module: 'example-module-1',
+    ps_component: 'example-component-1',
+    cvss3_score: '7.8',
+    trackers: 'example-tracker-1'
+  },
+  {
+    uuid: 'example-uuid-2',
+    flaw: 'example-flaw-2',
+    type: 'example-type-2',
+    ps_module: 'example-module-2',
+    ps_component: 'example-component-2',
+    cvss3_score: '9.3',
+    trackers: 'example-tracker-2'
+  },
+  {
+    uuid: 'example-uuid-2',
+    flaw: 'example-flaw-2',
+    type: 'example-type-2',
+    ps_module: 'example-module-2',
+    ps_component: 'example-component-2',
+    cvss3_score: '9.3',
+    trackers: 'example-tracker-2'
   }
-});
+];
+
+
+const requestReview = false;
+const pushToMitre = false;
+const markPublic = false;
+
+function reject() {
+  console.log('Reject clicked');
+}
+
+function submit() {
+  console.log('Submit clicked');
+}
+
 </script>
 
 <template>
@@ -100,6 +89,5 @@ export default defineComponent({
       </div>
     </main>
   </template>
-  
   
   
