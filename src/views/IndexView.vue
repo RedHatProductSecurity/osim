@@ -3,7 +3,7 @@ import IssueQueue from '../components/IssueQueue.vue'
 </script>
 
 <template>
-  <main>
+  <main class="mt-3">
     <IssueQueue/>
   </main>
 </template>

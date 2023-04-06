@@ -5,44 +5,66 @@
   flex-direction: column;
 }
 
-.irw-home {
-  display: flex;
+/* Red Hat colors */
+:root {
+  --redhat-primary: #cc0000;
+  --redhat-secondary: #cc0000;
+  --redhat-font: "Red Hat Text", sans-serif;
 }
 
-.irw-home, .irw-logo {
-  max-height: 100%;
-  object-fit: contain;
-  background-size: contain;
-  height: 100%;
+/* Apply Red Hat theme to buttons */
+.btn-primary {
+  background-color: var(--redhat-primary);
+  border-color: var(--redhat-primary);
+  color: #fff;
+  font-family: var(--redhat-font);
 }
 
-.irw-header {
-  flex: 0 1 auto;
-  max-height: 80px;
-
-  display: flex;
-  /*flex-direction: column;*/
-  justify-content: space-between;
-  padding-bottom: 20px;
+.btn-outline-primary {
+  color: var(--redhat-primary);
+  border-color: var(--redhat-primary);
+  font-family: var(--redhat-font);
 }
 
-.irw-content {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
+/* Remove borders from tables */
+.table {
+  border: none;
 }
 
-.irw-incident-filter {
-  display: flex;
-  justify-content: space-between;
-
+td {
+  border: none;
 }
 
-.container {
-  display: flex;
+table {
+  border-collapse: none;
+  border-spacing: 0;
 }
 
-.irw-user-profile .irw-user-profile-picture {
-  font-size: 2rem;
+
+/* Apply Red Hat font to the entire app */
+body {
+  font-family: var(--redhat-font);
 }
 
+/* override the primary color for accordion component */
+.accordion-button:not(.collapsed) {
+  background-color: white;
+}
+
+/* override the hover color for accordion component */
+.accordion-button:not(.collapsed):hover {
+  background-color: rgb(255, 0, 0);
+  border-color: rgb(255, 0, 0);
+}
+.card {
+  border-radius: 0;
+}
+.accordion-button:not(.collapsed) {
+  color: #000 !important;
+}
+.btn-primary:hover,
+.btn-outline-primary:hover,
+.btn-secondary:hover {
+  background-color: #f44336;
+  border-color: #f44336;
+}
