@@ -3,13 +3,16 @@ import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
 import {RouterLink} from 'vue-router'
 import {useUserStore} from '@/stores/UserStore';
+import {ref} from 'vue';
 
 const userStore = useUserStore();
+
+const searchIssue = ref("");
 </script>
 
 <template>
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <div class="container-fluid">
+    <div class="container">
       <RouterLink to="/" class="navbar-brand osim-home-link">
         <!--<RedHatLogo class="osim-logo"/>-->
         <img :src="RedHatLogoSvg"
@@ -24,16 +27,16 @@ const userStore = useUserStore();
         <li class="nav-item">
           <RouterLink class="nav-link" to="/">Index</RouterLink>
         </li>
-        <li class="nav-item">
-          <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>
-        </li>
-        <li class="nav-item">
-          <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>
-        </li>
+        <!--<li class="nav-item">-->
+        <!--  <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>-->
+        <!--</li>-->
+        <!--<li class="nav-item">-->
+        <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
+        <!--</li>-->
       </ul>
       <div class="osim-search">
         <form role="search">
-          <input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws"/>
+          <input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>
         </form>
       </div>
       <div class="btn-group">
