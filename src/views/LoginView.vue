@@ -8,7 +8,7 @@ import Login from '../components/Login.vue'
   </main>
 </template>
 
-<style scoped>
+<style>
 main {
   height: 100vh;
   width: 100vw;

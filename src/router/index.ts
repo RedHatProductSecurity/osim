@@ -1,9 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
-import FlawDetailView from '../views/FlawDetailView.vue';
-import TrackerView from '../views/TrackerView.vue';
-import {useUserStore} from '@/stores/UserStore';
+import IssueDetails from '../views/IssueDetails.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,10 +12,9 @@ const router = createRouter({
       component: IndexView,
     },
     {
-      path: '/flaws/:id',
-      name: 'flaw-details',
-      props: true,
-      component: FlawDetailView,
+      path: '/issue-details',
+      name: 'issue-details',
+      component: IssueDetails,
     },
     {
       path: '/login',
@@ -27,18 +24,6 @@ const router = createRouter({
         hideNavbar: true,
       },
     },
-    {
-      path: '/tracker',
-      name: 'tracker',
-      component: TrackerView,
-    },
-
-    // {
-    //   path: '/flaw-details',
-    //   name: 'flaw-details',
-    //   component: FlawView,
-    // },
-
     // {
     //   path: '/about/:id',
     //   name: 'about',
@@ -48,21 +33,6 @@ const router = createRouter({
     //   component: () => import('../views/AboutView.vue')
     // },
   ]
-})
-
-
-router.beforeEach((to, from) => {
-  const {isAuthenticated} = useUserStore();
-
-  if (isAuthenticated()) {
-    if (to.name === 'login') {
-      return false;
-    }
-  } else {
-    if (to.name !== 'login') {
-      return {name: 'login'};
-    }
-  }
 })
 
 export default router
