@@ -1,0 +1,40 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: ir-web-ui
+  namespace: irui
+spec:
+  replicas: 1
+  selector:
+    app: ir-web-ui
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: ir-web-ui
+    spec:
+      containers:
+      - name: ir-web-ui
+        image: ""
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - ir-web-ui
+      from:
+        kind: ImageStreamTag
+        name: ir-web-ui:latest
+
+

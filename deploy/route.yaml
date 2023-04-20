@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ir-web-ui-route
+  namespace: irui
+spec:
+  to:
+    kind: Service
+    name: ir-web-ui-service
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+

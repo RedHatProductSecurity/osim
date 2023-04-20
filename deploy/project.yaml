@@ -1,0 +1,8 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: irui
+  annotations:
+    openshift.io/description: "Project for the IR Web UI application"
+    openshift.io/display-name: "IR Web UI Project"
+
