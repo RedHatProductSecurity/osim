@@ -1,0 +1,40 @@
+name: Lint and Dry Run OpenShift YAML
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install yamllint
+      run: pip install yamllint
+
+    - name: Install OpenShift CLI (oc)
+      run: |
+        curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+        tar -xzvf openshift-client-linux.tar.gz
+        sudo mv oc /usr/local/bin/
+
+    - name: Run yamllint on deploy folder
+      run: yamllint deploy/
+
+    - name: Run oc dry-run on deploy folder
+      run: |
+        for file in deploy/*.yaml; do
+          oc apply --dry-run=client -f $file
+        done
+
