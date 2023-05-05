@@ -5,8 +5,10 @@ WORKDIR /app
 COPY . /app
 RUN yarn
 RUN yarn build  # Use "yarn build" to create a production build
+RUN ls -lah /app
+RUN ls -lah /app/dist
 
 # Production stage
-FROM httpd:2.4
-COPY --from=dev /app/dist /usr/local/apache2/htdocs/  # Copy the built files to the default Nginx directory
-RUN mv /usr/local/apache2/htdocs/dist /usr/local/apache2/htdocs/public_html
+FROM nginx:latest
+RUN ls -lah /usr/share/nginx/html
+COPY --from=dev /app/dist /usr/share/nginx/html  # Copy the built files to the default Nginx directory
