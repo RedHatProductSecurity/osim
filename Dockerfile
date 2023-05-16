@@ -11,4 +11,5 @@ RUN ls -lah /app/dist
 # Production stage
 FROM nginx:latest
 RUN ls -lah /usr/share/nginx/html
-COPY --from=dev /app/dist /usr/share/nginx/html  # Copy the built files to the default Nginx directory
+# Copy the built files to the default Nginx directory
+COPY --from=dev /app/dist /usr/share/nginx/html  
