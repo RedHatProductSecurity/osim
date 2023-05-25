@@ -13,13 +13,12 @@ on:
   push:
     branches:
       - main
-    pull_request:
+  pull_request:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch: {}
   release:
-    types:
-      - published
+    types: [published]
 
 env:
   REPO_NAME: ${{ github.repository }}
