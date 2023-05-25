@@ -13,12 +13,17 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'openshift/**'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'openshift/**'
   workflow_dispatch: {}
   release:
     types: [published]
+
 
 jobs:
   push-store-image:
