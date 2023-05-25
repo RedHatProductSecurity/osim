@@ -37,7 +37,7 @@ jobs:
     - name: 'Build and Push Image'
       run: |
         # Convert REPO_NAME to lowercase
-        REPO_NAME_LOWERCASE=$(echo ${{variables.QUAY_REPO}} | tr '[:upper:]' '[:lower:]')
+        REPO_NAME_LOWERCASE=$(echo ${{env.QUAY_REPO}} | tr '[:upper:]' '[:lower:]')
 
         # Determine the image tag based on the event that triggered the workflow
         if [[ ${{ github.event_name }} == "pull_request" ]]; then
