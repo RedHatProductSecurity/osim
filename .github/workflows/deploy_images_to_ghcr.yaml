@@ -1,13 +1,28 @@
+# This is a GitHub Action to deploy images to GitHub Container Registry (GHCR).
+# It supports tagging images based on release tags, PR numbers, and PR commits.
+# It assumes that the repository name is specified in an environment variable REPO_NAME.
+#
+# Workflow triggers:
+# - Pushes to the main branch
+# - PRs targeting the main branch
+# - Manual workflow dispatch
+
 name: Deploy Images to GHCR
 
 on:
   push:
     branches:
       - main
-  pull_request:
+    pull_request:
     branches:
       - main
   workflow_dispatch:
+  release:
+    types:
+      - published
+
+env:
+  REPO_NAME: ${{ github.repository }}
 
 jobs:
   push-store-image:
@@ -25,12 +40,23 @@ jobs:
 
     - name: 'Build and Push Image'
       run: |
-        # Use the branch name as the image tag for PR events, and use "latest" for push events to main
+        # Determine the image tag based on the event that triggered the workflow
         if [[ ${{ github.event_name }} == "pull_request" ]]; then
-          IMAGE_TAG="${{ github.event.pull_request.head.ref }}"
-        else
-          IMAGE_TAG="latest"
+          # For PR events, use the PR number and the commit SHA as the image tags
+          IMAGE_TAG_PR="pr-${{ github.event.pull_request.number }}"
+          IMAGE_TAG_COMMIT="pr-commit-${{ github.sha }}"
+          docker build . -t "ghcr.io/${REPO_NAME}:${IMAGE_TAG_PR}" -t "ghcr.io/${REPO_NAME}:${IMAGE_TAG_COMMIT}"
+          docker push "ghcr.io/${REPO_NAME}:${IMAGE_TAG_PR}"
+          docker push "ghcr.io/${REPO_NAME}:${IMAGE_TAG_COMMIT}"
+        elif [[ ${{ github.event_name }} == "push" ]]; then
+          # For push events, use "latest" as the image tag
+          docker build . -t "ghcr.io/${REPO_NAME}:latest"
+          docker push "ghcr.io/${REPO_NAME}:latest"
+        elif [[ ${{ github.event_name }} == "release" ]]; then
+          # For release events, use the release tag name and "release" as the image tags
+          IMAGE_TAG_RELEASE="release"
+          IMAGE_TAG_RELEASE_NAME="${{ github.event.release.tag_name }}"
+          docker build . -t "ghcr.io/${REPO_NAME}:${IMAGE_TAG_RELEASE}" -t "ghcr.io/${REPO_NAME}:${IMAGE_TAG_RELEASE_NAME}"
+          docker push "ghcr.io/${REPO_NAME}:${IMAGE_TAG_RELEASE}"
+          docker push "ghcr.io/${REPO_NAME}:${IMAGE_TAG_RELEASE_NAME}"
         fi
-        IMAGE_NAME="ghcr.io/redhatproductsecurity/ir-web-ui:${IMAGE_TAG}"
-        docker build . -t ${IMAGE_NAME}
-        docker push ${IMAGE_NAME}
