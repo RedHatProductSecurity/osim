@@ -1,0 +1,31 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: osim-deployment
+  namespace: osim-ui--runtime-int
+spec:
+  replicas: 1
+  selector:
+    app: osim
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: osim
+    spec:
+      containers:
+      - name: osim-container
+        image: ""
+        ports:
+        - containerPort: 8080
+  triggers:
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - osim-container
+      from:
+        kind: ImageStreamTag
+        name: osim-imagestream:latest
+        namespace: osim-ui--runtime-int
