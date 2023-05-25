@@ -37,7 +37,7 @@ yarn run build
 
 ## GitHub Actions for Deploying Docker Images
 
-This repository uses a GitHub Actions workflow to build and deploy Docker images to the GitHub Container Registry (GHCR). The workflow is triggered by push events to the main branch, pull request events targeting the main branch, and release events.
+This repository uses a GitHub Actions workflow to build and deploy Docker images to Quay. The workflow is triggered by push events to the main branch, pull request events targeting the main branch, and release events.
 
 The workflow uses the repository name specified in the REPO_NAME environment variable to name the images.
 
@@ -54,7 +54,7 @@ graph TB
     start(Start)-->push{Push Event}
     start-->pull_request{Pull Request Event}
     start-->release{Release Event}
-    push-->|"latest"|DockerBuildAndPush(Push to GHCR)
+    push-->|"latest"|DockerBuildAndPush(Push to Quay)
     pull_request-->|"pr-number"|DockerBuildAndPush
     pull_request-->|"pr-commit"|DockerBuildAndPush
     release-->|"release"|DockerBuildAndPush
