@@ -1,0 +1,18 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: osim-ui
+  namespace: osim-ui--runtime-int
+  labels:
+    shard: internal
+spec:
+  host: ui.osim-ui--runtime-int.apps.int.spoke.preprod.us-east-1.aws.paas.redhat.com
+  to:
+    kind: Service
+    name: osim
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+  wildcardPolicy: None

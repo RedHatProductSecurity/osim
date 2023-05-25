@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: osim
+  namespace: osim-ui--runtime-int
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  selector:
+    app: osim
