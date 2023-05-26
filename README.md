@@ -34,3 +34,29 @@ yarn run dev
 ```sh
 yarn run build
 ```
+
+## GitHub Actions for Deploying Docker Images
+
+This repository uses a GitHub Actions workflow to build and deploy Docker images to Quay. The workflow is triggered by push events to the main branch, pull request events targeting the main branch, and release events.
+
+The workflow uses the repository name specified in the REPO_NAME environment variable to name the images.
+
+When a push event to the main branch triggers the workflow, it builds and pushes an image tagged as "latest".
+
+When a pull request event triggers the workflow, it builds and pushes two images: one tagged with the PR number (formatted as "pr-number"), and one tagged with the commit SHA of the PR (formatted as "pr-commit").
+
+When a release event triggers the workflow, it builds and pushes two images: one tagged as "release", and one tagged with the name of the release tag (formatted as "release-tag-name").
+
+Here is a visual representation of this workflow:
+
+```mermaid
+graph TB
+    start(Start)-->push{Push Event}
+    start-->pull_request{Pull Request Event}
+    start-->release{Release Event}
+    push-->|"latest"|DockerBuildAndPush(Push to Quay)
+    pull_request-->|"pr-number"|DockerBuildAndPush
+    pull_request-->|"pr-commit"|DockerBuildAndPush
+    release-->|"release"|DockerBuildAndPush
+    release-->|"release-tag-name"|DockerBuildAndPush
+```

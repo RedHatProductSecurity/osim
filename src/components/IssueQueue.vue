@@ -7,12 +7,12 @@ import {getFlaws} from '@/services/FlawService'
 const issues = ref([]);
 
 let issueFilter = ref('');
-let filteredIssues = computed(() => {
+let filteredIssues = computed<any>(() => {
   if (issueFilter.value.length === 0) {
     return issues.value;
   }
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
-  return issues.value.filter(issue => {
+  return issues.value.filter((issue: any) => {
     // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
     return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
   });
@@ -69,7 +69,7 @@ let isSelectAllChecked = computed(() => {
   return selectedIssues.every(it => it);
 })
 
-let selectedIssues = reactive(filteredIssues.value.map(() => false));
+let selectedIssues = reactive<boolean[]>(filteredIssues.value.map(() => false));
 
 onMounted(() => {
   getFlaws()
@@ -109,7 +109,7 @@ onMounted(() => {
           <th><input type="checkbox"
                      :indeterminate="isSelectAllIndeterminate"
                      :checked="isSelectAllChecked"
-                     @input="toggleSelectAll($event.target.checked)"
+                     @input="toggleSelectAll(($event.target as HTMLInputElement).checked)"
                      aria-label="Select All Issues in Table">
           </th>
           <th>ID</th>
