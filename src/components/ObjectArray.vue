@@ -1,14 +1,9 @@
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 
-export default defineComponent({
-  props: {
-    affects: {
-      type: Array,
-      required: true
-    }
-  }
-});
+defineProps<{
+  // flaw: Flaw
+  affects: any[]
+}>();
 </script>
 
 <template>

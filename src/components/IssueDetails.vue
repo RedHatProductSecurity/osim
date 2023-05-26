@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type {Flaw} from '@/generated-client';
+// import type {Flaw} from '@/generated-client';
 import moment from 'moment';
 
 defineProps<{
-  flaw: Flaw
+  // flaw: Flaw
+  flaw: any
 }>();
 </script>
 

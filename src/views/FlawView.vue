@@ -39,9 +39,9 @@ const affects = [
 ];
 
 
-const requestReview = false;
-const pushToMitre = false;
-const markPublic = false;
+let requestReview = false;
+let pushToMitre = false;
+let markPublic = false;
 
 function reject() {
   console.log('Reject clicked');
