@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - main
+      - integration
     paths-ignore:
       - 'openshift/**'
   pull_request:
@@ -54,8 +55,9 @@ jobs:
           docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_COMMIT}"
         elif [[ ${{ github.event_name }} == "push" ]]; then
           # For push events, use "latest" as the image tag
-          docker build . -t "${REPO_NAME_LOWERCASE}:latest"
+          docker build . -t "${REPO_NAME_LOWERCASE}:latest" -t "${REPO_NAME_LOWERCASE}:${{ github.ref }}"
           docker push "${REPO_NAME_LOWERCASE}:latest"
+          docker push "${REPO_NAME_LOWERCASE}:${{ github.ref }}"
         elif [[ ${{ github.event_name }} == "release" ]]; then
           # For release events, use the release tag name and "release" as the image tags
           IMAGE_TAG_RELEASE="release"
