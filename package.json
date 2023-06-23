@@ -1,9 +1,9 @@
 {
-  "name": "ir-web-ui",
+  "name": "osim",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/RedHatProductSecurity/ir-web-ui.git"
+    "url": "https://github.com/RedHatProductSecurity/osim.git"
   },
   "license": "MIT",
   "private": false,
