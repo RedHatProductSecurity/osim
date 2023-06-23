@@ -44,6 +44,8 @@ jobs:
       run: |
         # Convert REPO_NAME to lowercase
         REPO_NAME_LOWERCASE=$(echo ${{vars.QUAY_REPO}} | tr '[:upper:]' '[:lower:]')
+        # Capture branch name
+        BRANCH_NAME=${{ github.ref#refs/heads/ }}
 
         # Determine the image tag based on the event that triggered the workflow
         if [[ ${{ github.event_name }} == "pull_request" ]]; then
@@ -55,9 +57,9 @@ jobs:
           docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_COMMIT}"
         elif [[ ${{ github.event_name }} == "push" ]]; then
           # For push events, use "latest" as the image tag
-          docker build . -t "${REPO_NAME_LOWERCASE}:latest" -t "${REPO_NAME_LOWERCASE}:${{ github.ref }}"
+          docker build . -t "${REPO_NAME_LOWERCASE}:latest" -t "${REPO_NAME_LOWERCASE}:${BRANCH_NAME}"
           docker push "${REPO_NAME_LOWERCASE}:latest"
-          docker push "${REPO_NAME_LOWERCASE}:${{ github.ref }}"
+          docker push "${REPO_NAME_LOWERCASE}:${BRANCH_NAME}"
         elif [[ ${{ github.event_name }} == "release" ]]; then
           # For release events, use the release tag name and "release" as the image tags
           IMAGE_TAG_RELEASE="release"
