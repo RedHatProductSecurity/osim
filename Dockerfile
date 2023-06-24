@@ -21,6 +21,7 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
     && chmod 755 /var/log/nginx \
 # Set up unprivileged nginx
     && sed -i '/^user nginx;$/d' /etc/nginx/nginx.conf \
+    && sed -i '/^pid \/run\/nginx.pid;$/c pid /tmp/nginx.pid;' /etc/nginx/nginx.conf \
 #
 # Replace port 80 with 8080 for unprivileged nginx.
 # osim-entrypoint.sh wants to delete the ipv6 line if ipv6 is not supported,
@@ -29,12 +30,10 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
 #    && sed -i -E 's/^(\s*listen.*)\b80([^.:])/\18080\2/' /etc/nginx/nginx.conf
 #
     && sed -i '/^\s*listen\b/d' /etc/nginx/nginx.conf \
-    && touch /run/nginx.pid \
-    && chown 999:0 /run/nginx.pid \
-    && chmod 644 /run/nginx.pid \
     && true
 
 COPY ./build/nginx-osim-ubi9-default.conf /etc/nginx/default.d/osim.conf
+COPY ./build/nginx-fix-random-uid.conf /etc/nginx/conf.d/
 COPY ./build/osim-entrypoint.sh /
 
 ENTRYPOINT ["/osim-entrypoint.sh"]
