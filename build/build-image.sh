@@ -1,3 +1,5 @@
 #!/bin/bash
 
-podman build . -t osim:local
+set -x
+
+podman build . -f "${1:-Dockerfile}" -t osim:local
