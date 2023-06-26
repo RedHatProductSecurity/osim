@@ -22,7 +22,7 @@ let filteredIssues = computed<FilteredIssue[]>(() => {
   }
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
   return issues.value
-      .filter(issue => {
+      .filter((issue: any) => {
         // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
         return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
       })
