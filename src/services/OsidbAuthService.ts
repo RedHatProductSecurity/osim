@@ -1,19 +1,23 @@
 import axios from 'axios';
-import {osimRuntime} from '@/stores/osimRuntime';
-import {useUserStore} from '../stores/UserStore';
 import {z} from 'zod';
 import type {AxiosRequestConfig} from 'axios';
+import {osimRuntime} from '@/stores/osimRuntime';
+import {useUserStore} from '../stores/UserStore';
+import {useSettingsStore} from '@/stores/SettingsStore';
 
 const RefreshResponse = z.object({
   access: z.string()
 });
 
-
 export async function osidbFetch(config: AxiosRequestConfig) {
+  const settingsStore = useSettingsStore();
   try {
     const accessToken = await getNextAccessToken();
     config.headers = config.headers || {};
     config.headers['Authorization'] = `Bearer ${accessToken}`;
+    if (/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
+      config.headers['Bugzilla-Api-Key'] = settingsStore.settings.bugzillaApiKey;
+    }
     config.baseURL = osimRuntime.value.backends.osidb;
     config.withCredentials = true;
     return axios(config);
