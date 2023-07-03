@@ -6,7 +6,6 @@ import type {JwtPayload} from 'jwt-decode';
 
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
-import axios from 'axios';
 
 const _sessionStorageKey = 'UserStore';
 
@@ -18,9 +17,6 @@ const loginResponse = z.object({
 
 export const useUserStore = defineStore('UserStore', () => {
 
-  function setA11nHeader() {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${access.value}`
-  }
 
   const refresh = ref<string>('');
 
