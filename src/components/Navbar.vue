@@ -42,7 +42,7 @@ const searchIssue = ref("");
       <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle osim-user-profile" data-bs-toggle="dropdown"
                 aria-expanded="false">
-          {{ userStore.jwt.user }}
+          {{ userStore.userName }}
           <i class="bi-person-circle osim-user-profile-picture"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
