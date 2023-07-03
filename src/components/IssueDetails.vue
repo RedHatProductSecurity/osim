@@ -1,11 +1,27 @@
 <script setup lang="ts">
 // import type {Flaw} from '@/generated-client';
 import moment from 'moment';
+import {computed} from 'vue';
 
-defineProps<{
+const props = defineProps<{
   // flaw: Flaw
   flaw: any
 }>();
+
+
+const trackerUuids = computed(() => {
+  return (props.flaw.affects ?? [])
+      .flatMap((affect: any) => {
+        return affect.trackers ?? []
+      })
+      .flatMap((tracker: any) => {
+        return {
+          uuid: tracker.uuid,
+          display: tracker.type + ' ' + tracker.external_system_id,
+        };
+      })
+})
+
 </script>
 
 <template>
@@ -47,7 +63,12 @@ defineProps<{
             </div>
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
-              <div v-for="tracker in flaw.trackers">{{ tracker }}</div>
+              <!--<div v-for="tracker in flaw.trackers">{{ tracker }}</div>-->
+              <div v-for="tracker in trackerUuids">
+                <RouterLink :to="{name: 'tracker-details', params: {id: tracker.uuid}}">
+                  {{ tracker.display }}
+                </RouterLink>
+              </div>
             </div>
           </div>
         </div>
