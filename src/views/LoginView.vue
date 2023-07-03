@@ -10,7 +10,7 @@ import Login from '../components/Login.vue'
 
 <style scoped>
 main {
-  height: 100vh;
+  height: calc(100vh - var(--osim-status-bar-height));
   width: 100vw;
   min-height: fit-content;
   display: flex;
