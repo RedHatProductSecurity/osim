@@ -39,17 +39,6 @@ export const useUserStore = defineStore('UserStore', () => {
       sub = 'User ID: ' + jwtAccess.value?.user_id;
     }
     if (sub == null) {
-      // fallback: look for user in domain root
-      sub = document.cookie
-          .split(';')
-          .map(x => x.trim())
-          .filter(x => /^.._user=/.test(x))
-          .map(x => x.substring('.._user='.length))
-          .reduce((acc: string[], x) => acc.concat(x.split('|')), [])
-          .map(x => decodeURIComponent(x))
-          .find(x => true)
-    }
-    if (sub == null) {
       sub = 'Current User';
     }
     return sub;
