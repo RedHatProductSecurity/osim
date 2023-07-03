@@ -1,57 +1,185 @@
-import {ref, computed} from 'vue'
-import {defineStore} from 'pinia'
+import {ref, computed} from 'vue';
+import {defineStore} from 'pinia';
+import {z} from 'zod';
+import jwtDecode from 'jwt-decode';
+import type {JwtPayload} from 'jwt-decode';
 
 import router from '@/router';
+import {osimRuntime} from '@/stores/osimRuntime';
+import axios from 'axios';
 
-interface Jwt {
-  user?: string | undefined;
-}
+const _sessionStorageKey = 'UserStore';
+
+const loginResponse = z.object({
+  access: z.string(),
+  refresh: z.string(),
+  env: z.string(),
+});
+
 export const useUserStore = defineStore('UserStore', () => {
 
+  function setA11nHeader() {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${access.value}`
+  }
 
-  const jwt = ref<Jwt>({})
-  const email = computed(() => jwt.value.user + '@redhat.com');
+  const access = ref<string>('');
+  const refresh = ref<string>('');
 
-  let storedUserStore = sessionStorage.getItem('UserStore');
-  if (storedUserStore != null) {
+  const jwtAccess = computed<JwtPayload | null>(() => {
     try {
-      storedUserStore = JSON.parse(storedUserStore);
-      // @ts-ignore
-      jwt.value = storedUserStore.jwt;
+      return jwtDecode(access.value);
     } catch (e) {
-      console.error('Unable to restore the UserStore from sessionStorage', e);
+      console.debug('UserStore: access token not a valid JWT', access.value, e);
     }
+    return null;
+  });
+  const jwtRefresh = computed<JwtPayload | null>(() => {
+    try {
+      return jwtDecode(refresh.value);
+    } catch (e) {
+      console.debug('UserStore: refresh token not a valid JWT', refresh.value, e);
+    }
+    return null;
+  });
 
+  const userName = computed(() => {
+    if (access.value === '') {
+      return 'Not Logged In';
+    }
+    let sub = jwtAccess.value?.sub;
+    if (sub == null) {
+      // @ts-ignore
+      sub = 'User ID: ' + jwtAccess.value?.user_id;
+    }
+    if (sub == null) {
+      // fallback: look for user in domain root
+      sub = document.cookie
+          .split(';')
+          .map(x => x.trim())
+          .filter(x => /^.._user=/.test(x))
+          .map(x => x.substring('.._user='.length))
+          .reduce((acc: string[], x) => acc.concat(x.split('|')), [])
+          .map(x => decodeURIComponent(x))
+          .find(x => true)
+    }
+    if (sub == null) {
+      sub = 'Current User';
+    }
+    return sub;
+  });
+
+  const env = ref<string>(''); // Placeholder: environment
+
+  // let refreshInterval = 30000;
+  // let refreshId = 0;
+
+
+  function setTokens(access_: string, refresh_: string, env_: string) {
+    access.value = access_;
+    refresh.value = refresh_;
+    env.value = env_;
+    // refreshId = setInterval(performTokenRefresh, 5000);
+    // writeSessionStorage()
   }
 
-  function login(user: string) {
-    return Promise.resolve(user)
-        .then(user => {
-          jwt.value.user = user;
+  readSessionStorage(); // Initially read when loading UserStore
+  function readSessionStorage() {
+    let storedUserStore = sessionStorage.getItem(_sessionStorageKey);
+    if (storedUserStore != null) {
+      try {
+        storedUserStore = JSON.parse(storedUserStore);
+        // @ts-ignore
+        access.value = storedUserStore.access;
+        // @ts-ignore
+        refresh.value = storedUserStore.refresh;
+        // @ts-ignore
+        env.value = storedUserStore.env;
+      } catch (e) {
+        console.error('UserStore: unable to restore from sessionStorage', e);
+        access.value = '';
+        refresh.value = '';
+        env.value = '';
+      }
+    }
+  }
+
+  // function login(jwtAccess, jwtRefresh) {
+  //   return userService.login()
+  //       .then(user => {
+  //         jwt.value.user = JSON.stringify(user);
+  //       })
+  // }
+  async function login() {
+    // return fetch('https://osidb-stage.prodsec.redhat.com/auth/token', {
+    return fetch(`${osimRuntime.value.backends.osidb}/auth/token`, {
+      // credentials: 'same-origin',
+      credentials: 'include',
+      cache: 'no-cache',
+    })
+        .then(response => response.json())
+        .then(json => {
+          const parsedLoginResponse = loginResponse.passthrough().parse(json);
+          access.value = parsedLoginResponse.access;
+          refresh.value = parsedLoginResponse.refresh;
+          env.value = parsedLoginResponse.env;
         })
+        .catch(e => {
+          console.error('UserStore: unsuccessful login request', e);
+        });
   }
+
+  // function writeSessionStorage() {
+  //   let storedUserStore = {
+  //     access: access.value,
+  //     refresh: refresh.value,
+  //     env: _env.value,
+  //     _modifyDate: Date.now(),
+  //   };
+  //   sessionStorage.setItem(_sessionStorageKey, JSON.stringify(storedUserStore));
+  // }
 
   function logout() {
-    return Promise.resolve()
-        .then(() => {
-          jwt.value.user = undefined;
-        })
-        .then(() => {
-          router.push({name: 'login'})
-        })
+    // clearInterval(refreshInterval);
+    setTokens('', '', '');
+    // router.push({name: 'login'});
+    // return Promise.resolve()
+    //     .then(() => {
+    //       jwt.value.user = undefined;
+    //     })
+    //     .then(() => {
+    //       router.push({name: 'login'})
+    //     })
+    return router.push({name: 'login'});
   }
 
+  /**
+   * Side effect: wipes tokens if tokens are expired
+   */
   function isAuthenticated() {
-    return jwt.value.user != null;
+    let now = Date.now();
+    let accessExp = jwtAccess.value?.exp;
+    if (accessExp != null) {
+      return now < accessExp * 1000;
+    }
+    let refreshExp = jwtRefresh.value?.exp;
+    if (refreshExp != null) {
+      return now < refreshExp * 1000;
+    }
+    setTokens('', '', '');
+    return false;
   }
 
   function $reset() {
-    jwt.value = {};
+    setTokens('', '', '');
   }
 
   return {
-    jwt,
-    email,
+    access,
+    refresh,
+    jwtAccess,
+    jwtRefresh,
+    userName,
+    env,
     login,
     logout,
     isAuthenticated,
