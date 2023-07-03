@@ -25,7 +25,8 @@
     "moment": "^2.29.4",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.2",
