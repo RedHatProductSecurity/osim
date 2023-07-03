@@ -26,6 +26,7 @@ watch(pinia.state, state => {
     storedUserStore._modifyDate = Date.now();
   }
   sessionStorage.setItem("UserStore", JSON.stringify(storedUserStore))
+  sessionStorage.setItem("SettingsStore", JSON.stringify(state.SettingsStore))
   // sessionStorage.setItem("OtherStore", JSON.stringify(state.OtherStore))
 }, {deep: true})
 

@@ -74,6 +74,10 @@ function onSearch(query: string) {
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
           <li>
+            <RouterLink class="dropdown-item" :to="{name: 'settings'}">Settings</RouterLink>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
             <button class="dropdown-item" type="button" @click.prevent="userStore.logout">Logout</button>
           </li>
         </ul>

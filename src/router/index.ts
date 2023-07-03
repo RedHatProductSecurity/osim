@@ -8,6 +8,7 @@ import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
+import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
 
 
@@ -75,6 +76,14 @@ const router = createRouter({
       meta: {
         title: 'Logout',
         hideNavbar: true,
+      },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: {
+        title: 'Settings',
       },
     },
 
