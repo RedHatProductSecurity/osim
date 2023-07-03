@@ -20,7 +20,7 @@ const searchIssue = ref("");
              class="d-inline-block align-text-top me-auto osim-logo"
              height="64"
         />
-        <div class="ms-auto">OSIM</div>
+        <div class="ms-auto"><abbr title="Open Security Issue Management">OSIM</abbr></div>
       </RouterLink>
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
