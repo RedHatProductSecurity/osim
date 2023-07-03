@@ -17,8 +17,14 @@ const pinia = createPinia();
 app.use(pinia)
 app.use(router)
 
+
 watch(pinia.state, state => {
-  sessionStorage.setItem("UserStore", JSON.stringify(state.UserStore))
+  const storedUserStore = state.UserStore;
+  if (storedUserStore.access !== '' || storedUserStore.refresh !== '') {
+    storedUserStore._modifyDate = Date.now();
+  }
+  sessionStorage.setItem("UserStore", JSON.stringify(storedUserStore))
+  // sessionStorage.setItem("OtherStore", JSON.stringify(state.OtherStore))
 }, {deep: true})
 
 app.mount('#app')
