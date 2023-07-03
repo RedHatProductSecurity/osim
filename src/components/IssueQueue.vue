@@ -4,19 +4,26 @@ import {getFlaws} from '@/services/FlawService'
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 
 
+type FilteredIssue = {
+  issue: any;
+  selected: boolean;
+};
 
 const issues = ref([]);
 
 let issueFilter = ref('');
-let filteredIssues = computed<any>(() => {
+
+let filteredIssues = computed<FilteredIssue[]>(() => {
   if (issueFilter.value.length === 0) {
-    return issues.value;
+    return issues.value.map(issue => reactive({issue: issue, selected: false}));
   }
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
-  return issues.value.filter((issue: any) => {
-    // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
-    return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
-  });
+  return issues.value
+      .filter(issue => {
+        // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
+        return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
+      })
+      .map(issue => reactive({issue: issue, selected: false}));
 });
 
 const mockIssues = [
@@ -53,24 +60,22 @@ const mockIssues = [
     assigned: 'Platform',
   },
 ]
-
-function toggleSelectAll(selectedAll: boolean) {
-  selectedIssues.push()
-  for (let i = 0; i < selectedIssues.length; i++) {
-    selectedIssues[i] = selectedAll;
+function updateSelectAll(selectedAll: boolean) {
+  for (let filteredIssue of filteredIssues.value) {
+    filteredIssue.selected = selectedAll;
   }
 }
 
 let isSelectAllIndeterminate = computed(() => {
-  return selectedIssues.some(
-      (it) => it !== selectedIssues[0]
-  )
-})
-let isSelectAllChecked = computed(() => {
-  return selectedIssues.every(it => it);
+  if (filteredIssues.value.length === 0) {
+    return false;
+  }
+  return filteredIssues.value.some((it) => it.selected !== filteredIssues.value[0].selected)
 })
 
-let selectedIssues = reactive<boolean[]>(filteredIssues.value.map(() => false));
+let isSelectAllChecked = computed(() => {
+  return filteredIssues.value.every(it => it.selected);
+})
 
 onMounted(() => {
   getFlaws()
@@ -110,7 +115,7 @@ onMounted(() => {
           <th><input type="checkbox"
                      :indeterminate="isSelectAllIndeterminate"
                      :checked="isSelectAllChecked"
-                     @input="toggleSelectAll(($event.target as HTMLInputElement).checked)"
+                     @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
                      aria-label="Select All Issues in Table">
           </th>
           <th>ID</th>
