@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref} from 'vue';
 import {getFlaws} from '@/services/FlawService'
+import IssueQueueItem from '@/components/IssueQueueItem.vue';
 
 
 
@@ -113,26 +114,18 @@ onMounted(() => {
                      aria-label="Select All Issues in Table">
           </th>
           <th>ID</th>
+          <th>Impact</th>
           <th>Source</th>
           <th>created_dt</th>
           <th>Title</th>
           <th>State</th>
-          <th>Assigned</th>
+          <!--<th>Assigned</th>-->
         </tr>
         </thead>
         <tbody class="table-group-divider">
-        <tr v-for="(issue, index) of filteredIssues">
-          <td><input type="checkbox" v-model="selectedIssues[index]" class="form-check-input" aria-label="Select Issue">
-          </td>
-          <td>
-            <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id }}</RouterLink>
-          </td>
-          <td>{{ issue.source }}</td>
-          <td>{{ issue.created_dt }}</td>
-          <td>{{ issue.title }}</td>
-          <td>{{ issue.state }}</td>
-          <td>{{ issue.assigned }}</td>
-        </tr>
+        <template v-for="filteredIssue of filteredIssues">
+          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" />
+        </template>
         </tbody>
       </table>
     </div>
