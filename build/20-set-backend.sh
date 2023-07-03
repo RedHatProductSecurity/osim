@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ "x$OSIM_BACKENDS" = x ]; then
-    printf '%s\n' 'OSIM_BACKENDS not in environment. Setting default backends.json contents.'
-    OSIM_BACKENDS='{"osidb":"http://osidb-service:8000"}'
+if [ "x$OSIM_RUNTIME" = x ]; then
+    printf '%s\n' 'OSIM_RUNTIME not in environment. Setting default runtime.json contents.'
+    OSIM_RUNTIME='{"backends":{"osidb":"http://osidb-service:8000"},"osimVersion":"0"}'
 fi
 
 # Store to /dev/shm because /var/www/nginx/html is read-only and /tmp might get messy
-printf '%s\n%s\n' 'Writing /dev/shm/backends.json:' "$OSIM_BACKENDS"
-printf '%s\n' "$OSIM_BACKENDS" >/dev/shm/backends.json
-chmod 444 /dev/shm/backends.json
+printf '%s\n%s\n' 'Writing /dev/shm/runtime.json:' "$OSIM_RUNTIME"
+printf '%s\n' "$OSIM_RUNTIME" >/dev/shm/runtime.json
+chmod 444 /dev/shm/runtime.json
