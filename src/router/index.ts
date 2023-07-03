@@ -3,8 +3,8 @@ import {nextTick as vueNextTick} from 'vue';
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
-import TrackerView from '../views/TrackerView.vue';
 import {useUserStore} from '@/stores/UserStore';
+import TrackerDetailView from '@/views/TrackerDetailView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,10 +35,12 @@ const router = createRouter({
         hideNavbar: true,
       },
     },
+
     {
-      path: '/tracker',
-      name: 'tracker',
-      component: TrackerView,
+      path: '/tracker/:id',
+      name: 'tracker-details',
+      props: true,
+      component: TrackerDetailView,
       meta: {
         title: 'Tracker Details',
       },
