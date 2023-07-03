@@ -36,7 +36,6 @@ const router = createRouter({
       path: '/flaws/new', // must be above /flaws/:id
       name: 'flaw-create',
       component: FlawCreateView,
-      props: true,
       meta: {
         title: 'Create Flaw',
       },
