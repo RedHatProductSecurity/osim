@@ -3,6 +3,7 @@
 #app {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
 }
 
 /* Red Hat colors */
