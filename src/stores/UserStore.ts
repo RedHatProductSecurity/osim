@@ -22,17 +22,8 @@ export const useUserStore = defineStore('UserStore', () => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${access.value}`
   }
 
-  const access = ref<string>('');
   const refresh = ref<string>('');
 
-  const jwtAccess = computed<JwtPayload | null>(() => {
-    try {
-      return jwtDecode(access.value);
-    } catch (e) {
-      console.debug('UserStore: access token not a valid JWT', access.value, e);
-    }
-    return null;
-  });
   const jwtRefresh = computed<JwtPayload | null>(() => {
     try {
       return jwtDecode(refresh.value);
@@ -43,10 +34,10 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   const userName = computed(() => {
-    if (access.value === '') {
+    if (refresh.value === '') {
       return 'Not Logged In';
     }
-    let sub = jwtAccess.value?.sub;
+    let sub = jwtRefresh.value?.sub;
     if (sub == null) {
       // @ts-ignore
       sub = 'User ID: ' + jwtAccess.value?.user_id;
@@ -74,8 +65,7 @@ export const useUserStore = defineStore('UserStore', () => {
   // let refreshId = 0;
 
 
-  function setTokens(access_: string, refresh_: string, env_: string) {
-    access.value = access_;
+  function setTokens(refresh_: string, env_: string) {
     refresh.value = refresh_;
     env.value = env_;
     // refreshId = setInterval(performTokenRefresh, 5000);
@@ -96,9 +86,7 @@ export const useUserStore = defineStore('UserStore', () => {
         env.value = storedUserStore.env;
       } catch (e) {
         console.error('UserStore: unable to restore from sessionStorage', e);
-        access.value = '';
-        refresh.value = '';
-        env.value = '';
+        $reset();
       }
     }
   }
@@ -140,7 +128,8 @@ export const useUserStore = defineStore('UserStore', () => {
 
   function logout() {
     // clearInterval(refreshInterval);
-    setTokens('', '', '');
+    $reset();
+
     // router.push({name: 'login'});
     // return Promise.resolve()
     //     .then(() => {
@@ -157,26 +146,20 @@ export const useUserStore = defineStore('UserStore', () => {
    */
   function isAuthenticated() {
     let now = Date.now();
-    let accessExp = jwtAccess.value?.exp;
-    if (accessExp != null) {
-      return now < accessExp * 1000;
-    }
     let refreshExp = jwtRefresh.value?.exp;
     if (refreshExp != null) {
       return now < refreshExp * 1000;
     }
-    setTokens('', '', '');
+    $reset();
     return false;
   }
 
   function $reset() {
-    setTokens('', '', '');
+    setTokens('', '');
   }
 
   return {
-    access,
     refresh,
-    jwtAccess,
     jwtRefresh,
     userName,
     env,
