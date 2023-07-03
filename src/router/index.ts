@@ -8,6 +8,7 @@ import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
+import LogoutView from '@/views/LogoutView.vue';
 
 
 // FIXME: Fix URL handling when clicking logout, then pressing the back button.
@@ -64,6 +65,15 @@ const router = createRouter({
       component: LoginView,
       meta: {
         title: 'Login',
+        hideNavbar: true,
+      },
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: LogoutView,
+      meta: {
+        title: 'Logout',
         hideNavbar: true,
       },
     },
