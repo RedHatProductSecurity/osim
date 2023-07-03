@@ -4,6 +4,7 @@ import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
 import {useUserStore} from '@/stores/UserStore';
+import NotFoundView from '@/views/NotFoundView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
 
 const router = createRouter({
@@ -51,6 +52,15 @@ const router = createRouter({
     //   name: 'flaw-details',
     //   component: FlawView,
     // },
+
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundView,
+      meta: {
+        title: 'Page Not Found',
+      },
+    },
 
     // {
     //   path: '/about/:id',
