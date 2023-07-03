@@ -13,10 +13,27 @@ const loginResponse = z.object({
   access: z.string(),
   refresh: z.string(),
   env: z.string(),
+  detail: z.string().optional(), // detail error message
 });
+const whoamiResponse = z.object({
+  email: z.string(),
+  groups: z.array(z.string()),
+  profile: z.object({
+    bz_user_id: z.string(),
+    jira_user_id: z.string(),
+  }).optional(),
+  username: z.string(),
+});
+type WhoamiType = z.infer<typeof whoamiResponse>;
+
+const userStoreSessionStorage = z.object({
+  refresh: z.string(),
+  env: z.string(),
+  whoami: whoamiResponse,
+});
+type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
 
 export const useUserStore = defineStore('UserStore', () => {
-
 
   const refresh = ref<string>('');
 
@@ -29,9 +46,13 @@ export const useUserStore = defineStore('UserStore', () => {
     return null;
   });
 
+  const whoami = ref<WhoamiType | null>(null);
   const userName = computed(() => {
     if (refresh.value === '') {
       return 'Not Logged In';
+    }
+    if (whoami.value != null) {
+      return whoami.value.email ?? whoami.value.username;
     }
     let sub = jwtRefresh.value?.sub;
     if (sub == null) {
@@ -53,8 +74,6 @@ export const useUserStore = defineStore('UserStore', () => {
   function setTokens(refresh_: string, env_: string) {
     refresh.value = refresh_;
     env.value = env_;
-    // refreshId = setInterval(performTokenRefresh, 5000);
-    // writeSessionStorage()
   }
 
   readSessionStorage(); // Initially read when loading UserStore
@@ -62,13 +81,10 @@ export const useUserStore = defineStore('UserStore', () => {
     let storedUserStore = sessionStorage.getItem(_sessionStorageKey);
     if (storedUserStore != null) {
       try {
-        storedUserStore = JSON.parse(storedUserStore);
-        // @ts-ignore
-        access.value = storedUserStore.access;
-        // @ts-ignore
-        refresh.value = storedUserStore.refresh;
-        // @ts-ignore
-        env.value = storedUserStore.env;
+        const parsedUserStore: UserStoreSessionStorage = userStoreSessionStorage.parse(JSON.parse(storedUserStore));
+        refresh.value = parsedUserStore.refresh;
+        env.value = parsedUserStore.env;
+        whoami.value = parsedUserStore.whoami;
       } catch (e) {
         console.error('UserStore: unable to restore from sessionStorage', e);
         $reset();
@@ -89,15 +105,39 @@ export const useUserStore = defineStore('UserStore', () => {
       credentials: 'include',
       cache: 'no-cache',
     })
-        .then(response => response.json())
-        .then(json => {
+        .then(async response => {
+          if (!response.ok) {
+            const text = await response.text();
+            // console.log('UserStore: login not ok', response.status, text);
+            throw new Error(text);
+          }
+          const json = await response.json();
           const parsedLoginResponse = loginResponse.passthrough().parse(json);
-          access.value = parsedLoginResponse.access;
+          if (parsedLoginResponse.detail) {
+            throw new Error(parsedLoginResponse.detail);
+          }
           refresh.value = parsedLoginResponse.refresh;
           env.value = parsedLoginResponse.env;
+          return parsedLoginResponse.access;
+        })
+        .then((access) => {
+          return fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: {
+              Authorization: `Bearer ${access}`
+            },
+          });
+        })
+        .then(response => response.json())
+        .then(json => {
+          const parsedWhoamiResponse = whoamiResponse.parse(json);
+          whoami.value = parsedWhoamiResponse;
         })
         .catch(e => {
+          $reset();
           console.error('UserStore: unsuccessful login request', e);
+          throw e;
         });
   }
 
@@ -141,11 +181,13 @@ export const useUserStore = defineStore('UserStore', () => {
 
   function $reset() {
     setTokens('', '');
+    whoami.value = null;
   }
 
   return {
     refresh,
     jwtRefresh,
+    whoami,
     userName,
     env,
     login,
