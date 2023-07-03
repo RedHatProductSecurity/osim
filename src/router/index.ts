@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {nextTick as vueNextTick} from 'vue';
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
@@ -12,18 +13,25 @@ const router = createRouter({
       path: '/',
       name: 'index',
       component: IndexView,
+      meta: {
+        title: 'Index',
+      },
     },
     {
       path: '/flaws/:id',
       name: 'flaw-details',
-      props: true,
       component: FlawDetailView,
+      props: true,
+      meta: {
+        title: 'Flaw Details',
+      },
     },
     {
       path: '/login',
       name: 'login',
       component: LoginView,
       meta: {
+        title: 'Login',
         hideNavbar: true,
       },
     },
@@ -31,6 +39,9 @@ const router = createRouter({
       path: '/tracker',
       name: 'tracker',
       component: TrackerView,
+      meta: {
+        title: 'Tracker Details',
+      },
     },
 
     // {
@@ -46,6 +57,9 @@ const router = createRouter({
     //   // this generates a separate chunk (About.[hash].js) for this route
     //   // which is lazy-loaded when the route is visited.
     //   component: () => import('../views/AboutView.vue')
+    //   meta: {
+    //     title: 'About',
+    //   },
     // },
   ]
 })
@@ -63,6 +77,11 @@ router.beforeEach((to, from) => {
       return {name: 'login'};
     }
   }
+
+router.afterEach((to, from) => {
+  vueNextTick(() => {
+    document.title = 'OSIM | ' + to.meta.title;
+  })
 })
 
 export default router
