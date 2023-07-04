@@ -81,20 +81,31 @@ router.beforeEach((to, from) => {
   const {isAuthenticated} = useUserStore();
 
   const toLogin = to.name === 'login';
+  let manualLocationNavigation = from.name === undefined;
 
   console.log('Going to login?', toLogin);
   if (isAuthenticated()) {
     console.log('user is authenticated');
     console.log('from route', from);
     if (toLogin) {
-      return {name: 'index'};
+      if (manualLocationNavigation) {
+        return {name: 'index'};
+      }
     }
     return !toLogin;
   }
 
   if (!toLogin) {
     return {name: 'login'};
+    let query: any = {};
+    if (manualLocationNavigation) { // Preserve destination
+      query.redirect = to.fullPath;
+    }
+    console.log('not authenticated, redirecting to login page')
+    return {name: 'login', query};
   }
+  console.log('not authenticated, should already be at login page')
+
 });
 
 router.afterEach((to, from) => {
