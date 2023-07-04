@@ -61,3 +61,50 @@ export async function getFlaw(uuid: string) {
     return response.data;
   })
 }
+
+export async function searchFlaws(query: string) {
+  return osidbFetch({
+    method: 'get',
+    url: '/osidb/api/v1/flaws',
+    params: {
+      search: query,
+    },
+  }).then(response => {
+    return response.data;
+  });
+}
+
+
+
+export async function createFlaw(flawCreateRequest: any) {
+  // {
+  //   "type": "VULNERABILITY",
+  //   "cve_id": "string",
+  //   "impact": "LOW",
+  //   "component": "string",
+  //   "title": "string",
+  //   "description": "string",
+  //   "summary": "string",
+  //   "statement": "string",
+  //   "cwe_id": "string",
+  //   "unembargo_dt": "2023-06-26T06:19:23.982Z",
+  //   "source": "ADOBE",
+  //   "reported_dt": "2023-06-26T06:19:23.982Z",
+  //   "mitigation": "string",
+  //   "cvss2": "string",
+  //   "cvss2_score": 0,
+  //   "nvd_cvss2": "string",
+  //   "cvss3": "string",
+  //   "cvss3_score": 0,
+  //   "nvd_cvss3": "string",
+  //   "is_major_incident": true,
+  //   "embargoed": true
+  // }
+  return osidbFetch({
+    method: 'post',
+    url: '/osidb/api/v1/flaws',
+    data: flawCreateRequest,
+  }).then(response => {
+    return response.data;
+  })
+}
