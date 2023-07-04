@@ -4,10 +4,19 @@ import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
 import {RouterLink} from 'vue-router'
 import {useUserStore} from '@/stores/UserStore';
 import {ref} from 'vue';
+import router from '@/router';
 
 const userStore = useUserStore();
 
 const searchIssue = ref("");
+
+function onSearch(query: string) {
+  let trimmedQuery = query.trim();
+  if (trimmedQuery === '') {
+    return;
+  }
+  router.push({name: 'search', query: {query: trimmedQuery}});
+}
 </script>
 
 <template>
@@ -34,9 +43,22 @@ const searchIssue = ref("");
         <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
         <!--</li>-->
       </ul>
-      <div class="osim-search">
-        <form role="search">
-          <input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>
+      <div class="osim-search me-2">
+        <form role="search" @submit.prevent="onSearch(searchIssue)">
+
+              <div class="input-group">
+                <input
+                    v-model="searchIssue"
+                    type="search"
+                    class="form-control"
+                    placeholder="Search Issues/Flaws"
+                    aria-label="Search Issues/Flaws"
+
+                />
+                <button class="btn btn-secondary" type="button"><i class="bi-search"></i></button>
+              </div>
+
+          <!--<input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>-->
         </form>
       </div>
       <div class="btn-group">

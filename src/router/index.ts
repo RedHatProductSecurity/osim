@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue';
 import FlawDetailView from '../views/FlawDetailView.vue';
 import {useUserStore} from '@/stores/UserStore';
 import NotFoundView from '@/views/NotFoundView.vue';
+import FlawSearchView from '@/views/FlawSearchView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
 
 
@@ -37,6 +38,15 @@ const router = createRouter({
       props: true,
       meta: {
         title: 'Flaw Details',
+      },
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: FlawSearchView,
+      props: true,
+      meta: {
+        title: 'Flaw Search',
       },
     },
     {
