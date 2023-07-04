@@ -38,6 +38,9 @@ function onSearch(query: string) {
         <li class="nav-item">
           <RouterLink class="nav-link" :to="{name: 'index'}">Index</RouterLink>
         </li>
+        <li class="nav-item">
+          <RouterLink class="nav-link" :to="{name: 'flaw-create'}">Create Flaw</RouterLink>
+        </li>
         <!--<li class="nav-item">-->
         <!--  <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>-->
         <!--</li>-->
