@@ -46,12 +46,12 @@ let isSelectAllChecked = computed(() => {
 onMounted(() => {
   getFlaws()
       .then(response => {
-        console.log('axios got: ', response.data);
+        console.log('meta.env.DEV', import.meta.env.DEV);
+        console.log('IssueQueue: got flaws: ', response.data);
         issues.value = response.data.results;
-
       })
       .catch(err => {
-        console.error('axios error: ', err);
+        console.error('IssueQueue: getFlaws error: ', err);
       })
 
 })
