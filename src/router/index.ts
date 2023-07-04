@@ -79,12 +79,6 @@ const router = createRouter({
       },
     },
 
-    // {
-    //   path: '/flaw-details',
-    //   name: 'flaw-details',
-    //   component: FlawView,
-    // },
-
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
