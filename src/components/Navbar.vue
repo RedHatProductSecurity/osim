@@ -34,7 +34,7 @@ function onSearch(query: string) {
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/">Index</RouterLink>
+          <RouterLink class="nav-link" :to="{name: 'index'}">Index</RouterLink>
         </li>
         <!--<li class="nav-item">-->
         <!--  <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>-->
