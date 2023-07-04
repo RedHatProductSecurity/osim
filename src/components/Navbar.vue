@@ -31,7 +31,9 @@ function onSearch(query: string) {
         />
         <div class="ms-auto"><abbr title="Open Security Issue Management">OSIM</abbr></div>
       </RouterLink>
-
+      <div class="osim-env">
+        <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>
+      </div>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <RouterLink class="nav-link" :to="{name: 'index'}">Index</RouterLink>
@@ -99,6 +101,19 @@ function onSearch(query: string) {
 
 .osim-logo-text {
   display: inline-block;
+}
+
+.osim-env {
+  /*background-color: gray;*/
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.osim-env > .osim-env-label {
+  min-height: 50%;
+  display: flex;
+  align-items: center;
 }
 
 .osim-user-profile .osim-user-profile-picture {
