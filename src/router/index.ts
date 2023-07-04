@@ -7,6 +7,18 @@ import {useUserStore} from '@/stores/UserStore';
 import NotFoundView from '@/views/NotFoundView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
 
+
+// FIXME: Fix URL handling when clicking logout, then pressing the back button.
+//        The URL should remain at /login while not logged-in.
+//        Vue doesn't seem to care (??? / !!!) but it's only a cosmetic issue...
+//        Something like this snippet was reported to work, but I haven't figured it out yet.
+let popStateDetected = false;
+let popStateEvent: PopStateEvent | null = null;
+window.addEventListener('popstate', (e) => {
+  popStateEvent = e;
+  popStateDetected = true;
+})
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -78,6 +90,11 @@ const router = createRouter({
 
 
 router.beforeEach((to, from) => {
+  const isNavigationBackButton = popStateDetected;
+  const popState = popStateEvent?.state;
+  popStateDetected = false;
+  popStateEvent = null;
+
   const {isAuthenticated} = useUserStore();
 
   const toLogin = to.name === 'login';
@@ -96,7 +113,10 @@ router.beforeEach((to, from) => {
   }
 
   if (!toLogin) {
-    return {name: 'login'};
+    if (isNavigationBackButton) {
+      history.pushState(popState, '', router.resolve({name: 'login'}).path);
+      return {name: 'login'};
+    }
     let query: any = {};
     if (manualLocationNavigation) { // Preserve destination
       query.redirect = to.fullPath;
