@@ -26,40 +26,6 @@ let filteredIssues = computed<FilteredIssue[]>(() => {
       .map(issue => reactive({issue: issue, selected: false}));
 });
 
-const mockIssues = [
-  {
-    id: '123456',
-    source: 'Assembler',
-    create_ts: '1/1/22 01:11',
-    title: 'CVE-2022-1111',
-    status: 'New',
-    assigned: 'Unassigned',
-  },
-  {
-    id: '234234',
-    source: 'SNOW',
-    create_ts: '1/1/22 01:1/2/22 01:11',
-    title: 'CVE-2022-Code execution',
-    status: 'In progress',
-    assigned: 'Cloud Platform',
-  },
-  {
-    id: '123456',
-    source: 'Secalert',
-    create_ts: '1/3/22 01:11',
-    title: 'New CPE',
-    status: 'New',
-    assigned: 'unassigned',
-  },
-  {
-    id: '123456',
-    source: 'Errata',
-    create_ts: '5/3/22 05:11',
-    title: 'RHSA-2022',
-    status: 'To Do',
-    assigned: 'Platform',
-  },
-]
 function updateSelectAll(selectedAll: boolean) {
   for (let filteredIssue of filteredIssues.value) {
     filteredIssue.selected = selectedAll;
