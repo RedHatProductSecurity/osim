@@ -80,15 +80,22 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const {isAuthenticated} = useUserStore();
 
+  const toLogin = to.name === 'login';
+
+  console.log('Going to login?', toLogin);
   if (isAuthenticated()) {
-    if (to.name === 'login') {
-      return false;
+    console.log('user is authenticated');
+    console.log('from route', from);
+    if (toLogin) {
+      return {name: 'index'};
     }
-  } else {
-    if (to.name !== 'login') {
-      return {name: 'login'};
-    }
+    return !toLogin;
   }
+
+  if (!toLogin) {
+    return {name: 'login'};
+  }
+});
 
 router.afterEach((to, from) => {
   vueNextTick(() => {
