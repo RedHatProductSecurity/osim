@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import Login from '../components/Login.vue'
+import {useUserStore} from '@/stores/UserStore';
+
+const userStore = useUserStore();
+userStore.logout();
 </script>
 
 <template>
   <main>
-    <Login/>
+    Logging out...
   </main>
 </template>
 

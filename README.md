@@ -1,4 +1,4 @@
-# ir-web-ui
+# Open Security Issue Management (OSIM)
 
 Incident Response Web UI
 

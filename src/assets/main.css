@@ -1,8 +1,18 @@
-@import './base.css';
-
 #app {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix Bootstrap 5 styles for input nested inside label */
+.form-label, .form-check-label {
+  display: inline-block;
 }
 
 /* Red Hat colors */

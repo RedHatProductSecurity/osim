@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref} from 'vue';
-import {getFlaws} from '@/services/FlawService'
-import IssueQueueItem from '@/components/IssueQueueItem.vue';
-
+import {useRoute} from 'vue-router';
+import {z} from 'zod';
+import {searchFlaws} from '../services/FlawService';
+import IssueQueueItem from '../components/IssueQueueItem.vue';
 
 type FilteredIssue = {
   issue: any;
   selected: boolean;
 };
+
+const route = useRoute();
 
 const issues = ref([]);
 
@@ -43,16 +46,30 @@ let isSelectAllChecked = computed(() => {
   return filteredIssues.value.every(it => it.selected);
 })
 
+const searchQuery = z.object({
+  query: z.object({
+    query: z.string(),
+  }),
+});
+
 onMounted(() => {
-  getFlaws()
-      .then(response => {
-        console.log('meta.env.DEV', import.meta.env.DEV);
-        console.log('IssueQueue: got flaws: ', response.data);
-        issues.value = response.data.results;
-      })
-      .catch(err => {
-        console.error('IssueQueue: getFlaws error: ', err);
-      })
+  try {
+    const parsedRoute = searchQuery.parse(route);
+    if (parsedRoute.query.query === '') {
+      // TODO handle error
+      return;
+    }
+    searchFlaws(parsedRoute.query.query)
+        .then(response => {
+          console.log('IssueSearch: got flaws: ', response.data);
+          issues.value = response.results;
+        })
+        .catch(err => {
+          console.error('IssueSearch: getFlaws error: ', err);
+        })
+  } catch (e) {
+    console.log('IssueSearch: error searching', e);
+  }
 
 })
 

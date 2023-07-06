@@ -4,10 +4,19 @@ import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
 import {RouterLink} from 'vue-router'
 import {useUserStore} from '@/stores/UserStore';
 import {ref} from 'vue';
+import router from '@/router';
 
 const userStore = useUserStore();
 
 const searchIssue = ref("");
+
+function onSearch(query: string) {
+  let trimmedQuery = query.trim();
+  if (trimmedQuery === '') {
+    return;
+  }
+  router.push({name: 'search', query: {query: trimmedQuery}});
+}
 </script>
 
 <template>
@@ -20,12 +29,17 @@ const searchIssue = ref("");
              class="d-inline-block align-text-top me-auto osim-logo"
              height="64"
         />
-        <div class="ms-auto">OSIM</div>
+        <div class="ms-auto"><abbr title="Open Security Issue Management">OSIM</abbr></div>
       </RouterLink>
-
+      <!--<div class="osim-env">-->
+      <!--  <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>-->
+      <!--</div>-->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <RouterLink class="nav-link" to="/">Index</RouterLink>
+          <RouterLink class="nav-link" :to="{name: 'index'}">Index</RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink class="nav-link" :to="{name: 'flaw-create'}">Create Flaw</RouterLink>
         </li>
         <!--<li class="nav-item">-->
         <!--  <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>-->
@@ -34,18 +48,35 @@ const searchIssue = ref("");
         <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
         <!--</li>-->
       </ul>
-      <div class="osim-search">
-        <form role="search">
-          <input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>
+      <div class="osim-search me-2">
+        <form role="search" @submit.prevent="onSearch(searchIssue)">
+
+              <div class="input-group">
+                <input
+                    v-model="searchIssue"
+                    type="search"
+                    class="form-control"
+                    placeholder="Search Issues/Flaws"
+                    aria-label="Search Issues/Flaws"
+
+                />
+                <button class="btn btn-secondary" type="button"><i class="bi-search"></i></button>
+              </div>
+
+          <!--<input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>-->
         </form>
       </div>
       <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle osim-user-profile" data-bs-toggle="dropdown"
                 aria-expanded="false">
-          {{ userStore.jwt.user }}
+          {{ userStore.userName }}
           <i class="bi-person-circle osim-user-profile-picture"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <RouterLink class="dropdown-item" :to="{name: 'settings'}">Settings</RouterLink>
+          </li>
+          <li><hr class="dropdown-divider"></li>
           <li>
             <button class="dropdown-item" type="button" @click.prevent="userStore.logout">Logout</button>
           </li>
@@ -77,6 +108,19 @@ const searchIssue = ref("");
 
 .osim-logo-text {
   display: inline-block;
+}
+
+.osim-env {
+  /*background-color: gray;*/
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.osim-env > .osim-env-label {
+  min-height: 50%;
+  display: flex;
+  align-items: center;
 }
 
 .osim-user-profile .osim-user-profile-picture {
