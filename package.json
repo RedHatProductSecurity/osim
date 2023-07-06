@@ -20,7 +20,7 @@
     "@popperjs/core": "^2.11.6",
     "axios": "^1.4.0",
     "bootstrap": "5.3.0",
-    "bootstrap-icons": "^1.10.3",
+    "bootstrap-icons": "^1.10.5",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "pinia": "^2.1.4",
