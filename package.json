@@ -17,7 +17,7 @@
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.4.0",
     "bootstrap": "5.3.0",
     "bootstrap-icons": "^1.10.5",
