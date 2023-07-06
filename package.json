@@ -29,7 +29,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.5.2",
+    "@openapitools/openapi-generator-cli": "^2.6.0",
     "@stoplight/prism-cli": "^5.0.1",
     "@types/node": "^20.4.0",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
