@@ -12,6 +12,9 @@ export default defineConfig({
       vue(),
       viteBasicSslPlugin(),
   ],
+  build: {
+    sourcemap: true,
+  },
   server: {
     https: true,
   },

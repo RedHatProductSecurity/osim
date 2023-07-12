@@ -4,9 +4,10 @@ import moment from 'moment';
 import {computed, onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
 
 const props = defineProps<{
-  // flaw: Flaw
-  modelValue: any
+  // flaw: Flaw,
+  modelValue: any,
 }>();
+
 // defineProps(['modelValue'])
 defineEmits(['update:modelValue'])
 
@@ -110,12 +111,10 @@ function removeAffect(affect: any) {
         <div class="row">
           <div class="col-6">
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CWE: </span><input type="text" class="form-control" v-model="modelValue.cwe_id" placeholder="e.g. CWE-20->CWE-77"/></div>
-            <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CVSS2: </span><input type="text" class="form-control" v-model="modelValue.cvss2" placeholder="e.g. AV:A/AC:M/Au:M/C:P/I:P/A:P/E:U/RL:TF/RC:C"/></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CVSS3: </span><input type="text" class="form-control" v-model="modelValue.cvss3" placeholder="e.g. 2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"/></div>
           </div>
           <div class="col-6">
             <div class="input-group mb-2" style="visibility: hidden"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CWE: </span><input type="text" class="form-control"/></div>
-            <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CVSS2 Score: </span><input type="text" class="form-control" v-model="modelValue.cvss2_score" placeholder="e.g. 3.4"/></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth"><input type="checkbox" class="form-check-input me-2">CVSS3 Score: </span><input type="text" class="form-control" v-model="modelValue.cvss3_score" placeholder="e.g. 2.2"/></div>
           </div>
         </div>
