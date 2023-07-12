@@ -35,7 +35,8 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
         const parsedSettingsStore: SettingsStoreSessionStorage = settingsStoreSessionStorage.parse(settingsJson);
         settings.value = parsedSettingsStore.settings;
       } catch (e) {
-        console.error('UserStore: unable to restore from sessionStorage', e);
+        console.error('UserStore: unable to restore from sessionStorage');
+        // console.trace(e);
         $reset();
       }
     }

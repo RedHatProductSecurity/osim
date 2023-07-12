@@ -1833,6 +1833,11 @@ magic-string@^0.30.0:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
+maska@^2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/maska/-/maska-2.1.9.tgz#98122f34625495dba2559889f0007447e1d8581e"
+  integrity sha512-LlAHN/ivh1NpwQSDrOWkj4PJlbMXkH2X0r1L4Pm9k6laO/0vxORLfogeLDPKLAbkJEugjfGS5wjhGE96iRpqbw==
+
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"

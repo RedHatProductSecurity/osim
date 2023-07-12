@@ -2,12 +2,17 @@
 import {reactive, ref, unref} from 'vue';
 import {useSettingsStore} from '@/stores/SettingsStore';
 import type {SettingsType} from '@/stores/SettingsStore';
+import EditableText from '@/components/widgets/EditableText.vue';
+import EditableDate from '@/components/widgets/EditableDate.vue';
 
 const settingsStore = useSettingsStore();
 type SensitiveFormInput = 'password' | 'text';
 let revealSensitive = ref<SensitiveFormInput>('password');
 
 let settings = reactive<SettingsType>({...settingsStore.settings});
+
+let editableText1 = ref<string>('foobar');
+let editableDate1 = ref<Date>(new Date());
 </script>
 
 <template>
@@ -60,6 +65,9 @@ let settings = reactive<SettingsType>({...settingsStore.settings});
         </div>
       </div>
 
+
+      <EditableText :editable="true" :editing="false" v-model="editableText1"/>
+      <EditableDate :editable="true" :editing="false" v-model="editableDate1"/>
       <button type="submit" class="btn btn-primary float-end">Save</button>
 
     </form>

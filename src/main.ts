@@ -1,5 +1,6 @@
 import {createApp, watch} from 'vue'
 import {createPinia} from 'pinia'
+import {vMaska} from 'maska';
 
 import App from './App.vue'
 import router from './router'
@@ -18,7 +19,7 @@ const pinia = createPinia();
 app.use(pinia)
 app.use(router)
 app.directive('input-label', InputLabelDirective);
-
+app.directive("maska", vMaska)
 
 watch(pinia.state, state => {
   const storedUserStore = state.UserStore;

@@ -132,6 +132,10 @@ router.beforeEach((to, from) => {
   const toLogin = to.name === 'login';
   let manualLocationNavigation = from.name === undefined;
 
+  if (to.name === 'settings') { // Temporary snapshot code
+    return;
+  }
+
   console.log('Going to login?', toLogin);
   if (isAuthenticated()) {
     console.log('user is authenticated');
