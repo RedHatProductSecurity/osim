@@ -12,7 +12,8 @@ let revealSensitive = ref<SensitiveFormInput>('password');
 let settings = reactive<SettingsType>({...settingsStore.settings});
 
 let editableText1 = ref<string>('foobar');
-let editableDate1 = ref<Date>(new Date());
+// let editableDate1 = ref<Date | null>(new Date());
+let editableDate1 = ref<Date | null>(null);
 </script>
 
 <template>
