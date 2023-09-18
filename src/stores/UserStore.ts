@@ -1,13 +1,27 @@
-import {ref, computed} from 'vue';
+import {ref, computed, watchEffect, watch, type Ref, reactive} from 'vue';
 import {defineStore} from 'pinia';
 import {z} from 'zod';
 import jwtDecode from 'jwt-decode';
 import type {JwtPayload} from 'jwt-decode';
+import {useSessionStorage} from '@vueuse/core';
 
+import {useRouter} from 'vue-router';
+// const router = useRouter();
 import router from '@/router';
-import {osimRuntime} from '@/stores/osimRuntime';
 
-const _sessionStorageKey = 'UserStore';
+import {osimRuntime} from '@/stores/osimRuntime';
+import type {SettingsType} from '@/stores/SettingsStore';
+
+import serviceWorkerClient from '../services/service-worker-client';
+
+export const queryRedirect = z.object({
+  query: z.object({
+    redirect: z.string(),
+  }),
+});
+
+
+const _userStoreKey = 'UserStore';
 
 const loginResponse = z.object({
   access: z.string(),
@@ -29,75 +43,83 @@ type WhoamiType = z.infer<typeof whoamiResponse>;
 const userStoreSessionStorage = z.object({
   refresh: z.string(),
   env: z.string(),
-  whoami: whoamiResponse,
+  whoami: whoamiResponse.nullable(),
 });
 type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
 
+// Vue bug: the whole chain of data uses reactivity, but ref doesn't work with the watch; only reactive does.
+const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
+const _userStoreSession = useSessionStorage(_userStoreKey, {refresh: '', env: '', whoami: null} as UserStoreSessionStorage);
+watchEffect(() => {
+  _userStoreSession.value = _userStore;
+});
+
+const workerReady = serviceWorkerClient.listen(_userStoreKey, value => {
+  if (value == null) {
+    Object.assign(_userStore, {refresh: '', env: '', whoami: null});
+  }
+  let newUserStore = userStoreSessionStorage.safeParse(value);
+  if (newUserStore.success) {
+    if (JSON.stringify(newUserStore.data) !== JSON.stringify(_userStore)) {
+      // New value; update
+      Object.assign(_userStore, newUserStore.data);
+      // _userStore = newUserStore.data;
+    }
+  }
+});
+// Top-level await is not available in the configured target environment "es2020"
+// await workerReady;
+export {workerReady};
+
+watch(_userStore, () => {
+  serviceWorkerClient.put(_userStoreKey, JSON.parse(JSON.stringify(_userStore)));
+});
+
 export const useUserStore = defineStore('UserStore', () => {
 
-  const refresh = ref<string>('');
+  const refresh = computed<string>(() => {
+    return _userStore.refresh;
+  });
 
   const jwtRefresh = computed<JwtPayload | null>(() => {
     try {
-      return jwtDecode(refresh.value);
+      return jwtDecode(_userStore.refresh);
     } catch (e) {
       console.debug('UserStore: refresh token not a valid JWT', refresh.value, e);
     }
     return null;
   });
 
-  const whoami = ref<WhoamiType | null>(null);
+  const whoami = computed<WhoamiType | null>(() => {
+    return _userStore.whoami || null;
+  });
   const userName = computed(() => {
-    if (refresh.value === '') {
+    if (_userStore.refresh === '') {
       return 'Not Logged In';
     }
-    if (whoami.value != null) {
-      return whoami.value.email ?? whoami.value.username;
+    if (_userStore.whoami != null) {
+      return _userStore.whoami.email ?? _userStore.whoami.username;
     }
     let sub = jwtRefresh.value?.sub;
-    if (sub == null) {
-      // @ts-ignore
-      sub = 'User ID: ' + jwtAccess.value?.user_id;
-    }
     if (sub == null) {
       sub = 'Current User';
     }
     return sub;
   });
 
-  const env = ref<string>(''); // Placeholder: environment
+  const env = computed<string>(() => {
+    return _userStore.env ?? '';
+  });
 
   // let refreshInterval = 30000;
   // let refreshId = 0;
 
 
   function setTokens(refresh_: string, env_: string) {
-    refresh.value = refresh_;
-    env.value = env_;
+    _userStore.refresh = refresh_;
+    _userStore.env = env_;
   }
 
-  readSessionStorage(); // Initially read when loading UserStore
-  function readSessionStorage() {
-    let storedUserStore = sessionStorage.getItem(_sessionStorageKey);
-    if (storedUserStore != null) {
-      try {
-        const parsedUserStore: UserStoreSessionStorage = userStoreSessionStorage.parse(JSON.parse(storedUserStore));
-        refresh.value = parsedUserStore.refresh;
-        env.value = parsedUserStore.env;
-        whoami.value = parsedUserStore.whoami;
-      } catch (e) {
-        console.error('UserStore: unable to restore from sessionStorage', e);
-        $reset();
-      }
-    }
-  }
-
-  // function login(jwtAccess, jwtRefresh) {
-  //   return userService.login()
-  //       .then(user => {
-  //         jwt.value.user = JSON.stringify(user);
-  //       })
-  // }
   async function login() {
     // return fetch('https://osidb-stage.prodsec.redhat.com/auth/token', {
     return fetch(`${osimRuntime.value.backends.osidb}/auth/token`, {
@@ -116,8 +138,8 @@ export const useUserStore = defineStore('UserStore', () => {
           if (parsedLoginResponse.detail) {
             throw new Error(parsedLoginResponse.detail);
           }
-          refresh.value = parsedLoginResponse.refresh;
-          env.value = parsedLoginResponse.env;
+          _userStore.refresh = parsedLoginResponse.refresh;
+          _userStore.env = parsedLoginResponse.env;
           return parsedLoginResponse.access;
         })
         .then((access) => {
@@ -132,7 +154,7 @@ export const useUserStore = defineStore('UserStore', () => {
         .then(response => response.json())
         .then(json => {
           const parsedWhoamiResponse = whoamiResponse.parse(json);
-          whoami.value = parsedWhoamiResponse;
+          _userStore.whoami = parsedWhoamiResponse;
         })
         .catch(e => {
           $reset();
@@ -140,16 +162,6 @@ export const useUserStore = defineStore('UserStore', () => {
           throw e;
         });
   }
-
-  // function writeSessionStorage() {
-  //   let storedUserStore = {
-  //     access: access.value,
-  //     refresh: refresh.value,
-  //     env: _env.value,
-  //     _modifyDate: Date.now(),
-  //   };
-  //   sessionStorage.setItem(_sessionStorageKey, JSON.stringify(storedUserStore));
-  // }
 
   function logout() {
     // clearInterval(refreshInterval);
@@ -169,7 +181,7 @@ export const useUserStore = defineStore('UserStore', () => {
   /**
    * Side effect: wipes tokens if tokens are expired
    */
-  function isAuthenticated() {
+  const isAuthenticated = computed<boolean>(() => {
     let now = Date.now();
     let refreshExp = jwtRefresh.value?.exp;
     if (refreshExp != null) {
@@ -177,11 +189,62 @@ export const useUserStore = defineStore('UserStore', () => {
     }
     $reset();
     return false;
-  }
+  });
+
+  // Watch authentication changes from other tabs
+  watch(isAuthenticated, () => {
+    console.log('isAuthenticated changed, current route:', router.currentRoute);
+    console.log('isAuthenticated changed, isAuthenticated:', isAuthenticated.value);
+    if (isAuthenticated.value) {
+      if (router.currentRoute.value.name === 'login') {
+        console.log('isAuthenticated became true while on login page');
+
+        try {
+          const maybeRedirect = queryRedirect.parse(router.currentRoute.value);
+          let redirect = maybeRedirect.query.redirect;
+          if (redirect.startsWith('/')) { // avoid possible third-party redirection
+            console.log('UserStore watch redirect:', redirect);
+            router.push(redirect);
+            return;
+          } else {
+            console.log('Refusing to redirect to', redirect);
+          }
+        } catch (e) {
+          // do nothing
+        }
+        console.log('UserStore watch push to index');
+        router.push({
+          name: 'index',
+        });
+        return;
+      }
+    } else {
+      console.log(router.currentRoute.value);
+      if (router.currentRoute.value.name !== 'login') {
+        console.log('isAuthenticated became false while not on login page');
+
+        // Preserve destination
+        let currentPath = router.currentRoute.value.fullPath;
+        console.log('current path:', currentPath);
+        if (currentPath !== '/') {
+          let query: any = {};
+          query.redirect = currentPath;
+          console.log('UserStore unauthenticated path not slash to login');
+          router.push({name: 'login', query});
+          return;
+        }
+        console.log('UserStore unauthenticated to login');
+        router.push({
+          name: 'login',
+        });
+        return;
+      }
+    }
+  })
 
   function $reset() {
     setTokens('', '');
-    whoami.value = null;
+    _userStore.whoami = null;
   }
 
   return {

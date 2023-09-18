@@ -1,8 +1,12 @@
-import {createApp, watch} from 'vue'
-import {createPinia} from 'pinia'
+import {createApp, watch} from 'vue';
+import type {Directive} from 'vue';
+import {createPinia} from 'pinia';
+import {vMaska} from 'maska';
+import {IMaskDirective} from 'vue-imask';
 
 import App from './App.vue'
 import router from './router'
+import './services/service-worker-client';
 
 import 'bootstrap/scss/bootstrap.scss'
 import 'bootstrap-icons/font/bootstrap-icons.scss'
@@ -18,16 +22,8 @@ const pinia = createPinia();
 app.use(pinia)
 app.use(router)
 app.directive('input-label', InputLabelDirective);
+app.directive('maska', vMaska);
+app.directive('imask', IMaskDirective as Directive);
 
-
-watch(pinia.state, state => {
-  const storedUserStore = state.UserStore;
-  if (storedUserStore.access !== '' || storedUserStore.refresh !== '') {
-    storedUserStore._modifyDate = Date.now();
-  }
-  sessionStorage.setItem("UserStore", JSON.stringify(storedUserStore))
-  sessionStorage.setItem("SettingsStore", JSON.stringify(state.SettingsStore))
-  // sessionStorage.setItem("OtherStore", JSON.stringify(state.OtherStore))
-}, {deep: true})
 
 app.mount('#app')

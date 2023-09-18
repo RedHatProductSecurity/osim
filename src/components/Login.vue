@@ -2,11 +2,11 @@
 import {useUserStore} from '@/stores/UserStore';
 import {ref} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
-import {z} from 'zod';
+import {object, z} from 'zod';
 
-const router = useRouter();
+// const router = useRouter();
 const userStore = useUserStore();
-const route = useRoute();
+// const route = useRoute();
 
 const username = ref('');
 const error = ref('');
@@ -17,39 +17,49 @@ const queryRedirect = z.object({
   }),
 });
 
+const working = ref(false);
+
 function login(event: Event) {
   // userStore.login(username.value)
   Promise.resolve()
   // Promise.reject('fake error')
       .then(() => {
+        working.value = true;
         error.value = '';
       })
       .then(userStore.login)
-      .then(() => {
-        try {
-          const maybeRedirect = queryRedirect.parse(route);
-          let redirect = maybeRedirect.query.redirect;
-          if (redirect.startsWith('/')) { // avoid possible third-party redirection
-            router.push(redirect);
-            return;
-          } else {
-            console.log('Refusing to redirect to', redirect);
-          }
-        } catch (e) {
-          // do nothing
-        }
-        router.push({
-          name: 'index'
-        });
-      })
+      // .then(() => {
+      //   try {
+      //     const maybeRedirect = queryRedirect.parse(route);
+      //     let redirect = maybeRedirect.query.redirect;
+      //     console.log('login component route,', route);
+      //     if (redirect.startsWith('/')) { // avoid possible third-party redirection
+      //       console.log('login component router push to redirect', redirect);
+      //       router.push(redirect);
+      //       return;
+      //     } else {
+      //       console.log('Refusing to redirect to', redirect);
+      //     }
+      //   } catch (e) {
+      //     // do nothing
+      //   }
+      //   console.log('login component redirect to index');
+      //   router.push({
+      //     name: 'index'
+      //   });
+      // })
       .catch(e => {
         console.debug('Error logging in', e);
         error.value = [
           'Error logging in.',
           'Ensure that your system has krb5 configured.',
           'Ensure that your browser has the correct trusted URIs for Negotiate authentication.',
+          'Ensure that you have logged into Kerberos on your system.',
           'More info: <a class="alert-link" target="_blank" rel="noopener noreferrer nofollow" href="https://people.redhat.com/mikeb/negotiate/">https://people.redhat.com/mikeb/negotiate/</a>',
         ].join('\n');
+      })
+      .finally(() => {
+        working.value = false;
       });
 }
 </script>
@@ -78,7 +88,16 @@ function login(event: Event) {
 
     <div class="row mb-3">
       <div class="col">
-        <button class="btn btn-primary align-self-end" type="submit">Login with System GSSAPI</button>
+        <button
+            class="btn btn-primary align-self-end"
+            type="submit"
+            :disabled="working"
+        >
+          <div class="spinner-border spinner-border-sm" role="status" v-if="working">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Login with System GSSAPI
+        </button>
       </div>
     </div>
   </form>

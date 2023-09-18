@@ -69,3 +69,14 @@
     * `/tmp` is not used because other junk may be placed there, and some
       separation of concerns can prevent confusion.
 
+## Local Configuration
+
+* Create `public/runtime.json` with the following contents:
+  ```json
+    {
+      "backends": {
+        "osidb": "http://localhost:8000"
+      },
+      "osimVersion": "0"
+    }
+  ```

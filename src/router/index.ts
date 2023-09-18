@@ -1,15 +1,16 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import {nextTick as vueNextTick} from 'vue';
+import {createRouter, createWebHistory, useRouter} from 'vue-router'
+import {nextTick as vueNextTick, watch} from 'vue';
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
-import FlawDetailView from '../views/FlawDetailView.vue';
-import {useUserStore} from '@/stores/UserStore';
+import FlawEditView from '../views/FlawEditView.vue';
+import {useUserStore, workerReady} from '@/stores/UserStore';
 import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import TrackerDetailView from '@/views/TrackerDetailView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
+import WidgetTestView from '@/views/WidgetTestView.vue';
 
 
 // FIXME: Fix URL handling when clicking logout, then pressing the back button.
@@ -45,7 +46,7 @@ const router = createRouter({
     {
       path: '/flaws/:id',
       name: 'flaw-details',
-      component: FlawDetailView,
+      component: FlawEditView,
       props: true,
       meta: {
         title: 'Flaw Details',
@@ -86,6 +87,14 @@ const router = createRouter({
         title: 'Settings',
       },
     },
+    {
+      path: '/widget-test',
+      name: 'widget-test',
+      component: WidgetTestView,
+      meta: {
+        title: 'Sample',
+      },
+    },
 
     {
       path: '/tracker/:id',
@@ -121,31 +130,42 @@ const router = createRouter({
 })
 
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const isNavigationBackButton = popStateDetected;
   const popState = popStateEvent?.state;
   popStateDetected = false;
   popStateEvent = null;
 
-  const {isAuthenticated} = useUserStore();
+  await workerReady;
+
+  const userStore = useUserStore();
+  const isAuthenticated = userStore.isAuthenticated;
 
   const toLogin = to.name === 'login';
   let manualLocationNavigation = from.name === undefined;
 
+  if (to.name === 'widget-test') { // Temporary snapshot code
+    return true;
+  }
+
   console.log('Going to login?', toLogin);
-  if (isAuthenticated()) {
+  if (isAuthenticated) {
     console.log('user is authenticated');
     console.log('from route', from);
+    console.log('to route', to);
     if (toLogin) {
       if (manualLocationNavigation) {
+        console.log('authenticated to login redirect to index');
         return {name: 'index'};
       }
     }
+    console.log('!toLogin:', !toLogin);
     return !toLogin;
   }
 
   if (!toLogin) {
     if (isNavigationBackButton) {
+      console.log('unauthenticated not to login pressed back');
       history.pushState(popState, '', router.resolve({name: 'login'}).path);
       return {name: 'login'};
     }
@@ -153,10 +173,11 @@ router.beforeEach((to, from) => {
     if (manualLocationNavigation) { // Preserve destination
       query.redirect = to.fullPath;
     }
-    console.log('not authenticated, redirecting to login page')
+
+    console.log('not authenticated, redirecting to login page');
     return {name: 'login', query};
   }
-  console.log('not authenticated, should already be at login page')
+  console.log('not authenticated, should already be at login page');
 
 });
 
@@ -166,4 +187,4 @@ router.afterEach((to, from) => {
   })
 })
 
-export default router
+export default router;
