@@ -5,11 +5,9 @@
 // Blurring focus or clicking the save button commits the change
 // Pressing escape or clicking the abort button aborts the change
 
-import {nextTick, reactive, ref, unref} from 'vue';
-import type {MaskaDetail} from 'maska';
-import moment from 'moment';
-import {IMask} from 'vue-imask';
-import {z} from 'zod';
+import { DateTime } from 'luxon';
+import { ref, nextTick, reactive, unref } from 'vue';
+import { IMask } from 'vue-imask';
 
 const props = defineProps<{
   modelValue: Date | undefined,
@@ -23,6 +21,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: Date | undefined],
   'update:editing': [value: boolean],
 }>();
+
 
 const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
@@ -60,31 +59,11 @@ const mask = {
   },
   // define date -> str conversion
   format: function (date: Date | string) { // required to complete input
-    if (typeof date === 'string') {
-      date = moment(date).toDate();
-    }
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear().toString();
-    let dayString = day.toString();
-    let monthString = month.toString();
-    if (day < 10) {
-      dayString = "0" + dayString;
-    }
-    if (month < 10) {
-      monthString = "0" + monthString;
-    }
-
-    return [year, monthString, dayString].join('-');
+    return formatDate(date);
   },
   // define str -> date conversion
   parse: function (str: string) { // required to complete input
-    const yearMonthDay = str.split('-');
-    return new Date(
-        parseInt(yearMonthDay[0], 10),
-        parseInt(yearMonthDay[1], 10) - 1,
-        parseInt(yearMonthDay[2], 10)
-    );
+    return parseDate(str);
   },
 
   autofix: true,
@@ -137,23 +116,20 @@ function beginEdit() {
 }
 
 function commit() {
-  console.log('commit');
-  editing.value = false;
-  if (!boundObject.completed) {
-    // clear date instead of aborting
-    // abort();
-    emit('update:modelValue', undefined);
-    return;
-  }
-  const dateRegex = /^(\d\d\d\d)-(\d\d)-(\d\d)/;
-  const parsedDate = boundObject.masked.match(dateRegex);
-  const date = moment.utc(boundObject.masked).toDate();
-  if (!isValidDate(date)) {
-    emit('update:modelValue', undefined);
-  } else {
-    emit('update:modelValue', date);
-  }
+    console.log('commit');
+    editing.value = false;
+    if (!boundObject.completed) {
+        emit('update:modelValue', undefined);
+        return;
+    }
+    const date = parseDate(boundObject.masked); // Use parseDate to get the Date object
+    if (!isValidDate(date)) {
+        emit('update:modelValue', undefined);
+    } else {
+        emit('update:modelValue', date);
+    }
 }
+
 function abort() {
   editing.value = false;
   editedModelValue.value = props.modelValue;
@@ -193,23 +169,36 @@ function blur(e: FocusEvent | null) {
   // }
 }
 
-function isValidDate(d: Date | string): boolean {
-  if (typeof d === 'string') {
-    const parsedString = z.string().datetime().safeParse(d);
-    return parsedString.success;
-  }
-  return !isNaN(d.getTime());
+// This function takes a Date or string and returns it in the 'YYYY-MM-DD' format.
+function formatDate(input: Date | string): string {
+  const dt = DateTime.fromJSDate(new Date(input)).toUTC();
+  return dt.toISODate(); // returns in 'YYYY-MM-DD' format
 }
 
-function osimFormatDate(date: Date | string | undefined | null) {
-  if (date == null) {
-    return '[No date selected]';
-  }
-  if (!isValidDate(date)) {
-    return 'Invalid Date';
-  }
-  return moment.utc(date).format('YYYY-MM-DD');
-  // return date.toISOString();
+// This function takes a string in 'YYYY-MM-DD' format and returns a Date object.
+function parseDate(input: string): Date {
+  return DateTime.fromISO(input, { zone: 'utc' }).toJSDate();
+}
+
+function isValidDate(d: Date | string): boolean {
+    if (typeof d === 'string') {
+        d = parseDate(d);
+    }
+    return !isNaN(d.getTime());
+}
+
+
+function osimFormatDate(date: Date | string | undefined | null): string {
+    if (date == null) {
+        return '[No date selected]';
+    }
+    
+    const formattedDate = formatDate(date); // Use the new formatDate function
+    if (!formattedDate) {
+        return 'Invalid Date';
+    }
+
+    return formattedDate;
 }
 
 function validateDatePart(e: KeyboardEvent) {

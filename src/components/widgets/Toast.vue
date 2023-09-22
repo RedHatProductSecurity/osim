@@ -1,16 +1,17 @@
 <script setup lang="ts">
 
 import {computed, onBeforeUnmount, ref, toRef, toRefs, watch} from 'vue';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import ProgressRing from "@/components/widgets/ProgressRing.vue";
 
 const props = defineProps<{
   title?: string,
   body: string,
-  timestamp: moment.Moment,
+  timestamp: DateTime,
   timeoutMs?: number,
   css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
 }>();
+
 
 const emit = defineEmits<{
   close: [],

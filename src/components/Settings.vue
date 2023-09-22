@@ -8,7 +8,7 @@ import ExampleForm from '@/components/ExampleForm.vue';
 import ExampleValidatedForm from '@/components/ExampleValidatedForm.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import Toast from '@/components/widgets/Toast.vue';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import {useToastStore} from '@/stores/ToastStore';
 import ProgressRing from "@/components/widgets/ProgressRing.vue";
 

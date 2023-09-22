@@ -7,7 +7,7 @@ import {
     RequiresSummaryEnum,
     Source666Enum
 } from '../generated-client';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 // console.log(Object.values(FlawType));
 
@@ -38,9 +38,9 @@ export const ZodFlawSchema = z.object({
     requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
     statement: z.string().nullish(),
     cwe_id: z.string().max(255).nullish(),
-    unembargo_dt: z.date().transform(val => moment(val).toISOString()).or(z.string().datetime()).nullish(), // $date-time,
+    unembargo_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     source: z.nativeEnum(Source666EnumWithBlank).nullish(),
-    reported_dt: z.date().transform(val => moment(val).toISOString()).or(z.string().datetime()).nullish(), // $date-time,
+    reported_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     mitigation: z.string().nullish(),
     cvss2: z.string().max(100).nullish(),
     cvss2_score: z.number().nullish(), // $float
@@ -52,7 +52,7 @@ export const ZodFlawSchema = z.object({
     major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
     nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
     embargoed: z.boolean(), // technically read-only, but mandatory
-    updated_dt: z.date().transform(val => moment(val).toISOString()).or(z.string().datetime()).nullish(), // $date-time,
+    updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
 // Object.values(ZodFlawSchema.shape.type._def.innerType.enum);
 // console.log(ZodFlawSchema);
