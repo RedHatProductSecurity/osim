@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, ref, toRef, toRefs, watch} from 'vue';
-import moment from 'moment';
+import {computed, onBeforeUnmount, ref, toRef, toRefs, watch, watchEffect} from 'vue';
+import { DateTime } from 'luxon';
 import ProgressRing from "@/components/widgets/ProgressRing.vue";
 
 const props = defineProps<{
   title?: string,
   body: string,
-  timestamp: moment.Moment,
+  timestamp: DateTime,
   timeoutMs?: number,
   css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
 }>();
@@ -42,11 +42,12 @@ if (props.timeoutMs) {
   });
 }
 
-// const timestamp = moment();
-const timestampRelative = ref<string>(props.timestamp.fromNow());
+// Initialize ref
+const timestampRelative = ref<string>(props.timestamp.toRelative() || '');
 
+// Update function
 const updateTimestamp = () => {
-  timestampRelative.value = props.timestamp.fromNow();
+  timestampRelative.value = props.timestamp.toRelative() || '';
 }
 
 const updateTimestampSecond = (updatesRemaining: number = 60) => {
@@ -68,10 +69,13 @@ const updateTimestampMinute = (updatesRemaining: number = 60) => {
   }
 }
 updateTimestampSecond();
-// setInterval(updateTimestamp, 1000);
 
 onBeforeUnmount(() => {
   clearInterval(relativeTimeInterval);
+});
+
+watchEffect(() => {
+  updateTimestamp();
 });
 
 const transitionDurationMs = ref(16);

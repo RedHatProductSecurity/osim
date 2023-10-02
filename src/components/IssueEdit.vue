@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import type {Flaw} from '@/generated-client';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import {computed, reactive, ref} from 'vue';
 import EditableText from '../components/widgets/EditableText.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -131,8 +131,8 @@ const onReset = (payload: MouseEvent) => {
 //   unembargo_dt: '',
 // };
 
-props.flaw.reported_dt = moment.utc(props.flaw.reported_dt).toDate();
-props.flaw.unembargo_dt = moment.utc(props.flaw.unembargo_dt).toDate();
+props.flaw.reported_dt = DateTime.fromISO(props.flaw.reported_dt, { zone: 'utc' }).toJSDate();
+props.flaw.unembargo_dt = DateTime.fromISO(props.flaw.unembargo_dt, { zone: 'utc' }).toJSDate();
 
 console.log('flaw reported_dt', props.flaw.reported_dt);
 
@@ -238,7 +238,7 @@ function addPublicComment() {
 
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable
-                :label="'Unembargo Date' + (moment(flaw.unembargo_dt).isAfter(moment()) ? ' [FUTURE]' : '')"
+                :label="'Unembargo Date' + (DateTime.fromJSDate(flaw.unembargo_dt).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import type {Flaw} from '@/generated-client';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import {computed, onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
 
 const props = defineProps<{
@@ -20,17 +20,17 @@ props.modelValue.embargoed = computed(() => {
   if (props.modelValue.unembargo_dt == null) {
     return false;
   }
-  return moment(props.modelValue.unembargo_dt).isAfter(moment());
-})
+  return DateTime.fromISO(props.modelValue.unembargo_dt).diffNow().milliseconds > 0;
+});
 props.modelValue.unembargo_dt = computed(() => {
   if (HTML_unembargo_dt.value == null) {
     return null;
   }
-  return moment(HTML_unembargo_dt.value).utc().format();
+  return DateTime.fromJSDate(HTML_unembargo_dt.value).toUTC().toISO();
 });
 
 props.modelValue.reported_dt = computed(() => {
-  return moment.utc().format();
+  return DateTime.utc().toISO();
 });
 
 const embargoChecked = ref(false);
@@ -49,6 +49,11 @@ function removeAffect(affect: any) {
   console.log(affects.value.indexOf(affect));
   affects.value.splice(affects.value.indexOf(affect), 1);
 }
+
+const getUnembargoDateTime = () => {
+  const value = (HTML_unembargo_dt?.value as any);
+  return DateTime.fromJSDate(value).diffNow().milliseconds;
+};
 
 </script>
 
@@ -99,7 +104,7 @@ function removeAffect(affect: any) {
             </div>
             <div v-if="embargoChecked">
               <span v-if="modelValue.embargoed">[EMBARGOED]</span>
-              <span v-if="moment(HTML_unembargo_dt).isAfter(moment())">[FUTURE]</span>
+              <span v-if="getUnembargoDateTime() > 0">[FUTURE]</span>
               <span v-else>[PAST]</span>
             </div>
             <div>

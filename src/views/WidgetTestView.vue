@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue';
-import moment from 'moment/moment';
+import { DateTime } from 'luxon';
 
 import Toast from '@/components/widgets/Toast.vue';
 import Modal from '@/components/widgets/Modal.vue';
@@ -70,7 +70,7 @@ const progress = ref(60);
       Open toast
     </button>
 
-    <Toast body="mybody" :timestamp="moment()" title="mytitle" css="dark"></Toast>
+    <Toast body="mybody" :timestamp="DateTime.now()" title="mytitle" css="dark"></Toast>
 
     <!--<ExampleForm/>-->
     <ExampleValidatedForm/>

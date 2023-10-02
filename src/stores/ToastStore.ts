@@ -1,6 +1,7 @@
 import {ref} from 'vue';
 import {defineStore} from 'pinia';
-import moment from 'moment';
+import { DateTime } from 'luxon';
+
 
 interface ToastNew {
   title?: string,
@@ -13,7 +14,7 @@ interface ToastNew {
 
 interface ToastAdded extends ToastNew {
   id: number,
-  timestamp: moment.Moment,
+  timestamp: DateTime,
 }
 
 let toastId = 0;
@@ -22,9 +23,9 @@ export const useToastStore = defineStore('ToastStore', () => {
   const toasts = ref<ToastAdded[]>([]);
 
   function addToast(toast: ToastNew) {
-    const newToast: ToastAdded = {...toast, id: toastId++, timestamp: moment()};
+    const newToast: ToastAdded = {...toast, id: toastId++, timestamp: DateTime.now()};
     toasts.value.unshift(newToast);
-  }
+  }  
 
   function $reset() {
     toasts.value = [];

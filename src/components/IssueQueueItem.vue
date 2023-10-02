@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 const props = defineProps<{
   issue: any,
@@ -29,7 +29,7 @@ defineEmits<{
   <tr>
     <td colspan="100%" style="padding: 1rem 5rem">
       <div v-if="issue.unembargo_dt">
-        <span v-if="moment(issue.unembargo_dt).isAfter(moment())">
+        <span v-if="DateTime.fromISO(issue.unembargo_dt).diffNow().milliseconds > 0">
           <span class="badge rounded-pill text-bg-danger">Embargoed</span>
         </span>
       </div>
