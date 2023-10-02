@@ -172,8 +172,13 @@ function blur(e: FocusEvent | null) {
 // This function takes a Date or string and returns it in the 'YYYY-MM-DD' format.
 function formatDate(input: Date | string): string {
   const dt = DateTime.fromJSDate(new Date(input)).toUTC();
-  return dt.toISODate(); // returns in 'YYYY-MM-DD' format
+  const result = dt.toISODate(); // returns in 'YYYY-MM-DD' format
+  if (result === null) {
+    throw new Error('Could not format date');
+  }
+  return result;
 }
+
 
 // This function takes a string in 'YYYY-MM-DD' format and returns a Date object.
 function parseDate(input: string): Date {

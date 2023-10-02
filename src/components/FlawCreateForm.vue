@@ -50,6 +50,11 @@ function removeAffect(affect: any) {
   affects.value.splice(affects.value.indexOf(affect), 1);
 }
 
+const getUnembargoDateTime = () => {
+  const value = (HTML_unembargo_dt?.value as any);
+  return DateTime.fromJSDate(value).diffNow().milliseconds;
+};
+
 </script>
 
 <template>
@@ -99,7 +104,7 @@ function removeAffect(affect: any) {
             </div>
             <div v-if="embargoChecked">
               <span v-if="modelValue.embargoed">[EMBARGOED]</span>
-              <span v-if="DateTime.fromJSDate(HTML_unembargo_dt.value).diffNow().milliseconds > 0">[FUTURE]</span>
+              <span v-if="getUnembargoDateTime() > 0">[FUTURE]</span>
               <span v-else>[PAST]</span>
             </div>
             <div>
