@@ -68,7 +68,7 @@ export function getDisplayedOsidbError(error: AxiosError<any, any>) {
       const doc = parser.parseFromString(error.response.data, error.response.headers['content-type']);
       const exception_value = doc.querySelector('.exception_value');
       const text = (exception_value as HTMLElement)?.innerText;
-      return text;
+      return 'Likely error between OSIDB and database:\n' + text;
     } else {
       return `Code ${error.response.status}: ${error.response.data instanceof Object ? JSON.stringify(error.response.data, null, 2) : error.response.data}`;
     }
