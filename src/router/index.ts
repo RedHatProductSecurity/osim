@@ -3,7 +3,7 @@ import {nextTick as vueNextTick, watch} from 'vue';
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';
-import {useUserStore, workerReady} from '@/stores/UserStore';
+import {useUserStore} from '@/stores/UserStore';
 import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
@@ -136,7 +136,7 @@ router.beforeEach(async (to, from) => {
   popStateDetected = false;
   popStateEvent = null;
 
-  await workerReady;
+  // await workerReady;
 
   const userStore = useUserStore();
   const isAuthenticated = userStore.isAuthenticated;
