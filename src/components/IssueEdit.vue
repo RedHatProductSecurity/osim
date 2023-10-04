@@ -191,13 +191,14 @@ function addPublicComment() {
           title: 'Comment saved',
           body: 'Comment saved',
         });
+        newPublicComment.value = '';
+        addComment.value = false;
         emit('refresh:flaw');
-        // location.reload(); // TODO extremely ugly hack
       })
       .catch(e => {
         addToast({
           title: 'Error saving comment',
-          body: e.toString(),
+          body: getDisplayedOsidbError(e),
         });
       })
 }
