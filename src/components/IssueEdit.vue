@@ -8,7 +8,7 @@ import * as zf from '../types/zodFlaw';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {ZodFlawSchema} from '../types/zodFlaw';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import {postFlawPublicComment, putFlaw} from '@/services/FlawService';
+import {getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, putFlaw} from '@/services/FlawService';
 import type {ZodFlawType} from '../types/zodFlaw';
 import {useField, useForm} from 'vee-validate';
 import {toTypedSchema} from '@vee-validate/zod';
@@ -17,6 +17,7 @@ const router = useRouter();
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import {useRouter} from 'vue-router';
 import {useToastStore} from '@/stores/ToastStore';
+import CveRequestForm from '@/components/CveRequestForm.vue';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
 
 const {addToast} = useToastStore();
@@ -186,8 +187,19 @@ function onreset() {
 function addPublicComment() {
   postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
       .then(() => {
-        location.reload(); // TODO extremely ugly hack
-      });
+        addToast({
+          title: 'Comment saved',
+          body: 'Comment saved',
+        });
+        emit('refresh:flaw');
+        // location.reload(); // TODO extremely ugly hack
+      })
+      .catch(e => {
+        addToast({
+          title: 'Error saving comment',
+          body: e.toString(),
+        });
+      })
 }
 
 </script>
@@ -216,7 +228,22 @@ function addPublicComment() {
 <!--            <label>Type <EditableText v-model="flawType"/></label>-->
             <LabelSelect label="Type" :options="flawTypes" v-model="flawType" :error="errors.type"/>
             <!--<div>CVE ID: {{ flaw.cve_id }}</div>-->
-            <LabelEditable label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id" />
+            <div class="">
+              <div class="row">
+                <div class="col">
+                  <LabelEditable
+                      label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id"/>
+                </div>
+                <div v-if="!(flawCve_id || '').includes('CVE')" class="col-auto align-self-end mb-3">
+                  <CveRequestForm
+                      :bugzilla-link="getFlawBugzillaLink(flaw)"
+                      :osim-link="getFlawOsimLink(flaw.uuid)"
+                      :subject="flawTitle"
+                      :description="flawDescription"
+                  />
+                </div>
+              </div>
+            </div>
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
             <LabelEditable label="CVSS3" type="text" v-model="flawCvss3" :error="errors.cvss3"/>
             <LabelInput label="CVSS3 Score" type="number" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
