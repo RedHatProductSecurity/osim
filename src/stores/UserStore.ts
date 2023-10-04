@@ -106,6 +106,12 @@ export const useUserStore = defineStore('UserStore', () => {
     }
     return sub;
   });
+  const userEmail = computed(() => {
+    if (_userStoreSession.value.refresh === '') {
+      return '';
+    }
+    return _userStoreSession.value.whoami?.email ?? '';
+  });
 
   const env = computed<string>(() => {
     return _userStoreSession.value.env ?? '';
@@ -252,6 +258,7 @@ export const useUserStore = defineStore('UserStore', () => {
     jwtRefresh,
     whoami,
     userName,
+    userEmail,
     env,
     login,
     logout,

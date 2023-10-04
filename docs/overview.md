@@ -75,7 +75,8 @@
   ```json
     {
       "backends": {
-        "osidb": "http://localhost:8000"
+        "osidb": "http://localhost:8000",
+        "bugzilla": "http://localhost:8001"
       },
       "osimVersion": "0"
     }
