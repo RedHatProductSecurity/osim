@@ -17,6 +17,7 @@ const router = useRouter();
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import {useRouter} from 'vue-router';
 import {useToastStore} from '@/stores/ToastStore';
+import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
 
 const {addToast} = useToastStore();
 
@@ -85,22 +86,11 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
         // router.go(0); // TODO extremely ugly hack - refresh the current route, refreshing the loaded flaw
       })
       .catch(error => {
-        if (error.response) {
-          addToast({
-            title: 'Error saving Flaw',
-            body: `Code ${error.response.status}: ${error.response.data instanceof Object ? JSON.stringify(error.response.data, null, 2) : error.response.data}`,
-          });
-        } else if (error.request) {
-          addToast({
-            title: 'Error saving Flaw',
-            body: error.request.toString(), // XMLHttpRequest object
-          });
-        } else {
-          addToast({
-            title: 'Error saving Flaw',
-            body: error.toString(),
-          });
-        }
+        const displayedError = getDisplayedOsidbError(error);
+        addToast({
+          title: 'Error saving Flaw',
+          body: displayedError,
+        });
         console.log(error);
       })
 
@@ -150,7 +140,8 @@ const trackerUuids = computed(() => {
           display: tracker.type + ' ' + tracker.external_system_id,
         };
       })
-})
+});
+
 
 // function onsubmit() {
 //
