@@ -3,6 +3,8 @@ import {osidbFetch} from '@/services/OsidbAuthService';
 import {z} from 'zod';
 import {FlawType} from '@/generated-client';
 import type {ZodFlawType} from '@/types/zodFlaw';
+import router from '@/router';
+import {osimRuntime} from '@/stores/osimRuntime';
 
 
 export async function getFlaws() {
@@ -61,6 +63,10 @@ export async function getFlaw(uuid: string) {
   return osidbFetch({
     method: 'get',
     url: `/osidb/api/v1/flaws/${uuid}`,
+    params: {
+      // 'include_meta_attr': '*', // too many fields
+      'include_meta_attr': 'bz_id',
+    },
   }).then(response => {
     return response.data;
   })
@@ -137,4 +143,19 @@ export async function createFlaw(flawCreateRequest: any) {
   }).then(response => {
     return response.data;
   })
+}
+
+export function getFlawOsimLink(flawUuid: any) {
+  const osimPath = router.resolve({name: 'flaw-details', params: {id: flawUuid}}).path;
+  const link = window.location.protocol + '//' + window.location.host + osimPath;
+  return link;
+}
+
+export function getFlawBugzillaLink(flaw: any) {
+  let bzId = String(flaw.meta_attr?.bz_id);
+  if (bzId === '') {
+    bzId = '0';
+  }
+  const link = osimRuntime.value.backends.bugzilla + '/show_bug.cgi?id=' + bzId;
+  return link;
 }
