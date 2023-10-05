@@ -19,12 +19,12 @@ on:
   pull_request:
     branches:
       - main
+      - integration
     paths-ignore:
       - 'openshift/**'
   workflow_dispatch: {}
   release:
     types: [published]
-
 
 jobs:
   push-store-image:
@@ -34,35 +34,42 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 'Login to GitHub Container Registry'
+      if: github.event_name != 'pull_request'
       uses: docker/login-action@v2
       with:
         registry: quay.io
         username: ${{secrets.QUAY_USER}}
         password: ${{secrets.QUAY_TOKEN}}
 
-    - name: 'Build and Push Image'
+    - name: 'Build (and Optionally Push) Image'
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: quay.io/${{vars.QUAY_REPO}}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
       run: |
         # Convert REPO_NAME to lowercase
         REPO_NAME_LOWERCASE=$(echo ${{vars.QUAY_REPO}} | tr '[:upper:]' '[:lower:]')
+        DOCKER_BUILD_FLAGS="--load"
+        DOCKER_PUSH_COMMANDS=""
 
         # Determine the image tag based on the event that triggered the workflow
         if [[ ${{ github.event_name }} == "pull_request" ]]; then
-          # For PR events, use the PR number and the commit SHA as the image tags
           IMAGE_TAG_PR="pr-${{ github.event.pull_request.number }}"
           IMAGE_TAG_COMMIT="pr-commit-${{ github.sha }}"
-          docker build . -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_PR}" -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_COMMIT}"
-          docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_PR}"
-          docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_COMMIT}"
+          docker build . -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_PR}" -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_COMMIT}" $DOCKER_BUILD_FLAGS
         elif [[ ${{ github.event_name }} == "push" ]]; then
-          # For push events, use "latest" as the image tag
-          docker build . -t "${REPO_NAME_LOWERCASE}:latest" -t "${REPO_NAME_LOWERCASE}:${GITHUB_REF_NAME}"
-          docker push "${REPO_NAME_LOWERCASE}:latest"
-          docker push "${REPO_NAME_LOWERCASE}:${GITHUB_REF_NAME}"
+          DOCKER_BUILD_FLAGS="--push"
+          DOCKER_PUSH_COMMANDS="docker push "${REPO_NAME_LOWERCASE}:latest"; docker push "${REPO_NAME_LOWERCASE}:${GITHUB_REF_NAME}""
+          docker build . -t "${REPO_NAME_LOWERCASE}:latest" -t "${REPO_NAME_LOWERCASE}:${GITHUB_REF_NAME}" $DOCKER_BUILD_FLAGS
         elif [[ ${{ github.event_name }} == "release" ]]; then
-          # For release events, use the release tag name and "release" as the image tags
+          DOCKER_BUILD_FLAGS="--push"
           IMAGE_TAG_RELEASE="release"
           IMAGE_TAG_RELEASE_NAME="${{ github.event.release.tag_name }}"
-          docker build . -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE}" -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE_NAME}"
-          docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE}"
-          docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE_NAME}"
+          DOCKER_PUSH_COMMANDS="docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE}"; docker push "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE_NAME}""
+          docker build . -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE}" -t "${REPO_NAME_LOWERCASE}:${IMAGE_TAG_RELEASE_NAME}" $DOCKER_BUILD_FLAGS
         fi
+        
+        eval "$DOCKER_PUSH_COMMANDS"
