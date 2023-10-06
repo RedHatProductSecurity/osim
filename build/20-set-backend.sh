@@ -2,7 +2,7 @@
 
 if [ "x$OSIM_RUNTIME" = x ]; then
     printf '%s\n' 'OSIM_RUNTIME not in environment. Setting default runtime.json contents.'
-    OSIM_RUNTIME='{"backends":{"osidb":"http://osidb-service:8000"},"osimVersion":"0"}'
+    OSIM_RUNTIME='{"backends":{"osidb":"http://osidb-service:8000","bugzilla":"http://bugzilla-service:8001"},"osimVersion":"0"}'
 fi
 
 # Store to /dev/shm because /var/www/nginx/html is read-only and /tmp might get messy

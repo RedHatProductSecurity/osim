@@ -93,9 +93,9 @@ function login(event: Event) {
             type="submit"
             :disabled="working"
         >
-          <div class="spinner-border spinner-border-sm" role="status" v-if="working">
+          <span class="spinner-border spinner-border-sm d-inline-block" role="status" v-if="working">
             <span class="visually-hidden">Loading...</span>
-          </div>
+          </span>
           Login with System GSSAPI
         </button>
       </div>

@@ -8,7 +8,7 @@ import * as zf from '../types/zodFlaw';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {ZodFlawSchema} from '../types/zodFlaw';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import {postFlawPublicComment, putFlaw} from '@/services/FlawService';
+import {getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, putFlaw} from '@/services/FlawService';
 import type {ZodFlawType} from '../types/zodFlaw';
 import {useField, useForm} from 'vee-validate';
 import {toTypedSchema} from '@vee-validate/zod';
@@ -17,6 +17,8 @@ const router = useRouter();
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import {useRouter} from 'vue-router';
 import {useToastStore} from '@/stores/ToastStore';
+import CveRequestForm from '@/components/CveRequestForm.vue';
+import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
 
 const {addToast} = useToastStore();
 
@@ -85,22 +87,11 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
         // router.go(0); // TODO extremely ugly hack - refresh the current route, refreshing the loaded flaw
       })
       .catch(error => {
-        if (error.response) {
-          addToast({
-            title: 'Error saving Flaw',
-            body: `Code ${error.response.status}: ${error.response.data instanceof Object ? JSON.stringify(error.response.data, null, 2) : error.response.data}`,
-          });
-        } else if (error.request) {
-          addToast({
-            title: 'Error saving Flaw',
-            body: error.request.toString(), // XMLHttpRequest object
-          });
-        } else {
-          addToast({
-            title: 'Error saving Flaw',
-            body: error.toString(),
-          });
-        }
+        const displayedError = getDisplayedOsidbError(error);
+        addToast({
+          title: 'Error saving Flaw',
+          body: displayedError,
+        });
         console.log(error);
       })
 
@@ -150,7 +141,8 @@ const trackerUuids = computed(() => {
           display: tracker.type + ' ' + tracker.external_system_id,
         };
       })
-})
+});
+
 
 // function onsubmit() {
 //
@@ -195,8 +187,20 @@ function onreset() {
 function addPublicComment() {
   postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
       .then(() => {
-        location.reload(); // TODO extremely ugly hack
-      });
+        addToast({
+          title: 'Comment saved',
+          body: 'Comment saved',
+        });
+        newPublicComment.value = '';
+        addComment.value = false;
+        emit('refresh:flaw');
+      })
+      .catch(e => {
+        addToast({
+          title: 'Error saving comment',
+          body: getDisplayedOsidbError(e),
+        });
+      })
 }
 
 </script>
@@ -225,7 +229,22 @@ function addPublicComment() {
 <!--            <label>Type <EditableText v-model="flawType"/></label>-->
             <LabelSelect label="Type" :options="flawTypes" v-model="flawType" :error="errors.type"/>
             <!--<div>CVE ID: {{ flaw.cve_id }}</div>-->
-            <LabelEditable label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id" />
+            <div class="">
+              <div class="row">
+                <div class="col">
+                  <LabelEditable
+                      label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id"/>
+                </div>
+                <div v-if="!(flawCve_id || '').includes('CVE')" class="col-auto align-self-end mb-3">
+                  <CveRequestForm
+                      :bugzilla-link="getFlawBugzillaLink(flaw)"
+                      :osim-link="getFlawOsimLink(flaw.uuid)"
+                      :subject="flawTitle"
+                      :description="flawDescription"
+                  />
+                </div>
+              </div>
+            </div>
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
             <LabelEditable label="CVSS3" type="text" v-model="flawCvss3" :error="errors.cvss3"/>
             <LabelInput label="CVSS3 Score" type="number" v-model="flawCvss3_score" :error="errors.cvss3_score"/>

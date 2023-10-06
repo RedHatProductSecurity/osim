@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {type AxiosError} from 'axios';
 import {z} from 'zod';
 import type {AxiosRequestConfig} from 'axios';
 import {osimRuntime} from '@/stores/osimRuntime';
@@ -58,4 +58,22 @@ export async function getNextAccessToken() {
           throw new Error('Unable to parse next access token');
         })
   }
+}
+
+export function getDisplayedOsidbError(error: AxiosError<any, any>) {
+  if (error.response) {
+    if (error.response.headers['content-type']?.startsWith('text/html')) {
+      // server in debug mode?
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(error.response.data, error.response.headers['content-type']);
+      const exception_value = doc.querySelector('.exception_value');
+      const text = (exception_value as HTMLElement)?.innerText;
+      return 'Likely error between OSIDB and database:\n' + text;
+    } else {
+      return `Code ${error.response.status}: ${error.response.data instanceof Object ? JSON.stringify(error.response.data, null, 2) : error.response.data}`;
+    }
+  } else if (error.request) {
+    return error.request.toString(); // XMLHttpRequest object
+  }
+  return error.toString();
 }

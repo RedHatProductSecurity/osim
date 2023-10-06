@@ -48,42 +48,42 @@ const userStoreSessionStorage = z.object({
 type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
 
 // Vue bug: the whole chain of data uses reactivity, but ref doesn't work with the watch; only reactive does.
-const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
+// const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
 const _userStoreSession = useSessionStorage(_userStoreKey, {refresh: '', env: '', whoami: null} as UserStoreSessionStorage);
-watchEffect(() => {
-  _userStoreSession.value = _userStore;
-});
-
-const workerReady = serviceWorkerClient.listen(_userStoreKey, value => {
-  if (value == null) {
-    Object.assign(_userStore, {refresh: '', env: '', whoami: null});
-  }
-  let newUserStore = userStoreSessionStorage.safeParse(value);
-  if (newUserStore.success) {
-    if (JSON.stringify(newUserStore.data) !== JSON.stringify(_userStore)) {
-      // New value; update
-      Object.assign(_userStore, newUserStore.data);
-      // _userStore = newUserStore.data;
-    }
-  }
-});
-// Top-level await is not available in the configured target environment "es2020"
-// await workerReady;
-export {workerReady};
-
-watch(_userStore, () => {
-  serviceWorkerClient.put(_userStoreKey, JSON.parse(JSON.stringify(_userStore)));
-});
+// watchEffect(() => {
+//   _userStoreSession.value = _userStore;
+// });
+//
+// const workerReady = serviceWorkerClient.listen(_userStoreKey, value => {
+//   if (value == null) {
+//     Object.assign(_userStore, {refresh: '', env: '', whoami: null});
+//   }
+//   let newUserStore = userStoreSessionStorage.safeParse(value);
+//   if (newUserStore.success) {
+//     if (JSON.stringify(newUserStore.data) !== JSON.stringify(_userStore)) {
+//       // New value; update
+//       Object.assign(_userStore, newUserStore.data);
+//       // _userStore = newUserStore.data;
+//     }
+//   }
+// });
+// // Top-level await is not available in the configured target environment "es2020"
+// // await workerReady;
+// export {workerReady};
+//
+// watch(_userStore, () => {
+//   serviceWorkerClient.put(_userStoreKey, JSON.parse(JSON.stringify(_userStore)));
+// });
 
 export const useUserStore = defineStore('UserStore', () => {
 
   const refresh = computed<string>(() => {
-    return _userStore.refresh;
+    return _userStoreSession.value.refresh;
   });
 
   const jwtRefresh = computed<JwtPayload | null>(() => {
     try {
-      return jwtDecode(_userStore.refresh);
+      return jwtDecode(_userStoreSession.value.refresh);
     } catch (e) {
       console.debug('UserStore: refresh token not a valid JWT', refresh.value, e);
     }
@@ -91,14 +91,14 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   const whoami = computed<WhoamiType | null>(() => {
-    return _userStore.whoami || null;
+    return _userStoreSession.value.whoami || null;
   });
   const userName = computed(() => {
-    if (_userStore.refresh === '') {
+    if (_userStoreSession.value.refresh === '') {
       return 'Not Logged In';
     }
-    if (_userStore.whoami != null) {
-      return _userStore.whoami.email ?? _userStore.whoami.username;
+    if (_userStoreSession.value.whoami != null) {
+      return _userStoreSession.value.whoami.email ?? _userStoreSession.value.whoami.username;
     }
     let sub = jwtRefresh.value?.sub;
     if (sub == null) {
@@ -106,9 +106,15 @@ export const useUserStore = defineStore('UserStore', () => {
     }
     return sub;
   });
+  const userEmail = computed(() => {
+    if (_userStoreSession.value.refresh === '') {
+      return '';
+    }
+    return _userStoreSession.value.whoami?.email ?? '';
+  });
 
   const env = computed<string>(() => {
-    return _userStore.env ?? '';
+    return _userStoreSession.value.env ?? '';
   });
 
   // let refreshInterval = 30000;
@@ -116,8 +122,8 @@ export const useUserStore = defineStore('UserStore', () => {
 
 
   function setTokens(refresh_: string, env_: string) {
-    _userStore.refresh = refresh_;
-    _userStore.env = env_;
+    _userStoreSession.value.refresh = refresh_;
+    _userStoreSession.value.env = env_;
   }
 
   async function login() {
@@ -138,8 +144,8 @@ export const useUserStore = defineStore('UserStore', () => {
           if (parsedLoginResponse.detail) {
             throw new Error(parsedLoginResponse.detail);
           }
-          _userStore.refresh = parsedLoginResponse.refresh;
-          _userStore.env = parsedLoginResponse.env;
+          _userStoreSession.value.refresh = parsedLoginResponse.refresh;
+          _userStoreSession.value.env = parsedLoginResponse.env;
           return parsedLoginResponse.access;
         })
         .then((access) => {
@@ -154,7 +160,7 @@ export const useUserStore = defineStore('UserStore', () => {
         .then(response => response.json())
         .then(json => {
           const parsedWhoamiResponse = whoamiResponse.parse(json);
-          _userStore.whoami = parsedWhoamiResponse;
+          _userStoreSession.value.whoami = parsedWhoamiResponse;
         })
         .catch(e => {
           $reset();
@@ -244,7 +250,7 @@ export const useUserStore = defineStore('UserStore', () => {
 
   function $reset() {
     setTokens('', '');
-    _userStore.whoami = null;
+    _userStoreSession.value.whoami = null;
   }
 
   return {
@@ -252,6 +258,7 @@ export const useUserStore = defineStore('UserStore', () => {
     jwtRefresh,
     whoami,
     userName,
+    userEmail,
     env,
     login,
     logout,

@@ -25,6 +25,7 @@ export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
 const OsimRuntime = z.object({
   backends: z.object({
     osidb: z.string(),
+    bugzilla: z.string(),
   }),
   osimVersion: z.string(),
   error: z.string().default(''),
@@ -32,7 +33,7 @@ const OsimRuntime = z.object({
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 let runtime = ref<OsimRuntime>({
-  backends: {osidb: ''},
+  backends: {osidb: '', bugzilla: ''},
   osimVersion: '',
   error: '',
 });

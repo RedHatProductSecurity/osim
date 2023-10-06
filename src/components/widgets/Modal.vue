@@ -45,7 +45,7 @@ watch(show, () => {
           <div class="modal-content">
             <div class="modal-header">
               <slot name="header">
-                <h1 class="modal-title fs-5">Modal Title</h1>
+                <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
                 <button type="button" class="btn-close" aria-label="Close" @click="emit('close', null)"></button>
               </slot>
             </div>
