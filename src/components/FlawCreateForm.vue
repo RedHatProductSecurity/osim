@@ -88,13 +88,14 @@ const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum)
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Impact: </span><input type="text" class="form-control" v-model="modelValue.impact" placeholder="e.g. LOW" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Component: </span><input type="text" class="form-control" v-model="modelValue.component" placeholder="e.g. ssh" /></div>
           </div>
-        <div class="col-6 text-end">
-          <div class="row">
-            <div class="col-6">
-              <div class="input-group mb-2" :class="{major: modelValue.is_major_incident, 'bg-danger': modelValue.is_major_incident}">
-                <span class="input-group-text">Major Incident:</span>
-                <div class="input-group-text">
-                  <input type="checkbox" class="form-check-input m-2" v-model="modelValue.is_major_incident"/>
+          <div class="col-6 text-end">
+            <div class="row">
+              <div class="col-6">
+                <div class="input-group mb-2" :class="{major: modelValue.is_major_incident, 'bg-danger': modelValue.is_major_incident}">
+                  <span class="input-group-text">Major Incident:</span>
+                  <div class="input-group-text">
+                    <input type="checkbox" class="form-check-input m-2" v-model="modelValue.is_major_incident"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -233,9 +234,7 @@ const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum)
             {{ modelValue.statement }}
           </textarea>
         </div>
-
       </div>
-
     </div>
   </div>
 </template>
