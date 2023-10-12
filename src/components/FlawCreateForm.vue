@@ -76,11 +76,11 @@ const getUnembargoDateTime = () => {
           <div class="input-group mb-2">
             <span class="input-group-text osim-input-fixwidth">Type: </span>
             <select class="form-control" v-model="modelValue.type">
-              <option disabled value="">VULNERABILITY</option>
-              <option value="THREAT">THREAT</option>
-              <option value="RISK">RISK</option>
+              <option value="VULNERABILITY">VULNERABILITY</option>
+              <option value="WEAKNESS">WEAKNESS</option>
             </select>
-          </div>            <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">CVE ID: </span><input type="text" class="form-control" v-model="modelValue.cve_id" placeholder="e.g. CVE-2077-1337" /></div>
+          </div>
+            <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">CVE ID: </span><input type="text" class="form-control" v-model="modelValue.cve_id" placeholder="e.g. CVE-2077-1337" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Flaw source: </span><input type="text" class="form-control" v-model="modelValue.source" placeholder="e.g. CUSTOMER" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">State: </span><input type="text" class="form-control" v-model="modelValue.state" placeholder="e.g. NEW" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Impact: </span><input type="text" class="form-control" v-model="modelValue.impact" placeholder="e.g. LOW" /></div>
