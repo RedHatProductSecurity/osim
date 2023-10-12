@@ -2,6 +2,7 @@
 // import type {Flaw} from '@/generated-client';
 import { DateTime } from 'luxon';
 import {computed, onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
+import {ZodFlawSchema} from '../types/zodFlaw';
 
 const props = defineProps<{
   // flaw: Flaw,
@@ -55,6 +56,8 @@ const getUnembargoDateTime = () => {
   return DateTime.fromJSDate(value).diffNow().milliseconds;
 };
 
+const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+
 </script>
 
 <template>
@@ -73,13 +76,12 @@ const getUnembargoDateTime = () => {
         <div class="row">
           <div class="col-6">
             <!--<div>UUID: {{ flaw.uuid }}</div>-->
-          <div class="input-group mb-2">
-            <span class="input-group-text osim-input-fixwidth">Type: </span>
-            <select class="form-control" v-model="modelValue.type">
-              <option value="VULNERABILITY">VULNERABILITY</option>
-              <option value="WEAKNESS">WEAKNESS</option>
-            </select>
-          </div>
+            <div class="input-group mb-2">
+              <span class="input-group-text osim-input-fixwidth">Type: </span>
+                <select class="form-control" v-model="modelValue.type">
+                  <option v-for="flawType in flawTypes" :value="flawType">{{flawType}}</option>
+                </select>
+            </div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">CVE ID: </span><input type="text" class="form-control" v-model="modelValue.cve_id" placeholder="e.g. CVE-2077-1337" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Flaw source: </span><input type="text" class="form-control" v-model="modelValue.source" placeholder="e.g. CUSTOMER" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">State: </span><input type="text" class="form-control" v-model="modelValue.state" placeholder="e.g. NEW" /></div>
