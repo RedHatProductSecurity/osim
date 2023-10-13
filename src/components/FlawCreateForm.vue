@@ -56,7 +56,7 @@ const getUnembargoDateTime = () => {
   return DateTime.fromJSDate(value).diffNow().milliseconds;
 };
 
-const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+const flawTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 
 </script>
 
