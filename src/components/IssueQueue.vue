@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue';
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue';
 import {getFlaws} from '@/services/FlawService'
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
-
 
 type FilteredIssue = {
   issue: any;
   selected: boolean;
 };
 
-const issues = ref([]);
+const issues = ref<any[]>([]);
 
 let issueFilter = ref('');
 
@@ -43,12 +42,16 @@ let isSelectAllChecked = computed(() => {
   return filteredIssues.value.every(it => it.selected);
 })
 
+let offset = ref(0); // Added offset state variable
+
 onMounted(() => {
-  getFlaws()
+  window.addEventListener('scroll', handleScroll);
+  getFlaws(offset.value)
       .then(response => {
         console.log('meta.env.DEV', import.meta.env.DEV);
         console.log('IssueQueue: got flaws: ', response.data);
         issues.value = response.data.results;
+        offset.value += 20; // Increase the offset for next fetch
       })
       .catch(err => {
         console.error('IssueQueue: getFlaws error: ', err);
@@ -56,6 +59,42 @@ onMounted(() => {
 
 })
 
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+const isLoading = ref(false);
+
+const loadMoreFlaws = () => {
+  if (isLoading.value) {
+    return; // Early exit if already loading
+  }
+  isLoading.value = true;
+  offset.value += 20;
+
+  getFlaws(offset.value)
+    .then(response => {
+      issues.value = [...issues.value, ...response.data.results];
+      offset.value += 20;
+    })
+    .catch(err => {
+      console.error('Error fetching more flaws: ', err);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+};
+
+const handleScroll = () => {
+  if (isLoading.value) return; // Do not load more if already loading
+  
+  const totalHeight = document.documentElement.scrollHeight;
+  const scrollPosition = window.scrollY + window.innerHeight;
+
+  if (scrollPosition >= totalHeight) {
+    loadMoreFlaws();
+  }
+};
 
 </script>
 
@@ -99,10 +138,21 @@ onMounted(() => {
         </template>
         </tbody>
       </table>
+      <!--- Button vs Infinite Scroll Method
+      <button @click="loadMoreFlaws" class="load-more-button">Load More Flaws</button>
+      -->
+      <div v-if="isLoading" class="loading-spinner">
+        Loading more flaws...
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.loading-spinner {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2em;
+}
 
 </style>
