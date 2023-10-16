@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>();
 
 // const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().enum) as string[];
-const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+const flawTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 // const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().enum) as string[];
 // const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().enum) as string[];
 const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
