@@ -73,7 +73,7 @@ const loadMoreFlaws = () => {
 
   getFlaws(offset.value, pagesize)
     .then(response => {
-      if (issues.value.length < pagesize) {
+      if (response.data.results.length < pagesize) {
         isFinalPageFetched.value = true;
         return;
       }
@@ -149,13 +149,12 @@ onUnmounted(() => {
         </tbody>
       </table>
 
-      <span v-if="isLoading" class="spinner-border spinner-border-sm d-inline-block" role="status">
-          <span class="visually-hidden">Loading...</span>
-      </span>
-
-      <span v-if="isFinalPageFetched" role="status"> All flaws loaded</span>
+      <div v-if="isLoading">
+        <span  class="spinner-border spinner-border-sm d-inline-block" role="status">Loading...</span>
+      </div>
       
-      <button @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws</button>
+      <span v-if="isFinalPageFetched" role="status">No more pages</span>
+      <button v-if="!isFinalPageFetched" @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws</button>
     </div>
   </div>
 </template>
