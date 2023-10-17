@@ -141,21 +141,12 @@ onUnmounted(() => {
         </template>
         </tbody>
       </table>
+
+      <span v-if="isLoading" class="spinner-border spinner-border-sm d-inline-block" role="status">
+          <span class="visually-hidden">Loading...</span>
+      </span>
       
       <button @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws</button>
-
-      <div v-if="isLoading" class="loading-spinner">
-        Loading more flaws...
-      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.loading-spinner {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1.2em;
-}
-
-</style>
