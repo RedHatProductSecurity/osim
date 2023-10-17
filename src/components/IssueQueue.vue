@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue'; //AutoScroll option requires onUnmounted
 import {getFlaws} from '@/services/FlawService'
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
-
+import IssueSearch from './IssueSearch.vue';
 
 type FilteredIssue = {
   issue: any;
   selected: boolean;
 };
 
-const issues = ref([]);
+const issues = ref<any[]>([]);
 
 let issueFilter = ref('');
 
@@ -43,12 +43,17 @@ let isSelectAllChecked = computed(() => {
   return filteredIssues.value.every(it => it.selected);
 })
 
+let offset = ref(0); // Added offset state variable
+let pagesize = 20;
+
 onMounted(() => {
-  getFlaws()
+  //window.addEventListener('scroll', handleScroll); AutoScroll Option
+  getFlaws(offset.value)
       .then(response => {
         console.log('meta.env.DEV', import.meta.env.DEV);
         console.log('IssueQueue: got flaws: ', response.data);
         issues.value = response.data.results;
+        offset.value += pagesize; // Increase the offset for next fetch
       })
       .catch(err => {
         console.error('IssueQueue: getFlaws error: ', err);
@@ -56,6 +61,50 @@ onMounted(() => {
 
 })
 
+const isFinalPageFetched = ref(false);
+const isLoading = ref(false);
+
+const loadMoreFlaws = () => {
+  if (isLoading.value || isFinalPageFetched.value) {
+    return; // Early exit if already loading
+  }
+  isLoading.value = true;
+  offset.value += pagesize;
+
+  getFlaws(offset.value, pagesize)
+    .then(response => {
+      if (response.data.results.length < pagesize) {
+        isFinalPageFetched.value = true;
+        return;
+      }
+      issues.value = [...issues.value, ...response.data.results];
+      offset.value += pagesize;
+    })
+    .catch(err => {
+      console.error('Error fetching more flaws: ', err);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+};
+
+/*
+AutoScroll Method. Maybe have this as a user configurable option in the future?
+const handleScroll = () => {
+  if (isLoading.value) return; // Do not load more if already loading
+  
+  const totalHeight = document.documentElement.scrollHeight;
+  const scrollPosition = window.scrollY + window.innerHeight;
+
+  if (scrollPosition >= totalHeight) {
+    loadMoreFlaws();
+  }
+};
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+*/
 
 </script>
 
@@ -99,10 +148,20 @@ onMounted(() => {
         </template>
         </tbody>
       </table>
+      
+      <span v-if="isFinalPageFetched" role="status">No more pages</span>
+      <button
+            v-if="!isFinalPageFetched"
+            @click="loadMoreFlaws"
+            class="btn btn-primary align-self-end"
+            type="submit"
+            :disabled="isLoading"
+        >
+          <span class="spinner-border spinner-border-sm d-inline-block" role="status" v-if="isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </span>
+          Load More Flaws
+        </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
