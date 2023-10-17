@@ -148,13 +148,11 @@ onUnmounted(() => {
         </template>
         </tbody>
       </table>
-
-      <div v-if="isLoading">
-        <span  class="spinner-border spinner-border-sm d-inline-block" role="status">Loading...</span>
-      </div>
       
       <span v-if="isFinalPageFetched" role="status">No more pages</span>
-      <button v-if="!isFinalPageFetched" @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws</button>
+      <button v-if="!isFinalPageFetched" @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws
+          <span v-if="isLoading" class="spinner-border spinner-border-sm d-inline-block" role="status">Loading...</span>
+      </button>
     </div>
   </div>
 </template>
