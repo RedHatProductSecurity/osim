@@ -45,7 +45,6 @@ let isSelectAllChecked = computed(() => {
 
 let offset = ref(0); // Added offset state variable
 let pagesize = 20;
-let isFinalPageFetched = false;
 
 onMounted(() => {
   //window.addEventListener('scroll', handleScroll); AutoScroll Option
@@ -62,10 +61,11 @@ onMounted(() => {
 
 })
 
+const isFinalPageFetched = ref(false);
 const isLoading = ref(false);
 
 const loadMoreFlaws = () => {
-  if (isLoading.value || isFinalPageFetched) {
+  if (isLoading.value || isFinalPageFetched.value) {
     return; // Early exit if already loading
   }
   isLoading.value = true;
@@ -73,9 +73,8 @@ const loadMoreFlaws = () => {
 
   getFlaws(offset.value, pagesize)
     .then(response => {
-      if (issues.value.length < pagesize)
-      {
-        isFinalPageFetched = true;
+      if (issues.value.length < pagesize) {
+        isFinalPageFetched.value = true;
         return;
       }
       issues.value = [...issues.value, ...response.data.results];
