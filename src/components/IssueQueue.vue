@@ -142,7 +142,7 @@ onUnmounted(() => {
         </tbody>
       </table>
       
-      <button @click="loadMoreFlaws">Load More Flaws</button>
+      <button @click="loadMoreFlaws" class="btn-secondary">Load More Flaws</button>
 
       <div v-if="isLoading" class="loading-spinner">
         Loading more flaws...
