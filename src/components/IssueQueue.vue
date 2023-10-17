@@ -2,6 +2,7 @@
 import {computed, onMounted, reactive, ref} from 'vue'; //AutoScroll option requires onUnmounted
 import {getFlaws} from '@/services/FlawService'
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
+import IssueSearch from './IssueSearch.vue';
 
 type FilteredIssue = {
   issue: any;
@@ -43,6 +44,8 @@ let isSelectAllChecked = computed(() => {
 })
 
 let offset = ref(0); // Added offset state variable
+let pagesize = 20;
+let isFinalPageFetched = false;
 
 onMounted(() => {
   //window.addEventListener('scroll', handleScroll); AutoScroll Option
@@ -51,7 +54,7 @@ onMounted(() => {
         console.log('meta.env.DEV', import.meta.env.DEV);
         console.log('IssueQueue: got flaws: ', response.data);
         issues.value = response.data.results;
-        offset.value += 20; // Increase the offset for next fetch
+        offset.value += pagesize; // Increase the offset for next fetch
       })
       .catch(err => {
         console.error('IssueQueue: getFlaws error: ', err);
@@ -62,16 +65,21 @@ onMounted(() => {
 const isLoading = ref(false);
 
 const loadMoreFlaws = () => {
-  if (isLoading.value) {
+  if (isLoading.value || isFinalPageFetched) {
     return; // Early exit if already loading
   }
   isLoading.value = true;
-  offset.value += 20;
+  offset.value += pagesize;
 
-  getFlaws(offset.value)
+  getFlaws(offset.value, pagesize)
     .then(response => {
+      if (issues.value.length < pagesize)
+      {
+        isFinalPageFetched = true;
+        return;
+      }
       issues.value = [...issues.value, ...response.data.results];
-      offset.value += 20;
+      offset.value += pagesize;
     })
     .catch(err => {
       console.error('Error fetching more flaws: ', err);
@@ -145,6 +153,8 @@ onUnmounted(() => {
       <span v-if="isLoading" class="spinner-border spinner-border-sm d-inline-block" role="status">
           <span class="visually-hidden">Loading...</span>
       </span>
+
+      <span v-if="isFinalPageFetched" role="status"> All flaws loaded</span>
       
       <button @click="loadMoreFlaws" class="btn btn-secondary">Load More Flaws</button>
     </div>
