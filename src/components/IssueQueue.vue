@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue'; //AutoScroll option requires onUnmounted
 import {getFlaws} from '@/services/FlawService'
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 
@@ -59,10 +59,6 @@ onMounted(() => {
 
 })
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
-
 const isLoading = ref(false);
 
 const loadMoreFlaws = () => {
@@ -85,6 +81,8 @@ const loadMoreFlaws = () => {
     });
 };
 
+/*
+AutoScroll Method. Maybe have this as a user configurable option in the future?
 const handleScroll = () => {
   if (isLoading.value) return; // Do not load more if already loading
   
@@ -95,6 +93,11 @@ const handleScroll = () => {
     loadMoreFlaws();
   }
 };
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+*/
 
 </script>
 
@@ -138,9 +141,9 @@ const handleScroll = () => {
         </template>
         </tbody>
       </table>
-      <!--- Button vs Infinite Scroll Method
-      <button @click="loadMoreFlaws" class="load-more-button">Load More Flaws</button>
-      -->
+      
+      <button @click="loadMoreFlaws">Load More Flaws</button>
+
       <div v-if="isLoading" class="loading-spinner">
         Loading more flaws...
       </div>
