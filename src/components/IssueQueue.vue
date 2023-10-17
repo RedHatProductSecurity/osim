@@ -45,7 +45,7 @@ let isSelectAllChecked = computed(() => {
 let offset = ref(0); // Added offset state variable
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  //window.addEventListener('scroll', handleScroll); AutoScroll Option
   getFlaws(offset.value)
       .then(response => {
         console.log('meta.env.DEV', import.meta.env.DEV);
