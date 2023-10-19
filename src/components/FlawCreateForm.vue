@@ -56,7 +56,9 @@ const getUnembargoDateTime = () => {
   return DateTime.fromJSDate(value).diffNow().milliseconds;
 };
 
-const flawTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+const incidentTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+
 
 </script>
 
@@ -78,9 +80,9 @@ const flawTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap(
             <!--<div>UUID: {{ flaw.uuid }}</div>-->
             <div class="input-group mb-2">
               <span class="input-group-text osim-input-fixwidth">Type: </span>
-                <select class="form-control" v-model="modelValue.type">
-                  <option v-for="flawType in flawTypes" :value="flawType">{{flawType}}</option>
-                </select>
+              <select class="form-control" v-model="modelValue.type">
+                <option v-for="flawType in flawTypes" :value="flawType">{{flawType}}</option>
+              </select>
             </div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">CVE ID: </span><input type="text" class="form-control" v-model="modelValue.cve_id" placeholder="e.g. CVE-2077-1337" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Flaw source: </span><input type="text" class="form-control" v-model="modelValue.source" placeholder="e.g. CUSTOMER" /></div>
@@ -93,9 +95,9 @@ const flawTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap(
               <div class="col-6">
                 <div class="input-group mb-2" :class="{major: modelValue.is_major_incident, 'bg-danger': modelValue.is_major_incident}">
                   <span class="input-group-text">Major Incident:</span>
-                  <div class="input-group-text">
-                    <input type="checkbox" class="form-check-input m-2" v-model="modelValue.is_major_incident"/>
-                  </div>
+                  <select class="form-control" v-model="modelValue.type">
+                    <option v-for="incidentType in incidentTypes" :value="incidentType">{{incidentType}}</option>
+                  </select>
                 </div>
               </div>
             </div>
