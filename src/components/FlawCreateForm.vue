@@ -57,7 +57,7 @@ const getUnembargoDateTime = () => {
 };
 
 const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
-const incidentTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 
 
 </script>
@@ -78,12 +78,7 @@ const incidentTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unw
         <div class="row">
           <div class="col-6">
             <!--<div>UUID: {{ flaw.uuid }}</div>-->
-            <div class="input-group mb-2">
-              <span class="input-group-text osim-input-fixwidth">Type: </span>
-              <select class="form-control" v-model="modelValue.type">
-                <option v-for="flawType in flawTypes" :value="flawType">{{flawType}}</option>
-              </select>
-            </div>
+            <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Type: </span><input type="text" class="form-control" v-model="modelValue.type" placeholder="e.g. VULNERABILITY" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">CVE ID: </span><input type="text" class="form-control" v-model="modelValue.cve_id" placeholder="e.g. CVE-2077-1337" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">Flaw source: </span><input type="text" class="form-control" v-model="modelValue.source" placeholder="e.g. CUSTOMER" /></div>
             <div class="input-group mb-2"><span class="input-group-text osim-input-fixwidth">State: </span><input type="text" class="form-control" v-model="modelValue.state" placeholder="e.g. NEW" /></div>
@@ -93,10 +88,10 @@ const incidentTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unw
           <div class="col-6 text-end">
             <div class="row">
               <div class="col-6">
-                <div class="input-group mb-2" :class="{major: modelValue.is_major_incident, 'bg-danger': modelValue.is_major_incident}">
-                  <span class="input-group-text">Major Incident:</span>
-                  <select class="form-control" v-model="modelValue.type">
-                    <option v-for="incidentType in incidentTypes" :value="incidentType">{{incidentType}}</option>
+                <div class="input-group mb-2" :class="{major: modelValue.major_incident_state}">
+                  <span class="input-group-text">Incident State:</span>
+                  <select class="form-control" v-model="modelValue.major_incident_state">
+                    <option v-for="inscidentState in incidentStates" :value="inscidentState">{{inscidentState}}</option>
                   </select>
                 </div>
               </div>

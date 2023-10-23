@@ -37,7 +37,7 @@ const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum)
 // const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().enum) as string[];
 const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
 const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
-const incidentTypes = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 
 
 console.log(flawTypes);
@@ -255,7 +255,7 @@ function addPublicComment() {
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
           </div>
           <div class="col-6">
-            <LabelSelect label="Major Incident" :options="incidentTypes" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
+            <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
 
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable
