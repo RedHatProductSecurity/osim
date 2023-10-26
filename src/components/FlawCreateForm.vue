@@ -88,10 +88,10 @@ const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.un
           <div class="col-6 text-end">
             <div class="row">
               <div class="col-6">
-                <div class="input-group mb-2" :class="{major: modelValue.major_incident_state}">
-                  <span class="input-group-text">Incident State:</span>
+                <div class="input-group mb-2" :class="{major: modelValue.major_incident_state !== ''}">
+                    <span class="input-group-text">Incident State:</span>
                   <select class="form-control" v-model="modelValue.major_incident_state">
-                    <option v-for="inscidentState in incidentStates" :value="inscidentState">{{inscidentState}}</option>
+                    <option v-for="incidentState in incidentStates" :value="incidentState">{{incidentState}}</option>
                   </select>
                 </div>
               </div>
