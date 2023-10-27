@@ -2,6 +2,7 @@
 // import type {Flaw} from '@/generated-client';
 import { DateTime } from 'luxon';
 import {computed, onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
+import {ZodFlawSchema} from '../types/zodFlaw';
 
 const props = defineProps<{
   // flaw: Flaw,
@@ -55,6 +56,10 @@ const getUnembargoDateTime = () => {
   return DateTime.fromJSDate(value).diffNow().milliseconds;
 };
 
+const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+
+
 </script>
 
 <template>
@@ -83,11 +88,11 @@ const getUnembargoDateTime = () => {
           <div class="col-6 text-end">
             <div class="row">
               <div class="col-6">
-                <div class="input-group mb-2" :class="{major: modelValue.is_major_incident}">
-                  <span class="input-group-text">Major Incident:</span>
-                  <div class="input-group-text">
-                    <input type="checkbox" class="form-check-input m-2" v-model="modelValue.is_major_incident"/>
-                  </div>
+                <div class="input-group mb-2" :class="{major: modelValue.major_incident_state !== ''}">
+                    <span class="input-group-text">Incident State:</span>
+                  <select class="form-control" v-model="modelValue.major_incident_state">
+                    <option v-for="incidentState in incidentStates" :value="incidentState">{{incidentState}}</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -226,9 +231,7 @@ const getUnembargoDateTime = () => {
             {{ modelValue.statement }}
           </textarea>
         </div>
-
       </div>
-
     </div>
   </div>
 </template>
