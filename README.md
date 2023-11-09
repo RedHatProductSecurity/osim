@@ -38,6 +38,12 @@ yarn run dev
 yarn run build
 ```
 
+### Run e2e tests,
+
+```sh
+yarn run test:e2e
+```
+
 ## GitHub Actions for Deploying Docker Images
 
 This repository uses a GitHub Actions workflow to build and deploy Docker images to Quay. The workflow is triggered by push events to the main branch, pull request events targeting the main branch, and release events.
@@ -63,3 +69,20 @@ graph TB
     release-->|"release"|DockerBuildAndPush
     release-->|"release-tag-name"|DockerBuildAndPush
 ```
+
+## Adding and Updating Tests
+
+### Test Structure
+Feature Files
+- Location: Place your .feature files in the features directory at the root level of this project.
+- Purpose: Each .feature file contains a set of scenarios written in Gherkin syntax that describe the behaviors to be tested.
+
+### Step Definitions
+- Location: Place your step implementation files within the features/steps subdirectory.
+- Purpose: These Python files contain the code that executes the steps defined in the .feature files.
+
+## Utility Functions
+
+### Shared Functions
+- Location: Place shared utility functions like server_is_ready in a environment.py or utils.py file within the features directory.
+- Usage: Import these utilities in your step definition files as needed.
