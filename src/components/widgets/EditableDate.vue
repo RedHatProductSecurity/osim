@@ -101,6 +101,9 @@ function onComplete(e: CustomEvent) {
 }
 
 function beginEdit() {
+  if (props.readOnly) {
+    return;
+  }
   editing.value = true;
   // elInput.value?.dispatchEvent(new Event('keyup'));
   nextTick(() => {
@@ -260,6 +263,7 @@ function validateDatePart(e: KeyboardEvent) {
     <!--vue-imask-->
     <input class="form-control"
            :class="{'is-invalid': error != null}"
+           :readonly="readOnly"
            type="text"
            ref="elInput"
            @blur="blur($event)"
