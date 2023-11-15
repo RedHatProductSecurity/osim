@@ -86,7 +86,6 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
       .then(() => {
         console.log('saved flaw', flaw);
         emit('refresh:flaw');
-        // router.go(0); // TODO extremely ugly hack - refresh the current route, refreshing the loaded flaw
       })
       .catch(error => {
         const displayedError = getDisplayedOsidbError(error);
