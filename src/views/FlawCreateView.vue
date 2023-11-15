@@ -58,7 +58,7 @@ function onSubmit() {
 
       <hr class="mt-5">
       <div class="row row-cols-5 action-buttons g-3">
-        <button class="btn btn-primary col">Create New Flaw</button>
+        <button type="submit" class="btn btn-primary col">Create New Flaw</button>
       </div>
     </div>
 

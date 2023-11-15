@@ -92,6 +92,7 @@ function blur(e: FocusEvent | null) {
       >{{modelValue === '' ? placeholder : modelValue}}</span>
       <!--if a button is inside a label, clicking the label clicks the button?-->
       <button
+          type="button"
           class="osim-editable-text-pen input-group-text"
           v-if="!readOnly"
           tabindex="-1"
@@ -113,12 +114,14 @@ function blur(e: FocusEvent | null) {
            @keyup.esc="abort"
     />
     <button
+        type="button"
         class="input-group-text"
         @click="commit"
         @blur="blur($event)"
         tabindex="-1"
     ><i class="bi bi-check"></i></button>
     <button
+        type="button"
         class="input-group-text"
         @click="abort"
         @blur="blur($event)"

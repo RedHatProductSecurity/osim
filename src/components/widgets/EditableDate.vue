@@ -232,6 +232,7 @@ function validateDatePart(e: KeyboardEvent) {
           :class="{'form-control': !readOnly, 'is-invalid': error != null && !readOnly}"
       >{{osimFormatDate(modelValue)}}</span>
       <button
+          type="button"
           class="osim-editable-date-pen input-group-text"
           @click="beginEdit"
           v-if="!readOnly"
@@ -269,12 +270,14 @@ function validateDatePart(e: KeyboardEvent) {
            @accept="onAccept"
     />
     <button
+        type="button"
         class="input-group-text"
         @click="commit"
         @blur="blur($event)"
         tabindex="-1"
     ><i class="bi bi-check"></i></button>
     <button
+        type="button"
         class="input-group-text"
         @click="abort"
         @blur="blur($event)"

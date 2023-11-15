@@ -136,6 +136,7 @@ function closeModal() {
           <!--target="_blank"-->
           <!--rel="noopener noreferrer"-->
           <button
+              type="button"
               @click.prevent="openMailto"
               class="btn btn-primary"
               role="button"
@@ -147,6 +148,7 @@ function closeModal() {
         <p class="mb-2">(After sending the CVE Request Email)</p>
         <div class="osim-request-cve-actions">
           <button
+              type="button"
               @click.prevent="addPublicCveRequestComment"
               class="btn btn-primary"
               role="button"
