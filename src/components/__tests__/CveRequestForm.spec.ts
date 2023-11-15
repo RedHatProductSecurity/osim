@@ -44,7 +44,7 @@ describe('CveRequestForm', () => {
     let button = wrapper.get('button');
     expect(wrapper.find('div.modal-content').exists()).toBe(false);
   });
-  it('renders a modal when clicking the button', () => {
+  it('renders a modal when clicking the button', async () => {
     const wrapper = mount(CveRequestForm, {
       props: {
         subject: 'string',
@@ -55,7 +55,7 @@ describe('CveRequestForm', () => {
     });
     let button = wrapper.get('button');
     console.log(button);
-    button.trigger('click');
+    await button.trigger('click');
     let currentComponent = wrapper.getCurrentComponent();
     expect(wrapper.find('div.modal-content').exists()).toBe(true);
   });
