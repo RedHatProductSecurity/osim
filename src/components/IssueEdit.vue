@@ -85,6 +85,10 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
   putFlaw(props.flaw.uuid, flaw)
       .then(() => {
         console.log('saved flaw', flaw);
+        addToast({
+          title: 'Info',
+          body: 'Flaw Saved',
+        });
         emit('refresh:flaw');
       })
       .catch(error => {
