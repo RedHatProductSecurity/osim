@@ -9,11 +9,11 @@
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {useToastStore} from '@/stores/ToastStore';
 
-const {addToast} = useToastStore();
-const settingsStore = useSettingsStore();
 
 
 export function notifyApiKeyUnset() {
+  const {addToast} = useToastStore();
+  const settingsStore = useSettingsStore();
   if (!/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
     addToast({
       css: 'warning',
