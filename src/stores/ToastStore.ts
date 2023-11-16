@@ -8,6 +8,7 @@ interface ToastNew {
   body: string,
   // timestamp: moment.Moment,
   // key?: number,
+  bodyHtml?: boolean,
   timeoutMs?: number,
   css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
 }

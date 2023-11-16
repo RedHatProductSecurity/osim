@@ -4,6 +4,7 @@ import {createFlaw} from '@/services/FlawService';
 import FlawCreateForm from '@/components/FlawCreateForm.vue';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
+import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 
 const flaw = ref({});
 // const props = defineProps<{
@@ -19,6 +20,9 @@ const error = ref('');
 // });
 
 const settingsStore = useSettingsStore();
+
+notifyApiKeyUnset();
+
 
 function onSubmit() {
   error.value = '';
@@ -39,15 +43,6 @@ function onSubmit() {
 
 <template>
   <main>
-
-    <div class="alert alert-danger"
-         role="alert"
-        v-if="!/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')">
-      You have not set your Bugzilla API key!<br/>
-      Flaw creation requires your Bugzilla API key to be set.<br/>
-      Visit <RouterLink :to="{name: 'settings'}">Settings</RouterLink>.
-    </div>
-
     <div v-if="error !== ''" class="alert alert-danger">{{error}}</div>
     <!--<textarea v-bind:value="JSON.stringify(flaw)"/>-->
     <form @submit.prevent="onSubmit">

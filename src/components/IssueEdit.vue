@@ -19,6 +19,11 @@ import {useRouter} from 'vue-router';
 import {useToastStore} from '@/stores/ToastStore';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+import PillList from '@/components/widgets/PillList.vue';
+import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
+import {postAffect, putAffect} from '@/services/AffectService';
+import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 
 const {addToast} = useToastStore();
 
@@ -30,6 +35,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'refresh:flaw': [],
 }>();
+
+notifyApiKeyUnset();
 
 // const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().enum) as string[];
 const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
@@ -52,6 +59,9 @@ const {handleSubmit, errors, setValues, values} = useForm({
   //
   // },
 });
+
+const cveIds = ref<string[]>([]);
+const theAffects = ref<any[]>(props.flaw.affects);
 
 const {value: flawType} = useField<string>('type');
 const {value: flawCve_id} = useField<string>('cve_id');
@@ -81,15 +91,82 @@ const {value: flawUpdated_dt} = useField<string>('updated_dt');
 let committedFlaw: ZodFlawType = reactive(props.flaw);
 let stagedFlaw: ZodFlawType = committedFlaw;
 setValues(committedFlaw);
+
+const onSubmitAffect = async () => {
+  for (let affect of theAffects.value) {
+    let go = true;
+    console.log('saving the affect', affect);
+    console.log(affect.uuid);
+    const newAffect = {
+      flaw: props.flaw.uuid,
+      type: affect.type,
+      affectedness: affect.affectedness,
+      resolution: affect.resolution,
+      ps_module: affect.ps_module,
+      ps_component: affect.ps_component,
+      impact: affect.impact,
+      embargoed: affect.embargoed || false,
+      updated_dt: affect.updated_dt,
+    }
+    if (!go) {
+      continue;
+    }
+    if (affect.uuid != null) {
+      await putAffect(affect.uuid, newAffect)
+          .then(() => {
+            console.log('saved newAffect', newAffect);
+            addToast({
+              title: 'Info',
+              body: `Affect Saved: ${newAffect.ps_component}`,
+            });
+          })
+          .catch(error => {
+            const displayedError = getDisplayedOsidbError(error);
+            addToast({
+              title: 'Error saving Affect',
+              body: displayedError,
+            });
+            console.log(error);
+          })
+    } else {
+      await postAffect(newAffect)
+          .then(() => {
+            console.log('saved newAffect', newAffect);
+            addToast({
+              title: 'Info',
+              body: `Affect Saved: ${newAffect.ps_component}`,
+            });
+          })
+          .catch(error => {
+            const displayedError = getDisplayedOsidbError(error);
+            addToast({
+              title: 'Error saving Affect',
+              body: displayedError,
+            });
+            console.log(error);
+          })
+    }
+  }
+  emit('refresh:flaw');
+}
+
 const onSubmit = handleSubmit((flaw: ZodFlawType) => {
+  let flawSaved = false;
+  // Save Flaw, then safe Affects, then refresh
   putFlaw(props.flaw.uuid, flaw)
       .then(() => {
+        flawSaved = true;
         console.log('saved flaw', flaw);
-        addToast({
-          title: 'Info',
-          body: 'Flaw Saved',
-        });
-        emit('refresh:flaw');
+      })
+      // .then(saveAffects)
+      .then(() => {
+        if (flawSaved) {
+          addToast({
+            title: 'Info',
+            body: 'Flaw Saved',
+          });
+          emit('refresh:flaw');
+        }
       })
       .catch(error => {
         const displayedError = getDisplayedOsidbError(error);
@@ -99,6 +176,9 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
         });
         console.log(error);
       })
+  for (let affect of theAffects.value) {
+    console.log('saving the affect', affect);
+  }
 
   // Promise.reject('success')
   //     .then(() => {
@@ -208,12 +288,20 @@ function addPublicComment() {
       })
 }
 
+function addBlankAffect() {
+  // props.flaw.affects = props.flaw.affects || [];
+  theAffects.value.push({});
+}
+function removeAffect(affectIdx: number) {
+  theAffects.value.splice(affectIdx, 1);
+}
+
 </script>
 
 <template>
   <form
       class="osim-content container"
-      @submit.prevent="onSubmit"
+      @submit="onSubmit"
   >
     <!--<div class="row">-->
     <!--  <ul class="nav nav-tabs">-->
@@ -237,6 +325,12 @@ function addPublicComment() {
             <div class="">
               <div class="row">
                 <div class="col">
+                  <label class="osim-input has-validation mb-3 border-start ps-3">
+                    <span class="form-label">
+                      CVE IDs
+                    </span>
+                    <PillList v-model="cveIds"/>
+                  </label>
                   <LabelEditable
                       label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id"/>
                 </div>
@@ -252,7 +346,7 @@ function addPublicComment() {
             </div>
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
             <LabelEditable label="CVSS3" type="text" v-model="flawCvss3" :error="errors.cvss3"/>
-            <LabelInput label="CVSS3 Score" type="number" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
+            <LabelInput label="CVSS3 Score" type="text" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
             <LabelEditable label="NVD CVSS3" type="text" v-model="flawNvd_cvss3" :error="errors.nvd_cvss3"/>
             <LabelEditable label="CWE ID" type="text" v-model="flawCwe_id" :error="errors.cwe_id"/>
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
@@ -262,7 +356,7 @@ function addPublicComment() {
 
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable
-                :label="'Unembargo Date' + (DateTime.fromJSDate(flaw.unembargo_dt).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
+                :label="'Public Date' + (DateTime.fromJSDate(flaw.unembargo_dt).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
@@ -277,49 +371,26 @@ function addPublicComment() {
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="h5" v-if="flaw.affects">Affected Offerings</div>
-          <div class="row affected-offering" v-for="affect in flaw.affects">
-            <div class="col-9">
-              <div class="affected-module-component">
-                Affected Module / Component: {{ affect.ps_module }} / {{ affect.ps_component }}
-              </div>
-              <div>Type: {{ affect.type }}</div>
-              <div v-if="affect.external_system_id">External ID: {{ affect.external_system_id }}</div>
-              <div>Affectedness: {{ affect.affectedness }}</div>
-              <div>Resolution: {{ affect.resolution }}</div>
-              <div>Impact: {{ affect.impact }}</div>
-              <div v-if="affect.cvss2 || affect.cvss2_score || affect.nvd_cvss2">
-                <span>CVSS2: {{ affect.cvss2 }}</span> <span>{{ affect.cvss2_score }}</span>
-              </div>
-              <div v-if="affect.cvss3 || affect.cvss3_score || affect.nvd_cvss3">
-                <span>CVSS3: {{ affect.cvss3 }}</span> <span>{{ affect.cvss3_score }}</span>
-              </div>
-            </div>
-            <div class="col-3 text-end">
-              <div>Created date: {{ affect.created_dt }}</div>
-              <div>Updated date: {{ affect.updated_dt }}</div>
-              <div>Embargoed: {{ affect.embargoed ? 'YES' : 'No' }}</div>
-            </div>
+        <div class="row osim-affects mb-3">
+          <div class="h5">Affected Offerings</div>
+          <div
+              v-if="theAffects"
+              v-for="(affect, affectIdx) in theAffects"
+              class="container-fluid row affected-offering">
+            <AffectedOfferingForm
+                class=""
+                v-model="theAffects[affectIdx]"
+                @remove="removeAffect(affectIdx)"
+            />
+          </div>
 
-            <h4 class="affect-trackers-heading" v-if="affect.trackers && affect.trackers.length > 0">Trackers</h4>
-            <div v-for="tracker in affect.trackers">
-              <div class="row">
-                <div class="col-6 flex-grow-1">
-                  <div>Type: {{ affect.type }}</div>
-                  <div v-if="affect.external_system_id">External System ID: {{ affect.external_system_id }}</div>
-                  <div v-if="affect.status">Status: {{ affect.status }}</div>
-                  <div>Resolution: {{ affect.resolution }}</div>
-                </div>
-                <div class="col-3 text-end">
-                  <div>Created date: {{ tracker.created_dt }}</div>
-                  <div>Updated date: {{ tracker.updated_dt }}</div>
-                </div>
-              </div>
-              <ul>
-                <li v-for="tracker_affects in tracker.affects">Affects: {{ tracker_affects }}</li>
-              </ul>
-            </div>
+          <div>
+            <div class="h6">Add New Affect</div>
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click.prevent="addBlankAffect()"
+            >Add New Affect</button>
           </div>
         </div>
 
@@ -327,7 +398,7 @@ function addPublicComment() {
           <LabelTextarea label="Summary" v-model="flawSummary"/>
           <LabelTextarea label="Description" v-model="flawDescription"/>
           <LabelTextarea label="Statement" v-model="flawStatement"/>
-          <LabelTextarea label="Mitigation" v-model="flawDescription"/>
+          <LabelTextarea label="Mitigation" v-model="flawMitigation"/>
         </div>
       </div>
 
@@ -341,6 +412,7 @@ function addPublicComment() {
         </ul>
         <div v-if="!addComment">
           <button
+              type="button"
               @click="addComment = true"
               class="btn btn-secondary col"
           >Add Public Comment</button>
@@ -348,10 +420,11 @@ function addPublicComment() {
         <div v-if="addComment">
         <LabelTextarea label="New Public Comment" v-model="newPublicComment"/>
           <button
+              type="button"
               @click="addPublicComment"
               class="btn btn-primary col"
           >Add Public Comment</button>
-          <!--          <button class="btn btn-primary col">Add Private Comment</button>-->
+          <!--          <button type="button" class="btn btn-primary col">Add Private Comment</button>-->
         </div>
 
       </div>
@@ -371,11 +444,11 @@ function addPublicComment() {
     </div>
 <!--    <div class="row row-cols-5 osim-action-buttons g-3 pb-5 sticky-bottom align-content-end d-flex ">-->
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-      <!--        <button class="btn btn-primary col">Customer Pending</button>-->
-      <!--        <button class="btn btn-primary col">Close this issue without actions</button>-->
-      <!--        <button class="btn btn-primary col">Move this issue to another source queue</button>-->
-      <!--        <button class="btn btn-primary col">Create a flaw</button>-->
-      <!--        <button class="btn btn-primary col">Create hardening bug/weakness</button>-->
+      <!--        <button type="button" class="btn btn-primary col">Customer Pending</button>-->
+      <!--        <button type="button" class="btn btn-primary col">Close this issue without actions</button>-->
+      <!--        <button type="button" class="btn btn-primary col">Move this issue to another source queue</button>-->
+      <!--        <button type="button" class="btn btn-primary col">Create a flaw</button>-->
+      <!--        <button type="button" class="btn btn-primary col">Create hardening bug/weakness</button>-->
       <button
           type="button"
           class="btn btn-secondary"
@@ -384,7 +457,7 @@ function addPublicComment() {
       <button
           type="submit"
           class="btn btn-primary"
-          @click="onSubmit"
+          @click="onSubmitAffect"
       >Save Changes</button>
     </div>
   </form>
@@ -430,6 +503,11 @@ function addPublicComment() {
   padding-right: 20px;
   padding-bottom: 2rem;
   padding-top: 0.5rem;
+}
+
+.osim-affects {
+  outline: 1px solid #ddd;
+  padding: 1.5em;
 }
 
 </style>

@@ -8,7 +8,7 @@ import {navbarBottom, footerTop, footerHeight} from "@/stores/responsive";
 //   // timestamp: moment.Moment,
 // }>();
 
-const {toasts} = useToastStore();
+const {toasts, $reset} = useToastStore();
 
 const top = computed<string>(() => {
   return navbarBottom.value > 0 ? 'auto' : '0';
@@ -24,6 +24,14 @@ const height = computed<string>(() => {
   }
 });
 
+function clearAll() {
+  console.log('clearing all');
+  toasts.length = 0;
+  // while (toasts.length > 0) {
+  //   toasts.shift();
+  // }
+}
+
 </script>
 
 <template>
@@ -34,12 +42,23 @@ const height = computed<string>(() => {
             which causes the toast to clip or squash when being animated.
             This preserves the container width, which fixes animation.
     --></div>
+    <Transition name="toast">
+      <div class="osim-toast-container-clear">
+        <button
+            v-if="toasts.length > 1"
+            type="button"
+            class="btn btn-secondary btn-sm mb-3"
+            @click.prevent="clearAll"
+        >Clear All</button>
+      </div>
+    </Transition>
     <TransitionGroup name="toast">
       <Toast
         v-for="(toast, index) in toasts"
         :key="toast.id"
         :title="toast.title"
         :body="toast.body"
+        :bodyHtml="toast.bodyHtml"
         :timestamp="toast.timestamp"
         :timeoutMs="toast.timeoutMs"
         :css="toast.css"
