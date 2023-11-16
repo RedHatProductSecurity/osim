@@ -79,9 +79,7 @@ function focusInput() {
 
 </template>
 
-<style scoped lang="scss">
-@import "bootstrap/scss/_helpers";
-
+<style scoped>
 .osim-pill-list {
   display: flex;
   flex-flow: row wrap;
