@@ -154,7 +154,7 @@ onUnmounted(() => {
             v-if="!isFinalPageFetched"
             @click="loadMoreFlaws"
             class="btn btn-primary align-self-end"
-            type="submit"
+            type="button"
             :disabled="isLoading"
         >
           <span class="spinner-border spinner-border-sm d-inline-block" role="status" v-if="isLoading">

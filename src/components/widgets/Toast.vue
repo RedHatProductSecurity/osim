@@ -8,6 +8,7 @@ const props = defineProps<{
   title?: string,
   body: string,
   timestamp: DateTime,
+  bodyHtml?: boolean,
   timeoutMs?: number,
   css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
 }>();
@@ -113,7 +114,10 @@ const transitionDurationMs = ref(16);
     </div>
     <div class="toast-body osim-toast-body">
       <slot name="body">
-        {{ body }}
+        <div v-if="bodyHtml" v-html="body"></div>
+        <div v-if="!bodyHtml">
+          {{ body }}
+        </div>
       </slot>
     </div>
   </div>

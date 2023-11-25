@@ -37,6 +37,7 @@ function focusInput() {
   <div
     class="osim-pill-list form-control"
     @click.prevent="focusInput()"
+    @submit.prevent
   >
     <span
         v-for="(value, index) in values"
@@ -52,7 +53,7 @@ function focusInput() {
       <i
           class="bi bi-x-square ms-1"
           tabindex="0"
-          @keyup.enter.prevent="remove(index)"
+          @keydown.enter.prevent="remove(index)"
           @keydown.space.prevent="remove(index)"
           @click.prevent="remove(index)"
       >
@@ -65,9 +66,9 @@ function focusInput() {
 
           ref="elInput"
 
-          @submit.prevent="void 0"
+          @submit.prevent
           @blur="add()"
-          @keyup.enter.prevent="add()"
+          @keydown.enter.prevent="add()"
 
           v-model="newItem"
 
@@ -78,9 +79,7 @@ function focusInput() {
 
 </template>
 
-<style scoped lang="scss">
-@import "bootstrap/scss/_helpers";
-
+<style scoped>
 .osim-pill-list {
   display: flex;
   flex-flow: row wrap;

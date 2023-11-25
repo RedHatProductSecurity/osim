@@ -103,7 +103,7 @@ const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.un
 
             <div class="input-group mb-2">
               <span class="input-group-text"><input type="checkbox" class="form-check-input" v-model="embargoChecked"/></span>
-              <span class="input-group-text">Unembargo date: </span>
+              <span class="input-group-text">Public date: </span>
 
               <input type="datetime-local" class="form-control" v-model="HTML_unembargo_dt"/>
             </div>

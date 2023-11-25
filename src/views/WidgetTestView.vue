@@ -53,17 +53,20 @@ const progress = ref(60);
     </Modal>
     <div></div>
     <button
+        type="button"
         class="btn btn-primary m-1"
         @click="modalComponentShown = true">
       Launch Demo Component Modal
     </button>
     <button
+        type="button"
         class="btn btn-primary m-1"
         @click="addToast({title: 'title', body: 'expiring body' + Date.now(), timeoutMs: 5000})"
     >
       Open expiring toast
     </button>
     <button
+        type="button"
         class="btn btn-primary m-1"
         @click="addToast({title: 'footitle', body: 'foobody' + Date.now()})"
     >

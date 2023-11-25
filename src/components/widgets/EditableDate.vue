@@ -101,6 +101,9 @@ function onComplete(e: CustomEvent) {
 }
 
 function beginEdit() {
+  if (props.readOnly) {
+    return;
+  }
   editing.value = true;
   // elInput.value?.dispatchEvent(new Event('keyup'));
   nextTick(() => {
@@ -232,6 +235,7 @@ function validateDatePart(e: KeyboardEvent) {
           :class="{'form-control': !readOnly, 'is-invalid': error != null && !readOnly}"
       >{{osimFormatDate(modelValue)}}</span>
       <button
+          type="button"
           class="osim-editable-date-pen input-group-text"
           @click="beginEdit"
           v-if="!readOnly"
@@ -259,6 +263,7 @@ function validateDatePart(e: KeyboardEvent) {
     <!--vue-imask-->
     <input class="form-control"
            :class="{'is-invalid': error != null}"
+           :readonly="readOnly"
            type="text"
            ref="elInput"
            @blur="blur($event)"
@@ -269,12 +274,14 @@ function validateDatePart(e: KeyboardEvent) {
            @accept="onAccept"
     />
     <button
+        type="button"
         class="input-group-text"
         @click="commit"
         @blur="blur($event)"
         tabindex="-1"
     ><i class="bi bi-check"></i></button>
     <button
+        type="button"
         class="input-group-text"
         @click="abort"
         @blur="blur($event)"
