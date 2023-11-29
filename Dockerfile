@@ -34,7 +34,10 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
 
 COPY ./build/nginx-osim-ubi9-default.conf /etc/nginx/default.d/osim.conf
 COPY ./build/nginx-fix-random-uid.conf /etc/nginx/conf.d/
+
+RUN mkdir /entrypoint.d/
 COPY ./build/osim-entrypoint.sh /
+COPY ./build/entrypoint.d/20-osim-runtime-json.sh /entrypoint.d/
 
 ENTRYPOINT ["/osim-entrypoint.sh"]
 
