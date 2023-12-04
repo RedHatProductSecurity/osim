@@ -2,3 +2,5 @@
 .github
 .vscode
 openshift
+node_modules
+dist

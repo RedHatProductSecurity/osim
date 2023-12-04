@@ -1,13 +1,14 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM ubi9/nodejs-18 AS dev
+FROM registry.access.redhat.com/ubi9/nodejs-20 AS dev
 WORKDIR /app
 COPY . /app
+RUN npm install -g yarn
 RUN yarn
 RUN yarn build
 
 # Production stage
-FROM redhat/ubi9-minimal:latest
+FROM registry.access.redhat.com/ubi9-minimal
 
 EXPOSE 8080
 
