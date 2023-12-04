@@ -1,6 +1,6 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM registry.access.redhat.com/ubi9/nodejs-20 AS dev
+FROM registry.access.redhat.com/ubi8/nodejs-18 AS dev
 WORKDIR /app
 COPY . /app
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
