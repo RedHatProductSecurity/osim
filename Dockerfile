@@ -3,9 +3,9 @@
 FROM registry.access.redhat.com/ubi9/nodejs-20 AS dev
 WORKDIR /app
 COPY . /app
-RUN npm install -g yarn
-RUN yarn
-RUN yarn build
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn
+RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn build
 
 # Production stage
 FROM registry.access.redhat.com/ubi9-minimal
