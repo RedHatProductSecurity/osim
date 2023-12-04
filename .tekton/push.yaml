@@ -39,6 +39,7 @@ spec:
     tasks:
       - name: fetch-repository
         taskRef:
+          kind: ClusterTask
           name: git-clone
         workspaces:
           - name: output
@@ -71,9 +72,15 @@ spec:
   workspaces:
   - name: source
     volumeClaimTemplate:
-      spec:
+      metadata:
+        labels:
+          paas.redhat.com/appcode: OSID-001
+        annotations:
+          kubernetes.io/reclaimPolicy: "Delete"
+      spec: 
         accessModes:
           - ReadWriteOnce
+        storageClassName: aws-ebs
         resources:
           requests:
             storage: 1Gi

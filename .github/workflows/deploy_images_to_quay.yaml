@@ -16,11 +16,13 @@ on:
       - integration
     paths-ignore:
       - 'openshift/**'
+      - '.tekton/**'
   pull_request:
     branches:
       - main
     paths-ignore:
       - 'openshift/**'
+      - '.tekton/**'
   workflow_dispatch: {}
   release:
     types: [published]
