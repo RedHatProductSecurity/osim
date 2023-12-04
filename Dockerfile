@@ -1,8 +1,7 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
 FROM registry.access.redhat.com/ubi8/nodejs-18 AS dev
-WORKDIR /app
-COPY . /app
+COPY . .
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
 RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn
 RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn build
@@ -43,7 +42,7 @@ COPY ./build/entrypoint.d/20-osim-runtime-json.sh /entrypoint.d/
 ENTRYPOINT ["/osim-entrypoint.sh"]
 
 # Copy the built files to the default Nginx directory
-COPY --from=dev /app/dist /usr/share/nginx/html
+COPY --from=dev /opt/app-root/src/dist /usr/share/nginx/html
 
 # nginx:x:999:999:Nginx web server:/var/lib/nginx:/sbin/nologin
 USER 999
