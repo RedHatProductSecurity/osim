@@ -1,6 +1,6 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM node:latest AS dev
+FROM ubi9/nodejs-18 AS dev
 WORKDIR /app
 COPY . /app
 RUN yarn
