@@ -7,7 +7,7 @@ RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yar
 RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn build
 
 # Production stage
-FROM registry.access.redhat.com/ubi9-minimal
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 EXPOSE 8080
 
