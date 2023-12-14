@@ -23,7 +23,7 @@ def step_impl(context):
 @given('I am on the OSIM local development page')
 def step_impl(context):
     context.browser = webdriver.Chrome()  # or use Firefox(), or the browser of your choice
-    context.browser.get("https://localhost:5173/")  # Replace 3000 with whatever port your dev server uses
+    context.browser.get("https://localhost:5173/")  # Replace 5173 with whatever port your dev server uses
 
 @when('I retrieve the background color of the page')
 def step_impl(context):

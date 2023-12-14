@@ -29,3 +29,6 @@ coverage
 
 # For local development only
 /public/runtime.json
+
+*.py[co]
+__pycache__
