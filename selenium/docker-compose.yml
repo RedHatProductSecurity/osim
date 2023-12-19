@@ -1,0 +1,24 @@
+version: '3'
+services:
+  osim:
+    image: localhost/osim:local
+    build:
+      dockerfile: Dockerfile
+      context: ../
+    ports:
+      - '8080:8080'
+    env_file:
+      - osim.env
+  selenium:
+    image: osim-selenium
+    build:
+      dockerfile: osim-selenium.Dockerfile
+      context: .
+    ports:
+      - '4444:4444'
+      - '7900:7900'
+    env_file:
+      - osim-selenium.env
+    shm_size: "2g"
+    volumes:
+      - './keytabs:/keytabs:ro'
