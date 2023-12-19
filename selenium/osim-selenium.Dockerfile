@@ -33,7 +33,7 @@ EXPOSE 7900
 #uid=1200(seluser) gid=1201(seluser) groups=1201(seluser)
 
 COPY osim-selenium_entrypoint.sh /
-COPY entrypoint.d /
+COPY entrypoint.d /entrypoint.d
 
 USER 1200:1201
 
