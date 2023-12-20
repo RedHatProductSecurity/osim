@@ -21,4 +21,4 @@ services:
       - osim-selenium.env
     shm_size: "2g"
     volumes:
-      - './keytabs:/keytabs:ro'
+      - './keytabs:/keytabs:ro,z'

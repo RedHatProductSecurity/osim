@@ -7,7 +7,7 @@ cmd=(
   -p 4444:4444
   -p 7900:7900
   --shm-size="2g"
-  -v ./keytabs:/keytabs:ro
+  -v ./keytabs:/keytabs:ro,z
   #--rm -it
   osim-selenium
   #/bin/tmux
