@@ -1,4 +1,7 @@
 import requests
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
+
 
 def server_is_ready(url):
     try:
@@ -13,3 +16,16 @@ def server_is_ready(url):
         print("An error occurred:", e)
         return False
     return False
+
+
+def init_remote_firefox_browser():
+    """
+    Init a remote firefox driver which we can use to test
+    osim
+    :return: Remote selenium firefox driver
+    """
+    profile = webdriver.FirefoxProfile()
+    profile.set_preference('network.negotiate-auth.trusted-uris', 'https://')
+    op = Options()
+    op.profile = profile
+    return webdriver.Remote(options=op)
