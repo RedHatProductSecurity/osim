@@ -1,6 +1,6 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM docker.io/selenium/standalone-chrome:latest
+FROM docker.io/selenium/standalone-firefox:latest
 
 USER 0
 
