@@ -4,3 +4,4 @@
 openshift
 node_modules
 dist
+/selenium

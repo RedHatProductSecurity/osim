@@ -1,13 +1,13 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM node:latest AS dev
-WORKDIR /app
-COPY . /app
+FROM registry.access.redhat.com/ubi9/nodejs-20-minimal AS dev
+RUN npm install -g yarn
+COPY . .
 RUN yarn
 RUN yarn build
 
 # Production stage
-FROM redhat/ubi9-minimal:latest
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 EXPOSE 8080
 
@@ -32,10 +32,10 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
     && sed -i '/^\s*listen\b/d' /etc/nginx/nginx.conf \
     && true
 
-COPY ./build/nginx-osim-ubi9-default.conf /etc/nginx/default.d/osim.conf
-COPY ./build/nginx-fix-random-uid.conf /etc/nginx/conf.d/
+COPY ./build/nginx-default.d-osim.conf /etc/nginx/default.d/osim.conf
+COPY ./build/nginx-conf.d-fix-random-uid.conf /etc/nginx/conf.d/fix-random-uid.conf
 
-RUN mkdir /entrypoint.d/
+RUN mkdir -p /entrypoint.d/
 COPY ./build/osim-entrypoint.sh /
 COPY ./build/entrypoint.d/20-osim-runtime-json.sh /entrypoint.d/
 COPY ./build/entrypoint.d/30-local-proxy.sh /entrypoint.d/
