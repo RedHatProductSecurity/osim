@@ -1,10 +1,10 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # Build stage
-FROM registry.access.redhat.com/ubi8/nodejs-18 AS dev
+FROM registry.access.redhat.com/ubi9/nodejs-20-minimal AS dev
+RUN npm install -g yarn
 COPY . .
-RUN curl -o- -L https://yarnpkg.com/install.sh | bash
-RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn
-RUN PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" yarn build
+RUN yarn
+RUN yarn build
 
 # Production stage
 FROM registry.access.redhat.com/ubi9/ubi-minimal
@@ -32,10 +32,10 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
     && sed -i '/^\s*listen\b/d' /etc/nginx/nginx.conf \
     && true
 
-COPY ./build/nginx-osim-ubi9-default.conf /etc/nginx/default.d/osim.conf
-COPY ./build/nginx-fix-random-uid.conf /etc/nginx/conf.d/
+COPY ./build/nginx-default.d-osim.conf /etc/nginx/default.d/osim.conf
+COPY ./build/nginx-conf.d-fix-random-uid.conf /etc/nginx/conf.d/fix-random-uid.conf
 
-RUN mkdir /entrypoint.d/
+RUN mkdir -p /entrypoint.d/
 COPY ./build/osim-entrypoint.sh /
 COPY ./build/entrypoint.d/20-osim-runtime-json.sh /entrypoint.d/
 

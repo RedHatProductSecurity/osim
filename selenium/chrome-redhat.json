@@ -1,0 +1,7 @@
+{
+    "DisableAuthNegotiateCnameLookup" : true,
+    "PromotionalTabsEnabled": false,
+    "MetricsReportingEnabled": false,
+    "SafeBrowsingExtendedReportingEnabled": false,
+    "UrlKeyedAnonymizedDataCollectionEnabled": false
+}
