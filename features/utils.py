@@ -29,7 +29,7 @@ def init_remote_firefox_browser():
     :return: Remote selenium firefox driver
     """
     profile = webdriver.FirefoxProfile()
-    profile.set_preference('network.negotiate-auth.trusted-uris', 'http://')
+    profile.set_preference('network.negotiate-auth.trusted-uris', 'https://')
     op = Options()
     op.profile = profile
     return webdriver.Remote(options=op)
