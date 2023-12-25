@@ -12,8 +12,9 @@ RUN apt-get update && \
     && \
     apt-get clean
 
-COPY chrome-redhat.json /etc/opt/chrome/policies/managed/redhat.json
-COPY chrome-redhat.json /etc/chromium/policies/managed/redhat.json
+# chrome-redhat.json is needed when selenium/standalone-chrome is used
+# COPY chrome-redhat.json /etc/opt/chrome/policies/managed/redhat.json
+# COPY chrome-redhat.json /etc/chromium/policies/managed/redhat.json
 
 COPY krb5.conf /etc/krb5.conf
 COPY krb5.conf.d /etc/krb5.conf.d
