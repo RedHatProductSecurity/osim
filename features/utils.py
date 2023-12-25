@@ -4,7 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from .constants import SUBMIT_BUTTON, TIMEOUT, OSIM_URL
+
+from constants import LOGIN_BUTTON, TIMEOUT, OSIM_URL
 
 
 def server_is_ready(url):
@@ -50,6 +51,6 @@ def login_with_valid_account():
     """
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
-    wait_for_visibility_by_xpath(browser, SUBMIT_BUTTON)
-    browser.find_element(By.XPATH, SUBMIT_BUTTON).click()
+    wait_for_visibility_by_xpath(browser, LOGIN_BUTTON)
+    browser.find_element(By.XPATH, LOGIN_BUTTON).click()
     return browser
