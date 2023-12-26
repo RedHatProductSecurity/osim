@@ -1,3 +1,5 @@
+from functools import wraps
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -54,3 +56,19 @@ def login_with_valid_account():
     wait_for_visibility_by_xpath(browser, LOGIN_BUTTON)
     browser.find_element(By.XPATH, LOGIN_BUTTON).click()
     return browser
+
+
+def skip_step_when_needed(func):
+    """
+    Decorator used for cucumber steps. When context.skip is True,
+    skip current step
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if hasattr(args[0], "skip") and args[0].skip:
+            return
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
