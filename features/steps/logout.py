@@ -3,11 +3,7 @@ from selenium.webdriver.common.by import By
 
 from features.utils import login_with_valid_account, wait_for_visibility_by_xpath
 from features.constants import USER_BUTTON, LOGOUT_BUTTON, LOGIN_BUTTON
-
-
-@given('I am an analyst AND I am logged into OSIM')
-def step_impl(context):
-    context.browser = login_with_valid_account()
+from features.steps.common_steps import *
 
 
 @when('I click the Logout button from the account dropdown')
