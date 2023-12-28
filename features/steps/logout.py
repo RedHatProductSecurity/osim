@@ -1,9 +1,8 @@
-from behave import given, when, then
+from behave import when, then
 from selenium.webdriver.common.by import By
 
-from features.utils import login_with_valid_account, wait_for_visibility_by_xpath
+from features.utils import wait_for_visibility_by_xpath
 from features.constants import USER_BUTTON, LOGOUT_BUTTON, LOGIN_BUTTON
-from features.steps.common_steps import *
 
 
 @when('I click the Logout button from the account dropdown')

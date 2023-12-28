@@ -1,7 +1,6 @@
 from behave import given, when, then
 from selenium.webdriver.common.by import By
 
-from features.steps.common_steps import *
 from features.utils import wait_for_visibility_by_xpath
 
 
