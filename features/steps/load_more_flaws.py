@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
 from features.utils import (
-    wait_for_visibility_by_xpath,
+    wait_for_visibility_by_locator,
     skip_step_when_needed
 )
 from features.constants import (
@@ -15,9 +15,9 @@ from features.constants import (
 
 @given('Not all flaws are loaded')
 def step_impl(context):
-    wait_for_visibility_by_xpath(context.browser, USER_BUTTON)
+    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR, USER_BUTTON)
     try:
-        context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
+        context.browser.find_element(By.CSS_SELECTOR, LOAD_MORE_FLAWS_BUTTON)
     except NoSuchElementException:
         context.skip = True
         context.browser.quit()
@@ -27,12 +27,12 @@ def step_impl(context):
 @skip_step_when_needed
 def step_impl(context):
     # wait flaw data load
-    wait_for_visibility_by_xpath(context.browser, '//tbody[@class="table-group-divider"]/tr[1]')
+    wait_for_visibility_by_locator(context.browser, By.XPATH, '//tbody[@class="table-group-divider"]/tr[1]')
     # get current date count
     rows = context.browser.find_elements(By.XPATH, GET_FLAWS_COUNT_XPATH)
     context.flaws_count = len(rows)
     # click button
-    btn = context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
+    btn = context.browser.find_element(By.CSS_SELECTOR, LOAD_MORE_FLAWS_BUTTON)
     context.browser.execute_script("arguments[0].click();", btn)
 
 
@@ -40,8 +40,8 @@ def step_impl(context):
 @skip_step_when_needed
 def step_impl(context):
     # check if there is more flaws loaded
-    wait_for_visibility_by_xpath(
-        context.browser,
+    wait_for_visibility_by_locator(
+        context.browser, By.XPATH,
         f'//tbody[@class="table-group-divider"]/tr[{context.flaws_count*2+1}]')
 
     rows = context.browser.find_elements(By.XPATH, GET_FLAWS_COUNT_XPATH)

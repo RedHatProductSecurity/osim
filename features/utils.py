@@ -2,10 +2,12 @@ from functools import wraps
 
 import requests
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+
 
 from constants import LOGIN_BUTTON, TIMEOUT, OSIM_URL
 
@@ -38,12 +40,12 @@ def init_remote_firefox_browser():
     return webdriver.Remote(options=op)
 
 
-def wait_for_visibility_by_xpath(browser, element_xpath):
+def wait_for_visibility_by_locator(browser, locator_type, element_locator):
     """
     Wait for loading the element.
     """
     wait = WebDriverWait(browser, int(TIMEOUT))
-    locator = (By.XPATH, element_xpath)
+    locator = (locator_type, element_locator)
     wait.until(EC.visibility_of_element_located(locator))
 
 
@@ -53,8 +55,9 @@ def login_with_valid_account():
     """
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
-    wait_for_visibility_by_xpath(browser, LOGIN_BUTTON)
-    browser.find_element(By.XPATH, LOGIN_BUTTON).click()
+    wait_for_visibility_by_locator(browser, By.CSS_SELECTOR, LOGIN_BUTTON)
+    element=browser.find_element(By.CSS_SELECTOR, LOGIN_BUTTON)
+    ActionChains(browser).move_to_element(element).click().perform()
     return browser
 
 
