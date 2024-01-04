@@ -1,35 +1,23 @@
-from behave import given, when, then
+from behave import then
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from features.utils import (
-        login_with_valid_account,
-        wait_for_visibility_by_xpath
+        wait_for_visibility_by_locator
 )
 from features.constants import (
     USER_BUTTON,
     LOGOUT_BUTTON
     )
 
-
-@given('I am an analyst with valid credential')
-def step_impl(context):
-    """
-    The valid accout keytab works in the selenium/browser container.
-    """
-    pass
-
-
-@when('I attempt to log into OSIM')
-def step_impl(context):
-    context.browser = login_with_valid_account()
-
-
 @then('I am able to log into OSIM')
 def step_impl(context):
     """
-    If user login success, the user could see flaw_filter.
+    If user login success, the user could see logout.
     """
-    wait_for_visibility_by_xpath(context.browser, USER_BUTTON)
-    context.browser.find_element(By.XPATH, USER_BUTTON).click()
-    wait_for_visibility_by_xpath(context.browser, LOGOUT_BUTTON)
+    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR,
+        USER_BUTTON)
+    element=context.browser.find_element(By.CSS_SELECTOR, USER_BUTTON)
+    ActionChains(context.browser).move_to_element(element).click().perform()
+    wait_for_visibility_by_locator(context.browser, By.XPATH, LOGOUT_BUTTON)
     context.browser.find_element(By.XPATH, LOGOUT_BUTTON)
     context.browser.quit()
