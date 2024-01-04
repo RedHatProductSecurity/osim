@@ -9,7 +9,7 @@ from features.utils import (
 from features.constants import (
     LOAD_MORE_FLAWS_BUTTON,
     USER_BUTTON,
-    GET_FLAWS_COUNT_XPATH
+    FLAW_ROW
 )
 
 
@@ -28,8 +28,8 @@ def step_impl(context):
 def step_impl(context):
     # wait flaw data load
     wait_for_visibility_by_xpath(context.browser, '//tbody[@class="table-group-divider"]/tr[1]')
-    # get current date count
-    rows = context.browser.find_elements(By.XPATH, GET_FLAWS_COUNT_XPATH)
+    # get current flaw count
+    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
     context.flaws_count = len(rows)
     # click button
     btn = context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
@@ -44,7 +44,7 @@ def step_impl(context):
         context.browser,
         f'//tbody[@class="table-group-divider"]/tr[{context.flaws_count*2+1}]')
 
-    rows = context.browser.find_elements(By.XPATH, GET_FLAWS_COUNT_XPATH)
+    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
     assert len(rows) > context.flaws_count, \
         "No more flaws loaded after click the 'Load More Flaws' button"
 
