@@ -2,14 +2,13 @@ from functools import wraps
 
 import requests
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-
-from constants import LOGIN_BUTTON, TIMEOUT, OSIM_URL
+from .constants import TIMEOUT, OSIM_URL
+from .locators import LOGIN_BUTTON
 
 
 def server_is_ready(url):
@@ -55,9 +54,8 @@ def login_with_valid_account():
     """
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
-    wait_for_visibility_by_locator(browser, By.CSS_SELECTOR, LOGIN_BUTTON)
-    element=browser.find_element(By.CSS_SELECTOR, LOGIN_BUTTON)
-    ActionChains(browser).move_to_element(element).click().perform()
+    wait_for_visibility_by_locator(browser, By.XPATH, LOGIN_BUTTON)
+    browser.find_element(By.XPATH, LOGIN_BUTTON).click()
     return browser
 
 
@@ -74,4 +72,3 @@ def skip_step_when_needed(func):
         return func(*args, **kwargs)
 
     return wrapper
-

@@ -3,10 +3,10 @@ from behave import when, then
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from features.utils import wait_for_visibility_by_locator
-from features.constants import (
-    FILTER_FLAWS,
+from features.locators import (
+    FLAW_FILTER,
     FLAW_ROW
-    )
+)
 
 FLAW_TITLE_TEXT_XPATH = "//tr[1]/td[6]"
 FLAW_CVE_ID_TEXT_XPATH = "//tr[1]/td[2]/a"
@@ -51,9 +51,9 @@ def when_step_mathcher(context, text_type):
     Input the filter keyword and search
     """
     wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR,
-        FILTER_FLAWS)
+        FLAW_FILTER)
     try:
-        input_element = context.browser.find_element(By.CSS_SELECTOR, FILTER_FLAWS)
+        input_element = context.browser.find_element(By.CSS_SELECTOR, FLAW_FILTER)
         text, context.element_locator = catch_one_existing_flaw_text_and_locator(
             context, text_type)
         input_element.send_keys(text)

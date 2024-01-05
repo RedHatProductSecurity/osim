@@ -1,17 +1,25 @@
 from behave import given, when, then
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from features.utils import wait_for_visibility_by_locator
-from features.constants import (
+
+from features.locators import (
+    COMMENT_BUTTON,
     FLAW_CHECKALL,
     FLAW_CHECKBOX,
-    FLAW_ROW
+    FLAW_LIST,
+    FLAW_ROW,
+    LOAD_MORE_FLAWS_BUTTON,
+    USER_BUTTON
+)
+from features.utils import (
+    wait_for_visibility_by_locator,
+    skip_step_when_needed
 )
 
 
 @given('I am on the flaw list')
 def step_impl(context):
-    flaw_list_xpath = '//div[@class="osim-incident-list"]'
-    wait_for_visibility_by_locator(context.browser, By.XPATH, flaw_list_xpath)
+    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR, FLAW_LIST)
 
 
 @when('I click the link of a flaw')
@@ -23,8 +31,7 @@ def step_impl(context):
 
 @then('I am able to view the flaw detail')
 def step_impl(context):
-    add_comment_button = '//button[contains(text(), "Comment")]'
-    wait_for_visibility_by_locator(context.browser, By.XPATH, add_comment_button)
+    wait_for_visibility_by_locator(context.browser, By.XPATH, COMMENT_BUTTON)
     context.browser.quit()
 
 
@@ -63,4 +70,39 @@ def step_impl(context):
     flaw_checkboxes = context.browser.find_elements(By.CSS_SELECTOR, FLAW_CHECKBOX)
     flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
     assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
+    context.browser.quit()
+
+
+@given('Not all flaws are loaded')
+def step_impl(context):
+    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR, USER_BUTTON)
+    try:
+        context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
+    except NoSuchElementException:
+        context.skip = True
+        context.browser.quit()
+
+
+@when("I click the button 'Load More Flaws'")
+@skip_step_when_needed
+def step_impl(context):
+    # wait flaw data load
+    wait_for_visibility_by_locator(context.browser, By.XPATH, '//tbody[@class="table-group-divider"]/tr[1]')
+    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
+    context.flaws_count = len(rows)
+    btn = context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
+    context.browser.execute_script("arguments[0].click();", btn)
+
+
+@then("More flaws are loaded into the list")
+@skip_step_when_needed
+def step_impl(context):
+    # check if there is more flaws loaded
+    wait_for_visibility_by_locator(
+        context.browser, By.XPATH,
+        f'//tbody[@class="table-group-divider"]/tr[{context.flaws_count*2+1}]')
+
+    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
+    assert len(rows) > context.flaws_count, \
+        "No more flaws loaded after click the 'Load More Flaws' button"
     context.browser.quit()
