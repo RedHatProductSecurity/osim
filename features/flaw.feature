@@ -19,3 +19,9 @@ Feature: Check flaw
         And The check-all checkbox of flaw list is checked
        When I uncheck the check-all checkbox
        Then No flaw in flaw table is selected
+
+    Scenario: Load more flaws
+      Given I am an analyst AND I am logged into OSIM
+      Given Not all flaws are loaded
+      When  I click the button 'Load More Flaws'
+      Then More flaws are loaded into the list

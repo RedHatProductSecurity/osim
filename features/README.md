@@ -13,4 +13,5 @@ There are a few methods how you can run test cases. Always run the commands from
 osim root directory.
 
 1. Run all tests using `yarn run test:e2e` or `behave`
-2. Run just test one feature: `behave features/$featurefile`
+2. Run a feature only: `behave features/$featurefile`
+3. Run a scenario only: `behave -n 'scenario name'`
