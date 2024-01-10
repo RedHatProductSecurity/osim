@@ -18,6 +18,9 @@ export async function osidbFetch(config: AxiosRequestConfig) {
     if (/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
       config.headers['Bugzilla-Api-Key'] = settingsStore.settings.bugzillaApiKey;
     }
+    if (/.+/.test(settingsStore.settings.jiraApiKey ?? '')) {
+      config.headers['Jira-Api-Key'] = settingsStore.settings.jiraApiKey; // Source: osidb/openapi.yml
+    }
     config.baseURL = osimRuntime.value.backends.osidb;
     config.withCredentials = true;
     return axios(config);
