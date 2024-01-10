@@ -14,7 +14,8 @@ const _settingsStoreKey = 'SettingsStore';
 
 export const SettingsSchema = z.object({
   // bugzillaApiKey: z.string().length(32, {message: 'Bugzilla API Key is the wrong length!'}).optional(),
-  bugzillaApiKey: z.string().optional().or(z.literal('')),
+  bugzillaApiKey: z.string().optional().or(z.literal("")),
+  jiraApiKey: z.string().optional().or(z.literal("")),
 });
 export type SettingsType = z.infer<typeof SettingsSchema>;
 

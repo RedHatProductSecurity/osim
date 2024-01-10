@@ -5,32 +5,35 @@ import type {SettingsType} from '@/stores/SettingsStore';
 import {useField, useForm} from 'vee-validate';
 import {toTypedSchema} from '@vee-validate/zod';
 
-const settingsStore = useSettingsStore();
 type SensitiveFormInput = 'password' | 'text';
+
+const settingsStore = useSettingsStore();
 const revealSensitive = ref<SensitiveFormInput>('password');
-
 const validationSchema = toTypedSchema(SettingsSchema);
-
 const initialValues = ref(settingsStore.settings);
-
-const {handleSubmit, errors, resetForm, meta} = useForm({
-  validationSchema,
-  initialValues,
-});
 
 watchEffect(() => {
   initialValues.value = settingsStore.settings;
 });
 
+const { handleSubmit, errors, resetForm, meta } = useForm({
+  validationSchema,
+  initialValues,
+});
+
+console.log(initialValues.value);
+
 const onSubmit = handleSubmit((values: SettingsType) => {
   settingsStore.save(values);
+  console.log(settingsStore, values);
 });
+
 const onReset = (payload: MouseEvent) => {
-  // setValues(committedForm);
   resetForm();
 };
 
-const {value: bugzillaApiKey} = useField('bugzillaApiKey');
+const { value: bugzillaApiKey } = useField('bugzillaApiKey');
+const { value: jiraApiKey } = useField('jiraApiKey');
 
 </script>
 
@@ -70,15 +73,19 @@ const {value: bugzillaApiKey} = useField('bugzillaApiKey');
       <div class="form-control mb-3">
         <label class="d-block has-validation">
           <span class="form-label">Bugzilla API Key</span>
-          <input :type="revealSensitive" class="form-control"
-                 v-model="bugzillaApiKey"
-                 :class="{'is-invalid': errors.bugzillaApiKey != null}"
-                 placeholder="[none saved]"
+          <input 
+            class="form-control"
+            :type="revealSensitive"
+            v-model="bugzillaApiKey"
+            :class="{'is-invalid': errors.bugzillaApiKey != null}"
+            placeholder="[none saved]"
           />
           <span
-              v-if="errors.bugzillaApiKey"
-              class="invalid-feedback d-block"
-          >{{errors.bugzillaApiKey}}</span>
+            v-if="errors.bugzillaApiKey"
+            class="invalid-feedback d-block"
+          >
+            {{errors.bugzillaApiKey}}
+          </span>
         </label>
         <div class="form-text">
           <p>Required for actions which interface with Bugzilla.</p>
@@ -91,6 +98,31 @@ const {value: bugzillaApiKey} = useField('bugzillaApiKey');
             <li>Copy the API key from the banner at the top of the page. Optionally, save it to your password manager.
               The API key will not be shown again after you navigate away from the page.
             </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-control mb-3">
+        <label class="d-block has-validation">
+          <span class="form-label">JIRA API Key</span>
+          <input 
+            class="form-control"
+            :type="revealSensitive"
+            v-model="jiraApiKey"
+            :class="{'is-invalid': errors.jiraApiKey != null}"
+            placeholder="[none saved]"
+          />
+          <span
+            v-if="errors.jiraApiKey"
+            class="invalid-feedback d-block"
+          >
+            {{errors.jiraApiKey}}
+          </span>
+        </label>
+        <div class="form-text">
+          <p>Required for actions which interface with JIRA.</p>
+          <p>Steps to create an API key:</p>
+          <ul>
+            <li>Stretch out <i>with your feelings</i></li>
           </ul>
         </div>
       </div>
