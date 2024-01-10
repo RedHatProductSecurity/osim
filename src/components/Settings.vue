@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watchEffect} from 'vue';
+import { ref, watchEffect } from 'vue';
 import {SettingsSchema, useSettingsStore} from '@/stores/SettingsStore';
 import type {SettingsType} from '@/stores/SettingsStore';
 import {useField, useForm} from 'vee-validate';
 import {toTypedSchema} from '@vee-validate/zod';
-import ExampleForm from '@/components/ExampleForm.vue';
-import ExampleValidatedForm from '@/components/ExampleValidatedForm.vue';
-import Modal from '@/components/widgets/Modal.vue';
-import Toast from '@/components/widgets/Toast.vue';
-import { DateTime } from 'luxon';
-import {useToastStore} from '@/stores/ToastStore';
-import ProgressRing from "@/components/widgets/ProgressRing.vue";
-
-const {addToast} = useToastStore();
 
 const settingsStore = useSettingsStore();
 type SensitiveFormInput = 'password' | 'text';
@@ -22,7 +13,7 @@ const validationSchema = toTypedSchema(SettingsSchema);
 
 const initialValues = ref(settingsStore.settings);
 
-const {handleSubmit, errors, setValues, resetForm, meta} = useForm({
+const {handleSubmit, errors, resetForm, meta} = useForm({
   validationSchema,
   initialValues,
 });
