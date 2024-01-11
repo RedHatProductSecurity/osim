@@ -14,8 +14,21 @@ export async function getFlaws(offset=0, limit=20) {
   // axios.get('https://osidb-stage.example.com/osidb/api/v1/flaws')
   // return axios.get('/mock/prod-flaws.json')
   // return axios.get('/mock/prod-flaws.json')
+  const includedFields = [
+    "cve_id",
+    "uuid",
+    "impact",
+    "source",
+    "created_dt",
+    "updated_dt",
+    "classification",
+    "is_major_incident",
+    "title",
+    "state",
+    "unembargo_dt"
+  ];
   let params = {
-    include_fields: 'cve_id,uuid,impact,source,created_dt,updated_dt,classification,is_major_incident,title,state,unembargo_dt',
+    include_fields: includedFields.join(','),
     limit: limit,
     offset: offset,
   };
