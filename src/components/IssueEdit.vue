@@ -323,6 +323,7 @@ function removeAffect(affectIdx: number) {
         <div class="row">
           <div class="col-6">
             <!--<div>UUID: {{ flaw.uuid }}</div>-->
+            <LabelStatic label="Status" type="text" v-model="flawStatus" />
             <LabelEditable label="Component" type="text" v-model="flawComponent" :error="errors.component"/>
             <!--<div>Type: {{ flaw.type }}</div>-->
 <!--            <label>Type <EditableText v-model="flawType"/></label>-->
