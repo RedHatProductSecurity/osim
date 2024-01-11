@@ -11,3 +11,4 @@ FLAW_ROW = "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top
 LOAD_MORE_FLAWS_BUTTON = "//button[contains(text(), 'Load More Flaws')]"
 LOGIN_BUTTON = "//button[contains(text(), 'Login')]"
 LOGOUT_BUTTON = "//button[text()='Logout']"
+BUGZILLA_API_KEY_TEXT_ELEMENT = "//span[text()='Bugzilla API Key']"
