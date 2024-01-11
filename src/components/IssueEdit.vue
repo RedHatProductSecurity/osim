@@ -6,6 +6,7 @@ import EditableText from '../components/widgets/EditableText.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import * as zf from '../types/zodFlaw';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import {ZodFlawSchema} from '../types/zodFlaw';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import {getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, putFlaw} from '@/services/FlawService';
@@ -87,6 +88,11 @@ const {value: flawMajor_incident_state} = useField<string>('major_incident_state
 const {value: flawNist_cvss_validation} = useField<string>('nist_cvss_validation');
 const {value: flawEmbargoed} = useField<boolean>('embargoed');
 const {value: flawUpdated_dt} = useField<string>('updated_dt');
+
+const {value: flawAssignee} = useField<string>('assignee'); // TODO: Connect when supported by API
+const {value: flawReporter} = useField<string>('reporter'); // TODO: Connect when supported by API
+const {value: flawCreator} = useField<string>('creator'); // TODO: Connect when supported by API
+const {value: flawStatus} = useField<string>('status'); // TODO: Connect when supported by API
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
 let stagedFlaw: ZodFlawType = committedFlaw;
@@ -360,6 +366,9 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
+            <LabelStatic label="Creator" :model-value="flawCreator" />
+            <LabelStatic label="Reporter" :model-value="flawReporter" />
+            <LabelEditable label="Asignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
               <!--<div v-for="tracker in flaw.trackers">{{ tracker }}</div>-->
