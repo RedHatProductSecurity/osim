@@ -6,6 +6,7 @@ import type {ZodFlawType} from '@/types/zodFlaw';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
 
+const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 
 export async function getFlaws(offset=0, limit=20) {
   // TODO add filtering parameters
@@ -26,14 +27,14 @@ export async function getFlaws(offset=0, limit=20) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
     return osidbFetch({
       method: 'get',
-      url: '/osidb/api/v1/flaws',
+      url: FLAW_BASE_URI,
       params: params,
     });
   }
 
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: FLAW_BASE_URI,
     params: params,
   });
   // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {
@@ -62,7 +63,7 @@ export async function getFlaw(uuid: string) {
 
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: `${FLAW_BASE_URI}/${uuid}`,
     params: {
       // 'include_meta_attr': '*', // too many fields
       'include_meta_attr': 'bz_id',
@@ -75,7 +76,7 @@ export async function getFlaw(uuid: string) {
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   return osidbFetch({
     method: 'put',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: `${FLAW_BASE_URI}/${uuid}`,
     data: flawObject,
   }).then(response => {
     console.log(response);
@@ -86,7 +87,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
 export async function postFlawPublicComment(uuid: string, comment: string) {
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/flaws/${uuid}/comments`,
+    url: `${FLAW_BASE_URI}/${uuid}/comments`,
     data: {
       text: comment,
       type: 'BUGZILLA',
@@ -101,7 +102,7 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: FLAW_BASE_URI,
     params: {
       search: query,
     },
@@ -138,7 +139,7 @@ export async function createFlaw(flawCreateRequest: any) {
   // }
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/flaws',
+    url: FLAW_BASE_URI,
     data: flawCreateRequest,
   }).then(response => {
     return response.data;
