@@ -8,11 +8,9 @@
 
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {useToastStore} from '@/stores/ToastStore';
-import type { ToastNew } from '@/stores/ToastStore';
 
 export function notifyApiKeyUnset() {
 
-  const { addToast } = useToastStore();
   const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
   const unsetKeys: string[] = [];
 
@@ -25,15 +23,14 @@ export function notifyApiKeyUnset() {
   }
 
   if (!bugzillaApiKey || !jiraApiKey) {
+    const { addToast } = useToastStore();
     const lis = unsetKeys.map((key) => `<li>${key}</li>`).join('');
-    const toastOptions: ToastNew = {
+    addToast({
       css: 'warning',
       title: 'Request CVE',
       bodyHtml: true,
-      body: '',
-    };
-    toastOptions.body += `You have not set the following keys in this tab: <ul>${lis}</ul>Flaw creation requires your Bugzilla API or JIRA key to be set. Visit <a href='/settings'}>Settings</a> to set any required keys.`;
-    addToast(toastOptions);
+      body: `You have not set the following keys in this tab: <ul>${lis}</ul>Flaw creation requires your Bugzilla API or JIRA key to be set. Visit <a href='/settings'}>Settings</a> to set any required keys.`
+    });
   }
 
 }
