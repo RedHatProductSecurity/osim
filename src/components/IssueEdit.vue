@@ -90,8 +90,6 @@ const {value: flawEmbargoed} = useField<boolean>('embargoed');
 const {value: flawUpdated_dt} = useField<string>('updated_dt');
 
 const {value: flawAssignee} = useField<string>('assignee'); // TODO: Connect when supported by API
-const {value: flawReporter} = useField<string>('reporter'); // TODO: Connect when supported by API
-const {value: flawCreator} = useField<string>('creator'); // TODO: Connect when supported by API
 const {value: flawStatus} = useField<string>('status'); // TODO: Connect when supported by API
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
@@ -367,8 +365,6 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
-            <LabelStatic label="Creator" :model-value="flawCreator" />
-            <LabelStatic label="Reporter" :model-value="flawReporter" />
             <LabelEditable label="Asignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
