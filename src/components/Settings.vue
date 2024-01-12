@@ -21,11 +21,8 @@ const { handleSubmit, errors, resetForm, meta } = useForm({
   initialValues,
 });
 
-console.log(initialValues.value);
-
 const onSubmit = handleSubmit((values: SettingsType) => {
   settingsStore.save(values);
-  console.log(settingsStore, values);
 });
 
 const onReset = (payload: MouseEvent) => {
