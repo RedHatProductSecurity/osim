@@ -70,10 +70,12 @@ function clearAll() {
 </template>
 
 <style scoped>
+
 .osim-toast-container {
   position: v-bind(position);
   top: v-bind(top);
   /*height: calc(100vh - 100px);*/
+  pointer-events: all !important;
   height: v-bind(height);
   overflow-x: clip;
   overflow-y: auto;
