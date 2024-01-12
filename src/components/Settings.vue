@@ -119,7 +119,12 @@ const { value: jiraApiKey } = useField('jiraApiKey');
           <p>Required for actions which interface with JIRA.</p>
           <p>Steps to create an API key:</p>
           <ul>
-            <li>Stretch out <i>with your feelings</i></li>
+            <li>Log into your JIRA account.</li>
+            <li>Go to 'Your Profile' page under your user icon menu in the upper right corner. </li>
+            <li>Select Personal Access Tokens from the left hand sidebar menu.</li>
+            <li>Click Create token button.</li>
+            <li>Name the token meaningfully (eg. 'OSIM token') and click create.</li>
+            <li>Copy token value and close.</li>
           </ul>
         </div>
       </div>
