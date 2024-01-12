@@ -75,7 +75,7 @@ function clearAll() {
   position: v-bind(position);
   top: v-bind(top);
   /*height: calc(100vh - 100px);*/
-  pointer-events: all !important;
+  pointer-events: all !important; /* override bootstrap .toast-container default value of 'none'*/ 
   height: v-bind(height);
   overflow-x: clip;
   overflow-y: auto;
