@@ -10,25 +10,15 @@ import {
     type Erratum, FlawMetaType,
 } from '../generated-client';
 import { DateTime } from 'luxon';
-import type {toZod} from '@/utils/toZod';
 
-// console.log(Object.values(FlawType));
-
-// const flawTypesWithBlank = (Object.values(FlawType) as string[]).concat('');
 const FlawTypeWithBlank = {'': '', ...FlawType,} as const;
 const ImpactEnumWithBlank = {'': '',...ImpactEnum} as const;
 const RequiresSummaryEnumWithBlank = {'': '',...RequiresSummaryEnum} as const;
 const Source666EnumWithBlank = {'': '',...Source666Enum} as const;
 const MajorIncidentStateEnumWithBlank = {'': '',...MajorIncidentStateEnum} as const;
 const NistCvssValidationEnumWithBlank = {'': '',...NistCvssValidationEnum} as const;
-
-
 const AffectednessEnumWithBlank = {'': '',...AffectednessEnum} as const;
 const ResolutionEnumWithBlank = {'': '',...ResolutionEnum} as const;
-
-//.transform(o => {if (o as any instanceof Date) return moment(o).toISOString(); else return o;})
-//z.string().datetime(), // $date-time,
-
 
 export const FlawCVSSSchema = z.object({
     comment: z.string().nullable(),
@@ -135,8 +125,6 @@ export const ZodFlawSchema = z.object({
     // type: z.nativeEnum(FlawType).optional(),
     type: z.nativeEnum(FlawTypeWithBlank).nullish(),
     cve_id: z.string().nullish(),
-    // state: z.string().nullish(), // read-only / XXX deprecated
-    // resolution: z.string().nullish(), // read-only / XXX deprecated
     impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
     component: z.string().max(100).nullish(),
     title: z.string().min(1),
@@ -156,17 +144,12 @@ export const ZodFlawSchema = z.object({
     cvss3: z.string().max(100).nullish(), // XXX deprecated
     cvss3_score: z.number().nullish(), // $float // XXX deprecated
     nvd_cvss3: z.string().max(100).nullish(), // XXX deprecated
-    // is_major_incident: z.boolean().nullish(), // XXX deprecated
     major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
     nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
     affects: z.array(ZodAffectSchema), // read-only
     meta: z.array(ZodFlawMetaSchema),
-    // comments: z.array(toZod<Comment>),
     cvss_scores: z.array(FlawCVSSSchema),
     embargoed: z.boolean(), // technically read-only, but mandatory
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
-// Object.values(ZodFlawSchema.shape.type._def.innerType.enum);
-// console.log(ZodFlawSchema);
-// console.log(Object.keys(ZodFlawSchema.shape.type));
 
