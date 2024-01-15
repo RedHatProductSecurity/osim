@@ -17,7 +17,6 @@ export function notifyApiKeyUnset() {
 
   if (!bugzillaApiKey) {
     unsetKeys.push('Bugzilla');
-    maybeRedirectToSettings();
   }
 
   if (!jiraApiKey) {
@@ -27,14 +26,15 @@ export function notifyApiKeyUnset() {
   if (!bugzillaApiKey || !jiraApiKey) {
     const { addToast } = useToastStore();
     const lis = unsetKeys.map((key) => `<li>${key}</li>`).join('');
+
     addToast({
       css: 'warning',
       title: 'Request CVE',
       bodyHtml: true,
       body: `You have not set the following keys in this tab: <ul>${lis}</ul>Flaw creation requires your Bugzilla API or JIRA key to be set. Visit Settings to set any required keys.`
     });
+    maybeRedirectToSettings();
   }
-
 }
 
 function maybeRedirectToSettings () {
@@ -43,3 +43,4 @@ function maybeRedirectToSettings () {
     router.push({path: '/settings'});
   }
 }
+
