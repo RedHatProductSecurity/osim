@@ -74,8 +74,8 @@ const {value: flawCvss3_score} = useField<number>('cvss3_score');
 const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
 
-const {value: flawAssignee} = useField<string>('assignee');
-const {value: flawStatus} = useField<string>('status');
+const { value: flawAssignee } = useField<string>('owner');
+const { value: flawStatus } = useField<string>('classification.state');
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
 
@@ -239,13 +239,8 @@ function removeAffect(affectIdx: number) {
       <div class="col">
         <div class="row">
           <div class="col-6">
-            <!--<div>UUID: {{ flaw.uuid }}</div>-->
-            <LabelStatic label="Status" type="text" v-model="flawStatus" />
             <LabelEditable label="Component" type="text" v-model="flawComponent" :error="errors.component"/>
-            <!--<div>Type: {{ flaw.type }}</div>-->
-<!--            <label>Type <EditableText v-model="flawType"/></label>-->
             <LabelSelect label="Type" :options="flawTypes" v-model="flawType" :error="errors.type"/>
-            <!--<div>CVE ID: {{ flaw.cve_id }}</div>-->
             <div class="">
               <div class="row">
                 <div class="col">
@@ -276,8 +271,8 @@ function removeAffect(affectIdx: number) {
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
           </div>
           <div class="col-6">
+            <LabelStatic label="Status" type="text" v-model="flawStatus" />
             <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
-
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable
                 :label="'Public Date' + (DateTime.fromJSDate(flaw.unembargo_dt).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
@@ -287,7 +282,6 @@ function removeAffect(affectIdx: number) {
             <LabelEditable label="Asignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
-              <!--<div v-for="tracker in flaw.trackers">{{ tracker }}</div>-->
               <div v-for="tracker in trackerUuids">
                 <RouterLink :to="{name: 'tracker-details', params: {id: tracker.uuid}}">
                   {{ tracker.display }}
