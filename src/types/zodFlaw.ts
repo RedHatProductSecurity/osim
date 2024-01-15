@@ -5,16 +5,19 @@ import {
     MajorIncidentStateEnum,
     NistCvssValidationEnum,
     RequiresSummaryEnum,
-    Source666Enum,
-    type Affect, AffectType, AffectednessEnum, ResolutionEnum, IssuerEnum,
-    type Erratum, FlawMetaType,
+    Source8d8Enum,
+    AffectType,
+    AffectednessEnum,
+    ResolutionEnum,
+    IssuerEnum,
+    FlawMetaType,
 } from '../generated-client';
 import { DateTime } from 'luxon';
 
 const FlawTypeWithBlank = {'': '', ...FlawType,} as const;
 const ImpactEnumWithBlank = {'': '',...ImpactEnum} as const;
 const RequiresSummaryEnumWithBlank = {'': '',...RequiresSummaryEnum} as const;
-const Source666EnumWithBlank = {'': '',...Source666Enum} as const;
+const Source8d8EnumWithBlank = {'': '',...Source8d8Enum} as const;
 const MajorIncidentStateEnumWithBlank = {'': '',...MajorIncidentStateEnum} as const;
 const NistCvssValidationEnumWithBlank = {'': '',...NistCvssValidationEnum} as const;
 const AffectednessEnumWithBlank = {'': '',...AffectednessEnum} as const;
@@ -135,7 +138,7 @@ export const ZodFlawSchema = z.object({
     statement: z.string().nullish(),
     cwe_id: z.string().max(255).nullish(),
     unembargo_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
-    source: z.nativeEnum(Source666EnumWithBlank).nullish(),
+    source: z.nativeEnum(Source8d8EnumWithBlank).nullish(),
     reported_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     mitigation: z.string().nullish(),
     cvss2: z.string().max(100).nullish(), // XXX deprecated
