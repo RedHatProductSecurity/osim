@@ -78,7 +78,7 @@ const {value: flawAssignee} = useField<string>('assignee');
 const {value: flawStatus} = useField<string>('status');
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
-let stagedFlaw: ZodFlawType = committedFlaw;
+
 setValues(committedFlaw);
 
 const onSubmitAffect = async () => {
