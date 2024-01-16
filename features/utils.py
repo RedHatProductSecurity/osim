@@ -9,8 +9,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.common.action_chains import ActionChains
 
-from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY
-from locators import LOGIN_BUTTON, USER_BUTTON, BUGZILLA_API_KEY_TEXT_ELEMENT
+from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY
+from locators import (
+    LOGIN_BUTTON,
+    USER_BUTTON,
+    BUGZILLA_API_KEY_TEXT_ELEMENT,
+    JIRA_API_KEY_TEXT_ELEMENT
+)
 
 
 def server_is_ready(url):
@@ -76,9 +81,9 @@ def skip_step_when_needed(func):
     return wrapper
 
 
-def set_bugzilla_api_key(browser):
+def _set_api_key_in_settings_page(browser, api_key_text, api_key_value):
     """
-    set osim bugzilla API key in settings
+    set osim API key in settings page
     """
     # enter settings page
     wait_for_visibility_by_locator(browser, By.CSS_SELECTOR, USER_BUTTON)
@@ -86,14 +91,30 @@ def set_bugzilla_api_key(browser):
     ActionChains(browser).move_to_element(element).click().perform()
     settings_btn = browser.find_element(By.LINK_TEXT, "Settings")
     settings_btn.click()
-    # set bugzilla api key
-    key_text = browser.find_element(By.XPATH, BUGZILLA_API_KEY_TEXT_ELEMENT)
+    # set api key
+    key_text = browser.find_element(By.XPATH, api_key_text)
     key_input = browser.find_elements(
         locate_with(By.TAG_NAME, "input").below(key_text))[0]
 
     key_input.clear()
-    key_input.send_keys(BUGZILLA_API_KEY)
+    key_input.send_keys(api_key_value)
 
+    # save change
     save_btn = browser.find_element(By.XPATH, "//button[text()='Save' and @type='submit']")
     browser.execute_script("arguments[0].click();", save_btn)
 
+
+def set_jira_api_key(browser):
+    """
+    set osim jira API key in settings
+    """
+    _set_api_key_in_settings_page(
+        browser, JIRA_API_KEY_TEXT_ELEMENT, JIRA_API_KEY)
+
+
+def set_bugzilla_api_key(browser):
+    """
+    set osim jira API key in settings
+    """
+    _set_api_key_in_settings_page(
+        browser, BUGZILLA_API_KEY_TEXT_ELEMENT, BUGZILLA_API_KEY)
