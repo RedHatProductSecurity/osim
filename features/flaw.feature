@@ -25,3 +25,10 @@ Feature: Check flaw
       Given Not all flaws are loaded
       When  I click the button 'Load More Flaws'
       Then More flaws are loaded into the list
+
+    Scenario: Add Public Comment for a flaw
+      Given I am an analyst AND I am logged into OSIM
+      Given I set the bugzilla api key and jira api key
+      Given I go to a flaw detail page
+      When I add a public comment to the flaw
+      Then A comment is added to the flaw
