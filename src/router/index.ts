@@ -4,6 +4,8 @@ import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';
 import {useUserStore} from '@/stores/UserStore';
+import {useSettingsStore} from '@/stores/SettingsStore';
+import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
@@ -42,6 +44,13 @@ const router = createRouter({
       meta: {
         title: 'Create Flaw',
       },
+      beforeEnter(to, from, next){
+        const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
+        if (!bugzillaApiKey || !jiraApiKey) {
+          notifyApiKeyUnset();
+          next('/settings')
+        }
+      }
     },
     {
       path: '/flaws/:id',
@@ -85,7 +94,7 @@ const router = createRouter({
       component: SettingsView,
       meta: {
         title: 'Settings',
-      },
+      }
     },
     {
       path: '/widget-test',
