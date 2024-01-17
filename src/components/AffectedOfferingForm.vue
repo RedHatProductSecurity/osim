@@ -4,7 +4,7 @@ import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import {ZodAffectSchema, ZodFlawSchema} from '@/types/zodFlaw';
+import { ZodAffectSchema } from '@/types/zodFlaw';
 
 const props = defineProps<{
   modelValue: any,
@@ -45,10 +45,6 @@ const affectTypes = Object.values(ZodAffectSchema.shape.type.unwrap().unwrap().e
         v-model="modelValue.type"
         :options="affectTypes"
     />
-    <LabelInput
-        class="col-6"
-        label="External ID"
-        v-model="modelValue.external_system_id"/>
     <LabelSelect
         class="col-6"
         label="Affectedness"
@@ -101,7 +97,6 @@ const affectTypes = Object.values(ZodAffectSchema.shape.type.unwrap().unwrap().e
       <div class="row">
         <div class="col-6 flex-grow-1">
           <div>Type: {{ modelValue.type }}</div>
-          <div v-if="modelValue.external_system_id">External System ID: {{ modelValue.external_system_id }}</div>
           <div v-if="modelValue.status">Status: {{ modelValue.status }}</div>
           <div>Resolution: {{ modelValue.resolution }}</div>
         </div>
