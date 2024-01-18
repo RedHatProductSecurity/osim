@@ -6,6 +6,8 @@ Refer to the README of osim-selenium-image and Start the osim-selenium-image.
 
 ## Configure environment variables for test cases
 ### Define which OSIM env will be tested.
+- BUGZILLA_API_KEY: export BUGZILLA_API_KEY=$BUGZILLA_API_KEY
+- JIRA_API_KEY: export JIRA_API_KEY=$JIRA_API_KEY
 - OSIM_URL: export OSIM_URL=$OSIM_URL
 
 ## Run the tests
