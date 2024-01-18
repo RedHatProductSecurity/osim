@@ -1,45 +1,36 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watchEffect} from 'vue';
+import { ref, watchEffect } from 'vue';
 import {SettingsSchema, useSettingsStore} from '@/stores/SettingsStore';
 import type {SettingsType} from '@/stores/SettingsStore';
 import {useField, useForm} from 'vee-validate';
 import {toTypedSchema} from '@vee-validate/zod';
-import ExampleForm from '@/components/ExampleForm.vue';
-import ExampleValidatedForm from '@/components/ExampleValidatedForm.vue';
-import Modal from '@/components/widgets/Modal.vue';
-import Toast from '@/components/widgets/Toast.vue';
-import { DateTime } from 'luxon';
-import {useToastStore} from '@/stores/ToastStore';
-import ProgressRing from "@/components/widgets/ProgressRing.vue";
 
-const {addToast} = useToastStore();
+type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
-type SensitiveFormInput = 'password' | 'text';
 const revealSensitive = ref<SensitiveFormInput>('password');
-
 const validationSchema = toTypedSchema(SettingsSchema);
-
 const initialValues = ref(settingsStore.settings);
-
-const {handleSubmit, errors, setValues, resetForm, meta} = useForm({
-  validationSchema,
-  initialValues,
-});
 
 watchEffect(() => {
   initialValues.value = settingsStore.settings;
 });
 
+const { handleSubmit, errors, resetForm, meta } = useForm({
+  validationSchema,
+  initialValues,
+});
+
 const onSubmit = handleSubmit((values: SettingsType) => {
   settingsStore.save(values);
 });
+
 const onReset = (payload: MouseEvent) => {
-  // setValues(committedForm);
   resetForm();
 };
 
-const {value: bugzillaApiKey} = useField('bugzillaApiKey');
+const { value: bugzillaApiKey } = useField('bugzillaApiKey');
+const { value: jiraApiKey } = useField('jiraApiKey');
 
 </script>
 
@@ -79,15 +70,19 @@ const {value: bugzillaApiKey} = useField('bugzillaApiKey');
       <div class="form-control mb-3">
         <label class="d-block has-validation">
           <span class="form-label">Bugzilla API Key</span>
-          <input :type="revealSensitive" class="form-control"
-                 v-model="bugzillaApiKey"
-                 :class="{'is-invalid': errors.bugzillaApiKey != null}"
-                 placeholder="[none saved]"
+          <input 
+            class="form-control"
+            :type="revealSensitive"
+            v-model="bugzillaApiKey"
+            :class="{'is-invalid': errors.bugzillaApiKey != null}"
+            placeholder="[none saved]"
           />
           <span
-              v-if="errors.bugzillaApiKey"
-              class="invalid-feedback d-block"
-          >{{errors.bugzillaApiKey}}</span>
+            v-if="errors.bugzillaApiKey"
+            class="invalid-feedback d-block"
+          >
+            {{errors.bugzillaApiKey}}
+          </span>
         </label>
         <div class="form-text">
           <p>Required for actions which interface with Bugzilla.</p>
@@ -100,6 +95,36 @@ const {value: bugzillaApiKey} = useField('bugzillaApiKey');
             <li>Copy the API key from the banner at the top of the page. Optionally, save it to your password manager.
               The API key will not be shown again after you navigate away from the page.
             </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-control mb-3">
+        <label class="d-block has-validation">
+          <span class="form-label">JIRA API Key</span>
+          <input 
+            class="form-control"
+            :type="revealSensitive"
+            v-model="jiraApiKey"
+            :class="{'is-invalid': errors.jiraApiKey != null}"
+            placeholder="[none saved]"
+          />
+          <span
+            v-if="errors.jiraApiKey"
+            class="invalid-feedback d-block"
+          >
+            {{errors.jiraApiKey}}
+          </span>
+        </label>
+        <div class="form-text">
+          <p>Required for actions which interface with JIRA.</p>
+          <p>Steps to create an API key:</p>
+          <ul>
+            <li>Log into your JIRA account.</li>
+            <li>Go to 'Your Profile' page under your user icon menu in the upper right corner. </li>
+            <li>Select Personal Access Tokens from the left hand sidebar menu.</li>
+            <li>Click Create token button.</li>
+            <li>Name the token meaningfully (eg. 'OSIM token') and click create.</li>
+            <li>Copy token value and close.</li>
           </ul>
         </div>
       </div>

@@ -10,9 +10,9 @@ export default mergeConfig(
       exclude: [...configDefaults.exclude, 'e2e/*'],
       root: fileURLToPath(new URL('./', import.meta.url)),
       globals: true,
-      globalSetup: [
-          './src/__tests__/global-setup.ts',
-      ],
+      // globalSetup: [
+      //     './src/__tests__/global-setup.ts',
+      // ],
     },
   }),
 )

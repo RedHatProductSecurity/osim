@@ -3,7 +3,7 @@ import {defineStore} from 'pinia';
 import { DateTime } from 'luxon';
 
 
-interface ToastNew {
+export interface ToastNew {
   title?: string,
   body: string,
   // timestamp: moment.Moment,
