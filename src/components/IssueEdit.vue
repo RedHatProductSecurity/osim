@@ -4,9 +4,8 @@ import { DateTime } from 'luxon';
 import { computed, reactive, ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-
-import { ZodFlawSchema } from '../types/zodFlaw';
-import type { ZodFlawType } from '../types/zodFlaw';
+import { RouterLink } from 'vue-router';
+import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -17,7 +16,6 @@ import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import PillList from '@/components/widgets/PillList.vue';
 
-import { getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, putFlaw } from '@/services/FlawService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { postAffect, putAffect } from '@/services/AffectService';
 import { notifyApiKeyUnset } from '@/services/ApiKeyService';
@@ -39,11 +37,6 @@ const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum)
 const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
 const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
 const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
-
-console.log(flawTypes);
-console.log(flawSources);
-console.log(flawImpacts);
-
 const validationSchema = toTypedSchema(ZodFlawSchema);
 
 const {handleSubmit, errors, setValues, values} = useForm({
@@ -232,13 +225,11 @@ function removeAffect(affectIdx: number) {
       class="osim-content container"
       @submit="onSubmit"
   >
-
-    <div class="row mt-3 mb-5">
-      <LabelEditable v-model="flawTitle"  label="Title" type="text"/>
-
-      <div class="col">
-        <div class="row">
-          <div class="col-6">
+  <div class="row mt-3 mb-5">
+    <LabelEditable v-model="flawTitle"  label="Title" type="text"/>
+    <div class="col">
+      <div class="row">
+        <div class="col-6">
             <LabelEditable label="Component" type="text" v-model="flawComponent" :error="errors.component"/>
             <LabelSelect label="Type" :options="flawTypes" v-model="flawType" :error="errors.type"/>
             <div class="">
@@ -279,7 +270,7 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
-            <LabelEditable label="Asignee" type="text" v-model="flawAssignee" />
+            <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
               <div v-for="tracker in trackerUuids">

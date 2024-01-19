@@ -26,7 +26,7 @@ function doupdate() {
 </script>
 
 <template>
-  <label class="osim-input mb-3 border-start ps-3">
+  <label class="osim-input mb-3 border-start ps-3" :id="`osim-input-${label.toLowerCase()}`">
     <span class="form-label">
       {{ label }}
       <!--<br />-->
