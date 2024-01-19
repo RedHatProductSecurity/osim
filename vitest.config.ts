@@ -11,7 +11,7 @@ export default mergeConfig(
       root: fileURLToPath(new URL('./', import.meta.url)),
       globals: true,
       globalSetup: [
-          './src/__tests__/global-setup.ts',
+          // './src/__tests__/global-setup.ts',
       ],
     },
   }),

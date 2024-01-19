@@ -1,27 +1,57 @@
+import axios from 'axios';
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import IssueEdit from '@/components/IssueEdit.vue';
 import { VueWrapper } from '@vue/test-utils';
-
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 
+import type { ZodFlawType } from '@/types/zodFlaw';
+
+const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
+// const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
+const putHandler = http.put(
+  `${FLAW_BASE_URI}/:id`,
+  async ({ request, params, cookies }) => {
+    const reader = request.body?.getReader();
+
+    if (!reader) {
+      throw new Error('Request body is not available');
+    }
+
+    const result = await reader.read();
+
+    if (result.done) {
+      throw new Error('Request body stream is already read to the end');
+    }
+
+    const decoder = new TextDecoder('utf-8');
+    const requestBody = decoder.decode(result.value);
+    return HttpResponse.json(JSON.parse(requestBody));
+  }
+);
+
+const server = setupServer(putHandler);
+
 describe('IssueEdit', () => {
-  let subject: VueWrapper<InstanceType<typeof IssueEdit>>
+  let subject: VueWrapper<InstanceType<typeof IssueEdit>>;
 
   beforeAll(() => {
     // Store below depends on global pinia test instance
     createTestingPinia({
       initialState: {
-        toasts: []
-      }
-    })
+        toasts: [],
+      },
+    });
+
+    server.listen({ onUnhandledRequest: 'error' });
+
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
     subject = mount(IssueEdit, {
-      plugins: [
-        useToastStore(),
-      ],
+      plugins: [useToastStore()],
       // shallow: true,
       props: {
         flaw,
@@ -32,11 +62,14 @@ describe('IssueEdit', () => {
         },
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
-          EditableDate: true
-        }
-      }
+          EditableDate: true,
+        },
+      },
     });
-  })
+  });
+
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
 
   const assigneeFieldSelector = '#osim-input-assignee';
   const statusFieldSelector = '#osim-static-label-status';
@@ -49,18 +82,46 @@ describe('IssueEdit', () => {
   });
 
   it('displays correct Assignee field value from props', async () => {
-    expect(subject.find(assigneeFieldSelector).find('span.form-label').text()).toBe('Assignee');
-    expect(subject.find(assigneeFieldSelector).attributes().modelvalue).toBe('test owner');
+    expect(
+      subject.find(assigneeFieldSelector).find('span.form-label').text()
+    ).toBe('Assignee');
+
+    expect(subject.find(assigneeFieldSelector).attributes().modelvalue).toBe(
+      'test owner'
+    );
   });
+
   it('displays correct Status field value from props', async () => {
-    expect(subject.find(statusFieldSelector).find('span.form-label').text()).toBe('Status');
+    expect(
+      subject.find(statusFieldSelector).find('span.form-label').text()
+    ).toBe('Status');
     expect(subject.find(statusFieldSelector).find('div').text()).toBe('REVIEW');
   });
 
-  // TODO: test outgoing PUT
+  it('does network stuff', async () => {
+    // @ts-ignore
+    const flaw: ZodFlawType = sampleFlaw();
+    // @ts-ignore
+    flaw.owner = 'networking test owner';
+    // @ts-ignore
+    const result = await mockedPutFlaw(flaw.uuid, flaw);
+    expect(result.owner).toBe('networking test owner');
+  });
 });
 
-function sampleFlaw() {
+function mockedPutFlaw(uuid: string, flawObject: typeof sampleFlaw) {
+  return axios({
+    method: 'put',
+    url: `${FLAW_BASE_URI}/${uuid}`,
+    data: flawObject,
+  })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
+}
+
+function sampleFlaw() /*:ZodFlawType */ {
   return {
     uuid: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
     type: 'VULNERABILITY',
@@ -148,23 +209,23 @@ function sampleFlaw() {
         created_dt: '2021-09-13T09:09:38Z',
         updated_dt: '2023-12-06T17:12:21Z',
       },
-      {
-        uuid: '24f7f36c-31e9-45ba-842d-9733141807d3',
-        type: 'REQUIRES_SUMMARY',
-        meta_attr: {
-          id: '5248524',
-          name: 'requires_doc_text',
-          setter: 'ex-maple@example.com',
-          status: '+',
-          type_id: '415',
-          is_active: '1',
-          creation_date: '2023-12-06T16:52:30Z',
-          modification_date: '2023-12-06T17:12:21Z',
-        },
-        embargoed: false,
-        created_dt: '2021-09-13T09:09:38Z',
-        updated_dt: '2023-12-06T17:12:21Z',
-      },
+      // {
+      //   uuid: '24f7f36c-31e9-45ba-842d-9733141807d3',
+      //   type: 'REQUIRES_SUMMARY',
+      //   meta_attr: {
+      //     id: '5248524',
+      //     name: 'requires_doc_text',
+      //     setter: 'ex-maple@example.com',
+      //     status: '+',
+      //     type_id: '415',
+      //     is_active: '1',
+      //     creation_date: '2023-12-06T16:52:30Z',
+      //     modification_date: '2023-12-06T17:12:21Z',
+      //   },
+      //   embargoed: false,
+      //   created_dt: '2021-09-13T09:09:38Z',
+      //   updated_dt: '2023-12-06T17:12:21Z',
+      // },
     ],
     comments: [
       {
