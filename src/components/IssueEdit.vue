@@ -19,6 +19,13 @@ import PillList from '@/components/widgets/PillList.vue';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { postAffect, putAffect } from '@/services/AffectService';
 import { notifyApiKeyUnset } from '@/services/ApiKeyService';
+import {
+  getFlawBugzillaLink,
+  getFlawOsimLink,
+  postFlawPublicComment,
+  putFlaw
+} from '@/services/FlawService';
+
 import { useToastStore } from '@/stores/ToastStore';
 
 const {addToast} = useToastStore();
