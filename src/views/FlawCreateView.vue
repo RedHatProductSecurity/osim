@@ -4,7 +4,6 @@ import {createFlaw} from '@/services/FlawService';
 import FlawCreateForm from '@/components/FlawCreateForm.vue';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
-import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 
 const flaw = ref({});
 // const props = defineProps<{
@@ -20,9 +19,6 @@ const error = ref('');
 // });
 
 const settingsStore = useSettingsStore();
-
-notifyApiKeyUnset();
-
 
 function onSubmit() {
   error.value = '';

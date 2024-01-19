@@ -23,7 +23,6 @@ import PillList from '@/components/widgets/PillList.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import {postAffect, putAffect} from '@/services/AffectService';
-import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 
 const {addToast} = useToastStore();
 
@@ -35,8 +34,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   'refresh:flaw': [],
 }>();
-
-notifyApiKeyUnset();
 
 // const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().enum) as string[];
 const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
