@@ -1,5 +1,7 @@
+import time
 from behave import given, when, then
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
 from features.locators import (
@@ -13,7 +15,8 @@ from features.locators import (
 )
 from features.utils import (
     wait_for_visibility_by_locator,
-    skip_step_when_needed
+    skip_step_when_needed,
+    generate_random_text
 )
 
 
@@ -105,4 +108,38 @@ def step_impl(context):
     rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
     assert len(rows) > context.flaws_count, \
         "No more flaws loaded after click the 'Load More Flaws' button"
+    context.browser.quit()
+
+
+@when("I add a public comment to the flaw")
+def step_impl(context):
+    # Click the "Add public comment" button
+    context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    wait_for_visibility_by_locator(context.browser, By.XPATH, COMMENT_BUTTON)
+    try:
+        element=context.browser.find_element(By.XPATH, COMMENT_BUTTON)
+    except NoSuchElementException:
+        context.browser.quit()
+    ActionChains(context.browser).move_to_element(element).click().perform()
+    # Add the random public comment
+    comment_text_windown = f"(//textarea[@class='form-control'])[5]"
+    wait_for_visibility_by_locator(context.browser, By.XPATH, comment_text_windown)
+    public_comment = generate_random_text()
+    context.browser.find_element(By.XPATH,comment_text_windown).send_keys(public_comment)
+    # Save the comment
+    context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    try:
+        element=context.browser.find_element(By.XPATH, COMMENT_BUTTON)
+    except NoSuchElementException:
+        context.browser.quit()
+    ActionChains(context.browser).move_to_element(element).click().perform()
+    context.add_comment = public_comment
+
+@then('A comment is added to the flaw')
+def step_impl(context):
+    # Check the comment saved successfully
+    comment_xpath = f'//p["data-v-38eda711="][text()="{context.add_comment}"]'
+    wait_for_visibility_by_locator(context.browser, By.XPATH, comment_xpath)
     context.browser.quit()
