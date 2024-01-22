@@ -285,17 +285,19 @@ function removeAffect(affectIdx: number) {
                 <button
                   @click="shouldShowRejectionModal = true"
                   class="btn btn-warning p-0 pe-1 ps-1 me-2"
+                  id="osim-status-reject-button"
                   v-if="flawStatus.toUpperCase() !== 'DONE'"
                 >
                   Reject
                 </button>
                 <button
-                @click="promoteFlaw(flaw.uuid)"
-                class="btn btn-warning p-0 pe-1 ps-1"
-                v-if="flawStatus.toUpperCase() !== 'DONE'"
-              >
-                Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
-              </button>
+                  @click="promoteFlaw(flaw.uuid)"
+                  class="btn btn-warning p-0 pe-1 ps-1"
+                  id="osim-status-promote-button"
+                  v-if="flawStatus.toUpperCase() !== 'DONE'"
+                >
+                  Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
+                </button>
               </div>
               <Modal :show="shouldShowRejectionModal">
                 <template #title>
