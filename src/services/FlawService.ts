@@ -129,6 +129,26 @@ export async function promoteFlaw(uuid: string) {
     // throw error;
   })
 }
+// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
+export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
+  return osidbFetch({
+    method: 'post',
+    url: `${FLAW_BASE_URI}/${uuid}/reject`,
+    data
+  }).then(response => {
+    console.log('Flaw rejection success:', response);
+    return response.data;
+  }).catch(error => {
+    const { addToast } = useToastStore();
+    addToast({
+      title: error.message,
+      body: error.response.data,
+      css: 'warning'
+    })
+    console.error('❌ Problem rejecting flaw:', error);
+    // throw error;
+  })
+}
 
 export async function searchFlaws(query: string) {
   return osidbFetch({

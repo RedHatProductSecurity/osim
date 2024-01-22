@@ -6,7 +6,7 @@ import { useField, useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { RouterLink } from 'vue-router';
 import { ZodFlawSchema, type ZodFlawType, WorkflowPhases } from '../types/zodFlaw';
-
+import Modal from '@/components/widgets/Modal.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
@@ -24,6 +24,7 @@ import {
   getFlawOsimLink,
   postFlawPublicComment,
   promoteFlaw,
+  rejectFlaw,
   putFlaw
 } from '@/services/FlawService';
 
@@ -56,6 +57,8 @@ const {handleSubmit, errors, setValues, values} = useForm({
 
 const cveIds = ref<string[]>([]);
 const theAffects = ref<any[]>(props.flaw.affects);
+const shouldShowRejectionModal = ref(false);
+const rejectionReason = ref('');
 
 const {value: flawType} = useField<string>('type');
 const {value: flawCve_id} = useField<string>('cve_id');
@@ -278,13 +281,43 @@ function removeAffect(affectIdx: number) {
           </div>
           <div class="col-6">
             <LabelStatic label="Status" type="text" v-model="flawStatus">
-              <button
+              <div>
+                <button
+                  @click="shouldShowRejectionModal = true"
+                  class="btn btn-warning p-0 pe-1 ps-1 me-2"
+                  v-if="flawStatus.toUpperCase() !== 'DONE'"
+                >
+                  Reject
+                </button>
+                <button
                 @click="promoteFlaw(flaw.uuid)"
-                class="btn btn-secondary p-0 pe-1 ps-1"
+                class="btn btn-warning p-0 pe-1 ps-1"
                 v-if="flawStatus.toUpperCase() !== 'DONE'"
               >
                 Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
               </button>
+              </div>
+              <Modal :show="shouldShowRejectionModal">
+                <template #title>
+                  Reject Flaw
+                </template>
+                <template #body>
+                  <LabelEditable label="Rejection Reason" type="text" v-model="rejectionReason"/>
+                </template>
+                <template #footer>
+                  <button
+                      type="button"
+                      class="btn btn-primary"
+                      @click="rejectFlaw(flaw.uuid, {reason: rejectionReason})"
+                    >Reject Flaw</button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="shouldShowRejectionModal = false"
+                  >Cancel</button>
+                </template>
+              </Modal>
+    
 
             </LabelStatic>
             <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>

@@ -25,7 +25,4 @@ div.osim-pill-list {
   justify-content: space-between;
   align-items: center;
 }
-/* .action-component {
-  gap: 1rem;
-} */
 </style>

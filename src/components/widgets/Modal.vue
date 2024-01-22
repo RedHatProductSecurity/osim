@@ -13,7 +13,6 @@ const emit = defineEmits<{
 
 const {show} = toRefs(props);
 watch(show, () => {
-  console.log(show.value);
   if (show.value) {
     document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
@@ -21,7 +20,6 @@ watch(show, () => {
   } else {
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
-    // document.body.style.paddingRight = '';
     document.body.style.padding = '';
   }
 }, {immediate: true});
@@ -30,7 +28,6 @@ watch(show, () => {
 
 <template>
   <Transition name="modal">
-      <!--:style="{display: show? 'block' : 'none'}"-->
       <div
           v-if="show"
           class="modal fade"
