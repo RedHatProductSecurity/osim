@@ -95,7 +95,7 @@ describe('IssueEdit', () => {
     expect(
       subject.find(statusFieldSelector).find('span.form-label').text()
     ).toBe('Status');
-    expect(subject.find(statusFieldSelector).find('div').text()).toBe('REVIEW');
+    expect(subject.find(statusFieldSelector).find('div.form-control > span').text()).toBe('REVIEW');
   });
 
   it('does network stuff', async () => {
