@@ -14,6 +14,15 @@ import {
 } from '../generated-client';
 import { DateTime } from 'luxon';
 
+export enum WorkflowPhases {
+    // https://github.com/RedHatProductSecurity/osidb/blob/master/apps/workflows/workflows/default.yml
+    'New' = 'NEW',
+    'Triage' = 'TRIAGE',
+    'Pre Secondary Assessment' = 'PRE_SECONDARY_ASSESSMENT',
+    'Secondary Assessment' = 'SECONDARY_ASSESSMENT',
+    'Done' = 'DONE',
+}
+
 const FlawTypeWithBlank = {'': '', ...FlawType,} as const;
 const ImpactEnumWithBlank = {'': '',...ImpactEnum} as const;
 const RequiresSummaryEnumWithBlank = {'': '',...RequiresSummaryEnum} as const;

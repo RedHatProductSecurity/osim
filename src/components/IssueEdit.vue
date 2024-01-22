@@ -5,7 +5,7 @@ import { computed, reactive, ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { RouterLink } from 'vue-router';
-import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
+import { ZodFlawSchema, type ZodFlawType, WorkflowPhases } from '../types/zodFlaw';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -23,6 +23,7 @@ import {
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlawPublicComment,
+  promoteFlaw,
   putFlaw
 } from '@/services/FlawService';
 
@@ -107,6 +108,7 @@ const onSubmitAffect = async () => {
             addToast({
               title: 'Info',
               body: `Affect Saved: ${newAffect.ps_component}`,
+              css: 'danger'
             });
           })
           .catch(error => {
@@ -199,6 +201,12 @@ function onreset() {
   // TODO FIX
 }
 
+function nextPhase(flawStatus: WorkflowPhases) {
+  const [labels, phases] = [Object.keys(WorkflowPhases), Object.values(WorkflowPhases)];
+  const index = phases.indexOf(flawStatus);
+  return labels[index + 1] || labels.slice(-1)[0];
+}
+
 function addPublicComment() {
   postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
       .then(() => {
@@ -269,7 +277,16 @@ function removeAffect(affectIdx: number) {
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
           </div>
           <div class="col-6">
-            <LabelStatic label="Status" type="text" v-model="flawStatus" />
+            <LabelStatic label="Status" type="text" v-model="flawStatus">
+              <button
+                @click="promoteFlaw(flaw.uuid)"
+                class="btn btn-secondary p-0 pe-1 ps-1"
+                v-if="flawStatus.toUpperCase() !== 'DONE'"
+              >
+                Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
+              </button>
+
+            </LabelStatic>
             <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable

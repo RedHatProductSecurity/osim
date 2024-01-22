@@ -1,11 +1,9 @@
 import axios from 'axios';
-import {osidbFetch} from '@/services/OsidbAuthService';
-import {z} from 'zod';
-import {FlawType} from '@/generated-client';
+import { osidbFetch } from '@/services/OsidbAuthService';
 import type {ZodFlawType} from '@/types/zodFlaw';
+import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
-
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 
 export async function getFlaws(offset=0, limit=20) {
@@ -109,6 +107,26 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
   }).then(response => {
     console.log(response);
     return response.data;
+  })
+}
+
+// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
+export async function promoteFlaw(uuid: string) {
+  return osidbFetch({
+    method: 'post',
+    url: `${FLAW_BASE_URI}/${uuid}/promote`,
+  }).then(response => {
+    console.log('Flaw promoted:', response);
+    return response.data;
+  }).catch(error => {
+    const { addToast } = useToastStore();
+    addToast({
+      title: error.message,
+      body: error.response.data,
+      css: 'warning'
+    })
+    console.error('❌ Problem promoting flaw:', error);
+    // throw error;
   })
 }
 
