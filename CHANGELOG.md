@@ -4,6 +4,8 @@
 `-`
 
 ## [2024.1.0]
+
+### Added
 * Support `Flaw` workflow status display
 * Support `Flaw` assignment
 * Support JIRA API Key configuration
@@ -11,6 +13,9 @@
   * Boilerplate for network-based unit tests
   * Settings
   * Initial support for `Flaw` editing
+
+### Fixed
+* Clear All button for toasts is now clickable
 
 ## [2023.11.0]
 The first release for user testing, briefly reaching feature parity with OSIDB
@@ -37,7 +42,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2023.11.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2023.11.0...v2024.1.0
 [2023.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0
 [2023.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0
 [2023.4.0]: https://github.com/RedHatProductSecurity/osim/compare/7b2b6a061cd6e30f5f53543f29271c80b08b16ff...v2023.4.0
