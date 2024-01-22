@@ -3,8 +3,18 @@
 ## [Unreleased]
 `-`
 
+## [2024.1.0]
+* Support `Flaw` workflow status display
+* Support `Flaw` assignment
+* Support JIRA API Key configuration
+* Expand unit test coverage
+  * Boilerplate for network-based unit tests
+  * Settings
+  * Initial support for `Flaw` editing
+
 ## [2023.11.0]
 The first release for user testing, briefly reaching feature parity with OSIDB
+
 ### Added
 * Various standard widgets
 * Flaw commenting
