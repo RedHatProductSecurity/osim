@@ -37,7 +37,7 @@ const validationSchema = toTypedSchema(ExampleFormSchema);
 const initialValues = ref<ExampleFormType>({...committedForm});
 const {handleSubmit, errors, setValues, resetForm, values, meta} = useForm({
   validationSchema,
-  initialValues,
+  initialValues: initialValues.value,
 });
 
 const fruitNotesExample = ref('');
