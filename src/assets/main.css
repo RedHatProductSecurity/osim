@@ -15,11 +15,27 @@ img, picture, video, canvas, svg {
   display: inline-block;
 }
 
+@font-face {
+  font-family: "Red Hat Text";
+  src:
+  url('/fonts/RedHatTextVFModified.woff2');
+}
+@font-face {
+  font-family: "Red Hat Display";
+  src:
+  url('/fonts/RedHatDisplayVFModified.woff2');
+}
+@font-face {
+  font-family: "Red Hat Mono";
+  src:
+  url('/fonts/RedHatMono-VariableFont_wght.ttf');
+}
+
 /* Red Hat colors */
 :root {
   --redhat-primary: #cc0000;
   --redhat-secondary: #cc0000;
-  --redhat-font: "Red Hat Text", sans-serif;
+  --redhat-font: "Red Hat Text","RedHatText", sans-serif;
 }
 
 /* Apply Red Hat theme to buttons */
