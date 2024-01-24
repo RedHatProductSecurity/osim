@@ -6,15 +6,27 @@ import type {ZodFlawType} from '@/types/zodFlaw';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
 
-
 export async function getFlaws(offset=0, limit=20) {
   // TODO add filtering parameters
   // axios.get('http://127.0.0.1:4010/osidb/api/v1/flaws?bz_id=999.1777106091507&changed_after=2016-05-25T04%3A00%3A00.0Z&changed_before=1953-04-15T05%3A00%3A00.0Z&created_dt=1997-02-22T05%3A00%3A00.0Z&cve_id=suscipit,quia,dignissimos&cvss2=nobis&cvss2_score=-3.12820402011057e%2B38&cvss3=nam&cvss3_score=2.2240193839647933e%2B38&cwe_id=reprehenderit&description=sed&embargoed=false&exclude_fields=pariatur&flaw_meta_type=enim,sed,enim&impact=LOW&include_fields=et,quisquam,sunt,aut&include_meta_attr=ullam,libero,at,alias&reported_dt=1972-11-30T00%3A00%3A00.0Z&resolution=DUPLICATE&search=unde&source=PHP&state=NEW&statement=sunt&summary=maiores&title=reprehenderit&tracker_ids=eum,cum,at,odio,a&type=WEAKNESS&unembargo_dt=1949-12-22T00%3A00%3A00.0Z&updated_dt=1973-03-16T05%3A00%3A00.0Z&uuid=c605cdc8-0f63-c5ec-d32d-75c184147eba')
   // axios.get('https://osidb-stage.example.com/osidb/api/v1/flaws')
   // return axios.get('/mock/prod-flaws.json')
   // return axios.get('/mock/prod-flaws.json')
+  const includedFields = [
+    'cve_id',
+    'uuid',
+    'impact',
+    'source',
+    'created_dt',
+    'updated_dt',
+    'classification',
+    'is_major_incident',
+    'title',
+    'state',
+    'unembargo_dt'
+  ];
   let params = {
-    include_fields: 'cve_id,uuid,impact,source,created_dt,updated_dt,classification,is_major_incident,title,state,unembargo_dt',
+    include_fields: includedFields.join(','),
     limit: limit,
     offset: offset,
   };
@@ -26,14 +38,14 @@ export async function getFlaws(offset=0, limit=20) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
     return osidbFetch({
       method: 'get',
-      url: '/osidb/api/v1/flaws',
+      url: `/osidb/api/v1/flaws`,
       params: params,
     });
   }
 
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/v1/flaws`,
     params: params,
   });
   // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {
@@ -101,7 +113,7 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/v1/flaws`,
     params: {
       search: query,
     },
@@ -138,7 +150,7 @@ export async function createFlaw(flawCreateRequest: any) {
   // }
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/v1/flaws`,
     data: flawCreateRequest,
   }).then(response => {
     return response.data;

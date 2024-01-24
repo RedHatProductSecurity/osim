@@ -18,7 +18,7 @@ watchEffect(() => {
 
 const { handleSubmit, errors, resetForm, meta } = useForm({
   validationSchema,
-  initialValues,
+  initialValues: initialValues.value,
 });
 
 const onSubmit = handleSubmit((values: SettingsType) => {
