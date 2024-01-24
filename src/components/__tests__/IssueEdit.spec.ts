@@ -1,14 +1,17 @@
-
 import axios from 'axios';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import IssueEdit from '@/components/IssueEdit.vue';
-import { VueWrapper } from '@vue/test-utils';
+import { describe, it, expect, vi, type Mock } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import IssueEdit from '@/components/IssueEdit.vue';
+import { InputLabelDirective } from '@/directives/InputLabelDirective';
+import { useRouter } from 'vue-router';
+
+
 
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -37,6 +40,14 @@ const putHandler = http.put(
 
 const server = setupServer(putHandler);
 
+vi.mock('vue-router', async () => {
+  const actual = await vi.importActual("vue-router")
+  return {
+    ...actual as {},
+    useRouter: vi.fn(),
+  };
+});
+
 describe('IssueEdit', () => {
   let subject: VueWrapper<InstanceType<typeof IssueEdit>>;
 
@@ -52,6 +63,10 @@ describe('IssueEdit', () => {
 
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
+    (useRouter as Mock).mockReturnValue({
+      'currentRoute': { 'value': { 'fullPath': '/flaws/uuiddddd' } },
+    });
+
     subject = mount(IssueEdit, {
       plugins: [useToastStore()],
       // shallow: true,
@@ -60,8 +75,10 @@ describe('IssueEdit', () => {
       },
       global: {
         mocks: {
-          // router: useRouter(),
-          router: vi.fn().mockReturnValue('mock flaw osim link'),
+          $beforeEach: a => a,
+
+          // router,
+          // router: vi.fn().mockReturnValue('mock flaw osim link'),
         },
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
@@ -74,33 +91,32 @@ describe('IssueEdit', () => {
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
-  const assigneeFieldSelector = 'label[for=]';
-  // const statusFieldSelector = '#osim-static-label-status';  
+
 
   it('mounts and renders', async () => {
     expect(subject.exists()).toBe(true);
     expect(subject.vm).toBeDefined();
-    expect(subject.find('label').exists()).toBe(true);
-    // expect(subject.find(statusFieldSelector).exists()).toBe(true);
   });
 
   it('displays correct Assignee field value from props', async () => {
-    const assigneeField = subject.findAllComponents(LabelEditable).at(7)
-    expect(
-      assigneeField?.find('span.form-label').text()
-    ).toBe('Assignee');
+    const assigneeField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.text().includes('Assignee'));
 
-    expect(assigneeField?.attributes().modelvalue).toBe(
-      'test owner'
-    );
+    expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
+
+    expect(assigneeField?.attributes().modelvalue).toBe('test owner');
   });
 
-  // it('displays correct Status field value from props', async () => {
-  //   expect(
-  //     subject.find(statusFieldSelector).find('span.form-label').text()
-  //   ).toBe('Status');
-  //   expect(subject.find(statusFieldSelector).find('div').text()).toBe('REVIEW');
-  // });
+  it('displays correct Status field value from props', async () => {
+    const statusField = subject
+    .findAllComponents(LabelStatic)
+    .find((component) => component.text().includes('Status'));
+    expect(
+      statusField?.find('span.form-label').text()
+    ).toBe('Status');
+    expect(statusField?.find('div.form-control').text()).toBe('REVIEW');
+  });
 
   it('does network stuff', async () => {
     // @ts-ignore
