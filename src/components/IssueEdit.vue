@@ -27,8 +27,6 @@ import {notifyApiKeyUnset} from '@/services/ApiKeyService';
 
 const {addToast} = useToastStore();
 
-const showCalculatorModal = ref(false)
-
 const props = defineProps<{
   // flaw: Flaw,
   flaw: any,
@@ -196,6 +194,15 @@ const onReset = (payload: MouseEvent) => {
   setValues(committedFlaw);
 }
 
+const flawCvss3CaculatorLink = computed(()=>{
+  let link = flawCvss3.value;
+  const index = flawCvss3.value.indexOf('CVSS');
+  if(index != -1) {
+    link = link.slice(index);
+  }
+  return `https://www.first.org/cvss/calculator/3.1#${link}`;
+});
+
 // const errors = {
 //   type: '',
 //   source: '',
@@ -347,11 +354,11 @@ function removeAffect(affectIdx: number) {
               </div>
             </div>
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
-            <LabelEditable label="CVSS3" type="text" v-model="flawCvss3" :error="errors.cvss3"/>      
-
-            <a :href = "'https://www.first.org/cvss/calculator/3.1#' + flawCvss3" target="_blank" class="d-inline-block pb-4 calculator-link">Calculator</a>
-    
-            
+            <LabelEditable type="text" v-model="flawCvss3" :error="errors.cvss3">
+              <template #label>
+                CVSS3 <a :href = flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
+              </template>
+            </LabelEditable>
             <LabelInput label="CVSS3 Score" type="text" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
             <LabelEditable label="NVD CVSS3" type="text" v-model="flawNvd_cvss3" :error="errors.nvd_cvss3"/>
             <LabelEditable label="CWE ID" type="text" v-model="flawCwe_id" :error="errors.cwe_id"/>
@@ -516,7 +523,4 @@ function removeAffect(affectIdx: number) {
   padding: 1.5em;
 }
 
-.calculator-link{
-  padding-left:18px;
-}
 </style>
