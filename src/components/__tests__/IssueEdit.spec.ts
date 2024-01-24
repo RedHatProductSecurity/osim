@@ -115,10 +115,41 @@ describe('IssueEdit', () => {
     expect(
       statusField?.find('span.form-label').text()
     ).toBe('Status');
-    expect(statusField?.find('div.form-control').text()).toBe('REVIEW');
+    expect(
+      statusField?.find('div.form-control > span').text()
+    ).toBe('REVIEW');
+  });
+  it('displays promote and reject buttons for status', async () => {
+    const statusField = subject
+    .findAllComponents(LabelStatic)
+    .find((component) => component.text().includes('Status'));
+    expect(
+      statusField?.find('button#osim-status-reject-button')
+        .exists()
+    ).toBe(true);
+    expect(
+      statusField?.find('button#osim-status-promote-button')
+        .exists()
+    ).toBe(true);
+  });
+  it('shows a modal for reject button clicks', async () => {
+    const statusField = subject
+    .findAllComponents(LabelStatic)
+    .find((component) => component.text().includes('Status'));
+    const rejectButton = statusField?.find('button#osim-status-reject-button')
+      await rejectButton?.trigger('click');
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    expect(
+      subject.find('.modal-dialog').exists()
+    ).toBe(true);
+    expect(
+      statusField?.find('button#osim-status-promote-button')
+        .exists()
+    ).toBe(true);
   });
 
-  it('does network stuff', async () => {
+  it('sends a mocked PUT request with an updated owner', async () => {
     // @ts-ignore
     const flaw: ZodFlawType = sampleFlaw();
     // @ts-ignore
