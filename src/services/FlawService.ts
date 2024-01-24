@@ -23,7 +23,8 @@ export async function getFlaws(offset=0, limit=20) {
     'is_major_incident',
     'title',
     'state',
-    'unembargo_dt'
+    'unembargo_dt',
+    'owner',
   ];
   let params = {
     include_fields: includedFields.join(','),
