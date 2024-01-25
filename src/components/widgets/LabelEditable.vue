@@ -3,12 +3,14 @@
 import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   // modelValue: string,
-  label: string,
+  label?: string,
   type: 'text' | 'date',
   // error: string,
-}>();
+}>(), {
+  label: ''
+});
 
 const components = {
   text: EditableText,
@@ -28,7 +30,10 @@ function doupdate() {
 <template>
   <label class="osim-input mb-3 border-start ps-3">
     <span class="form-label">
-      {{ label }}
+      <slot name="label">
+        {{ label }}
+      </slot>
+
       <!--<br />-->
       <!--attrs: {{ $attrs }}-->
       <!--<br/>-->
