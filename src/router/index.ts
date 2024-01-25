@@ -1,9 +1,16 @@
-import {createRouter, createWebHistory, useRouter} from 'vue-router'
-import {nextTick as vueNextTick, watch} from 'vue';
+import {
+  createRouter,
+  createWebHistory,
+  type NavigationGuardNext,
+  type RouteLocationNormalized
+} from 'vue-router'
+import { nextTick as vueNextTick, watch } from 'vue';
 import IndexView from '../views/IndexView.vue'
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';
-import {useUserStore} from '@/stores/UserStore';
+import { useUserStore } from '@/stores/UserStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { notifyApiKeyUnset } from '@/services/ApiKeyService';
 import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
@@ -42,6 +49,7 @@ const router = createRouter({
       meta: {
         title: 'Create Flaw',
       },
+      beforeEnter: apiKeysGuard(true),
     },
     {
       path: '/flaws/:id',
@@ -51,6 +59,7 @@ const router = createRouter({
       meta: {
         title: 'Flaw Details',
       },
+      beforeEnter: apiKeysGuard(),
     },
     {
       path: '/search',
@@ -115,6 +124,8 @@ const router = createRouter({
       },
     },
 
+
+
     // {
     //   path: '/about/:id',
     //   name: 'about',
@@ -128,6 +139,21 @@ const router = createRouter({
     // },
   ]
 })
+
+function apiKeysGuard(shouldRedirectToSettings = false) {
+  return (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+  ) => {
+    const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
+    const noKeysAreSet = !bugzillaApiKey || !jiraApiKey
+
+    if (noKeysAreSet) notifyApiKeyUnset();
+    if (noKeysAreSet && shouldRedirectToSettings) next('/settings');
+    if (noKeysAreSet && !shouldRedirectToSettings) next();
+  }
+}
 
 
 router.beforeEach(async (to, from) => {
@@ -156,7 +182,7 @@ router.beforeEach(async (to, from) => {
     if (toLogin) {
       if (manualLocationNavigation) {
         console.log('authenticated to login redirect to index');
-        return {name: 'index'};
+        return { name: 'index' };
       }
     }
     console.log('!toLogin:', !toLogin);
@@ -166,8 +192,8 @@ router.beforeEach(async (to, from) => {
   if (!toLogin) {
     if (isNavigationBackButton) {
       console.log('unauthenticated not to login pressed back');
-      history.pushState(popState, '', router.resolve({name: 'login'}).path);
-      return {name: 'login'};
+      history.pushState(popState, '', router.resolve({ name: 'login' }).path);
+      return { name: 'login' };
     }
     let query: any = {};
     if (manualLocationNavigation) { // Preserve destination
@@ -175,7 +201,7 @@ router.beforeEach(async (to, from) => {
     }
 
     console.log('not authenticated, redirecting to login page');
-    return {name: 'login', query};
+    return { name: 'login', query };
   }
   console.log('not authenticated, should already be at login page');
 

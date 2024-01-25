@@ -8,7 +8,7 @@
 
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {useToastStore} from '@/stores/ToastStore';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 
 export function notifyApiKeyUnset() {
 
@@ -33,14 +33,14 @@ export function notifyApiKeyUnset() {
       bodyHtml: true,
       body: `You have not set the following keys in this tab: <ul>${lis}</ul>Flaw creation requires your Bugzilla API or JIRA key to be set. Visit Settings to set any required keys.`
     });
-    maybeRedirectToSettings();
+    // maybeRedirectToSettings();
   }
 }
 
-function maybeRedirectToSettings () {
-  const router = useRouter();
-  if (router.currentRoute.value.fullPath === '/flaws/new') {
-    router.push({path: '/settings'});
-  }
-}
+// function maybeRedirectToSettings () {
+//   const router = useRouter();
+//   if (router.currentRoute.value.fullPath === '/flaws/new') {
+//     router.push({path: '/settings'});
+//   }
+// }
 

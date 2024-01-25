@@ -3,7 +3,7 @@ import {onMounted, ref} from 'vue';
 import {createFlaw} from '@/services/FlawService';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
-import {notifyApiKeyUnset} from '@/services/ApiKeyService';
+
 import FlawForm from '@/components/FlawForm.vue';
 import type {ZodFlawType} from '@/types/zodFlaw';
 
@@ -18,10 +18,6 @@ const error = ref('');
 //       .then(theFlaw => flaw.value = theFlaw)
 //       .catch(err => console.error(err))
 // });
-
-const settingsStore = useSettingsStore();
-
-notifyApiKeyUnset();
 
 
 const blankFlaw: ZodFlawType = {
