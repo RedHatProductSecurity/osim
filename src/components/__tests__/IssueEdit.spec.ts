@@ -128,12 +128,36 @@ describe('IssueEdit', () => {
     expect(result.owner).toBe('networking test owner');
   });
 
-  it("displays correct Cvss3 calculator link", async () => {
+  it("displays correct Cvss3 calculator link for empty value", async () => {
     const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
     expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#");
+  })
+
+  it("displays correct Cvss3 calculator link for cvss3 value", async() => {
+    const flaw = sampleFlaw();
+    flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"
+    subject = mount(IssueEdit, {
+      plugins: [useToastStore()],
+      props: {
+        flaw,
+      },
+      global: {
+        mocks: {
+          $beforeEach: (a: any) => a,
+        },
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
+    expect(cvss3EditField?.exists()).toBeTruthy();
+    const linkElement = cvss3EditField?.find('a');
+    expect(linkElement?.exists()).toBeTruthy();
+    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N");
   })
 });
 
