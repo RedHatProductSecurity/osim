@@ -20,6 +20,7 @@ EOF
 }
 
 curl_args=()
+v=()
 resource_url=
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -27,6 +28,10 @@ while [[ "$#" -gt 0 ]]; do
             [[ -z "$resource_url" ]] || usage
             resource_url="$1"
             shift
+            ;;
+        -v)
+            v=('-v')
+            shift;
             ;;
         *)
             curl_args+=("$1")
@@ -47,8 +52,8 @@ if [[ -n "$service_url_override" ]]; then
 fi
 
 #export SSLKEYLOGFILE=/tmp/negotiate.keylog
-tokens="$(curl -v -H 'Content-Type: application/json' --negotiate -u : "${SERVICE_URL}/auth/token")"
+tokens="$(curl -s "${v[@]}" -H 'Content-Type: application/json' --negotiate -u : "${SERVICE_URL}/auth/token")"
 
 access="$(jq -r .access <<<"$tokens")"
 
-curl -v -H 'Content-Type: application/json' -H "Authorization: Bearer $access" "${curl_args[@]}" "${SERVICE_URL}/${resource_url#/}"
+curl "${v[@]}" -H 'Content-Type: application/json' -H "Authorization: Bearer $access" "${curl_args[@]}" "${SERVICE_URL}/${resource_url#/}"
