@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="osim-input mb-3 border-start ps-3" :id="`osim-static-label-${label.toLowerCase()}`">
+  <div class="osim-input mb-3 border-start ps-3">
     <span class="form-label">
       {{ label }}
     </span>

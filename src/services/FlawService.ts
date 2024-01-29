@@ -4,7 +4,6 @@ import type {ZodFlawType} from '@/types/zodFlaw';
 import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
-const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 
 export async function getFlaws(offset=0, limit=20) {
   // TODO add filtering parameters
@@ -13,17 +12,17 @@ export async function getFlaws(offset=0, limit=20) {
   // return axios.get('/mock/prod-flaws.json')
   // return axios.get('/mock/prod-flaws.json')
   const includedFields = [
-    "cve_id",
-    "uuid",
-    "impact",
-    "source",
-    "created_dt",
-    "updated_dt",
-    "classification",
-    "is_major_incident",
-    "title",
-    "state",
-    "unembargo_dt"
+    'cve_id',
+    'uuid',
+    'impact',
+    'source',
+    'created_dt',
+    'updated_dt',
+    'classification',
+    'is_major_incident',
+    'title',
+    'state',
+    'unembargo_dt'
   ];
   let params = {
     include_fields: includedFields.join(','),
@@ -38,14 +37,14 @@ export async function getFlaws(offset=0, limit=20) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
     return osidbFetch({
       method: 'get',
-      url: FLAW_BASE_URI,
+      url: `/osidb/api/v1/flaws`,
       params: params,
     });
   }
 
   return osidbFetch({
     method: 'get',
-    url: FLAW_BASE_URI,
+    url: `/osidb/api/v1/flaws`,
     params: params,
   });
   // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {
@@ -74,7 +73,7 @@ export async function getFlaw(uuid: string) {
 
   return osidbFetch({
     method: 'get',
-    url: `${FLAW_BASE_URI}/${uuid}`,
+    url: `/osidb/api/v1/flaws/${uuid}`,
     params: {
       // 'include_meta_attr': '*', // too many fields
       'include_meta_attr': 'bz_id',
@@ -87,7 +86,7 @@ export async function getFlaw(uuid: string) {
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   return osidbFetch({
     method: 'put',
-    url: `${FLAW_BASE_URI}/${uuid}`,
+    url: `/osidb/api/v1/flaws/${uuid}`,
     data: flawObject,
   }).then(response => {
     console.log(response);
@@ -98,7 +97,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
 export async function postFlawPublicComment(uuid: string, comment: string) {
   return osidbFetch({
     method: 'post',
-    url: `${FLAW_BASE_URI}/${uuid}/comments`,
+    url: `/osidb/api/v1/flaws/${uuid}/comments`,
     data: {
       text: comment,
       type: 'BUGZILLA',
@@ -153,7 +152,7 @@ export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: FLAW_BASE_URI,
+    url: `/osidb/api/v1/flaws`,
     params: {
       search: query,
     },
@@ -190,7 +189,7 @@ export async function createFlaw(flawCreateRequest: any) {
   // }
   return osidbFetch({
     method: 'post',
-    url: FLAW_BASE_URI,
+    url: `/osidb/api/v1/flaws`,
     data: flawCreateRequest,
   }).then(response => {
     return response.data;
