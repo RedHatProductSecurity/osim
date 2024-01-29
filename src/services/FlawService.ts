@@ -111,18 +111,30 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 }
 
 export async function searchFlaws(query: string) {
-  return osidbFetch({
-    method: 'get',
-    url: `/osidb/api/v1/flaws`,
-    params: {
-      search: query,
-    },
-  }).then(response => {
+  // Optionally match prefix `CVE-`, place match 4 digits, a hypen, 4-7 digits
+  // in its own capture group to be extracted later. Gives user the option of 
+  // searching for `CVE-2021-1234` or just `2021-1234`, for example.
+  const cveRegex = /(CVE-)?(\d{4}-\d{4,7})/
+  // match[2] will be the CVE ID if it exists
+  const maybeCveId = query.match(cveRegex)?.[2]
+  const [param, value] = maybeCveId
+    ? ['cve_id', `CVE-${maybeCveId}`]
+    : ['search', query];
+  try {
+    const response = await osidbFetch({
+      method: 'get',
+      url: `/osidb/api/v1/flaws`,
+      params: {
+        [param]: value
+      },
+    })
+    // if (response.)
     return response.data;
-  });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
-
-
 
 export async function createFlaw(flawCreateRequest: any) {
   // {
