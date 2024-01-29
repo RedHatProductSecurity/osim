@@ -140,6 +140,7 @@ export const ZodFlawSchema = z.object({
     component: z.string().max(100).nullish(),
     title: z.string().min(1),
     owner: z.string().nullish(),
+    team_id: z.string().nullish(),
     trackers: z.array(z.string()).nullish(), // read-only
     description: z.string(),
     summary: z.string().nullish(),
