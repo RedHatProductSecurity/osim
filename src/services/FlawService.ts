@@ -113,7 +113,7 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 export async function promoteFlaw(uuid: string) {
   return osidbFetch({
     method: 'post',
-    url: `${FLAW_BASE_URI}/${uuid}/promote`,
+    url: `/osidb/api/v1/flaws/${uuid}/promote`,
   }).then(response => {
     console.log('Flaw promoted:', response);
     return response.data;
@@ -132,7 +132,7 @@ export async function promoteFlaw(uuid: string) {
 export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
   return osidbFetch({
     method: 'post',
-    url: `${FLAW_BASE_URI}/${uuid}/reject`,
+    url: `/osidb/api/v1/flaws/${uuid}/reject`,
     data
   }).then(response => {
     console.log('Flaw rejection success:', response);
