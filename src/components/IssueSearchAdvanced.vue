@@ -1,11 +1,13 @@
 <script setup lang="ts">
-const props=defineProps<{
+const props = defineProps<{
   setIssues: Function
 }>()
 import { computed, ref } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
-import { set } from 'zod';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 type Facet = {
   field: string;
@@ -54,33 +56,64 @@ function submitAdvancedSearch() {
       console.error('IssueSearch: getFlaws error: ', err);
     })
 }
-const shouldShowAdvanced = ref(false);
+const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
 
 <template>
-  
-  <button v-if="!shouldShowAdvanced" @click="shouldShowAdvanced=true">Advanced Search</button>
-  <div v-else class="osim-advanced-filtering" >
-    <label class="d-block" v-for="(facet, index) in facets">
+  <button v-if="!shouldShowAdvanced" class="btn btn-secondary" @click="shouldShowAdvanced = true">
+    Advanced Search
+  </button>
+  <div v-else class="mb-4 advanced-search-container">
+    <div class="input-group mb-2" v-for="(facet, index) in facets">
       <select v-model="facet.field">
-        <option selected v-if="!facet.field">-</option>
-        <!-- <option v-for="(field) in unchosenFields(facet.field)" :value="field"> -->
-        <option v-for="(field) in flawFields" :value="field">
+        <option v-if="!facet.field" selected value="" disabled>Select field...</option>
+        <option v-for="(field) in unchosenFields(facet.field)" :value="field">
           {{ field }}
+          <i class="bi-caret-down"></i>
         </option>
       </select>
-      <select name="" id="" v-if="optionsFor(facet.field)" v-model="facet.value">
+
+      <select v-if="optionsFor(facet.field)" v-model="facet.value">
         <option v-for="option in optionsFor(facet.field)" :value="option">
           {{ option }}
         </option>
       </select>
-      <input type="text" name="" id="" v-model="facet.value" v-else>
-      <button @click="removeFacet(index)">-</button>
-    </label>
-    <button @click="addFacet">+</button>
-    <button @click="submitAdvancedSearch">🚀</button>
-
+      <input v-else type="text" class="form-cotrol" v-model="facet.value">
+      <i class="bi-dash-square mt-1 ms-1" @click="removeFacet(index)"></i>
+    </div>
+    <div class="mb-2">
+      <i class="bi-plus-square cursor" @click="addFacet"></i>
+    </div>
+    <button class="btn btn-secondary" @click="submitAdvancedSearch">Search</button>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+i {
+  cursor: pointer;
+}
+
+.input-group:nth-child(1) {
+  grid-column: 1 / 2;
+}
+
+.input-group:nth-child(2) {
+  grid-column: 2 / 3;
+
+}
+.input-group:nth-child(3) {
+  grid-column: 3 / 4;
+}
+
+/* .input-group input { */
+div.advanced-search-container div.input-group {
+  /* min-width: 12rem; */
+  /* max-width: 12rem; */
+  display: grid;
+  grid-template-columns: 1fr 1fr 24px;
+}
+
+select, input {
+  border: 1px solid #DEE2E6;
+  border-radius: 6px;
+}</style>
