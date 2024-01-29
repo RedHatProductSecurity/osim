@@ -4,6 +4,8 @@ import {useRoute} from 'vue-router';
 import {z} from 'zod';
 import {searchFlaws} from '../services/FlawService';
 import IssueQueueItem from '../components/IssueQueueItem.vue';
+import IssueSearchAdvanced from '../components/IssueSearchAdvanced.vue';
+
 
 type FilteredIssue = {
   issue: any;
@@ -60,20 +62,16 @@ onMounted(() => {
       return;
     }
     searchFlaws(parsedRoute.query.query)
-        .then(response => {
-          console.log('IssueSearch: got flaws: ', response.data);
-          issues.value = response.results;
-        })
-        .catch(err => {
-          console.error('IssueSearch: getFlaws error: ', err);
-        })
+        .then(response => setIssues(response.results))
+        .catch(console.error);
   } catch (e) {
-    console.log('IssueSearch: error searching', e);
+    console.log('IssueSearch: error advanced searching', e);
   }
+});
 
-})
-
-
+function setIssues(loadedIssues:[]) {
+  issues.value = loadedIssues;
+}
 </script>
 
 <template>
@@ -89,6 +87,7 @@ onMounted(() => {
         <!--</select>-->
 
         <input type="text" v-model="issueFilter" class="form-text form-control" placeholder="Filter Issues/Flaws"/>
+        <IssueSearchAdvanced :setIssues="setIssues"/>
       </label>
     </div>
     <div class="osim-incident-list">
