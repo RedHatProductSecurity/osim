@@ -8,12 +8,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import IssueEdit from '@/components/IssueEdit.vue';
-import { InputLabelDirective } from '@/directives/InputLabelDirective';
 import { useRouter } from 'vue-router';
-
-
-
-import type { ZodFlawType } from '@/types/zodFlaw';
 
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -55,9 +50,6 @@ describe('IssueEdit', () => {
       plugins: [useToastStore()],
       props,
       global: {
-        directives: {
-          tooltip: TooltipDirective
-        },
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
@@ -170,6 +162,18 @@ describe('IssueEdit', () => {
     flaw.owner = 'networking test owner';
     const result = await mockedPutFlaw(flaw.uuid, flaw);
     expect(result.owner).toBe('networking test owner');
+  });
+
+  it('shows a Team Id field', async () => {
+    mountWithProps({flaw: {...sampleFlaw(), team_id: '12345'}});
+
+    const teamIdField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.text().includes('Team ID'));
+
+    expect(teamIdField?.find('span.form-label').text()).toBe('Team ID');
+
+    expect(teamIdField?.attributes().modelvalue).toBe('12345');
   });
 
   it("displays correct Cvss3 calculator link for empty value", async () => {
