@@ -50,7 +50,21 @@ vi.mock('vue-router', async () => {
 
 describe('IssueEdit', () => {
   let subject: VueWrapper<InstanceType<typeof IssueEdit>>;
-
+  function mountWithProps(props: typeof IssueEdit.$props) {
+    subject =  mount(IssueEdit, {
+      plugins: [useToastStore()],
+      props,
+      global: {
+        directives: {
+          tooltip: TooltipDirective
+        },
+        stubs: {
+          // osimFormatDate not defined on test run, so we need to stub it
+          EditableDate: true,
+        },
+      },
+    });
+  }
   beforeAll(() => {
     // Store below depends on global pinia test instance
     createTestingPinia({
@@ -61,8 +75,6 @@ describe('IssueEdit', () => {
 
     server.listen({ onUnhandledRequest: 'error' });
 
-    const flaw = sampleFlaw();
-    flaw.owner = 'test owner';
     (useRouter as Mock).mockReturnValue({
       'currentRoute': { 'value': { 'fullPath': '/flaws/uuiddddd' } },
     });
@@ -71,7 +83,7 @@ describe('IssueEdit', () => {
       plugins: [useToastStore()],
       // shallow: true,
       props: {
-        flaw,
+        flaw: sampleFlaw()
       },
       global: {
         mocks: {
@@ -99,6 +111,9 @@ describe('IssueEdit', () => {
   });
 
   it('displays correct Assignee field value from props', async () => {
+    const flaw = sampleFlaw();
+    flaw.owner = 'test owner';
+    mountWithProps({flaw});
     const assigneeField = subject
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('Assignee'));
@@ -119,6 +134,7 @@ describe('IssueEdit', () => {
       statusField?.find('div.form-control > span').text()
     ).toBe('REVIEW');
   });
+
   it('displays promote and reject buttons for status', async () => {
     const statusField = subject
     .findAllComponents(LabelStatic)
