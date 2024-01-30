@@ -148,13 +148,13 @@ describe('IssueEdit', () => {
         .exists()
     ).toBe(true);
   });
+
   it('shows a modal for reject button clicks', async () => {
     const statusField = subject
-    .findAllComponents(LabelStatic)
-    .find((component) => component.text().includes('Status'));
-    const rejectButton = statusField?.find('button#osim-status-reject-button')
-      await rejectButton?.trigger('click');
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      .findAllComponents(LabelStatic)
+      .find((component) => component.text().includes('Status'));
+    const rejectButton = statusField?.find('button#osim-status-reject-button');
+    await rejectButton?.trigger('click');
 
     expect(
       subject.find('.modal-dialog').exists()
@@ -166,11 +166,8 @@ describe('IssueEdit', () => {
   });
 
   it('sends a mocked PUT request with an updated owner', async () => {
-    // @ts-ignore
-    const flaw: ZodFlawType = sampleFlaw();
-    // @ts-ignore
+    const flaw = sampleFlaw();
     flaw.owner = 'networking test owner';
-    // @ts-ignore
     const result = await mockedPutFlaw(flaw.uuid, flaw);
     expect(result.owner).toBe('networking test owner');
   });
@@ -208,7 +205,7 @@ describe('IssueEdit', () => {
   })
 });
 
-function mockedPutFlaw(uuid: string, flawObject: typeof sampleFlaw) {
+function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
   return axios({
     method: 'put',
     url: `${FLAW_BASE_URI}/${uuid}`,
@@ -220,7 +217,7 @@ function mockedPutFlaw(uuid: string, flawObject: typeof sampleFlaw) {
     .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
 }
 
-function sampleFlaw() /*:ZodFlawType */ {
+function sampleFlaw() {
   return {
     uuid: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
     type: 'VULNERABILITY',
