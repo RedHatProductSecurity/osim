@@ -14,5 +14,6 @@ defineProps<{
     <div class="osim-pill-list form-control" :class="{ 'alert alert-warning': !modelValue }">
       {{ modelValue }}
     </div>
+    <slot></slot>
   </div>
 </template>
