@@ -13,6 +13,7 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
+import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import PillList from '@/components/widgets/PillList.vue';
 
@@ -290,6 +291,7 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
+            <IssueFieldEmbargo :cveId="flawCve_id"/>
             <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
