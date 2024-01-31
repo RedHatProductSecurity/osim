@@ -90,7 +90,12 @@ body {
 }
 .btn-primary:hover,
 .btn-outline-primary:hover,
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-warning:hover {
   background-color: #f44336;
   border-color: #f44336;
+}
+
+.btn-warning:hover {
+  color: #fff;
 }

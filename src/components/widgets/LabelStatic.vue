@@ -12,7 +12,17 @@ defineProps<{
       {{ label }}
     </span>
     <div class="osim-pill-list form-control" :class="{ 'alert alert-warning': !modelValue }">
-      {{ modelValue }}
+      <span>{{ modelValue }}</span>
+      <slot />
     </div>
+
   </div>
 </template>
+
+<style scope>
+div.osim-pill-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>

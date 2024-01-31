@@ -1,10 +1,10 @@
 import axios from 'axios';
-import {osidbFetch} from '@/services/OsidbAuthService';
-import {z} from 'zod';
-import {FlawType} from '@/generated-client';
+import { osidbFetch } from '@/services/OsidbAuthService';
 import type {ZodFlawType} from '@/types/zodFlaw';
+import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
+import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
 
 export async function getFlaws(offset=0, limit=20) {
   // TODO add filtering parameters
@@ -107,6 +107,48 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
   }).then(response => {
     console.log(response);
     return response.data;
+  })
+}
+
+// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
+export async function promoteFlaw(uuid: string) {
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${uuid}/promote`,
+  }).then(response => {
+    console.log('Flaw promoted:', response);
+    return response.data;
+  }).catch(error => {
+    const displayedError = getDisplayedOsidbError(error);
+    const { addToast } = useToastStore();
+    addToast({
+      title: displayedError,
+      body: error.response.data,
+      css: 'warning'
+    })
+    console.error('❌ Problem promoting flaw:', error);
+    throw error;
+  })
+}
+// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
+export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${uuid}/reject`,
+    data
+  }).then(response => {
+    console.log('Flaw rejection success:', response);
+    return response.data;
+  }).catch(error => {
+    const { addToast } = useToastStore();
+    const displayedError = getDisplayedOsidbError(error);
+    addToast({
+      title: displayedError,
+      body: error.response.data,
+      css: 'warning'
+    })
+    console.error('❌ Problem rejecting flaw:', error);
+    throw error;
   })
 }
 
