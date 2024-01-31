@@ -65,7 +65,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
   </button>
   <div v-else class="mb-4 advanced-search-container">
     <div class="input-group mb-2" v-for="(facet, index) in facets">
-      <select v-model="facet.field">
+      <select v-model="facet.field" class="form-select">
         <option v-if="!facet.field" selected value="" disabled>Select field...</option>
         <option v-for="(field) in unchosenFields(facet.field)" :value="field">
           {{ field }}
@@ -73,12 +73,12 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
         </option>
       </select>
 
-      <select v-if="optionsFor(facet.field)" v-model="facet.value">
+      <select v-if="optionsFor(facet.field)" v-model="facet.value" class="form-select">
         <option v-for="option in optionsFor(facet.field)" :value="option">
           {{ option }}
         </option>
       </select>
-      <input v-else type="text" class="form-cotrol" v-model="facet.value">
+      <input v-else type="text" class="form-control" v-model="facet.value">
       <i class="bi-dash-square mt-1 ms-1" @click="removeFacet(index)"></i>
     </div>
     <div class="mb-2">
@@ -93,25 +93,6 @@ i {
   cursor: pointer;
 }
 
-.input-group:nth-child(1) {
-  grid-column: 1 / 2;
-}
-
-.input-group:nth-child(2) {
-  grid-column: 2 / 3;
-
-}
-.input-group:nth-child(3) {
-  grid-column: 3 / 4;
-}
-
-/* .input-group input { */
-div.advanced-search-container div.input-group {
-  /* min-width: 12rem; */
-  /* max-width: 12rem; */
-  display: grid;
-  grid-template-columns: 1fr 1fr 24px;
-}
 
 select, input {
   border: 1px solid #DEE2E6;
