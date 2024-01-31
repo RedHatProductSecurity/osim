@@ -122,6 +122,16 @@ export async function searchFlaws(query: string) {
   });
 }
 
+export async function advancedSearchFlaws(params: Record<string, string>) {
+  return osidbFetch({
+    method: 'get',
+    url: `/osidb/api/v1/flaws`,
+    params,
+  })
+    .then(response => response.data)
+    .catch(console.error);
+}
+
 
 
 export async function createFlaw(flawCreateRequest: any) {

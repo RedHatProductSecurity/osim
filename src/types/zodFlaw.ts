@@ -156,3 +156,12 @@ export const ZodFlawSchema = z.object({
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
 
+type RegisteredSchemaType = typeof FlawCVSSSchema
+    | typeof AffectCVSSSchema
+    | typeof ErratumSchema
+    | typeof TrackerSchema
+    | typeof ZodAffectSchema
+    | typeof ZodFlawMetaSchema
+    | typeof ZodFlawSchema;
+
+export const fieldsFor = (schema: RegisteredSchemaType) => Object.keys(schema.shape);
