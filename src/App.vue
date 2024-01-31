@@ -9,10 +9,12 @@ import {ref, watchEffect} from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
 import {useElementBounding} from "@vueuse/core";
 import {footerHeight, footerTop} from "@/stores/responsive";
+import { useSettingsStore } from './stores/SettingsStore';
 setup();
 
 const elFooter = ref<HTMLElement | null>(null);
 const {top: footerTop_, height: footerHeight_} = useElementBounding(elFooter);
+const settingStore = useSettingsStore()
 watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
@@ -26,7 +28,7 @@ watchEffect(() => {
       <Navbar v-if="!$route.meta.hideNavbar"/>
     </header>
     <div class="osim-content-layered">
-      <ToastContainer/>
+      <ToastContainer v-if="settingStore.showNotification"/>
       <RouterView class="osim-page-view" />
     </div>
     <footer class="fixed-bottom osim-status-bar" ref="elFooter">
