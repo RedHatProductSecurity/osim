@@ -82,9 +82,10 @@ function setIssues(loadedIssues: []) {
 <template>
   <div class="osim-content container">
     <div class="osim-incident-filter">
-      <div class="col-lg-6 col-md-8 mt-4">
+      <div class="col-lg-6 col-md-8 mt-2">
         <IssueSearchAdvanced :setIssues="setIssues" />
       </div>
+      <hr/>
       <label>
         <!--Filter By-->
         <!--<select>-->
