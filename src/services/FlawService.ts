@@ -4,6 +4,7 @@ import type {ZodFlawType} from '@/types/zodFlaw';
 import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
+import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
 
 export async function getFlaws(offset=0, limit=20) {
   // TODO add filtering parameters
@@ -118,14 +119,15 @@ export async function promoteFlaw(uuid: string) {
     console.log('Flaw promoted:', response);
     return response.data;
   }).catch(error => {
+    const displayedError = getDisplayedOsidbError(error);
     const { addToast } = useToastStore();
     addToast({
-      title: error.message,
+      title: displayedError,
       body: error.response.data,
       css: 'warning'
     })
     console.error('❌ Problem promoting flaw:', error);
-    // throw error;
+    throw error;
   })
 }
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
@@ -139,13 +141,14 @@ export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
     return response.data;
   }).catch(error => {
     const { addToast } = useToastStore();
+    const displayedError = getDisplayedOsidbError(error);
     addToast({
-      title: error.message,
+      title: displayedError,
       body: error.response.data,
       css: 'warning'
     })
     console.error('❌ Problem rejecting flaw:', error);
-    // throw error;
+    throw error;
   })
 }
 
