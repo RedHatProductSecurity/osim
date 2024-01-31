@@ -79,10 +79,12 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
         </option>
       </select>
       <input v-else type="text" class="form-control" v-model="facet.value">
-      <i class="bi-dash-square mt-1 ms-1" @click="removeFacet(index)"></i>
+      <button class="btn btn-outline-secondary">
+        <i class="bi-x" @click="removeFacet(index)"></i>
+      </button>
     </div>
     <div class="mb-2">
-      <i class="bi-plus-square cursor" @click="addFacet"></i>
+      <i class="bi-plus-square" @click="addFacet"></i>
     </div>
     <button class="btn btn-secondary" @click="submitAdvancedSearch">Search</button>
   </div>
@@ -92,9 +94,14 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 i {
   cursor: pointer;
 }
+.bi-x {
+  transform: translateX(1.125rem);
+}
 
-
+.btn-outline-secondary, 
 select, input {
   border: 1px solid #DEE2E6;
   border-radius: 6px;
-}</style>
+}
+
+</style>
