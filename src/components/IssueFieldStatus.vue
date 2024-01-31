@@ -4,8 +4,8 @@ import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import Modal from '@/components/widgets/Modal.vue';
-import { WorkflowPhases } from '@/types/zodFlaw';
 import { useField } from 'vee-validate';
+import { ZodFlawClassification } from '@/types/zodFlaw';
 
 const props =
   defineProps<{
@@ -16,6 +16,12 @@ const { flawId } = toRefs(props);
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
 const { value: flawStatus } = useField<string>('classification.state');
+
+const workflowStatuses = ZodFlawClassification.shape.state.enum;
+
+type WorkflowPhases = typeof workflowStatuses[keyof typeof workflowStatuses];
+
+const DONE_STATUS = workflowStatuses.Done;
 
 function openModal() {
   shouldShowRejectionModal.value = true;
@@ -32,8 +38,8 @@ function onSave() {
 
 function nextPhase(flawStatus: WorkflowPhases) {
   const [labels, phases] = [
-    Object.keys(WorkflowPhases),
-    Object.values(WorkflowPhases),
+    Object.keys(workflowStatuses),
+    Object.values(workflowStatuses),
   ];
   const index = phases.indexOf(flawStatus);
   return labels[index + 1] || labels.slice(-1)[0];
@@ -44,12 +50,12 @@ function nextPhase(flawStatus: WorkflowPhases) {
 <template>
   <LabelStatic label="Status" type="text" v-model="flawStatus">
     <div>
-      <button @click="shouldShowRejectionModal = true" class="btn btn-warning p-0 pe-1 ps-1 me-2"
-        id="osim-status-reject-button" v-if="flawStatus.toUpperCase() !== 'DONE'">
+      <button @click="openModal" class="btn btn-warning p-0 pe-1 ps-1 me-2"
+        id="osim-status-reject-button" v-if="flawStatus.toUpperCase() !== DONE_STATUS">
         Reject
       </button>
       <button @click="promoteFlaw(flawId)" class="btn btn-warning p-0 pe-1 ps-1" id="osim-status-promote-button"
-        v-if="flawStatus.toUpperCase() !== 'DONE'">
+        v-if="flawStatus.toUpperCase() !== DONE_STATUS">
         Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
       </button>
     </div>
