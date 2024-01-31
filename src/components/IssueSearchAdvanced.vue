@@ -32,15 +32,19 @@ const unchosenFields = (chosenField: string) =>
     (field) => !chosenFields.value.includes(field) || field === chosenField
   );
 
-const flawTypes = Object.values(
-  ZodFlawSchema.shape.type.unwrap().unwrap().enum
-) as string[];
-const flawSources = Object.values(
-  ZodFlawSchema.shape.source.unwrap().unwrap().enum
-) as string[];
-const flawImpacts = Object.values(
-  ZodFlawSchema.shape.impact.unwrap().unwrap().enum
-) as string[];
+const {
+  type: zodFlawType,
+  source: zodFlawSource,
+  impact: zodFlawImpacts,
+} = ZodFlawSchema.shape;
+
+const extractEnum = (zodEnum: any): string[] =>
+  Object.values(zodEnum.unwrap().unwrap().enum);
+
+const flawTypes = extractEnum(zodFlawType);
+const flawSources = extractEnum(zodFlawSource);
+const flawImpacts = extractEnum(zodFlawImpacts);
+
 const optionsFor = (field: string) =>
   ({
     type: flawTypes,
@@ -84,7 +88,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
     </summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div class="input-group mb-2" v-for="(facet, index) in facets">
-        <select v-model="facet.field" class="form-select field" @submit.prevent>
+        <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
           <option v-if="!facet.field" selected value="" disabled>
             Select field...
           </option>
@@ -130,7 +134,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
     cursor: pointer;
   }
 
-  select.field {
+  select.search-facet-field {
     display: flex;
     width: auto;
     flex-grow: 0;
