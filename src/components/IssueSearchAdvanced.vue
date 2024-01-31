@@ -63,8 +63,8 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
   <button v-if="!shouldShowAdvanced" class="btn btn-secondary" @click="shouldShowAdvanced = true">
     Advanced Search
   </button>
-  <div v-else class="mb-4 advanced-search-container">
-    <div class="input-group mb-2" v-for="(facet, index) in facets">
+  <div v-else class="mb-4 osim-advanced-search-container">
+    <div class="input-group mb-2 " v-for="(facet, index) in facets">
       <select v-model="facet.field" class="form-select">
         <option v-if="!facet.field" selected value="" disabled>Select field...</option>
         <option v-for="(field) in unchosenFields(facet.field)" :value="field">
@@ -83,25 +83,30 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
         <i class="bi-x" @click="removeFacet(index)"></i>
       </button>
     </div>
+
     <div class="mb-2">
-      <i class="bi-plus-square" @click="addFacet"></i>
+      <button class="btn btn-secondary me-3" @click="submitAdvancedSearch">Search</button>
     </div>
-    <button class="btn btn-secondary" @click="submitAdvancedSearch">Search</button>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.osim-advanced-search-container {
 i {
   cursor: pointer;
 }
-.bi-x {
-  transform: translateX(1.125rem);
+
+  select:nth-child(1) {
+    display: flex;
+    width: auto;
+    flex-grow: 0;
 }
 
-.btn-outline-secondary, 
-select, input {
+  .form-select .btn-outline-secondary,
+  select,
+  input {
   border: 1px solid #DEE2E6;
   border-radius: 6px;
 }
-
+}
 </style>
