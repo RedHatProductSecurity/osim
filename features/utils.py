@@ -13,7 +13,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY
 from locators import (
-    LOGIN_BUTTON,
     USER_BUTTON,
     BUGZILLA_API_KEY_TEXT_ELEMENT,
     JIRA_API_KEY_TEXT_ELEMENT,
@@ -21,6 +20,7 @@ from locators import (
     COMMENT_BUTTON,
     FLAW_INDEX
 )
+from pages.login_page import LoginPage
 
 
 def server_is_ready(url):
@@ -66,8 +66,8 @@ def login_with_valid_account():
     """
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
-    wait_for_visibility_by_locator(browser, By.XPATH, LOGIN_BUTTON)
-    browser.find_element(By.XPATH, LOGIN_BUTTON).click()
+    login_page = LoginPage(browser)
+    login_page.login()
     return browser
 
 
