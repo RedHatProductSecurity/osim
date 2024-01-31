@@ -117,8 +117,11 @@ export async function searchFlaws(query: string) {
     params: {
       search: query,
     },
-  }).then(response => {
-    return response.data;
+  }).then(response => response.data)
+  .catch(error => {
+    // TODO: import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+    console.error(error);
+    return error;
   });
 }
 
