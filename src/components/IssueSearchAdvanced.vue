@@ -2,7 +2,7 @@
 const props = defineProps<{
   setIssues: Function
 }>()
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
@@ -15,9 +15,14 @@ type Facet = {
 }
 const facets = ref<Facet[]>([{ field: '', value: '' }]);
 const flawFields = fieldsFor(ZodFlawSchema);
-const chosenFields = computed(() => {
-  return facets.value.map(({ field }) => field);
-})
+const chosenFields = computed(() => facets.value.map(({ field }) => field));
+
+watch(facets.value, (changingFacets) => {
+  const newFacet = changingFacets[changingFacets.length - 1];
+  if (newFacet?.field && newFacet?.value) {
+    addFacet();
+  }
+});
 
 const unchosenFields = (chosenField: string) => flawFields.filter(field =>
   !chosenFields.value.includes(field) || field === chosenField
@@ -36,20 +41,23 @@ const optionsFor = (field: string) =>
 function addFacet() {
   facets.value.push({ field: '', value: '' });
 }
+
 function removeFacet(index: number) {
   facets.value.splice(index, 1);
+  if (!facets.value.length) {
+    addFacet();
+  }
 }
+
 function submitAdvancedSearch() {
-  const params = facets.value.reduce((acc, { field, value }) => {
+  const params = facets.value.reduce((fields, { field, value }) => {
     if (field && value) {
-      acc[field] = value;
+      fields[field] = value;
     }
-    return acc;
+    return fields;
   }, {} as Record<string, string>);
   advancedSearchFlaws(params)
     .then(response => {
-      console.log('IssueSearch: got advanced flaws: ', response);
-      // issues.value = response.results;
       props.setIssues(response.results);
     })
     .catch(err => {
@@ -92,21 +100,21 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 
 <style lang="scss" scoped>
 .osim-advanced-search-container {
-i {
-  cursor: pointer;
-}
+  i {
+    cursor: pointer;
+  }
 
   select:nth-child(1) {
     display: flex;
     width: auto;
     flex-grow: 0;
-}
+  }
 
   .form-select .btn-outline-secondary,
   select,
   input {
-  border: 1px solid #DEE2E6;
-  border-radius: 6px;
-}
+    border: 1px solid #DEE2E6;
+    border-radius: 6px;
+  }
 }
 </style>
