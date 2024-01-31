@@ -105,7 +105,6 @@ const onSubmitAffect = async () => {
             addToast({
               title: 'Info',
               body: `Affect Saved: ${newAffect.ps_component}`,
-              css: 'danger'
             });
           })
           .catch(error => {
