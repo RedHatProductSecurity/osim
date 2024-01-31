@@ -69,15 +69,15 @@ function onSearch(query: string) {
       </ul>
 
       <i
-        class="bi px-3 fs-4 me-2 position-relative notification-icon"
+        class="bi px-3 fs-4 me-2 position-relative notification-icon text-white"
         :class="{
-          'bi-bell-fill text-white': settingsStore.showNotification,
-          'bi-bell-slash-fill text-white': !settingsStore.showNotification
+          'bi-bell-fill': settingsStore.showNotification,
+          'bi-bell-slash-fill': !settingsStore.showNotification
         }"
         @click="settingsStore.toggleNotification()"
       >
         <span
-          class="position-absolute start-30 translate-middle badge border bg-danger text-white rounded-circle notification-badge"
+          class="position-absolute start-30 translate-middle badge border bg-danger rounded-circle notification-badge"
           v-show="toasts.length > 0"
         >{{ toasts.length }}</span>
       </i>
