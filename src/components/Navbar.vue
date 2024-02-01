@@ -6,7 +6,7 @@ import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import {useSettingsStore} from "../stores/SettingsStore";
+import {useSettingsStore} from "@/stores/SettingsStore";
 import {useToastStore} from '@/stores/ToastStore';
 import {useElementBounding} from "@vueuse/core";
 import {navbarBottom, navbarHeight} from '@/stores/responsive';
