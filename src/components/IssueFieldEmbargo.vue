@@ -21,15 +21,15 @@ function handleChange(event: { target: { value: string } }) {
 }
 
 function handleConfirm(){
-  isEmbargoed.value = true;
+  isEmbargoed.value = false;
+  closeModal();
 }
 </script>
 
 <template>
   <LabelStatic label="Embargoed" :modelValue="isEmbargoed ? 'Yes' : 'No'">
-
       <div v-if="isEmbargoed" class="mt-2">
-        <button class="btn btn-primary" @click="openModal">
+        <button type="button" class="btn btn-primary" @click="openModal">
   
           <i class="bi-radioactive ps-0"></i>
           <i class="bi-eye-fill"></i>
@@ -68,8 +68,8 @@ function handleConfirm(){
               proceed." :modelValue="confirmationId" @input="handleChange" />
           </template>
           <template #footer>
-            <button class="btn btn-info" @click="closeModal">Cancel</button>
-            <button class="btn btn-primary" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
+            <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
+            <button type="button" class="btn btn-primary" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
               Confirm
             </button>
           </template>
