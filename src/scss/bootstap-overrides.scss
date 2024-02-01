@@ -31,10 +31,12 @@ $redhat-secondary: $redhat-gray-50;
 $primary: $redhat-primary;
 $secondary: $redhat-secondary;
 $danger: $redhat-danger-50;
+$success: $redhat-success-40;
 $black: $redhat-gray-95;
 $info: $redhat-teal-40;
 $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
+$blue: $redhat-blue-40;
 
 $nav-link-color: rebeccapurple;
 
@@ -45,7 +47,7 @@ $theme-colors: (
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,
-  'success': $danger,
+  'success': $success,
   'danger': $danger,
   'warning': $warning,
 );
