@@ -15,31 +15,16 @@ img, picture, video, canvas, svg {
   display: inline-block;
 }
 
-@font-face {
-  font-family: "Red Hat Text";
-  src:
-  url('/fonts/RedHatTextVFModified.woff2');
-}
-@font-face {
-  font-family: "Red Hat Display";
-  src:
-  url('/fonts/RedHatDisplayVFModified.woff2');
-}
-@font-face {
-  font-family: "Red Hat Mono";
-  src:
-  url('/fonts/RedHatMono-VariableFont_wght.ttf');
-}
 
 /* Red Hat colors */
 :root {
-  --redhat-primary: #cc0000;
-  --redhat-secondary: #cc0000;
-  --redhat-font: "Red Hat Text","RedHatText", sans-serif;
+  /* --redhat-primary: #cc0000; */
+  /* --redhat-secondary: #cc0000; */
+  /* --redhat-font: "Red Hat Text","RedHatText", sans-serif; */
 }
 
 /* Apply Red Hat theme to buttons */
-.btn-primary {
+/* .btn-primary {
   background-color: var(--redhat-primary);
   border-color: var(--redhat-primary);
   color: #fff;
@@ -50,7 +35,7 @@ img, picture, video, canvas, svg {
   color: var(--redhat-primary);
   border-color: var(--redhat-primary);
   font-family: var(--redhat-font);
-}
+} */
 
 /* Remove borders from tables */
 .table {
@@ -68,27 +53,27 @@ table {
 
 
 /* Apply Red Hat font to the entire app */
-body {
+/* body {
   font-family: var(--redhat-font);
-}
+} */
 
 /* override the primary color for accordion component */
-.accordion-button:not(.collapsed) {
+/* .accordion-button:not(.collapsed) {
   background-color: white;
-}
+} */
 
 /* override the hover color for accordion component */
-.accordion-button:not(.collapsed):hover {
+/* .accordion-button:not(.collapsed):hover {
   background-color: rgb(255, 0, 0);
   border-color: rgb(255, 0, 0);
-}
+} */
 .card {
   border-radius: 0;
 }
 .accordion-button:not(.collapsed) {
   color: #000 !important;
 }
-.btn-primary:hover,
+/* .btn-primary:hover,
 .btn-outline-primary:hover,
 .btn-secondary:hover,
 .btn-warning:hover {
@@ -98,4 +83,4 @@ body {
 
 .btn-warning:hover {
   color: #fff;
-}
+} */

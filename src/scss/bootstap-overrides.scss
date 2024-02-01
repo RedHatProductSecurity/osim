@@ -1,0 +1,62 @@
+// https://www.redhat.com/en/about/brand/standards/color
+;
+@import './redhat-brand-colors.scss';
+
+
+
+@font-face {
+  font-family: 'Red Hat Text';
+  src: url('/fonts/RedHatTextVFModified.woff2');
+}
+@font-face {
+  font-family: 'Red Hat Display';
+  src: url('/fonts/RedHatDisplayVFModified.woff2');
+}
+@font-face {
+  font-family: 'Red Hat Mono';
+  src: url('/fonts/RedHatMono-VariableFont_wght.ttf');
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Red Hat Display';
+}
+$font-family-base: 'Red Hat Text';
+$font-family-monospace: 'Red Hat Mono', monospace;
+$font-family-code: $font-family-monospace;
+
+// A variable with !default flag will default to the previously set value of
+//  this variable (if any available). As all bootstrap variables have this flag, 
+//  you could import your custom-variables.scss before the bootstrap/scss/bootstrap;
+$redhat-primary: $redhat-red-50;
+$redhat-secondary: $redhat-gray-50;
+$primary: $redhat-primary;
+$secondary: $redhat-secondary;
+$danger: $redhat-danger-50;
+$black: $redhat-gray-95;
+$info: $redhat-teal-40;
+$warning: $redhat-yellow-30;
+$gray: $redhat-gray-20;
+
+$nav-link-color: rebeccapurple;
+
+
+$theme-colors: (
+  'black': $black,
+  'gray': $gray,
+  'primary': $primary,
+  'secondary': $secondary,
+  'info': $info,
+  'success': $danger,
+  'danger': $danger,
+  'warning': $warning,
+);
+
+// Create your own map
+$custom-colors: (
+  'custom-color': #900,
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+// Import last to preserve overrides
+@import "../node_modules/bootstrap/scss/bootstrap"
