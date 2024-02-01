@@ -6,11 +6,14 @@ import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import { useElementBounding } from "@vueuse/core";
-
-import { navbarBottom, navbarHeight } from '@/stores/responsive';
+import {useSettingsStore} from "@/stores/SettingsStore";
+import {useToastStore} from '@/stores/ToastStore';
+import {useElementBounding} from "@vueuse/core";
+import {navbarBottom, navbarHeight} from '@/stores/responsive';
 
 const userStore = useUserStore();
+const settingsStore = useSettingsStore();
+const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(elHeader, {width: 0, height: 0}, {box: 'border-box'});
 const { height: headerHeight, bottom: headerBottom } = useElementBounding(elHeader);
@@ -28,6 +31,7 @@ function onSearch(query: string) {
   }
   router.push({ name: 'search', query: { query: trimmedQuery } });
 }
+
 </script>
 
 <template>
@@ -57,6 +61,21 @@ function onSearch(query: string) {
         <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
         <!--</li>-->
       </ul>
+
+      <i
+        class="bi px-3 fs-4 me-2 position-relative notification-icon text-white"
+        :class="{
+          'bi-bell-fill': settingsStore.showNotification,
+          'bi-bell-slash-fill': !settingsStore.showNotification
+        }"
+        @click="settingsStore.toggleNotification()"
+      >
+        <span
+          class="position-absolute start-30 translate-middle badge border bg-danger rounded-circle notification-badge"
+          v-show="toasts.length > 0"
+        >{{ toasts.length }}</span>
+      </i>
+
       <div class="osim-search me-2">
         <form role="search" @submit.prevent="onSearch(searchIssue)">
           <div class="input-group">
@@ -192,5 +211,15 @@ filter:
 
 .osim-logo-container {
   height: 64px;
+}
+
+.notification-icon{
+  pointer-events: all !important;
+  cursor: pointer;
+}
+
+.notification-badge{
+  font-size: 0.5rem !important;
+  top: 20%;
 }
 </style>
