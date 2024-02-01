@@ -37,12 +37,11 @@ $info: $redhat-teal-40;
 $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
 $blue: $redhat-blue-40;
-
-$nav-link-color: rebeccapurple;
-
+$link-color: $blue;
 
 $theme-colors: (
   'black': $black,
+  'blue': $blue,
   'gray': $gray,
   'primary': $primary,
   'secondary': $secondary,
