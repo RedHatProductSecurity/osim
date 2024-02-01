@@ -161,7 +161,7 @@ export async function searchFlaws(query: string) {
     },
   }).then(response => response.data)
   .catch(error => {
-    // TODO: import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+    // TODO: use {getDisplayedOsidbError} from '@/services/OsidbAuthService';
     console.error(error);
     return error;
   });

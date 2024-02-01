@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { searchFlaws } from '../services/FlawService';
 import IssueQueueItem from '../components/IssueQueueItem.vue';
 import IssueSearchAdvanced from '../components/IssueSearchAdvanced.vue';
+import router from '@/router';
 
 type FilteredIssue = {
   issue: any;
@@ -59,16 +60,40 @@ const searchQuery = z.object({
   }),
 });
 
+function quickMatchCVE (query: string) {
+  // Optionally match prefix `CVE-`, place match 4 digits, a hypen, 4-7 digits
+  // in its own capture group to be extracted later. Gives user the option of 
+  // searching for `CVE-2021-1234` or just `2021-1234`, for example.
+  const cveRegex = /(CVE-)?(\d{4}-\d{4,7})/
+  // match[2] will be the CVE ID if it exists
+  return query.match(cveRegex)?.[2];
+}
+
 onMounted(() => {
+
   try {
     const parsedRoute = searchQuery.parse(route);
     if (parsedRoute.query.query === '') {
       // TODO handle error
       return;
     }
+    const maybeCveId =  quickMatchCVE(parsedRoute.query.query);
+    if (maybeCveId) {
+      router.push({path: `/flaws/CVE-${maybeCveId}`});
+      return;
+    }
+    if (parsedRoute.query.query.match(/CVE-\d{4}-\d{4,7}/)) {
+      quickMatchCVE(parsedRoute.query.query)
+      return;
+    }
     searchFlaws(parsedRoute.query.query)
-      .then((response) => setIssues(response.results))
-      .catch(console.error);
+      .then(response => {
+        console.log('IssueSearch: got flaws: ', response.data);
+        issues.value = response.results;
+      })
+      .catch(err => {
+        console.error('IssueSearch: getFlaws error: ', err);
+      })
   } catch (e) {
     console.log('IssueSearch: error advanced searching', e);
   }
