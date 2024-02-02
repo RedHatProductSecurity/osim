@@ -2,18 +2,21 @@
 import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
 import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg'
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
-import {RouterLink} from 'vue-router'
-import {useUserStore} from '@/stores/UserStore';
-import {ref, watchEffect} from 'vue';
+import { RouterLink } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore';
+import { ref, watchEffect } from 'vue';
 import router from '@/router';
+import {useSettingsStore} from "@/stores/SettingsStore";
+import {useToastStore} from '@/stores/ToastStore';
 import {useElementBounding} from "@vueuse/core";
-
 import {navbarBottom, navbarHeight} from '@/stores/responsive';
 
 const userStore = useUserStore();
+const settingsStore = useSettingsStore();
+const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(elHeader, {width: 0, height: 0}, {box: 'border-box'});
-const {height: headerHeight, bottom: headerBottom} = useElementBounding(elHeader);
+const { height: headerHeight, bottom: headerBottom } = useElementBounding(elHeader);
 watchEffect(() => {
   navbarHeight.value = headerHeight.value;
   navbarBottom.value = headerBottom.value;
@@ -26,35 +29,30 @@ function onSearch(query: string) {
   if (trimmedQuery === '') {
     return;
   }
-  router.push({name: 'search', query: {query: trimmedQuery}});
+  router.push({ name: 'search', query: { query: trimmedQuery } });
 }
+
 </script>
 
 <template>
-  <nav
-      class="osim-navbar navbar navbar-expand navbar-dark"
-      ref="elHeader"
-  >
+  <nav class="osim-navbar navbar navbar-expand navbar-dark" ref="elHeader">
     <div class="container">
       <RouterLink to="/" class="osim-home-link">
         <!--<RedHatLogo class="osim-logo"/>-->
-        <img :src="RedHatIconSvg"
-             alt="Red Hat Logo"
-             class="osim-logo"
-        />
+        <img :src="RedHatIconSvg" alt="Red Hat Logo" class="osim-logo" />
       </RouterLink>
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
       </RouterLink>
-<!--      <div class="osim-env">-->
-<!--        <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>-->
-<!--      </div>-->
+      <!--      <div class="osim-env">-->
+      <!--        <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>-->
+      <!--      </div>-->
       <ul class="navbar-nav me-auto align-items-center">
         <li class="nav-item">
-          <RouterLink class="nav-link" :to="{name: 'index'}">Index</RouterLink>
+          <RouterLink class="nav-link" :to="{ name: 'index' }">Index</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :to="{name: 'flaw-create'}">Create Flaw</RouterLink>
+          <RouterLink class="nav-link" :to="{ name: 'flaw-create' }">Create Flaw</RouterLink>
         </li>
         <!--<li class="nav-item">-->
         <!--  <RouterLink class="nav-link" to="/tracker">Tracker</RouterLink>-->
@@ -63,38 +61,56 @@ function onSearch(query: string) {
         <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
         <!--</li>-->
       </ul>
+
+      <i
+        class="bi px-3 fs-4 me-2 position-relative notification-icon text-white"
+        :class="{
+          'bi-bell-fill': settingsStore.showNotification,
+          'bi-bell-slash-fill': !settingsStore.showNotification
+        }"
+        @click="settingsStore.toggleNotification()"
+      >
+        <span
+          class="position-absolute start-30 translate-middle badge border bg-danger rounded-circle notification-badge"
+          v-show="toasts.length > 0"
+        >{{ toasts.length }}</span>
+      </i>
+
       <div class="osim-search me-2">
         <form role="search" @submit.prevent="onSearch(searchIssue)">
-
-              <div class="input-group">
-                <input
-                    v-model="searchIssue"
-                    type="search"
-                    class="form-control"
-                    placeholder="Search Issues/Flaws"
-                    aria-label="Search Issues/Flaws"
-
-                />
-                <button class="btn btn-secondary" type="button"><i class="bi-search"></i></button>
-              </div>
-
-          <!--<input class="form-control" type="search" placeholder="Search Issues/Flaws" aria-label="Search Issues/Flaws" v-model="searchIssue"/>-->
+          <div class="input-group">
+            <input v-model="searchIssue" type="search" class="form-control" placeholder="Search Issues/Flaws"
+              aria-label="Search Issues/Flaws" />
+            <button class="btn btn-secondary" type="button">
+              <i class="bi-search" @click="onSearch(searchIssue)"></i>
+            </button>
+            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            </button>
+            <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'search', query: { 'mode': 'advanced' } }">Advanced Search
+                </RouterLink>
+              </li>
+            </ul>
+          </div>
         </form>
       </div>
       <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle osim-user-profile" data-bs-toggle="dropdown"
-                aria-expanded="false">
+          aria-expanded="false">
           {{ userStore.userName }}
           <i class="bi-person-circle osim-user-profile-picture"></i>
         </button>
         <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
           <li>
-            <RouterLink class="dropdown-item" :to="{name: 'settings'}">Settings</RouterLink>
+            <RouterLink class="dropdown-item" :to="{ name: 'settings' }">Settings</RouterLink>
           </li>
           <li>
-            <RouterLink class="dropdown-item" :to="{name: 'widget-test'}">Widget Test</RouterLink>
+            <RouterLink class="dropdown-item" :to="{ name: 'widget-test' }">Widget Test</RouterLink>
           </li>
-          <li><hr class="dropdown-divider"></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
           <li>
             <button class="dropdown-item" type="button" @click.prevent="userStore.logout">Logout</button>
           </li>
@@ -106,9 +122,9 @@ function onSearch(query: string) {
 </template>
 
 <style>
-
 .osim-dropdown-menu.dropdown-menu {
-  z-index: 1091; /* --bs-toast-zindex + 1 */
+  z-index: 1091;
+  /* --bs-toast-zindex + 1 */
   /*color: red;*/
   /*outline: 1px solid deeppink !important;*/
 }
@@ -163,10 +179,10 @@ filter:
   padding: var(--vertical-padding) 11px var(--vertical-padding) 0;
   border-right: 1px solid white;
   border-image: linear-gradient(to bottom,
-    transparent var(--vertical-padding),
-    rgba(255,255,255,1) var(--vertical-padding),
-    rgba(255,255,255,1) calc(100% - var(--vertical-padding)),
-    transparent calc(100% - var(--vertical-padding))) 1;
+      transparent var(--vertical-padding),
+      rgba(255, 255, 255, 1) var(--vertical-padding),
+      rgba(255, 255, 255, 1) calc(100% - var(--vertical-padding)),
+      transparent calc(100% - var(--vertical-padding))) 1;
 }
 
 .osim-home-text {
@@ -183,7 +199,7 @@ filter:
   align-items: center;
 }
 
-.osim-env > .osim-env-label {
+.osim-env>.osim-env-label {
   min-height: 50%;
   display: flex;
   align-items: center;
@@ -195,5 +211,15 @@ filter:
 
 .osim-logo-container {
   height: 64px;
+}
+
+.notification-icon{
+  pointer-events: all !important;
+  cursor: pointer;
+}
+
+.notification-badge{
+  font-size: 0.5rem !important;
+  top: 20%;
 }
 </style>

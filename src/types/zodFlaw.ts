@@ -11,6 +11,7 @@ import {
     ResolutionEnum,
     IssuerEnum,
     FlawMetaType,
+    FlawClassificationStateEnum
 } from '../generated-client';
 import { DateTime } from 'luxon';
 
@@ -82,6 +83,10 @@ export const TrackerSchema = z.object({
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
 
+export const ZodFlawClassification = z.object({
+    workflow: z.string(),
+    state: z.nativeEnum(FlawClassificationStateEnum),
+})
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
@@ -108,10 +113,13 @@ export const ZodAffectSchema = z.object({
     }).nullable(),
     delegated_resolution: z.string().nullable(),
     cvss_scores: z.array(AffectCVSSSchema),
+    classifcation: ZodFlawClassification,
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 })
+
+
 
 export const ZodFlawMetaSchema = z.object({
     uuid: z.string().uuid(),
@@ -156,3 +164,12 @@ export const ZodFlawSchema = z.object({
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
 
+type RegisteredSchemaType = typeof FlawCVSSSchema
+    | typeof AffectCVSSSchema
+    | typeof ErratumSchema
+    | typeof TrackerSchema
+    | typeof ZodAffectSchema
+    | typeof ZodFlawMetaSchema
+    | typeof ZodFlawSchema;
+
+export const fieldsFor = (schema: RegisteredSchemaType) => Object.keys(schema.shape);

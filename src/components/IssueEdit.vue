@@ -6,16 +6,15 @@ import { useField, useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { RouterLink } from 'vue-router';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
-
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import PillList from '@/components/widgets/PillList.vue';
+import IssueFieldStatus from './IssueFieldStatus.vue';
 
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { postAffect, putAffect } from '@/services/AffectService';
@@ -78,7 +77,6 @@ const {value: flawMajor_incident_state} = useField<string>('major_incident_state
 const {value: flawEmbargoed} = useField<boolean>('embargoed');
 
 const { value: flawAssignee } = useField<string>('owner');
-const { value: flawStatus } = useField<string>('classification.state');
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
 
@@ -211,6 +209,7 @@ function onreset() {
   // TODO FIX
 }
 
+
 function addPublicComment() {
   postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
       .then(() => {
@@ -285,7 +284,7 @@ function removeAffect(affectIdx: number) {
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
           </div>
           <div class="col-6">
-            <LabelStatic label="Status" type="text" v-model="flawStatus" />
+            <IssueFieldStatus :flawId="flaw.uuid"/>
             <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
             <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
             <LabelEditable

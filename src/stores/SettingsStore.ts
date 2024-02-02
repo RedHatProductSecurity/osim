@@ -27,6 +27,7 @@ type SettingsStoreSessionStorage = z.infer<typeof settingsStoreSessionStorage>;
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const settings = ref<SettingsType>({});
+  const showNotification = ref<boolean>(true);
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
   serviceWorkerClient.listen(_settingsStoreKey, value => {
     let newSettingsStore = SettingsSchema.safeParse(value);
@@ -41,7 +42,6 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     serviceWorkerClient.put(_settingsStoreKey, JSON.parse(JSON.stringify(settings.value)));
   });
 
-
   function save(newSettings: SettingsType) {
     settings.value = {...newSettings};
   }
@@ -50,10 +50,16 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     settings.value = {};
   }
 
+  function toggleNotification() {
+    showNotification.value = !showNotification.value;
+  };
+
   return {
     $reset,
     save,
+    toggleNotification,
     settings,
+    showNotification
   };
 });
 
