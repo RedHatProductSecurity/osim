@@ -64,7 +64,7 @@ function handleConfirm(){
           <template #footer>
             <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
             <button type="button" class="btn btn-danger" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
-              Confirm
+              Remove Embargo
             </button>
           </template>
         </Modal>
