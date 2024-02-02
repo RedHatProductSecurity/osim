@@ -74,23 +74,11 @@ function handleConfirm(){
 </template>
 
 <style lang="scss" scoped>
-i {
-  color: var(--redhat-primary);
-}
-
 button {
-  &:disabled {
-    opacity: 0.25;
-  }
-
-  i {
-    color: #fff;
-  }
 
   i.bi-radioactive {
     display: inline;
   }
-
   i.bi-eye-slash-fill,
   i.bi-eye-fill {
     display: none;
@@ -155,11 +143,5 @@ button {
     width: 0;
   }
 
-}
-
-input[type='checkbox'].form-check-input {
-  background-color: var(--redhat-primary);
-  border-color: var(--redhat-primary);
-  pointer-events: none;
 }
 </style>
