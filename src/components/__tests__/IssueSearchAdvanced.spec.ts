@@ -1,7 +1,11 @@
-import { describe, it, expect, vi, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import { useRoute } from 'vue-router';
-import IssueSearchAdvanced from '../IssueSearchAdvanced.vue';
+import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
+import { useToastStore } from '@/stores/ToastStore';
+
+import { createTestingPinia } from '@pinia/testing';
+
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual("vue-router");
@@ -18,10 +22,22 @@ vi.mock('vue-router', async () => {
 describe('IssueSearchAdvanced', () => {
   let wrapper: VueWrapper<any>;
 
+  beforeAll(() => {
+    createTestingPinia({
+      initialState: {
+        toasts: [],
+      },
+    });
+  })
+
   beforeEach(() => {
     const props: typeof IssueSearchAdvanced.props = {};
     wrapper = mount(IssueSearchAdvanced, {
-      props
+      props,
+      plugins:[useToastStore()],
+      global: {
+        mocks: { useRoute },
+      }
     });
   })
 
