@@ -36,7 +36,7 @@ function handleConfirm(){
           </template>
           <template #body>
             <p class="text-danger">
-              Making a flaw public is an irreversible action! Here is why:
+              Making a Flaw public is an irreversible action! Here is why:
             </p>
             <ol>
               <li>
@@ -44,7 +44,7 @@ function handleConfirm(){
                 unembargo, including Bugzilla users outside of Red Hat,
               </li>
               <li>
-                A request to push the flaw's description and other metadata is
+                A request to push the Flaw's description and other metadata is
                 sent to MITRE,
               </li>
               <li>
