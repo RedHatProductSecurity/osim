@@ -22,6 +22,15 @@ watchEffect(() => {
   navbarBottom.value = headerBottom.value;
 });
 
+
+function quickMatchCVE(query: string) {
+  // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
+  // with optional surrounding whitespace.
+  const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/
+  // match[1] will be the CVE ID if it exists
+  return query.match(cveRegex)?.[1];
+}
+
 const searchIssue = ref("");
 
 function onSearch(query: string) {
@@ -29,7 +38,12 @@ function onSearch(query: string) {
   if (trimmedQuery === '') {
     return;
   }
-  router.push({ name: 'search', query: { query: trimmedQuery } });
+  const maybeCveId =  quickMatchCVE(query);
+  if (maybeCveId) {
+    router.push({path: `/flaws/${maybeCveId}`});
+    return;
+  }
+  router.push({name: 'search', query: {query: trimmedQuery}});
 }
 
 </script>

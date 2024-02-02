@@ -60,25 +60,12 @@ const searchQuery = z.object({
   }),
 });
 
-function quickMatchCVE(query: string) {
-  // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
-  // with optional surrounding whitespace.
-  const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/
-  // match[1] will be the CVE ID if it exists
-  return query.match(cveRegex)?.[1];
-}
-
 onMounted(() => {
 
   try {
     const parsedRoute = searchQuery.parse(route);
     if (parsedRoute.query.query === '') {
       // TODO handle error
-      return;
-    }
-    const maybeCveId =  quickMatchCVE(parsedRoute.query.query);
-    if (maybeCveId) {
-      router.push({path: `/flaws/${maybeCveId}`});
       return;
     }
     searchFlaws(parsedRoute.query.query)
