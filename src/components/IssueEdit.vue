@@ -11,6 +11,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
+import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import PillList from '@/components/widgets/PillList.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
@@ -72,6 +73,8 @@ const {value: flawCvss3} = useField<string>('cvss3');
 const {value: flawCvss3_score} = useField<number>('cvss3_score');
 const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
+
+const {value: flawEmbargoed} = useField<boolean>('embargoed');
 
 const { value: flawAssignee } = useField<string>('owner');
 
@@ -289,6 +292,9 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
+            <IssueFieldEmbargo
+                v-model="flawEmbargoed"
+                :cveId="flawCve_id"/>
             <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
