@@ -77,6 +77,7 @@ const {value: flawMajor_incident_state} = useField<string>('major_incident_state
 const {value: flawEmbargoed} = useField<boolean>('embargoed');
 
 const { value: flawAssignee } = useField<string>('owner');
+const { value: flawTeamId } = useField<string>('team_id');
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
 
@@ -168,7 +169,8 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
   for (let affect of theAffects.value) {
     console.log('saving the affect', affect);
   }
-});
+},
+console.error);
 
 const onReset = (payload: MouseEvent) => {
   console.log('onReset');
@@ -296,6 +298,7 @@ function removeAffect(affectIdx: number) {
                 v-model="flawEmbargoed"
                 :cveId="flawCve_id"/>
             <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
+            <LabelEditable type="text" label="Team ID" v-model="flawTeamId" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
               <div v-for="tracker in trackerUuids">
@@ -378,7 +381,7 @@ function removeAffect(affectIdx: number) {
       <button
           type="submit"
           class="btn btn-primary"
-          @click="onSubmitAffect"
+          @click="onSubmit"
       >Save Changes</button>
     </div>
   </form>

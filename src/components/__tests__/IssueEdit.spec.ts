@@ -8,12 +8,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import IssueEdit from '@/components/IssueEdit.vue';
-import { InputLabelDirective } from '@/directives/InputLabelDirective';
 import { useRouter } from 'vue-router';
-
-
-
-import type { ZodFlawType } from '@/types/zodFlaw';
 
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -50,7 +45,18 @@ vi.mock('vue-router', async () => {
 
 describe('IssueEdit', () => {
   let subject: VueWrapper<InstanceType<typeof IssueEdit>>;
-
+  function mountWithProps(props: typeof IssueEdit.$props) {
+    subject =  mount(IssueEdit, {
+      plugins: [useToastStore()],
+      props,
+      global: {
+        stubs: {
+          // osimFormatDate not defined on test run, so we need to stub it
+          EditableDate: true,
+        },
+      },
+    });
+  }
   beforeAll(() => {
     // Store below depends on global pinia test instance
     createTestingPinia({
@@ -61,8 +67,6 @@ describe('IssueEdit', () => {
 
     server.listen({ onUnhandledRequest: 'error' });
 
-    const flaw = sampleFlaw();
-    flaw.owner = 'test owner';
     (useRouter as Mock).mockReturnValue({
       'currentRoute': { 'value': { 'fullPath': '/flaws/uuiddddd' } },
     });
@@ -71,7 +75,7 @@ describe('IssueEdit', () => {
       plugins: [useToastStore()],
       // shallow: true,
       props: {
-        flaw,
+        flaw: sampleFlaw()
       },
       global: {
         mocks: {
@@ -99,6 +103,9 @@ describe('IssueEdit', () => {
   });
 
   it('displays correct Assignee field value from props', async () => {
+    const flaw = sampleFlaw();
+    flaw.owner = 'test owner';
+    mountWithProps({flaw});
     const assigneeField = subject
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('Assignee'));
@@ -119,6 +126,7 @@ describe('IssueEdit', () => {
       statusField?.find('div.form-control > span').text()
     ).toBe('REVIEW');
   });
+
   it('displays promote and reject buttons for status', async () => {
     const statusField = subject
     .findAllComponents(LabelStatic)
@@ -132,13 +140,13 @@ describe('IssueEdit', () => {
         .exists()
     ).toBe(true);
   });
+
   it('shows a modal for reject button clicks', async () => {
     const statusField = subject
-    .findAllComponents(LabelStatic)
-    .find((component) => component.text().includes('Status'));
-    const rejectButton = statusField?.find('button#osim-status-reject-button')
-      await rejectButton?.trigger('click');
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      .findAllComponents(LabelStatic)
+      .find((component) => component.text().includes('Status'));
+    const rejectButton = statusField?.find('button#osim-status-reject-button');
+    await rejectButton?.trigger('click');
 
     expect(
       subject.find('.modal-dialog').exists()
@@ -150,13 +158,22 @@ describe('IssueEdit', () => {
   });
 
   it('sends a mocked PUT request with an updated owner', async () => {
-    // @ts-ignore
-    const flaw: ZodFlawType = sampleFlaw();
-    // @ts-ignore
+    const flaw = sampleFlaw();
     flaw.owner = 'networking test owner';
-    // @ts-ignore
     const result = await mockedPutFlaw(flaw.uuid, flaw);
     expect(result.owner).toBe('networking test owner');
+  });
+
+  it('shows a Team Id field', async () => {
+    mountWithProps({flaw: {...sampleFlaw(), team_id: '12345'}});
+
+    const teamIdField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.text().includes('Team ID'));
+
+    expect(teamIdField?.find('span.form-label').text()).toBe('Team ID');
+
+    expect(teamIdField?.attributes().modelvalue).toBe('12345');
   });
 
   it("displays correct Cvss3 calculator link for empty value", async () => {
@@ -192,7 +209,7 @@ describe('IssueEdit', () => {
   })
 });
 
-function mockedPutFlaw(uuid: string, flawObject: typeof sampleFlaw) {
+function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
   return axios({
     method: 'put',
     url: `${FLAW_BASE_URI}/${uuid}`,
@@ -204,7 +221,7 @@ function mockedPutFlaw(uuid: string, flawObject: typeof sampleFlaw) {
     .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
 }
 
-function sampleFlaw() /*:ZodFlawType */ {
+function sampleFlaw() {
   return {
     uuid: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
     type: 'VULNERABILITY',
