@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import { useField } from 'vee-validate';
 import { useModal } from '@/composables/useModal';
 import LabelInput from './widgets/LabelInput.vue';
@@ -12,13 +12,8 @@ const props = defineProps<{
 
 const { isModalOpen, openModal, closeModal } = useModal();
 const { value: isEmbargoed } = useField<boolean>('embargoed');
-const isFlawIdConfirmed = ref(false);
 const confirmationId = ref('');
-
-function handleChange(event: { target: { value: string } }) {
-  confirmationId.value = event.target?.value;
-  isFlawIdConfirmed.value = confirmationId.value === props.cveId;
-}
+const isFlawIdConfirmed = computed(() => confirmationId.value === props.cveId);
 
 function handleConfirm(){
   isEmbargoed.value = false;
@@ -63,8 +58,9 @@ function handleConfirm(){
                 Bugzilla bug.
               </li>
             </ol>
-            <LabelInput label="To prevent an accidental unembargo please confirm your intention by typing the numeric flaw ID if you wish to
-              proceed." :modelValue="confirmationId" @input="handleChange" />
+            <LabelInput
+                label="To prevent an accidental unembargo please confirm your intention by typing the numeric flaw ID if you wish to proceed."
+                v-model="confirmationId"/>
           </template>
           <template #footer>
             <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
