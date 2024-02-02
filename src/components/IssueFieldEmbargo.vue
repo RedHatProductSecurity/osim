@@ -28,9 +28,7 @@ function handleConfirm(){
           <i class="bi-radioactive ps-0"></i>
           <i class="bi-eye-fill"></i>
           <i class="bi-eye-slash-fill"></i>
-  
           Unembargo
-  
         </button>
         <Modal :show="isModalOpen" @close="closeModal">
           <template #header>
