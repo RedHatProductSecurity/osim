@@ -74,7 +74,7 @@ function handleConfirm(){
 </template>
 
 <style lang="scss" scoped>
-button {
+button.osim-unembargo-button {
 
   i.bi-radioactive {
     display: inline;
