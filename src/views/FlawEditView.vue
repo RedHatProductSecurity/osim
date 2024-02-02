@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch, watchEffect} from 'vue';
 import IssueEdit from '../components/IssueEdit.vue';
 import {getFlaw} from '../services/FlawService';
 import {useToastStore} from '@/stores/ToastStore';
@@ -14,24 +14,23 @@ const props = defineProps<{
 
 const {addToast} = useToastStore();
 
-onMounted(() => {
+refreshFlaw();
+
+watch(() => props.id, () => {
+  refreshFlaw();
+});
+
+function refreshFlaw() {
+  errorLoadingFlaw.value = false;
   getFlaw(props.id)
       .then(theFlaw => flaw.value = theFlaw)
       .catch(err => {
         errorLoadingFlaw.value = true;
+        flaw.value = null;
         addToast({
           title: 'Error loading Flaw',
           body: getDisplayedOsidbError(err),
         });
-        console.error(err);
-      })
-});
-
-function refreshFlaw() {
-  getFlaw(props.id)
-      .then(theFlaw => flaw.value = theFlaw)
-      .catch(err => {
-        errorLoadingFlaw.value = true;
         console.error(err);
       });
 }
