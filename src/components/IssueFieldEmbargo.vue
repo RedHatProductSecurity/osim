@@ -35,7 +35,7 @@ function handleConfirm(){
             Set Flaw for Unembargo
           </template>
           <template #body>
-            <p style="color: #f00;">
+            <p class="text-danger">
               Making a flaw public is an irreversible action! Here is why:
             </p>
             <ol>
@@ -62,7 +62,7 @@ function handleConfirm(){
           </template>
           <template #footer>
             <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
-            <button type="button" class="btn btn-primary" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
+            <button type="button" class="btn btn-danger" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
               Confirm
             </button>
           </template>
