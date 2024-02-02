@@ -29,8 +29,7 @@ function handleConfirm(){
 <template>
   <LabelStatic label="Embargoed" :modelValue="isEmbargoed ? 'Yes' : 'No'">
       <div v-if="isEmbargoed" class="mt-2">
-        <button type="button" class="btn btn-primary" @click="openModal">
-  
+        <button type="button" class="btn btn-danger osim-unembargo-button" @click="openModal">
           <i class="bi-radioactive ps-0"></i>
           <i class="bi-eye-fill"></i>
           <i class="bi-eye-slash-fill"></i>
