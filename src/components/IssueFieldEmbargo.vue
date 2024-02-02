@@ -59,7 +59,7 @@ function handleConfirm(){
               </li>
             </ol>
             <LabelInput
-                label="To prevent an accidental unembargo please confirm your intention by typing the numeric flaw ID if you wish to proceed."
+                :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
                 v-model="confirmationId"/>
           </template>
           <template #footer>
