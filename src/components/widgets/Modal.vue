@@ -70,10 +70,6 @@ watch(show, () => {
 </template>
 
 <style scoped>
-.modal {
-  color: #000;
-  text-align: left;
-}
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
