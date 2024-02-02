@@ -59,6 +59,7 @@ function handleConfirm(){
             <LabelInput
                 :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
                 v-model="confirmationId"/>
+            <p class="alert alert-warning">The embargo is only removed upon saving the Flaw!</p>
           </template>
           <template #footer>
             <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
