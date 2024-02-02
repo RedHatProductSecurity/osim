@@ -1,29 +1,35 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import { useField } from 'vee-validate';
 import { useModal } from '@/composables/useModal';
 import LabelInput from './widgets/LabelInput.vue';
-import LabelStatic from './widgets/LabelStatic.vue';
 import Modal from '@/components/widgets/Modal.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
 
 const props = defineProps<{
+  modelValue: boolean;
   cveId: string;
 }>();
 
+const emit = defineEmits<{
+  (e: 'update:modelValue', embargoed: boolean): void;
+}>();
+
 const { isModalOpen, openModal, closeModal } = useModal();
-const { value: isEmbargoed } = useField<boolean>('embargoed');
 const confirmationId = ref('');
 const isFlawIdConfirmed = computed(() => confirmationId.value === props.cveId);
 
 function handleConfirm(){
-  isEmbargoed.value = false;
+  emit('update:modelValue', false);
   closeModal();
 }
 </script>
 
 <template>
-  <LabelStatic label="Embargoed" :modelValue="isEmbargoed ? 'Yes' : 'No'">
-      <div v-if="isEmbargoed" class="mt-2">
+  <LabelDiv label="Embargoed">
+    <template #default>
+      <div>
+      <div class="form-control">{{modelValue ? 'Yes' : 'No'}}</div>
+      <div v-if="modelValue" class="mt-2">
         <button type="button" class="btn btn-danger osim-unembargo-button" @click="openModal">
           <i class="bi-radioactive ps-0"></i>
           <i class="bi-eye-fill"></i>
@@ -69,8 +75,10 @@ function handleConfirm(){
           </template>
         </Modal>
       </div>
+      </div>
+    </template>
 
-  </LabelStatic>
+  </LabelDiv>
 </template>
 
 <style lang="scss" scoped>

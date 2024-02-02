@@ -75,6 +75,8 @@ const {value: flawCvss3_score} = useField<number>('cvss3_score');
 const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
 
+const {value: flawEmbargoed} = useField<boolean>('embargoed');
+
 const { value: flawAssignee } = useField<string>('owner');
 const { value: flawStatus } = useField<string>('classification.state');
 
@@ -291,7 +293,9 @@ function removeAffect(affectIdx: number) {
                 type="date"
                 v-model="flawUnembargo_dt"
                 :error="errors.unembargo_dt"/>
-            <IssueFieldEmbargo :cveId="flawCve_id"/>
+            <IssueFieldEmbargo
+                v-model="flawEmbargoed"
+                :cveId="flawCve_id"/>
             <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
