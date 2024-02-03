@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch, watchEffect} from 'vue';
 import IssueEdit from '../components/IssueEdit.vue';
 import {getFlaw} from '../services/FlawService';
 import {useToastStore} from '@/stores/ToastStore';
@@ -14,24 +14,23 @@ const props = defineProps<{
 
 const {addToast} = useToastStore();
 
-onMounted(() => {
+refreshFlaw();
+
+watch(() => props.id, () => {
+  refreshFlaw();
+});
+
+function refreshFlaw() {
+  errorLoadingFlaw.value = false;
   getFlaw(props.id)
       .then(theFlaw => flaw.value = theFlaw)
       .catch(err => {
         errorLoadingFlaw.value = true;
+        flaw.value = null;
         addToast({
           title: 'Error loading Flaw',
           body: getDisplayedOsidbError(err),
         });
-        console.error(err);
-      })
-});
-
-function refreshFlaw() {
-  getFlaw(props.id)
-      .then(theFlaw => flaw.value = theFlaw)
-      .catch(err => {
-        errorLoadingFlaw.value = true;
         console.error(err);
       });
 }
@@ -42,7 +41,17 @@ function refreshFlaw() {
     <IssueEdit v-if="flaw" :flaw="flaw" @refresh:flaw="refreshFlaw" />
 <!--    <FlawEditForm v-if="flaw" :modelValue="flaw"/>-->
     <div v-if="errorLoadingFlaw">
-      Flaw not found
+      <div class="row justify-content-around">
+        <div class="m-5  col-lg-6 col-md-8 col-sm-12">
+          <div class="alert alert-warning" role="alert">
+            Flaw {{ `${props.id}` }} not found.
+            <div class="mt-4">
+              <RouterLink class="btn btn-primary me-3" to="/flaws/new">Create New Flaw</RouterLink>
+              <RouterLink class="btn btn-primary" to="/flaws">See All Flaws</RouterLink>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!flaw && !errorLoadingFlaw" class="d-flex justify-content-center m-5">
       <div class="spinner-border" role="status">

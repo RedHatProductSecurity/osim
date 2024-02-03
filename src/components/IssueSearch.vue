@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { searchFlaws } from '../services/FlawService';
 import IssueQueueItem from '../components/IssueQueueItem.vue';
 import IssueSearchAdvanced from '../components/IssueSearchAdvanced.vue';
+import router from '@/router';
 
 type FilteredIssue = {
   issue: any;
@@ -60,6 +61,7 @@ const searchQuery = z.object({
 });
 
 onMounted(() => {
+
   try {
     const parsedRoute = searchQuery.parse(route);
     if (parsedRoute.query.query === '') {
@@ -67,8 +69,13 @@ onMounted(() => {
       return;
     }
     searchFlaws(parsedRoute.query.query)
-      .then((response) => setIssues(response.results))
-      .catch(console.error);
+      .then(response => {
+        console.log('IssueSearch: got flaws: ', response.data);
+        issues.value = response.results;
+      })
+      .catch(err => {
+        console.error('IssueSearch: getFlaws error: ', err);
+      })
   } catch (e) {
     console.log('IssueSearch: error advanced searching', e);
   }
