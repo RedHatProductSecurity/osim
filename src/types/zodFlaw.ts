@@ -24,6 +24,7 @@ const NistCvssValidationEnumWithBlank = {'': '',...NistCvssValidationEnum} as co
 const AffectednessEnumWithBlank = {'': '',...AffectednessEnum} as const;
 const ResolutionEnumWithBlank = {'': '',...ResolutionEnum} as const;
 
+export type ZodFlawCVSSType = z.infer<typeof FlawCVSSSchema>;
 export const FlawCVSSSchema = z.object({
     comment: z.string().nullable(),
     cvss_version: z.string(),

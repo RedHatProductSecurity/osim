@@ -5,7 +5,7 @@ import { computed, reactive, ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { RouterLink } from 'vue-router';
-import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
+import { ZodFlawSchema, type ZodFlawCVSSType, type ZodFlawType } from '../types/zodFlaw';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -13,7 +13,6 @@ import LabelInput from '@/components/widgets/LabelInput.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
-import PillList from '@/components/widgets/PillList.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
@@ -69,9 +68,10 @@ const {value: flawUnembargo_dt} = useField<string>('unembargo_dt');
 const {value: flawSource} = useField<string>('source');
 const {value: flawReported_dt} = useField<string>('reported_dt');
 const {value: flawMitigation} = useField<string>('mitigation');
-const {value: flawCvss3} = useField<string>('cvss3');
-const {value: flawCvss3_score} = useField<number>('cvss3_score');
 const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
+const {value: flawCvssScores} = useField<ZodFlawCVSSType[]>('cvss_scores');
+const flawCvssScore = computed(()=> flawCvssScores.value[0]);
+
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
 
 const {value: flawEmbargoed} = useField<boolean>('embargoed');
@@ -178,12 +178,7 @@ const onReset = (payload: MouseEvent) => {
 }
 
 const flawCvss3CaculatorLink = computed(()=>{
-  let link = flawCvss3.value;
-  const index = flawCvss3.value.indexOf('CVSS');
-  if(index != -1) {
-    link = link.slice(index);
-  }
-  return `https://www.first.org/cvss/calculator/3.1#${link}`;
+  return `https://www.first.org/cvss/calculator/3.1#${flawCvssScore.value.vector}`;
 });
 
 props.flaw.reported_dt = DateTime.fromISO(props.flaw.reported_dt, { zone: 'utc' }).toJSDate();
@@ -237,7 +232,6 @@ function addBlankAffect() {
 function removeAffect(affectIdx: number) {
   theAffects.value.splice(affectIdx, 1);
 }
-
 </script>
 
 <template>
@@ -246,8 +240,8 @@ function removeAffect(affectIdx: number) {
       @submit="onSubmit"
   >
   <div class="row mt-3 mb-5">
-    <LabelEditable v-model="flawTitle"  label="Title" type="text"/>
     <div class="col">
+        <LabelEditable v-model="flawTitle" label="Title" type="text" />
       <div class="row">
         <div class="col-6">
             <LabelEditable label="Component" type="text" v-model="flawComponent" :error="errors.component"/>
@@ -255,12 +249,12 @@ function removeAffect(affectIdx: number) {
             <div class="">
               <div class="row">
                 <div class="col">
-                  <label class="osim-input has-validation mb-3 border-start ps-3">
-                    <span class="form-label">
+                  <!-- <label class="osim-input has-validation mb-3 border-start ps-3"> -->
+                  <!-- <span class="form-label">
                       CVE IDs
                     </span>
-                    <PillList v-model="cveIds"/>
-                  </label>
+                    <PillList v-model="cveIds"/> -->
+                  <!-- </label> -->
                   <LabelEditable
                       label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id"/>
                 </div>
@@ -277,7 +271,7 @@ function removeAffect(affectIdx: number) {
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
             <LabelEditable type="text" v-model="flawCvss3" :error="errors.cvss3">
               <template #label>
-                CVSS3 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
+                CVSS3.1 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
               </template>
             </LabelEditable>
             <LabelInput label="CVSS3 Score" type="text" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
@@ -388,6 +382,11 @@ function removeAffect(affectIdx: number) {
 </template>
 
 <style scoped>
+
+.osim-cvss-input >>> span.osim-editable-text-value,
+.osim-cvss-input >>> input {
+  font-family: Red Hat Mono;
+}
 .span-editable-text {
   cursor: text;
 }
@@ -414,7 +413,6 @@ function removeAffect(affectIdx: number) {
   font-weight: bold;
 }
 
-
 .osim-content.container label {
   display: block;
 }
@@ -433,5 +431,4 @@ function removeAffect(affectIdx: number) {
   outline: 1px solid #ddd;
   padding: 1.5em;
 }
-
 </style>
