@@ -189,11 +189,17 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
         });
         console.log(error);
       })
-  for (let affect of theAffects.value) {
-    console.log('saving the affect', affect);
-  }
+  // onSubmitAffect();
+
 },
-console.error);
+(validationFailures)=>{
+  console.error(validationFailures)
+  addToast({
+    title: 'Error saving Flaw',
+    body: validationFailures.errors as unknown as string,
+    css: 'warning'
+  });
+});
 
 const onReset = (payload: MouseEvent) => {
   console.log('onReset');
