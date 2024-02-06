@@ -70,12 +70,13 @@ function clearAll() {
 </template>
 
 <style scoped>
-
+.osim-toast-container-clear button {
+  pointer-events: auto;
+}
 .osim-toast-container {
   position: v-bind(position);
   top: v-bind(top);
   /*height: calc(100vh - 100px);*/
-  pointer-events: all !important; /* override bootstrap .toast-container default value of 'none'*/ 
   height: v-bind(height);
   overflow-x: clip;
   overflow-y: auto;
