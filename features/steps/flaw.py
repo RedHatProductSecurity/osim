@@ -1,58 +1,46 @@
 import time
 from behave import given, when, then
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
-from features.locators import (
-    COMMENT_BUTTON,
-    FLAW_CHECKALL,
-    FLAW_CHECKBOX,
-    FLAW_LIST,
-    FLAW_ROW,
-    LOAD_MORE_FLAWS_BUTTON,
-    USER_BUTTON
-)
 from features.utils import (
     wait_for_visibility_by_locator,
     skip_step_when_needed,
     generate_random_text
 )
+from features.pages.flaw_detail_page import FlawDetailPage
+from features.pages.home_page import HomePage
 
 
 @given('I am on the flaw list')
 def step_impl(context):
-    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR, FLAW_LIST)
+    home_page = HomePage(context.browser)
+    home_page.flaw_list_exist()
 
 
 @when('I click the link of a flaw')
 def step_impl(context):
-    flaw_link_xpath = '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'
-    wait_for_visibility_by_locator(context.browser, By.XPATH, flaw_link_xpath)
-    context.browser.find_element(By.XPATH, flaw_link_xpath).click()
+    home_page = HomePage(context.browser)
+    home_page.click_first_flaw_link()
 
 
 @then('I am able to view the flaw detail')
 def step_impl(context):
-    wait_for_visibility_by_locator(context.browser, By.XPATH, COMMENT_BUTTON)
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.add_comment_btn_exist()
     context.browser.quit()
 
 
 @when('I check the check-all checkbox of flaw table')
 def step_impl(context):
-    wait_for_visibility_by_locator(context.browser, By.XPATH, FLAW_CHECKALL)
-    wait_for_visibility_by_locator(context.browser, By.XPATH, '//tbody[@class="table-group-divider"]/tr[1]')
-    context.browser.find_element(By.XPATH, FLAW_CHECKALL).click()
+    home_page = HomePage(context.browser)
+    home_page.click_flaw_check_all_checkbox()
 
 
 @then('All flaws in flaw table are selected')
 def step_impl(context):
-    flaw_rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
-    flaw_checkboxes = context.browser.find_elements(By.CSS_SELECTOR, FLAW_CHECKBOX)
-    assert len(flaw_rows) == len(flaw_checkboxes), 'Incorrect checkbox count'
-
-    flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
-    assert len(flaw_checked) == len(flaw_checkboxes), 'Incorrect check-all check result'
+    home_page = HomePage(context.browser)
+    home_page.check_is_all_flaw_selected()
     context.browser.quit()
 
 
@@ -65,22 +53,22 @@ def step_impl(context):
 
 @when('I uncheck the check-all checkbox')
 def step_impl(context):
-    context.browser.find_element(By.XPATH, FLAW_CHECKALL).click()
+    home_page = HomePage(context.browser)
+    home_page.click_flaw_check_all_checkbox()
 
 
 @then('No flaw in flaw table is selected')
 def step_impl(context):
-    flaw_checkboxes = context.browser.find_elements(By.CSS_SELECTOR, FLAW_CHECKBOX)
-    flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
-    assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
+    home_page = HomePage(context.browser)
+    home_page.check_is_all_flaw_unselected()
     context.browser.quit()
 
 
 @given('Not all flaws are loaded')
 def step_impl(context):
-    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR, USER_BUTTON)
+    home_page = HomePage(context.browser)
     try:
-        context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
+        home_page.check_is_all_flaw_loaded()
     except NoSuchElementException:
         context.skip = True
         context.browser.quit()
@@ -89,25 +77,16 @@ def step_impl(context):
 @when("I click the button 'Load More Flaws'")
 @skip_step_when_needed
 def step_impl(context):
-    # wait flaw data load
-    wait_for_visibility_by_locator(context.browser, By.XPATH, '//tbody[@class="table-group-divider"]/tr[1]')
-    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
-    context.flaws_count = len(rows)
-    btn = context.browser.find_element(By.XPATH, LOAD_MORE_FLAWS_BUTTON)
-    context.browser.execute_script("arguments[0].click();", btn)
+    home_page = HomePage(context.browser)
+    context.flaws_count = home_page.click_load_more_flaws_btn()
 
 
 @then("More flaws are loaded into the list")
 @skip_step_when_needed
 def step_impl(context):
     # check if there is more flaws loaded
-    wait_for_visibility_by_locator(
-        context.browser, By.XPATH,
-        f'//tbody[@class="table-group-divider"]/tr[{context.flaws_count*2+1}]')
-
-    rows = context.browser.find_elements(By.XPATH, FLAW_ROW)
-    assert len(rows) > context.flaws_count, \
-        "No more flaws loaded after click the 'Load More Flaws' button"
+    home_page = HomePage(context.browser)
+    home_page.is_more_flaw_loaded(context.flaws_count)
     context.browser.quit()
 
 
@@ -116,26 +95,20 @@ def step_impl(context):
     # Click the "Add public comment" button
     context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(2)
-    wait_for_visibility_by_locator(context.browser, By.XPATH, COMMENT_BUTTON)
-    try:
-        element=context.browser.find_element(By.XPATH, COMMENT_BUTTON)
-    except NoSuchElementException:
-        context.browser.quit()
-    ActionChains(context.browser).move_to_element(element).click().perform()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.add_comment_btn_exist()
+    flaw_detail_page.click_add_comment_btn()
+
     # Add the random public comment
-    comment_text_windown = f"(//textarea[@class='form-control'])[5]"
-    wait_for_visibility_by_locator(context.browser, By.XPATH, comment_text_windown)
     public_comment = generate_random_text()
-    context.browser.find_element(By.XPATH,comment_text_windown).send_keys(public_comment)
+    flaw_detail_page.set_comment_value(public_comment)
     # Save the comment
     context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(2)
-    try:
-        element=context.browser.find_element(By.XPATH, COMMENT_BUTTON)
-    except NoSuchElementException:
-        context.browser.quit()
-    ActionChains(context.browser).move_to_element(element).click().perform()
+    flaw_detail_page.click_add_comment_btn()
+
     context.add_comment = public_comment
+
 
 @then('A comment is added to the flaw')
 def step_impl(context):
