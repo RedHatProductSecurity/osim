@@ -87,7 +87,7 @@ export const TrackerSchema = z.object({
 export const ZodFlawClassification = z.object({
     workflow: z.string(),
     state: z.nativeEnum(FlawClassificationStateEnum),
-})
+});
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
@@ -111,10 +111,10 @@ export const ZodAffectSchema = z.object({
         ps_component: z.string(),
         ps_module: z.string(),
         resolution: z.string(),
-    }).nullable(),
+    }).nullish(),
     delegated_resolution: z.string().nullable(),
     cvss_scores: z.array(AffectCVSSSchema),
-    classifcation: ZodFlawClassification,
+    classifcation: ZodFlawClassification.optional(),
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
@@ -160,6 +160,7 @@ export const ZodFlawSchema = z.object({
     nvd_cvss3: z.string().max(100).nullish(), // XXX deprecated
     major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
     nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
+    classification: ZodFlawClassification,
     affects: z.array(ZodAffectSchema), // read-only
     meta: z.array(ZodFlawMetaSchema),
     cvss_scores: z.array(FlawCVSSSchema),
