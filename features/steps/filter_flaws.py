@@ -2,11 +2,8 @@ import time
 from behave import when, then
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from features.pages.home_page import HomePage
 from features.utils import wait_for_visibility_by_locator
-from features.locators import (
-    FLAW_FILTER,
-    FLAW_ROW
-)
 
 FLAW_TITLE_TEXT_XPATH = "//tr[1]/td[6]"
 FLAW_CVE_ID_TEXT_XPATH = "//tr[1]/td[2]/a"
@@ -50,13 +47,11 @@ def when_step_mathcher(context, text_type):
     """
     Input the filter keyword and search
     """
-    wait_for_visibility_by_locator(context.browser, By.CSS_SELECTOR,
-        FLAW_FILTER)
     try:
-        input_element = context.browser.find_element(By.CSS_SELECTOR, FLAW_FILTER)
         text, context.element_locator = catch_one_existing_flaw_text_and_locator(
             context, text_type)
-        input_element.send_keys(text)
+        home_page = HomePage(context.browser)
+        home_page.input_filter_keyword_and_filter_flaw(text)
     except NoSuchElementException:
         context.browser.quit()
 
@@ -66,9 +61,8 @@ def then_step_mathcher(context, flaws_count):
     Check the filter results and check the number of the flaws
     """
     # Make sure the flaws were loaded and the flaw was the filtered flaw
-    wait_for_visibility_by_locator(
-        context.browser, By.XPATH, context.element_locator)
-    current_len = len(context.browser.find_elements(By.XPATH, FLAW_ROW))
+    home_page = HomePage(context.browser)
+    current_len=home_page.get_flaw_list_item_count()
     assert current_len == int(flaws_count)
     context.browser.quit()
 
