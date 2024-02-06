@@ -416,8 +416,8 @@ function removeAffect(affectIdx: number) {
 
 <style scoped>
 
-.osim-cvss-input >>> span.osim-editable-text-value,
-.osim-cvss-input >>> input {
+:deep(.osim-cvss-input  span.osim-editable-text-value),
+:deep(.osim-cvss-input  input ){
   font-family: Red Hat Mono;
 }
 .span-editable-text {
