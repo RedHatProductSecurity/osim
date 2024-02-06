@@ -76,9 +76,7 @@ const wasCvssScoreModified = computed(() => isFieldDirty('cvss_scores'));
 const flawCvssScore = computed(()=> flawCvssScores.value[0] || {vector: '', score: '', comment: ''});
 
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
-
 const {value: flawEmbargoed} = useField<boolean>('embargoed');
-
 const { value: flawAssignee } = useField<string>('owner');
 const { value: flawTeamId } = useField<string>('team_id');
 
@@ -108,22 +106,23 @@ const onSubmitAffect = async () => {
     }
     if (affect.uuid != null) {
       await putAffect(affect.uuid, newAffect)
-          .then(() => {
-            console.log('saved newAffect', newAffect);
-            addToast({
-              title: 'Info',
+        .then(() => {
+          console.log('saved newAffect', newAffect);
+          addToast({
+            title: 'Info',
             body: `Affect ${index+1} of ${affectsQuantity} Saved: ${newAffect.ps_component}`,
             css: 'success',
-            });
-          })
-          .catch(error => {
-            const displayedError = getDisplayedOsidbError(error);
-            addToast({
-              title: 'Error saving Affect',
-              body: displayedError,
-            });
-            console.log(error);
-          })
+          });
+        })
+        .catch(error => {
+          const displayedError = getDisplayedOsidbError(error);
+          addToast({
+            title: 'Error saving Affect',
+            body: displayedError,
+            css: 'warning',
+          });
+          console.log(error);
+        })
     } else {
       await postAffect(newAffect)
           .then(() => {
@@ -179,6 +178,7 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
           addToast({
             title: 'Info',
             body: 'Flaw Saved',
+            css: 'success',
           });
           emit('refresh:flaw');
         }
@@ -188,6 +188,7 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
         addToast({
           title: 'Error saving Flaw',
           body: displayedError,
+          css: 'warning',
         });
         console.log(error);
       })
@@ -244,6 +245,7 @@ function addPublicComment() {
         addToast({
           title: 'Comment saved',
           body: 'Comment saved',
+          css: 'success',
         });
         newPublicComment.value = '';
         addComment.value = false;
@@ -253,6 +255,7 @@ function addPublicComment() {
         addToast({
           title: 'Error saving comment',
           body: getDisplayedOsidbError(e),
+          css: 'warning',
         });
       })
 }
