@@ -87,7 +87,8 @@ let committedFlaw: ZodFlawType = reactive(props.flaw);
 setValues(committedFlaw);
 
 const onSubmitAffect = async () => {
-  for (let affect of theAffects.value) {
+  const affectsQuantity = theAffects.value.length
+  for (let [index, affect] of theAffects.value.entries()) {
     let go = true;
     console.log('saving the affect', affect);
     console.log(affect.uuid);
@@ -111,7 +112,8 @@ const onSubmitAffect = async () => {
             console.log('saved newAffect', newAffect);
             addToast({
               title: 'Info',
-              body: `Affect Saved: ${newAffect.ps_component}`,
+            body: `Affect ${index+1} of ${affectsQuantity} Saved: ${newAffect.ps_component}`,
+            css: 'success',
             });
           })
           .catch(error => {
