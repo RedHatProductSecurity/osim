@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
-import type {ZodFlawType} from '@/types/zodFlaw';
+import type { ZodFlawType } from '@/types/zodFlaw';
 import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
@@ -95,6 +95,30 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   })
 }
 
+// {
+//   "comment": "string",
+//   "cvss_version": "string",
+//   "issuer": "RH",
+//   "score": 0,
+//   "vector": "string",
+//   "embargoed": true,
+//   "updated_dt": "2024-02-06T16:02:54.708Z"
+// }
+export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cvssScoreObject: unknown) {
+  const putObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+  delete putObject['uuid'];
+  delete putObject['flaw'];
+  delete putObject['created_dt'];
+  return osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
+    data: putObject,
+  }).then(response => {
+    console.log(response);
+    return response.data;
+  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+}
+
 export async function postFlawPublicComment(uuid: string, comment: string) {
   return osidbFetch({
     method: 'post',
@@ -177,8 +201,6 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     .catch(console.error);
 }
 
-
-
 export async function createFlaw(flawCreateRequest: any) {
   // {
   //   "type": "VULNERABILITY",
@@ -225,4 +247,18 @@ export function getFlawBugzillaLink(flaw: any) {
   }
   const link = osimRuntime.value.backends.bugzilla + '/show_bug.cgi?id=' + bzId;
   return link;
+}
+
+function createCatchHandler (consoleMessage: string) {
+  return ((error: AxiosError) => {
+    const displayedError = getDisplayedOsidbError(error);
+    const { addToast } = useToastStore();
+    addToast({
+      title: displayedError,
+      body: error.response?.data as string,
+      css: 'warning'
+    })
+    console.error('❌ ', consoleMessage, error);
+    throw error;
+  })
 }

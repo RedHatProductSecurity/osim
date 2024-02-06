@@ -22,7 +22,8 @@ import {
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlawPublicComment,
-  putFlaw
+  putFlaw,
+  putFlawCvssScores,
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
@@ -45,14 +46,13 @@ const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().e
 const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 const validationSchema = toTypedSchema(ZodFlawSchema);
 
-const {handleSubmit, errors, setValues, values} = useForm({
+const { handleSubmit, errors, setValues, isFieldDirty } = useForm({
   validationSchema,
   // initialValues: {
   //
   // },
 });
 
-const cveIds = ref<string[]>([]);
 const theAffects = ref<any[]>(props.flaw.affects);
 
 const {value: flawType} = useField<string>('type');
@@ -69,8 +69,11 @@ const {value: flawSource} = useField<string>('source');
 const {value: flawReported_dt} = useField<string>('reported_dt');
 const {value: flawMitigation} = useField<string>('mitigation');
 const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
-const {value: flawCvssScores} = useField<ZodFlawCVSSType[]>('cvss_scores');
-const flawCvssScore = computed(()=> flawCvssScores.value[0]);
+const {value: flawCvssScores, } = useField<ZodFlawCVSSType[]>(()=>'cvss_scores');
+
+const wasCvssScoreModified = computed(() => isFieldDirty('cvss_scores'));
+
+const flawCvssScore = computed(()=> flawCvssScores.value[0] || {vector: '', score: '', comment: ''});
 
 const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
 
@@ -144,6 +147,26 @@ const onSubmitAffect = async () => {
 const onSubmit = handleSubmit((flaw: ZodFlawType) => {
   let flawSaved = false;
   // Save Flaw, then safe Affects, then refresh
+  if (wasCvssScoreModified.value) {
+    putFlawCvssScores(props.flaw.uuid, flawCvssScore.value.uuid || '', flawCvssScore.value as unknown)
+      .then((response) => {
+        console.log('saved flawCvssScores', response);
+        addToast({
+          title: 'Success!',
+          body: 'Saved CVSS Scores',
+          css: 'success',
+        });
+      })
+      .catch(error => {
+        const displayedError = getDisplayedOsidbError(error);
+        addToast({
+          title: 'Error saving Flaw CVSS Scores',
+          body: displayedError,
+          css: 'warning',
+        });
+        console.log(error);
+      })
+  }
   putFlaw(props.flaw.uuid, flaw)
       .then(() => {
         flawSaved = true;
@@ -177,7 +200,7 @@ const onReset = (payload: MouseEvent) => {
   setValues(committedFlaw);
 }
 
-const flawCvss3CaculatorLink = computed(()=>{
+const flawCvss3CaculatorLink = computed(() => {
   return `https://www.first.org/cvss/calculator/3.1#${flawCvssScore.value.vector}`;
 });
 
@@ -269,12 +292,14 @@ function removeAffect(affectIdx: number) {
               </div>
             </div>
             <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
-            <LabelEditable type="text" v-model="flawCvss3" :error="errors.cvss3">
+            <LabelEditable type="text" class="osim-cvss-input" v-model="flawCvssScore.vector" :error="errors.cvss3">
               <template #label>
                 CVSS3.1 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
               </template>
             </LabelEditable>
-            <LabelInput label="CVSS3 Score" type="text" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
+
+            <LabelInput label="CVSS3.1 Score" type="text" v-model="flawCvssScore.score" :error="errors.cvss3_score" />
+            <LabelTextarea label="CVSS Explanation" v-model="flawCvssScore.comment" />
             <LabelEditable label="NVD CVSS3" type="text" v-model="flawNvd_cvss3" :error="errors.nvd_cvss3"/>
             <LabelEditable label="CWE ID" type="text" v-model="flawCwe_id" :error="errors.cwe_id"/>
             <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
