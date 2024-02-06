@@ -86,7 +86,7 @@ export const TrackerSchema = z.object({
 export const ZodFlawClassification = z.object({
     workflow: z.string(),
     state: z.nativeEnum(FlawClassificationStateEnum),
-})
+});
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
@@ -110,10 +110,10 @@ export const ZodAffectSchema = z.object({
         ps_component: z.string(),
         ps_module: z.string(),
         resolution: z.string(),
-    }).nullable(),
+    }).nullish(),
     delegated_resolution: z.string().nullable(),
     cvss_scores: z.array(AffectCVSSSchema),
-    classifcation: ZodFlawClassification,
+    classifcation: ZodFlawClassification.optional(),
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
