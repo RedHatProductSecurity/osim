@@ -20,7 +20,9 @@ class HomePage(PageFactory):
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
         "firstFlaw": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
-        "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a")
+        "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
+        "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
+        "flawRow": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']")
     }
 
     def click_flaw_index_btn(self):
@@ -73,3 +75,11 @@ class HomePage(PageFactory):
         flaw_count = len(find_elements_in_page_factory(self, "flawListContent"))
         assert flaw_count > old_count, \
             "No more flaws loaded after click the 'Load More Flaws' button"
+
+    def input_filter_keyword_and_filter_flaw(self, keywd):
+        self.flawFilterBox.visibility_of_element_located()
+        self.flawFilterBox.set_text(keywd)
+
+    def get_flaw_list_item_count(self):
+        self.flawRow.visibility_of_element_located()
+        return len(find_elements_in_page_factory(self, "flawRow"))
