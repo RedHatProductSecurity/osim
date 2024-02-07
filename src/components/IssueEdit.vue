@@ -11,7 +11,6 @@ import LabelInput from '@/components/widgets/LabelInput.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
-import PillList from '@/components/widgets/PillList.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
@@ -43,7 +42,6 @@ const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().e
 const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
 const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
 
-const cveIds = ref<string[]>([]);
 const theAffects = ref<any[]>(props.flaw.affects);
 
 // TODO
@@ -236,12 +234,6 @@ function removeAffect(affectIdx: number) {
             <div class="">
               <div class="row">
                 <div class="col">
-                  <label class="osim-input has-validation mb-3 border-start ps-3">
-                    <span class="form-label">
-                      CVE IDs
-                    </span>
-                    <PillList v-model="cveIds"/>
-                  </label>
                   <LabelEditable
                       label="CVE ID" type="text" v-model="flaw.cve_id" :error="errors.cve_id"/>
                 </div>
