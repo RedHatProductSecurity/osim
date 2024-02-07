@@ -176,10 +176,10 @@ function blur(e: FocusEvent | null) {
 function formatDate(input: Date | string): string {
   const dt = DateTime.fromJSDate(new Date(input)).toUTC();
   const result = dt.toISODate(); // returns in 'YYYY-MM-DD' format
-  if (result === null) {
-    throw new Error('Could not format date');
-  }
-  return result;
+  // if (result === null) {
+  //   throw new Error('Could not format date');
+  // }
+  return result || '';
 }
 
 

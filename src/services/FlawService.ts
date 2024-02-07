@@ -119,6 +119,29 @@ export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cv
   }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
 
+// {
+//   "comment": "string",
+//   "cvss_version": "string",
+//   "issuer": "RH",
+//   "score": 0,
+//   "vector": "string",
+//   "embargoed": true
+// }
+export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknown) {
+  const postObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+  delete postObject['uuid'];
+  delete postObject['flaw'];
+  delete postObject['created_dt'];
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
+    data: postObject,
+  }).then(response => {
+    console.log(response);
+    return response.data;
+  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+}
+
 export async function postFlawPublicComment(uuid: string, comment: string) {
   return osidbFetch({
     method: 'post',

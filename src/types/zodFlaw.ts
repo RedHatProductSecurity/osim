@@ -72,7 +72,7 @@ export const TrackerSchema = z.object({
         ps_update_stream: z.string(),
         resolution: z.string(),
         status: z.string(),
-    }),
+    }).optional(),
     ps_update_stream: z.string().max(100).nullish(),
     status: z.string().max(100).nullish(),
     resolution: z.string().max(100).nullish(),

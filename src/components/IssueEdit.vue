@@ -24,6 +24,7 @@ import {
   postFlawPublicComment,
   putFlaw,
   putFlawCvssScores,
+  postFlawCvssScores,
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
@@ -145,10 +146,8 @@ const onSubmitAffect = async () => {
   emit('refresh:flaw');
 }
 
-const onSubmit = handleSubmit((flaw: ZodFlawType) => {
-  let flawSaved = false;
-  // Save Flaw, then safe Affects, then refresh
-  if (wasCvssScoreModified.value) {
+function handleCvssScoresSumbit () {
+  if (flawCvssScore.value.created_dt){
     putFlawCvssScores(props.flaw.uuid, flawCvssScore.value.uuid || '', flawCvssScore.value as unknown)
       .then((response) => {
         console.log('saved flawCvssScores', response);
@@ -161,12 +160,47 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
       .catch(error => {
         const displayedError = getDisplayedOsidbError(error);
         addToast({
-          title: 'Error saving Flaw CVSS Scores',
+          title: 'Error updating Flaw CVSS data',
           body: displayedError,
           css: 'warning',
         });
         console.log(error);
+      });
+  } else {
+    const requestBody = {
+      "comment": flawCvssScore.value.comment,
+      "cvss_version": "3.1",
+      "issuer": "RH",
+      "score": flawCvssScore.value.score,
+      "vector": flawCvssScore.value.vector,
+      "embargoed": flawEmbargoed.value,
+    };
+    postFlawCvssScores(props.flaw.uuid, requestBody as unknown)
+      .then((response) => {
+        console.log('saved flawCvssScores', response);
+        addToast({
+          title: 'Success!',
+          body: 'Saved CVSS Scores',
+          css: 'success',
+        });
       })
+      .catch(error => {
+        const displayedError = getDisplayedOsidbError(error);
+        addToast({
+          title: 'Error creating Flaw CVSS data',
+          body: displayedError,
+          css: 'warning',
+        });
+        console.log(error);
+      });
+  }
+}
+
+const onSubmit = handleSubmit((flaw: ZodFlawType) => {
+  let flawSaved = false;
+  // Save Flaw, then safe Affects, then refresh
+  if (wasCvssScoreModified.value) {
+    handleCvssScoresSumbit();
   }
   putFlaw(props.flaw.uuid, flaw)
       .then(() => {
@@ -309,7 +343,7 @@ function removeAffect(affectIdx: number) {
               </template>
             </LabelEditable>
 
-            <LabelInput label="CVSS3.1 Score" type="text" v-model="flawCvssScore.score" :error="errors.cvss3_score" />
+            <LabelInput label="CVSS3.1 Score" type="text" v-model.number="flawCvssScore.score" :error="errors.cvss3_score" />
             <LabelTextarea label="CVSS Explanation" v-model="flawCvssScore.comment" />
             <LabelEditable label="NVD CVSS3" type="text" v-model="flawNvd_cvss3" :error="errors.nvd_cvss3"/>
             <LabelEditable label="CWE ID" type="text" v-model="flawCwe_id" :error="errors.cwe_id"/>
