@@ -2,8 +2,6 @@
 
 import { DateTime } from 'luxon';
 import { computed, reactive, ref } from 'vue';
-import { useField, useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
 import { RouterLink } from 'vue-router';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -44,44 +42,27 @@ const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum)
 const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
 const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
 const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
-const validationSchema = toTypedSchema(ZodFlawSchema);
-
-const {handleSubmit, errors, setValues, values} = useForm({
-  validationSchema,
-  // initialValues: {
-  //
-  // },
-});
 
 const cveIds = ref<string[]>([]);
 const theAffects = ref<any[]>(props.flaw.affects);
 
-const {value: flawType} = useField<string>('type');
-const {value: flawCve_id} = useField<string>('cve_id');
-const {value: flawImpact} = useField<string>('impact');
-const {value: flawComponent} = useField<string>('component');
-const {value: flawTitle} = useField<string>('title');
-const {value: flawDescription} = useField<string>('description');
-const {value: flawSummary} = useField<string>('summary');
-const {value: flawStatement} = useField<string>('statement');
-const {value: flawCwe_id} = useField<string>('cwe_id');
-const {value: flawUnembargo_dt} = useField<string>('unembargo_dt');
-const {value: flawSource} = useField<string>('source');
-const {value: flawReported_dt} = useField<string>('reported_dt');
-const {value: flawMitigation} = useField<string>('mitigation');
-const {value: flawCvss3} = useField<string>('cvss3');
-const {value: flawCvss3_score} = useField<number>('cvss3_score');
-const {value: flawNvd_cvss3} = useField<string>('nvd_cvss3');
-const {value: flawMajor_incident_state} = useField<string>('major_incident_state');
-
-const {value: flawEmbargoed} = useField<boolean>('embargoed');
-
-const { value: flawAssignee } = useField<string>('owner');
-const { value: flawTeamId } = useField<string>('team_id');
+// TODO
+const errors = {
+  cve_id: null,
+  impact: null,
+  cvss3: null,
+  cvss3_score: null,
+  nvd_cvss3: null,
+  cwe_id: null,
+  major_incident_state: null,
+  reported_dt: null,
+  unembargo_dt: null,
+  type: null,
+  component: null,
+  source: null,
+};
 
 let committedFlaw: ZodFlawType = reactive(props.flaw);
-
-setValues(committedFlaw);
 
 const onSubmitAffect = async () => {
   for (let affect of theAffects.value) {
@@ -141,7 +122,8 @@ const onSubmitAffect = async () => {
   emit('refresh:flaw');
 }
 
-const onSubmit = handleSubmit((flaw: ZodFlawType) => {
+const onSubmit = () => {
+  let flaw = props.flaw;
   let flawSaved = false;
   // Save Flaw, then safe Affects, then refresh
   putFlaw(props.flaw.uuid, flaw)
@@ -169,17 +151,16 @@ const onSubmit = handleSubmit((flaw: ZodFlawType) => {
   for (let affect of theAffects.value) {
     console.log('saving the affect', affect);
   }
-},
-console.error);
+};
 
 const onReset = (payload: MouseEvent) => {
   console.log('onReset');
-  setValues(committedFlaw);
+  // FIXME XXX TODO
 }
 
 const flawCvss3CaculatorLink = computed(()=>{
-  let link = flawCvss3.value;
-  const index = flawCvss3.value.indexOf('CVSS');
+  let link = props.flaw.cvss3;
+  const index = props.flaw.cvss3.indexOf('CVSS');
   if(index != -1) {
     link = link.slice(index);
   }
@@ -243,15 +224,15 @@ function removeAffect(affectIdx: number) {
 <template>
   <form
       class="osim-content container"
-      @submit="onSubmit"
+      @submit="onSubmit()"
   >
   <div class="row mt-3 mb-5">
-    <LabelEditable v-model="flawTitle"  label="Title" type="text"/>
+    <LabelEditable v-model="flaw.title"  label="Title" type="text"/>
     <div class="col">
       <div class="row">
         <div class="col-6">
-            <LabelEditable label="Component" type="text" v-model="flawComponent" :error="errors.component"/>
-            <LabelSelect label="Type" :options="flawTypes" v-model="flawType" :error="errors.type"/>
+            <LabelEditable label="Component" type="text" v-model="flaw.component" :error="errors.component"/>
+            <LabelSelect label="Type" :options="flawTypes" v-model="flaw.type" :error="errors.type"/>
             <div class="">
               <div class="row">
                 <div class="col">
@@ -262,43 +243,43 @@ function removeAffect(affectIdx: number) {
                     <PillList v-model="cveIds"/>
                   </label>
                   <LabelEditable
-                      label="CVE ID" type="text" v-model="flawCve_id" :error="errors.cve_id"/>
+                      label="CVE ID" type="text" v-model="flaw.cve_id" :error="errors.cve_id"/>
                 </div>
-                <div v-if="!(flawCve_id || '').includes('CVE')" class="col-auto align-self-end mb-3">
+                <div v-if="!(flaw.cve_id || '').includes('CVE')" class="col-auto align-self-end mb-3">
                   <CveRequestForm
                       :bugzilla-link="getFlawBugzillaLink(flaw)"
                       :osim-link="getFlawOsimLink(flaw.uuid)"
-                      :subject="flawTitle"
-                      :description="flawDescription"
+                      :subject="flaw.title"
+                      :description="flaw.description"
                   />
                 </div>
               </div>
             </div>
-            <LabelSelect label="Impact" :options="flawImpacts" v-model="flawImpact" :error="errors.impact"/>
-            <LabelEditable type="text" v-model="flawCvss3" :error="errors.cvss3">
+            <LabelSelect label="Impact" :options="flawImpacts" v-model="flaw.impact" :error="errors.impact"/>
+            <LabelEditable type="text" v-model="flaw.cvss3" :error="errors.cvss3">
               <template #label>
                 CVSS3 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
               </template>
             </LabelEditable>
-            <LabelInput label="CVSS3 Score" type="text" v-model="flawCvss3_score" :error="errors.cvss3_score"/>
-            <LabelEditable label="NVD CVSS3" type="text" v-model="flawNvd_cvss3" :error="errors.nvd_cvss3"/>
-            <LabelEditable label="CWE ID" type="text" v-model="flawCwe_id" :error="errors.cwe_id"/>
-            <LabelSelect label="Source" :options="flawSources" v-model="flawSource" :error="errors.source"/>
+            <LabelInput label="CVSS3 Score" type="text" v-model="flaw.cvss3_score" :error="errors.cvss3_score"/>
+            <LabelEditable label="NVD CVSS3" type="text" v-model="flaw.nvd_cvss3" :error="errors.nvd_cvss3"/>
+            <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
+            <LabelSelect label="Source" :options="flawSources" v-model="flaw.source" :error="errors.source"/>
           </div>
           <div class="col-6">
-            <IssueFieldStatus :flawId="flaw.uuid"/>
-            <LabelSelect label="Incident State" :options="incidentStates" v-model="flawMajor_incident_state" :error="errors.major_incident_state"/>
-            <LabelEditable label="Reported Date" type="date" v-model="flawReported_dt" :error="errors.reported_dt"/>
+            <IssueFieldStatus :classification="flaw.classification" :flawId="flaw.uuid"/>
+            <LabelSelect label="Incident State" :options="incidentStates" v-model="flaw.major_incident_state" :error="errors.major_incident_state"/>
+            <LabelEditable label="Reported Date" type="date" v-model="flaw.reported_dt" :error="errors.reported_dt"/>
             <LabelEditable
                 :label="'Public Date' + (DateTime.fromJSDate(flaw.unembargo_dt).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
                 type="date"
-                v-model="flawUnembargo_dt"
+                v-model="flaw.unembargo_dt"
                 :error="errors.unembargo_dt"/>
             <IssueFieldEmbargo
-                v-model="flawEmbargoed"
-                :cveId="flawCve_id"/>
-            <LabelEditable label="Assignee" type="text" v-model="flawAssignee" />
-            <LabelEditable type="text" label="Team ID" v-model="flawTeamId" />
+                v-model="flaw.embargoed"
+                :cveId="flaw.cve_id"/>
+            <LabelEditable label="Assignee" type="text" v-model="flaw.owner" />
+            <LabelEditable type="text" label="Team ID" v-model="flaw.team_id" />
             <div>
               <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
               <div v-for="tracker in trackerUuids">
@@ -333,10 +314,10 @@ function removeAffect(affectIdx: number) {
         </div>
 
         <div class="row">
-          <LabelTextarea label="Summary" v-model="flawSummary"/>
-          <LabelTextarea label="Description" v-model="flawDescription"/>
-          <LabelTextarea label="Statement" v-model="flawStatement"/>
-          <LabelTextarea label="Mitigation" v-model="flawMitigation"/>
+          <LabelTextarea label="Summary" v-model="flaw.summary"/>
+          <LabelTextarea label="Description" v-model="flaw.description"/>
+          <LabelTextarea label="Statement" v-model="flaw.statement"/>
+          <LabelTextarea label="Mitigation" v-model="flaw.mitigation"/>
         </div>
       </div>
 
