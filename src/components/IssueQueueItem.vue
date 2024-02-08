@@ -29,6 +29,7 @@ defineEmits<{
     <td>{{ issue.created_dt }}</td>
     <td>{{ issue.title }}</td>
     <td>{{ issue.state }}</td>
+    <td>{{ issue.owner }}</td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
 </template>

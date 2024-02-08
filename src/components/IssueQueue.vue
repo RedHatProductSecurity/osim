@@ -139,6 +139,7 @@ onUnmounted(() => {
           <th>created_dt</th>
           <th>Title</th>
           <th>State</th>
+          <th>Owner</th>
           <!--<th>Assigned</th>-->
         </tr>
         </thead>

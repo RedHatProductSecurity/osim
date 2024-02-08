@@ -5,7 +5,7 @@
 // Blurring focus or clicking the save button commits the change
 // Pressing escape or clicking the abort button aborts the change
 
-import {computed, nextTick, ref, unref} from 'vue';
+import {nextTick, ref, unref, watch} from 'vue';
 
 const props = defineProps<{
   modelValue: string | null,
@@ -26,6 +26,10 @@ const editing = ref<boolean>(props.editing ?? false);
 const saveFlashMs = 100;
 
 const editedModelValue = ref<string | null>(unref(props.modelValue));
+
+watch(() => props.modelValue, () => {
+  editedModelValue.value = props.modelValue;
+});
 
 function beginEdit() {
   editing.value = true;

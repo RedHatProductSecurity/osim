@@ -2,35 +2,22 @@
 import { ref, watchEffect } from 'vue';
 import {SettingsSchema, useSettingsStore} from '@/stores/SettingsStore';
 import type {SettingsType} from '@/stores/SettingsStore';
-import {useField, useForm} from 'vee-validate';
-import {toTypedSchema} from '@vee-validate/zod';
 
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
 const revealSensitive = ref<SensitiveFormInput>('password');
-const validationSchema = toTypedSchema(SettingsSchema);
-const initialValues = ref(settingsStore.settings);
 
-watchEffect(() => {
-  initialValues.value = settingsStore.settings;
-});
+const settings = ref(settingsStore.settings);
 
-const { handleSubmit, errors, resetForm, meta } = useForm({
-  validationSchema,
-  initialValues: initialValues.value,
-});
-
-const onSubmit = handleSubmit((values: SettingsType) => {
+const onSubmit = (values: SettingsType) => {
   settingsStore.save(values);
-});
-
-const onReset = (payload: MouseEvent) => {
-  resetForm();
 };
 
-const { value: bugzillaApiKey } = useField('bugzillaApiKey');
-const { value: jiraApiKey } = useField('jiraApiKey');
+const errors = {
+  bugzillaApiKey: null,
+  jiraApiKey: null,
+};
 
 </script>
 
@@ -45,7 +32,7 @@ const { value: jiraApiKey } = useField('jiraApiKey');
 
     <!--@submit.prevent="settingsStore.save(settings)"-->
     <form
-        @submit="onSubmit"
+        @submit="onSubmit(settings)"
         class="osim-settings"
     >
 
@@ -73,7 +60,7 @@ const { value: jiraApiKey } = useField('jiraApiKey');
           <input 
             class="form-control"
             :type="revealSensitive"
-            v-model="bugzillaApiKey"
+            v-model="settings.bugzillaApiKey"
             :class="{'is-invalid': errors.bugzillaApiKey != null}"
             placeholder="[none saved]"
           />
@@ -104,7 +91,7 @@ const { value: jiraApiKey } = useField('jiraApiKey');
           <input 
             class="form-control"
             :type="revealSensitive"
-            v-model="jiraApiKey"
+            v-model="settings.jiraApiKey"
             :class="{'is-invalid': errors.jiraApiKey != null}"
             placeholder="[none saved]"
           />
@@ -127,15 +114,6 @@ const { value: jiraApiKey } = useField('jiraApiKey');
             <li>Copy token value and close.</li>
           </ul>
         </div>
-      </div>
-      <div
-          v-if="meta.dirty"
-          class="alert alert-warning"
-          role="alert"
-      >Remember to save your changes</div>
-      <div class="osim-save-buttons text-end">
-        <button type="button" class="btn btn-primary me-3" @click="onReset">Reset</button>
-        <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </form>
 
