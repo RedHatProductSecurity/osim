@@ -169,9 +169,9 @@ function handleCvssScoresSumbit () {
   } else {
     const requestBody = {
       "comment": flawCvssScore.value.comment,
-      "cvss_version": "3.1",
+      "cvss_version": "V3",
       "issuer": "RH",
-      "score": flawCvssScore.value.score,
+      // "score": flawCvssScore.value.score,
       "vector": flawCvssScore.value.vector,
       "embargoed": flawEmbargoed.value,
     };
