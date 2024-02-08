@@ -43,7 +43,7 @@ function clearAll() {
             This preserves the container width, which fixes animation.
     --></div>
     <Transition name="toast">
-      <div class="osim-toast-container-clear">
+      <div class="osim-toast-container-clear d-flex justify-content-end">
         <button
             v-if="toasts.length > 1"
             type="button"
