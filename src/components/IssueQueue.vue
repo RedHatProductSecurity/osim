@@ -144,8 +144,8 @@ onUnmounted(() => {
         </tr>
         </thead>
         <tbody class="table-group-divider">
-        <template v-for="filteredIssue of filteredIssues">
-          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" />
+        <template v-for="(filteredIssue, index) of filteredIssues">
+          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" :class="{'osim-shaded':index % 2===0}" />
         </template>
         </tbody>
       </table>
@@ -167,7 +167,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 @import "@/scss/bootstap-overrides.scss";
 .osim-content.container:deep( tr.osim-issue-queue-item:nth-of-type(4n+1) td) {
   background-color: $light-gray;
@@ -177,5 +177,5 @@ onUnmounted(() => {
 }
 /* .osim-content.container:deep( tr.osim-issue-queue-item:nth-of-type(2n+1) td) {
   background-color: aliceblue;
-} */
-</style>
+} */ -->
+<!-- </style> -->

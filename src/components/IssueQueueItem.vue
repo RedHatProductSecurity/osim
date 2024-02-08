@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
+import { computed } from 'vue';
 
 const props = defineProps<{
   issue: any,
   selected: boolean,
 }>();
+
+const isEmbargoed = computed(() => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0);
+const hasBadges = computed(() => isEmbargoed.value);
 
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
@@ -14,7 +18,7 @@ defineEmits<{
 </script>
 
 <template>
-  <tr class="osim-issue-queue-item">
+  <tr class="osim-issue-queue-item" :class="$attrs.class">
     <td><input :checked="selected" @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)" type="checkbox" class="form-check-input" aria-label="Select Issue"></td>
     <td>
       <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id || issue.uuid }}</RouterLink>
@@ -28,10 +32,10 @@ defineEmits<{
     <td>{{ issue.owner }}</td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
-  <tr class="osim-badge-gutter" :class="{'osim-hidden': !issue.unembargo_dt }">
+  <tr class="osim-badge-gutter" :class="$attrs.class" v-if="hasBadges">
     <td colspan="100%" >
-    <div v-if="issue.unembargo_dt" class="ps-4">
-      <span v-if="DateTime.fromISO(issue.unembargo_dt).diffNow().milliseconds > 0">
+    <div  class="ps-4">
+      <span v-if="isEmbargoed">
         <span class="badge rounded-pill text-bg-danger">Embargoed</span>
       </span>
     </div>
@@ -39,9 +43,15 @@ defineEmits<{
   </tr>
 </template>
 
-<style scoped>
-.osim-hidden {
-  max-height: 0px;
-  visibility: hidden;
+<style lang="scss" scoped>
+@import "@/scss/bootstap-overrides.scss";
+
+tr td {
+  border: 0;
 }
+
+tr.osim-shaded td {
+  background-color: $light-gray;
+}
+
 </style>
