@@ -38,11 +38,13 @@ $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
 $blue: $redhat-blue-40;
 $link-color: $blue;
+$light-gray: $redhat-gray-10;
 
 $theme-colors: (
   'black': $black,
   'blue': $blue,
   'gray': $gray,
+  'light-gray': $light-gray,
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,
