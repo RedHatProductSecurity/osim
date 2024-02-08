@@ -113,7 +113,7 @@ export const ZodAffectSchema = z.object({
     }).nullable(),
     delegated_resolution: z.string().nullable(),
     cvss_scores: z.array(AffectCVSSSchema),
-    classifcation: ZodFlawClassification,
+    classification: ZodFlawClassification.nullish(),
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
