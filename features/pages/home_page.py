@@ -16,12 +16,14 @@ class HomePage(PageFactory):
         "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
         "flawCheckAllCheckBox": ("XPATH", "//div[@class='osim-incident-list']/table/thead/tr/th/input[@type='checkbox']"),
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
+        # TODO:// I removed the style atrribute on this and added a class  <tr class="osim-issue-queue-item">
         "flawListContent": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
         "firstFlaw": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
+        # TODO:// I removed the style atrribute on this and added a class  <tr class="osim-issue-queue-item">
         "flawRow": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']")
     }
 

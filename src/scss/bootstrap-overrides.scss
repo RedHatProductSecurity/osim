@@ -1,3 +1,5 @@
+// https://www.redhat.com/en/about/brand/standards/color
+;
 @import './redhat-brand-colors.scss';
 
 @font-face {
@@ -12,7 +14,9 @@
   font-family: 'Red Hat Mono';
   src: url('/fonts/RedHatMono-VariableFont_wght.ttf');
 }
-
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Red Hat Display';
+}
 $font-family-base: 'Red Hat Text';
 $font-family-monospace: 'Red Hat Mono', monospace;
 $font-family-code: $font-family-monospace;
@@ -30,13 +34,19 @@ $black: $redhat-gray-95;
 $info: $redhat-teal-40;
 $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
+$light-gray: $redhat-gray-10;
 $blue: $redhat-blue-40;
 $link-color: $blue;
+$light-purple: $redhat-purple-10;
+
+$nav-link-color: rebeccapurple;
+
 
 $theme-colors: (
   'black': $black,
   'blue': $blue,
   'gray': $gray,
+  'light-gray': $light-gray,
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,

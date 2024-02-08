@@ -124,7 +124,7 @@ onUnmounted(() => {
       </label>
     </div>
     <div class="osim-incident-list">
-      <table class="table">
+      <table class="table align-middle">
         <thead>
         <tr>
           <th><input type="checkbox"
@@ -136,7 +136,7 @@ onUnmounted(() => {
           <th>ID</th>
           <th>Impact</th>
           <th>Source</th>
-          <th>created_dt</th>
+          <th>Created</th>
           <th>Title</th>
           <th>State</th>
           <th>Owner</th>
@@ -144,8 +144,8 @@ onUnmounted(() => {
         </tr>
         </thead>
         <tbody class="table-group-divider">
-        <template v-for="filteredIssue of filteredIssues">
-          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" />
+        <template v-for="(filteredIssue, index) of filteredIssues">
+          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" :class="{'osim-shaded':index % 2===0}" />
         </template>
         </tbody>
       </table>
@@ -166,3 +166,6 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+</style>
