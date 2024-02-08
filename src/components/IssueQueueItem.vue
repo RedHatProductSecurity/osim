@@ -14,7 +14,7 @@ defineEmits<{
 </script>
 
 <template>
-  <tr>
+  <tr class="osim-issue-queue-item">
     <td><input :checked="selected" @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)" type="checkbox" class="form-check-input" aria-label="Select Issue"></td>
     <td>
       <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id || issue.uuid }}</RouterLink>
