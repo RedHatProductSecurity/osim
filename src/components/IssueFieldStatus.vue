@@ -6,15 +6,15 @@ import Modal from '@/components/widgets/Modal.vue';
 import { useField } from 'vee-validate';
 import { ZodFlawClassification } from '@/types/zodFlaw';
 
-defineProps<{
+const props = defineProps<{
   flawId: string;
+  classification: any;
 }>();
 
 const emit = defineEmits<{ 'refresh:flaw': [] }>();
 
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
-const { value: flawStatus } = useField<string>('classification.state');
 
 const workflowStatuses = ZodFlawClassification.shape.state.enum;
 
@@ -24,7 +24,7 @@ const DONE_STATUS = workflowStatuses.Done as string;
 const REJECTED_STATUS = workflowStatuses.Rejected as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATUS, REJECTED_STATUS].includes(flawStatus.value)
+  () => ![DONE_STATUS, REJECTED_STATUS].includes(props.classification.state)
 );
 
 function openModal() {
@@ -56,7 +56,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
 </script>
 
 <template>
-  <LabelStatic label="Status" type="text" v-model="flawStatus">
+  <LabelStatic label="Status" type="text" :model-value="classification.state">
     <div>
       <button
         @click="openModal"
@@ -72,7 +72,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
         id="osim-status-promote-button"
         v-if="shouldShowWorkflowButtons"
       >
-        Promote to {{ nextPhase(flawStatus as WorkflowPhases) }}
+        Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
       </button>
     </div>
     <Modal :show="shouldShowRejectionModal" @close="closeModal">
