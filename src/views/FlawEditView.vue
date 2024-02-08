@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref, watch, watchEffect} from 'vue';
-import IssueEdit from '../components/IssueEdit.vue';
+import FlawForm from '../components/FlawForm.vue';
 import {getFlaw, putFlaw} from '../services/FlawService';
 import {useToastStore} from '@/stores/ToastStore';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
@@ -158,7 +158,7 @@ const onReset = (payload: MouseEvent) => {
   <main>
     <form @submit.prevent="onSubmit">
 
-      <IssueEdit v-if="flaw" @refresh:flaw="refreshFlaw" v-model:flaw="flaw" mode="edit"/>
+      <FlawForm v-if="flaw" @refresh:flaw="refreshFlaw" v-model:flaw="flaw" mode="edit"/>
       <div v-if="flaw" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
         <!--        <button type="button" class="btn btn-primary col">Customer Pending</button>-->
         <!--        <button type="button" class="btn btn-primary col">Close this issue without actions</button>-->
