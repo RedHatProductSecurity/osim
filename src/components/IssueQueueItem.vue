@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const isEmbargoed = computed(() => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0);
 const hasBadges = computed(() => isEmbargoed.value);
-
+const formattedDate = computed(() => DateTime.fromISO(props.issue.created_dt).toFormat('yyyy-MM-dd'));
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
 }>();
@@ -26,7 +26,7 @@ defineEmits<{
     </td>
     <td>{{ issue.impact }}</td>
     <td>{{ issue.source }}</td>
-    <td>{{ issue.created_dt }}</td>
+    <td>{{ formattedDate }}</td>
     <td>{{ issue.title }}</td>
     <td>{{ issue.state }}</td>
     <td>{{ issue.owner }}</td>
