@@ -4,7 +4,7 @@ import {createFlaw} from '@/services/FlawService';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {notifyApiKeyUnset} from '@/services/ApiKeyService';
-import IssueEdit from '@/components/IssueEdit.vue';
+import FlawForm from '@/components/FlawForm.vue';
 import type {ZodFlawType} from '@/types/zodFlaw';
 
 // const props = defineProps<{
@@ -77,7 +77,7 @@ function onSubmit() {
     <!--<textarea v-bind:value="JSON.stringify(flaw)"/>-->
     <form @submit.prevent="onSubmit">
 
-    <IssueEdit v-model:flaw="flaw" mode="create"/>
+    <FlawForm v-model:flaw="flaw" mode="create"/>
 
     <div class="container">
 
