@@ -129,7 +129,7 @@ function commit() {
     if (!isValidDate(date)) {
         emit('update:modelValue', undefined);
     } else {
-        emit('update:modelValue', date);
+        emit('update:modelValue', date.toISOString());
     }
 }
 
