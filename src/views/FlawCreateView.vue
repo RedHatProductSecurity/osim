@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import {createFlaw} from '@/services/FlawService';
-import FlawCreateForm from '@/components/FlawCreateForm.vue';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {notifyApiKeyUnset} from '@/services/ApiKeyService';
