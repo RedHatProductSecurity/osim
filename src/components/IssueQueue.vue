@@ -167,15 +167,5 @@ onUnmounted(() => {
   </div>
 </template>
 
-<!-- <style lang="scss" scoped>
-@import "@/scss/bootstap-overrides.scss";
-.osim-content.container:deep( tr.osim-issue-queue-item:nth-of-type(4n+1) td) {
-  background-color: $light-gray;
-}
-.osim-content.container:deep( tr.osim-badge-gutter:nth-of-type(4n+2) td) {
-  background-color: $light-gray;
-}
-/* .osim-content.container:deep( tr.osim-issue-queue-item:nth-of-type(2n+1) td) {
-  background-color: aliceblue;
-} */ -->
-<!-- </style> -->
+<style scoped>
+</style>
