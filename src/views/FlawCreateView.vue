@@ -5,8 +5,9 @@ import FlawCreateForm from '@/components/FlawCreateForm.vue';
 import router from '@/router';
 import {useSettingsStore} from '@/stores/SettingsStore';
 import {notifyApiKeyUnset} from '@/services/ApiKeyService';
+import IssueEdit from '@/components/IssueEdit.vue';
+import type {ZodFlawType} from '@/types/zodFlaw';
 
-const flaw = ref({});
 // const props = defineProps<{
 //   id: string
 // }>();
@@ -23,6 +24,36 @@ const settingsStore = useSettingsStore();
 
 notifyApiKeyUnset();
 
+
+const blankFlaw: ZodFlawType = {
+  affects: [],
+  classification: {
+    state: 'NEW',
+    workflow: '',
+  },
+  component: '',
+  cve_id: '',
+  cvss3: '',
+  cvss_scores: [],
+  cwe_id: '',
+  description: '',
+  embargoed: false,
+  impact: '',
+  major_incident_state: '',
+  meta: [],
+  nvd_cvss3: '',
+  source: '',
+  title: '',
+  type: '',
+
+  owner: '',
+  team_id: '',
+  summary: '',
+  statement: '',
+  mitigation: '',
+};
+
+const flaw = ref(blankFlaw);
 
 function onSubmit() {
   error.value = '';
@@ -47,7 +78,7 @@ function onSubmit() {
     <!--<textarea v-bind:value="JSON.stringify(flaw)"/>-->
     <form @submit.prevent="onSubmit">
 
-    <FlawCreateForm v-model="flaw"/>
+    <IssueEdit v-model:flaw="flaw" mode="create"/>
 
     <div class="container">
 
@@ -58,7 +89,7 @@ function onSubmit() {
     </div>
 
     </form>
-    <textarea>{{JSON.stringify(flaw, null, 2)}}</textarea>
+    <pre>{{JSON.stringify(flaw, null, 2)}}</pre>
 
   </main>
 </template>
