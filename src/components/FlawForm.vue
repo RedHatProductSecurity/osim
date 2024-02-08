@@ -182,6 +182,12 @@ function removeAffect(affectIdx: number) {
             </div>
           </div>
         </div>
+        <div class="row">
+          <LabelTextarea label="Summary" v-model="flaw.summary"/>
+          <LabelTextarea label="Description" v-model="flaw.description"/>
+          <LabelTextarea label="Statement" v-model="flaw.statement"/>
+          <LabelTextarea label="Mitigation" v-model="flaw.mitigation"/>
+        </div>
         <div class="row osim-affects mb-3">
           <div class="h5">Affected Offerings</div>
           <div
@@ -203,13 +209,6 @@ function removeAffect(affectIdx: number) {
                 @click.prevent="addBlankAffect()"
             >Add New Affect</button>
           </div>
-        </div>
-
-        <div class="row">
-          <LabelTextarea label="Summary" v-model="flaw.summary"/>
-          <LabelTextarea label="Description" v-model="flaw.description"/>
-          <LabelTextarea label="Statement" v-model="flaw.statement"/>
-          <LabelTextarea label="Mitigation" v-model="flaw.mitigation"/>
         </div>
       </div>
 
