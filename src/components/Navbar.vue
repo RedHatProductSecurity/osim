@@ -100,7 +100,7 @@ function onSearch(query: string) {
           <div class="input-group">
             <input v-model="searchIssue" type="search" class="form-control" placeholder="Search Issues/Flaws"
               aria-label="Search Issues/Flaws" />
-            <button class="btn btn-secondary">
+            <button class="btn btn-secondary" type="submit" @submit.prevent="onSearch(searchIssue)">
               <i class="bi-search" @click="onSearch(searchIssue)"></i>
             </button>
             <button
