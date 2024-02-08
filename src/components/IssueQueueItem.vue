@@ -14,10 +14,15 @@ defineEmits<{
 </script>
 
 <template>
-  <tr style="border-top: 1px solid black">
+  <tr>
     <td><input :checked="selected" @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)" type="checkbox" class="form-check-input" aria-label="Select Issue"></td>
     <td>
       <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id || issue.uuid }}</RouterLink>
+      <div v-if="issue.unembargo_dt">
+        <span v-if="DateTime.fromISO(issue.unembargo_dt).diffNow().milliseconds > 0">
+          <span class="badge rounded-pill text-bg-danger">Embargoed</span>
+        </span>
+      </div>
     </td>
     <td>{{ issue.impact }}</td>
     <td>{{ issue.source }}</td>
@@ -26,15 +31,6 @@ defineEmits<{
     <td>{{ issue.state }}</td>
     <td>{{ issue.owner }}</td>
     <!--<td>{{ issue.assigned }}</td>-->
-  </tr>
-  <tr>
-    <td colspan="100%" style="padding: 1rem 5rem">
-      <div v-if="issue.unembargo_dt">
-        <span v-if="DateTime.fromISO(issue.unembargo_dt).diffNow().milliseconds > 0">
-          <span class="badge rounded-pill text-bg-danger">Embargoed</span>
-        </span>
-      </div>
-    </td>
   </tr>
 </template>
 
