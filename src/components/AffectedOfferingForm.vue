@@ -39,8 +39,9 @@ const affectTypes = Object.values(ZodAffectSchema.shape.type.unwrap().unwrap().e
         class="col-6"
         label="Affected Component"
         v-model="modelValue.ps_component"/>
+    <!--Hiding the Type field until we have more options to choose from-->
     <LabelSelect
-        class="col-6"
+        class="col-6 visually-hidden"
         label="Type"
         v-model="modelValue.type"
         :options="affectTypes"
