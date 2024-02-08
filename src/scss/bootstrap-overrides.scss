@@ -2,8 +2,6 @@
 ;
 @import './redhat-brand-colors.scss';
 
-
-
 @font-face {
   font-family: 'Red Hat Text';
   src: url('/fonts/RedHatTextVFModified.woff2');
@@ -31,11 +29,14 @@ $redhat-secondary: $redhat-gray-50;
 $primary: $redhat-primary;
 $secondary: $redhat-secondary;
 $danger: $redhat-danger-50;
+$success: $redhat-success-40;
 $black: $redhat-gray-95;
 $info: $redhat-teal-40;
 $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
 $light-gray: $redhat-gray-10;
+$blue: $redhat-blue-40;
+$link-color: $blue;
 $light-purple: $redhat-purple-10;
 
 $nav-link-color: rebeccapurple;
@@ -43,12 +44,13 @@ $nav-link-color: rebeccapurple;
 
 $theme-colors: (
   'black': $black,
+  'blue': $blue,
   'gray': $gray,
   'light-gray': $light-gray,
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,
-  'success': $danger,
+  'success': $success,
   'danger': $danger,
   'warning': $warning,
 );

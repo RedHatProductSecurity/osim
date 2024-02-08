@@ -10,7 +10,7 @@ import { InputLabelDirective } from '@/directives/InputLabelDirective.js';
 
 import 'bootstrap/scss/bootstrap.scss';
 import 'bootstrap-icons/font/bootstrap-icons.scss';
-import './scss/bootstap-overrides.scss';
+import './scss/bootstrap-overrides.scss';
 import './assets/main.css'
 
 import './services/service-worker-client';
