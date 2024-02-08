@@ -100,10 +100,14 @@ function onSearch(query: string) {
           <div class="input-group">
             <input v-model="searchIssue" type="search" class="form-control" placeholder="Search Issues/Flaws"
               aria-label="Search Issues/Flaws" />
-            <button class="btn btn-secondary" type="button">
+            <button class="btn btn-secondary">
               <i class="bi-search" @click="onSearch(searchIssue)"></i>
             </button>
-            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
             </button>
             <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
               <li>
