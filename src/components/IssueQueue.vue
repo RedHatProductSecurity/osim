@@ -136,7 +136,7 @@ onUnmounted(() => {
           <th>ID</th>
           <th>Impact</th>
           <th>Source</th>
-          <th>created_dt</th>
+          <th>Created</th>
           <th>Title</th>
           <th>State</th>
           <th>Owner</th>
