@@ -20,7 +20,7 @@ defineEmits<{
 <template>
   <tr class="osim-issue-queue-item" :class="$attrs.class">
     <td><input :checked="selected" @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)" type="checkbox" class="form-check-input" aria-label="Select Issue"></td>
-    <td>
+    <td class="osim-issue-title">
       <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id || issue.uuid }}</RouterLink>
 
     </td>
@@ -45,6 +45,13 @@ defineEmits<{
 
 <style lang="scss" scoped>
 @import "@/scss/bootstap-overrides.scss";
+
+td.osim-issue-title {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 tr td {
   border: 0;
