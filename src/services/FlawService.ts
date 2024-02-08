@@ -152,6 +152,7 @@ export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
   })
 }
 
+// TODO paginate search results page
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
