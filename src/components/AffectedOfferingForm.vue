@@ -67,29 +67,30 @@ const affectTypes = Object.values(ZodAffectSchema.shape.type.unwrap().unwrap().e
         type="text"
         label="CVSS3"
         v-model="modelValue.cvss3"/>
-    <LabelInput
-        class="col-6"
-        type="text"
-        label="CVSS3 Score"
-        v-model="modelValue.cvss3_score"/>
-    <LabelEditable
-        class="col-6"
-        type="date"
-        label="Created Date"
-        :readOnly="true"
-        v-model="modelValue.created_dt"/>
-    <LabelEditable
-        class="col-6"
-        type="date"
-        label="Updated Date"
-        :readOnly="true"
-        v-model="modelValue.updated_dt"/>
-    <LabelCheckbox
-        class="col-6"
-        label="Embargoed?"
-        v-model="modelValue.embargoed"
-        :readonly="true"
-    />
+    <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
+    <!--<LabelInput-->
+    <!--    class="col-6"-->
+    <!--    type="text"-->
+    <!--    label="CVSS3 Score"-->
+    <!--    v-model="modelValue.cvss3_score"/>-->
+    <!--<LabelEditable-->
+    <!--    class="col-6"-->
+    <!--    type="date"-->
+    <!--    label="Created Date"-->
+    <!--    :readOnly="true"-->
+    <!--    v-model="modelValue.created_dt"/>-->
+    <!--<LabelEditable-->
+    <!--    class="col-6"-->
+    <!--    type="date"-->
+    <!--    label="Updated Date"-->
+    <!--    :readOnly="true"-->
+    <!--    v-model="modelValue.updated_dt"/>-->
+    <!--<LabelCheckbox-->
+    <!--    class="col-6"-->
+    <!--    label="Embargoed?"-->
+    <!--    v-model="modelValue.embargoed"-->
+    <!--    :readonly="true"-->
+    <!--/>-->
 
     <!-- trackers are read-only -->
     <h4 class="affect-trackers-heading" v-if="modelValue.trackers && modelValue.trackers.length > 0">Trackers</h4>

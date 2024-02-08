@@ -152,7 +152,7 @@ function removeAffect(affectIdx: number) {
                 CVSS3 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
               </template>
             </LabelEditable>
-            <LabelInput label="CVSS3 Score" type="text" v-model="flaw.cvss3_score" :error="errors.cvss3_score"/>
+            <!--<LabelInput label="CVSS3 Score" type="text" v-model="flaw.cvss3_score" :error="errors.cvss3_score"/>-->
             <LabelEditable label="NVD CVSS3" type="text" v-model="flaw.nvd_cvss3" :error="errors.nvd_cvss3"/>
             <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
             <LabelSelect label="Source" :options="flawSources" v-model="flaw.source" :error="errors.source"/>
