@@ -124,7 +124,7 @@ onUnmounted(() => {
       </label>
     </div>
     <div class="osim-incident-list">
-      <table class="table">
+      <table class="table table-striped align-middle">
         <thead>
         <tr>
           <th><input type="checkbox"
