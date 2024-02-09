@@ -158,15 +158,20 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
 export async function promoteFlaw(uuid: string) {
+  const { addToast } = useToastStore();
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/promote`,
   }).then(response => {
     console.log('Flaw promoted:', response);
+    addToast({
+      title: "Flaw Promoted",
+      body: response.data.classification.state,
+      css: 'warning'
+    })
     return response.data;
   }).catch(error => {
     const displayedError = getDisplayedOsidbError(error);
-    const { addToast } = useToastStore();
     addToast({
       title: displayedError,
       body: error.response.data,
