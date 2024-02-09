@@ -2,10 +2,10 @@ import {
   createRouter,
   createWebHistory,
   type NavigationGuardNext,
-  type RouteLocationNormalized
-} from 'vue-router'
+  type RouteLocationNormalized,
+} from 'vue-router';
 import { nextTick as vueNextTick, watch } from 'vue';
-import IndexView from '../views/IndexView.vue'
+import IndexView from '../views/IndexView.vue';
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';
 import { useUserStore } from '@/stores/UserStore';
@@ -19,7 +19,6 @@ import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
 import WidgetTestView from '@/views/WidgetTestView.vue';
 
-
 // FIXME: Fix URL handling when clicking logout, then pressing the back button.
 //        The URL should remain at /login while not logged-in.
 //        Vue doesn't seem to care (??? / !!!) but it's only a cosmetic issue...
@@ -29,7 +28,7 @@ let popStateEvent: PopStateEvent | null = null;
 window.addEventListener('popstate', (e) => {
   popStateEvent = e;
   popStateDetected = true;
-})
+});
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,8 +74,15 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
       meta: {
+        canVisitWithoutAuth: true,
         title: 'Login',
         hideNavbar: true,
+      },
+      beforeEnter() {
+        const userStore = useUserStore();
+        if (userStore.isAuthenticated) {
+          return { name: 'index' };
+        }
       },
     },
     {
@@ -101,6 +107,7 @@ const router = createRouter({
       name: 'widget-test',
       component: WidgetTestView,
       meta: {
+        canVisitWithoutAuth: true,
         title: 'Sample',
       },
     },
@@ -120,11 +127,10 @@ const router = createRouter({
       name: 'not-found',
       component: NotFoundView,
       meta: {
+        canVisitWithoutAuth: true,
         title: 'Page Not Found',
       },
     },
-
-
 
     // {
     //   path: '/about/:id',
@@ -137,8 +143,8 @@ const router = createRouter({
     //     title: 'About',
     //   },
     // },
-  ]
-})
+  ],
+});
 
 function apiKeysGuard(shouldRedirectToSettings = false) {
   return (
@@ -146,15 +152,17 @@ function apiKeysGuard(shouldRedirectToSettings = false) {
     from: RouteLocationNormalized,
     next: NavigationGuardNext
   ) => {
-    const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
-    const noKeysAreSet = !bugzillaApiKey || !jiraApiKey
+    const {
+      settings: { bugzillaApiKey, jiraApiKey },
+    } = useSettingsStore();
+    const noKeysAreSet = !bugzillaApiKey || !jiraApiKey;
 
     if (noKeysAreSet) notifyApiKeyUnset();
     if (noKeysAreSet && shouldRedirectToSettings) next('/settings');
-    if (noKeysAreSet && !shouldRedirectToSettings) next();
-  }
+    // if (noKeysAreSet && !shouldRedirectToSettings)
+    next();
+  };
 }
-
 
 router.beforeEach(async (to, from) => {
   const isNavigationBackButton = popStateDetected;
@@ -167,50 +175,31 @@ router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
   const isAuthenticated = userStore.isAuthenticated;
 
-  const toLogin = to.name === 'login';
+  const { canVisitWithoutAuth } = to.meta;
   let manualLocationNavigation = from.name === undefined;
 
-  if (to.name === 'widget-test') { // Temporary snapshot code
-    return true;
-  }
-
-  console.log('Going to login?', toLogin);
-  if (isAuthenticated) {
-    console.log('user is authenticated');
-    console.log('from route', from);
-    console.log('to route', to);
-    if (toLogin) {
-      if (manualLocationNavigation) {
-        console.log('authenticated to login redirect to index');
-        return { name: 'index' };
-      }
-    }
-    console.log('!toLogin:', !toLogin);
-    return !toLogin;
-  }
-
-  if (!toLogin) {
+  if (!canVisitWithoutAuth && !isAuthenticated) {
     if (isNavigationBackButton) {
-      console.log('unauthenticated not to login pressed back');
+      console.log('unauthenticated (probably just logged out), pressed back, and going to protected route');
       history.pushState(popState, '', router.resolve({ name: 'login' }).path);
       return { name: 'login' };
     }
     let query: any = {};
-    if (manualLocationNavigation) { // Preserve destination
+    if (manualLocationNavigation) {
+      // Preserve destination
       query.redirect = to.fullPath;
     }
 
     console.log('not authenticated, redirecting to login page');
     return { name: 'login', query };
   }
-  console.log('not authenticated, should already be at login page');
-
 });
 
 router.afterEach((to, from) => {
   vueNextTick(() => {
     document.title = 'OSIM | ' + to.meta.title;
-  })
-})
+  });
+});
 
 export default router;
+
