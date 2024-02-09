@@ -10,7 +10,7 @@ import { ref, nextTick, reactive, unref } from 'vue';
 import { IMask } from 'vue-imask';
 
 const props = defineProps<{
-  modelValue: Date | undefined,
+  modelValue: string | undefined,
   time?: boolean,
   readOnly?: boolean,
   editing?: boolean,
@@ -18,7 +18,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: Date | undefined],
+  'update:modelValue': [value: string | undefined],
   'update:editing': [value: boolean],
 }>();
 
@@ -71,7 +71,7 @@ const mask = {
 // const editedMaskedModelValue = ref('');
 // const boundObject = reactive<MaskaDetail>({completed: false, masked: '', unmasked: ''});
 
-const editedModelValue = ref<Date | undefined>(unref(props.modelValue));
+const editedModelValue = ref<string | undefined>(unref(props.modelValue));
 
 
 const boundObject = reactive({
@@ -129,7 +129,7 @@ function commit() {
     if (!isValidDate(date)) {
         emit('update:modelValue', undefined);
     } else {
-        emit('update:modelValue', date);
+        emit('update:modelValue', date.toISOString());
     }
 }
 

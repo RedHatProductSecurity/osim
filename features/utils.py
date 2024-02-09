@@ -4,23 +4,15 @@ import requests
 import random
 import string
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support.relative_locator import locate_with
-from selenium.webdriver.common.action_chains import ActionChains
 
 from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY
-from locators import (
-    LOGIN_BUTTON,
-    USER_BUTTON,
-    BUGZILLA_API_KEY_TEXT_ELEMENT,
-    JIRA_API_KEY_TEXT_ELEMENT,
-    FLAW_LIST,
-    COMMENT_BUTTON,
-    FLAW_INDEX
-)
+from pages.login_page import LoginPage
+from pages.home_page import HomePage
+from pages.settings_page import SettingsPage
+from pages.flaw_detail_page import FlawDetailPage
 
 
 def server_is_ready(url):
@@ -66,8 +58,8 @@ def login_with_valid_account():
     """
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
-    wait_for_visibility_by_locator(browser, By.XPATH, LOGIN_BUTTON)
-    browser.find_element(By.XPATH, LOGIN_BUTTON).click()
+    login_page = LoginPage(browser)
+    login_page.login()
     return browser
 
 
@@ -86,43 +78,28 @@ def skip_step_when_needed(func):
     return wrapper
 
 
-def _set_api_key_in_settings_page(browser, api_key_text, api_key_value):
-    """
-    set osim API key in settings page
-    """
-    # enter settings page
-    wait_for_visibility_by_locator(browser, By.CSS_SELECTOR, USER_BUTTON)
-    element = browser.find_element(By.CSS_SELECTOR, USER_BUTTON)
-    ActionChains(browser).move_to_element(element).click().perform()
-    settings_btn = browser.find_element(By.LINK_TEXT, "Settings")
-    settings_btn.click()
-    # set api key
-    key_text = browser.find_element(By.XPATH, api_key_text)
-    key_input = browser.find_elements(
-        locate_with(By.TAG_NAME, "input").below(key_text))[0]
-
-    key_input.clear()
-    key_input.send_keys(api_key_value)
-
-    # save change
-    save_btn = browser.find_element(By.XPATH, "//button[text()='Save' and @type='submit']")
-    browser.execute_script("arguments[0].click();", save_btn)
-
-
 def set_jira_api_key(browser):
     """
     set osim jira API key in settings
     """
-    _set_api_key_in_settings_page(
-        browser, JIRA_API_KEY_TEXT_ELEMENT, JIRA_API_KEY)
+    home_page = HomePage(browser)
+    home_page.click_user_btn()
+    home_page.click_settings_btn()
+
+    settings_page = SettingsPage(browser)
+    settings_page.set_jira_api_key(JIRA_API_KEY)
 
 
 def set_bugzilla_api_key(browser):
     """
     set osim jira API key in settings
     """
-    _set_api_key_in_settings_page(
-        browser, BUGZILLA_API_KEY_TEXT_ELEMENT, BUGZILLA_API_KEY)
+    home_page = HomePage(browser)
+    home_page.click_user_btn()
+    home_page.click_settings_btn()
+
+    settings_page = SettingsPage(browser)
+    settings_page.set_bugzilla_api_key(BUGZILLA_API_KEY)
 
 
 def go_to_flaw_detail_page(browser):
@@ -130,13 +107,16 @@ def go_to_flaw_detail_page(browser):
     This function is a comment one for all senarios of edit flaw.
     """
     # From the setting page back to flaw list
-    browser.find_element(By.CSS_SELECTOR, FLAW_INDEX).click()
-    wait_for_visibility_by_locator(browser, By.CSS_SELECTOR, FLAW_LIST)
+    home_page = HomePage(browser)
+    home_page.click_flaw_index_btn()
+    home_page.flaw_list_exist()
+
     # Get the first flaw and go to detail table
-    flaw_link_xpath = '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'
-    wait_for_visibility_by_locator(browser, By.XPATH, flaw_link_xpath)
-    browser.find_element(By.XPATH, flaw_link_xpath).click()
-    wait_for_visibility_by_locator(browser, By.XPATH, COMMENT_BUTTON)
+    home_page.click_first_flaw_link()
+
+    flaw_detail_page = FlawDetailPage(browser)
+    flaw_detail_page.add_comment_btn_exist()
+
 
 def generate_random_text():
     """

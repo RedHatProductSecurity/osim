@@ -72,7 +72,7 @@ export const TrackerSchema = z.object({
         ps_update_stream: z.string(),
         resolution: z.string(),
         status: z.string(),
-    }).optional(),
+    }).nullish(),
     ps_update_stream: z.string().max(100).nullish(),
     status: z.string().max(100).nullish(),
     resolution: z.string().max(100).nullish(),
@@ -114,7 +114,7 @@ export const ZodAffectSchema = z.object({
     }).nullish(),
     delegated_resolution: z.string().nullable(),
     cvss_scores: z.array(AffectCVSSSchema),
-    classifcation: ZodFlawClassification.optional(),
+    classification: ZodFlawClassification.nullish(),
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
@@ -143,6 +143,7 @@ export const ZodFlawSchema = z.object({
     owner: z.string().nullish(),
     team_id: z.string().nullish(),
     trackers: z.array(z.string()).nullish(), // read-only
+    classification: ZodFlawClassification.nullish(),
     description: z.string(),
     summary: z.string().nullish(),
     requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),

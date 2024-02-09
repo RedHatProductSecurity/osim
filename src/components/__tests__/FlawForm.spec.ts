@@ -7,7 +7,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
-import IssueEdit from '@/components/IssueEdit.vue';
+import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
 
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
@@ -43,10 +43,10 @@ vi.mock('vue-router', async () => {
   };
 });
 
-describe('IssueEdit', () => {
-  let subject: VueWrapper<InstanceType<typeof IssueEdit>>;
-  function mountWithProps(props: typeof IssueEdit.$props) {
-    subject =  mount(IssueEdit, {
+describe('FlawForm', () => {
+  let subject: VueWrapper<InstanceType<typeof FlawForm>>;
+  function mountWithProps(props: typeof FlawForm.$props) {
+    subject =  mount(FlawForm, {
       plugins: [useToastStore()],
       props,
       global: {
@@ -71,11 +71,12 @@ describe('IssueEdit', () => {
       'currentRoute': { 'value': { 'fullPath': '/flaws/uuiddddd' } },
     });
 
-    subject = mount(IssueEdit, {
+    subject = mount(FlawForm, {
       plugins: [useToastStore()],
       // shallow: true,
       props: {
-        flaw: sampleFlaw()
+        flaw: sampleFlaw(),
+        mode: 'edit',
       },
       global: {
         mocks: {
@@ -187,10 +188,11 @@ describe('IssueEdit', () => {
   it("displays correct Cvss3 calculator link for cvss3 value", async() => {
     const flaw = sampleFlaw();
     flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"
-    subject = mount(IssueEdit, {
+    subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props: {
         flaw,
+        mode: 'edit',
       },
       global: {
         mocks: {
