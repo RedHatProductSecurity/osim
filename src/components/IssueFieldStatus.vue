@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import Modal from '@/components/widgets/Modal.vue';
-import { useField } from 'vee-validate';
 import { ZodFlawClassification } from '@/types/zodFlaw';
 
 const props = defineProps<{
@@ -60,6 +59,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
     <div>
       <button
         @click="openModal"
+        type="button"
         class="btn btn-warning p-0 pe-1 ps-1 me-2"
         id="osim-status-reject-button"
         v-if="shouldShowWorkflowButtons"
@@ -68,6 +68,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
       </button>
       <button
         @click="onPromote(flawId)"
+        type="button"
         class="btn btn-warning p-0 pe-1 ps-1"
         id="osim-status-promote-button"
         v-if="shouldShowWorkflowButtons"

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import { DateTime } from 'luxon';
-import {computed, reactive, ref, toRef} from 'vue';
+import { computed, ref, toRef } from 'vue';
 import { RouterLink } from 'vue-router';
-import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
+import { ZodFlawSchema } from '../types/zodFlaw';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -14,8 +14,7 @@ import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
-import { postAffect, putAffect } from '@/services/AffectService';
-import { notifyApiKeyUnset } from '@/services/ApiKeyService';
+
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
@@ -23,28 +22,52 @@ import {
   putFlaw
 } from '@/services/FlawService';
 
-import { useToastStore } from '@/stores/ToastStore';
+import { useFlawForm } from '@/composables/useFlawform';
 
-const {addToast} = useToastStore();
+
+
+// import { useToastStore } from '@/stores/ToastStore';
+
+// const {addToast} = useToastStore();
 
 const props = defineProps<{
   flaw: any;
   mode: 'create' | 'edit';
 }>();
 
-const emit = defineEmits<{
-  'update:flaw': [flaw: any];
-  'refresh:flaw': [];
-}>();
+const {
+    flaw,
 
-notifyApiKeyUnset();
+    addComment,
+    newPublicComment,
+    trackerUuids,
+    flawTypes,
+    flawSources,
+    flawImpacts,
+    incidentStates,
+    osimLink,
+    bugzillaLink,
+    flawCvssScore,
+    addPublicComment,
+    addBlankAffect,
+    removeAffect,
+    updateFlaw,
+    saveAffects,
+    theAffects,
+    emit
+  } = useFlawForm(props.flaw);
 
-const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
-const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
-const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
-const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+// const emit = defineEmits<{
+//   'update:flaw': [flaw: any];
+//   'refresh:flaw': [];
+// }>();
 
-const theAffects = toRef(props.flaw, 'affects');
+// const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
+// const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
+// const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
+// const incidentStates = Object.values(ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum) as string[];
+
+// const theAffects = toRef(props.flaw, 'affects');
 
 // TODO
 const errors = {
@@ -74,49 +97,47 @@ const flawCvss3CaculatorLink = computed(()=>{
 // props.flaw.reported_dt = DateTime.fromISO(props.flaw.reported_dt, { zone: 'utc' }).toJSDate();
 // props.flaw.unembargo_dt = DateTime.fromISO(props.flaw.unembargo_dt, { zone: 'utc' }).toJSDate();
 
-console.log('flaw reported_dt', props.flaw.reported_dt);
+// const addComment = ref(false);
+// const newPublicComment = ref('');
 
-const addComment = ref(false);
-const newPublicComment = ref('');
+// const trackerUuids = computed(() => {
+//   return (props.flaw.affects ?? [])
+//       .flatMap((affect: any) => {
+//         return affect.trackers ?? []
+//       })
+//       .flatMap((tracker: any) => {
+//         return {
+//           uuid: tracker.uuid,
+//           display: tracker.type + ' ' + tracker.external_system_id,
+//         };
+//       })
+// });
 
-const trackerUuids = computed(() => {
-  return (props.flaw.affects ?? [])
-      .flatMap((affect: any) => {
-        return affect.trackers ?? []
-      })
-      .flatMap((tracker: any) => {
-        return {
-          uuid: tracker.uuid,
-          display: tracker.type + ' ' + tracker.external_system_id,
-        };
-      })
-});
+// function addPublicComment() {
+//   postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
+//       .then(() => {
+//         addToast({
+//           title: 'Comment saved',
+//           body: 'Comment saved',
+//         });
+//         newPublicComment.value = '';
+//         addComment.value = false;
+//         emit('refresh:flaw');
+//       })
+//       .catch(e => {
+//         addToast({
+//           title: 'Error saving comment',
+//           body: getDisplayedOsidbError(e),
+//         });
+//       })
+// }
 
-function addPublicComment() {
-  postFlawPublicComment(props.flaw.uuid, newPublicComment.value)
-      .then(() => {
-        addToast({
-          title: 'Comment saved',
-          body: 'Comment saved',
-        });
-        newPublicComment.value = '';
-        addComment.value = false;
-        emit('refresh:flaw');
-      })
-      .catch(e => {
-        addToast({
-          title: 'Error saving comment',
-          body: getDisplayedOsidbError(e),
-        });
-      })
-}
-
-function addBlankAffect() {
-  theAffects.value.push({});
-}
-function removeAffect(affectIdx: number) {
-  theAffects.value.splice(affectIdx, 1);
-}
+// function addBlankAffect() {
+//   theAffects.value.push({});
+// }
+// function removeAffect(affectIdx: number) {
+//   theAffects.value.splice(affectIdx, 1);
+// }
 
 </script>
 
@@ -138,8 +159,8 @@ function removeAffect(affectIdx: number) {
                 <div v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
                      class="col-auto align-self-end mb-3">
                   <CveRequestForm
-                      :bugzilla-link="getFlawBugzillaLink(flaw)"
-                      :osim-link="getFlawOsimLink(flaw.uuid)"
+                      :bugzilla-link="bugzillaLink"
+                      :osim-link="osimLink"
                       :subject="flaw.title"
                       :description="flaw.description"
                   />
