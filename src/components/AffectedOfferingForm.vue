@@ -16,7 +16,9 @@ const emit = defineEmits<{
   'remove': [],
 }>();
 
-watch(props.modelValue, () => props.reportAffectAsModified(props.modelValue.uuid));
+watch(props.modelValue, () => {
+  if (props.modelValue.uuid) props.reportAffectAsModified(props.modelValue.uuid)
+});
 
 const affectImpacts = Object.values(ZodAffectSchema.shape.impact.unwrap().unwrap().enum) as string[];
 const affectResolutions = Object.values(ZodAffectSchema.shape.resolution.unwrap().unwrap().enum) as string[];
