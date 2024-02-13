@@ -7,7 +7,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 
 const props = defineProps<{
   modelValue: boolean;
-  cveId: string;
+  cveId: string | null | undefined;
 }>();
 
 const emit = defineEmits<{
@@ -28,60 +28,68 @@ function handleConfirm(){
   <LabelDiv label="Embargoed">
     <template #default>
       <div>
-      <div class="form-control">{{modelValue ? 'Yes' : 'No'}}</div>
-      <div v-if="modelValue" class="mt-2">
-        <button type="button" class="btn btn-danger osim-unembargo-button" @click="openModal">
-          <i class="bi-radioactive ps-0"></i>
-          <i class="bi-eye-fill"></i>
-          <i class="bi-eye-slash-fill"></i>
-          Unembargo
-        </button>
-        <Modal :show="isModalOpen" @close="closeModal">
-          <template #header>
-            Set Flaw for Unembargo
-          </template>
-          <template #body>
-            <p class="text-danger">
-              Making a Flaw public is an irreversible action! Here is why:
-            </p>
-            <ol>
-              <li>
-                Email notifications are sent to Bugzilla watchers about the
-                unembargo, including Bugzilla users outside of Red Hat,
-              </li>
-              <li>
-                A request to push the Flaw's description and other metadata is
-                sent to MITRE,
-              </li>
-              <li>
-                A public CVE page is generated and published on the Customer
-                Portal,
-              </li>
-              <li>
-                Search engines may index or cache the created CVE page or
-                Bugzilla bug.
-              </li>
-            </ol>
-            <LabelInput
-                :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
-                v-model="confirmationId"/>
-            <p class="alert alert-warning">The embargo is only removed upon saving the Flaw!</p>
-          </template>
-          <template #footer>
-            <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
-            <button type="button" class="btn btn-danger" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
-              Remove Embargo
+        <div class="d-flex ms-0 p-0 justify-content-between">
+          <div class="osim-embargo-label form-control">
+            {{modelValue ? 'Yes' : 'No'}}
+          </div>
+          <div v-if="modelValue" class=" ">
+            <button type="button" class="btn ms-3 btn-danger osim-unembargo-button" @click="openModal">
+              <i class="bi-radioactive ps-0"></i>
+              <i class="bi-eye-fill"></i>
+              <i class="bi-eye-slash-fill"></i>
+              Unembargo
             </button>
-          </template>
-        </Modal>
-      </div>
+            <Modal :show="isModalOpen" @close="closeModal">
+              <template #header>
+                Set Flaw for Unembargo
+              </template>
+              <template #body>
+                <p class="text-danger">
+                  Making a Flaw public is an irreversible action! Here is why:
+                </p>
+                <ol>
+                  <li>
+                    Email notifications are sent to Bugzilla watchers about the
+                    unembargo, including Bugzilla users outside of Red Hat,
+                  </li>
+                  <li>
+                    A request to push the Flaw's description and other metadata is
+                    sent to MITRE,
+                  </li>
+                  <li>
+                    A public CVE page is generated and published on the Customer
+                    Portal,
+                  </li>
+                  <li>
+                    Search engines may index or cache the created CVE page or
+                    Bugzilla bug.
+                  </li>
+                </ol>
+                <LabelInput
+                    :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
+                    v-model="confirmationId"/>
+                <p class="alert alert-warning">The embargo is only removed upon saving the Flaw!</p>
+              </template>
+              <template #footer>
+                <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
+                <button type="button" class="btn btn-danger" :disabled="!isFlawIdConfirmed" @click="handleConfirm">
+                  Remove Embargo
+                </button>
+              </template>
+            </Modal>
+          </div>
+        </div>
       </div>
     </template>
-
   </LabelDiv>
 </template>
 
 <style lang="scss" scoped>
+
+.osim-embargo-label {
+  flex-grow: 1;
+  width: inherit !important;
+}
 button.osim-unembargo-button {
 
   i.bi-radioactive {
