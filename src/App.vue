@@ -14,7 +14,6 @@ setup();
 
 const elFooter = ref<HTMLElement | null>(null);
 const {top: footerTop_, height: footerHeight_} = useElementBounding(elFooter);
-const settingStore = useSettingsStore()
 watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
@@ -28,7 +27,7 @@ watchEffect(() => {
       <Navbar v-if="!$route.meta.hideNavbar"/>
     </header>
     <div class="osim-content-layered">
-      <ToastContainer v-if="settingStore.showNotification"/>
+      <ToastContainer/>
       <RouterView class="osim-page-view" />
     </div>
     <footer class="fixed-bottom osim-status-bar" ref="elFooter">

@@ -1,17 +1,17 @@
 import { VueWrapper, mount } from "@vue/test-utils";
-import { describe, it, expect} from "vitest";
+import { describe, it, expect } from "vitest";
 import router from '@/router';
 import { createTestingPinia } from "@pinia/testing";
 
 import { useToastStore } from '@/stores/ToastStore';
-import { useSettingsStore} from "@/stores/SettingsStore";
+import { useSettingsStore } from "@/stores/SettingsStore";
 
 import Navbar from "../Navbar.vue";
 
-describe("Navbar",async () => {
-  let subject:  VueWrapper<InstanceType<typeof Navbar>>;
+describe("Navbar", async () => {
+  let subject: VueWrapper<InstanceType<typeof Navbar>>;
   beforeEach(() => {
-    
+
     vi.mock('@vueuse/core', () => ({
       useSessionStorage: vi.fn(() => ({
         value: {
@@ -26,18 +26,18 @@ describe("Navbar",async () => {
       })),
       useElementBounding: vi.fn(() => ({
         bottom: 1000,
-        height: 100
+        height: 100,
       }))
     }));
-    
+
     vi.mock('jwt-decode', () => ({
       default: vi.fn(() => ({
         sub: '1234567890',
         name: 'Test User',
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365)
+        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365),
       })),
     }));
-    
+
     router.push('/');
   });
 
@@ -45,8 +45,8 @@ describe("Navbar",async () => {
     vi.clearAllMocks();
   })
 
-  it("renders show notification icon with empty notification count",async () => {
-    const pinia =  createTestingPinia({
+  it("renders show notification icon with empty notification count", async () => {
+    const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
@@ -56,64 +56,68 @@ describe("Navbar",async () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      ...settingStore.$state,
-      showNotification: true
+      settings: {
+        ...settingStore.$state.settings,
+        showNotifications: true,
+      }
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
-          router
+          router,
         ]
       }
     });
-    const icon = subject.find('.notification-icon');
-    expect(icon.exists()).toBeTruthy();
+    const button = subject.find('.osim-notification-button');
+    expect(button.exists()).toBeTruthy();
+    const icon = button.find('.notification-icon');
     expect(icon.classes()).toContain('bi-bell-fill');
-    const badge = icon.find('.notification-badge');
+    const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
-    expect(badge.text()).toBe('0');
   });
 
-  it("renders show notification icon with notification count",async () => {
-    const pinia =  createTestingPinia({
+  it("renders show notification icon with notification count", async () => {
+    const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
     toastStore.$state = {
       //@ts-ignore
-      toasts: [{},{}],
+      toasts: [{}, {}],
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      ...settingStore.$state,
-      showNotification: true
+      settings: {
+        ...settingStore.$state.settings,
+        showNotifications: true
+      }
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
-          router
+          router,
         ]
       }
     });
-    let icon = subject.find('.notification-icon');
-    expect(icon.exists()).toBeTruthy();
+    const button = subject.find('.osim-notification-button');
+    expect(button.exists()).toBeTruthy();
+    let icon = button.find('.notification-icon');
     expect(icon.classes()).toContain('bi-bell-fill');
-    const badge = icon.find('.notification-badge');
+    const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
     expect(badge.text()).toBe('2');
     await icon.trigger("click");
-    expect(settingStore.toggleNotification).toHaveBeenCalledOnce();
-    icon = subject.find('.notification-icon');
+    expect(settingStore.settings.showNotifications).toBe(false);
+    icon = subject.find('.osim-notification-button .notification-icon');
     expect(icon.exists()).toBeTruthy();
     expect(icon.classes()).toContain('bi-bell-slash-fill');
   });
 
-
-  it("renders hide notification icon with empty notification count",async () => {
-    const pinia =  createTestingPinia({
+  it("renders hide notification icon with empty notification count", async () => {
+    const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
@@ -123,57 +127,63 @@ describe("Navbar",async () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      ...settingStore.$state,
-      showNotification: false
+      settings: {
+        ...settingStore.$state.settings,
+        showNotifications: false,
+      }
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
-          router
+          router,
         ]
       }
     });
-    const icon = subject.find('.notification-icon');
-    expect(icon.exists()).toBeTruthy();
+    const button = subject.find('.osim-notification-button');
+    expect(button.exists()).toBeTruthy();
+    const icon = button.find('.notification-icon');
     expect(icon.classes()).toContain('bi-bell-slash-fill');
-    const badge = icon.find('.notification-badge');
+    const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
-    expect(badge.text()).toBe('0');
   });
 
-  it("renders hide notification icon with notification count",async () => {
-    const pinia =  createTestingPinia({
+  it("renders hide notification icon with notification count", async () => {
+    const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
+    let newToasts = new Array(1000);
     toastStore.$state = {
       //@ts-ignore
-      toasts: [{}, {}, {}],
+      toasts: newToasts,
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      ...settingStore.$state,
-      showNotification: false
+      settings: {
+        ...settingStore.$state.settings,
+        showNotifications: false,
+      }
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
-          router
+          router,
         ]
       }
     });
-    let icon = subject.find('.notification-icon');
-    expect(icon.exists()).toBeTruthy();
+    const button = subject.find('.osim-notification-button');
+    expect(button.exists()).toBeTruthy();
+    let icon = button.find('.notification-icon');
     expect(icon.classes()).toContain('bi-bell-slash-fill');
-    const badge = icon.find('.notification-badge');
+    const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
-    expect(badge.text()).toBe('3');
+    expect(badge.text()).toBe('99+');
     await icon.trigger("click");
-    expect(settingStore.toggleNotification).toHaveBeenCalledOnce();
-    icon = subject.find('.notification-icon');
+    expect(settingStore.settings.showNotifications).toBe(true);
+    icon = subject.find('.osim-notification-button .notification-icon');
     expect(icon.exists()).toBeTruthy();
     expect(icon.classes()).toContain('bi-bell-fill');
   });

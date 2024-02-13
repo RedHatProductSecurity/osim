@@ -16,6 +16,7 @@ export interface ToastNew {
 interface ToastAdded extends ToastNew {
   id: number,
   timestamp: DateTime,
+  fresh: boolean,
 }
 
 let toastId = 0;
@@ -24,9 +25,14 @@ export const useToastStore = defineStore('ToastStore', () => {
   const toasts = ref<ToastAdded[]>([]);
 
   function addToast(toast: ToastNew) {
-    const newToast: ToastAdded = {...toast, id: toastId++, timestamp: DateTime.now()};
+    const newToast: ToastAdded = {
+      ...toast,
+      id: toastId++,
+      timestamp: DateTime.now(),
+      fresh: true,
+    };
     toasts.value.unshift(newToast);
-  }  
+  }
 
   function $reset() {
     toasts.value = [];
