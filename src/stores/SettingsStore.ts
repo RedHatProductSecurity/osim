@@ -16,6 +16,7 @@ export const SettingsSchema = z.object({
   // bugzillaApiKey: z.string().length(32, {message: 'Bugzilla API Key is the wrong length!'}).optional(),
   bugzillaApiKey: z.string().optional().or(z.literal("")),
   jiraApiKey: z.string().optional().or(z.literal("")),
+  showNotifications: z.boolean(),
 });
 export type SettingsType = z.infer<typeof SettingsSchema>;
 
@@ -26,8 +27,7 @@ type SettingsStoreSessionStorage = z.infer<typeof settingsStoreSessionStorage>;
 
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>({});
-  const showNotification = ref<boolean>(true);
+  const settings = ref<SettingsType>({showNotifications: false});
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
   serviceWorkerClient.listen(_settingsStoreKey, value => {
     let newSettingsStore = SettingsSchema.safeParse(value);
@@ -47,19 +47,13 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   }
 
   function $reset() {
-    settings.value = {};
+    settings.value = {showNotifications: false};
   }
-
-  function toggleNotification() {
-    showNotification.value = !showNotification.value;
-  };
 
   return {
     $reset,
     save,
-    toggleNotification,
     settings,
-    showNotification
   };
 });
 

@@ -3,12 +3,14 @@ import Toast from '../components/widgets/Toast.vue';
 import {useToastStore} from '../stores/ToastStore';
 import {computed, ref} from "vue";
 import {navbarBottom, footerTop, footerHeight} from "@/stores/responsive";
+import {useSettingsStore} from '@/stores/SettingsStore';
 
 // const props = defineProps<{
 //   // timestamp: moment.Moment,
 // }>();
 
 const {toasts, $reset} = useToastStore();
+const {settings} = useSettingsStore();
 
 const top = computed<string>(() => {
   return navbarBottom.value > 0 ? 'auto' : '0';
@@ -45,7 +47,7 @@ function clearAll() {
     <Transition name="toast">
       <div class="osim-toast-container-clear d-flex justify-content-end">
         <button
-            v-if="toasts.length > 1"
+            v-if="settings.showNotifications && toasts.length > 0"
             type="button"
             class="btn btn-secondary btn-sm mb-3"
             @click.prevent="clearAll"
@@ -55,6 +57,7 @@ function clearAll() {
     <TransitionGroup name="toast">
       <Toast
         v-for="(toast, index) in toasts"
+        v-show="toast.fresh || settings.showNotifications"
         :key="toast.id"
         :title="toast.title"
         :body="toast.body"
@@ -63,6 +66,7 @@ function clearAll() {
         :timeoutMs="toast.timeoutMs"
         :css="toast.css"
         @close="toasts.splice(index, 1)"
+        @stale="toast.fresh = false"
       >
       </Toast>
     </TransitionGroup>

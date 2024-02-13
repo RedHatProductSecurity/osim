@@ -24,24 +24,27 @@ describe("SettingsStore", () => {
   });
 
   it("initializes", () => {
-    expect(settingsStore.$state.settings).toEqual({})
+    expect(settingsStore.$state.settings).toEqual({showNotifications: false});
   });
   it("saves values", () => {
     settingsStore.save({
       bugzillaApiKey: "beep-beep-who-got-the-keys-to-the-jeep",
       jiraApiKey: "beep-beep-who-got-the-keys-to-the-jeep",
-    })
+      showNotifications: true
+    });
     expect(
       settingsStore.settings.bugzillaApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
     );
     expect(
       settingsStore.settings.jiraApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
     );
+    expect(
+      settingsStore.settings.showNotifications 
+    ).toBe(true);
   });
-
-  it("toggle Notification", async () => {
-    expect(settingsStore.showNotification).toBe(true);
-    await settingsStore.toggleNotification();
-    expect(settingsStore.showNotification).toBe(false);
-  });
+  it("reset", () => {
+    settingsStore.settings.showNotifications = true;
+    settingsStore.$reset();
+    expect(settingsStore.settings.showNotifications).toBe(false);
+  })
 });
