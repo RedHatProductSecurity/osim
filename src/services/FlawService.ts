@@ -231,7 +231,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     .catch(console.error);
 }
 
-export async function createFlaw(flawCreateRequest: any) {
+export async function postFlaw(requestBody: any) {
   // {
   //   "type": "VULNERABILITY",
   //   "cve_id": "string",
@@ -258,7 +258,7 @@ export async function createFlaw(flawCreateRequest: any) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws`,
-    data: flawCreateRequest,
+    data: requestBody,
   }).then(response => {
     return response.data;
   })

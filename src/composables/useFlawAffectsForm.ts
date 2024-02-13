@@ -24,6 +24,7 @@ export function useFlawAffectsForm(flaw: Ref<Flaw>) {
 
   function removeAffect(affectIdx: number) {
     // TODO: Send delete request to OSIDB
+    // Show staged soft-deletion in UI
     affectIdsToDelete.value.push(theAffects.value[affectIdx].uuid);
     theAffects.value.splice(affectIdx, 1);
   }
