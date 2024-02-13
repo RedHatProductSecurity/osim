@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import { watch } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
@@ -7,6 +7,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { ZodAffectSchema } from '@/types/zodFlaw';
 
 const props = defineProps<{
+  reportAffectAsModified: Function,
   modelValue: any,
   error?: string,
 }>();
@@ -14,6 +15,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: object],
   'remove': [],
 }>();
+
+watch(props.modelValue, () => props.reportAffectAsModified(props.modelValue.uuid));
 
 const affectImpacts = Object.values(ZodAffectSchema.shape.impact.unwrap().unwrap().enum) as string[];
 const affectResolutions = Object.values(ZodAffectSchema.shape.resolution.unwrap().unwrap().enum) as string[];
