@@ -9,11 +9,15 @@ const onError = createCatchHandler('Error updating Flaw CVSS data');
 export function useCvssScores(flaw: Ref<Flaw>) {
   const wasCvssModified = ref(false);
   const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
-  const flawRhCvss = ref(redHatCvssData || flaw.value.cvss_scores[0]);
-  
-  watch(flawRhCvss, () => wasCvssModified.value = true, {deep: true});
+  const flawRhCvss = ref(
+    redHatCvssData || flaw.value.cvss_scores[0] || {} // empty for creating a flaw, or if no CVSS data exists
+  );
 
-  const nistCvssScore = computed(() => flaw.value.cvss_scores.find((score) => score.issuer === 'NIST'));
+  watch(flawRhCvss, () => (wasCvssModified.value = true), { deep: true });
+
+  const nistCvssScore = computed(() =>
+    flaw.value.cvss_scores.find((score) => score.issuer === 'NIST')
+  );
   const flawNvdCvssScore = computed(() => nistCvssScore.value?.score || flaw.value.nvd_cvss3);
 
   async function saveCvssScores() {
