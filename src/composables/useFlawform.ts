@@ -1,89 +1,71 @@
-import { computed, ref, toRef, defineEmits } from 'vue';
+import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 
-import { FlawType, type Flaw, type Affect } from '@/generated-client';
-import { postAffect, putAffect } from '@/services/AffectService';
+import { type Flaw } from '@/generated-client';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
-
+import { useCvssScores } from '@/composables/useCvssScores';
+import { useFlawAffectsForm } from '@/composables/useFlawAffectsForm';
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlawPublicComment,
   putFlaw,
-  putFlawCvssScores,
-  postFlawCvssScores,
 } from '@/services/FlawService';
 
-const emit = defineEmits<{
-  // 'update:flaw': [flaw: any];
-  'update:flaw': [flaw: Flaw];
-  'refresh:flaw': [];
-}>();
-
 import { useToastStore } from '@/stores/ToastStore';
+import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-
-const flawTypes = Object.values(ZodFlawSchema.shape.type.unwrap().unwrap().enum) as string[];
-const flawSources = Object.values(ZodFlawSchema.shape.source.unwrap().unwrap().enum) as string[];
-const flawImpacts = Object.values(ZodFlawSchema.shape.impact.unwrap().unwrap().enum) as string[];
-const incidentStates = Object.values(
-  ZodFlawSchema.shape.major_incident_state.unwrap().unwrap().enum
-  ) as string[];
-  
-  export function useFlawForm(forFlaw: Flaw) {
+export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
   const { addToast } = useToastStore();
-  // {emit}: {emit: (event: string, ...args: any[])})
-  const flaw = ref<Flaw | ZodFlawType | ZodFlawType>(forFlaw);
+  const flaw = ref<Flaw>(forFlaw);
+  const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
+  const {
+    theAffects,
+    saveAffects,
+    wereAffectsModified,
+    addBlankAffect,
+    removeAffect,
+    reportAffectAsModified,
+    // modifiedAffects,
+  } = useFlawAffectsForm(flaw);
+
   const committedFlaw = ref<Flaw | null>(null);
-  const theAffects = toRef(flaw.value, 'affects');
   const addComment = ref(false);
   const newPublicComment = ref('');
 
   const trackerUuids = computed(() => {
     return (flaw.value.affects ?? [])
-      .flatMap((affect: any) => {
-        return affect.trackers ?? [];
-      })
-      .flatMap((tracker: any) => {
-        return {
-          uuid: tracker.uuid,
-          display: tracker.type + ' ' + tracker.external_system_id,
-        };
-      });
+      .flatMap((affect: any) => affect.trackers ?? [])
+      .flatMap((tracker: any) => ({
+        uuid: tracker.uuid,
+        display: tracker.type + ' ' + tracker.external_system_id,
+      }));
   });
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
-  const flawCvssScore = computed(() => flaw.value.cvss_scores[0]);
 
-  function updateFlaw() {
+  async function updateFlaw() {
     if (!flaw.value) {
       return; // TODO
     }
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!newFlaw.success) {
       addToast({
-        title: 'Error saving Flaw',
+        title: 'Error validating Flaw (schema error)',
         body: newFlaw.error.toString(),
       });
       return; // TODO
     }
-    let flawSaved = false;
     console.log(newFlaw.data);
     // Save Flaw, then safe Affects, then refresh
-    putFlaw(flaw.value.uuid, newFlaw.data)
+    await putFlaw(flaw.value.uuid, newFlaw.data)
       .then(() => {
-        flawSaved = true;
-        console.log('saved flaw', flaw);
-      })
-      .then(() => {
-        if (flawSaved) {
-          addToast({
-            title: 'Info',
-            body: 'Flaw Saved',
-          });
-          // emit('update:flaw', flaw.value);
-          // refreshFlaw();
-        }
+        addToast({
+          title: 'Info',
+          body: 'Flaw Saved',
+        });
+        // emit('update:flaw', flaw.value);
+        // refreshFlaw();
       })
       .catch((error) => {
         const displayedError = getDisplayedOsidbError(error);
@@ -93,6 +75,12 @@ const incidentStates = Object.values(
         });
         console.log(error);
       });
+      if (wereAffectsModified.value) {
+        await saveAffects();
+      }
+      if (wasCvssModified.value) {
+        await saveCvssScores();
+      }
   }
 
   function addPublicComment() {
@@ -114,125 +102,6 @@ const incidentStates = Object.values(
       });
   }
 
-  function addBlankAffect() {
-    theAffects.value.push({} as Affect);
-  }
-
-  function removeAffect(affectIdx: number) {
-    theAffects.value.splice(affectIdx, 1);
-  }
-
-  function saveCvssScores() {
-    if (flawCvssScore.value.created_dt) {
-      putFlawCvssScores(
-        flaw.value.uuid,
-        flawCvssScore.value.uuid || '',
-        flawCvssScore.value as unknown
-      )
-        .then((response) => {
-          console.log('saved flawCvssScores', response);
-          addToast({
-            title: 'Success!',
-            body: 'Saved CVSS Scores',
-            css: 'success',
-          });
-        })
-        .catch((error) => {
-          const displayedError = getDisplayedOsidbError(error);
-          addToast({
-            title: 'Error updating Flaw CVSS data',
-            body: displayedError,
-            css: 'warning',
-          });
-          console.log(error);
-        });
-    } else {
-      const requestBody = {
-        comment: flawCvssScore.value.comment,
-        cvss_version: 'V3',
-        issuer: 'RH',
-        // "score": flawCvssScore.value.score,
-        vector: flawCvssScore.value.vector,
-        embargoed: flaw.value.embargoed,
-      };
-      postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
-        .then((response) => {
-          console.log('saved flawCvssScores', response);
-          addToast({
-            title: 'Success!',
-            body: 'Saved CVSS Scores',
-            css: 'success',
-          });
-        })
-        .catch((error) => {
-          const displayedError = getDisplayedOsidbError(error);
-          addToast({
-            title: 'Error creating Flaw CVSS data',
-            body: displayedError,
-            css: 'warning',
-          });
-          console.log(error);
-        });
-    }
-  }
-
-  const saveAffects = async () => {
-    if (!flaw.value?.affects?.length) {
-      return; // TODO
-    }
-    for (let affect of flaw.value?.affects) {
-      console.log('saving the affect', affect);
-      console.log(affect.uuid);
-      const newAffect = {
-        flaw: flaw.value?.uuid,
-        type: affect.type,
-        affectedness: affect.affectedness,
-        resolution: affect.resolution,
-        ps_module: affect.ps_module,
-        ps_component: affect.ps_component,
-        impact: affect.impact,
-        embargoed: affect.embargoed || false,
-        updated_dt: affect.updated_dt,
-      };
-      if (affect.uuid != null) {
-        await putAffect(affect.uuid, newAffect)
-          .then(() => {
-            console.log('saved newAffect', newAffect);
-            addToast({
-              title: 'Info',
-              body: `Affect Saved: ${newAffect.ps_component}`,
-            });
-          })
-          .catch((error) => {
-            const displayedError = getDisplayedOsidbError(error);
-            addToast({
-              title: 'Error saving Affect',
-              body: displayedError,
-            });
-            console.log(error);
-          });
-      } else {
-        await postAffect(newAffect)
-          .then(() => {
-            console.log('saved newAffect', newAffect);
-            addToast({
-              title: 'Info',
-              body: `Affect Saved: ${newAffect.ps_component}`,
-            });
-          })
-          .catch((error) => {
-            const displayedError = getDisplayedOsidbError(error);
-            addToast({
-              title: 'Error saving Affect',
-              body: displayedError,
-            });
-            console.log(error);
-          });
-      }
-    }
-    // refreshFlaw();
-  };
-
   return {
     flaw,
     committedFlaw,
@@ -242,17 +111,19 @@ const incidentStates = Object.values(
     flawTypes,
     flawSources,
     flawImpacts,
-    incidentStates,
+    flawIncidentStates,
     osimLink,
     bugzillaLink,
-    flawCvssScore,
+    flawNvdCvssScore,
+    flawRhCvss,
     addPublicComment,
     addBlankAffect,
     removeAffect,
     updateFlaw,
-    saveAffects,
+    reportAffectAsModified,
+    // saveAffects,
     theAffects,
-    emit
+    emit,
   };
 }
 

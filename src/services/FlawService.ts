@@ -1,10 +1,11 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+import { createCatchHandler } from '@/composables/service-helpers';
 
 const FLAW_LIST_FIELDS = [
   'cve_id',
@@ -212,12 +213,9 @@ export async function searchFlaws(query: string) {
       include_fields: FLAW_LIST_FIELDS.join(','),
       search: query,
     },
-  }).then(response => response.data)
-  .catch(error => {
-    // TODO: use {getDisplayedOsidbError} from '@/services/OsidbAuthService';
-    console.error(error);
-    return error;
-  });
+  })
+    .then(response => response.data)
+    .catch(createCatchHandler('Problem searching flaws:'));
 }
 
 export async function advancedSearchFlaws(params: Record<string, string>) {
@@ -281,16 +279,3 @@ export function getFlawBugzillaLink(flaw: any) {
   return link;
 }
 
-function createCatchHandler (consoleMessage: string) {
-  return ((error: AxiosError) => {
-    const displayedError = getDisplayedOsidbError(error);
-    const { addToast } = useToastStore();
-    addToast({
-      title: displayedError,
-      body: error.response?.data as string,
-      css: 'warning'
-    })
-    console.error('❌ ', consoleMessage, error);
-    throw error;
-  })
-}
