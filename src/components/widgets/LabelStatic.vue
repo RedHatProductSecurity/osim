@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  modelValue: string;
+  modelValue: string | number | null | undefined;
   label: string;
   error?: string;
 }>();
