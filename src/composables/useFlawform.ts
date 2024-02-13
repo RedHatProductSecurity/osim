@@ -1,14 +1,16 @@
 import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
-
+import { useRouter } from 'vue-router';
 import { type Flaw } from '@/generated-client';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useCvssScores } from '@/composables/useCvssScores';
 import { useFlawAffectsForm } from '@/composables/useFlawAffectsForm';
+import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlawPublicComment,
+  postFlaw,
   putFlaw,
 } from '@/services/FlawService';
 
@@ -21,14 +23,14 @@ export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function)
   const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
   const {
     theAffects,
-    saveAffects,
     wereAffectsModified,
+    saveAffects,
     addBlankAffect,
     removeAffect,
     reportAffectAsModified,
-    // modifiedAffects,
   } = useFlawAffectsForm(flaw);
 
+  const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
   const addComment = ref(false);
   const newPublicComment = ref('');
@@ -44,43 +46,43 @@ export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function)
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
+  async function createFlaw() {
+    postFlaw(flaw.value)
+      .then(
+        createSuccessHandler({ title: 'Success!', body: 'Flaw created' }, (response) => {
+          router.push({ name: 'flaw-detail', params: { id: response.data.uuid } });
+        })
+      )
+      .catch(createCatchHandler('Error creating Flaw'));
+  }
+
   async function updateFlaw() {
-    if (!flaw.value) {
-      return; // TODO
-    }
+    console.log(flaw.value);
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
+    console.log(newFlaw);
     if (!newFlaw.success) {
       addToast({
         title: 'Error validating Flaw (schema error)',
         body: newFlaw.error.toString(),
+        css: 'warning',
       });
-      return; // TODO
+      console.log(newFlaw.error);
+      return; // Abort if schema validation fails
     }
-    console.log(newFlaw.data);
-    // Save Flaw, then safe Affects, then refresh
+
+    if (wereAffectsModified.value) {
+      await saveAffects();
+    }
+
     await putFlaw(flaw.value.uuid, newFlaw.data)
-      .then(() => {
-        addToast({
-          title: 'Info',
-          body: 'Flaw Saved',
-        });
-        // emit('update:flaw', flaw.value);
-        // refreshFlaw();
-      })
-      .catch((error) => {
-        const displayedError = getDisplayedOsidbError(error);
-        addToast({
-          title: 'Error saving Flaw',
-          body: displayedError,
-        });
-        console.log(error);
-      });
-      if (wereAffectsModified.value) {
-        await saveAffects();
-      }
-      if (wasCvssModified.value) {
-        await saveCvssScores();
-      }
+      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
+      .catch(createCatchHandler('Could not update Flaw'));
+
+    if (wasCvssModified.value) {
+      await saveCvssScores();
+    }
+
+    emit('refresh:flaw');
   }
 
   function addPublicComment() {
@@ -119,9 +121,9 @@ export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function)
     addPublicComment,
     addBlankAffect,
     removeAffect,
+    createFlaw,
     updateFlaw,
     reportAffectAsModified,
-    // saveAffects,
     theAffects,
     emit,
   };
@@ -147,7 +149,7 @@ function blankFlaw(): ZodFlawType {
     nvd_cvss3: '',
     source: '',
     title: '',
-    type: '',
+    type: 'VULNERABILITY', // OSIDB only supports Vulnerabilities at present
     owner: '',
     team_id: '',
     summary: '',
