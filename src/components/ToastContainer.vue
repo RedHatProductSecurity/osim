@@ -51,7 +51,7 @@ function clearAll() {
             type="button"
             class="btn btn-secondary btn-sm mb-3"
             @click.prevent="clearAll"
-        >Clear All</button>
+        >Clear All<i class="bi bi-trash3 ms-1"></i></button>
       </div>
     </Transition>
     <TransitionGroup name="toast">
