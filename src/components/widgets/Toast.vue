@@ -217,7 +217,8 @@ button.osim-toast-close-btn {
 .fresh-leave-active {
   animation-duration: v-bind(freshMsCss);
   animation-name: slideout;
-  transition: transform ease-in;
+  transition: transform;
+  animation-timing-function: ease-in;
 }
 @keyframes slideout {
   from {
