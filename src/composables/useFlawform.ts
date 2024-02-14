@@ -87,21 +87,14 @@ export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function)
 
   function addPublicComment() {
     postFlawPublicComment(flaw.value.uuid, newPublicComment.value)
-      .then(() => {
-        addToast({
-          title: 'Comment saved',
-          body: 'Comment saved',
-        });
-        newPublicComment.value = '';
-        addComment.value = false;
-        emit('refresh:flaw');
-      })
-      .catch((e) => {
-        addToast({
-          title: 'Error saving comment',
-          body: getDisplayedOsidbError(e),
-        });
-      });
+        .then(
+          createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }, (response) => {
+            newPublicComment.value = '';
+            addComment.value = false;
+            emit('refresh:flaw');
+          })
+        )
+      .catch(createCatchHandler('Error saving comment'));
   }
 
   return {
