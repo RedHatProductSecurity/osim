@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, ref, watchEffect} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
 import { DateTime } from 'luxon';
 import ProgressRing from "@/components/widgets/ProgressRing.vue";
 import {useSettingsStore} from '@/stores/SettingsStore';
@@ -36,47 +36,57 @@ const percentTimeRemaining = ref<number>(100);
 const percentFreshTimeRemaining = ref<number>(100);
 let freshAndBecomingStaleStart = ref(true);
 
-const freshCountdownId: number = setInterval(() => {
-  if (settings.showNotifications) {
-    percentFreshTimeRemaining.value = 0;
-    emit('stale');
-    isStale.value = true;
-    clearInterval(freshCountdownId);
-    return;
-  }
-  if (active.value) {
-    percentFreshTimeRemaining.value = 100;
-    return;
-  }
-  // inactive
-  freshAndBecomingStaleStart.value = percentFreshTimeRemaining.value === 100;
-  let msNotHovered = Date.now() - inactiveDate.value;
-  percentFreshTimeRemaining.value = 100 - 100 * msNotHovered / freshMs;
-  if (percentFreshTimeRemaining.value <= 0) {
-    clearInterval(freshCountdownId);
-    emit('stale');
-    isStale.value = true;
-  }
-}, 33);
+let freshCountdownId: number = NaN;  // Use NaN to check if the id has been assigned before clearInterval
+onMounted(() => {
+  freshCountdownId = setInterval(() => {
+    if (settings.showNotifications) {
+      percentFreshTimeRemaining.value = 0;
+      emit('stale');
+      isStale.value = true;
+      clearInterval(freshCountdownId);
+      return;
+    }
+    if (active.value) {
+      percentFreshTimeRemaining.value = 100;
+      return;
+    }
+    // inactive
+    freshAndBecomingStaleStart.value = percentFreshTimeRemaining.value === 100;
+    let msNotHovered = Date.now() - inactiveDate.value;
+    percentFreshTimeRemaining.value = 100 - 100 * msNotHovered / freshMs;
+    if (percentFreshTimeRemaining.value <= 0) {
+      clearInterval(freshCountdownId);
+      emit('stale');
+      isStale.value = true;
+    }
+  }, 33); // 1000ms / 30fps = 33ms
+});
 onBeforeUnmount(() => {
-  clearInterval(freshCountdownId);
+  if (!Number.isNaN(freshCountdownId)) {
+    clearInterval(freshCountdownId);
+  }
 })
 
 if (props.timeoutMs) {
-  const countdownId: number = setInterval(() => {
-    if (active.value || props.timeoutMs == null) {
-      percentTimeRemaining.value = 100;
-      return;
-    }
-    let msNotHovered = Date.now() - inactiveDate.value;
-    percentTimeRemaining.value = 100 - 100 * msNotHovered / props.timeoutMs;
-    if (percentTimeRemaining.value <= 0) {
-      clearInterval(countdownId);
-      emit('close');
-    }
-  }, 33); // 1000ms / 30fps = 33ms
+  let countdownId: number = NaN;
+  onMounted(() => {
+    const countdownId: number = setInterval(() => {
+      if (active.value || props.timeoutMs == null) {
+        percentTimeRemaining.value = 100;
+        return;
+      }
+      let msNotHovered = Date.now() - inactiveDate.value;
+      percentTimeRemaining.value = 100 - 100 * msNotHovered / props.timeoutMs;
+      if (percentTimeRemaining.value <= 0) {
+        clearInterval(countdownId);
+        emit('close');
+      }
+    }, 33); // 1000ms / 30fps = 33ms
+  });
   onBeforeUnmount(() => {
-    clearInterval(countdownId);
+    if (!Number.isNaN(freshCountdownId)) {
+      clearInterval(countdownId);
+    }
   });
 }
 
