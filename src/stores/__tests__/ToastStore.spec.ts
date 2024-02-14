@@ -25,7 +25,7 @@ describe('ToastStore', () => {
     toastStore.addToast(toast);
 
     expect(toastStore.toasts).toHaveLength(1);
-    expect(toastStore.toasts[0].fresh).toBe(true);
+    expect(toastStore.toasts[0].isFresh).toBe(true);
   });
 
   it('reset', () => {

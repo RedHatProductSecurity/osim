@@ -114,7 +114,7 @@ describe("ToastContainer", async () => {
     vi.advanceTimersByTime(12000);
     await flushPromises();
     expect(toastStore.toasts.length).toBe(1);
-    expect(toastStore.toasts[0].fresh).toBe(false);
+    expect(toastStore.toasts[0].isFresh).toBe(false);
   });
 
   it("renders temporary toasts and hide toasts after its timeoutMs when showNotification is false", async () => {
