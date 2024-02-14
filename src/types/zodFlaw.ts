@@ -125,7 +125,7 @@ export const ZodAffectSchema = z.object({
 export const ZodFlawMetaSchema = z.object({
     uuid: z.string().uuid(),
     type: z.nativeEnum(FlawMetaType).nullish(),
-    meta_attr: z.record(z.string(), z.string().nullish()),
+    meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
