@@ -25,7 +25,7 @@ const css = computed(() => {
   return props.css ?? 'light';
 });
 
-const stale = ref(false);
+const isStale = ref(false);
 const freshMs = 10000;  // ms for inactive toast to remain fresh
 const freshMsCss = computed(() => `${freshMs}ms`);
 
@@ -40,7 +40,7 @@ const freshCountdownId: number = setInterval(() => {
   if (settings.showNotifications) {
     percentFreshTimeRemaining.value = 0;
     emit('stale');
-    stale.value = true;
+    isStale.value = true;
     clearInterval(freshCountdownId);
     return;
   }
@@ -55,7 +55,7 @@ const freshCountdownId: number = setInterval(() => {
   if (percentFreshTimeRemaining.value <= 0) {
     clearInterval(freshCountdownId);
     emit('stale');
-    stale.value = true;
+    isStale.value = true;
   }
 }, 33);
 onBeforeUnmount(() => {
@@ -124,7 +124,7 @@ const toastClasses = computed(() => {
   const textBgKey: string = 'text-bg-' + css.value;
   classes[textBgKey] = true;
 
-  let freshAndBecomingStale = !settings.showNotifications && !active.value && !stale.value;
+  let freshAndBecomingStale = !settings.showNotifications && !active.value && !isStale.value;
   classes['fresh-leave-active'] = freshAndBecomingStale;
 
   return classes;

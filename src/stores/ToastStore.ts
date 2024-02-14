@@ -16,7 +16,7 @@ export interface ToastNew {
 interface ToastAdded extends ToastNew {
   id: number,
   timestamp: DateTime,
-  fresh: boolean,
+  isFresh: boolean,
 }
 
 let toastId = 0;
@@ -29,7 +29,7 @@ export const useToastStore = defineStore('ToastStore', () => {
       ...toast,
       id: toastId++,
       timestamp: DateTime.now(),
-      fresh: true,
+      isFresh: true,
     };
     toasts.value.unshift(newToast);
   }
