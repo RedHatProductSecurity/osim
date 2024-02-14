@@ -1,8 +1,11 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, ref, toRef, toRefs, watch, watchEffect} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
 import { DateTime } from 'luxon';
 import ProgressRing from "@/components/widgets/ProgressRing.vue";
+import {useSettingsStore} from '@/stores/SettingsStore';
+
+const {settings} = useSettingsStore();
 
 const props = defineProps<{
   title?: string,
@@ -15,30 +18,74 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [],
+  stale: [],  // Called when the toast is no longer fresh and visibility should be controlled by showNotifications
 }>();
 
 const css = computed(() => {
   return props.css ?? 'light';
 });
 
+const isStale = ref(false);
+const freshMs = 10000;  // ms for inactive toast to remain fresh
+const freshMsCss = computed(() => `${freshMs}ms`);
+
 const active = ref<boolean>(false);
 const inactiveDate = ref(Date.now());
 const percentTimeRemaining = ref<number>(100);
 
-if (props.timeoutMs) {
-  const countdown: number = setInterval(() => {
-    if (active.value || props.timeoutMs == null) {
-      percentTimeRemaining.value = 100;
+const percentFreshTimeRemaining = ref<number>(100);
+let freshAndBecomingStaleStart = ref(true);
+
+let freshCountdownId: number = NaN;  // Use NaN to check if the id has been assigned before clearInterval
+onMounted(() => {
+  freshCountdownId = setInterval(() => {
+    if (settings.showNotifications) {
+      percentFreshTimeRemaining.value = 0;
+      emit('stale');
+      isStale.value = true;
+      clearInterval(freshCountdownId);
       return;
     }
-    percentTimeRemaining.value = 100 - 100 * (Date.now() - inactiveDate.value) / props.timeoutMs;
+    if (active.value) {
+      percentFreshTimeRemaining.value = 100;
+      return;
+    }
+    // inactive
+    freshAndBecomingStaleStart.value = percentFreshTimeRemaining.value === 100;
+    let msNotHovered = Date.now() - inactiveDate.value;
+    percentFreshTimeRemaining.value = 100 - 100 * msNotHovered / freshMs;
+    if (percentFreshTimeRemaining.value <= 0) {
+      clearInterval(freshCountdownId);
+      emit('stale');
+      isStale.value = true;
+    }
   }, 33); // 1000ms / 30fps = 33ms
-  onBeforeUnmount(() => {
-    clearInterval(countdown);
+});
+onBeforeUnmount(() => {
+  if (!Number.isNaN(freshCountdownId)) {
+    clearInterval(freshCountdownId);
+  }
+})
+
+if (props.timeoutMs) {
+  let countdownId: number = NaN;
+  onMounted(() => {
+    const countdownId: number = setInterval(() => {
+      if (active.value || props.timeoutMs == null) {
+        percentTimeRemaining.value = 100;
+        return;
+      }
+      let msNotHovered = Date.now() - inactiveDate.value;
+      percentTimeRemaining.value = 100 - 100 * msNotHovered / props.timeoutMs;
+      if (percentTimeRemaining.value <= 0) {
+        clearInterval(countdownId);
+        emit('close');
+      }
+    }, 33); // 1000ms / 30fps = 33ms
   });
-  watch(percentTimeRemaining, () => {
-    if (percentTimeRemaining.value <= 0) {
-      emit('close');
+  onBeforeUnmount(() => {
+    if (!Number.isNaN(freshCountdownId)) {
+      clearInterval(countdownId);
     }
   });
 }
@@ -81,12 +128,27 @@ watchEffect(() => {
 
 const transitionDurationMs = ref(16);
 
+const toastClasses = computed(() => {
+  const classes: { [key: string]: boolean } = {};
+
+  const textBgKey: string = 'text-bg-' + css.value;
+  classes[textBgKey] = true;
+
+  let freshAndBecomingStale = !settings.showNotifications && !active.value && !isStale.value;
+  classes['fresh-leave-active'] = freshAndBecomingStale;
+
+  return classes;
+});
+
+const timeoutRingDiameter = ref(22);
+const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
+
 </script>
 
 <template>
   <div
       class="osim-toast toast show"
-      :class="['text-bg-' + css]"
+      :class="toastClasses"
       role="alert"
       aria-labelledby="modalTitle"
       aria-live="assertive"
@@ -97,19 +159,24 @@ const transitionDurationMs = ref(16);
     <!--:style="{display: show? 'block' : 'none'}"-->
     <div class="toast-header">
       <slot name="header">
-        <ProgressRing
-            class="osim-toast-timer"
-            v-if="timeoutMs"
-            color="grey"
-            :progress="percentTimeRemaining"
-            :diameter="12"
-            :stroke="6"
-            :transition-duration-ms="transitionDurationMs"
-            direction="down"
-        />
         <strong class="me-auto">{{ title ?? '' }}</strong>
         <small class="text-muted">{{ timestampRelative }}</small>
-        <button type="button" class="btn-close" aria-label="Close" @click="$emit('close')"></button>
+        <button
+            type="button"
+            class="osim-toast-close-btn btn-close"
+            aria-label="Close"
+            @click="$emit('close')">
+          <ProgressRing
+              class="osim-temporary-toast-timer"
+              v-if="timeoutMs"
+              color="grey"
+              :progress="percentTimeRemaining"
+              :diameter="timeoutRingDiameter"
+              :stroke="2"
+              :transition-duration-ms="transitionDurationMs"
+              direction="down"
+          />
+        </button>
       </slot>
     </div>
     <div class="toast-body osim-toast-body">
@@ -126,6 +193,7 @@ const transitionDurationMs = ref(16);
 <style scoped>
 .osim-toast {
   min-width: var(--bs-toast-max-width);
+  transition: transform ease-in;
 }
 .osim-toast-body {
   white-space: pre-wrap;
@@ -133,9 +201,32 @@ const transitionDurationMs = ref(16);
 .osim-toast-timer {
   margin-right: 5px;
 }
-/*
-.osim-body-html {
-  all: initial;
+
+button.osim-toast-close-btn {
+  overflow: visible;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-*/
+.osim-temporary-toast-timer {
+  position: absolute;
+  width: v-bind(timeoutRingDiameterPx);
+  height: v-bind(timeoutRingDiameterPx);
+}
+.fresh-leave-active {
+  animation-duration: v-bind(freshMsCss);
+  animation-name: slideout;
+  transition: transform;
+  animation-timing-function: ease-in;
+}
+@keyframes slideout {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(20px);
+  }
+}
+
 </style>

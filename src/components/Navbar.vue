@@ -12,7 +12,7 @@ import {useElementBounding} from "@vueuse/core";
 import {navbarBottom, navbarHeight} from '@/stores/responsive';
 
 const userStore = useUserStore();
-const settingsStore = useSettingsStore();
+const {settings} = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(elHeader, {width: 0, height: 0}, {box: 'border-box'});
@@ -76,19 +76,24 @@ function onSearch(query: string) {
         <!--</li>-->
       </ul>
 
-      <i
-        class="bi px-3 fs-4 me-2 position-relative notification-icon text-white"
-        :class="{
-          'bi-bell-fill': settingsStore.showNotification,
-          'bi-bell-slash-fill': !settingsStore.showNotification
+      <button
+          type="button"
+          class="osim-notification-button position-relative me-3"
+          @click.prevent="settings.showNotifications = !settings.showNotifications">
+        <i
+            class="bi notification-icon text-white osim-notification-icon"
+            :class="{
+          'bi-bell-fill': settings.showNotifications,
+          'bi-bell-slash-fill': !settings.showNotifications,
         }"
-        @click="settingsStore.toggleNotification()"
-      >
+        >
+          <span class="visually-hidden">Toggle Notifications</span>
+        </i>
         <span
-          class="position-absolute start-30 translate-middle badge border bg-danger rounded-circle notification-badge"
-          v-show="toasts.length > 0"
-        >{{ toasts.length }}</span>
-      </i>
+            class="position-absolute start-100 translate-middle badge bg-danger osim-notification-count"
+            v-show="toasts.length > 0"
+        >{{ toasts.length > 99 ? '99+' : toasts.length }}</span>
+      </button>
 
       <div class="osim-search me-2">
         <form role="search" @submit.prevent="onSearch(searchIssue)">
@@ -232,8 +237,11 @@ filter:
   cursor: pointer;
 }
 
-.notification-badge{
-  font-size: 0.5rem !important;
-  top: 20%;
+.osim-notification-button {
+  background: transparent;
+  border-color: transparent;
+}
+.osim-notification-button .osim-notification-count {
+  padding: 0.3em;
 }
 </style>
