@@ -10,7 +10,13 @@ export function useCvssScores(flaw: Ref<Flaw>) {
   const wasCvssModified = ref(false);
   const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
   const flawRhCvss = ref(
-    redHatCvssData || flaw.value.cvss_scores[0] || {} // empty for creating a flaw, or if no CVSS data exists
+    redHatCvssData || {
+      vector: null,
+      uuid: null,
+      issuer: null,
+      comment: null,
+      created_dt: null,
+    } // empty for creating a flaw, or if no CVSS data exists
   );
 
   watch(flawRhCvss, () => (wasCvssModified.value = true), { deep: true });
@@ -21,6 +27,7 @@ export function useCvssScores(flaw: Ref<Flaw>) {
   const flawNvdCvssScore = computed(() => nistCvssScore.value?.score || flaw.value.nvd_cvss3);
 
   async function saveCvssScores() {
+    if (!flawRhCvss.value.created_dt) 
     if (flawRhCvss.value.created_dt) {
       return putFlawCvssScores(
         flaw.value.uuid,
