@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { DateTime } from 'luxon';
-import { computed, ref, toRef } from 'vue';
+import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -16,7 +16,7 @@ import LabelStatic from './widgets/LabelStatic.vue';
 
 import { type Flaw, type Affect } from '@/generated-client';
 
-import { useFlawForm } from '@/composables/useFlawForm';
+import { useFlawModel } from '@/composables/useFlawModel';
 
 const props = defineProps<{
   flaw: any;
@@ -24,9 +24,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'update:flaw': [flaw: Flaw];
-    'refresh:flaw': [];
-  }>();
+  'update:flaw': [flaw: Flaw];
+  'refresh:flaw': [];
+}>();
 
 const {
     flaw,
@@ -79,15 +79,23 @@ const flawCvss3CaculatorLink = computed(() =>
   `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`
 );
 
-
-
 const onReset = (payload: MouseEvent) => {
   console.log('onReset');
   // flaw.value = Object.assign({}, committedFlaw.value);
   // FIXME XXX TODO
 }
 
-
+function handleAffectedOfferingChange(theEvent: any) {
+  console.log(theEvent)
+  console.log('created handleAffectedOfferingChange');
+  
+  // return (newValue: any) => {
+  //   console.log(newValue)
+  //   const affect = affects[id];
+  //   reportAffectAsModified(affect.uuid);
+  //   affects[id] = newValue;
+  // }
+}
 </script>
 
 <template>
@@ -166,10 +174,9 @@ const onReset = (payload: MouseEvent) => {
                 v-for="(affect, affectIdx) in theAffects"
                 class="container-fluid row affected-offering">
               <AffectedOfferingForm
-                  class=""
-                  v-model="theAffects[affectIdx]"
-                  @remove="removeAffect(affectIdx)"
-                  :reportAffectAsModified="reportAffectAsModified"
+                :modelValue="affect"
+                @update:modelValue="(newValue) => console.log(newValue)"
+                @remove="removeAffect(affectIdx)"
               />
             </div>
   
