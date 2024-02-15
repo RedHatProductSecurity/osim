@@ -32,7 +32,7 @@ function handleConfirm(){
           <div class="osim-embargo-label form-control">
             {{modelValue ? 'Yes' : 'No'}}
           </div>
-          <div v-if="modelValue" class=" ">
+          <div v-if="modelValue">
             <button type="button" class="btn ms-3 btn-danger osim-unembargo-button" @click="openModal">
               <i class="bi-radioactive ps-0"></i>
               <i class="bi-eye-fill"></i>
