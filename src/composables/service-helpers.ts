@@ -19,17 +19,16 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
 }
 
 export function createSuccessHandler(
-  { title, body }: Record<string, string>,
-  onSucceed: (response: AxiosResponse) => void = () => {}
+  { title, body }: Record<string, string>
 ) {
   return (response: AxiosResponse) => {
     const { addToast } = useToastStore();
-    onSucceed(response);
     addToast({
       title,
       body,
       css: 'success',
     });
+    return response;
   };
 }
 

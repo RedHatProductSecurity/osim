@@ -17,7 +17,6 @@ import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
 export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
-
   const { addToast } = useToastStore();
   const flaw = ref<Flaw>(forFlaw);
   const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
@@ -48,11 +47,10 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
 
   async function createFlaw() {
     postFlaw(flaw.value)
-      .then(
-        createSuccessHandler({ title: 'Success!', body: 'Flaw created' }, (response) => {
-          router.push({ name: 'flaw-detail', params: { id: response.data.uuid } });
-        })
-      )
+      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
+      .then((response) => {
+        router.push({ name: 'flaw-detail', params: { id: response.data.uuid } });
+      })
       .catch(createCatchHandler('Error creating Flaw'));
   }
 
@@ -87,13 +85,12 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
 
   function addPublicComment() {
     postFlawPublicComment(flaw.value.uuid, newPublicComment.value)
-        .then(
-          createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }, (response) => {
-            newPublicComment.value = '';
-            addComment.value = false;
-            emit('refresh:flaw');
-          })
-        )
+      .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
+      .then(() => {
+        newPublicComment.value = '';
+        addComment.value = false;
+        emit('refresh:flaw');
+      })
       .catch(createCatchHandler('Error saving comment'));
   }
 
