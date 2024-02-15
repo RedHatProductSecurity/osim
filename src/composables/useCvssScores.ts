@@ -27,7 +27,6 @@ export function useCvssScores(flaw: Ref<Flaw>) {
   const flawNvdCvssScore = computed(() => nistCvssScore.value?.score || flaw.value.nvd_cvss3);
 
   async function saveCvssScores() {
-    if (!flawRhCvss.value.created_dt) 
     if (flawRhCvss.value.created_dt) {
       return putFlawCvssScores(
         flaw.value.uuid,
@@ -36,19 +35,20 @@ export function useCvssScores(flaw: Ref<Flaw>) {
       )
         .then(onSucceed)
         .catch(onError);
-    } else {
-      const requestBody = {
-        // "score":  is recalculated based on the vector by OSIDB and does not need to be included
-        comment: flawRhCvss.value.comment,
-        cvss_version: 'V3',
-        issuer: 'RH',
-        vector: flawRhCvss.value.vector,
-        embargoed: flaw.value.embargoed,
-      };
-      return postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
-        .then(onSucceed)
-        .catch(onError);
     }
+
+    const requestBody = {
+      // "score":  is recalculated based on the vector by OSIDB and does not need to be included
+      comment: flawRhCvss.value.comment,
+      cvss_version: 'V3',
+      issuer: 'RH',
+      vector: flawRhCvss.value.vector,
+      embargoed: flaw.value.embargoed,
+    };
+    return postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
+      .then(onSucceed)
+      .catch(onError);
+
   }
 
   return {
