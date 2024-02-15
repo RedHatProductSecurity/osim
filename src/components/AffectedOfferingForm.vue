@@ -17,7 +17,9 @@ const emit = defineEmits<{
 }>();
 
 watch(props.modelValue, () => {
-  if (props.modelValue.uuid) props.reportAffectAsModified(props.modelValue.uuid)
+  if (props.modelValue.uuid) {
+    props.reportAffectAsModified(props.modelValue.uuid)
+  }
 });
 
 const affectImpacts = Object.values(ZodAffectSchema.shape.impact.unwrap().unwrap().enum) as string[];
