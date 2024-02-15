@@ -24,6 +24,7 @@ const NistCvssValidationEnumWithBlank = {'': '',...NistCvssValidationEnum} as co
 const AffectednessEnumWithBlank = {'': '',...AffectednessEnum} as const;
 const ResolutionEnumWithBlank = {'': '',...ResolutionEnum} as const;
 
+export type ZodFlawCVSSType = z.infer<typeof FlawCVSSSchema>;
 export const FlawCVSSSchema = z.object({
     comment: z.string().nullable(),
     cvss_version: z.string(),
@@ -86,7 +87,7 @@ export const TrackerSchema = z.object({
 export const ZodFlawClassification = z.object({
     workflow: z.string(),
     state: z.nativeEnum(FlawClassificationStateEnum),
-})
+});
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
@@ -163,7 +164,7 @@ export const ZodFlawSchema = z.object({
     affects: z.array(ZodAffectSchema), // read-only
     meta: z.array(ZodFlawMetaSchema),
     cvss_scores: z.array(FlawCVSSSchema),
-    embargoed: z.boolean(), // technically read-only, but mandatory
+    embargoed: z.boolean(),
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
 });
 
@@ -173,6 +174,22 @@ type RegisteredSchemaType = typeof FlawCVSSSchema
     | typeof TrackerSchema
     | typeof ZodAffectSchema
     | typeof ZodFlawMetaSchema
-    | typeof ZodFlawSchema;
+    | typeof ZodFlawSchema
+    | typeof ZodFlawClassification;
 
 export const fieldsFor = (schema: RegisteredSchemaType) => Object.keys(schema.shape);
+
+const {
+  type: zodFlawType,
+  source: zodFlawSource,
+  impact: zodFlawImpacts,
+  major_incident_state: zodFlawMajorIncidentState,
+} = ZodFlawSchema.shape;
+
+const extractEnum = (zodEnum: any): string[] =>
+Object.values(zodEnum.unwrap().unwrap().enum);
+
+export const flawTypes = extractEnum(zodFlawType);
+export const flawSources = extractEnum(zodFlawSource);
+export const flawImpacts = extractEnum(zodFlawImpacts);
+export const flawIncidentStates = extractEnum(zodFlawMajorIncidentState);

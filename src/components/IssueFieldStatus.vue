@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import Modal from '@/components/widgets/Modal.vue';
-import { useField } from 'vee-validate';
 import { ZodFlawClassification } from '@/types/zodFlaw';
 
 const props = defineProps<{
@@ -56,46 +55,52 @@ function nextPhase(flawStatus: WorkflowPhases) {
 </script>
 
 <template>
-  <LabelStatic label="Status" type="text" :model-value="classification.state">
-    <div>
+  <div class="d-flex">
+    <LabelStatic label="Status" type="text" :modelValue="classification.state">
+      <Modal :show="shouldShowRejectionModal" @close="closeModal">
+        <template #title> Reject Flaw </template>
+        <template #body>
+          <label class="osim-modal-label mb-3">
+            <p>Please provide a reason for rejecting the flaw</p>
+            <textarea class="form-control" v-model="rejectionReason"></textarea>
+          </label>
+        </template>
+        <template #footer>
+          <button type="button" class="btn btn-primary" @click="onReject(flawId)">
+            Reject Flaw
+          </button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">
+            Cancel
+          </button>
+        </template>
+      </Modal>
+    </LabelStatic>
+    <div v-if="shouldShowWorkflowButtons" class="mt-4">
       <button
         @click="openModal"
-        class="btn btn-warning p-0 pe-1 ps-1 me-2"
-        id="osim-status-reject-button"
-        v-if="shouldShowWorkflowButtons"
+        type="button"
+        class="btn btn-warning mt-2 ms-2 me-2"
       >
         Reject
       </button>
       <button
         @click="onPromote(flawId)"
-        class="btn btn-warning p-0 pe-1 ps-1"
-        id="osim-status-promote-button"
-        v-if="shouldShowWorkflowButtons"
+        type="button"
+        class="btn btn-warning mt-2 me-2"
+
       >
         Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
       </button>
     </div>
-    <Modal :show="shouldShowRejectionModal" @close="closeModal">
-      <template #title> Reject Flaw </template>
-      <template #body>
-        <label class="osim-modal-label mb-3">
-          <p>Please provide a reason for rejecting the flaw</p>
-          <textarea class="form-control" v-model="rejectionReason"></textarea>
-        </label>
-      </template>
-      <template #footer>
-        <button type="button" class="btn btn-primary" @click="onReject(flawId)">
-          Reject Flaw
-        </button>
-        <button type="button" class="btn btn-secondary" @click="closeModal">
-          Cancel
-        </button>
-      </template>
-    </Modal>
-  </LabelStatic>
+  </div>
 </template>
 
 <style scoped>
+
+.d-flex :deep(.osim-input){
+  flex-grow: 1;
+;}
+
 label.osim-modal-label {
   display: block;
 }

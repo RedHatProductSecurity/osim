@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
-import type {ZodFlawType} from '@/types/zodFlaw';
+import type { ZodFlawType } from '@/types/zodFlaw';
 import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+import { createCatchHandler } from '@/composables/service-helpers';
 
 const FLAW_LIST_FIELDS = [
   'cve_id',
@@ -97,6 +98,50 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   })
 }
 
+// {
+//   "comment": "string",
+//   "cvss_version": "string",
+//   "issuer": "RH",
+//   "score": 0,
+//   "vector": "string",
+//   "embargoed": true,
+//   "updated_dt": "2024-02-06T16:02:54.708Z"
+// }
+export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cvssScoreObject: unknown) {
+  const putObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+  delete putObject['uuid'];
+  delete putObject['flaw'];
+  delete putObject['created_dt'];
+  return osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
+    data: putObject,
+  }).then(response => {
+    console.log(response);
+    return response.data;
+  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+}
+
+// {
+//   "comment": "string",
+//   "cvss_version": "string",
+//   "issuer": "RH",
+//   "score": 0,
+//   "vector": "string",
+//   "embargoed": true
+// }
+export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknown) {
+  const postObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
+    data: postObject,
+  }).then(response => {
+    console.log(response);
+    return response.data;
+  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+}
+
 export async function postFlawPublicComment(uuid: string, comment: string) {
   return osidbFetch({
     method: 'post',
@@ -114,15 +159,20 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
 
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
 export async function promoteFlaw(uuid: string) {
+  const { addToast } = useToastStore();
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/promote`,
   }).then(response => {
     console.log('Flaw promoted:', response);
+    addToast({
+      title: "Flaw Promoted",
+      body: response.data.classification.state,
+      css: 'warning'
+    })
     return response.data;
   }).catch(error => {
     const displayedError = getDisplayedOsidbError(error);
-    const { addToast } = useToastStore();
     addToast({
       title: displayedError,
       body: error.response.data,
@@ -163,12 +213,9 @@ export async function searchFlaws(query: string) {
       include_fields: FLAW_LIST_FIELDS.join(','),
       search: query,
     },
-  }).then(response => response.data)
-  .catch(error => {
-    // TODO: use {getDisplayedOsidbError} from '@/services/OsidbAuthService';
-    console.error(error);
-    return error;
-  });
+  })
+    .then(response => response.data)
+    .catch(createCatchHandler('Problem searching flaws:'));
 }
 
 export async function advancedSearchFlaws(params: Record<string, string>) {
@@ -184,9 +231,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     .catch(console.error);
 }
 
-
-
-export async function createFlaw(flawCreateRequest: any) {
+export async function postFlaw(requestBody: any) {
   // {
   //   "type": "VULNERABILITY",
   //   "cve_id": "string",
@@ -213,7 +258,7 @@ export async function createFlaw(flawCreateRequest: any) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws`,
-    data: flawCreateRequest,
+    data: requestBody,
   }).then(response => {
     return response.data;
   })
@@ -233,3 +278,4 @@ export function getFlawBugzillaLink(flaw: any) {
   const link = osimRuntime.value.backends.bugzilla + '/show_bug.cgi?id=' + bzId;
   return link;
 }
+

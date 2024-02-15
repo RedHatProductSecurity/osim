@@ -74,7 +74,9 @@ function clearAll() {
 </template>
 
 <style scoped>
-
+.osim-toast-container-clear button {
+  pointer-events: auto;
+}
 .osim-toast-container {
   position: v-bind(position);
   top: v-bind(top);

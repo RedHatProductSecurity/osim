@@ -35,7 +35,6 @@ function doupdate() {
       </slot>
 
       <!--<br />-->
-      <!--attrs: {{ $attrs }}-->
       <!--<br/>-->
     </span>
     <!-- https://github.com/vuejs/language-tools/issues/3138 -->

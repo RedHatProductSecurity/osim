@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
 import {SettingsSchema, useSettingsStore} from '@/stores/SettingsStore';
 import type {SettingsType} from '@/stores/SettingsStore';
-
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
@@ -73,16 +73,18 @@ const errors = {
         </label>
         <div class="form-text">
           <p>Required for actions which interface with Bugzilla.</p>
-          <p>Steps to create an API key:</p>
-          <ul>
-            <li>Visit your Bugzilla user preferences page</li>
-            <li>Click the API Keys tab</li>
-            <li>Check the "Generate a new API key" box</li>
-            <li>Click the "Submit Changes" button</li>
-            <li>Copy the API key from the banner at the top of the page. Optionally, save it to your password manager.
-              The API key will not be shown again after you navigate away from the page.
-            </li>
-          </ul>
+          <details>
+            <summary>Steps to create an API key:</summary>
+            <ul>
+              <li>Visit your Bugzilla user preferences page</li>
+              <li>Click the API Keys tab</li>
+              <li>Check the "Generate a new API key" box</li>
+              <li>Click the "Submit Changes" button</li>
+              <li>Copy the API key from the banner at the top of the page. Optionally, save it to your password manager.
+                The API key will not be shown again after you navigate away from the page.
+              </li>
+            </ul>
+          </details>
         </div>
       </div>
       <div class="form-control mb-3">
@@ -104,15 +106,17 @@ const errors = {
         </label>
         <div class="form-text">
           <p>Required for actions which interface with JIRA.</p>
-          <p>Steps to create an API key:</p>
-          <ul>
-            <li>Log into your JIRA account.</li>
-            <li>Go to 'Your Profile' page under your user icon menu in the upper right corner. </li>
-            <li>Select Personal Access Tokens from the left hand sidebar menu.</li>
-            <li>Click Create token button.</li>
-            <li>Name the token meaningfully (eg. 'OSIM token') and click create.</li>
-            <li>Copy token value and close.</li>
-          </ul>
+          <details>
+            <summary>Steps to create an API key:</summary>
+            <ul>
+              <li>Log into your JIRA account.</li>
+              <li>Go to 'Your Profile' page under your user icon menu in the upper right corner. </li>
+              <li>Select Personal Access Tokens from the left hand sidebar menu.</li>
+              <li>Click Create token button.</li>
+              <li>Name the token meaningfully (eg. 'OSIM token') and click create.</li>
+              <li>Copy token value and close.</li>
+            </ul>
+          </details>
         </div>
       </div>
     </form>
