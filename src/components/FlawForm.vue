@@ -85,17 +85,6 @@ const onReset = (payload: MouseEvent) => {
   // FIXME XXX TODO
 }
 
-function handleAffectedOfferingChange(theEvent: any) {
-  console.log(theEvent)
-  console.log('created handleAffectedOfferingChange');
-  
-  // return (newValue: any) => {
-  //   console.log(newValue)
-  //   const affect = affects[id];
-  //   reportAffectAsModified(affect.uuid);
-  //   affects[id] = newValue;
-  // }
-}
 </script>
 
 <template>
@@ -177,6 +166,7 @@ function handleAffectedOfferingChange(theEvent: any) {
                 :modelValue="affect"
                 @update:modelValue="(newValue) => console.log(newValue)"
                 @remove="removeAffect(affectIdx)"
+                :reportAffectAsModified="reportAffectAsModified"
               />
             </div>
   
