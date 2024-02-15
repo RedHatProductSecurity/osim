@@ -16,6 +16,7 @@ const emit = defineEmits<{
   'remove': [],
 }>();
 
+// TODO: Deprecate this pattern and use composable?
 watch(props.modelValue, () => {
   if (props.modelValue.uuid) {
     props.reportAffectAsModified(props.modelValue.uuid)

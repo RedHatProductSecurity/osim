@@ -48,7 +48,7 @@ const {
     updateFlaw,
     createFlaw,
     addPublicComment,
-  } = useFlawForm(props.flaw, emit);
+  } = useFlawModel(props.flaw, emit);
 
 const onSubmit = () => {
   if (props.mode === 'edit') {

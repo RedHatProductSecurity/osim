@@ -2,7 +2,6 @@ import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { type Flaw } from '@/generated-client';
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useCvssScores } from '@/composables/useCvssScores';
 import { useFlawAffectsForm } from '@/composables/useFlawAffectsForm';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
@@ -17,7 +16,8 @@ import {
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export function useFlawForm(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
+export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
+
   const { addToast } = useToastStore();
   const flaw = ref<Flaw>(forFlaw);
   const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
