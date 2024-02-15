@@ -130,7 +130,7 @@ const onReset = (payload: MouseEvent) => {
                            :error="errors.major_incident_state"/>
               <LabelEditable label="Reported Date" type="date" v-model="flaw.reported_dt" :error="errors.reported_dt"/>
               <LabelEditable
-                  :label="'Public Date' + (DateTime.fromJSDate(flaw.unembargo_dt as unknown as Date).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
+                  :label="'Public Date' + (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
                   type="date"
                   v-model="flaw.unembargo_dt"
                   :error="errors.unembargo_dt"/>
