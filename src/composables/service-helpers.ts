@@ -8,7 +8,7 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
     const { addToast } = useToastStore();
     addToast({
       title,
-      body: `${displayedError}: ${error.response?.data}`,
+      body: displayedError,
       css: 'warning',
     });
     console.error('❌ ', error);
