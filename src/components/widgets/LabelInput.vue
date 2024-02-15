@@ -2,12 +2,14 @@
 
 import {computed} from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: any,
   label: string,
-  error?: string,
+  error?: string | null,
   type?: 'text' | 'date' | 'reset' | 'button' | 'checkbox' | 'color' | 'datetime-local' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'search' | 'submit' | 'tel' | 'time' | 'url' | 'week',
-}>();
+}>(), {
+  modelValue: '',
+});
 
 const type = computed<string>(() => (props.type ?? 'text'));
 

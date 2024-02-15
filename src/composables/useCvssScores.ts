@@ -16,6 +16,7 @@ export function useCvssScores(flaw: Ref<Flaw>) {
       issuer: null,
       comment: null,
       created_dt: null,
+      score: null,
     } // empty for creating a flaw, or if no CVSS data exists
   );
 
