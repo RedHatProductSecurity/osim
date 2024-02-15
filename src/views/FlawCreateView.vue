@@ -42,32 +42,12 @@ const blankFlaw: ZodFlawType = {
 
 const flaw = ref(blankFlaw);
 
-// function onSubmit() {
-//   error.value = '';
-//   console.log('Submitting the flaw', flaw.value);
-//   createFlaw(flaw.value)
-//       .then(response => {
-//         console.log('submit response', response);
-//         router.push({name: 'flaw-detail', params: {id: response.uuid}});
-//       })
-//       .catch(e => {
-//         console.log('submit error', e);
-//         let errorText = JSON.stringify((e.response?.data ?? e), null, 2);
-//         error.value = errorText;
-//       })
-// }
-
 </script>
 
 <template>
   <main>
     <div v-if="error !== ''" class="alert alert-danger">{{error}}</div>
-    <!--<textarea v-bind:value="JSON.stringify(flaw)"/>-->
-
     <FlawForm v-model:flaw="flaw" mode="create"/>
-
-    <pre>{{JSON.stringify(flaw, null, 2)}}</pre>
-
   </main>
 </template>
 
