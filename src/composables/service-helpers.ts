@@ -15,7 +15,6 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
     if (shouldThrow) {
       throw error;
     };
-    return error;
   };
 }
 
