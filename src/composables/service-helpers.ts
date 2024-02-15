@@ -12,7 +12,9 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
       css: 'warning',
     });
     console.error('❌ ', error);
-    if (shouldThrow) throw error;
+    if (shouldThrow) {
+      throw error
+    };
     return error;
   };
 }
