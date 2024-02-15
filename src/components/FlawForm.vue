@@ -51,8 +51,12 @@ const {
   } = useFlawForm(props.flaw, emit);
 
 const onSubmit = () => {
-  if (props.mode==='edit') updateFlaw();
-  if (props.mode==='create') createFlaw();
+  if (props.mode === 'edit') {
+    updateFlaw();
+  }
+  if (props.mode === 'create') {
+    createFlaw();
+  }
 };
 
 // TODO
