@@ -32,14 +32,12 @@ export function useFlawAffectsForm(flaw: Ref<Flaw>) {
   function reportAffectAsModified(affectId: string) {
     wereAffectsModified.value = true;
     modifiedAffectIds.value.push(affectId);
-    console.log(modifiedAffectIds.value);
   }
 
   const saveAffects = async () => {
     const affectsToSaveQuantity = affectsToSave.value.length;
-    for (let [index, affect] of Object.entries(affectsToSave.value)) {
-      console.log(`Saving affect ${+index + 1} of ${affectsToSaveQuantity}`, affect);
-      console.log(affect.uuid);
+    for (let index = 0; index < affectsToSaveQuantity; index++) {
+      const affect = affectsToSave.value[index];
       const requestBody = {
         flaw: flaw.value?.uuid,
         type: affect.type,
@@ -57,7 +55,7 @@ export function useFlawAffectsForm(flaw: Ref<Flaw>) {
             console.log('saved newAffect', requestBody);
             addToast({
               title: 'Info',
-              body: `Affect ${+index + 1} of ${affectsToSaveQuantity} Saved: ${
+              body: `Affect ${index + 1} of ${affectsToSaveQuantity} Saved: ${
                 requestBody.ps_component
               }`,
             });

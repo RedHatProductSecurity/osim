@@ -13,7 +13,7 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
     });
     console.error('❌ ', error);
     if (shouldThrow) {
-      throw error
+      throw error;
     };
     return error;
   };
