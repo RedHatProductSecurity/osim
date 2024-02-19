@@ -2,8 +2,8 @@ import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { type Flaw } from '@/generated-client';
-import { useCvssScores } from '@/composables/useCvssScores';
-import { useFlawAffectsForm } from '@/composables/useFlawAffectsForm';
+import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
+import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import {
   getFlawBugzillaLink,
@@ -13,13 +13,18 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
+export type FlawEmitter = {
+    (e: 'update:flaw',  flaw: any): void
+    (e: 'refresh:flaw'): void
+};
+
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
+export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: FlawEmitter) {
   const { addToast } = useToastStore();
   const flaw = ref<Flaw>(forFlaw);
-  const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
+  const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
   const {
     theAffects,
     wereAffectsModified,
@@ -27,7 +32,7 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
     addBlankAffect,
     removeAffect,
     reportAffectAsModified,
-  } = useFlawAffectsForm(flaw);
+  } = useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
