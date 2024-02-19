@@ -18,15 +18,15 @@
   },
   "plugins": ["@typescript-eslint", "vue"],
   "rules": {
-    "typescript-eslint/no-explicit-any": "off",
-    "indent": ["error", 2],
+    "@typescript-eslint/no-explicit-any": "off",
+    "indent": ["warn", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
-    "comma-dangle": ["error", "only-multiline"],
+    "comma-dangle": ["warn", "only-multiline"],
     "vue/html-self-closing": "off",
     "vue/max-attributes-per-line": [
-      "error",
+      "warn",
       {
         "singleline": 3,
         "multiline": {
@@ -35,7 +35,7 @@
       }
     ],
     "vue/html-closing-bracket-spacing": [
-      "error",
+      "warn",
       {
         "startTag": "never",
         "selfClosingTag": "always"

@@ -29,6 +29,7 @@ export function useFlawAffectsForm(flaw: Ref<Flaw>) {
     theAffects.value.splice(affectIdx, 1);
   }
 
+  // Is there a way to watch affect is modified within composable?
   function reportAffectAsModified(affectId: string) {
     wereAffectsModified.value = true;
     modifiedAffectIds.value.push(affectId);
