@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const props =  withDefaults( defineProps<{
+withDefaults( defineProps<{
   modelValue: string | null,
   options: string[] ,
   label: string,
@@ -12,25 +12,25 @@ const props =  withDefaults( defineProps<{
     
 <template>
   <label class="osim-input mb-3 border-start ps-3">
-    <span class="form-label" v-if="label" >
+    <span v-if="label" class="form-label">
       {{ label }}
     </span>
     <select
-        class="form-select"
-        :value="modelValue"
-        v-bind="{
-          ...$attrs,
-          // onChange: $event => {
-          //   $emit('update:modelValue', ($event as InputEvent).target.value)
-          // },
-        }"
-        @change="$emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)"
+      :value="modelValue"
+      v-bind="{
+        ...$attrs,
+        // onChange: $event => {
+        //   $emit('update:modelValue', ($event as InputEvent).target.value)
+        // },
+      }"
+      class="form-select"
+      @change="$emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)"
     >
       <option
-          v-for="option in options"
-          :value="option"
-          :key="option"
-          :selected="option === modelValue"
+        v-for="option in options"
+        :value="option"
+        :key="option"
+        :selected="option === modelValue"
       >{{ option }}</option>
 
     </select>
