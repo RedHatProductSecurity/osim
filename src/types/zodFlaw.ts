@@ -1,17 +1,17 @@
 import {z} from 'zod';
 import {
-    FlawType,
-    ImpactEnum,
-    MajorIncidentStateEnum,
-    NistCvssValidationEnum,
-    RequiresSummaryEnum,
-    Source8d8Enum,
-    AffectType,
-    AffectednessEnum,
-    ResolutionEnum,
-    IssuerEnum,
-    FlawMetaType,
-    FlawClassificationStateEnum
+  FlawType,
+  ImpactEnum,
+  MajorIncidentStateEnum,
+  NistCvssValidationEnum,
+  RequiresSummaryEnum,
+  Source8d8Enum,
+  AffectType,
+  AffectednessEnum,
+  ResolutionEnum,
+  IssuerEnum,
+  FlawMetaType,
+  FlawClassificationStateEnum
 } from '../generated-client';
 import { DateTime } from 'luxon';
 
@@ -24,7 +24,26 @@ const NistCvssValidationEnumWithBlank = {'': '',...NistCvssValidationEnum} as co
 const AffectednessEnumWithBlank = {'': '',...AffectednessEnum} as const;
 const ResolutionEnumWithBlank = {'': '',...ResolutionEnum} as const;
 
+const zodOsimDateTime = () => z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish();
+
 export type ZodFlawCVSSType = z.infer<typeof FlawCVSSSchema>;
+
+export const AffectAcknowledgmentSchema = z.object({
+  name: z.string(),
+  affiliation: z.string(),
+  from_upstream: z.boolean(),
+  embargoed: z.boolean(),
+  updated_dt: zodOsimDateTime(),
+});
+
+export const FlawReferenceSchema = z.object({
+  description: z.string(),
+  type: z.enum(['ARTICLE']),
+  url: z.string(),
+  embargoed: z.boolean(),
+  updated_dt: zodOsimDateTime(),
+});
+
 export const FlawCVSSSchema = z.object({
     comment: z.string().nullable(),
     cvss_version: z.string(),
@@ -118,9 +137,7 @@ export const ZodAffectSchema = z.object({
     embargoed: z.boolean(), // read-only
     created_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
     updated_dt: z.date().transform(val => DateTime.fromJSDate(val).toUTC().toISO()).or(z.string().datetime()).nullish(), // $date-time,
-})
-
-
+});
 
 export const ZodFlawMetaSchema = z.object({
     uuid: z.string().uuid(),
@@ -186,10 +203,21 @@ const {
   major_incident_state: zodFlawMajorIncidentState,
 } = ZodFlawSchema.shape;
 
-const extractEnum = (zodEnum: any): string[] =>
-Object.values(zodEnum.unwrap().unwrap().enum);
+const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
 export const flawTypes = extractEnum(zodFlawType);
 export const flawSources = extractEnum(zodFlawSource);
 export const flawImpacts = extractEnum(zodFlawImpacts);
 export const flawIncidentStates = extractEnum(zodFlawMajorIncidentState);
+
+const {
+  impact: zodAffectImpact,
+  resolution: zodAffectResolution,
+  affectedness: zodAffectAffectedness,
+  type: zodAffectType,
+} = ZodAffectSchema.shape;
+
+export const affectImpacts = extractEnum(zodAffectImpact);
+export const affectResolutions = extractEnum(zodAffectResolution);
+export const affectAffectedness = extractEnum(zodAffectAffectedness);
+export const affectTypes = extractEnum(zodAffectType);

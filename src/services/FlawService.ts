@@ -5,7 +5,7 @@ import {useToastStore} from '@/stores/ToastStore';
 import router from '@/router';
 import {osimRuntime} from '@/stores/osimRuntime';
 import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
-import { createCatchHandler } from '@/composables/service-helpers';
+import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 const FLAW_LIST_FIELDS = [
   'cve_id',
@@ -28,7 +28,7 @@ export async function getFlaws(offset=0, limit=20) {
   // axios.get('https://osidb-stage.example.com/osidb/api/v1/flaws')
   // return axios.get('/mock/prod-flaws.json')
   // return axios.get('/mock/prod-flaws.json')
-  let params = {
+  const params = {
     include_fields: FLAW_LIST_FIELDS.join(','),
     limit: limit,
     offset: offset,
@@ -69,10 +69,10 @@ export async function getFlawQueue() {
 export async function getFlaw(uuid: string) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
     return axios.get('/mock/new-flaws-stage.json')
-        .then(response => {
-          const flaw = response.data.results.find((flaw: { uuid: string; }) => flaw.uuid === uuid);
-          return flaw;
-        })
+      .then(response => {
+        const flaw = response.data.results.find((flaw: { uuid: string; }) => flaw.uuid === uuid);
+        return flaw;
+      });
   }
 
   return osidbFetch({
@@ -84,7 +84,7 @@ export async function getFlaw(uuid: string) {
     },
   }).then(response => {
     return response.data;
-  })
+  });
 }
 
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
@@ -95,7 +95,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   }).then(response => {
     console.log(response);
     return response.data;
-  })
+  });
 }
 
 // {
@@ -154,7 +154,7 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
   }).then(response => {
     console.log(response);
     return response.data;
-  })
+  });
 }
 
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
@@ -166,10 +166,10 @@ export async function promoteFlaw(uuid: string) {
   }).then(response => {
     console.log('Flaw promoted:', response);
     addToast({
-      title: "Flaw Promoted",
+      title: 'Flaw Promoted',
       body: response.data.classification.state,
       css: 'warning'
-    })
+    });
     return response.data;
   }).catch(error => {
     const displayedError = getDisplayedOsidbError(error);
@@ -177,10 +177,10 @@ export async function promoteFlaw(uuid: string) {
       title: displayedError,
       body: error.response.data,
       css: 'warning'
-    })
+    });
     console.error('❌ Problem promoting flaw:', error);
     throw error;
-  })
+  });
 }
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
 export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
@@ -198,10 +198,10 @@ export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
       title: displayedError,
       body: error.response.data,
       css: 'warning'
-    })
+    });
     console.error('❌ Problem rejecting flaw:', error);
     throw error;
-  })
+  });
 }
 
 // TODO paginate search results page
@@ -261,7 +261,7 @@ export async function postFlaw(requestBody: any) {
     data: requestBody,
   }).then(response => {
     return response.data;
-  })
+  });
 }
 
 export function getFlawOsimLink(flawUuid: any) {
@@ -279,3 +279,33 @@ export function getFlawBugzillaLink(flaw: any) {
   return link;
 }
 
+type FlawReferencePost = {
+  description: string,
+  type: string,
+  url: string,
+  embargoed: boolean,
+}
+
+export function postFlawReference(flawId: string, requestBody: FlawReferencePost) {
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${flawId}/references`,
+    data: requestBody,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
+    .catch(createCatchHandler('Error creating Reference:'));
+}
+
+type FlawReferencePut = FlawReferencePost & {
+  updated_dt: string,
+}
+
+export function putFlawReference(flawId: string, requestBody: FlawReferencePut) {
+  return osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v1/flaws/${flawId}/references`,
+    data: requestBody,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
+    .catch(createCatchHandler('Error creating Reference:'));
+}
