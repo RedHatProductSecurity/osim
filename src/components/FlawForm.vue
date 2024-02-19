@@ -24,26 +24,25 @@ const props = defineProps<{
 const emit = defineEmits<FlawEmitter>();
 
 const {
-    flaw,
-    addComment,
-    newPublicComment,
-    trackerUuids,
-    flawTypes,
-    flawSources,
-    flawImpacts,
-    flawIncidentStates,
-    osimLink,
-    bugzillaLink,
-    flawRhCvss,
-    flawNvdCvssScore,
-    theAffects,
-    addBlankAffect,
-    removeAffect,
-    reportAffectAsModified,
-    updateFlaw,
-    createFlaw,
-    addPublicComment,
-  } = useFlawModel(props.flaw, emit);
+  flaw,
+  addComment,
+  newPublicComment,
+  trackerUuids,
+  flawTypes, // Visually hidden field
+  flawSources,
+  flawImpacts,
+  flawIncidentStates,
+  osimLink,
+  bugzillaLink,
+  flawRhCvss,
+  flawNvdCvssScore,
+  theAffects,
+  addBlankAffect,
+  removeAffect,
+  updateFlaw,
+  createFlaw,
+  addPublicComment,
+} = useFlawModel(props.flaw, emit);
 
 const onSubmit = () => {
   if (props.mode === 'edit') {
@@ -74,11 +73,11 @@ const flawCvss3CaculatorLink = computed(() =>
   `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`
 );
 
-const onReset = (payload: MouseEvent) => {
+const onReset = () => {
   console.log('onReset');
   // flaw.value = Object.assign({}, committedFlaw.value);
   // FIXME XXX TODO
-}
+};
 
 </script>
 
@@ -86,33 +85,36 @@ const onReset = (payload: MouseEvent) => {
   <form @submit.prevent="onSubmit">
     <div class="osim-content container">
       <div class="row mt-3 mb-5">
-        <LabelEditable v-model="flaw.title" label="Title" type="text"/>
+        <LabelEditable v-model="flaw.title" label="Title" type="text" />
         <div class="col">
           <div class="row">
             <div class="col-6">
               <LabelEditable label="Component" type="text" v-model="flaw.component" :error="errors.component"/>
-              <!-- <LabelSelect label="Type" :options="flawTypes" v-model="flaw.type" :error="errors.type"/> -->
+              <LabelSelect label="Type" :options="flawTypes" v-model="flaw.type" :error="errors.type" class="visually-hidden"/>
               <div class="">
                 <div class="row">
                   <div class="col">
                     <LabelEditable
-                        label="CVE ID" type="text" v-model="flaw.cve_id" :error="errors.cve_id"/>
+                      v-model="flaw.cve_id"
+                      type="text" 
+                      label="CVE ID"
+                      :error="errors.cve_id" 
+                    />
                   </div>
-                  <div v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
-                       class="col-auto align-self-end mb-3">
+                  <div v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'" class="col-auto align-self-end mb-3">
                     <CveRequestForm
-                        :bugzilla-link="bugzillaLink"
-                        :osim-link="osimLink"
-                        :subject="flaw.title"
-                        :description="flaw.description"
+                      :bugzilla-link="bugzillaLink"
+                      :osim-link="osimLink"
+                      :subject="flaw.title"
+                      :description="flaw.description"
                     />
                   </div>
                 </div>
               </div>
-              <LabelSelect label="Impact" :options="flawImpacts" v-model="flaw.impact" :error="errors.impact"/>
+              <LabelSelect label="Impact" :options="flawImpacts" v-model="flaw.impact" :error="errors.impact" />
               <LabelEditable type="text" v-model="flawRhCvss.vector" :error="errors.cvss3">
                 <template #label>
-                  CVSSv3 <a :href=flawCvss3CaculatorLink target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
+                  CVSSv3 <a :href="flawCvss3CaculatorLink" target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
                 </template>
               </LabelEditable>
               <LabelInput label="CVSSv3 Score" type="text" v-model="flawRhCvss.score" :error="errors.cvss3_score"/>
@@ -126,18 +128,17 @@ const onReset = (payload: MouseEvent) => {
                            :error="errors.major_incident_state"/>
               <LabelEditable label="Reported Date" type="date" v-model="flaw.reported_dt" :error="errors.reported_dt"/>
               <LabelEditable
-                  :label="'Public Date' + (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
-                  type="date"
-                  v-model="flaw.unembargo_dt"
-                  :error="errors.unembargo_dt"/>
-              <IssueFieldEmbargo
-                  v-model="flaw.embargoed"
-                  :cveId="flaw.cve_id"/>
-              <LabelEditable label="Assignee" type="text" v-model="flaw.owner"/>
-              <LabelEditable type="text" label="Team ID" v-model="flaw.team_id"/>
+                v-model="flaw.unembargo_dt"
+                :label="'Public Date' + (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')"
+                type="date"
+                :error="errors.unembargo_dt"
+              />
+              <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
+              <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
+              <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
               <div>
                 <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
-                <div v-for="tracker in trackerUuids">
+                <div v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
                   <RouterLink :to="{name: 'tracker-details', params: {id: tracker.uuid}}">
                     {{ tracker.display }}
                   </RouterLink>
@@ -146,17 +147,18 @@ const onReset = (payload: MouseEvent) => {
             </div>
           </div>
           <div class="row">
-            <LabelTextarea label="Summary" v-model="flaw.summary"/>
-            <LabelTextarea label="Description" v-model="flaw.description"/>
-            <LabelTextarea label="Statement" v-model="flaw.statement"/>
-            <LabelTextarea label="Mitigation" v-model="flaw.mitigation"/>
+            <LabelTextarea v-model="flaw.summary" label="Summary" />
+            <LabelTextarea v-model="flaw.description" label="Description" />
+            <LabelTextarea v-model="flaw.statement" label="Statement" />
+            <LabelTextarea v-model="flaw.mitigation" label="Mitigation" />
           </div>
-          <div v-if="mode==='edit'" class="row osim-affects mb-3">
+          <div v-if="theAffects && mode==='edit'" class="row osim-affects mb-3">
             <div class="h5">Affected Offerings</div>
             <div
-                v-if="theAffects"
-                v-for="(affect, affectIdx) in theAffects"
-                class="container-fluid row affected-offering">
+              v-for="(affect, affectIdx) in theAffects"
+              :key="affectIdx"
+              class="container-fluid row affected-offering"
+            >
               <AffectedOfferingForm
                 v-model="theAffects[affectIdx]"
                 @remove="removeAffect(affectIdx)"
@@ -166,9 +168,9 @@ const onReset = (payload: MouseEvent) => {
             <div>
               <div class="h6">Add New Affect</div>
               <button
-                  type="button"
-                  class="btn btn-secondary"
-                  @click.prevent="addBlankAffect()"
+                type="button"
+                class="btn btn-secondary"
+                @click.prevent="addBlankAffect()"
               >Add New Affect</button>
             </div>
           </div>
@@ -177,14 +179,15 @@ const onReset = (payload: MouseEvent) => {
           <h3 class="mt-3 mb-2">Comments</h3>
           <div class="row">
             <ul>
-              <li class="p-3" v-for="comment in flaw.comments">
+              <li v-for="(comment, commentIndex) in flaw.comments" :key="commentIndex" class="p-3">
                 <p class="border-top pt-2">
                   {{ comment.meta_attr?.creator }} /
                   <a :href="'#' + comment.type + '/' + comment.external_system_id">
                     {{ comment.meta_attr?.time }}
                   </a>
-                  <span v-if="comment.meta_attr?.is_private.toLowerCase() === 'true'"
-                  >(internal)</span>
+                  <span v-if="comment.meta_attr?.is_private.toLowerCase() === 'true'">
+                    (internal)
+                  </span>
                 </p>
                 <p>{{ comment.meta_attr?.text }}</p>
               </li>
@@ -260,6 +263,7 @@ const onReset = (payload: MouseEvent) => {
 .affected-module-component {
   font-weight: bold;
 }
+
 .affect-trackers-heading {
   font-size: 100%;
   font-weight: bold;
@@ -269,6 +273,7 @@ const onReset = (payload: MouseEvent) => {
   outline: 1px solid #ddd;
   padding: 1.5em;
 }
+
 .osim-action-buttons {
   background: white;
   border-top: 1px solid #ddd;

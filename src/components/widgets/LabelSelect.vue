@@ -1,26 +1,20 @@
 <script setup lang="ts">
 
-const props = withDefaults(defineProps<{
-  modelValue: string,
-  options: string[],
+const props =  withDefaults( defineProps<{
+  modelValue: string | null,
+  options: string[] ,
   label: string,
 }>(), {
   modelValue: '',
 });
 
 </script>
-
+    
 <template>
   <label class="osim-input mb-3 border-start ps-3">
-    <span
-        class="form-label"
-        v-if="label"
-    >
+    <span class="form-label" v-if="label" >
       {{ label }}
-      <!--attrs: {{ $attrs }}-->
     </span>
-
-
     <select
         class="form-select"
         :value="modelValue"
@@ -48,7 +42,7 @@ const props = withDefaults(defineProps<{
 <style scoped>
 
 .osim-input {
-  display: block;
+  display: block ; 
 }
 
 </style>

@@ -30,49 +30,53 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
 <template>
   <div class="row">
     <LabelInput
-        class="col-6"
-        label="Affected Module"
-        v-model="modelValue.ps_module"/>
+      v-model="modelValue.ps_module"
+      class="col-6"
+      label="Affected Module"
+    />
     <div class="col-auto align-self-center ms-auto">
       <button
-          type="button"
-          class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="$emit('remove')"
+        type="button"
+        class="osim-affected-offering-remove btn btn-secondary justify-self-end"
+        @click.prevent="$emit('remove')"
       >Remove This Affect</button>
     </div>
     <LabelInput
-        class="col-6"
-        label="Affected Component"
-        v-model="modelValue.ps_component"/>
+      v-model="modelValue.ps_component"
+      class="col-6"
+      label="Affected Component"
+    />
     <!--Hiding the Type field until we have more options to choose from-->
     <LabelSelect
-        class="col-6 visually-hidden"
-        label="Type"
-        v-model="modelValue.type"
-        :options="affectTypes"
+      v-model="modelValue.type"
+      class="col-6 visually-hidden"
+      label="Type"
+      :options="affectTypes"
     />
     <LabelSelect
-        class="col-6"
-        label="Affectedness"
-        v-model="modelValue.affectedness"
-        :options="affectAffectedness"
+      v-model="modelValue.affectedness"
+      class="col-6"
+      label="Affectedness"
+      :options="affectAffectedness"
     />
     <LabelSelect
-        class="col-6"
-        label="Resolution"
-        v-model="modelValue.resolution"
-        :options="affectResolutions"
+      v-model="modelValue.resolution"
+      class="col-6"
+      label="Resolution"
+      :options="affectResolutions"
     />
     <LabelSelect
-        class="col-6"
-        label="Impact"
-        v-model="modelValue.impact"
-        :options="affectImpacts"/>
+      v-model="modelValue.impact"
+      class="col-6"
+      label="Impact"
+      :options="affectImpacts"
+    />
     <LabelEditable
-        class="col-6"
-        type="text"
-        label="CVSS3"
-        v-model="modelValue.cvss3"/>
+      v-model="affectCvssScore"
+      type="text"
+      class="col-6"
+      label="CVSS3"
+    />
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
     <!--<LabelInput-->
     <!--    class="col-6"-->
@@ -99,12 +103,17 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
     <!--/>-->
 
     <!-- trackers are read-only -->
-    <h4 class="affect-trackers-heading" v-if="modelValue.trackers && modelValue.trackers.length > 0">Trackers</h4>
-    <div v-for="tracker in modelValue.trackers">
+    <h4 v-if="modelValue.trackers && modelValue.trackers.length > 0" class="affect-trackers-heading">
+      Trackers
+    </h4>
+    <div v-for="(tracker, trackerIndex) in modelValue.trackers" :key="trackerIndex">
       <div class="row">
         <div class="col-6 flex-grow-1">
           <div>Type: {{ modelValue.type }}</div>
-          <div v-if="modelValue.status">Status: {{ modelValue.status }}</div>
+          <!-- TODO: define a reasonable type -->
+          <div v-if="(modelValue as any).status">
+            Status: {{ (modelValue as any).status }}
+          </div>
           <div>Resolution: {{ modelValue.resolution }}</div>
         </div>
         <div class="col-3 text-end">
@@ -113,12 +122,10 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
         </div>
       </div>
       <ul>
-        <li v-for="tracker_affects in tracker.affects">Affects: {{ tracker_affects }}</li>
+        <li v-for="(trackerAffects, trackerAffectIndex) in tracker.affects" :key="trackerAffectIndex">
+          Affects: {{ trackerAffects }}
+        </li>
       </ul>
     </div>
   </div>
-
 </template>
-
-<style scoped>
-</style>

@@ -12,7 +12,6 @@ const error = ref('');
 //       .catch(err => console.error(err))
 // });
 
-
 const blankFlaw: ZodFlawType = {
   affects: [],
   classification: {
@@ -41,13 +40,12 @@ const blankFlaw: ZodFlawType = {
 };
 
 const flaw = ref(blankFlaw);
-
 </script>
 
 <template>
   <main>
-    <div v-if="error !== ''" class="alert alert-danger">{{error}}</div>
-    <FlawForm v-model:flaw="flaw" mode="create"/>
+    <div v-if="error !== ''" class="alert alert-danger">{{ error }}</div>
+    <FlawForm v-model:flaw="flaw" mode="create" />
   </main>
 </template>
 
