@@ -14,19 +14,14 @@ import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 import LabelStatic from './widgets/LabelStatic.vue';
 
-import { type Flaw, type Affect } from '@/generated-client';
-
-import { useFlawModel } from '@/composables/useFlawModel';
+import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 
 const props = defineProps<{
   flaw: any;
   mode: 'create' | 'edit';
 }>();
 
-const emit = defineEmits<{
-  'update:flaw': [flaw: Flaw];
-  'refresh:flaw': [];
-}>();
+const emit = defineEmits<FlawEmitter>();
 
 const {
     flaw,
@@ -163,10 +158,8 @@ const onReset = (payload: MouseEvent) => {
                 v-for="(affect, affectIdx) in theAffects"
                 class="container-fluid row affected-offering">
               <AffectedOfferingForm
-                :modelValue="affect"
-                @update:modelValue="(newValue) => console.log(newValue)"
+                v-model="theAffects[affectIdx]"
                 @remove="removeAffect(affectIdx)"
-                :reportAffectAsModified="reportAffectAsModified"
               />
             </div>
   
