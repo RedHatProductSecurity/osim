@@ -14,13 +14,11 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
     console.error('❌ ', error);
     if (shouldThrow) {
       throw error;
-    };
+    }
   };
 }
 
-export function createSuccessHandler(
-  { title, body }: Record<string, string>
-) {
+export function createSuccessHandler({ title, body }: Record<string, string>) {
   return (response: AxiosResponse) => {
     const { addToast } = useToastStore();
     addToast({

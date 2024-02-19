@@ -184,7 +184,7 @@ router.beforeEach(async (to, from) => {
       history.pushState(popState, '', router.resolve({ name: 'login' }).path);
       return { name: 'login' };
     }
-    let query: any = {};
+    const query: any = {};
     if (manualLocationNavigation) {
       // Preserve destination
       query.redirect = to.fullPath;
