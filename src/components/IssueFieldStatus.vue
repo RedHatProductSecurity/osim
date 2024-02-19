@@ -79,15 +79,15 @@ function nextPhase(flawStatus: WorkflowPhases) {
       <button
         @click="openModal"
         type="button"
-        class="btn btn-warning mt-2 ms-2 me-2"
+        class="btn btn-warning mt-2 ms-2"
       >
         Reject
       </button>
       <button
-        @click="onPromote(flawId)"
         type="button"
-        class="btn btn-warning mt-2 me-2"
-
+        class="btn btn-warning mt-2 ms-2 osim-promote-button"
+        :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
+        @click="onPromote(flawId)"
       >
         Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
       </button>
@@ -97,9 +97,20 @@ function nextPhase(flawStatus: WorkflowPhases) {
 
 <style scoped>
 
-.d-flex :deep(.osim-input){
+.osim-promote-button {
+  max-width: 12rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.d-flex :deep(.osim-static-label){
   flex-grow: 1;
-;}
+}
+
+.d-flex button{
+  flex-grow: 1;
+}
 
 label.osim-modal-label {
   display: block;
