@@ -19,7 +19,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Red Hat Display';
 }
 
-.text-bg-danger, .btn-danger {
+main.osim-page-view .text-bg-danger, .btn-danger {
   color: #FFF !important;
 }
 

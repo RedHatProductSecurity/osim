@@ -1,13 +1,15 @@
-@import './redhat-brand-colors.scss';
+@import './redhat-brand-colors';
 
 @font-face {
   font-family: 'Red Hat Text';
   src: url('/fonts/RedHatTextVFModified.woff2');
 }
+
 @font-face {
   font-family: 'Red Hat Display';
   src: url('/fonts/RedHatDisplayVFModified.woff2');
 }
+
 @font-face {
   font-family: 'Red Hat Mono';
   src: url('/fonts/RedHatMono-VariableFont_wght.ttf');
@@ -35,7 +37,6 @@ $blue: $redhat-blue-40;
 $link-color: $blue;
 $light-gray: $redhat-gray-10;
 $light-purple: $redhat-purple-10;
-
 $theme-colors: (
   'black': $black,
   'blue': $blue,
@@ -57,5 +58,3 @@ $custom-colors: (
 // Merge the maps
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
-// Import last to preserve overrides
-@import "../node_modules/bootstrap/scss/bootstrap"
