@@ -1,4 +1,4 @@
-import { type Ref, ref, toRef, computed } from 'vue';
+import { type Ref, ref, toRef, computed, watch } from 'vue';
 
 import { type Flaw } from '@/generated-client';
 import { postAffect, putAffect } from '@/services/AffectService';
@@ -29,6 +29,12 @@ export function useFlawAffectsModel(flaw: Ref<Flaw>) {
     affectIdsToDelete.value.push(theAffects.value[affectIdx].uuid);
     theAffects.value.splice(affectIdx, 1);
   }
+
+  theAffects.value.forEach((affect) => {
+    watch(affect, () => {
+      reportAffectAsModified(affect.uuid);
+    });
+  });
 
   // Is there a way to watch affect is modified within composable?
   function reportAffectAsModified(affectId: string) {
