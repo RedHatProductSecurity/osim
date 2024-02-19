@@ -1,32 +1,29 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { ref } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import { ZodAffectSchema } from '@/types/zodFlaw';
+import { 
+  affectImpacts,
+  affectResolutions,
+  affectAffectedness,
+  affectTypes,
+  type ZodAffectType
+} from '@/types/zodFlaw';
 
-const props = defineProps<{
-  reportAffectAsModified: Function,
-  modelValue: any,
+defineProps<{
   error?: string,
 }>();
-const emit = defineEmits<{
+
+const modelValue = defineModel<ZodAffectType>({ default: null });
+
+defineEmits<{
   'update:modelValue': [value: object],
   'remove': [],
 }>();
 
-// TODO: Deprecate this pattern and use composable?
-watch(props.modelValue, () => {
-  if (props.modelValue.uuid) {
-    props.reportAffectAsModified(props.modelValue.uuid)
-  }
-});
+const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issuer === 'RH')?.score);
 
-const affectImpacts = Object.values(ZodAffectSchema.shape.impact.unwrap().unwrap().enum) as string[];
-const affectResolutions = Object.values(ZodAffectSchema.shape.resolution.unwrap().unwrap().enum) as string[];
-const affectAffectedness = Object.values(ZodAffectSchema.shape.affectedness.unwrap().unwrap().enum) as string[];
-const affectTypes = Object.values(ZodAffectSchema.shape.type.unwrap().unwrap().enum) as string[];
 
 </script>
 
