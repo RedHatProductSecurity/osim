@@ -25,6 +25,10 @@
     "semi": ["error", "always"],
     "comma-dangle": ["warn", "only-multiline"],
     "vue/html-self-closing": "off",
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/multiline-html-element-content-newline": "off",
+    "vue/attribute-hyphenation": "off",
+    "vue/v-on-event-hyphenation": "off",
     "vue/max-attributes-per-line": [
       "warn",
       {
