@@ -1,15 +1,16 @@
 import { type Ref, ref, toRef, computed } from 'vue';
 
-import { type Flaw, type Affect } from '@/generated-client';
+import { type Flaw } from '@/generated-client';
 import { postAffect, putAffect } from '@/services/AffectService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
+import type { ZodAffectType } from '@/types/zodFlaw';
 
-export function useFlawAffectsForm(flaw: Ref<Flaw>) {
+export function useFlawAffectsModel(flaw: Ref<Flaw>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
   const affectIdsToDelete = ref<string[]>([]);
-  const theAffects = toRef(flaw.value, 'affects') as Ref<Affect[]>;
+  const theAffects = toRef(flaw.value, 'affects') as Ref<ZodAffectType[]>;
 
   const affectsToSave = computed(() => [
     ...theAffects.value.filter((affect) => modifiedAffectIds.value.includes(affect.uuid)),
@@ -19,7 +20,7 @@ export function useFlawAffectsForm(flaw: Ref<Flaw>) {
   const { addToast } = useToastStore();
 
   function addBlankAffect() {
-    theAffects.value.push({} as Affect);
+    theAffects.value.push({} as ZodAffectType);
   }
 
   function removeAffect(affectIdx: number) {

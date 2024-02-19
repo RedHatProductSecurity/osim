@@ -6,7 +6,7 @@ import { computed, ref, watch, type Ref } from 'vue';
 const onSucceed = createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' });
 const onError = createCatchHandler('Error updating Flaw CVSS data');
 
-export function useCvssScores(flaw: Ref<Flaw>) {
+export function useCvssScoresModel(flaw: Ref<Flaw>) {
   const wasCvssModified = ref(false);
   const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
   const flawRhCvss = ref(
