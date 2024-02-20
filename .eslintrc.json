@@ -18,6 +18,7 @@
   },
   "plugins": ["@typescript-eslint", "vue"],
   "rules": {
+    "max-len": ["warn", { "code": 120 }],
     "@typescript-eslint/no-explicit-any": "off",
     "indent": ["warn", 2],
     "linebreak-style": ["error", "unix"],
