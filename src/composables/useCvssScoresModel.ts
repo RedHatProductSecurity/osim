@@ -1,12 +1,12 @@
 import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import { type Flaw } from '@/generated-client';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { computed, ref, watch, type Ref } from 'vue';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
 const onSucceed = createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' });
 const onError = createCatchHandler('Error updating Flaw CVSS data');
 
-export function useCvssScoresModel(flaw: Ref<Flaw>) {
+export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
   const wasCvssModified = ref(false);
   const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
   const flawRhCvss = ref(

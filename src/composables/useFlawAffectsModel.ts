@@ -1,12 +1,10 @@
 import { type Ref, ref, toRef, computed, watch } from 'vue';
-
-import { type Flaw } from '@/generated-client';
 import { postAffect, putAffect } from '@/services/AffectService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
-import type { ZodAffectType } from '@/types/zodFlaw';
+import type { ZodAffectType, ZodFlawType } from '@/types/zodFlaw';
 
-export function useFlawAffectsModel(flaw: Ref<Flaw>) {
+export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
   const affectIdsToDelete = ref<string[]>([]);

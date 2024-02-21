@@ -4,35 +4,23 @@ import { useRouter } from 'vue-router';
 import { type Flaw } from '@/generated-client';
 import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+import { useFlawReferencesModel } from '@/composables/useFlawReferencesModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
-import {
-  getFlawBugzillaLink,
-  getFlawOsimLink,
-  postFlawPublicComment,
-  postFlaw,
-  putFlaw,
-} from '@/services/FlawService';
-
-export type FlawEmitter = {
-    (e: 'update:flaw',  flaw: any): void
-    (e: 'refresh:flaw'): void
-};
+import { getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, postFlaw, putFlaw } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: FlawEmitter) {
+export type FlawEmitter = {
+  (e: 'update:flaw', flaw: any): void;
+  (e: 'refresh:flaw'): void;
+};
+
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
-  const flaw = ref<Flaw>(forFlaw);
-  const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
-  const {
-    theAffects,
-    wereAffectsModified,
-    saveAffects,
-    addBlankAffect,
-    removeAffect,
-    reportAffectAsModified,
-  } = useFlawAffectsModel(flaw);
+  const flaw = ref<ZodFlawType>(forFlaw);
+  const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
+  const { wereAffectsModified, saveAffects } = useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
@@ -54,22 +42,23 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: FlawEmit
     postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response) => {
-        router.push({ name: 'flaw-detail', params: { id: response.data.uuid } });
+        router.push({
+          name: 'flaw-detail',
+          params: { id: response?.data.uuid },
+        });
       })
       .catch(createCatchHandler('Error creating Flaw'));
   }
 
   async function updateFlaw() {
-    console.log(flaw.value);
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
-    console.log(newFlaw);
     if (!newFlaw.success) {
       addToast({
         title: 'Error validating Flaw (schema error)',
         body: newFlaw.error.toString(),
         css: 'warning',
       });
-      console.log(newFlaw.error);
+      console.error(newFlaw.error);
       return; // Abort if schema validation fails
     }
 
@@ -102,8 +91,6 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: FlawEmit
   return {
     flaw,
     committedFlaw,
-    addComment,
-    newPublicComment,
     trackerUuids,
     flawTypes,
     flawSources,
@@ -111,16 +98,15 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: FlawEmit
     flawIncidentStates,
     osimLink,
     bugzillaLink,
-    flawNvdCvssScore,
-    flawRhCvss,
+    addComment,
+    newPublicComment,
     addPublicComment,
-    addBlankAffect,
-    removeAffect,
     createFlaw,
     updateFlaw,
-    reportAffectAsModified,
-    theAffects,
     emit,
+    ...useCvssScoresModel(flaw),
+    ...useFlawAffectsModel(flaw),
+    ...useFlawReferencesModel(flaw, emit),
   };
 }
 
@@ -132,6 +118,7 @@ function blankFlaw(): ZodFlawType {
       workflow: '',
     },
     component: '',
+    uuid: '',
     cve_id: '',
     cvss3: '',
     cvss_scores: [],
@@ -152,4 +139,3 @@ function blankFlaw(): ZodFlawType {
     mitigation: '',
   };
 }
-
