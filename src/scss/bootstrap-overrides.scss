@@ -35,13 +35,23 @@ $gray: $redhat-gray-20;
 $blue: $redhat-blue-40;
 $link-color: $blue;
 $light-gray: $redhat-gray-10;
+$light-light-gray: #fcfcfc;
+$light-light-orange: #fffaf3;
 $light-purple: $redhat-purple-10;
+$light-green: $redhat-success-10;
+$light-yellow: $redhat-yellow-10;
+$light-orange: $redhat-orange-10;
 $theme-colors: (
   'black': $black,
   'blue': $blue,
   'gray': $gray,
+  'light-light-gray': $light-light-gray,
+  'light-light-orange': $light-light-orange,
   'light-gray': $light-gray,
   'light-purple': $light-purple,
+  'light-green': $light-green,
+  'light-yellow': $light-yellow,
+  'light-orange': $light-orange,
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,
