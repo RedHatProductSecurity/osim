@@ -13,6 +13,7 @@ import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 import LabelStatic from './widgets/LabelStatic.vue';
+import IssueFieldReferences from './IssueFieldReferences.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 
@@ -36,12 +37,15 @@ const {
   bugzillaLink,
   flawRhCvss,
   flawNvdCvssScore,
+  flawReferences,
   theAffects,
+  addBlankReference,
   addBlankAffect,
   removeAffect,
   updateFlaw,
   createFlaw,
   addPublicComment,
+  saveReferences
 } = useFlawModel(props.flaw, emit);
 
 const onSubmit = () => {
@@ -89,6 +93,7 @@ const onReset = () => {
         <div class="col">
           <div class="row">
             <div class="col-6">
+
               <LabelEditable label="Component" type="text" v-model="flaw.component" :error="errors.component"/>
               <LabelSelect label="Type" :options="flawTypes" v-model="flaw.type" :error="errors.type" class="visually-hidden"/>
               <div class="">
@@ -136,6 +141,12 @@ const onReset = () => {
               <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
               <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
               <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
+              <IssueFieldReferences
+                v-model="flawReferences" 
+                :isEmbargoed="flaw.embargoed"
+                @update:references="saveReferences"
+                @addBlankReference:flaw="addBlankReference(flaw.embargoed)"
+              />
               <div>
                 <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
                 <div v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
@@ -185,7 +196,7 @@ const onReset = () => {
                   <a :href="'#' + comment.type + '/' + comment.external_system_id">
                     {{ comment.meta_attr?.time }}
                   </a>
-                  <span v-if="comment.meta_attr?.is_private.toLowerCase() === 'true'">
+                  <span v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'">
                     (internal)
                   </span>
                 </p>

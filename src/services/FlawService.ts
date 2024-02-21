@@ -37,7 +37,7 @@ export async function getFlaws(offset = 0, limit = 20) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
     return axios.get('/mock/new-flaws-stage.json');
   }
-  
+
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
     return osidbFetch({
       method: 'get',
@@ -70,8 +70,8 @@ export async function getFlaw(uuid: string) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
     return axios.get('/mock/new-flaws-stage.json').then((response) => {
       const flaw = response.data.results.find((flaw: { uuid: string }) => flaw.uuid === uuid);
-        return flaw;
-      });
+      return flaw;
+    });
   }
 
   return osidbFetch({
@@ -121,8 +121,8 @@ export async function putFlawCvssScores(
     data: putObject,
   })
     .then((response) => {
-    console.log(response);
-    return response.data;
+      console.log(response);
+      return response.data;
     })
     .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
@@ -143,8 +143,8 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     data: postObject,
   })
     .then((response) => {
-    console.log(response);
-    return response.data;
+      console.log(response);
+      return response.data;
     })
     .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
@@ -172,24 +172,24 @@ export async function promoteFlaw(uuid: string) {
     url: `/osidb/api/v1/flaws/${uuid}/promote`,
   })
     .then((response) => {
-    console.log('Flaw promoted:', response);
-    addToast({
-      title: 'Flaw Promoted',
-      body: response.data.classification.state,
+      console.log('Flaw promoted:', response);
+      addToast({
+        title: 'Flaw Promoted',
+        body: response.data.classification.state,
         css: 'warning',
-    });
-    return response.data;
+      });
+      return response.data;
     })
     .catch((error) => {
-    const displayedError = getDisplayedOsidbError(error);
-    addToast({
-      title: displayedError,
-      body: error.response.data,
+      const displayedError = getDisplayedOsidbError(error);
+      addToast({
+        title: displayedError,
+        body: error.response.data,
         css: 'warning',
+      });
+      console.error('❌ Problem promoting flaw:', error);
+      throw error;
     });
-    console.error('❌ Problem promoting flaw:', error);
-    throw error;
-  });
 }
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
 export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
@@ -199,20 +199,20 @@ export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
     data,
   })
     .then((response) => {
-    console.log('Flaw rejection success:', response);
-    return response.data;
+      console.log('Flaw rejection success:', response);
+      return response.data;
     })
     .catch((error) => {
-    const { addToast } = useToastStore();
-    const displayedError = getDisplayedOsidbError(error);
-    addToast({
-      title: displayedError,
-      body: error.response.data,
+      const { addToast } = useToastStore();
+      const displayedError = getDisplayedOsidbError(error);
+      addToast({
+        title: displayedError,
+        body: error.response.data,
         css: 'warning',
+      });
+      console.error('❌ Problem rejecting flaw:', error);
+      throw error;
     });
-    console.error('❌ Problem rejecting flaw:', error);
-    throw error;
-  });
 }
 
 // TODO paginate search results page
@@ -311,12 +311,51 @@ type FlawReferencePut = FlawReferencePost & {
   updated_dt: string;
 };
 
-export function putFlawReference(flawId: string, requestBody: FlawReferencePut) {
+export function putFlawReference(
+  flawId: string,
+  referenceId: string,
+  requestBody: FlawReferencePut,
+) {
   return osidbFetch({
     method: 'put',
-    url: `/osidb/api/v1/flaws/${flawId}/references`,
+    url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
     data: requestBody,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
-    .catch(createCatchHandler('Error creating Reference:'));
+    .then(createSuccessHandler({ title: 'Success!', body: 'Reference updated.' }))
+    .catch(createCatchHandler('Error updating Reference:'));
+}
+
+export type FlawAcknowledgmentPost = {
+  name: string;
+  affiliation: string;
+  from_upstream: boolean;
+  embargoed: boolean;
+};
+
+export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAcknowledgmentPost) {
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${flawId}/acknowledgments`,
+    data: requestBody,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment created.' }))
+    .catch(createCatchHandler('Error creating Acknowledgment:'));
+}
+
+export type FlawAcknowledgmentPut = FlawAcknowledgmentPost & {
+  updated_dt: string;
+};
+
+export async function putFlawAcknowledgment(
+  flawId: string,
+  acknowledgmentId: string,
+  requestBody: FlawAcknowledgmentPut,
+) {
+  return osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
+    data: requestBody,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' }))
+    .catch(createCatchHandler('Error updating Acknowledgment:'));
 }
