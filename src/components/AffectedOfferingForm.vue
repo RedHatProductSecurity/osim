@@ -3,49 +3,43 @@ import { ref } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import { 
+import {
   affectImpacts,
   affectResolutions,
   affectAffectedness,
   affectTypes,
-  type ZodAffectType
+  type ZodAffectType,
 } from '@/types/zodFlaw';
 
 defineProps<{
-  error?: string,
+  error?: string;
 }>();
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
 defineEmits<{
-  'update:modelValue': [value: object],
-  'remove': [],
+  'update:modelValue': [value: object];
+  remove: [];
 }>();
 
-const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issuer === 'RH')?.score);
-
-
+const affectCvssScore = ref(
+  modelValue.value?.cvss_scores.find(({ issuer }) => issuer === 'RH')?.score || '',
+);
 </script>
 
 <template>
   <div class="row">
-    <LabelInput
-      v-model="modelValue.ps_module"
-      class="col-6"
-      label="Affected Module"
-    />
+    <LabelInput v-model="modelValue.ps_module" class="col-6" label="Affected Module" />
     <div class="col-auto align-self-center ms-auto">
       <button
         type="button"
         class="osim-affected-offering-remove btn btn-secondary justify-self-end"
         @click.prevent="$emit('remove')"
-      >Remove This Affect</button>
+      >
+        Remove This Affect
+      </button>
     </div>
-    <LabelInput
-      v-model="modelValue.ps_component"
-      class="col-6"
-      label="Affected Component"
-    />
+    <LabelInput v-model="modelValue.ps_component" class="col-6" label="Affected Component" />
     <!--Hiding the Type field until we have more options to choose from-->
     <LabelSelect
       v-model="modelValue.type"
@@ -103,7 +97,10 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
     <!--/>-->
 
     <!-- trackers are read-only -->
-    <h4 v-if="modelValue.trackers && modelValue.trackers.length > 0" class="affect-trackers-heading">
+    <h4
+      v-if="modelValue.trackers && modelValue.trackers.length > 0"
+      class="affect-trackers-heading"
+    >
       Trackers
     </h4>
     <div v-for="(tracker, trackerIndex) in modelValue.trackers" :key="trackerIndex">
@@ -111,9 +108,7 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
         <div class="col-6 flex-grow-1">
           <div>Type: {{ modelValue.type }}</div>
           <!-- TODO: define a reasonable type -->
-          <div v-if="(modelValue as any).status">
-            Status: {{ (modelValue as any).status }}
-          </div>
+          <div v-if="(modelValue as any).status">Status: {{ (modelValue as any).status }}</div>
           <div>Resolution: {{ modelValue.resolution }}</div>
         </div>
         <div class="col-3 text-end">
@@ -122,7 +117,10 @@ const affectCvssScore = ref(modelValue.value?.cvss_scores.find(({issuer}) =>issu
         </div>
       </div>
       <ul>
-        <li v-for="(trackerAffects, trackerAffectIndex) in tracker.affects" :key="trackerAffectIndex">
+        <li
+          v-for="(trackerAffects, trackerAffectIndex) in tracker.affects"
+          :key="trackerAffectIndex"
+        >
           Affects: {{ trackerAffects }}
         </li>
       </ul>

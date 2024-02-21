@@ -6,7 +6,13 @@ import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawReferencesModel } from '@/composables/useFlawReferencesModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
-import { getFlawBugzillaLink, getFlawOsimLink, postFlawPublicComment, postFlaw, putFlaw } from '@/services/FlawService';
+import {
+  getFlawBugzillaLink,
+  getFlawOsimLink,
+  postFlawPublicComment,
+  postFlaw,
+  putFlaw,
+} from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';

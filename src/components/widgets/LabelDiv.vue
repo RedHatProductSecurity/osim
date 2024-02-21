@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {nextTick, onMounted, ref} from 'vue';
-
-const props = defineProps<{
+defineProps<{
   label: string,
   error?: string,
 }>();
@@ -18,7 +16,3 @@ const props = defineProps<{
   </div>
 
 </template>
-
-<style scoped>
-
-</style>

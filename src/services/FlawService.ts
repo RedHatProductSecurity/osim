@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types/zodFlaw';
-import {useToastStore} from '@/stores/ToastStore';
+import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
-import {osimRuntime} from '@/stores/osimRuntime';
-import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+import { osimRuntime } from '@/stores/osimRuntime';
+import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 const FLAW_LIST_FIELDS = [
@@ -22,7 +22,7 @@ const FLAW_LIST_FIELDS = [
   'owner',
 ];
 
-export async function getFlaws(offset=0, limit=20) {
+export async function getFlaws(offset = 0, limit = 20) {
   // TODO add filtering parameters
   // axios.get('http://127.0.0.1:4010/osidb/api/v1/flaws?bz_id=999.1777106091507&changed_after=2016-05-25T04%3A00%3A00.0Z&changed_before=1953-04-15T05%3A00%3A00.0Z&created_dt=1997-02-22T05%3A00%3A00.0Z&cve_id=suscipit,quia,dignissimos&cvss2=nobis&cvss2_score=-3.12820402011057e%2B38&cvss3=nam&cvss3_score=2.2240193839647933e%2B38&cwe_id=reprehenderit&description=sed&embargoed=false&exclude_fields=pariatur&flaw_meta_type=enim,sed,enim&impact=LOW&include_fields=et,quisquam,sunt,aut&include_meta_attr=ullam,libero,at,alias&reported_dt=1972-11-30T00%3A00%3A00.0Z&resolution=DUPLICATE&search=unde&source=PHP&state=NEW&statement=sunt&summary=maiores&title=reprehenderit&tracker_ids=eum,cum,at,odio,a&type=WEAKNESS&unembargo_dt=1949-12-22T00%3A00%3A00.0Z&updated_dt=1973-03-16T05%3A00%3A00.0Z&uuid=c605cdc8-0f63-c5ec-d32d-75c184147eba')
   // axios.get('https://osidb-stage.example.com/osidb/api/v1/flaws')
@@ -41,14 +41,14 @@ export async function getFlaws(offset=0, limit=20) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
     return osidbFetch({
       method: 'get',
-      url: `/osidb/api/v1/flaws`,
+      url: '/osidb/api/v1/flaws',
       params: params,
     });
   }
 
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws`,
+    url: '/osidb/api/v1/flaws',
     params: params,
   });
   // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {
@@ -68,9 +68,8 @@ export async function getFlawQueue() {
 
 export async function getFlaw(uuid: string) {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
-    return axios.get('/mock/new-flaws-stage.json')
-      .then(response => {
-        const flaw = response.data.results.find((flaw: { uuid: string; }) => flaw.uuid === uuid);
+    return axios.get('/mock/new-flaws-stage.json').then((response) => {
+      const flaw = response.data.results.find((flaw: { uuid: string }) => flaw.uuid === uuid);
         return flaw;
       });
   }
@@ -80,9 +79,9 @@ export async function getFlaw(uuid: string) {
     url: `/osidb/api/v1/flaws/${uuid}`,
     params: {
       // 'include_meta_attr': '*', // too many fields
-      'include_meta_attr': 'bz_id',
+      include_meta_attr: 'bz_id',
     },
-  }).then(response => {
+  }).then((response) => {
     return response.data;
   });
 }
@@ -92,7 +91,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
     method: 'put',
     url: `/osidb/api/v1/flaws/${uuid}`,
     data: flawObject,
-  }).then(response => {
+  }).then((response) => {
     console.log(response);
     return response.data;
   });
@@ -107,8 +106,12 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
 //   "embargoed": true,
 //   "updated_dt": "2024-02-06T16:02:54.708Z"
 // }
-export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cvssScoreObject: unknown) {
-  const putObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+export async function putFlawCvssScores(
+  flawId: string,
+  cvssScoresId: string,
+  cvssScoreObject: unknown,
+) {
+  const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
   delete putObject['flaw'];
   delete putObject['created_dt'];
@@ -116,10 +119,12 @@ export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cv
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
     data: putObject,
-  }).then(response => {
+  })
+    .then((response) => {
     console.log(response);
     return response.data;
-  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+    })
+    .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
 
 // {
@@ -131,15 +136,17 @@ export async function putFlawCvssScores(flawId: string, cvssScoresId: string, cv
 //   "embargoed": true
 // }
 export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknown) {
-  const postObject: Record<string,any> = Object.assign({}, cvssScoreObject);
+  const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
     data: postObject,
-  }).then(response => {
+  })
+    .then((response) => {
     console.log(response);
     return response.data;
-  }).catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+    })
+    .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
 
 export async function postFlawPublicComment(uuid: string, comment: string) {
@@ -151,7 +158,7 @@ export async function postFlawPublicComment(uuid: string, comment: string) {
       type: 'BUGZILLA',
       embargoed: true, // read-only but mandatory
     },
-  }).then(response => {
+  }).then((response) => {
     console.log(response);
     return response.data;
   });
@@ -163,41 +170,45 @@ export async function promoteFlaw(uuid: string) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/promote`,
-  }).then(response => {
+  })
+    .then((response) => {
     console.log('Flaw promoted:', response);
     addToast({
       title: 'Flaw Promoted',
       body: response.data.classification.state,
-      css: 'warning'
+        css: 'warning',
     });
     return response.data;
-  }).catch(error => {
+    })
+    .catch((error) => {
     const displayedError = getDisplayedOsidbError(error);
     addToast({
       title: displayedError,
       body: error.response.data,
-      css: 'warning'
+        css: 'warning',
     });
     console.error('❌ Problem promoting flaw:', error);
     throw error;
   });
 }
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
-export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
+export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/reject`,
-    data
-  }).then(response => {
+    data,
+  })
+    .then((response) => {
     console.log('Flaw rejection success:', response);
     return response.data;
-  }).catch(error => {
+    })
+    .catch((error) => {
     const { addToast } = useToastStore();
     const displayedError = getDisplayedOsidbError(error);
     addToast({
       title: displayedError,
       body: error.response.data,
-      css: 'warning'
+        css: 'warning',
     });
     console.error('❌ Problem rejecting flaw:', error);
     throw error;
@@ -208,26 +219,26 @@ export async function rejectFlaw(uuid: string, data: Record<'reason',string>) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws`,
+    url: '/osidb/api/v1/flaws',
     params: {
       include_fields: FLAW_LIST_FIELDS.join(','),
       search: query,
     },
   })
-    .then(response => response.data)
+    .then((response) => response.data)
     .catch(createCatchHandler('Problem searching flaws:'));
 }
 
 export async function advancedSearchFlaws(params: Record<string, string>) {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws`,
+    url: '/osidb/api/v1/flaws',
     params: {
       ...params,
       include_fields: FLAW_LIST_FIELDS.join(','),
     },
   })
-    .then(response => response.data)
+    .then((response) => response.data)
     .catch(console.error);
 }
 
@@ -257,15 +268,15 @@ export async function postFlaw(requestBody: any) {
   // }
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/flaws`,
+    url: '/osidb/api/v1/flaws',
     data: requestBody,
-  }).then(response => {
+  }).then((response) => {
     return response.data;
   });
 }
 
 export function getFlawOsimLink(flawUuid: any) {
-  const osimPath = router.resolve({name: 'flaw-details', params: {id: flawUuid}}).path;
+  const osimPath = router.resolve({ name: 'flaw-details', params: { id: flawUuid } }).path;
   const link = window.location.protocol + '//' + window.location.host + osimPath;
   return link;
 }
@@ -280,11 +291,11 @@ export function getFlawBugzillaLink(flaw: any) {
 }
 
 type FlawReferencePost = {
-  description: string,
-  type: string,
-  url: string,
-  embargoed: boolean,
-}
+  description: string;
+  type: string;
+  url: string;
+  embargoed: boolean;
+};
 
 export function postFlawReference(flawId: string, requestBody: FlawReferencePost) {
   return osidbFetch({
@@ -297,8 +308,8 @@ export function postFlawReference(flawId: string, requestBody: FlawReferencePost
 }
 
 type FlawReferencePut = FlawReferencePost & {
-  updated_dt: string,
-}
+  updated_dt: string;
+};
 
 export function putFlawReference(flawId: string, requestBody: FlawReferencePut) {
   return osidbFetch({
