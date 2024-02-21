@@ -13,6 +13,7 @@ import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 import LabelStatic from './widgets/LabelStatic.vue';
+import CvssNISTForm from '@/components/CvssNISTForm.vue';
 
 import { type Flaw, type Affect } from '@/generated-client';
 
@@ -121,7 +122,18 @@ const onReset = (payload: MouseEvent) => {
                 </template>
               </LabelEditable>
               <LabelInput label="CVSSv3 Score" type="text" v-model="flawRhCvss.score" :error="errors.cvss3_score"/>
-              <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
+              <div class="">
+                <div class="row">
+                  <div class="col">
+                    <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
+                  </div>
+                  <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
+                    <CvssNISTForm :flaw=flaw :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
+                      :bugzilla="bugzillaLink" :nvdpage="osimLink" :cvss="flaw.cvss3"
+                      :nistcvss="String(flawRhCvss.score)" />
+                  </div>
+                </div>
+              </div>
               <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
               <LabelSelect label="Source" :options="flawSources" v-model="flaw.source" :error="errors.source"/>
             </div>
