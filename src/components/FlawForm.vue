@@ -17,6 +17,7 @@ import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
+import { groupBy } from '@/utils/helpers';
 
 const props = defineProps<{
   flaw: any;
@@ -61,6 +62,8 @@ const onSubmit = () => {
   }
 };
 
+const groupedAffects = computed(() => groupBy(theAffects.value, ({ ps_module }) => ps_module));
+console.log('groupedAffects', groupedAffects.value);
 // TODO
 const errors = {
   cve_id: null,
@@ -133,8 +136,8 @@ const onReset = () => {
           />
           <LabelEditable v-model="flawRhCvss.vector" type="text" :error="errors.cvss3">
             <template #label>
-              CVSSv3
-              <a :href="flawCvss3CaculatorLink" target="_blank" class="ms-1"><i class="bi-calculator"></i>Calculator</a>
+              <p class="mb-0">CVSSv3</p>
+              <a :href="flawCvss3CaculatorLink" target="_blank"><i class="bi-calculator me-1"></i>Calculator</a>
             </template>
           </LabelEditable>
           <LabelInput
@@ -202,20 +205,30 @@ const onReset = () => {
             @addBlankAcknowledgment:flaw="addBlankAcknowledgment(flaw.embargoed)"
           />
           <div>
-            <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
-            <div v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-              <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                {{ tracker.display }}
-              </RouterLink>
-            </div>
+            <LabelCollapsable label="Trackers">
+              <!-- <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div> -->
+              <div v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
+                <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
+                  {{ tracker.display }}
+                </RouterLink>
+              </div>
+            </LabelCollapsable>
           </div>
         </div>
       </div>
 
       <div v-if="theAffects && mode === 'edit'" class="row osim-affects mb-3">
         <div class="h5">Affected Offerings</div>
-        <div v-for="(affect, affectIdx) in theAffects" :key="affectIdx" class="container-fluid row affected-offering">
-          <AffectedOfferingForm v-model="theAffects[affectIdx]" @remove="removeAffect(affectIdx)" />
+        <div v-for="(streamAffects, streamName) in groupedAffects" :key="streamName">
+          <LabelCollapsable :label="`${streamName} (${streamAffects.length} affected)`">
+            <div
+              v-for="(affect, affectIdx) in streamAffects"
+              :key="affectIdx"
+              class="container-fluid row affected-offering"
+            >
+              <AffectedOfferingForm v-model="streamAffects[affectIdx]" @remove="removeAffect(affectIdx)" />
+            </div>
+          </LabelCollapsable>
         </div>
 
         <div>
