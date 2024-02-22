@@ -8,11 +8,15 @@ defineProps<{
 
 <template>
   <div class="osim-input mb-3 border-start ps-3">
-    <span class="form-label">
-      {{ label }}
-      <!--attrs: {{ $attrs }}-->
-    </span>
-    <slot></slot>
+    <div class="row">
+      <span class="form-label col-3">
+        {{ label }}
+        <!--attrs: {{ $attrs }}-->
+      </span>
+      <div class="col-9">
+        <slot></slot>
+      </div>
+    </div>
   </div>
 
 </template>

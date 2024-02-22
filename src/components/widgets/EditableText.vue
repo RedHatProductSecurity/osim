@@ -84,7 +84,7 @@ function blur(e: FocusEvent | null) {
 </script>
 
 <template>
-  <div class="position-relative"> <!-- for invalid-tooltip positioning -->
+  <div class="position-relative col-9"> <!-- for invalid-tooltip positioning -->
     <!--<Transition name="flash-bg" :duration="2000">-->
   <Transition name="flash-bg">
     <div class="osim-editable-text" v-show="!editing" :tabindex="readOnly ? -1 : 0"

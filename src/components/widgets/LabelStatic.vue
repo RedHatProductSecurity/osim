@@ -8,12 +8,13 @@ defineProps<{
 
 <template>
   <div class="osim-static-label mb-3 border-start ps-3">
-    <span class="form-label">
-      {{ label }}
-    </span>
-    <div class="form-control" :class="{ 'alert alert-warning': !modelValue }">
-      <span>{{ modelValue }}</span>
+    <div class="row">
+      <span class="form-label col-3">
+        {{ label }}
+      </span>
+      <div class="col-9" :class="{ 'alert alert-warning': !modelValue }">
+        <span class="form-control">{{ modelValue }}</span>
+      </div>
     </div>
   </div>
 </template>
-

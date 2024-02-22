@@ -165,10 +165,5 @@ header select {
   max-width: 28rem;
 }
 
-.osim-collapsable-label :deep(div.osim-static-label),
-.osim-collapsable-label :deep(.osim-input) {
-  padding-left: 0 !important;
-  border-left: none !important;
-  margin-left: 0 !important;
-}
+
 </style>

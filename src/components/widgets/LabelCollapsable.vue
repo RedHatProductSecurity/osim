@@ -9,18 +9,32 @@ const isExpanded = ref(false);
 </script>
 
 <template>
-  <div class="osim-collapsable-label mb-3 border-start ps-3">
-    <label class="form-label" @click="isExpanded=!isExpanded">
+  <div class="osim-collapsable-label mb-3  ps-0">
+    <button type="button" class="me-2" @click="isExpanded=!isExpanded">
+      <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
+      <i v-else class="bi bi-plus-square-dotted me-1"></i>
+    </button>
+    <label class="form-label">
       {{ label }}
-      <i v-if="isExpanded" class="bi bi-dash-square-dotted ms-1"></i>
-      <i v-else class="bi bi-plus-square-dotted ms-1"></i>
-      <p v-if="!isExpanded" class="mt-2 mb-2">...</p>
     </label>
-    <!-- <div class="form-control" :class="{ 'alert alert-warning': !modelValue }">
-      <span>{{ modelValue }}</span>
-    </div> -->
-    <slot v-if="isExpanded" />
+    <div class="ps-3 border-start">
+
+      <slot v-if="isExpanded" />
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.osim-collapsable-label button {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.osim-collapsable-label :deep(div.osim-static-label),
+.osim-collapsable-label :deep(.osim-input) {
+  padding-left: 0 !important;
+  border-left: none !important;
+  margin-left: 0 !important;
+}
+</style>
