@@ -116,7 +116,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   };
 }
 
-function blankFlaw(): ZodFlawType {
+export function blankFlaw(): ZodFlawType {
   return {
     affects: [],
     classification: {
@@ -143,5 +143,9 @@ function blankFlaw(): ZodFlawType {
     summary: '',
     statement: '',
     mitigation: '',
+    comments: [],
+    references: [],
+    acknowledgments: []
+
   };
 }

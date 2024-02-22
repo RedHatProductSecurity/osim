@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import FlawForm from '@/components/FlawForm.vue';
+import { blankFlaw } from '@/composables/useFlawModel';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const error = ref('');
@@ -12,34 +13,7 @@ const error = ref('');
 //       .catch(err => console.error(err))
 // });
 
-const blankFlaw: ZodFlawType = {
-  affects: [],
-  classification: {
-    state: 'NEW',
-    workflow: '',
-  },
-  component: '',
-  cve_id: '',
-  cvss3: '',
-  cvss_scores: [],
-  cwe_id: '',
-  description: '',
-  embargoed: false,
-  impact: '',
-  major_incident_state: '',
-  meta: [],
-  nvd_cvss3: '',
-  source: '',
-  title: '',
-  type: 'VULNERABILITY', // OSIDB only supports Vulnerabilities at present
-  owner: '',
-  team_id: '',
-  summary: '',
-  statement: '',
-  mitigation: '',
-};
-
-const flaw = ref(blankFlaw);
+const flaw = ref(blankFlaw());
 </script>
 
 <template>
