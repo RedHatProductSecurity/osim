@@ -14,7 +14,7 @@ import { ref, type Ref } from 'vue';
 export function useFlawReferencesModel(flaw: Ref<ZodFlawType>, emit: any) {
 
   const flawReferences = ref<ZodFlawReferenceType[]>(flaw.value.references);
-  const flawAcknowlegdments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
+  const flawAcknowledgments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
 
   async function updateReference(reference: ZodFlawReferenceType & { uuid: string }) {
     await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
@@ -42,16 +42,6 @@ export function useFlawReferencesModel(flaw: Ref<ZodFlawType>, emit: any) {
     emit('refresh:flaw');
   }
 
-  async function createAcknowledgment(acknowlegdment: any) {
-    await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
-    emit('refresh:flaw');
-  }
-
-  async function updateAcknowledgment(acknowlegdment: any) {
-    await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
-    emit('refresh:flaw');
-  }
-
   function addBlankReference(isEmbargoed: boolean) {
     flawReferences.value.push({
       description: '',
@@ -63,8 +53,34 @@ export function useFlawReferencesModel(flaw: Ref<ZodFlawType>, emit: any) {
     });
   }
 
+  async function createAcknowledgment(acknowlegdment: any) {
+    await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
+    emit('refresh:flaw');
+  }
+
+  async function updateAcknowledgment(acknowlegdment: any) {
+    await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
+    emit('refresh:flaw');
+  }
+
+  async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
+    for (const acknowledgment of acknowledgments) {
+      if (acknowledgment.uuid) {
+        await updateAcknowledgment(acknowledgment);
+      } else {
+        await createAcknowledgment(acknowledgment);
+      }
+    }
+    // await Promise.all(
+    //   references.map((reference) =>
+    //     reference.uuid ? updateReference(reference) : createReference(reference),
+    //   ),
+    // );
+    emit('refresh:flaw');
+  }
+
   function addBlankAcknowledgment(isEmbargoed: boolean) {
-    flawAcknowlegdments.value.push({
+    flawAcknowledgments.value.push({
       name: '',
       affiliation: '',
       from_upstream: false,
@@ -78,7 +94,8 @@ export function useFlawReferencesModel(flaw: Ref<ZodFlawType>, emit: any) {
 
   return {
     flawReferences,
-    flawAcknowlegdments,
+    flawAcknowledgments,
+    saveAcknowledgments,
     saveReferences,
     addBlankReference,
     addBlankAcknowledgment,

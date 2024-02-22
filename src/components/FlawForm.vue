@@ -14,6 +14,7 @@ import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
 import LabelStatic from './widgets/LabelStatic.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
+import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 
@@ -40,12 +41,15 @@ const {
   flawReferences,
   theAffects,
   addBlankReference,
+  addBlankAcknowledgment,
   addBlankAffect,
   removeAffect,
   updateFlaw,
   createFlaw,
   addPublicComment,
-  saveReferences
+  saveReferences,
+  flawAcknowledgments,
+  saveAcknowledgments,
 } = useFlawModel(props.flaw, emit);
 
 const onSubmit = () => {
@@ -146,6 +150,11 @@ const onReset = () => {
                 :isEmbargoed="flaw.embargoed"
                 @update:references="saveReferences"
                 @addBlankReference:flaw="addBlankReference(flaw.embargoed)"
+              />
+              <IssueFieldAcknowledgments
+                v-model="flawAcknowledgments"
+                @update:acknowledgments="saveAcknowledgments"
+                @addBlankAcknowledgment:flaw="addBlankAcknowledgment(flaw.embargoed)"
               />
               <div>
                 <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div>
