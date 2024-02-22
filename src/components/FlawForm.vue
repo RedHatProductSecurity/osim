@@ -80,7 +80,9 @@ const errors = {
   source: null,
 };
 
-const flawCvss3CaculatorLink = computed(() => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`);
+const flawCvss3CaculatorLink = computed(
+  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
+);
 
 const onReset = () => {
   console.log('onReset');
@@ -118,7 +120,10 @@ const onReset = () => {
                 :error="errors.cve_id"
               />
             </div>
-            <div v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'" class="col-auto align-self-end mb-3">
+            <div
+              v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
+              class="col-auto align-self-end mb-3"
+            >
               <CveRequestForm
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
@@ -137,7 +142,10 @@ const onReset = () => {
           <LabelEditable v-model="flawRhCvss.vector" type="text" :error="errors.cvss3">
             <template #label>
               <p class="mb-0">CVSSv3</p>
-              <a :href="flawCvss3CaculatorLink" target="_blank"><i class="bi-calculator me-1"></i>Calculator</a>
+              <a
+                :href="flawCvss3CaculatorLink"
+                target="_blank"
+              ><i class="bi-calculator me-1"></i>Calculator</a>
             </template>
           </LabelEditable>
           <LabelInput
@@ -168,7 +176,11 @@ const onReset = () => {
         </div>
 
         <div class="col-6">
-          <IssueFieldStatus v-if="mode === 'edit'" :classification="flaw.classification" :flawId="flaw.uuid" />
+          <IssueFieldStatus
+            v-if="mode === 'edit'"
+            :classification="flaw.classification"
+            :flawId="flaw.uuid"
+          />
           <LabelSelect
             v-model="flaw.major_incident_state"
             label="Incident State"
@@ -185,7 +197,9 @@ const onReset = () => {
             v-model="flaw.unembargo_dt"
             :label="
               'Public Date' +
-                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0 ? ' [FUTURE]' : '')
+                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
+                  ? ' [FUTURE]'
+                  : '')
             "
             type="date"
             :error="errors.unembargo_dt"
@@ -222,18 +236,30 @@ const onReset = () => {
         <div v-for="(streamAffects, streamName) in groupedAffects" :key="streamName">
           <LabelCollapsable :label="`${streamName} (${streamAffects.length} affected)`">
             <div
-              v-for="(affect, affectIdx) in streamAffects"
-              :key="affectIdx"
+              v-for="(affects, componentName) in groupBy(
+                streamAffects,
+                ({ ps_component }) => ps_component,
+              )"
+              :key="componentName"
               class="container-fluid row affected-offering"
             >
-              <AffectedOfferingForm v-model="streamAffects[affectIdx]" @remove="removeAffect(affectIdx)" />
+              <LabelCollapsable :label="`${componentName} (${affects.length} affected)`">
+                <div v-for="(affect, affectIndex) in affects" :key="affectIndex">
+                  <AffectedOfferingForm
+                    v-model="affects[affectIndex]"
+                    @remove="removeAffect(affectIndex)"
+                  />
+                </div>
+              </LabelCollapsable>
             </div>
           </LabelCollapsable>
         </div>
 
         <div>
           <div class="h6">Add New Affect</div>
-          <button type="button" class="btn btn-secondary" @click.prevent="addBlankAffect()">Add New Affect</button>
+          <button type="button" class="btn btn-secondary" @click.prevent="addBlankAffect()">
+            Add New Affect
+          </button>
         </div>
       </div>
 
@@ -247,17 +273,23 @@ const onReset = () => {
                 <a :href="'#' + comment.type + '/' + comment.external_system_id">
                   {{ comment.meta_attr?.time }}
                 </a>
-                <span v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'"> (internal) </span>
+                <span v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'">
+                  (internal)
+                </span>
               </p>
               <p>{{ comment.meta_attr?.text }}</p>
             </li>
           </ul>
           <div v-if="!addComment">
-            <button type="button" class="btn btn-secondary col" @click="addComment = true">Add Public Comment</button>
+            <button type="button" class="btn btn-secondary col" @click="addComment = true">
+              Add Public Comment
+            </button>
           </div>
           <div v-if="addComment">
             <LabelTextarea v-model="newPublicComment" label="New Public Comment" />
-            <button type="button" class="btn btn-primary col" @click="addPublicComment">Add Public Comment</button>
+            <button type="button" class="btn btn-primary col" @click="addPublicComment">
+              Add Public Comment
+            </button>
             <!--          <button type="button" class="btn btn-primary col">Add Private Comment</button>-->
           </div>
         </div>
@@ -287,6 +319,7 @@ const onReset = () => {
 
 * {
   line-height: 1.5;
+  font-family: Red Hat Mono;
 }
 
 .affected-offering {
@@ -309,7 +342,7 @@ const onReset = () => {
 }
 
 .osim-affects {
-  outline: 1px solid #ddd;
+  /* outline: 1px solid #ddd; */
   padding: 1.5em;
 }
 
