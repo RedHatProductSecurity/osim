@@ -21,10 +21,11 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'update:modelValue': [value: object];
   remove: [];
+  'add-blank-affect': [];
 }>();
 
 const affectCvssScore = ref(
-  modelValue.value?.cvss_scores.find(({ issuer }) => issuer === 'RH')?.score || '',
+  modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
 );
 
 const flawId = computed(() => modelValue.value?.flaw);
@@ -65,6 +66,7 @@ const handleFileTracker = () => {
           @click.prevent="emit('remove')"
         >
           Remove This Affect
+          <!-- TODO: FIX -->
         </button>
       </div>
     </div>
@@ -144,7 +146,7 @@ const handleFileTracker = () => {
             </tr>
           </tbody>
         </table>
-        <div>
+        <div v-if="tracker.errata.length">
           <h5>Errata</h5>
           <table
             v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
@@ -165,6 +167,7 @@ const handleFileTracker = () => {
         </div>
       </div>
     </div>
+
 
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
     <!--<LabelInput-->

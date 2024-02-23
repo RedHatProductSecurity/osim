@@ -20,6 +20,7 @@ import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types
 export type FlawEmitter = {
   (e: 'update:flaw', flaw: any): void;
   (e: 'refresh:flaw'): void;
+  (e: 'add-blank-affect'): void;
 };
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {

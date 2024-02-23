@@ -63,8 +63,14 @@ const onSubmit = () => {
   }
 };
 
-const groupedAffects = computed(() => groupBy(theAffects.value, ({ ps_module }) => ps_module));
-console.log('groupedAffects', groupedAffects.value);
+const groupedAffects = computed(() =>
+  groupBy(
+    theAffects.value.filter(({ ps_module }) => ps_module),
+    ({ ps_module }) => ps_module,
+  ),
+);
+
+const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !affect.ps_module));
 // TODO
 const errors = {
   cve_id: null,
@@ -232,8 +238,9 @@ const onReset = () => {
         </div>
       </div>
 
-      <div v-if="theAffects && mode === 'edit'" class="row osim-affects mb-3">
-        <div class="h5">Affected Offerings</div>
+      <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
+        <hr />
+        <h5 class="mb-4">Affected Offerings</h5>
         <div v-for="(streamAffects, streamName) in groupedAffects" :key="streamName">
           <LabelCollapsable :label="`${streamName} (${streamAffects.length} affected)`">
             <div
@@ -248,21 +255,26 @@ const onReset = () => {
                 <div v-for="(affect, affectIndex) in affects" :key="affectIndex">
                   <AffectedOfferingForm
                     v-model="affects[affectIndex]"
-                    @remove="removeAffect(affectIndex)"
+                    @remove="removeAffect(theAffects.indexOf(affect))"
                     @file-tracker="fileTracker($event as TrackersFilePost)"
+                    @add-blank-affect="addBlankAffect"
                   />
                 </div>
               </LabelCollapsable>
             </div>
           </LabelCollapsable>
         </div>
-
-        <div>
-          <div class="h6">Add New Affect</div>
-          <button type="button" class="btn btn-secondary" @click.prevent="addBlankAffect()">
-            Add New Affect
-          </button>
+        <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
+          <AffectedOfferingForm
+            v-model="ungroupedAffects[affectIndex]"
+            @remove="removeAffect(theAffects.indexOf(affect))"
+            @file-tracker="fileTracker($event as TrackersFilePost)"
+            @add-blank-affect="addBlankAffect"
+          />
         </div>
+        <button type="button" class="btn btn-secondary mt-3" @click.prevent="addBlankAffect">
+          Add New Affect
+        </button>
       </div>
 
       <div v-if="mode === 'edit'">
@@ -341,11 +353,6 @@ const onReset = () => {
 .affect-trackers-heading {
   font-size: 100%;
   font-weight: bold;
-}
-
-.osim-affects {
-  /* outline: 1px solid #ddd; */
-  padding: 1.5em;
 }
 
 .osim-action-buttons {
