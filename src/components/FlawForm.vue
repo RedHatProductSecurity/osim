@@ -18,6 +18,7 @@ import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 import { groupBy } from '@/utils/helpers';
+import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 
 const props = defineProps<{
   flaw: any;
@@ -248,6 +249,7 @@ const onReset = () => {
                   <AffectedOfferingForm
                     v-model="affects[affectIndex]"
                     @remove="removeAffect(affectIndex)"
+                    @file-tracker="fileTracker($event as TrackersFilePost)"
                   />
                 </div>
               </LabelCollapsable>

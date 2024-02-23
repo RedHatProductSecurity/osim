@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
+import { createCatchHandler } from '@/composables/service-helpers';
 
 export async function getTrackers() {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
@@ -63,10 +64,12 @@ export async function postTracker(requestBody: TrackersPost) {
     method: 'post',
     url: '/osidb/api/v1/trackers',
     data: requestBody,
-  });
+  })
+    .then(({ data }) => data)
+    .catch(createCatchHandler('Failed to create tracker'));
 }
 
-type TrackersFilePost = {
+export type TrackersFilePost = {
   flaw_uuids: string[];
 };
 
@@ -75,5 +78,7 @@ export async function fileTracker(requestBody: TrackersFilePost) {
     method: 'post',
     url: '/trackers/api/v1/file',
     data: requestBody,
-  });
+  })
+    .then(({ data }) => data)
+    .catch(createCatchHandler('Failed to file tracker'));
 }

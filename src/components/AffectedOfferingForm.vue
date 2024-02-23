@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -18,18 +18,24 @@ defineProps<{
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
 const emit = defineEmits<{
+  'file-tracker': [value: object];
   'update:modelValue': [value: object];
   remove: [];
-  'file-tracker': [];
 }>();
 
 const affectCvssScore = ref(
   modelValue.value?.cvss_scores.find(({ issuer }) => issuer === 'RH')?.score || '',
 );
+
+const flawId = computed(() => modelValue.value?.flaw);
+
+const handleFileTracker = () => {
+  emit('file-tracker', { flaw_uuids: [flawId.value] });
+};
 </script>
 
 <template>
-  <div class="row">
+  <div class="row osim-affected-offerings">
     <div class="col-6">
       <LabelInput v-model="modelValue.ps_module" label="Affected Module" />
       <LabelInput v-model="modelValue.ps_component" label="Affected Component" />
@@ -63,45 +69,56 @@ const affectCvssScore = ref(
       </div>
     </div>
     <div class="col-6">
-      <div class="col-auto align-self-center ms-auto">
+      <div class="d-flex justify-content-between">
+        <h4
+          v-if="modelValue.trackers && modelValue.trackers.length > 0"
+          class="affect-trackers-heading"
+        >
+          Trackers
+        </h4>
         <button
           type="button"
           class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="emit('file-tracker')"
+          @click.prevent="handleFileTracker"
         >
           File Tracker
         </button>
       </div>
-      <h4
-        v-if="modelValue.trackers && modelValue.trackers.length > 0"
-        class="affect-trackers-heading"
-      >
-        Trackers
-      </h4>
       <div
         v-for="(tracker, trackerIndex) in modelValue.trackers"
         :key="trackerIndex"
-        class="card bg-light-yellow mb-2 pb-2 border-0"
+        class="card mb-2 border-0"
       >
         <table class="table table-striped">
           <tbody>
             <tr>
+              <th colspan="100%">
+                <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }"> Link </RouterLink>
+              </th>
+            </tr>
+            <tr>
               <th>Type</th>
               <td>
                 <!-- TODO: define a reasonable type -->
-                {{ modelValue.type }}
+                {{ tracker.type }}
               </td>
             </tr>
             <tr>
               <th>Resolution</th>
               <td>
-                {{ modelValue.resolution }}
+                {{ tracker.resolution }}
               </td>
             </tr>
-            <tr v-if="(modelValue as any).status">
+            <tr>
               <th>Status</th>
               <td>
-                {{ (modelValue as any).status }}
+                {{ tracker.status }}
+              </td>
+            </tr>
+            <tr>
+              <th>Product Stream</th>
+              <td>
+                {{ tracker.ps_update_stream }}
               </td>
             </tr>
             <tr>
@@ -112,22 +129,43 @@ const affectCvssScore = ref(
               <th>Updated date</th>
               <td>{{ tracker.updated_dt }}</td>
             </tr>
+            <tr>
+              <th>Affects</th>
+              <td>
+                <ul>
+                  <li
+                    v-for="(trackerAffect, trackerAffectIndex) in tracker.affects"
+                    :key="trackerAffectIndex"
+                  >
+                    {{ trackerAffect }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
           </tbody>
         </table>
-        <li
-          v-for="(trackerAffects, trackerAffectIndex) in tracker.affects"
-          :key="trackerAffectIndex"
-        >
-          Affects: {{ trackerAffects }}
-        </li>
-      </div>
-      <div class="col-3 text-end">
         <div>
-          <div></div>
+          <h5>Errata</h5>
+          <table
+            v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
+            :key="trackerErrataIndex"
+            class="table-info table table-striped"
+          >
+            <tbody>
+              <tr>
+                <th>Advisory</th>
+                <td>{{ trackerErrata.advisory_name }}</td>
+              </tr>
+              <tr>
+                <th>Shipped</th>
+                <td>{{ trackerErrata.shipped_dt }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <ul></ul>
       </div>
     </div>
+
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
     <!--<LabelInput-->
     <!--    class="col-6"-->
@@ -156,3 +194,11 @@ const affectCvssScore = ref(
     <!-- trackers are read-only -->
   </div>
 </template>
+
+<style scoped lang="scss">
+.osim-affected-offerings {
+  table.table-striped th {
+    border-bottom: none;
+  }
+}
+</style>
