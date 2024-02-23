@@ -58,10 +58,22 @@ type TrackersPost = {
   updated_dt: string; //
 };
 
-export async function fileTracker(uuid: string, requestBody: TrackersPost) {
+export async function postTracker(requestBody: TrackersPost) {
   return osidbFetch({
     method: 'post',
     url: '/osidb/api/v1/trackers',
+    data: requestBody,
+  });
+}
+
+type TrackersFilePost = {
+  flaw_uuids: string[];
+};
+
+export async function fileTracker(requestBody: TrackersFilePost) {
+  return osidbFetch({
+    method: 'post',
+    url: '/trackers/api/v1/file',
     data: requestBody,
   });
 }
