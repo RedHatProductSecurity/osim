@@ -17,9 +17,10 @@ defineProps<{
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: object];
   remove: [];
+  'file-tracker': [];
 }>();
 
 const affectCvssScore = ref(
@@ -55,7 +56,7 @@ const affectCvssScore = ref(
         <button
           type="button"
           class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="$emit('remove')"
+          @click.prevent="emit('remove')"
         >
           Remove This Affect
         </button>
@@ -66,7 +67,7 @@ const affectCvssScore = ref(
         <button
           type="button"
           class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="$emit('file-tracker')"
+          @click.prevent="emit('file-tracker')"
         >
           File Tracker
         </button>
