@@ -25,7 +25,7 @@ const components = {
 </script>
 
 <template>
-  <label class="osim-input ps-3 mb-3 border-start ">
+  <label class="osim-input ps-3 mb-3 input-group">
     <div class="row">
       <span class="form-label col-3">
         <slot name="label">

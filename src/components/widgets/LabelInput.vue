@@ -39,7 +39,7 @@ const type = computed<string>(() => props.type ?? 'text');
 </script>
 
 <template>
-  <label class="osim-input has-validation mb-3 border-start ps-3">
+  <label class="osim-input has-validation mb-3 ps-3">
     <div class="row">
       <span class="form-label col-3">
         {{ label }}
@@ -52,7 +52,9 @@ const type = computed<string>(() => props.type ?? 'text');
           :class="{ 'is-invalid': error != null }"
           v-bind="$attrs"
           :value="modelValue"
-          @input="$emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)"
+          @input="
+            $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)
+          "
         />
       </div>
       <span v-if="error" class="invalid-feedback d-block">{{ error }}</span>
