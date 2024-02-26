@@ -137,7 +137,12 @@ function commitEdit(index: number) {
           v-model="references[referenceIndex].description"
           label="Description"
         />
-        <LabelStatic v-else v-model="reference.description" label="Description" />
+        <LabelStatic
+          v-else
+          v-model="reference.description"
+          label="Description"
+          hasTopLabelStyle
+        />
       </div>
     </div>
     <form>
@@ -157,13 +162,7 @@ function commitEdit(index: number) {
 </template>
 
 <style lang="scss" scoped>
-.modified.card {
-  border: 1px solid red !important;
-}
-
 header select {
   max-width: 28rem;
 }
-
-
 </style>

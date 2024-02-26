@@ -22,7 +22,9 @@ type WorkflowPhases = (typeof workflowStatuses)[keyof typeof workflowStatuses];
 const DONE_STATUS = workflowStatuses.Done as string;
 const REJECTED_STATUS = workflowStatuses.Rejected as string;
 
-const shouldShowWorkflowButtons = computed(() => ![DONE_STATUS, REJECTED_STATUS].includes(props.classification.state));
+const shouldShowWorkflowButtons = computed(
+  () => ![DONE_STATUS, REJECTED_STATUS].includes(props.classification.state),
+);
 
 function openModal() {
   shouldShowRejectionModal.value = true;
@@ -49,62 +51,57 @@ function nextPhase(flawStatus: WorkflowPhases) {
 </script>
 
 <template>
-  <LabelDiv label="Status" type="text">
+  <div class="osim-workflow-status-container mb-3">
+    <LabelDiv label="Status" type="text" class="osim-workflow-status-display">
+      <span class="form-control">{{ classification.state }}</span>
+      <Modal :show="shouldShowRejectionModal" @close="closeModal">
+        <template #title> Reject Flaw </template>
+        <template #body>
+          <label class="osim-modal-label mb-3">
+            <p>Please provide a reason for rejecting the flaw</p>
+            <textarea v-model="rejectionReason" class="form-control"></textarea>
+          </label>
+        </template>
+        <template #footer>
+          <button type="button" class="btn btn-primary" @click="onReject(flawId)">
+            Reject Flaw
+          </button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+        </template>
+      </Modal>
+    </LabelDiv>
     <div class="row">
-      <div class="col-4">
-
-        <span class="form-control">{{ classification.state }}</span>
-      </div>
-      <div v-if="shouldShowWorkflowButtons" class="col-8">
-        <button type="button" class="btn btn-warning ms-2" @click="openModal">Reject</button>
-        <button
-          type="button"
-          class="btn btn-warning ms-2 osim-promote-button"
-          :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
-          @click="onPromote(flawId)"
-        >
-          Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
-        </button>
+      <div class="col-3"></div>
+      <div class="col-9">
+        <div v-if="shouldShowWorkflowButtons" class="osim-workflow-status-buttons mb-3">
+          <button type="button" class="btn btn-warning" @click="openModal">Reject</button>
+          <button
+            type="button"
+            class="btn btn-warning ms-2 osim-promote-button"
+            :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
+            @click="onPromote(flawId)"
+          >
+            Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
+          </button>
+        </div>
       </div>
     </div>
-    <Modal :show="shouldShowRejectionModal" @close="closeModal">
-      <template #title> Reject Flaw </template>
-      <template #body>
-        <label class="osim-modal-label mb-3">
-          <p>Please provide a reason for rejecting the flaw</p>
-          <textarea v-model="rejectionReason" class="form-control"></textarea>
-        </label>
-      </template>
-      <template #footer>
-        <button type="button" class="btn btn-primary" @click="onReject(flawId)">Reject Flaw</button>
-        <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
-      </template>
-    </Modal>
-  </LabelDiv>
+  </div>
 </template>
 
-<style scoped>
-.osim-classification-label {
-  white-space: nowrap;
+<style lang="scss" scoped>
+
+.osim-workflow-status-container {
+  button {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  label.osim-modal-label {
+    display: block;
+  }
   
-}
-
-.osim-promote-button {
-  max-width: 12rem;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.d-flex :deep(.osim-static-label) {
-  flex-grow: 1;
-}
-
-.d-flex button {
-  flex-grow: 1;
-}
-
-label.osim-modal-label {
-  display: block;
+  .osim-workflow-status-display {
+    margin-bottom: 0 !important;
+  }
 }
 </style>
