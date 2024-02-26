@@ -20,7 +20,7 @@ const modelValue = defineModel<ZodAffectType>({ default: null });
 const emit = defineEmits<{
   'file-tracker': [value: object];
   'update:modelValue': [value: object];
-  remove: [];
+  remove: [value: object];
   'add-blank-affect': [];
 }>();
 
@@ -38,8 +38,8 @@ const handleFileTracker = () => {
 <template>
   <div class="row osim-affected-offerings">
     <div class="col-6">
-      <LabelInput v-model="modelValue.ps_module" label="Affected Module" />
-      <LabelInput v-model="modelValue.ps_component" label="Affected Component" />
+      <LabelEditable v-model="modelValue.ps_module" type="text" label="Affected Module" />
+      <LabelEditable v-model="modelValue.ps_component" type="text" label="Affected Component" />
       <!--Hiding the Type field until we have more options to choose from-->
       <LabelSelect
         v-model="modelValue.type"
@@ -59,15 +59,17 @@ const handleFileTracker = () => {
       />
       <LabelSelect v-model="modelValue.impact" label="Impact" :options="affectImpacts" />
       <LabelEditable v-model="affectCvssScore" type="text" label="CVSS3" />
-      <div class="col-auto align-self-center ms-auto">
-        <button
-          type="button"
-          class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="emit('remove')"
-        >
-          Remove This Affect
-          <!-- TODO: FIX -->
-        </button>
+      <div class="row">
+        <div class="col ps-0 mb-4">
+          <button
+            type="button"
+            class="osim-affected-offering-remove btn btn-secondary"
+            @click.prevent="emit('remove', modelValue)"
+          >
+            Remove This Affect
+            <!-- TODO: FIX -->
+          </button>
+        </div>
       </div>
     </div>
     <div class="col-6">
@@ -78,11 +80,7 @@ const handleFileTracker = () => {
         >
           Trackers
         </h4>
-        <button
-          type="button"
-          class="osim-affected-offering-remove btn btn-secondary justify-self-end"
-          @click.prevent="handleFileTracker"
-        >
+        <button type="button" class="btn btn-secondary" @click.prevent="handleFileTracker">
           File Tracker
         </button>
       </div>
@@ -168,7 +166,6 @@ const handleFileTracker = () => {
       </div>
     </div>
 
-
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
     <!--<LabelInput-->
     <!--    class="col-6"-->
@@ -200,6 +197,8 @@ const handleFileTracker = () => {
 
 <style scoped lang="scss">
 .osim-affected-offerings {
+  padding-left: 0.75rem;
+
   table.table-striped th {
     border-bottom: none;
   }
