@@ -7,8 +7,9 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
-import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
+import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
@@ -148,13 +149,16 @@ const onReset = () => {
           />
           <LabelEditable v-model="flawRhCvss.vector" type="text" :error="errors.cvss3">
             <template #label>
-              <p class="mb-0">CVSSv3</p>
-              <a
-                :href="flawCvss3CaculatorLink"
-                target="_blank"
-              ><i class="bi-calculator me-1"></i>Calculator</a>
+              <span class="mb-0 pt-2 pb-2">CVSSv3
+                <br />
+                <a
+                  :href="flawCvss3CaculatorLink"
+                  target="_blank"
+                ><i class="bi-calculator me-1"></i>Calculator</a>
+              </span>
             </template>
           </LabelEditable>
+
           <LabelInput
             v-model="flawRhCvss.score"
             label="CVSSv3 Score"
@@ -237,46 +241,13 @@ const onReset = () => {
           </div>
         </div>
       </div>
-
-      <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
-        <hr />
-        <h5 class="mb-4">Affected Offerings</h5>
-        <div v-for="(streamAffects, streamName) in groupedAffects" :key="streamName">
-          <LabelCollapsable :label="`${streamName} (${streamAffects.length} affected)`">
-            <div
-              v-for="(affects, componentName) in groupBy(
-                streamAffects,
-                ({ ps_component }) => ps_component,
-              )"
-              :key="componentName"
-              class="container-fluid row affected-offering"
-            >
-              <LabelCollapsable :label="`${componentName} (${affects.length} affected)`">
-                <div v-for="(affect, affectIndex) in affects" :key="affectIndex">
-                  <AffectedOfferingForm
-                    v-model="affects[affectIndex]"
-                    @remove="removeAffect(theAffects.indexOf(affect))"
-                    @file-tracker="fileTracker($event as TrackersFilePost)"
-                    @add-blank-affect="addBlankAffect"
-                  />
-                </div>
-              </LabelCollapsable>
-            </div>
-          </LabelCollapsable>
-        </div>
-        <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
-          <AffectedOfferingForm
-            v-model="ungroupedAffects[affectIndex]"
-            @remove="removeAffect(theAffects.indexOf(affect))"
-            @file-tracker="fileTracker($event as TrackersFilePost)"
-            @add-blank-affect="addBlankAffect"
-          />
-        </div>
-        <button type="button" class="btn btn-secondary mt-3" @click.prevent="addBlankAffect">
-          Add New Affect
-        </button>
-      </div>
-
+      <AffectedOfferings
+        :theAffects="theAffects"
+        :mode="mode"
+        @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
+        @file-tracker="fileTracker($event as TrackersFilePost)"
+        @add-blank-affect="addBlankAffect"
+      />
       <div v-if="mode === 'edit'">
         <h3 class="mt-3 mb-2">Comments</h3>
         <div class="row">
@@ -326,21 +297,77 @@ const onReset = () => {
   </form>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+form * {
+  line-height: 1.5;
+  font-family: 'Red Hat Mono', monospace;
+}
+
+:deep(.osim-input) {
+  .row {
+    align-items: stretch;
+  }
+
+  div.col-9 {
+    padding-left: 0;
+
+    input,
+    span,
+    select,
+    div.form-control {
+      // height: ;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .osim-editable-text,
+    .input-group,
+    input.form-control {
+      height: 100%;
+
+      * {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  span.form-label {
+    text-align: right;
+    margin-bottom: 0;
+    background-color: #dee2e6;
+    border-bottom-left-radius: 0.5rem;
+    border-top-left-radius: 0.5rem;
+    margin-right: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+
+    &:has(+ textarea),
+    &:has(+ .osim-static-label-value.osim-top-label-style) {
+      border-top-right-radius: 0.5rem;
+      border-bottom-left-radius: 0;
+      text-align: left;
+      padding: 0.375rem;
+      // padding-left: 1rem;
+      justify-content: center;
+    }
+  }
+
+  textarea {
+    border-top-left-radius: 0;
+  }
+}
+
 .span-editable-text {
   cursor: text;
 }
 
-* {
-  line-height: 1.5;
-  font-family: Red Hat Mono;
-}
-
-.affected-offering {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+// .affected-offering {
+//   border: 1px solid #ddd;
+//   padding: 0.5rem;
+//   margin-bottom: 0.5rem;
+// }
 
 .action-buttons > button {
   margin: 0.2rem;
