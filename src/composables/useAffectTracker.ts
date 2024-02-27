@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { fileTracker, type TrackersFilePost, postTracker } from '@/services/TrackerService';
 
 export function useAffectTracker(affectUuid: string, module: string, component: string) {
-  const productStreams = ref<string[]>([]);
+  const moduleComponentStreams = ref<string[]>([]);
   const isNotApplicable = ref(false);
 
   function isAffectNotApplicable(response: any) {
@@ -25,7 +25,7 @@ export function useAffectTracker(affectUuid: string, module: string, component: 
           ps_module === module && ps_component === component,
       );
       if (moduleComponent) {
-        productStreams.value = moduleComponent.streams;
+        moduleComponentStreams.value = moduleComponent.streams;
       }
     } catch (error) {
       console.error(error);
@@ -33,7 +33,7 @@ export function useAffectTracker(affectUuid: string, module: string, component: 
   }
 
   return {
-    productStreams,
+    moduleComponentStreams,
     isNotApplicable,
     getTrackers,
     postTracker

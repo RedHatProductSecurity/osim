@@ -32,21 +32,21 @@ const affectCvssScore = ref(
 
 const flawId = computed(() => modelValue.value.flaw);
 
-const { getTrackers, productStreams, isNotApplicable, postTracker } = useAffectTracker(
+const { getTrackers, moduleComponentStreams, isNotApplicable, postTracker } = useAffectTracker(
   flawId.value as string,
   modelValue.value.ps_module,
   modelValue.value.ps_component,
 );
 
-const productStreamNames = computed(() =>
-  productStreams.value.map(({ps_update_stream}: any) => ps_update_stream),
+const updateStreamNames = computed(() =>
+  moduleComponentStreams.value.map(({ps_update_stream}: any) => ps_update_stream),
 );
 
-const chosenProductStream = ref('');
+const chosenUpdateStream = ref('');
 
 function handleTrackAffect() {
   postTracker({
-    ps_update_stream: chosenProductStream.value,
+    ps_update_stream: chosenUpdateStream.value,
     resolution: modelValue.value.resolution || '',
     updated_dt: modelValue.value.updated_dt || '',
     affects: [modelValue.value.uuid],
@@ -172,7 +172,7 @@ function handleTrackAffect() {
       </div>
 
       <button
-        v-if="productStreamNames.length === 0"
+        v-if="updateStreamNames.length === 0"
         type="button"
         class="btn btn-secondary mt-4"
         :disabled="!flawId || isNotApplicable"
@@ -182,14 +182,15 @@ function handleTrackAffect() {
       </button>
       <div v-else class="ps-3 mt-4 osim-tracker-update-streams">
         <LabelSelect
-          v-model="chosenProductStream"
-          :options="productStreamNames"
-          label="Product Stream"
+          v-model="chosenUpdateStream"
+          :options="updateStreamNames"
+          label="Update Stream"
         />
         <button
           type="button"
           class="btn btn-secondary"
-          @click.prevent="handleTrackAffect">
+          @click.prevent="handleTrackAffect"
+        >
           Track Affect
         </button>
       </div>

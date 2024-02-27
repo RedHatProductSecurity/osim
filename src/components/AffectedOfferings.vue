@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, watch } from 'vue';
+import { computed, toRefs } from 'vue';
 
 import { groupBy } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
@@ -75,7 +75,7 @@ const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !aff
           <ul>
             <li>
               {{ affect.ps_module || '<module not set>' }}::{{ affect.ps_component || '<component not set>' }}
-                {{ !affect.uuid ? '(doesn\'t exist yet in OSIDB)' : '' }}
+              {{ !affect.uuid ? '(doesn\'t exist yet in OSIDB)' : '' }}
               <button
                 type="button"
                 class="btn btn-secondary"
