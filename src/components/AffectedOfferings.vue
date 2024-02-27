@@ -6,11 +6,12 @@ import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 const props = defineProps<{
   mode: string;
   theAffects: ZodAffectType[];
+  affectsToDelete: ZodAffectType[];
 }>();
 
 const emit = defineEmits<{
   'file-tracker': [value: object];
-  remove: [value: object];
+  remove: [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
 
@@ -58,6 +59,7 @@ const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !aff
         </div>
       </LabelCollapsable>
     </div>
+    <h5 v-if="ungroupedAffects.length">Ungrouped Affected Offerings</h5>
     <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
       <AffectedOfferingForm
         v-model="ungroupedAffects[affectIndex]"

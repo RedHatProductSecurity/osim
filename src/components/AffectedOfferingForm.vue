@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {
@@ -10,7 +9,6 @@ import {
   affectTypes,
   type ZodAffectType,
 } from '@/types/zodFlaw';
-import LabelStatic from './widgets/LabelStatic.vue';
 
 defineProps<{
   error?: string;
@@ -21,7 +19,7 @@ const modelValue = defineModel<ZodAffectType>({ default: null });
 const emit = defineEmits<{
   'file-tracker': [value: object];
   'update:modelValue': [value: object];
-  remove: [value: object];
+  remove: [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
 
@@ -76,7 +74,9 @@ const handleFileTracker = () => {
       <div class="bg-dark rounded-2 text-info">
         <h5 class="affect-trackers-heading p-2 ps-3 mb-0">Trackers</h5>
       </div>
-      <p v-if="modelValue.trackers?.length === 0" class="ps-1 mt-3">&mdash; None yet.</p>
+      <p v-if="!modelValue.trackers || modelValue.trackers?.length === 0" class="ps-1 mt-3">
+        <em>&mdash; None yet.</em>
+      </p>
 
       <div
         v-for="(tracker, trackerIndex) in modelValue.trackers"
