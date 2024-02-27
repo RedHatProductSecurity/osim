@@ -236,7 +236,6 @@ const onReset = () => {
       <AffectedOfferings
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
-        :affectIdsToDelete="affectIdsToDelete"
         :mode="mode"
         @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"

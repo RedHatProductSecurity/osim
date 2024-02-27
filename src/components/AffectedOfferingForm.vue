@@ -9,6 +9,8 @@ import {
   affectTypes,
   type ZodAffectType,
 } from '@/types/zodFlaw';
+import { useAffectTracker } from '@/composables/useAffectTracker';
+import type { TrackersPost } from '@/services/TrackerService';
 
 defineProps<{
   error?: string;
@@ -28,11 +30,33 @@ const affectCvssScore = ref(
   modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
 );
 
-const flawId = computed(() => modelValue.value?.flaw);
+const flawId = computed(() => modelValue.value.flaw);
 
-const handleFileTracker = () => {
-  emit('file-tracker', { flaw_uuids: [flawId.value] });
-};
+const { getTrackers, productStreams, isNotApplicable, postTracker } = useAffectTracker(
+  flawId.value as string,
+  modelValue.value.ps_module,
+  modelValue.value.ps_component,
+);
+
+const productStreamNames = computed(() =>
+  productStreams.value.map(({ps_update_stream}: any) => ps_update_stream),
+);
+
+const chosenProductStream = ref('');
+
+function handleTrackAffect() {
+  postTracker({
+    ps_update_stream: chosenProductStream.value,
+    resolution: modelValue.value.resolution || '',
+    updated_dt: modelValue.value.updated_dt || '',
+    affects: [modelValue.value.uuid],
+    embargoed: modelValue.value.embargoed,
+  } as TrackersPost);
+
+}
+// const handleFileTracker = () => {
+// emit('file-tracker', { flaw_uuids: [flawId.value] });
+// };
 </script>
 
 <template>
@@ -146,9 +170,34 @@ const handleFileTracker = () => {
           </table>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary mt-4" @click.prevent="handleFileTracker">
+
+      <button
+        v-if="productStreamNames.length === 0"
+        type="button"
+        class="btn btn-secondary mt-4"
+        :disabled="!flawId || isNotApplicable"
+        @click.prevent="getTrackers"
+      >
         File Tracker
       </button>
+      <div v-else class="ps-3 mt-4 osim-tracker-update-streams">
+        <LabelSelect
+          v-model="chosenProductStream"
+          :options="productStreamNames"
+          label="Product Stream"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click.prevent="handleTrackAffect">
+          Track Affect
+        </button>
+      </div>
+      <div v-if="isNotApplicable">
+        <p class="ps-3 mt-3">
+          <em>&mdash; Not applicable for this affect.</em>
+        </p>
+      </div>
     </div>
 
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
@@ -186,6 +235,11 @@ const handleFileTracker = () => {
 
   table.table-striped th {
     border-bottom: none;
+  }
+
+  .osim-tracker-update-streams :deep(.col-3),
+  .osim-tracker-update-streams :deep(.col-9) {
+    width: 50%;
   }
 }
 </style>

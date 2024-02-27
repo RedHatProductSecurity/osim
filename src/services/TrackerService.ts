@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
-import { createCatchHandler } from '@/composables/service-helpers';
+import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 export async function getTrackers() {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
@@ -51,8 +51,8 @@ export async function getTracker(uuid: string) {
   });
 }
 
-type TrackersPost = {
-  affects: string[];
+export type TrackersPost = {
+  affects: string[]; // Flaw UUIDs
   ps_update_stream: string;
   resolution: string;
   embargoed: boolean;
@@ -66,6 +66,11 @@ export async function postTracker(requestBody: TrackersPost) {
     data: requestBody,
   })
     .then(({ data }) => data)
+    .then(
+      createSuccessHandler({
+        body: `Affect tracked on new ${requestBody.ps_update_stream} stream`,
+      }),
+    )
     .catch(createCatchHandler('Failed to create tracker'));
 }
 
