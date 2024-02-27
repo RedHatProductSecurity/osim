@@ -2,7 +2,7 @@ import type {
   ZodFlawReferenceType,
   ZodFlawType,
   ZodFlawAcknowledgmentType,
-} from './../types/zodFlaw';
+} from '@/types/zodFlaw';
 import {
   postFlawReference,
   putFlawReference,
@@ -11,7 +11,7 @@ import {
 } from '@/services/FlawService';
 import { ref, type Ref } from 'vue';
 
-export function useFlawReferencesModel(flaw: Ref<ZodFlawType>, emit: any) {
+export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
 
   const flawReferences = ref<ZodFlawReferenceType[]>(flaw.value.references);
   const flawAcknowledgments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
