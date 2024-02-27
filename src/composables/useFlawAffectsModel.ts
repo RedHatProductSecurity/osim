@@ -1,4 +1,4 @@
-import { type Ref, ref, toRef, computed, watch } from 'vue';
+import { type Ref, ref, toRef, reactive, computed, watch } from 'vue';
 import { postAffect, putAffect, deleteAffect } from '@/services/AffectService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
@@ -7,16 +7,14 @@ import type { ZodAffectType, ZodFlawType } from '@/types/zodFlaw';
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
-  const affectIdsToDelete = ref<string[]>([]);
-  const theAffects = toRef(flaw.value, 'affects') as Ref<ZodAffectType[]>;
+  const affectsToDelete = ref<ZodAffectType[]>([]);
+  const theAffects: Ref<ZodAffectType[]> = toRef(flaw.value, 'affects');
 
-  const affectsToSave = computed(() => [
-    ...theAffects.value.filter((affect) => modifiedAffectIds.value.includes(affect.uuid)),
-    ...theAffects.value.filter((affect) => !affect.uuid),
-  ]);
-
-  const affectsToDelete = computed(() =>
-    theAffects.value.filter((affect) => affectIdsToDelete.value.includes(affect.uuid)),
+  const affectsToSave = computed(() =>
+    [
+      ...theAffects.value.filter((affect) => modifiedAffectIds.value.includes(affect.uuid)),
+      ...theAffects.value.filter((affect) => !affect.uuid),
+    ].filter((affect) => !affectsToDelete.value.includes(affect)),
   );
 
   const { addToast } = useToastStore();
@@ -26,10 +24,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function removeAffect(affectIdx: number) {
-    // TODO: Send delete request to OSIDB
-    // Show staged soft-deletion in UI
-    affectIdsToDelete.value.push(theAffects.value[affectIdx].uuid);
-    theAffects.value.splice(affectIdx, 1);
+    const deletedAffect = theAffects.value.splice(affectIdx, 1)[0];
+    affectsToDelete.value.push(deletedAffect);
+  }
+
+  function recoverAffect(affectIdx: number) {
+    const recoveredAffect = affectsToDelete.value.splice(affectIdx, 1)[0];
+    theAffects.value.push(recoveredAffect);
   }
 
   theAffects.value.forEach((affect) => {
@@ -39,12 +40,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   });
 
   async function deleteAffects() {
-    for (const affects of affectsToDelete.value) {
-      await deleteAffect(affects.uuid);
+    for (const affect of affectsToDelete.value) {
+      if (affect.uuid){
+        await deleteAffect(affect.uuid);
+      }
     }
   }
 
-  // Is there a way to watch affect is modified within composable?
   function reportAffectAsModified(affectId: string) {
     wereAffectsModified.value = true;
     modifiedAffectIds.value.push(affectId);
@@ -108,6 +110,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   return {
     addBlankAffect,
     removeAffect,
+    recoverAffect,
     saveAffects,
     deleteAffects,
     reportAffectAsModified,

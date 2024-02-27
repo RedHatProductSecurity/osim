@@ -17,7 +17,6 @@ import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
-import { groupBy } from '@/utils/helpers';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 
 const props = defineProps<{
@@ -41,17 +40,18 @@ const {
   flawRhCvss,
   flawNvdCvssScore,
   flawReferences,
+  flawAcknowledgments,
   theAffects,
   affectsToDelete,
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
   removeAffect,
+  recoverAffect,
   updateFlaw,
   createFlaw,
   addPublicComment,
   saveReferences,
-  flawAcknowledgments,
   saveAcknowledgments,
 } = useFlawModel(props.flaw, emit);
 
@@ -64,14 +64,6 @@ const onSubmit = () => {
   }
 };
 
-const groupedAffects = computed(() =>
-  groupBy(
-    theAffects.value.filter(({ ps_module }) => ps_module),
-    ({ ps_module }) => ps_module,
-  ),
-);
-
-const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !affect.ps_module));
 // TODO
 const errors = {
   cve_id: null,
@@ -244,7 +236,9 @@ const onReset = () => {
       <AffectedOfferings
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
+        :affectIdsToDelete="affectIdsToDelete"
         :mode="mode"
+        @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"

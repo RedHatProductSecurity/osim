@@ -27,7 +27,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
-  const { wereAffectsModified, saveAffects } = useFlawAffectsModel(flaw);
+  const { wereAffectsModified, saveAffects, deleteAffects, affectsToDelete } =
+    useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
@@ -71,6 +72,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
     if (wereAffectsModified.value) {
       await saveAffects();
+    }
+
+    if (affectsToDelete.value.length) {
+      await deleteAffects();
     }
 
     await putFlaw(flaw.value.uuid, newFlaw.data)
@@ -146,7 +151,6 @@ export function blankFlaw(): ZodFlawType {
     mitigation: '',
     comments: [],
     references: [],
-    acknowledgments: []
-
+    acknowledgments: [],
   };
 }

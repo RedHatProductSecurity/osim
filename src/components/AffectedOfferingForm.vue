@@ -20,6 +20,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'update:modelValue': [value: object];
   remove: [value: ZodAffectType];
+  recover: [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
 
