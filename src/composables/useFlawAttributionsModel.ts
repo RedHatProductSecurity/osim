@@ -6,8 +6,10 @@ import type {
 import {
   postFlawReference,
   putFlawReference,
+  deleteFlawReference,
   postFlawAcknowledgment,
   putFlawAcknowledgment,
+  deleteFlawAcknowledgment,
 } from '@/services/FlawService';
 import { ref, type Ref } from 'vue';
 
@@ -23,6 +25,11 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
 
   async function createReference(reference: ZodFlawReferenceType) {
     await postFlawReference(flaw.value.uuid, reference);
+    emit('refresh:flaw');
+  }
+
+  async function deleteReference(referenceId: string) {
+    await deleteFlawReference(flaw.value.uuid, referenceId);
     emit('refresh:flaw');
   }
 
@@ -55,6 +62,11 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
 
   async function createAcknowledgment(acknowlegdment: any) {
     await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
+    emit('refresh:flaw');
+  }
+
+  async function deleteAcknowledgment(acknowledgmentId: string) {
+    await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId);
     emit('refresh:flaw');
   }
 
@@ -101,7 +113,9 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
     addBlankAcknowledgment,
     createReference,
     updateReference,
+    deleteReference,
     createAcknowledgment,
     updateAcknowledgment,
+    deleteAcknowledgment,
   };
 }

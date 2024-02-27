@@ -2,15 +2,20 @@
 import { onMounted, ref, computed } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import type { ZodFlawReferenceType } from '@/types/zodFlaw';
-// import LabelDiv from './widgets/LabelDiv.vue';
+// import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import { flawReferenceTypeValues } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
-import LabelStatic from './widgets/LabelStatic.vue';
-import LabelInput from './widgets/LabelInput.vue';
-import LabelCollapsable from './widgets/LabelCollapsable.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import LabelInput from '@/components/widgets/LabelInput.vue';
+import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import Modal from '@/components/widgets/Modal.vue';
+
+import { useModal } from '@/composables/useModal';
+
+const { isModalOpen, openModal, closeModal } = useModal();
 
 const references = defineModel<ZodFlawReferenceType[]>({ default: null });
-const emit = defineEmits(['addBlankReference:flaw', 'update:references']);
+const emit = defineEmits(['addBlankReference:flaw', 'update:references', 'delete:reference']);
 onMounted(() => (priorValues.value = deepCopyFromRaw(references.value)));
 
 const indexBeingEdited = ref<number | null>(null);
@@ -46,7 +51,11 @@ function commitEdit(index: number) {
   modifiedReferenceIndexes.value.push(index);
   indexBeingEdited.value = null;
   priorValues.value = deepCopyFromRaw(references.value);
-  console.log('commitEdit', references.value[index]);
+}
+
+function handleConfirm(uuid: string) {
+  isModalOpen.value = false;
+  emit('delete:reference', uuid);
 }
 </script>
 
@@ -97,6 +106,14 @@ function commitEdit(index: number) {
                 <i class="bi bi-pencil"></i>
               </button>
               <button
+                v-if="indexBeingEdited !== referenceIndex"
+                type="button"
+                class="btn"
+                @click="openModal"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+              <button
                 v-if="indexBeingEdited === referenceIndex"
                 type="button"
                 class="btn"
@@ -144,6 +161,18 @@ function commitEdit(index: number) {
           hasTopLabelStyle
         />
       </div>
+      <Modal :show="isModalOpen" @close="closeModal">
+        <template #header> Confirm Reference Deletion </template>
+        <template #body>
+          <p class="text-danger">Are you sure you want to delete this reference?</p>
+        </template>
+        <template #footer>
+          <button type="button" class="btn btn-danger" @click="handleConfirm(reference.uuid)">
+            Confirm
+          </button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+        </template>
+      </Modal>
     </div>
     <form>
       <button

@@ -325,6 +325,19 @@ export function putFlawReference(
     .catch(createCatchHandler('Error updating Reference:'));
 }
 
+
+export async function deleteFlawReference(
+  flawId: string,
+  referenceId: string,
+) {
+  return osidbFetch({
+    method: 'delete',
+    url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Reference deleted.' }))
+    .catch(createCatchHandler('Error deleting Reference:'));
+}
+
 export type FlawAcknowledgmentPost = {
   name: string;
   affiliation: string;
@@ -358,4 +371,16 @@ export async function putFlawAcknowledgment(
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' }))
     .catch(createCatchHandler('Error updating Acknowledgment:'));
+}
+
+export async function deleteFlawAcknowledgment(
+  flawId: string,
+  acknowledgmentId: string,
+) {
+  return osidbFetch({
+    method: 'delete',
+    url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment deleted.' }))
+    .catch(createCatchHandler('Error deleting Acknowledgment:'));
 }

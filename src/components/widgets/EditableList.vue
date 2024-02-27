@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import Modal from '@/components/widgets/Modal.vue';
+import { useModal } from '@/composables/useModal';
+const { isModalOpen, openModal, closeModal } = useModal();
+
 import LabelCollapsable from './LabelCollapsable.vue';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
   entityName: string;
+  entitiesName?: string;
 }>();
 
 const emit = defineEmits(['generic-update']);
 
-const entityNamePlural = computed(() => `${props.entityName}s`);
+const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
 
 onMounted(() => (priorValues.value = deepCopyFromRaw(items.value)));
 
@@ -37,7 +42,10 @@ function commitEdit(index: number) {
   modifiedItemIndexes.value.push(index);
   indexBeingEdited.value = null;
   priorValues.value = deepCopyFromRaw(items.value);
-  console.log('commitEdit', items.value[index]);
+}
+
+function handleConfirm(id: string) {
+  emit('generic-update', { type: 'delete::item', itemToDelete: id });
 }
 </script>
 
@@ -72,6 +80,14 @@ function commitEdit(index: number) {
               <i class="bi bi-pencil"></i>
             </button>
             <button
+              v-if="indexBeingEdited !== itemIndex"
+              type="button"
+              class="btn"
+              @click="openModal"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+            <button
               v-if="indexBeingEdited === itemIndex"
               type="button"
               class="btn"
@@ -94,20 +110,35 @@ function commitEdit(index: number) {
           <!-- if new and not saved in DB -->
         </div>
       </div>
+      <Modal :show="isModalOpen" @close="closeModal" @confirm="handleConfirm">
+        <template #body>
+          <slot
+            name="modal"
+            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+          ></slot>
+        </template>
+        <template #header>
+
+          <p></p>
+        </template>
+        <template #footer>
+          <p></p>
+        </template>
+      </Modal>
     </div>
     <form>
       <button
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('generic-update', { emitType: 'saveItems', itemsToSave })"
+        @click.prevent="emit('generic-update', { emitType: 'save::items', itemsToSave })"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
       <button
         type="button"
         class="btn btn-secondary"
-        @click.prevent="emit('generic-update', { emitType: 'addNew' })"
+        @click.prevent="emit('generic-update', { emitType: 'new::item' })"
       >
         Add {{ entityName }}
       </button>
@@ -116,7 +147,6 @@ function commitEdit(index: number) {
 </template>
 
 <style lang="scss" scoped>
-
 header select {
   max-width: 28rem;
 }

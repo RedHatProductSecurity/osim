@@ -52,7 +52,9 @@ const {
   createFlaw,
   addPublicComment,
   saveReferences,
+  deleteReference,
   saveAcknowledgments,
+  deleteAcknowledgment,
 } = useFlawModel(props.flaw, emit);
 
 const onSubmit = () => {
@@ -215,11 +217,13 @@ const onReset = () => {
             :isEmbargoed="flaw.embargoed"
             @update:references="saveReferences"
             @addBlankReference:flaw="addBlankReference(flaw.embargoed)"
+            @delete:reference="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
             @update:acknowledgments="saveAcknowledgments"
             @addBlankAcknowledgment:flaw="addBlankAcknowledgment(flaw.embargoed)"
+            @delete:acknowledgment="deleteAcknowledgment"
           />
           <div>
             <LabelCollapsable label="Trackers">
