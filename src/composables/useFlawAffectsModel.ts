@@ -1,5 +1,5 @@
 import { type Ref, ref, toRef, computed, watch } from 'vue';
-import { postAffect, putAffect } from '@/services/AffectService';
+import { postAffect, putAffect, deleteAffect } from '@/services/AffectService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodAffectType, ZodFlawType } from '@/types/zodFlaw';
@@ -14,6 +14,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     ...theAffects.value.filter((affect) => modifiedAffectIds.value.includes(affect.uuid)),
     ...theAffects.value.filter((affect) => !affect.uuid),
   ]);
+
+  const affectsToDelete = computed(() =>
+    theAffects.value.filter((affect) => affectIdsToDelete.value.includes(affect.uuid)),
+  );
 
   const { addToast } = useToastStore();
 
@@ -34,13 +38,19 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     });
   });
 
+  async function deleteAffects() {
+    for (const affects of affectsToDelete.value) {
+      await deleteAffect(affects.uuid);
+    }
+  }
+
   // Is there a way to watch affect is modified within composable?
   function reportAffectAsModified(affectId: string) {
     wereAffectsModified.value = true;
     modifiedAffectIds.value.push(affectId);
   }
 
-  const saveAffects = async () => {
+  async function saveAffects() {
     const affectsToSaveQuantity = affectsToSave.value.length;
     for (let index = 0; index < affectsToSaveQuantity; index++) {
       const affect = affectsToSave.value[index];
@@ -93,15 +103,16 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           });
       }
     }
-  };
+  }
 
   return {
-    wereAffectsModified,
     addBlankAffect,
     removeAffect,
     saveAffects,
-    theAffects,
+    deleteAffects,
     reportAffectAsModified,
+    theAffects,
+    wereAffectsModified,
+    affectsToDelete,
   };
 }
-
