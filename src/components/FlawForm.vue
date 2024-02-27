@@ -7,7 +7,6 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
-import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
@@ -43,6 +42,7 @@ const {
   flawNvdCvssScore,
   flawReferences,
   theAffects,
+  affectsToDelete,
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
@@ -100,7 +100,7 @@ const onReset = () => {
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" @submit.prevent="onSubmit">
     <div class="osim-content container pt-5">
       <div class="row">
         <div class="col-12"></div>
@@ -243,6 +243,7 @@ const onReset = () => {
       </div>
       <AffectedOfferings
         :theAffects="theAffects"
+        :affectsToDelete="affectsToDelete"
         :mode="mode"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
@@ -298,7 +299,7 @@ const onReset = () => {
 </template>
 
 <style scoped lang="scss">
-form * {
+form.osim-flaw-form :deep(*) {
   line-height: 1.5;
   font-family: 'Red Hat Mono', monospace;
 }
@@ -349,7 +350,6 @@ form * {
       border-bottom-left-radius: 0;
       text-align: left;
       padding: 0.375rem;
-      // padding-left: 1rem;
       justify-content: center;
     }
   }
