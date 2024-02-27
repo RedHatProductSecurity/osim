@@ -10,6 +10,7 @@ import {
   affectTypes,
   type ZodAffectType,
 } from '@/types/zodFlaw';
+import LabelStatic from './widgets/LabelStatic.vue';
 
 defineProps<{
   error?: string;
@@ -36,7 +37,7 @@ const handleFileTracker = () => {
 </script>
 
 <template>
-  <div class="row osim-affected-offerings">
+  <div class="row osim-affected-offerings pt-2">
     <div class="col-6">
       <LabelEditable v-model="modelValue.ps_module" type="text" label="Affected Module" />
       <LabelEditable v-model="modelValue.ps_component" type="text" label="Affected Component" />
@@ -67,103 +68,86 @@ const handleFileTracker = () => {
             @click.prevent="emit('remove', modelValue)"
           >
             Remove This Affect
-            <!-- TODO: FIX -->
           </button>
         </div>
       </div>
     </div>
     <div class="col-6">
-      <div class="d-flex justify-content-between">
-        <h4
-          v-if="modelValue.trackers && modelValue.trackers.length > 0"
-          class="affect-trackers-heading"
-        >
-          Trackers
-        </h4>
-        <button type="button" class="btn btn-secondary" @click.prevent="handleFileTracker">
-          File Tracker
-        </button>
+      <div class="bg-dark rounded-2 text-info">
+        <h5 class="affect-trackers-heading p-2 ps-3 mb-0">Trackers</h5>
       </div>
+      <p v-if="modelValue.trackers?.length === 0" class="ps-1 mt-3">&mdash; None yet.</p>
+
       <div
         v-for="(tracker, trackerIndex) in modelValue.trackers"
         :key="trackerIndex"
-        class="card mb-2 border-0"
+        class="osim-tracker-card ps-2 mb-3 pe-1"
       >
-        <table class="table table-striped">
-          <tbody>
-            <tr>
-              <th colspan="100%">
-                <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }"> Link </RouterLink>
-              </th>
-            </tr>
-            <tr>
-              <th>Type</th>
-              <td>
-                <!-- TODO: define a reasonable type -->
-                {{ tracker.type }}
-              </td>
-            </tr>
-            <tr>
-              <th>Resolution</th>
-              <td>
-                {{ tracker.resolution }}
-              </td>
-            </tr>
-            <tr>
-              <th>Status</th>
-              <td>
-                {{ tracker.status }}
-              </td>
-            </tr>
-            <tr>
-              <th>Product Stream</th>
-              <td>
-                {{ tracker.ps_update_stream }}
-              </td>
-            </tr>
-            <tr>
-              <th>Created date</th>
-              <td>{{ tracker.created_dt }}</td>
-            </tr>
-            <tr>
-              <th>Updated date</th>
-              <td>{{ tracker.updated_dt }}</td>
-            </tr>
-            <tr>
-              <th>Affects</th>
-              <td>
-                <ul>
-                  <li
-                    v-for="(trackerAffect, trackerAffectIndex) in tracker.affects"
-                    :key="trackerAffectIndex"
-                  >
-                    {{ trackerAffect }}
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-if="tracker.errata.length">
-          <h5>Errata</h5>
-          <table
-            v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
-            :key="trackerErrataIndex"
-            class="table-info table table-striped"
-          >
+        <div class="card">
+          <table class="table table-striped table-info mb-0">
             <tbody>
               <tr>
-                <th>Advisory</th>
-                <td>{{ trackerErrata.advisory_name }}</td>
+                <th>Type</th>
+                <td>
+                  {{ tracker.type }}
+                </td>
+                <th>Product Stream</th>
+                <td>
+                  {{ tracker.ps_update_stream }}
+                </td>
               </tr>
               <tr>
-                <th>Shipped</th>
-                <td>{{ trackerErrata.shipped_dt }}</td>
+                <th>Resolution</th>
+                <td>
+                  {{ tracker.resolution }}
+                </td>
+                <th>Status</th>
+                <td>
+                  {{ tracker.status }}
+                </td>
+              </tr>
+              <tr>
+                <th>Created date</th>
+                <td>{{ tracker.created_dt }}</td>
+                <th>Updated date</th>
+                <td>{{ tracker.updated_dt }}</td>
+              </tr>
+              <tr>
+                <th colspan="2">
+                  <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }"> Link </RouterLink>
+                </th>
+                <th>Affects</th>
+                <td>
+                  <ul>
+                    <li
+                      v-for="(trackerAffect, trackerAffectIndex) in tracker.affects"
+                      :key="trackerAffectIndex"
+                    >
+                      {{ trackerAffect }}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr v-if="tracker.errata.length">
+                <th colspan="4" class="text-center table-dark text-warning">Errata</th>
+              </tr>
+              <tr
+                v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
+                :key="trackerErrataIndex"
+                class="table-warning"
+              >
+                <th>Advisory</th>
+                <td colspan="3">
+                  {{ trackerErrata.advisory_name }} &mdash; {{ trackerErrata.shipped_dt }}
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <button type="button" class="btn btn-secondary mt-4" @click.prevent="handleFileTracker">
+        File Tracker
+      </button>
     </div>
 
     <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
