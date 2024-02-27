@@ -16,7 +16,7 @@ img, picture, video, canvas, svg {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Red Hat Display';
+  font-family: 'Red Hat Display', sans-serif;
 }
 
 main.osim-page-view .text-bg-danger, .btn-danger {
