@@ -129,7 +129,7 @@ const onReset = (payload: MouseEvent) => {
                 <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
                   <CvssNISTForm :flaw=flaw :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
                     :bugzilla="bugzillaLink" :nvdpage="osimLink" :cvss="flaw.cvss3"
-                    :nistcvss="String(flawRhCvss.score)" />
+                    :nistcvss="String(flawNvdCvssScore)" />
                 </div>
               </div>
               <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>

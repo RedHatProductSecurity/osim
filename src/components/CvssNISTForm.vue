@@ -6,48 +6,48 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
-  flaw?: any,
   cveid?: string | null | undefined;
   flawSummary?: string
   bugzilla?: string
   nvdpage?: string | null | undefined;
-  cvss?: string | null | undefined;
-  nistcvss?: string | null | undefined;
-  cvssjustification?: string
+  cvss?: string | null;
+  nistcvss?: string | null;
 }>();
 
 const userStore = useUserStore();
 const show = ref(false);
 const modalShown = ref(false);
 
-const ToEmail = 'nvd@nist.gov';
-const CCEmail = 'secalert@redhat.com';
-const Subject = `CVSS Rescore Request - ${props.cveid}`;
-const EmailBody = `Hello,
+const toEmail = 'nvd@nist.gov';
+const ccEmail = 'secalert@redhat.com';
+const subject = `CVSS Rescore Request - ${props.cveid}`;
+const emailBody = `Hello,
 
 I have performed an analysis of ${props.cveid} on behalf of Red Hat Product Security, resulting in a Red Hat CVSS score which is different from the NIST score. Our information and analysis is included below, and we would appreciate your consideration and review.
 
 CVE : ${props.cveid}
-Flaw Summary : ${props.flawSummary}
-Red Hat Bugzilla : ${props.bugzilla}
-NVD Page : ${props.nvdpage}
-Red Hat CVSS : ${props.cvss}
-NIST CVSS : ${props.nistcvss}
-Red Hats CVSS Justification : "cvss justification"
+
+Red Hat Bugzilla: ${props.bugzilla}
+NVD Page: https://nvd.nist.gov/vuln/detail/CVE-2024-0057
+Red Hat CVSS: ${props.cvss}
+NIST CVSS: ${props.nistcvss}
+
+Flaw Summary: 
+${props.flawSummary}
+
+Red Hat's CVSS Justification:
+____
 `;
 
-const EmailFooter = `Thank you so much for your time and consideration.
+const EmailFooter = 
+`Thank you.
 -${userStore.userEmail}`;
-
-function cancel() {
-  show.value = false;
-}
 
 function openMailto() {
   const recipient = encodeURI('nvd@nist.gov');
   const cc = encodeURI('secalert@redhat.com');
-  const encodedSubject = encodeURIComponent(Subject);
-  const body = EmailBody + '\n\n' + EmailFooter;
+  const encodedSubject = encodeURIComponent(subject);
+  const body = emailBody + '\n\n' + EmailFooter;
   const encodedBody = encodeURIComponent(body);
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   window.open(mailto, '_blank');
@@ -73,18 +73,18 @@ function closeModal() {
       </template>
       <template #body>
         <div class="osim-input mb-3 border-start ps-3">
-          <p><span class="fw-bold">To:</span> <span class="to-email">{{ ToEmail }}</span></p>
+          <p><span class="fw-bold">To:</span> <span class="to-email">{{ toEmail }}</span></p>
           <p class="from-email"><span class="fw-bold">From:</span> {{ userStore.userEmail }}</p>
-          <p><span class="fw-bold">CC:</span> <span class="cc-email">{{ CCEmail }}</span></p>
+          <p><span class="fw-bold">CC:</span> <span class="cc-email">{{ ccEmail }}</span></p>
           <hr />
-          <p>Subject:</p>
+          <p>subject:</p>
           <div class="w-100 mb-2">
-            <input class="form-control" :readonly="true" type="text" :value="Subject" />
+            <input class="form-control" :readonly="true" type="text" :value="subject" />
           </div>
           <hr />
         </div>
 
-        <LabelTextarea label="Body:" v-model="EmailBody" />
+        <LabelTextarea label="Body:" v-model="emailBody" />
         <LabelTextarea label="Body" v-model="EmailFooter" :hideLabel=true />
       </template>
       <template #footer>
