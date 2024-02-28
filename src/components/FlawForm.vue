@@ -97,7 +97,9 @@ const onReset = () => {
   <form class="osim-flaw-form" @submit.prevent="onSubmit">
     <div class="osim-content container pt-5">
       <div class="row">
-        <div class="col-12"></div>
+        <div class="col-12">
+          <!-- Alerts might go here -->
+        </div>
         <div class="col-6">
           <LabelEditable v-model="flaw.title" label="Title" type="text" />
           <LabelEditable
