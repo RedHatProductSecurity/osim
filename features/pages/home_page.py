@@ -24,8 +24,16 @@ class HomePage(PageFactory):
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
         # TODO:// I removed the style atrribute on this and added a class  <tr class="osim-issue-queue-item">
-        "flawRow": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']")
+        "flawRow": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']"),
+        "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
+        "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]")
     }
+
+    def click_advanced_search_drop_down_btn(self):
+        self.advancedSearchDropDownBtn.click_button()
+
+    def click_advanced_search_btn(self):
+        self.advancedSearchBtn.click_button()
 
     def click_flaw_index_btn(self):
         self.flawIndexBtn.click_button()

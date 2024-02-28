@@ -10,6 +10,7 @@ from features.utils import (
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
+from features.pages.advanced_search_page import AdvancedSearchPage
 
 
 @given('I am on the flaw list')
@@ -115,4 +116,21 @@ def step_impl(context):
     # Check the comment saved successfully
     comment_xpath = f'//p["data-v-38eda711="][text()="{context.add_comment}"]'
     wait_for_visibility_by_locator(context.browser, By.XPATH, comment_xpath)
+    context.browser.quit()
+
+
+@when('I am searching for all flaws')
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.click_advanced_search_drop_down_btn()
+    home_page.click_advanced_search_btn()
+
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.click_search_btn()
+
+
+@then('I get a list of all flaws')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.first_flaw_exist()
     context.browser.quit()

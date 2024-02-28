@@ -12,7 +12,6 @@ class SettingsPage(PageFactory):
     locators = {
         "jiraApiKeyText": ("XPATH", "//span[text()='JIRA API Key']"),
         "bugzillaApiKeyText": ("XPATH", "//span[text()='Bugzilla API Key']"),
-        "saveBtn": ("XPATH", "//button[text()='Save' and @type='submit']")
     }
 
     def set_jira_api_key(self, value):
@@ -30,6 +29,3 @@ class SettingsPage(PageFactory):
 
         key_input.clear()
         key_input.send_keys(value)
-
-    def click_save_btn(self):
-        self.saveBtn.execute_script("arguments[0].click();")
