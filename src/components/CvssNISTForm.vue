@@ -27,7 +27,7 @@ I have performed an analysis of ${props.cveid} on behalf of Red Hat Product Secu
 CVE : ${props.cveid}
 
 Red Hat Bugzilla: ${props.bugzilla}
-NVD Page: https://nvd.nist.gov/vuln/detail/CVE-2024-0057
+NVD Page: https://nvd.nist.gov/vuln/detail/${props.cveid}
 Red Hat CVSS: ${props.cvss}
 NIST CVSS: ${props.nistcvss}
 
