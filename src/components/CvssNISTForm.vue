@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import Modal from '@/components/widgets/Modal.vue';
 
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -8,8 +8,8 @@ import { useModal } from '@/composables/useModal';
 
 const props = defineProps<{
   cveid?: string | null;
-  flawSummary?: string
-  bugzilla?: string
+  flawSummary?: string;
+  bugzilla?: string;
   cvss?: string;
   nistcvss?: string;
 }>();
@@ -19,8 +19,8 @@ const { isModalOpen, openModal, closeModal } = useModal();
 
 const toEmail = 'nvd@nist.gov';
 const ccEmail = 'secalert@redhat.com';
-const subject = `CVSS Rescore Request - ${props.cveid}`;
-const emailBody = `Hello,
+const subject = computed(() => `CVSS Rescore Request - ${props.cveid}`);
+const emailBody = computed(() => `Hello,
 
 I have performed an analysis of ${props.cveid} on behalf of Red Hat Product Security, resulting in a Red Hat CVSS score which is different from the NIST score. Our information and analysis is included below, and we would appreciate your consideration and review.
 
@@ -39,13 +39,13 @@ ____
 
 Thank you,
 -${userStore.userEmail}
-`;
+`);
 
 function openMailto() {
   const recipient = encodeURI('nvd@nist.gov');
   const cc = encodeURI('secalert@redhat.com');
-  const encodedSubject = encodeURIComponent(subject);
-  const encodedBody = encodeURIComponent(emailBody);
+  const encodedSubject = encodeURIComponent(subject.value);
+  const encodedBody = encodeURIComponent(emailBody.value);
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   window.open(mailto, '_blank');
 }

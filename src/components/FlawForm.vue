@@ -137,9 +137,13 @@ const cvssString = computed(() => {
                   <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
                 </div>
                 <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
-                  <CvssNISTForm :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
-                    :bugzilla="bugzillaLink" :cvss="cvssString"
-                    :nistcvss="flawNvdCvssScore?.toString()" />
+                  <CvssNISTForm
+                      :cveid="flaw.cve_id"
+                      :flaw-summary="flaw.summary"
+                      :bugzilla="bugzillaLink"
+                      :cvss="cvssString"
+                      :nistcvss="flawNvdCvssScore?.toString()"
+                  />
                 </div>
               </div>
               <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
