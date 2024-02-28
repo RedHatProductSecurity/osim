@@ -65,7 +65,7 @@ function closeModal() {
       Email NIST
     </button>
 
-    <Modal width="800px" :show="modalShown" @close="closeModal">
+    <Modal :show="modalShown" @close="closeModal">
       <template #title>
         Email NIST
       </template>
@@ -75,7 +75,7 @@ function closeModal() {
           <p class="from-email"><span class="fw-bold">From:</span> {{ userStore.userEmail }}</p>
           <p><span class="fw-bold">CC:</span> <span class="cc-email">{{ ccEmail }}</span></p>
           <hr />
-          <p>subject:</p>
+          <p>Subject:</p>
           <div class="w-100 mb-2">
             <input class="form-control" :readonly="true" type="text" :value="subject" />
           </div>
