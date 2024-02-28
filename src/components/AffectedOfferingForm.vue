@@ -82,7 +82,7 @@ function handleTrackAffect() {
         :options="affectResolutions"
       />
       <LabelSelect v-model="modelValue.impact" label="Impact" :options="affectImpacts" />
-      <LabelEditable v-model="affectCvssScore" type="text" label="CVSS3" />
+      <LabelEditable v-model="affectCvssScore" type="text" label="CVSSv3" />
       <div class="row">
         <div class="col ps-0 mb-4">
           <button
