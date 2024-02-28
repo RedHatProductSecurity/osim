@@ -86,6 +86,16 @@ const onReset = (payload: MouseEvent) => {
   // FIXME XXX TODO
 }
 
+const displayCvssNISTForm = computed(() => {
+  const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+  const nvdCvssScore = flawNvdCvssScore.toString();
+  return rhCvss !== nvdCvssScore;
+});
+
+const cvssString = computed(() => {
+  return `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+});
+
 </script>
 
 <template>
@@ -126,10 +136,10 @@ const onReset = (payload: MouseEvent) => {
                 <div class="col">
                   <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
                 </div>
-                <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
+                <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
                   <CvssNISTForm :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
-                    :bugzilla="bugzillaLink" :cvss="flaw.cvss3"
-                    :nistcvss="String(flawNvdCvssScore)" />
+                    :bugzilla="bugzillaLink" :cvss="cvssString"
+                    :nistcvss="flawNvdCvssScore?.toString()" />
                 </div>
               </div>
               <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
