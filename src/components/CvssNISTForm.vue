@@ -14,7 +14,6 @@ const props = defineProps<{
 }>();
 
 const userStore = useUserStore();
-const show = ref(false);
 const modalShown = ref(false);
 
 const toEmail = 'nvd@nist.gov';
@@ -38,7 +37,7 @@ Red Hat's CVSS Justification:
 ____
 `;
 
-const EmailFooter = 
+const emailFooter = 
 `Thank you.
 -${userStore.userEmail}`;
 
@@ -46,7 +45,7 @@ function openMailto() {
   const recipient = encodeURI('nvd@nist.gov');
   const cc = encodeURI('secalert@redhat.com');
   const encodedSubject = encodeURIComponent(subject);
-  const body = emailBody + '\n\n' + EmailFooter;
+  const body = emailBody + '\n\n' + emailFooter;
   const encodedBody = encodeURIComponent(body);
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   window.open(mailto, '_blank');
@@ -84,7 +83,7 @@ function closeModal() {
         </div>
 
         <LabelTextarea label="Body:" v-model="emailBody" />
-        <LabelTextarea label="Body" v-model="EmailFooter" :hideLabel=true />
+        <LabelTextarea label="Body" v-model="emailFooter" :hideLabel=true />
       </template>
       <template #footer>
         <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal" @click="closeModal">Cancel
