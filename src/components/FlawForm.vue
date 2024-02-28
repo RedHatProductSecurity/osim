@@ -127,8 +127,8 @@ const onReset = (payload: MouseEvent) => {
                   <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
                 </div>
                 <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
-                  <CvssNISTForm :flaw=flaw :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
-                    :bugzilla="bugzillaLink" :nvdpage="osimLink" :cvss="flaw.cvss3"
+                  <CvssNISTForm :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
+                    :bugzilla="bugzillaLink" :cvss="flaw.cvss3"
                     :nistcvss="String(flawNvdCvssScore)" />
                 </div>
               </div>

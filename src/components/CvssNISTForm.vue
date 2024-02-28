@@ -6,12 +6,11 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
-  cveid?: string | null | undefined;
+  cveid?: string | null;
   flawSummary?: string
   bugzilla?: string
-  nvdpage?: string | null | undefined;
-  cvss?: string | null;
-  nistcvss?: string | null;
+  cvss?: string;
+  nistcvss?: string;
 }>();
 
 const userStore = useUserStore();
