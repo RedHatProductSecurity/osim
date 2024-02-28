@@ -4,6 +4,7 @@ import Modal from '@/components/widgets/Modal.vue';
 
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import { useUserStore } from '@/stores/UserStore';
+import { useModal } from '@/composables/useModal';
 
 const props = defineProps<{
   cveid?: string | null;
@@ -14,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const userStore = useUserStore();
-const modalShown = ref(false);
+const { isModalOpen, openModal, closeModal } = useModal();
 
 const toEmail = 'nvd@nist.gov';
 const ccEmail = 'secalert@redhat.com';
@@ -48,13 +49,6 @@ function openMailto() {
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   window.open(mailto, '_blank');
 }
-
-function openModal() {
-  modalShown.value = true;
-}
-function closeModal() {
-  modalShown.value = false;
-}
 </script>
 
 <template>
@@ -63,7 +57,7 @@ function closeModal() {
       Email NIST
     </button>
 
-    <Modal :show="modalShown" @close="closeModal">
+    <Modal :show="isModalOpen" @close="closeModal">
       <template #title>
         Email NIST
       </template>
