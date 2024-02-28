@@ -35,18 +35,16 @@ ${props.flawSummary}
 
 Red Hat's CVSS Justification:
 ____
-`;
 
-const emailFooter = 
-`Thank you.
--${userStore.userEmail}`;
+Thank you,
+-${userStore.userEmail}
+`;
 
 function openMailto() {
   const recipient = encodeURI('nvd@nist.gov');
   const cc = encodeURI('secalert@redhat.com');
   const encodedSubject = encodeURIComponent(subject);
-  const body = emailBody + '\n\n' + emailFooter;
-  const encodedBody = encodeURIComponent(body);
+  const encodedBody = encodeURIComponent(emailBody);
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   window.open(mailto, '_blank');
 }
@@ -76,14 +74,13 @@ function closeModal() {
           <p><span class="fw-bold">CC:</span> <span class="cc-email">{{ ccEmail }}</span></p>
           <hr />
           <p>Subject:</p>
-          <div class="w-100 mb-2">
+          <div class="mb-2">
             <input class="form-control" :readonly="true" type="text" :value="subject" />
           </div>
           <hr />
         </div>
 
         <LabelTextarea label="Body:" v-model="emailBody" />
-        <LabelTextarea label="Body" v-model="emailFooter" :hideLabel=true />
       </template>
       <template #footer>
         <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal" @click="closeModal">Cancel
@@ -96,6 +93,6 @@ function closeModal() {
 
 <style scoped>
 .osim-cve-nist-button :deep(.modal-dialog) {
-  max-width: 800px;
+  max-width: 80ch;
 }
 </style>

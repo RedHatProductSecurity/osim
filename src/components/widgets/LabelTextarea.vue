@@ -6,7 +6,6 @@ const props = defineProps<{
   modelValue: string | null | undefined,
   label: string,
   error?: string,
-  hideLabel?: boolean,
 }>();
 
 const elTextArea = ref();
@@ -27,7 +26,7 @@ const elTextArea = ref();
 
 <template>
   <label class="osim-input has-validation mb-3 border-start ps-3">
-    <span class="form-label" :class="{ 'visually-hidden': hideLabel }">
+    <span class="form-label">
       {{ label }}
       <!--attrs: {{ $attrs }}-->
     </span>
