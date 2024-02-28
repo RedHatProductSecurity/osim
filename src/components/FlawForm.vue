@@ -122,16 +122,14 @@ const onReset = (payload: MouseEvent) => {
                 </template>
               </LabelEditable>
               <LabelInput label="CVSSv3 Score" type="text" v-model="flawRhCvss.score" :error="errors.cvss3_score"/>
-              <div class="">
-                <div class="row">
-                  <div class="col">
-                    <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
-                  </div>
-                  <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
-                    <CvssNISTForm :flaw=flaw :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
-                      :bugzilla="bugzillaLink" :nvdpage="osimLink" :cvss="flaw.cvss3"
-                      :nistcvss="String(flawRhCvss.score)" />
-                  </div>
+              <div class="row">
+                <div class="col">
+                  <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
+                </div>
+                <div v-if="flawRhCvss.score !== flawNvdCvssScore" class="col-auto align-self-end mb-3">
+                  <CvssNISTForm :flaw=flaw :cveid="flaw.cve_id" :flaw-summary="flaw.summary"
+                    :bugzilla="bugzillaLink" :nvdpage="osimLink" :cvss="flaw.cvss3"
+                    :nistcvss="String(flawRhCvss.score)" />
                 </div>
               </div>
               <LabelEditable label="CWE ID" type="text" v-model="flaw.cwe_id" :error="errors.cwe_id"/>
