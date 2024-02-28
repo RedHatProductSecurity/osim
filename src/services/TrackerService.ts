@@ -52,11 +52,11 @@ export async function getTracker(uuid: string) {
 }
 
 export type TrackersPost = {
-  affects: string[]; // Flaw UUIDs
+  affects: string[];
   ps_update_stream: string;
   resolution: string;
   embargoed: boolean;
-  updated_dt: string; //
+  updated_dt: string;
 };
 
 export async function postTracker(requestBody: TrackersPost) {
