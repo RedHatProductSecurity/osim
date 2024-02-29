@@ -227,7 +227,8 @@ function validateDatePart(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="position-relative col-9"> <!-- for invalid-tooltip positioning -->
+  <!-- for invalid-tooltip positioning -->
+  <div class="position-relative col-9 osim-editable-field osim-date"> 
   <Transition name="flash-bg">
     <div class="osim-editable-date" v-if="!editing" :tabindex="readOnly ? -1 : 0" @focus="beginEdit">
       <span

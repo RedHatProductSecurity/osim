@@ -95,7 +95,7 @@ const onReset = () => {
 
 <template>
   <form class="osim-flaw-form" @submit.prevent="onSubmit">
-    <div class="osim-content container pt-5">
+    <div class="osim-content container-lg pt-5">
       <div class="row">
         <div class="col-12">
           <!-- Alerts might go here -->
@@ -254,13 +254,16 @@ const onReset = () => {
           <ul>
             <li v-for="(comment, commentIndex) in flaw.comments" :key="commentIndex" class="p-3">
               <p class="border-top pt-2">
+                <span
+                  v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'"
+                  class=" badge bg-warning rounded-pill"
+                >
+                  internal
+                </span>
                 {{ comment.meta_attr?.creator }} /
                 <a :href="'#' + comment.type + '/' + comment.external_system_id">
                   {{ comment.meta_attr?.time }}
                 </a>
-                <span v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'">
-                  (internal)
-                </span>
               </p>
               <p>{{ comment.meta_attr?.text }}</p>
             </li>
@@ -322,6 +325,8 @@ form.osim-flaw-form :deep(*) {
 
     .osim-editable-text,
     .input-group,
+    .osim-editable-date,
+    span.form-control,
     input.form-control {
       height: 100%;
 

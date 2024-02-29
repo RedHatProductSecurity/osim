@@ -29,7 +29,11 @@ defineProps<{
 </template>
 
 <style scoped>
-.osim-static-label .osim-static-label-top-style .top-label{
+.osim-static-label span.form-control {
+  word-wrap: break-word;
+}
+
+.osim-static-label .osim-static-label-top-style .top-label {
   display: inline-block;
   background-color: #DEE2E6;
   border-top-left-radius: .5rem;
