@@ -8,20 +8,17 @@ const props = withDefaults(defineProps<{
   label?: string,
   type: 'text' | 'date',
   // error: string,
+  // required: boolean,
 }>(), {
-  label: ''
+  label: '',
+  // required: false,
 });
 
 const components = {
   text: EditableText,
   date: EditableDate,
 };
-
-// const emit = defineEmits<{
-//   'update:modelValue': [value: string],
-// }>();
-
-
+const modelValue = defineModel<string | undefined | null | number>();
 </script>
 
 <template>
@@ -38,6 +35,7 @@ const components = {
       <!-- https://github.com/vuejs/language-tools/issues/3138 -->
       <component
         :is="components[type as keyof typeof components] as any"
+        v-model="modelValue"
         v-bind="$attrs"
       />
       <!--class="form-control"-->
