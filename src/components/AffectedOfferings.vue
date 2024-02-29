@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, toRefs } from 'vue';
+import { computed, toRefs, ref } from 'vue';
 
-import { groupBy } from '@/utils/helpers';
+import { groupBy, objectMap } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
 
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
@@ -20,39 +20,93 @@ const emit = defineEmits<{
   'add-blank-affect': [];
 }>();
 const { theAffects, affectsToDelete } = toRefs(props);
-const groupedAffects = computed(() =>
+
+const sortedByGroup = <T extends { ps_module: string }>(array: T[]) =>
   groupBy(
-    theAffects.value.filter(({ ps_module }) => ps_module),
+    array
+      .filter(({ ps_module }) => ps_module)
+      .sort(({ ps_module: a }, { ps_module: b }) => a.localeCompare(b)),
     ({ ps_module }) => ps_module,
-  ),
-);
+  );
+
+const groupedAffects = computed(() => sortedByGroup(theAffects.value));
+
+const directoryOfCollapsed = ref(initializeCollapsedStates());
+
+function collapseAll(inModuleName?: string) {
+  if (inModuleName) {
+    directoryOfCollapsed.value[inModuleName] = objectMap(
+      directoryOfCollapsed.value[inModuleName],
+      () => ({ isExpanded: false }),
+    );
+  } else {
+    directoryOfCollapsed.value = initializeCollapsedStates();
+  }
+}
+
+
+function initializeCollapsedStates(isExpanded = false) {
+  return objectMap(
+    sortedByGroup(theAffects.value),
+    (key, value): Record<string, any> => ({
+      isExpanded,
+      ...Object.fromEntries(value.map((affect) => [affect.ps_component, { isExpanded }])),
+    }),
+  );
+}
+
 const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !affect.ps_module));
+
+function moduleComponentName(moduleName: string = '<module not set>', componentName: string) {
+  return `${moduleName}::${componentName}`;
+}
 </script>
 
 <template>
   <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
     <hr />
-    <h5 class="mb-4">Affected Offerings</h5>
-    <div v-for="(streamAffects, streamName) in groupedAffects" :key="streamName">
-      <LabelCollapsable :label="`${streamName} (${streamAffects.length} affected)`">
+    <h5 class="mb-4">
+      Affected Offerings
+
+      <button type="button" class="btn btn-sm btn-secondary" @click="collapseAll()">
+        Collapse All
+      </button>
+    </h5>
+    <div v-for="(moduleAffects, moduleName) in groupedAffects" :key="moduleName">
+      <LabelCollapsable v-model="directoryOfCollapsed[moduleName].isExpanded" class="mb-3">
+        <template #label>
+          <label class="ms-2 form-label">
+            {{ `${moduleName} (${moduleAffects.length} affected)` }}
+          </label>
+
+          <button
+            v-if="directoryOfCollapsed[moduleName].isExpanded"
+            type="button"
+            class="rounded-pill btn btn-sm btn-secondary ms-3"
+            @click="collapseAll(moduleName as string)"
+          >
+            Collapse Components
+          </button>
+        </template>
         <div
           v-for="(affects, componentName) in groupBy(
-            streamAffects,
+            moduleAffects,
             ({ ps_component }) => ps_component,
           )"
           :key="componentName"
           class="container-fluid row affected-offering"
         >
-          <LabelCollapsable :label="`${componentName} (${affects.length} affected)`">
+          <LabelCollapsable
+            v-model="directoryOfCollapsed[moduleName][componentName].isExpanded"
+            :label="`${componentName} (${affects.length} affected)`"
+            class="mt-2"
+          >
             <div v-for="(affect, affectIndex) in affects" :key="affectIndex">
               <AffectedOfferingForm
                 v-model="affects[affectIndex]"
                 @remove="emit('remove', affect)"
                 @file-tracker="emit('file-tracker', $event)"
               />
-              <!-- @remove="removeAffect(theAffects.indexOf(affect))"
-                @file-tracker="fileTracker($event as TrackersFilePost)"
-                @add-blank-affect="addBlankAffect" -->
             </div>
           </LabelCollapsable>
         </div>
@@ -74,8 +128,8 @@ const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !aff
         <div v-for="(affect, affectIndex) in affectsToDelete" :key="affectIndex">
           <ul>
             <li>
-              {{ affect.ps_module || '<module not set>' }}::{{ affect.ps_component || '<component not set>' }}
-              {{ !affect.uuid ? '(doesn\'t exist yet in OSIDB)' : '' }}
+              {{ moduleComponentName(affect.ps_module, affect.ps_component) }}
+              {{ !affect.uuid ? "(doesn't exist yet in OSIDB)" : '' }}
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -90,13 +144,3 @@ const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !aff
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.osim-affected-offerings {
-  padding-left: 0.75rem;
-
-  table.table-striped th {
-    border-bottom: none;
-  }
-}
-</style>
