@@ -10,11 +10,16 @@ import {
   type ZodAffectType,
 } from '@/types/zodFlaw';
 import { useAffectTracker } from '@/composables/useAffectTracker';
+import { useScreenSizeWatcher } from '@/composables/useScreenWatcher';
 import type { TrackersPost } from '@/services/TrackerService';
 
 defineProps<{
   error?: string;
 }>();
+
+const { screenWidth } = useScreenSizeWatcher();
+
+const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
@@ -39,7 +44,7 @@ const { getTrackers, moduleComponentStreams, isNotApplicable, postTracker } = us
 );
 
 const updateStreamNames = computed(() =>
-  moduleComponentStreams.value.map(({ps_update_stream}: any) => ps_update_stream),
+  moduleComponentStreams.value.map(({ ps_update_stream }: any) => ps_update_stream),
 );
 
 const chosenUpdateStream = ref('');
@@ -52,7 +57,6 @@ function handleTrackAffect() {
     affects: [modelValue.value.uuid],
     embargoed: modelValue.value.embargoed,
   } as TrackersPost);
-
 }
 // const handleFileTracker = () => {
 // emit('file-tracker', { flaw_uuids: [flawId.value] });
@@ -62,8 +66,18 @@ function handleTrackAffect() {
 <template>
   <div class="row osim-affected-offerings pt-2">
     <div class="col-6">
-      <LabelEditable v-model="modelValue.ps_module" type="text" label="Affected Module" />
-      <LabelEditable v-model="modelValue.ps_component" type="text" label="Affected Component" />
+      <LabelEditable
+        v-model="modelValue.ps_module"
+        required
+        type="text"
+        label="Affected Module"
+      />
+      <LabelEditable
+        v-model="modelValue.ps_component"
+        required
+        type="text"
+        label="Affected Component"
+      />
       <!--Hiding the Type field until we have more options to choose from-->
       <LabelSelect
         v-model="modelValue.type"
@@ -95,9 +109,9 @@ function handleTrackAffect() {
         </div>
       </div>
     </div>
-    <div class="col-6">
-      <div class="bg-dark rounded-2 text-info">
-        <h5 class="affect-trackers-heading p-2 ps-3 mb-0">Trackers</h5>
+    <div class="col-6 p-0">
+      <div class="bg-dark rounded-top-2 text-info">
+        <h5 class="affect-trackers-heading p-2 ps-3 m-0">Trackers</h5>
       </div>
       <p v-if="!modelValue.trackers || modelValue.trackers?.length === 0" class="ps-1 mt-3">
         <em>&mdash; None yet.</em>
@@ -106,69 +120,104 @@ function handleTrackAffect() {
       <div
         v-for="(tracker, trackerIndex) in modelValue.trackers"
         :key="trackerIndex"
-        class="osim-tracker-card ps-2 mb-3 pe-1"
+        class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <div class="card">
-          <table class="table table-striped table-info mb-0">
-            <tbody>
-              <tr>
-                <th>Type</th>
-                <td>
-                  {{ tracker.type }}
-                </td>
-                <th>Product Stream</th>
-                <td>
-                  {{ tracker.ps_update_stream }}
-                </td>
-              </tr>
-              <tr>
-                <th>Resolution</th>
-                <td>
-                  {{ tracker.resolution }}
-                </td>
-                <th>Status</th>
-                <td>
-                  {{ tracker.status }}
-                </td>
-              </tr>
-              <tr>
-                <th>Created date</th>
-                <td>{{ tracker.created_dt }}</td>
-                <th>Updated date</th>
-                <td>{{ tracker.updated_dt }}</td>
-              </tr>
-              <tr>
-                <th colspan="2">
-                  <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }"> Link </RouterLink>
-                </th>
-                <th>Affects</th>
-                <td>
-                  <ul>
-                    <li
-                      v-for="(trackerAffect, trackerAffectIndex) in tracker.affects"
-                      :key="trackerAffectIndex"
-                    >
-                      {{ trackerAffect }}
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-              <tr v-if="tracker.errata.length">
-                <th colspan="4" class="text-center table-dark text-warning">Errata</th>
-              </tr>
-              <tr
-                v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
-                :key="trackerErrataIndex"
-                class="table-warning"
-              >
-                <th>Advisory</th>
-                <td colspan="3">
-                  {{ trackerErrata.advisory_name }} &mdash; {{ trackerErrata.shipped_dt }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table class="table table-striped table-info mb-0">
+          <tbody v-if="!isScreenSortaSmall">
+            <tr>
+              <th>Type</th>
+              <td>
+                <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }">
+                  <i class="bi bi-link"></i>{{ tracker.type }}
+                </RouterLink>
+              </td>
+              <th>Product Stream</th>
+              <td>
+                {{ tracker.ps_update_stream }}
+              </td>
+            </tr>
+            <tr>
+              <th>Resolution</th>
+              <td>
+                {{ tracker.resolution }}
+              </td>
+              <th>Status</th>
+              <td>
+                {{ tracker.status }}
+              </td>
+            </tr>
+            <tr>
+              <th>Created date</th>
+              <td>{{ tracker.created_dt }}</td>
+              <th>Updated date</th>
+              <td>{{ tracker.updated_dt }}</td>
+            </tr>
+            <tr v-if="tracker.errata.length">
+              <th colspan="4" class="text-center table-dark text-warning">Errata</th>
+            </tr>
+            <tr
+              v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
+              :key="trackerErrataIndex"
+              class="table-warning"
+            >
+              <th>Advisory</th>
+              <td colspan="3">
+                {{ trackerErrata.advisory_name }} &mdash; {{ trackerErrata.shipped_dt }}
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
+            <tr>
+              <th colspan="2">Type</th>
+              <td colspan="2">
+                <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }">
+                  <i class="bi bi-link"></i>{{ tracker.type }}
+                </RouterLink>
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">Product Stream</th>
+              <td colspan="2">
+                {{ tracker.ps_update_stream }}
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">Resolution</th>
+              <td colspan="2">
+                {{ tracker.resolution }}
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">Status</th>
+              <td colspan="2">
+                {{ tracker.status }}
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">Created date</th>
+              <td colspan="2">{{ tracker.created_dt }}</td>
+            </tr>
+            <tr>
+              <th colspan="2">Updated date</th>
+              <td colspan="2">{{ tracker.updated_dt }}</td>
+            </tr>
+            <tr v-if="tracker.errata.length">
+              <td colspan="4" class="text-center table-dark text-warning">Errata</td>
+            </tr>
+            <tr
+              v-for="(trackerErrata, trackerErrataIndex) in tracker.errata"
+              :key="trackerErrataIndex"
+              class="table-warning"
+            >
+
+              <th colspan="1">Advisory</th>
+              <td colspan="3">
+                {{ trackerErrata.advisory_name }} 
+                <br/> {{ trackerErrata.shipped_dt }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <button
@@ -186,11 +235,7 @@ function handleTrackAffect() {
           :options="updateStreamNames"
           label="Update Stream"
         />
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click.prevent="handleTrackAffect"
-        >
+        <button type="button" class="btn btn-secondary" @click.prevent="handleTrackAffect">
           Track Affect
         </button>
       </div>
@@ -234,8 +279,16 @@ function handleTrackAffect() {
 .osim-affected-offerings {
   padding-left: 0.75rem;
 
-  table.table-striped th {
+  table {
+    table-layout: fixed;
+  }
+
+  th {
     border-bottom: none;
+  }
+
+  td {
+    word-wrap: break-word;
   }
 
   .osim-tracker-update-streams :deep(.col-3),
