@@ -30,24 +30,28 @@
           </div>
         </div>
       </template>
-
-      <template #modal="{item, closeModal}">
+      <template #modal-header>
+        <div>
+          <h5>Confirm Acknowledgment Deletion</h5>
+        </div>
+      </template>
+      <template #modal-body>
         <div>
           <p class="text-danger">Are you sure you want to delete this acknowledgment?</p>
+        </div>
+      </template>
+      <template #modal-footer="{ item, closeModal }">
+        <div>
           <button
             type="button"
-            class="btn btn-danger"
-            @click="handleUpdate({ emitType: 'delete::item', itemToDelete: item.uuid })"
+            class="btn btn-danger me-2"
+            @click="
+              handleUpdate({ emitType: 'delete::item', itemToDelete: item.uuid }), closeModal()
+            "
           >
             Confirm
           </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
-            Cancel
-          </button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
         </div>
       </template>
     </EditableList>
@@ -73,7 +77,7 @@ type EmissionType = {
 };
 
 function handleUpdate(emission: EmissionType) {
-  console.log(emission)
+  console.log(emission);
   switch (emission.emitType) {
   case 'save::items':
     return emit('update:acknowledgments', emission.itemsToSave);

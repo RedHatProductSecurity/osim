@@ -113,16 +113,21 @@ function handleConfirm(id: string) {
       <Modal :show="isModalOpen" @close="closeModal" @confirm="handleConfirm">
         <template #body>
           <slot
-            name="modal"
+            name="modal-body"
             v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
-          ></slot>
+          />
         </template>
         <template #header>
-
-          <p></p>
+          <slot
+            name="modal-header"
+            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+          />
         </template>
         <template #footer>
-          <p></p>
+          <slot
+            name="modal-footer"
+            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+          />
         </template>
       </Modal>
     </div>
