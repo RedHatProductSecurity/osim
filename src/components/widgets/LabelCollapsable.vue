@@ -11,7 +11,7 @@ const isExpanded = defineModel<boolean>();
 </script>
 
 <template>
-  <div class="osim-collapsable-label mb-3 ps-">
+  <div class="osim-collapsable-label" v-bind="$attrs">
     <button type="button" class="me-2" @click="isExpanded = !isExpanded">
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
@@ -22,7 +22,9 @@ const isExpanded = defineModel<boolean>();
       </slot>
     </button>
     <div class="ps-3 border-start">
-      <slot v-if="isExpanded" />
+      <div :class="{'visually-hidden': !isExpanded}">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
