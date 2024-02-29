@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref } from 'vue';
+import { computed, toRefs, ref, watch, nextTick } from 'vue';
 
 import { groupBy, objectMap } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
@@ -21,41 +21,61 @@ const emit = defineEmits<{
 }>();
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const sortedByGroup = <T extends { ps_module: string }>(array: T[]) =>
+const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
   groupBy(
     array
-      .filter(({ ps_module }) => ps_module)
-      .sort(({ ps_module: a }, { ps_module: b }) => a.localeCompare(b)),
-    ({ ps_module }) => ps_module,
+      .filter((item: T) => item[key])
+      .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
+    (item: T) => item[key],
   );
 
-const groupedAffects = computed(() => sortedByGroup(theAffects.value));
+const affectsWithDefinedModules = computed(() =>
+  theAffects.value.filter((affect) => affect.ps_module && affect.ps_component),
+);
 
-const directoryOfCollapsed = ref(initializeCollapsedStates());
+const affectedModules = computed(() =>
+  objectMap(sortedByGroup(affectsWithDefinedModules.value, 'ps_module'), (module, components) =>
+    // Convert to object by extracting inner array value
+    objectMap(sortedByGroup(components, 'ps_component'), (k, v) => v[0]),
+  ),
+);
 
-function collapseAll(inModuleName?: string) {
-  if (inModuleName) {
-    directoryOfCollapsed.value[inModuleName] = objectMap(
-      directoryOfCollapsed.value[inModuleName],
-      () => ({ isExpanded: false }),
-    );
-  } else {
-    directoryOfCollapsed.value = initializeCollapsedStates();
-  }
+const directoryOfCollapsed = ref(initializeCollapsedStates(theAffects.value));
+
+watch(
+  props.theAffects,
+  () => {
+    directoryOfCollapsed.value = {
+      ...initializeCollapsedStates(affectsWithDefinedModules.value),
+      ...directoryOfCollapsed.value,
+    };
+  },
+  { deep: true },
+);
+
+function collapseAll() {
+  directoryOfCollapsed.value = initializeCollapsedStates(theAffects.value);
 }
 
-
-function initializeCollapsedStates(isExpanded = false) {
+function initializeCollapsedStates(affects: ZodAffectType[], isExpanded = false) {
   return objectMap(
-    sortedByGroup(theAffects.value),
+    sortedByGroup(affects, 'ps_module'),
     (key, value): Record<string, any> => ({
       isExpanded,
-      ...Object.fromEntries(value.map((affect) => [affect.ps_component, { isExpanded }])),
+      ...Object.fromEntries(value.map((affect: any) => [affect.ps_component, { isExpanded }])),
     }),
   );
 }
 
-const ungroupedAffects = computed(() => theAffects.value.filter((affect) => !affect.ps_module));
+function componentLabel(affectedComponent: ZodAffectType) {
+  return affectedComponent.uuid
+    ? `(${affectedComponent.trackers?.length || 0} trackers)`
+    : '(unsaved in OSIDB)';
+}
+
+const ungroupedAffects = computed(() =>
+  theAffects.value.filter((affect) => !affect.ps_module || !affect.uuid),
+);
 
 function moduleComponentName(moduleName: string = '<module not set>', componentName: string) {
   return `${moduleName}::${componentName}`;
@@ -72,42 +92,28 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
         Collapse All
       </button>
     </h5>
-    <div v-for="(moduleAffects, moduleName) in groupedAffects" :key="moduleName">
+    <div v-for="(affectedComponents, moduleName) in affectedModules" :key="moduleName">
       <LabelCollapsable v-model="directoryOfCollapsed[moduleName].isExpanded" class="mb-3">
         <template #label>
           <label class="ms-2 form-label">
-            {{ `${moduleName} (${moduleAffects.length} affected)` }}
+            {{ `${moduleName} (${Object.keys(affectedComponents).length} affected)` }}
           </label>
-
-          <button
-            v-if="directoryOfCollapsed[moduleName].isExpanded"
-            type="button"
-            class="rounded-pill btn btn-sm btn-secondary ms-3"
-            @click="collapseAll(moduleName as string)"
-          >
-            Collapse Components
-          </button>
         </template>
         <div
-          v-for="(affects, componentName) in groupBy(
-            moduleAffects,
-            ({ ps_component }) => ps_component,
-          )"
+          v-for="(affectedComponent, componentName) in affectedComponents"
           :key="componentName"
-          class="container-fluid row affected-offering"
+          class="affected-offering"
         >
           <LabelCollapsable
             v-model="directoryOfCollapsed[moduleName][componentName].isExpanded"
-            :label="`${componentName} (${affects.length} affected)`"
+            :label="`${componentName} ${componentLabel(affectedComponent)}`"
             class="mt-2"
           >
-            <div v-for="(affect, affectIndex) in affects" :key="affectIndex">
-              <AffectedOfferingForm
-                v-model="affects[affectIndex]"
-                @remove="emit('remove', affect)"
-                @file-tracker="emit('file-tracker', $event)"
-              />
-            </div>
+            <AffectedOfferingForm
+              v-model="affectedComponents[componentName]"
+              @remove="emit('remove', affectedComponent)"
+              @file-tracker="emit('file-tracker', $event)"
+            />
           </LabelCollapsable>
         </div>
       </LabelCollapsable>
