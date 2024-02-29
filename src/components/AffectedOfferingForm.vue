@@ -66,18 +66,8 @@ function handleTrackAffect() {
 <template>
   <div class="row osim-affected-offerings pt-2">
     <div class="col-6">
-      <LabelEditable
-        v-model="modelValue.ps_module"
-        required
-        type="text"
-        label="Affected Module"
-      />
-      <LabelEditable
-        v-model="modelValue.ps_component"
-        required
-        type="text"
-        label="Affected Component"
-      />
+      <LabelEditable v-model="modelValue.ps_module" type="text" label="Affected Module" />
+      <LabelEditable v-model="modelValue.ps_component" type="text" label="Affected Component" />
       <!--Hiding the Type field until we have more options to choose from-->
       <LabelSelect
         v-model="modelValue.type"
@@ -209,11 +199,11 @@ function handleTrackAffect() {
               :key="trackerErrataIndex"
               class="table-warning"
             >
-
               <th colspan="1">Advisory</th>
               <td colspan="3">
-                {{ trackerErrata.advisory_name }} 
-                <br/> {{ trackerErrata.shipped_dt }}
+                {{ trackerErrata.advisory_name }}
+                <br />
+                {{ trackerErrata.shipped_dt }}
               </td>
             </tr>
           </tbody>
