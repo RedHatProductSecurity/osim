@@ -15,7 +15,7 @@ import { useModal } from '@/composables/useModal';
 const { isModalOpen, openModal, closeModal } = useModal();
 
 const references = defineModel<ZodFlawReferenceType[]>({ default: null });
-const emit = defineEmits(['addBlankReference:flaw', 'update:references', 'delete:reference']);
+const emit = defineEmits(['reference:new', 'reference:update', 'reference:delete']);
 onMounted(() => (priorValues.value = deepCopyFromRaw(references.value)));
 
 const indexBeingEdited = ref<number | null>(null);
@@ -55,7 +55,7 @@ function commitEdit(index: number) {
 
 function handleConfirm(uuid: string) {
   isModalOpen.value = false;
-  emit('delete:reference', uuid);
+  emit('reference:delete', uuid);
 }
 </script>
 
@@ -182,11 +182,11 @@ function handleConfirm(uuid: string) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: referencesToSave.length === 0 }"
-        @click="emit('update:references', referencesToSave)"
+        @click="emit('reference:update', referencesToSave)"
       >
         Save Changes to References
       </button>
-      <button type="button" class="btn btn-secondary" @click="emit('addBlankReference:flaw')">
+      <button type="button" class="btn btn-secondary" @click="emit('reference:new')">
         Add Reference
       </button>
     </form>

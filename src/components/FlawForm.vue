@@ -227,9 +227,9 @@ const onReset = () => {
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
-            @update:references="saveReferences"
-            @addBlankReference:flaw="addBlankReference(flaw.embargoed)"
-            @delete:reference="deleteReference"
+            @reference:update="saveReferences"
+            @reference:new="addBlankReference(flaw.embargoed)"
+            @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
