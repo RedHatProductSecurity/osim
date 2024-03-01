@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch, nextTick } from 'vue';
+import { computed, toRefs, ref, watch } from 'vue';
 
 import { groupBy, objectMap } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
 
-import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
+import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 
 const props = defineProps<{
@@ -19,6 +19,7 @@ const emit = defineEmits<{
   recover: [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
+
 const { theAffects, affectsToDelete } = toRefs(props);
 
 const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
@@ -57,6 +58,10 @@ function collapseAll() {
   directoryOfCollapsed.value = initializeCollapsedStates(theAffects.value);
 }
 
+function toggle(reference: any) {
+  reference.isExpanded = !reference.isExpanded;
+}
+
 function initializeCollapsedStates(affects: ZodAffectType[], isExpanded = false) {
   return objectMap(
     sortedByGroup(affects, 'ps_module'),
@@ -65,12 +70,6 @@ function initializeCollapsedStates(affects: ZodAffectType[], isExpanded = false)
       ...Object.fromEntries(value.map((affect: any) => [affect.ps_component, { isExpanded }])),
     }),
   );
-}
-
-function componentLabel(affectedComponent: ZodAffectType) {
-  return affectedComponent.uuid
-    ? `(${affectedComponent.trackers?.length || 0} trackers)`
-    : '(unsaved in OSIDB)';
 }
 
 const ungroupedAffects = computed(() =>
@@ -93,34 +92,74 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
       </button>
     </h5>
     <div v-for="(affectedComponents, moduleName) in affectedModules" :key="moduleName">
-      <LabelCollapsable v-model="directoryOfCollapsed[moduleName].isExpanded" class="mb-3">
+      <LabelCollapsable
+        :isExpanded="directoryOfCollapsed[moduleName].isExpanded"
+        class="mb-3"
+        @toggle-expanded="toggle(directoryOfCollapsed[moduleName])"
+      >
         <template #label>
           <label class="ms-2 form-label">
             {{ `${moduleName} (${Object.keys(affectedComponents).length} affected)` }}
           </label>
+        </template>
+        <template #buttons>
+          <div v-if="directoryOfCollapsed[moduleName].isExpanded" class="btn-group">
+            <div class="dropdown">
+              <button
+                id="dropdownMenuButton"
+                class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
+                type="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Bulk Action
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Change Affected Module</a>
+              </div>
+            </div>
+          </div>
         </template>
         <div
           v-for="(affectedComponent, componentName) in affectedComponents"
           :key="componentName"
           class="affected-offering"
         >
-          <LabelCollapsable
+          <!-- <LabelCollapsable
             v-model="directoryOfCollapsed[moduleName][componentName].isExpanded"
-            :label="`${componentName} ${componentLabel(affectedComponent)}`"
             class="mt-2"
           >
-            <AffectedOfferingForm
-              v-model="affectedComponents[componentName]"
-              @remove="emit('remove', affectedComponent)"
-              @file-tracker="emit('file-tracker', $event)"
-            />
-          </LabelCollapsable>
+            <template #label>
+              <label class="ms-2 form-label">
+                {{ `${componentName} ${componentLabel(affectedComponent)}` }}
+              </label>
+              <div class="btn-group" role="group" aria-label="Tracker Actions">
+                <button
+                  type="button"
+                  class="btn btn-sm rounded-pill btn-secondary"
+                  @click.capture="emit('file-tracker', affectedComponent)"
+                >
+                  File Tracker
+                </button>
+              </div>
+            </template> -->
+          <AffectExpandableForm
+            v-model="affectedComponents[componentName]"
+            :componentName="`${componentName}`"
+            :affectedComponent="affectedComponent"
+            :isExpanded="directoryOfCollapsed[moduleName][componentName].isExpanded"
+            @toggle-expanded="toggle(directoryOfCollapsed[moduleName][componentName])"
+            @remove="emit('remove', affectedComponent)"
+            @file-tracker="emit('file-tracker', $event)"
+          />
+          <!-- </LabelCollapsable> -->
         </div>
       </LabelCollapsable>
     </div>
     <h5 v-if="ungroupedAffects.length">Ungrouped Affected Offerings</h5>
     <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
-      <AffectedOfferingForm
+      <AffectExpandableForm
         v-model="ungroupedAffects[affectIndex]"
         @remove="emit('remove', affect)"
       />

@@ -1,18 +1,21 @@
 <script setup lang="ts">
-
-type Props = {
+const props = defineProps<{
   label?: string;
-};
+  isExpanded: boolean;
+}>();
 
-defineProps<Props>();
-const isExpanded = defineModel<boolean>();
+const emit = defineEmits<{
+  'toggleExpanded': [value: boolean],
+}>();
 
-
+function handleClick() {
+  emit('toggleExpanded', !props.isExpanded);
+}
 </script>
 
 <template>
   <div class="osim-collapsable-label" v-bind="$attrs">
-    <button type="button" class="me-2" @click="isExpanded = !isExpanded">
+    <button type="button" class="me-2" @click="handleClick">
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
       <slot name="label">
@@ -21,8 +24,9 @@ const isExpanded = defineModel<boolean>();
         </label>
       </slot>
     </button>
+    <slot name="buttons" />
     <div class="ps-3 border-start">
-      <div :class="{'visually-hidden': !isExpanded}">
+      <div :class="{ 'visually-hidden': !isExpanded }">
         <slot />
       </div>
     </div>

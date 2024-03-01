@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, toRef } from 'vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import {
   affectImpacts,
   affectResolutions,
@@ -9,9 +10,8 @@ import {
   affectTypes,
   type ZodAffectType,
 } from '@/types/zodFlaw';
-import { useAffectTracker } from '@/composables/useAffectTracker';
+
 import { useScreenSizeWatcher } from '@/composables/useScreenWatcher';
-import type { TrackersPost } from '@/services/TrackerService';
 
 defineProps<{
   error?: string;
@@ -35,32 +35,6 @@ const affectCvssScore = ref(
   modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
 );
 
-const flawId = computed(() => modelValue.value.flaw);
-
-const { getTrackers, moduleComponentStreams, isNotApplicable, postTracker } = useAffectTracker(
-  flawId.value as string,
-  modelValue.value.ps_module,
-  modelValue.value.ps_component,
-);
-
-const updateStreamNames = computed(() =>
-  moduleComponentStreams.value.map(({ ps_update_stream }: any) => ps_update_stream),
-);
-
-const chosenUpdateStream = ref('');
-
-function handleTrackAffect() {
-  postTracker({
-    ps_update_stream: chosenUpdateStream.value,
-    resolution: modelValue.value.resolution || '',
-    updated_dt: modelValue.value.updated_dt || '',
-    affects: [modelValue.value.uuid],
-    embargoed: modelValue.value.embargoed,
-  } as TrackersPost);
-}
-// const handleFileTracker = () => {
-// emit('file-tracker', { flaw_uuids: [flawId.value] });
-// };
 </script>
 
 <template>
@@ -208,26 +182,6 @@ function handleTrackAffect() {
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <button
-        v-if="updateStreamNames.length === 0"
-        type="button"
-        class="btn btn-secondary mt-4"
-        :disabled="!flawId || isNotApplicable"
-        @click.prevent="getTrackers"
-      >
-        File Tracker
-      </button>
-      <div v-else class="ps-3 mt-4 osim-tracker-update-streams">
-        <LabelSelect
-          v-model="chosenUpdateStream"
-          :options="updateStreamNames"
-          label="Update Stream"
-        />
-        <button type="button" class="btn btn-secondary" @click.prevent="handleTrackAffect">
-          Track Affect
-        </button>
       </div>
       <div v-if="isNotApplicable">
         <p class="ps-3 mt-3">
