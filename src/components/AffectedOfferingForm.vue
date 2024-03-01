@@ -144,12 +144,12 @@ const affectCvssScore = ref(
                   {{ tracker.ps_update_stream }}
                 </td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <th colspan="2">Resolution</th>
                 <td colspan="2">
                   {{ tracker.resolution }}
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <th colspan="2">Status</th>
                 <td colspan="2">
