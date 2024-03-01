@@ -44,15 +44,12 @@ const updateStreamNames = computed(() =>
 function handleTrackAffect(stream: string) {
   postTracker({
     ps_update_stream: stream,
-    resolution: modelValue.value.resolution || '',
+    // resolution: modelValue.value.resolution || '',
     updated_dt: modelValue.value.updated_dt || '',
     affects: [modelValue.value.uuid],
     embargoed: modelValue.value.embargoed,
   } as TrackersPost);
 }
-const handleFileTracker = () => {
-  emit('file-tracker', { flaw_uuids: [flawId.value] });
-};
 
 function componentLabel(affectedComponent: ZodAffectType) {
   return affectedComponent.uuid
@@ -77,7 +74,7 @@ function componentLabel(affectedComponent: ZodAffectType) {
           :disabled="!flawId || isNotApplicable"
           @click.prevent="getTrackers"
         >
-          File Tracker
+          {{ isNotApplicable ? 'No Product Streams Apply' : 'File Tracker' }}
         </button>
         <div v-else class="dropdown">
           <button
@@ -99,7 +96,10 @@ function componentLabel(affectedComponent: ZodAffectType) {
             >{{ stream }}</a>
           </div>
         </div>
-        <button type="button" class="btn btn-white btn-outline-black btn-sm">Status</button>
+        <button type="button" class="btn btn-white btn-outline-black btn-sm">
+          <!-- TODO: Advance status through workflow with this button -->
+          🚧 Status
+        </button>
         <button
           type="button"
           class="btn btn-white btn-outline-black btn-sm"

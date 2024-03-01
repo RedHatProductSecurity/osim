@@ -100,10 +100,10 @@ const affectCvssScore = ref(
                 </td>
               </tr>
               <tr>
-                <th>Resolution</th>
+                <!-- <th>Resolution</th>
                 <td>
                   {{ tracker.resolution }}
-                </td>
+                </td> -->
                 <th>Status</th>
                 <td>
                   {{ tracker.status }}

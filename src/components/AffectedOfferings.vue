@@ -99,14 +99,13 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 
 <template>
   <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
-    <hr />
-    <h5 class="mb-4">
+    <h4 class="mb-4">
       Affected Offerings
 
-      <button type="button" class="btn btn-sm btn-secondary" @click="collapseAll()">
+      <button v-if="Object.values(directoryOfCollapsed).some(({isExpanded})=>isExpanded)" type="button" class="btn btn-sm btn-secondary" @click="collapseAll()">
         Collapse All
       </button>
-    </h5>
+    </h4>
     <div v-for="(affectedComponents, moduleName) in affectedModules" :key="moduleName">
       <LabelCollapsable
         :isExpanded="directoryOfCollapsed[moduleName].isExpanded"
@@ -131,7 +130,9 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
                 Bulk Action
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Change Affected Module for all components</a>
+                <a class="dropdown-item" href="#"> 🚧 Change Affected Module for all components</a>
+                <a class="dropdown-item" href="#"> 🚧 Change Status for all components</a>
+                <a class="dropdown-item" href="#"> 🚧 Auto-file for all components</a>
               </div>
             </div>
           </div>
@@ -141,24 +142,6 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           :key="componentName"
           class="affected-offering"
         >
-          <!-- <LabelCollapsable
-            v-model="directoryOfCollapsed[moduleName][componentName].isExpanded"
-            class="mt-2"
-          >
-            <template #label>
-              <label class="ms-2 form-label">
-                {{ `${componentName} ${componentLabel(affectedComponent)}` }}
-              </label>
-              <div class="btn-group" role="group" aria-label="Tracker Actions">
-                <button
-                  type="button"
-                  class="btn btn-sm rounded-pill btn-secondary"
-                  @click.capture="emit('file-tracker', affectedComponent)"
-                >
-                  File Tracker
-                </button>
-              </div>
-            </template> -->
           <AffectExpandableForm
             v-model="affectedComponents[componentName]"
             :componentName="`${componentName}`"
@@ -168,7 +151,6 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
             @remove="emit('remove', affectedComponent)"
             @file-tracker="emit('file-tracker', $event)"
           />
-          <!-- </LabelCollapsable> -->
         </div>
       </LabelCollapsable>
     </div>
