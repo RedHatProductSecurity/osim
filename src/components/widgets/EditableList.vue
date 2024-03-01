@@ -16,7 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'item:save': [value: any[]];
   'item:new': [];
-  'item:delete':[value: string];
+  'item:delete': [value: string];
 }>();
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
@@ -47,7 +47,6 @@ function commitEdit(index: number) {
   indexBeingEdited.value = null;
   priorValues.value = deepCopyFromRaw(items.value);
 }
-
 </script>
 
 <template>
@@ -137,15 +136,11 @@ function commitEdit(index: number) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('item:save', itemsToSave )"
+        @click.prevent="emit('item:save', itemsToSave)"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
-      <button
-        type="button"
-        class="btn btn-secondary"
-        @click.prevent="emit('item:new')"
-      >
+      <button type="button" class="btn btn-secondary" @click.prevent="emit('item:new')">
         Add {{ entityName }}
       </button>
     </form>
