@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref} from 'vue'; //AutoScroll option requires onUnmounted
-import {getFlaws} from '@/services/FlawService'
+import { getFlaws } from '@/services/FlawService';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
-import IssueSearch from './IssueSearch.vue';
+
 
 type FilteredIssue = {
   issue: any;
@@ -109,7 +109,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="osim-content container">
+  <div class="osim-content container osim-issue-queue">
     <div class="osim-incident-filter">
       <label>
         <!--Filter By-->
@@ -127,16 +127,20 @@ onUnmounted(() => {
       <table class="table align-middle">
         <thead>
         <tr>
-          <th><input type="checkbox"
-                     :indeterminate="isSelectAllIndeterminate"
-                     :checked="isSelectAllChecked"
-                     @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
-                     aria-label="Select All Issues in Table">
+          <th>
+            <input
+              type="checkbox"
+              class="form-check-input"
+              :indeterminate="isSelectAllIndeterminate"
+              :checked="isSelectAllChecked"
+              @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
+              aria-label="Select All Issues in Table"
+            >
           </th>
           <th>ID</th>
           <th>Impact</th>
           <th>Source</th>
-          <th>Created</th>
+          <th class="osim-issue-queue-table-created">Created</th>
           <th>Title</th>
           <th>State</th>
           <th>Owner</th>
@@ -168,4 +172,11 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.osim-issue-queue {
+  font-family: 'Red Hat Mono', monospace;
+}
+
+.osim-issue-queue-table-created {
+  width: 12ch;
+}
 </style>
