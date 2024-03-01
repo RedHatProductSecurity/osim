@@ -77,7 +77,7 @@ function commitEdit(index: number) {
               class="btn"
               @click="setEdit(itemIndex)"
             >
-              <i class="bi bi-pencil"></i>
+              <i class="bi bi-pencil"><span class="visually-hidden">Edit Item</span></i>
             </button>
             <button
               v-if="indexBeingEdited !== itemIndex"
@@ -85,7 +85,7 @@ function commitEdit(index: number) {
               class="btn"
               @click="openModal"
             >
-              <i class="bi bi-trash"></i>
+              <i class="bi bi-trash"><span class="visually-hidden">Delete Item</span></i>
             </button>
             <button
               v-if="indexBeingEdited === itemIndex"
@@ -93,7 +93,7 @@ function commitEdit(index: number) {
               class="btn"
               @click="commitEdit(itemIndex)"
             >
-              <i class="bi bi-check"></i>
+              <i class="bi bi-check"><span class="visually-hidden">Confirm Item Edit</span></i>
             </button>
             <button
               v-if="indexBeingEdited === itemIndex"
@@ -101,7 +101,7 @@ function commitEdit(index: number) {
               class="btn"
               @click="cancelEdit(itemIndex)"
             >
-              <i class="bi bi-x"></i>
+              <i class="bi bi-x"><span class="visually-hidden">Cancel Item Edit</span></i>
             </button>
           </div>
         </div>
