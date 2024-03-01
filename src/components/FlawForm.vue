@@ -103,7 +103,7 @@ const onReset = () => {
   <form class="osim-flaw-form" @submit.prevent="onSubmit">
     <div class="osim-content container-lg pt-5">
       <div class="row">
-        <div class="col-12">
+        <div class="col-12 osim-alerts-banner">
           <!-- Alerts might go here -->
         </div>
         <div class="col-6">
@@ -180,12 +180,6 @@ const onReset = () => {
             :options="flawSources"
             :error="errors.source"
           />
-          <LabelCollapsable label="Document Text Fields">
-            <LabelTextarea v-model="flaw.summary" label="Summary" />
-            <LabelTextarea v-model="flaw.description" label="Description" />
-            <LabelTextarea v-model="flaw.statement" label="Statement" />
-            <LabelTextarea v-model="flaw.mitigation" label="Mitigation" />
-          </LabelCollapsable>
         </div>
 
         <div class="col-6">
@@ -220,6 +214,16 @@ const onReset = () => {
           <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
+        </div>
+      </div>
+      <div class=" mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
+        <div class="osim-doc-text-container">
+          <LabelCollapsable label="Document Text Fields">
+            <LabelTextarea v-model="flaw.summary" label="Summary" />
+            <LabelTextarea v-model="flaw.description" label="Description" />
+            <LabelTextarea v-model="flaw.statement" label="Statement" />
+            <LabelTextarea v-model="flaw.mitigation" label="Mitigation" />
+          </LabelCollapsable>
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
@@ -233,18 +237,20 @@ const onReset = () => {
             @addBlankAcknowledgment:flaw="addBlankAcknowledgment(flaw.embargoed)"
             @delete:acknowledgment="deleteAcknowledgment"
           />
-          <div>
+
             <LabelCollapsable label="Trackers">
-              <!-- <div v-if="flaw.trackers && flaw.trackers.length > 0">Trackers:</div> -->
-              <div v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-                <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                  {{ tracker.display }}
-                </RouterLink>
-              </div>
+              <ul>
+                <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
+                  <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
+                    {{ tracker.display }}
+                  </RouterLink>
+                </li>
+              </ul>
             </LabelCollapsable>
-          </div>
+
         </div>
       </div>
+
       <AffectedOfferings
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
@@ -254,17 +260,17 @@ const onReset = () => {
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
-      <div v-if="mode === 'edit'">
-        <h3 class="mt-3 mb-2">Comments</h3>
+      <div v-if="mode === 'edit'" class="border-top mt-4">
+        <h4 class="mt-3 mb-2">Comments</h4>
         <div class="row">
-          <ul>
+          <ul class="col-6">
             <li v-for="(comment, commentIndex) in flaw.comments" :key="commentIndex" class="p-3">
               <p class="border-top pt-2">
                 <span
                   v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'"
                   class="badge bg-warning rounded-pill"
                 >
-                  internal
+                  Bugzilla Internal
                 </span>
                 {{ comment.meta_attr?.creator }} /
                 <a :href="'#' + comment.type + '/' + comment.external_system_id">
@@ -400,5 +406,9 @@ form.osim-flaw-form :deep(*) {
   padding-right: 20px;
   padding-bottom: 2rem;
   padding-top: 0.5rem;
+}
+
+.osim-doc-text-container {
+  max-width: 80ch;
 }
 </style>
