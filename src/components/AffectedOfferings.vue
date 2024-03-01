@@ -4,6 +4,7 @@ import { computed, toRefs, ref, watch } from 'vue';
 import { groupBy, objectMap } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
 
+import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 
@@ -158,7 +159,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
     </div>
     <h5 v-if="ungroupedAffects.length">Ungrouped Affected Offerings</h5>
     <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
-      <AffectExpandableForm
+      <AffectedOfferingForm
         v-model="ungroupedAffects[affectIndex]"
         @remove="emit('remove', affect)"
       />
