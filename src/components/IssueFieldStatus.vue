@@ -58,7 +58,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
         <template #title> Reject Flaw </template>
         <template #body>
           <label class="osim-modal-label mb-3">
-            <p>Please provide a reason for rejecting the flaw</p>
+            <span>Please provide a reason for rejecting the flaw</span>
             <textarea v-model="rejectionReason" class="form-control"></textarea>
           </label>
         </template>
@@ -74,10 +74,16 @@ function nextPhase(flawStatus: WorkflowPhases) {
       <div class="col-lg-3 col-md-1"></div>
       <div class="col-lg-9 col-md-11">
         <div v-if="shouldShowWorkflowButtons" class="osim-workflow-status-buttons mb-3">
-          <button type="button" class="btn btn-warning ms-2" @click="openModal">Reject</button>
           <button
             type="button"
-            class="btn btn-warning ms-2 osim-promote-button"
+            class="btn btn-warning ms-2 osim-workflow-button"
+            @click="openModal"
+          >
+            Reject
+          </button>
+          <button
+            type="button"
+            class="btn btn-warning ms-2 osim-promote-button osim-workflow-button"
             :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
             @click="onPromote(flawId)"
           >
@@ -90,16 +96,16 @@ function nextPhase(flawStatus: WorkflowPhases) {
 </template>
 
 <style lang="scss" scoped>
-
 .osim-workflow-status-container {
-  button {
+  button.osim-workflow-button {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
+
   label.osim-modal-label {
     display: block;
   }
-  
+
   .osim-workflow-status-display {
     margin-bottom: 0 !important;
   }
