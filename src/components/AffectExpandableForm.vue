@@ -124,7 +124,11 @@ function componentLabel(affectedComponent: ZodAffectType) {
           </button>
         </div> -->
         <button type="button" class="btn btn-white btn-outline-black btn-sm">Status</button>
-        <button type="button" class="btn btn-white btn-outline-black btn-sm">
+        <button
+          type="button"
+          class="btn btn-white btn-outline-black btn-sm"
+          @click.prevent="emit('remove', modelValue)"
+        >
           <i class="bi bi-trash" />
         </button>
       </div>
@@ -152,17 +156,6 @@ function componentLabel(affectedComponent: ZodAffectType) {
         />
         <LabelSelect v-model="modelValue.impact" label="Impact" :options="affectImpacts" />
         <LabelEditable v-model="affectCvssScore" type="text" label="CVSSv3" />
-        <div class="row">
-          <div class="col ps-0 mb-4">
-            <button
-              type="button"
-              class="osim-affected-offering-remove btn btn-secondary"
-              @click.prevent="emit('remove', modelValue)"
-            >
-              Remove This Affect
-            </button>
-          </div>
-        </div>
       </div>
       <div class="col-6 p-0">
         <div class="bg-dark rounded-top-2 text-info">

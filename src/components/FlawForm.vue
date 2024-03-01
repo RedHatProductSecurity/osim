@@ -256,7 +256,7 @@ const onReset = () => {
               <p class="border-top pt-2">
                 <span
                   v-if="(comment.meta_attr?.is_private || '').toLowerCase() === 'true'"
-                  class=" badge bg-warning rounded-pill"
+                  class="badge bg-warning rounded-pill"
                 >
                   internal
                 </span>
