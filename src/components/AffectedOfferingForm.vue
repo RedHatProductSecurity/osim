@@ -130,6 +130,7 @@ const affectCvssScore = ref(
                 </td>
               </tr>
             </tbody>
+            <!-- TODO: Break table out into component and replace these -->
             <tbody v-else>
               <tr>
                 <th colspan="2">Type</th>
