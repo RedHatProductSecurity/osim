@@ -227,7 +227,8 @@ function validateDatePart(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="position-relative"> <!-- for invalid-tooltip positioning -->
+  <!-- for invalid-tooltip positioning -->
+  <div class="position-relative col-9 osim-editable-field osim-date"> 
   <Transition name="flash-bg">
     <div class="osim-editable-date" v-if="!editing" :tabindex="readOnly ? -1 : 0" @focus="beginEdit">
       <span
@@ -243,11 +244,12 @@ function validateDatePart(e: KeyboardEvent) {
       ><i class="bi bi-pencil"></i></button>
     </div>
   </Transition>
-  <div class="input-group has-validation"
-       v-if="editing"
-       @blur="blur($event)"
-       ref="elDiv"
-  >
+    <div 
+      v-if="editing"
+      ref="elDiv"
+      class="input-group has-validation row"
+      @blur="blur($event)"
+    >
 
     <!--v-maska-->
     <!--@keydown="validateDatePart($event)"-->
@@ -261,18 +263,19 @@ function validateDatePart(e: KeyboardEvent) {
     <!--       data-maska="####-##-##"-->
     <!--/>-->
     <!--vue-imask-->
-    <input class="form-control"
-           :class="{'is-invalid': error != null}"
-           :readonly="readOnly"
-           type="text"
-           ref="elInput"
-           @blur="blur($event)"
-           @keyup.esc="abort"
-           v-imask="mask"
-           :value="boundObject.masked"
-           @complete="onComplete"
-           @accept="onAccept"
-    />
+      <input 
+        ref="elInput"
+        v-imask="mask"
+        class="form-control"
+        :class="{'is-invalid': error != null}"
+        :readonly="readOnly"
+        type="text"
+        :value="boundObject.masked"
+        @blur="blur($event)"
+        @keyup.esc="abort"
+        @complete="onComplete"
+        @accept="onAccept"
+      />
     <button
         type="button"
         class="input-group-text"

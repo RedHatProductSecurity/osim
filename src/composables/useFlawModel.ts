@@ -2,8 +2,9 @@ import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { type Flaw } from '@/generated-client';
-import { useCvssScores } from '@/composables/useCvssScores';
-import { useFlawAffectsForm } from '@/composables/useFlawAffectsForm';
+import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
+import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import {
   getFlawBugzillaLink,
@@ -16,18 +17,18 @@ import {
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function) {
+export type FlawEmitter = {
+  (e: 'update:flaw', flaw: any): void;
+  (e: 'refresh:flaw'): void;
+  (e: 'add-blank-affect'): void;
+};
+
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
-  const flaw = ref<Flaw>(forFlaw);
-  const { flawNvdCvssScore, flawRhCvss, wasCvssModified, saveCvssScores } = useCvssScores(flaw);
-  const {
-    theAffects,
-    wereAffectsModified,
-    saveAffects,
-    addBlankAffect,
-    removeAffect,
-    reportAffectAsModified,
-  } = useFlawAffectsForm(flaw);
+  const flaw = ref<ZodFlawType>(forFlaw);
+  const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
+  const { wereAffectsModified, saveAffects, deleteAffects, affectsToDelete } =
+    useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
@@ -49,27 +50,32 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
     postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response) => {
-        router.push({ name: 'flaw-detail', params: { id: response.data.uuid } });
+        router.push({
+          name: 'flaw-detail',
+          params: { id: response?.data.uuid },
+        });
       })
       .catch(createCatchHandler('Error creating Flaw'));
   }
 
   async function updateFlaw() {
-    console.log(flaw.value);
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
-    console.log(newFlaw);
     if (!newFlaw.success) {
       addToast({
         title: 'Error validating Flaw (schema error)',
         body: newFlaw.error.toString(),
         css: 'warning',
       });
-      console.log(newFlaw.error);
+      console.error(newFlaw.error);
       return; // Abort if schema validation fails
     }
 
     if (wereAffectsModified.value) {
       await saveAffects();
+    }
+
+    if (affectsToDelete.value.length) {
+      await deleteAffects();
     }
 
     await putFlaw(flaw.value.uuid, newFlaw.data)
@@ -97,8 +103,6 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
   return {
     flaw,
     committedFlaw,
-    addComment,
-    newPublicComment,
     trackerUuids,
     flawTypes,
     flawSources,
@@ -106,20 +110,19 @@ export function useFlawModel(forFlaw: Flaw = blankFlaw() as Flaw, emit: Function
     flawIncidentStates,
     osimLink,
     bugzillaLink,
-    flawNvdCvssScore,
-    flawRhCvss,
+    addComment,
+    newPublicComment,
     addPublicComment,
-    addBlankAffect,
-    removeAffect,
     createFlaw,
     updateFlaw,
-    reportAffectAsModified,
-    theAffects,
     emit,
+    ...useCvssScoresModel(flaw),
+    ...useFlawAffectsModel(flaw),
+    ...useFlawAttributionsModel(flaw, emit),
   };
 }
 
-function blankFlaw(): ZodFlawType {
+export function blankFlaw(): ZodFlawType {
   return {
     affects: [],
     classification: {
@@ -127,6 +130,7 @@ function blankFlaw(): ZodFlawType {
       workflow: '',
     },
     component: '',
+    uuid: '',
     cve_id: '',
     cvss3: '',
     cvss_scores: [],
@@ -145,6 +149,8 @@ function blankFlaw(): ZodFlawType {
     summary: '',
     statement: '',
     mitigation: '',
+    comments: [],
+    references: [],
+    acknowledgments: [],
   };
 }
-
