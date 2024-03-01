@@ -114,6 +114,7 @@ const affectCvssScore = ref(
                 <th>Created date</th>
                 <td>{{ tracker.created_dt }}</td>
                 <th>Updated date</th>
+                <!-- updated_dt will match the flaw and affect updated_dt -->
                 <td>{{ tracker.updated_dt }}</td>
               </tr>
               <tr v-if="tracker.errata.length">
