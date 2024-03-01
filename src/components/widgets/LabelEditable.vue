@@ -18,7 +18,7 @@ const components = {
   text: EditableText,
   date: EditableDate,
 };
-const modelValue = defineModel<string | undefined | null | number>();
+const modelValue = defineModel<string | undefined | null | number | Date>();
 </script>
 
 <template>
