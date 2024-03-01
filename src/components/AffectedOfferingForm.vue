@@ -56,6 +56,7 @@ const affectCvssScore = ref(
         :options="affectResolutions"
       />
       <LabelSelect v-model="modelValue.impact" label="Impact" :options="affectImpacts" />
+      <!-- TODO: Should CVSSv3 be inherited from Flaw? -->
       <LabelEditable v-model="affectCvssScore" type="text" label="CVSSv3" />
       <div class="row">
         <div class="col ps-0 mb-4">
@@ -184,33 +185,6 @@ const affectCvssScore = ref(
         </details>
       </div>
     </div>
-
-    <!-- Commenting values below because OSIDB is supposed to inherit them from the Flaw -->
-    <!--<LabelInput-->
-    <!--    class="col-6"-->
-    <!--    type="text"-->
-    <!--    label="CVSS3 Score"-->
-    <!--    v-model="modelValue.cvss3_score"/>-->
-    <!--<LabelEditable-->
-    <!--    class="col-6"-->
-    <!--    type="date"-->
-    <!--    label="Created Date"-->
-    <!--    :readOnly="true"-->
-    <!--    v-model="modelValue.created_dt"/>-->
-    <!--<LabelEditable-->
-    <!--    class="col-6"-->
-    <!--    type="date"-->
-    <!--    label="Updated Date"-->
-    <!--    :readOnly="true"-->
-    <!--    v-model="modelValue.updated_dt"/>-->
-    <!--<LabelCheckbox-->
-    <!--    class="col-6"-->
-    <!--    label="Embargoed?"-->
-    <!--    v-model="modelValue.embargoed"-->
-    <!--    :readonly="true"-->
-    <!--/>-->
-
-    <!-- trackers are read-only -->
   </div>
 </template>
 
