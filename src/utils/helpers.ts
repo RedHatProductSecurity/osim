@@ -49,3 +49,11 @@ export const objectMap = (object: Record<string, any>, mapFn: (key: string, valu
     (acc, key) => assignKeyValue(acc, key, mapFn(key, object[key])),
     {} as Record<string, any>,
   );
+
+export const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
+  groupBy(
+    array
+      .filter((item: T) => item[key])
+      .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
+    (item: T) => item[key],
+  );

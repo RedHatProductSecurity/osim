@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
 
-import { groupBy, objectMap } from '@/utils/helpers';
+import { groupBy, objectMap, sortedByGroup } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
 
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
@@ -23,13 +23,6 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
-  groupBy(
-    array
-      .filter((item: T) => item[key])
-      .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
-    (item: T) => item[key],
-  );
 
 const affectsWithDefinedModules = computed(() =>
   theAffects.value.filter((affect) => affect.ps_module && affect.ps_component),
