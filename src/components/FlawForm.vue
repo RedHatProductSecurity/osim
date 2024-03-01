@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -18,6 +19,7 @@ import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
 const props = defineProps<{
   flaw: any;
@@ -57,6 +59,12 @@ const {
   deleteAcknowledgment,
 } = useFlawModel(props.flaw, emit);
 
+const initialFlaw = ref<ZodFlawType>();
+
+onMounted(() => {
+  initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+});
+
 const onSubmit = () => {
   if (props.mode === 'edit') {
     updateFlaw();
@@ -87,9 +95,7 @@ const flawCvss3CaculatorLink = computed(
 );
 
 const onReset = () => {
-  console.log('onReset');
-  // flaw.value = Object.assign({}, committedFlaw.value);
-  // FIXME XXX TODO
+  flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 </script>
 
