@@ -11,13 +11,13 @@ import {
   type ZodAffectType,
 } from '@/types/zodFlaw';
 
-import { useScreenSizeWatcher } from '@/composables/useScreenWatcher';
+import { useWindowSize } from '@vueuse/core';
+
+const { width: screenWidth } = useWindowSize();
 
 defineProps<{
   error?: string;
 }>();
-
-const { screenWidth } = useScreenSizeWatcher();
 
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
