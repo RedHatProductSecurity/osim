@@ -74,7 +74,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
       <div class="col-lg-3 col-md-1"></div>
       <div class="col-lg-9 col-md-11">
         <div v-if="shouldShowWorkflowButtons" class="osim-workflow-status-buttons mb-3">
-          <button type="button" class="btn btn-warning" @click="openModal">Reject</button>
+          <button type="button" class="btn btn-warning ms-2" @click="openModal">Reject</button>
           <button
             type="button"
             class="btn btn-warning ms-2 osim-promote-button"
