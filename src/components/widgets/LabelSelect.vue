@@ -1,15 +1,16 @@
 <script setup lang="ts">
-
-withDefaults( defineProps<{
-  modelValue: string | null,
-  options: string[] ,
-  label: string,
-}>(), {
-  modelValue: '',
-});
-
+withDefaults(
+  defineProps<{
+    modelValue: string | null;
+    options: string[];
+    label: string;
+  }>(),
+  {
+    modelValue: '',
+  },
+);
 </script>
-    
+
 <template>
   <label class="osim-input mb-3 ps-3">
     <div class="row">
@@ -26,26 +27,27 @@ withDefaults( defineProps<{
             // },
           }"
           class="form-select"
-          @change="$emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)"
+          @change="
+            $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)
+          "
         >
           <option
             v-for="option in options"
             :key="option"
             :value="option"
             :selected="option === modelValue"
-          >{{ option }}</option>
+          >
+            {{ option }}
+          </option>
         </select>
       </div>
       <!--<pre>select value: {{modelValue}}</pre>-->
     </div>
   </label>
-
 </template>
 
 <style scoped>
-
 .osim-input {
-  display: block ; 
+  display: block;
 }
-
 </style>
