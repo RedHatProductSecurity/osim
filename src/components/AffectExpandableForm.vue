@@ -81,8 +81,6 @@ function componentLabel(affectedComponent: ZodAffectType) {
             class="btn btn-white btn-outline-black btn-sm dropdown-toggle"
             type="button"
             data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
           >
             Trackers
           </button>

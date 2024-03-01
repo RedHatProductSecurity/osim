@@ -23,7 +23,6 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-
 const affectsWithDefinedModules = computed(() =>
   theAffects.value.filter((affect) => affect.ps_module && affect.ps_component),
 );
@@ -37,19 +36,22 @@ const affectedModules = computed(() =>
 
 const directoryOfCollapsed = ref(initializeCollapsedStates(theAffects.value));
 
-props.theAffects.forEach((affect) => {
-  watch(
-    () => [affect.ps_module, affect.ps_component],
-    () => {
-      if (affect.ps_module && affect.ps_component) {
-        directoryOfCollapsed.value[affect.ps_module] = {
-          ...initializeCollapsedStates(affectsWithDefinedModules.value)[affect.ps_module],
-          ...directoryOfCollapsed.value[affect.ps_module],
-        };
-      }
-    },
-  );
-}, { deep: true });
+props.theAffects.forEach(
+  (affect) => {
+    watch(
+      () => [affect.ps_module, affect.ps_component],
+      () => {
+        if (affect.ps_module && affect.ps_component) {
+          directoryOfCollapsed.value[affect.ps_module] = {
+            ...initializeCollapsedStates(affectsWithDefinedModules.value)[affect.ps_module],
+            ...directoryOfCollapsed.value[affect.ps_module],
+          };
+        }
+      },
+    );
+  },
+  { deep: true },
+);
 
 // watch(
 //   props.theAffects,
@@ -95,7 +97,12 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
     <h4 class="mb-4">
       Affected Offerings
 
-      <button v-if="Object.values(directoryOfCollapsed).some(({isExpanded})=>isExpanded)" type="button" class="btn btn-sm btn-secondary" @click="collapseAll()">
+      <button
+        v-if="Object.values(directoryOfCollapsed).some(({ isExpanded }) => isExpanded)"
+        type="button"
+        class="btn btn-sm btn-secondary"
+        @click="collapseAll()"
+      >
         Collapse All
       </button>
     </h4>
@@ -117,8 +124,6 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
                 type="button"
                 data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
               >
                 Bulk Action
               </button>

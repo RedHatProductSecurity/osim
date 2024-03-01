@@ -103,7 +103,7 @@ function handleConfirm(uuid: string) {
                 class="btn"
                 @click="setEdit(referenceIndex)"
               >
-                <i class="bi bi-pencil"></i>
+                <i class="bi bi-pencil"><span class="visually-hidden">Edit Reference</span></i>
               </button>
               <button
                 v-if="indexBeingEdited !== referenceIndex"
@@ -111,7 +111,7 @@ function handleConfirm(uuid: string) {
                 class="btn"
                 @click="openModal"
               >
-                <i class="bi bi-trash"></i>
+                <i class="bi bi-trash"><span class="visually-hidden">Delete Reference</span></i>
               </button>
               <button
                 v-if="indexBeingEdited === referenceIndex"
@@ -119,7 +119,11 @@ function handleConfirm(uuid: string) {
                 class="btn"
                 @click="commitEdit(referenceIndex)"
               >
-                <i class="bi bi-check"></i>
+                <i class="bi bi-check">
+                  <span class="visually-hidden">
+                    Confirm Reference Edit
+                  </span>
+                </i>
               </button>
               <button
                 v-if="indexBeingEdited === referenceIndex"
@@ -127,7 +131,7 @@ function handleConfirm(uuid: string) {
                 class="btn"
                 @click="cancelEdit(referenceIndex)"
               >
-                <i class="bi bi-x"></i>
+                <i class="bi bi-x"><span class="visually-hidden">Cancel Reference Edit</span></i>
               </button>
             </div>
           </header>
