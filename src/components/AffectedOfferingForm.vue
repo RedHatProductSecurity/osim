@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue';
+import { computed, ref } from 'vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+
 import {
   affectImpacts,
   affectResolutions,
@@ -24,11 +24,8 @@ const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
 const emit = defineEmits<{
-  'file-tracker': [value: object];
   'update:modelValue': [value: object];
-  remove: [value: ZodAffectType];
-  recover: [value: ZodAffectType];
-  'add-blank-affect': [];
+  'remove': [value: object];
 }>();
 
 const affectCvssScore = ref(
@@ -182,11 +179,6 @@ const affectCvssScore = ref(
             </tr>
           </tbody>
         </table>
-      </div>
-      <div v-if="isNotApplicable">
-        <p class="ps-3 mt-3">
-          <em>&mdash; Not applicable for this affect.</em>
-        </p>
       </div>
     </div>
 

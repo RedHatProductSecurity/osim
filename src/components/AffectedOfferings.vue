@@ -44,16 +44,31 @@ const affectedModules = computed(() =>
 
 const directoryOfCollapsed = ref(initializeCollapsedStates(theAffects.value));
 
-watch(
-  props.theAffects,
-  () => {
-    directoryOfCollapsed.value = {
-      ...initializeCollapsedStates(affectsWithDefinedModules.value),
-      ...directoryOfCollapsed.value,
-    };
-  },
-  { deep: true },
-);
+props.theAffects.forEach((affect) => {
+  watch(
+    () => [affect.ps_module, affect.ps_component],
+    () => {
+      if (affect.ps_module && affect.ps_component) {
+        directoryOfCollapsed.value[affect.ps_module] = {
+          ...initializeCollapsedStates(affectsWithDefinedModules.value)[affect.ps_module],
+          ...directoryOfCollapsed.value[affect.ps_module],
+        };
+      }
+    },
+  );
+}, { deep: true });
+
+// watch(
+//   props.theAffects,
+//   () => {
+//     console.log('changed');
+//     directoryOfCollapsed.value = {
+//       ...directoryOfCollapsed.value,
+//       ...initializeCollapsedStates(affectsWithDefinedModules.value),
+//     };
+//   },
+//   { deep: true },
+// );
 
 function collapseAll() {
   directoryOfCollapsed.value = initializeCollapsedStates(theAffects.value);
