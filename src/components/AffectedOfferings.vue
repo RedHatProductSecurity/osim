@@ -106,17 +106,16 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           <div v-if="directoryOfCollapsed[moduleName].isExpanded" class="btn-group">
             <div class="dropdown">
               <button
-                id="dropdownMenuButton"
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
                 type="button"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
               >
                 Bulk Action
               </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Change Affected Module</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Change Affected Module for all components</a>
               </div>
             </div>
           </div>

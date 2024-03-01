@@ -53,11 +53,11 @@ const updateStreamNames = computed(() =>
   moduleComponentStreams.value.map(({ ps_update_stream }: any) => ps_update_stream),
 );
 
-const chosenUpdateStream = ref('');
+// const chosenUpdateStream = ref('');
 
-function handleTrackAffect() {
+function handleTrackAffect(stream: string) {
   postTracker({
-    ps_update_stream: chosenUpdateStream.value,
+    ps_update_stream: stream,
     resolution: modelValue.value.resolution || '',
     updated_dt: modelValue.value.updated_dt || '',
     affects: [modelValue.value.uuid],
@@ -95,10 +95,9 @@ function componentLabel(affectedComponent: ZodAffectType) {
         </button>
         <div v-else class="dropdown">
           <button
-            id="dropdownMenuButton"
             class="btn btn-white btn-outline-black btn-sm dropdown-toggle"
             type="button"
-            data-toggle="dropdown"
+            data-bs-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >
@@ -110,7 +109,7 @@ function componentLabel(affectedComponent: ZodAffectType) {
               :key="stream"
               class="dropdown-item"
               href="#"
-              @click.prevent="handleTrackAffect"
+              @click.prevent="handleTrackAffect(stream)"
             >{{ stream }}</a>
           </div>
         </div>
