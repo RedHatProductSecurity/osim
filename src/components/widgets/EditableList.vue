@@ -13,7 +13,11 @@ const props = defineProps<{
   entitiesName?: string;
 }>();
 
-const emit = defineEmits(['generic-update']);
+const emit = defineEmits<{
+  'save::items': [value: any[]];
+  'new::item': [];
+  'delete::item':[value: string];
+}>();
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
 
@@ -45,7 +49,7 @@ function commitEdit(index: number) {
 }
 
 function handleConfirm(id: string) {
-  emit('generic-update', { type: 'delete::item', itemToDelete: id });
+  emit('delete::item', id );
 }
 </script>
 
@@ -136,14 +140,14 @@ function handleConfirm(id: string) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('generic-update', { emitType: 'save::items', itemsToSave })"
+        @click.prevent="emit('save::items', itemsToSave )"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
       <button
         type="button"
         class="btn btn-secondary"
-        @click.prevent="emit('generic-update', { emitType: 'new::item' })"
+        @click.prevent="emit('new::item')"
       >
         Add {{ entityName }}
       </button>

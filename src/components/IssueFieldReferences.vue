@@ -164,7 +164,10 @@ function handleConfirm(uuid: string) {
       <Modal :show="isModalOpen" @close="closeModal">
         <template #header> Confirm Reference Deletion </template>
         <template #body>
-          <p class="text-danger">Are you sure you want to delete this reference?</p>
+          <p class="text-danger">
+            Are you sure you want to delete this reference? This action will take place immediately
+            and will not require saving the Flaw to take effect.
+          </p>
         </template>
         <template #footer>
           <button type="button" class="btn btn-danger" @click="handleConfirm(reference.uuid)">

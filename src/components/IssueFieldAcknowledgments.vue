@@ -3,7 +3,9 @@
     <EditableList
       v-model="acknowledgments"
       entityName="Acknowledgment"
-      @generic-update="handleUpdate"
+      @save::items="emit('update:acknowledgments', $event)"
+      @delete::item="emit('delete:acknowledgment', $event)"
+      @new::item="emit('addBlankAcknowledgment:flaw')"
     >
       <template #default="{ name, affiliation }">
         <div class="form-group">
@@ -37,7 +39,10 @@
       </template>
       <template #modal-body>
         <div>
-          <p class="text-danger">Are you sure you want to delete this acknowledgment?</p>
+          <p class="text-danger">
+            Are you sure you want to delete this acknowledgment? This action will take place
+            immediately and will not require saving the Flaw to take effect.
+          </p>
         </div>
       </template>
       <template #modal-footer="{ item, closeModal }">
