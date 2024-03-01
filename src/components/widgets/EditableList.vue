@@ -14,9 +14,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'save::items': [value: any[]];
-  'new::item': [];
-  'delete::item':[value: string];
+  'item:save': [value: any[]];
+  'item:new': [];
+  'item:delete':[value: string];
 }>();
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
@@ -48,9 +48,6 @@ function commitEdit(index: number) {
   priorValues.value = deepCopyFromRaw(items.value);
 }
 
-function handleConfirm(id: string) {
-  emit('delete::item', id );
-}
 </script>
 
 <template>
@@ -114,7 +111,7 @@ function handleConfirm(id: string) {
           <!-- if new and not saved in DB -->
         </div>
       </div>
-      <Modal :show="isModalOpen" @close="closeModal" @confirm="handleConfirm">
+      <Modal :show="isModalOpen" @close="closeModal">
         <template #body>
           <slot
             name="modal-body"
@@ -140,14 +137,14 @@ function handleConfirm(id: string) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('save::items', itemsToSave )"
+        @click.prevent="emit('item:save', itemsToSave )"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
       <button
         type="button"
         class="btn btn-secondary"
-        @click.prevent="emit('new::item')"
+        @click.prevent="emit('item:new')"
       >
         Add {{ entityName }}
       </button>

@@ -233,9 +233,9 @@ const onReset = () => {
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
-            @update:acknowledgments="saveAcknowledgments"
-            @addBlankAcknowledgment:flaw="addBlankAcknowledgment(flaw.embargoed)"
-            @delete:acknowledgment="deleteAcknowledgment"
+            @acknowledgment:update="saveAcknowledgments"
+            @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+            @acknowledgment:delete="deleteAcknowledgment"
           />
 
             <LabelCollapsable label="Trackers">

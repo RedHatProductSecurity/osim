@@ -3,9 +3,9 @@
     <EditableList
       v-model="acknowledgments"
       entityName="Acknowledgment"
-      @save::items="emit('update:acknowledgments', $event)"
-      @delete::item="emit('delete:acknowledgment', $event)"
-      @new::item="emit('addBlankAcknowledgment:flaw')"
+      @item:save="emit('acknowledgment:update', $event)"
+      @item:delete="emit('acknowledgment:delete', $event)"
+      @item:new="emit('acknowledgment:new')"
     >
       <template #default="{ name, affiliation }">
         <div class="form-group">
@@ -50,9 +50,7 @@
           <button
             type="button"
             class="btn btn-danger me-2"
-            @click="
-              handleUpdate({ emitType: 'delete::item', itemToDelete: item.uuid }), closeModal()
-            "
+            @click="emit('acknowledgment:delete', item.uuid), closeModal()"
           >
             Confirm
           </button>
@@ -69,29 +67,9 @@ import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 
-const emit = defineEmits([
-  'update:acknowledgments',
-  'addBlankAcknowledgment:flaw',
-  'delete:acknowledgment',
-]);
-
-type EmissionType = {
-  emitType: string;
-  itemsToSave?: ZodFlawAcknowledgmentType[];
-  itemToDelete?: string;
-};
-
-function handleUpdate(emission: EmissionType) {
-  console.log(emission);
-  switch (emission.emitType) {
-  case 'save::items':
-    return emit('update:acknowledgments', emission.itemsToSave);
-  case 'delete::item':
-    return emit('delete:acknowledgment', emission.itemToDelete);
-  case 'new::item':
-    return emit('addBlankAcknowledgment:flaw');
-  default:
-    return;
-  }
-}
+const emit = defineEmits<{
+  'acknowledgment:update': [value: any[]];
+  'acknowledgment:new': [];
+  'acknowledgment:delete': [value: string];
+}>();
 </script>
