@@ -18,19 +18,10 @@ import { DateTime } from 'luxon';
 
 const FlawTypeWithBlank = { '': '', ...FlawType } as const;
 const ImpactEnumWithBlank = { '': '', ...ImpactEnum } as const;
-const RequiresSummaryEnumWithBlank = {
-  '': '',
-  ...RequiresSummaryEnum,
-} as const;
+const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
 const Source8d8EnumWithBlank = { '': '', ...Source8d8Enum } as const;
-const MajorIncidentStateEnumWithBlank = {
-  '': '',
-  ...MajorIncidentStateEnum,
-} as const;
-const NistCvssValidationEnumWithBlank = {
-  '': '',
-  ...NistCvssValidationEnum,
-} as const;
+const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
+const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 const AffectednessEnumWithBlank = { '': '', ...AffectednessEnum } as const;
 const ResolutionEnumWithBlank = { '': '', ...ResolutionEnum } as const;
 
