@@ -1,4 +1,4 @@
-import { type Ref, ref, toRef, reactive, computed, watch } from 'vue';
+import { type Ref, ref, toRef, computed, watch } from 'vue';
 import { postAffect, putAffect, deleteAffect } from '@/services/AffectService';
 import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
