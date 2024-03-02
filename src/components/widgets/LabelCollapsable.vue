@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { vRef } from '@/utils/helpers';
 const props = withDefaults(
   defineProps<{
     label?: string;
@@ -10,7 +11,7 @@ const props = withDefaults(
   },
 );
 
-const isExpanded = vref(props, 'isExpanded', false);
+const isExpanded = vRef(props, 'isExpanded', false);
 
 const emit = defineEmits<{
   setExpanded: [value: boolean];
