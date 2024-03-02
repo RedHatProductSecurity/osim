@@ -1,6 +1,13 @@
 // Source: https://github.com/vuejs/core/issues/5303#issuecomment-1543596383
 
-import { toRaw, isRef, isReactive, isProxy } from 'vue';
+import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch } from 'vue';
+
+export function vRef(prop: Record<string, any>, property: string, defaultValue: any) {
+  const reffedProp = toRef(prop, property);
+  watch(reffedProp, (value) => flexRef.value = value);
+  const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
+  return flexRef;
+}
 
 export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
   const objectIterator = (input: any): any => {
