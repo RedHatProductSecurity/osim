@@ -1,11 +1,10 @@
-import {describe, it, expect} from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { mount } from '@vue/test-utils';
 
 import CveRequestForm from '../CveRequestForm.vue';
+import { createTestingPinia } from '@pinia/testing';
 
-import {useToastStore} from '../../stores/ToastStore';
-import {useUserStore} from '../../stores/UserStore';
-import {mount} from './test-helpers';
-
+createTestingPinia();
 
 describe('CveRequestForm', () => {
   it('renders a form', () => {
@@ -17,7 +16,7 @@ describe('CveRequestForm', () => {
         bugzillaLink: 'string',
       },
     });
-    let s = wrapper.text();
+    const s = wrapper.text();
     expect(s).toContain('Request CVE');
   });
   it('renders a button', () => {
@@ -29,7 +28,7 @@ describe('CveRequestForm', () => {
         bugzillaLink: 'string',
       },
     });
-    let button = wrapper.get('button');
+    const button = wrapper.get('button');
     expect(button.text()).toBe('Request CVE');
   });
   it('does not render before clicking the button', () => {
@@ -41,7 +40,7 @@ describe('CveRequestForm', () => {
         bugzillaLink: 'string',
       },
     });
-    let button = wrapper.get('button');
+    // const button = wrapper.get('button');
     expect(wrapper.find('div.modal-content').exists()).toBe(false);
   });
   it('renders a modal when clicking the button', async () => {
@@ -53,10 +52,10 @@ describe('CveRequestForm', () => {
         bugzillaLink: 'string',
       },
     });
-    let button = wrapper.get('button');
+    const button = wrapper.get('button');
     console.log(button);
     await button.trigger('click');
-    let currentComponent = wrapper.getCurrentComponent();
+    // const currentComponent = wrapper.getCurrentComponent();
     expect(wrapper.find('div.modal-content').exists()).toBe(true);
   });
 });
