@@ -180,7 +180,7 @@ const cvssString = computed(() => {
             :error="errors.cvss3_score"
           />
           <div class="row">
-            <div class="col">
+            <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
               <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
             </div>
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
@@ -435,5 +435,8 @@ form.osim-flaw-form :deep(*) {
 
 .osim-doc-text-container {
   max-width: 80ch;
+}
+.cvss-button-div {
+  width: 60%;
 }
 </style>

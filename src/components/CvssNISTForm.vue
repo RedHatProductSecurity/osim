@@ -8,7 +8,7 @@ import { useModal } from '@/composables/useModal';
 
 const props = defineProps<{
   cveid?: string | null;
-  flawSummary?: string;
+  flawSummary?: string | null;
   bugzilla?: string;
   cvss?: string;
   nistcvss?: string;
