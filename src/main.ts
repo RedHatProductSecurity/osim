@@ -1,4 +1,4 @@
-import {createApp, watch} from 'vue';
+import {createApp} from 'vue';
 import type {Directive} from 'vue';
 import {createPinia} from 'pinia';
 import {vMaska} from 'maska';
@@ -10,13 +10,13 @@ import { InputLabelDirective } from '@/directives/InputLabelDirective.js';
 
 import 'bootstrap/scss/bootstrap.scss';
 import 'bootstrap-icons/font/bootstrap-icons.scss';
-import './scss/bootstrap-overrides.scss';
-import './assets/main.css'
+import './scss/index.scss';
+import './assets/main.css';
 
 import './services/service-worker-client';
-import 'bootstrap/js/index.esm.js'
+import 'bootstrap/js/index.esm.js';
 
-const app = createApp(App)
+const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
@@ -26,4 +26,4 @@ app.directive('maska', vMaska);
 app.directive('imask', IMaskDirective as Directive);
 
 
-app.mount('#app')
+app.mount('#app');

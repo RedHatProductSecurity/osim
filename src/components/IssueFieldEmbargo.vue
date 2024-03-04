@@ -66,8 +66,9 @@ function handleConfirm(){
                   </li>
                 </ol>
                 <LabelInput
-                    :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
-                    v-model="confirmationId"/>
+                  v-model="confirmationId"
+                  :label="`To prevent an accidental unembargo please confirm your intention by typing ${cveId} if you wish to proceed.`"
+                />
                 <p class="alert alert-warning">The embargo is only removed upon saving the Flaw!</p>
               </template>
               <template #footer>
@@ -90,11 +91,12 @@ function handleConfirm(){
   flex-grow: 1;
   width: inherit !important;
 }
-button.osim-unembargo-button {
 
+button.osim-unembargo-button {
   i.bi-radioactive {
     display: inline;
   }
+
   i.bi-eye-slash-fill,
   i.bi-eye-fill {
     display: none;
@@ -118,7 +120,6 @@ button.osim-unembargo-button {
 }
 
 @keyframes fade-in-out-eye-fill {
-
   0%,
   49% {
     visibility: hidden;
@@ -139,7 +140,6 @@ button.osim-unembargo-button {
 }
 
 @keyframes fade-in-out-eye-slash-fill {
-
   1% {
     visibility: visible;
     width: auto;
@@ -158,6 +158,5 @@ button.osim-unembargo-button {
     visibility: hidden;
     width: 0;
   }
-
 }
 </style>

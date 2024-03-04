@@ -32,3 +32,8 @@ Feature: Check flaw
       Given I go to a flaw detail page
       When I add a public comment to the flaw
       Then A comment is added to the flaw
+
+    Scenario: List all flaws
+      Given I am an analyst AND I am logged into OSIM
+      When I am searching for all flaws
+      Then I get a list of all flaws

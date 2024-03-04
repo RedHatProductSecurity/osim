@@ -1,12 +1,12 @@
 import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import { type Flaw } from '@/generated-client';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { computed, ref, watch, type Ref } from 'vue';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
 const onSucceed = createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' });
 const onError = createCatchHandler('Error updating Flaw CVSS data');
 
-export function useCvssScores(flaw: Ref<Flaw>) {
+export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
   const wasCvssModified = ref(false);
   const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
   const flawRhCvss = ref(
@@ -17,22 +17,24 @@ export function useCvssScores(flaw: Ref<Flaw>) {
       comment: null,
       created_dt: null,
       score: null,
-    } // empty for creating a flaw, or if no CVSS data exists
+    }, // empty for creating a flaw, or if no CVSS data exists
   );
 
   watch(flawRhCvss, () => (wasCvssModified.value = true), { deep: true });
 
   const nistCvssScore = computed(() =>
-    flaw.value.cvss_scores.find((score) => score.issuer === 'NIST')
+    flaw.value.cvss_scores.find((score) => score.issuer === 'NIST'),
   );
-  const flawNvdCvssScore = computed(() => nistCvssScore.value?.score || flaw.value.nvd_cvss3);
+  const flawNvdCvssScore = computed(
+    () => nistCvssScore.value?.score || flaw.value.nvd_cvss3 || '-',
+  );
 
   async function saveCvssScores() {
     if (flawRhCvss.value.created_dt) {
       return putFlawCvssScores(
         flaw.value.uuid,
         flawRhCvss.value.uuid || '',
-        flawRhCvss.value as unknown
+        flawRhCvss.value as unknown,
       )
         .then(onSucceed)
         .catch(onError);
@@ -49,7 +51,6 @@ export function useCvssScores(flaw: Ref<Flaw>) {
     return postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
       .then(onSucceed)
       .catch(onError);
-
   }
 
   return {
@@ -59,4 +60,3 @@ export function useCvssScores(flaw: Ref<Flaw>) {
     saveCvssScores,
   };
 }
-

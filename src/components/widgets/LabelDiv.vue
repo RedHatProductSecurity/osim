@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {nextTick, onMounted, ref} from 'vue';
-
-const props = defineProps<{
+defineProps<{
   label: string,
   error?: string,
 }>();
@@ -9,16 +7,16 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="osim-input mb-3 border-start ps-3">
-    <span class="form-label">
-      {{ label }}
-      <!--attrs: {{ $attrs }}-->
-    </span>
-    <slot></slot>
+  <div class="osim-input mb-3 ps-3" v-bind="$attrs">
+    <div class="row">
+      <span class="form-label col-3">
+        {{ label }}
+        <!--attrs: {{ $attrs }}-->
+      </span>
+      <div class="col-9">
+        <slot></slot>
+      </div>
+    </div>
   </div>
 
 </template>
-
-<style scoped>
-
-</style>

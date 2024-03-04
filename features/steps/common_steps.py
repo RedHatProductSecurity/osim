@@ -18,8 +18,6 @@ def step_impl(context):
 def step_impl(context):
     set_bugzilla_api_key(context.browser)
     set_jira_api_key(context.browser)
-    settings_page = SettingsPage(context.browser)
-    settings_page.click_save_btn()
 
 
 @given('I go to a flaw detail page')

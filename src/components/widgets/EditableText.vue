@@ -84,14 +84,15 @@ function blur(e: FocusEvent | null) {
 </script>
 
 <template>
-  <div class="position-relative"> <!-- for invalid-tooltip positioning -->
+  <!-- for invalid-tooltip positioning -->
+  <div class="position-relative col-9 osim-editable-field osim-text"> 
     <!--<Transition name="flash-bg" :duration="2000">-->
   <Transition name="flash-bg">
     <div class="osim-editable-text" v-show="!editing" :tabindex="readOnly ? -1 : 0"
       @focus="beginEdit"
     >
       <span
-          class="osim-editable-text-value form-control"
+          class="osim-editable-text-value"
           :class="{'form-control': !readOnly}"
       >{{modelValue === '' ? placeholder : modelValue}}</span>
       <!--if a button is inside a label, clicking the label clicks the button?-->
@@ -144,13 +145,8 @@ function blur(e: FocusEvent | null) {
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
-//@import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
-//@import "bootstrap/scss/utilities";
 @import "bootstrap/scss/forms";
-
-//@import "bootstrap/scss/bootstrap";
-
 
 .flash-bg-enter-active {
   /* The vue framework checks for root-level transition-duration.
@@ -158,12 +154,15 @@ function blur(e: FocusEvent | null) {
   Alternatively, :duration="ms" can be set on the Transition component. */
   transition-duration: 200ms;
 }
+
 .flash-bg-enter-active .osim-editable-text-value {
   transition: background-color 200ms ease-out !important;
 }
+
 .flash-bg-enter-from .osim-editable-text-value {
   background-color: #ff0000;
 }
+
 .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
   transition: none !important;
   display: none !important;
@@ -171,11 +170,16 @@ function blur(e: FocusEvent | null) {
 
 .osim-editable-text {
   // Nest these for specificity
+  white-space: nowrap;
+
   .osim-editable-text-value {
-    //border-color: transparent; // TODO decide to keep the hovering effect?
+    // border-color: transparent; // TODO decide to keep the hovering effect?
     color: var(--bs-secondary-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
-  .osim-editable-text-value:before {
+
+  .osim-editable-text-value::before {
     // Prevent field from collapsing when empty
     content: '\a0';
     display: inline-block;
@@ -189,6 +193,7 @@ function blur(e: FocusEvent | null) {
 
 //.osim-editable-text:hover {  // TODO decide to keep the hovering effect?
 .osim-editable-text {
+  
   @extend .input-group; // Use pure CSS instead of JS for hover
 
   .osim-editable-text-value {
