@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'LoadingSpinner',
   props: {
@@ -15,7 +15,7 @@ export default {
     type: {
       type: String,
       required: true,
-      validator: prop => ['border', 'grow'].includes(prop),
+      validator: (prop: string) => ['border', 'grow'].includes(prop),
       default: 'border',
     },
   },
@@ -26,5 +26,3 @@ export default {
   },
 };
 </script>
-
-<style lang="sass" scoped></style>
