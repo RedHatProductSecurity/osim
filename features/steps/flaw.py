@@ -6,7 +6,8 @@ from selenium.webdriver.common.by import By
 from features.utils import (
     wait_for_visibility_by_locator,
     skip_step_when_needed,
-    generate_random_text
+    generate_random_text,
+    go_to_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
@@ -133,4 +134,27 @@ def step_impl(context):
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.first_flaw_exist()
+    context.browser.quit()
+
+
+@given('Edit statement field leaves it in correct format')
+def step_impl(context):
+    v = "test" + generate_random_text()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_document_text_fields_button()
+    flaw_detail_page.set_statement(v)
+    context.statement_value = v
+    flaw_detail_page.click_save_btn()
+    flaw_detail_page.wait_flaw_saved_msg()
+
+
+@then('The statement field information is changed')
+def step_impl(context):
+    go_to_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_document_text_fields_button()
+    v = flaw_detail_page.get_statement_value()
+
+    assert v == context.statement_value, f"set statement value{context.statement_value}, got {v}"
+
     context.browser.quit()
