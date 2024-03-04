@@ -1,7 +1,8 @@
 # OSIM Changelog
 
 ## [Unreleased]
-`-`
+### Changed
+* Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
 
 ## [2024.1.0]
 

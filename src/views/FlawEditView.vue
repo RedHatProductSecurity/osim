@@ -28,6 +28,7 @@ function refreshFlaw() {
     .then(theFlaw => {
       flaw.value = Object.assign({}, theFlaw);
       committedFlaw.value = Object.assign({}, theFlaw);
+      history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
     })
     .catch(err => {
       errorLoadingFlaw.value = true;

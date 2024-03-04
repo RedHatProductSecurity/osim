@@ -24,7 +24,7 @@ const hasBadges = computed(() => isEmbargoed.value);
 const formattedDate = computed(() =>
   DateTime.fromISO(props.issue.created_dt).toFormat('yyyy-MM-dd'),
 );
-
+const cveOrUuid = computed(() => props.issue.cve_id || props.issue.uuid);
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
 }>();
@@ -42,8 +42,8 @@ defineEmits<{
       @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)"
     ></td>
     <td class="osim-issue-title">
-      <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">
-        {{ issue.cve_id || issue.uuid }}
+      <RouterLink :to="{name: 'flaw-details', params: {id: cveOrUuid}}">
+        {{ cveOrUuid }}
       </RouterLink>
 
     </td>
