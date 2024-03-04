@@ -1,7 +1,6 @@
 import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import { useRouter } from 'vue-router';
-import { type Flaw } from '@/generated-client';
 import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
@@ -31,7 +30,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     useFlawAffectsModel(flaw);
 
   const router = useRouter();
-  const committedFlaw = ref<Flaw | null>(null);
+  const committedFlaw = ref<ZodFlawType | null>(null);
   const addComment = ref(false);
   const newPublicComment = ref('');
 
