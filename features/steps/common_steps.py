@@ -6,7 +6,6 @@ from features.utils import (
     set_jira_api_key,
     go_to_flaw_detail_page
 )
-from features.pages.settings_page import SettingsPage
 
 
 @given('I am an analyst AND I am logged into OSIM')

@@ -37,3 +37,10 @@ Feature: Check flaw
       Given I am an analyst AND I am logged into OSIM
       When I am searching for all flaws
       Then I get a list of all flaws
+
+    Scenario: Modify statement
+      Given I am an analyst AND I am logged into OSIM
+      Given I set the bugzilla api key and jira api key
+      Given I go to a flaw detail page
+      And Edit statement field leaves it in correct format
+      Then The statement field information is changed

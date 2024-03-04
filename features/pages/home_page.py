@@ -36,7 +36,8 @@ class HomePage(PageFactory):
         self.advancedSearchBtn.click_button()
 
     def click_flaw_index_btn(self):
-        self.flawIndexBtn.click_button()
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.flawIndexBtn)
+        self.driver.execute_script("arguments[0].click();", self.flawIndexBtn)
 
     def click_settings_btn(self):
         self.settingsBtn.click_button()
