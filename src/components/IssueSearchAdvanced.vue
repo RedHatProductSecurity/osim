@@ -1,14 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
-  setIssues: Function;
+  setIssues: (issues: any) => Promise<any>;
 }>();
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
-import { useToastStore } from '@/stores/ToastStore';
-
-const { addToast } = useToastStore();
 
 const route = useRoute();
 
@@ -28,18 +25,11 @@ watch(facets.value, (changingFacets) => {
 });
 
 const unchosenFields = (chosenField: string) =>
-  flawFields.filter(
-    (field) => !chosenFields.value.includes(field) || field === chosenField
-  );
+  flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
 
-const {
-  type: zodFlawType,
-  source: zodFlawSource,
-  impact: zodFlawImpacts,
-} = ZodFlawSchema.shape;
+const { type: zodFlawType, source: zodFlawSource, impact: zodFlawImpacts } = ZodFlawSchema.shape;
 
-const extractEnum = (zodEnum: any): string[] =>
-  Object.values(zodEnum.unwrap().unwrap().enum);
+const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
 const flawTypes = extractEnum(zodFlawType);
 const flawSources = extractEnum(zodFlawSource);
@@ -50,7 +40,7 @@ const optionsFor = (field: string) =>
     type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
-  }[field] || null);
+  })[field] || null;
 
 function addFacet() {
   facets.value.push({ field: '', value: '' });
@@ -64,12 +54,15 @@ function removeFacet(index: number) {
 }
 
 function submitAdvancedSearch() {
-  const params = facets.value.reduce((fields, { field, value }) => {
-    if (field && value) {
-      fields[field] = value;
-    }
-    return fields;
-  }, {} as Record<string, string>);
+  const params = facets.value.reduce(
+    (fields, { field, value }) => {
+      if (field && value) {
+        fields[field] = value;
+      }
+      return fields;
+    },
+    {} as Record<string, string>,
+  );
   advancedSearchFlaws(params)
     .then((response) => {
       props.setIssues(response.results);
@@ -83,16 +76,17 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 
 <template>
   <details :open="shouldShowAdvanced" class="osim-advanced-search-container">
-    <summary class="mb-2" @click="shouldShowAdvanced = true">
-      Advanced Search
-    </summary>
+    <summary class="mb-2" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
-      <div class="input-group mb-2" v-for="(facet, index) in facets">
+      <div v-for="(facet, index) in facets" :key="index" class="input-group mb-2">
         <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
-          <option v-if="!facet.field" selected value="" disabled>
-            Select field...
-          </option>
-          <option v-for="field in unchosenFields(facet.field)" :value="field">
+          <option
+            v-if="!facet.field"
+            selected
+            value=""
+            disabled
+          >Select field...</option>
+          <option v-for="field in unchosenFields(facet.field)" :key="field" :value="field">
             {{ field }}
           </option>
         </select>
@@ -102,28 +96,22 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           class="form-select"
           @submit.prevent
         >
-          <option v-for="option in optionsFor(facet.field)" :value="option">
+          <option v-for="option in optionsFor(facet.field)" :key="option" :value="option">
             {{ option }}
           </option>
         </select>
         <input
           v-else
+          v-model="facet.value"
           type="text"
           class="form-control"
-          v-model="facet.value"
           :disabled="!facet.field"
         />
-        <button
-          class="btn btn-outline-primary"
-          type="button"
-          @click="removeFacet(index)"
-        >
+        <button class="btn btn-outline-primary" type="button" @click="removeFacet(index)">
           <i class="bi-x" aria-label="remove field"></i>
         </button>
       </div>
-      <button class="btn btn-primary me-3" @click="submitAdvancedSearch">
-        Search
-      </button>
+      <button class="btn btn-primary me-3" @click="submitAdvancedSearch">Search</button>
     </form>
   </details>
 </template>
