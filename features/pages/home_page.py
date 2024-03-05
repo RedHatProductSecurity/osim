@@ -59,8 +59,7 @@ class HomePage(PageFactory):
     def check_is_all_flaw_selected(self):
         flaw_rows = find_elements_in_page_factory(self, "flawRow")
         flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
-        assert len(flaw_rows) == len(flaw_checkboxes), 'Incorrect checkbox count'
-
+        assert len(flaw_rows) + 1 == len(flaw_checkboxes), 'Incorrect checkbox count'
         flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
         assert len(flaw_checked) == len(flaw_checkboxes), 'Incorrect check-all check result'
 

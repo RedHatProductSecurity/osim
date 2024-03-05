@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
 
 
@@ -8,10 +9,16 @@ class FlawDetailPage(PageFactory):
         self.timeout = 15
 
     locators = {
-        "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
-        "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        "summaryText": ("XPATH", "//span[text()='Summary']"),
+        "summaryTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[1]"),
+        "descriptionText": ("XPATH", "//span[text()='Description']"),
+        "descriptionTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[2]"),
         "statementText": ("XPATH", "//span[text()='Statement']"),
         "statementTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[3]"),
+        "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
+        "mitigationTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[4]"),
+        "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
+        "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "saveBtn": ("XPATH", '//button[text()="Save Changes"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
@@ -30,14 +37,21 @@ class FlawDetailPage(PageFactory):
     def click_document_text_fields_button(self):
         self.documentTextFieldsDropDownBtn.click_button()
 
-    def set_statement(self, value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.statementText)
-        self.driver.execute_script("arguments[0].value = '';", self.statementTextWindow)
-        self.statementTextWindow.send_keys(value)
+    def set_text_field(self, field, value):
+        field_element = getattr(self, field + 'Text')
+        field_input = getattr(self, field + 'TextWindow')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
+        if value:
+            self.driver.execute_script("arguments[0].value = '';", field_input)
+            field_input.send_keys(value)
+        else:
+            field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def get_statement_value(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.statementText)
-        return self.statementTextWindow.getAttribute("value")
+    def get_text_field(self, field):
+        field_element = getattr(self, field + 'Text')
+        field_input = getattr(self, field + 'TextWindow')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
+        return field_input.getAttribute("value")
 
     def click_save_btn(self):
         self.saveBtn.click_button()

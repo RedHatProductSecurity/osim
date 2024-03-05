@@ -38,9 +38,19 @@ Feature: Check flaw
       When I am searching for all flaws
       Then I get a list of all flaws
 
-    Scenario: Modify statement
+    Scenario Outline: Modify document text fields
       Given I am an analyst AND I am logged into OSIM
       Given I set the bugzilla api key and jira api key
       Given I go to a flaw detail page
-      And Edit statement field leaves it in correct format
-      Then The statement field information is changed
+      And I set the <field> value to "<value>"
+      Then The <field> value is changed
+
+      Examples:
+        |        field  |              value |
+        |       summary |       edit summary |
+        |     statement |     edit statement |
+        |     statement |                    |
+        |     statement |      add statement |
+        |    mitigation |    edit mitigation |
+        |    mitigation |                    |
+        |    mitigation |     add mitigation |
