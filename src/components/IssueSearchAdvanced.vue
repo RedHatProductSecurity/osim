@@ -1,20 +1,83 @@
 <script setup lang="ts">
-const props = defineProps<{
-  setIssues: (issues: any) => Promise<any>;
-}>();
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
 
-const route = useRoute();
-
 type Facet = {
   field: string;
   value: string;
 };
+
+const emit = defineEmits<{
+  'issues:load': [any[]];
+}>();
+
+const route = useRoute();
+
+let isSearching = ref(false);
+
+const fieldsMapping: Record<string, string | string[]> = {
+  classification: 'workflow_state',
+  cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
+  affects: ['affects__ps_module', 'affects__ps_component', 'affects__trackers__ps_update_stream'],
+  acknowledgments: 'acknowledgments__name',
+  trackers: [
+    'affects__trackers__errata__advisory_name',
+    'affects__trackers__ps_update_stream',
+    'affects__trackers__external_system_id',
+  ],
+  references: [],
+  comments: [],
+};
+
+const excludedFields = [
+  'cvss2',
+  'cvss2_score',
+  'cvss3',
+  'cvss3_score',
+  'major_incident_state',
+  'meta',
+  'updated_dt',
+  'reported_dt',
+  'unembargo_dt',
+  'summary',
+  'requires_summary',
+  'description',
+  'statement',
+  'mitigation',
+  'nvd_cvss2',
+  'nvd_cvss3',
+  'nist_cvss_validation',
+];
+
+const nameForOption = (fieldName: string) => {
+  const mappings: Record<string, string> = {
+    uuid: 'UUID',
+    cvss_scores__score: 'CVSS Score',
+    cvss_scores__vector: 'CVSS Vector',
+    affects__ps_module: 'Affected Module',
+    affects__ps_component: 'Affected Component',
+    affects__trackers__ps_update_stream: 'Affect Update Stream',
+    acknowledgments__name: 'Acknowledgment Author',
+    affects__trackers__errata__advisory_name: 'Errata Advisory Name',
+    affects__trackers__external_system_id: 'Tracker External System ID',
+    workflow_state: 'Flaw Status',
+    cwe_id: 'CWE ID',
+    cve_id: 'CVE ID',
+  };
+  let name =
+    mappings[fieldName] ||
+    fieldName.replace(/__[a-z]/g, (beep) => `: ${beep.charAt(2).toUpperCase()}`);
+  name = name.replace(/_/g, ' ');
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
 const facets = ref<Facet[]>([{ field: '', value: '' }]);
-const flawFields = fieldsFor(ZodFlawSchema);
+const flawFields = fieldsFor(ZodFlawSchema)
+  .filter((field) => !excludedFields.includes(field))
+  .flatMap((field) => fieldsMapping[field] || field)
+  .sort();
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 watch(facets.value, (changingFacets) => {
@@ -40,6 +103,15 @@ const optionsFor = (field: string) =>
     type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
+    embargoed: ['true', 'false'],
+    workflow_state: [
+      'DONE',
+      'NEW',
+      'PRE_SECONDARY_ASSESSMENT',
+      'REJECTED',
+      'SECONDARY_ASSESSMENT',
+      'TRIAGE',
+    ],
   })[field] || null;
 
 function addFacet() {
@@ -53,7 +125,12 @@ function removeFacet(index: number) {
   }
 }
 
-function submitAdvancedSearch() {
+function setIsSearching(value: boolean) {
+  isSearching.value = value;
+}
+
+async function submitAdvancedSearch() {
+  emit('issues:load', []);
   const params = facets.value.reduce(
     (fields, { field, value }) => {
       if (field && value) {
@@ -63,13 +140,15 @@ function submitAdvancedSearch() {
     },
     {} as Record<string, string>,
   );
-  advancedSearchFlaws(params)
-    .then((response) => {
-      props.setIssues(response.results);
-    })
-    .catch((err) => {
-      console.error('IssueSearch: getFlaws error: ', err);
-    });
+  setIsSearching(true);
+  const response: { results: any } = await advancedSearchFlaws(params);
+  if (response) {
+    emit('issues:load', response.results);
+  }
+  setIsSearching(false);
+  // .then((response) => {
+  //   props.setIssues(response.results);
+  // });
 }
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
@@ -87,7 +166,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
             disabled
           >Select field...</option>
           <option v-for="field in unchosenFields(facet.field)" :key="field" :value="field">
-            {{ field }}
+            {{ nameForOption(field) }}
           </option>
         </select>
         <select
@@ -111,7 +190,10 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           <i class="bi-x" aria-label="remove field"></i>
         </button>
       </div>
-      <button class="btn btn-primary me-3" @click="submitAdvancedSearch">Search</button>
+      <button class="btn btn-primary me-3" @click="submitAdvancedSearch">
+        <div v-if="isSearching" class="spinner-border spinner-border-sm"></div>
+        Search
+      </button>
     </form>
   </details>
 </template>
