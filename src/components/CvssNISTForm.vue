@@ -42,8 +42,8 @@ Thank you,
 `);
 
 function openMailto() {
-  const recipient = encodeURI('nvd@nist.gov');
-  const cc = encodeURI('secalert@redhat.com');
+  const recipient = encodeURI(toEmail);
+  const cc = encodeURI(ccEmail);
   const encodedSubject = encodeURIComponent(subject.value);
   const encodedBody = encodeURIComponent(emailBody.value);
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
