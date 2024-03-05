@@ -16,6 +16,7 @@ import IssueFieldStatus from './IssueFieldStatus.vue';
 import LabelStatic from './widgets/LabelStatic.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
+import CvssNISTForm from '@/components/CvssNISTForm.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
@@ -97,6 +98,17 @@ const flawCvss3CaculatorLink = computed(
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
+
+
+const displayCvssNISTForm = computed(() => {
+  const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+  const nvdCvssScore = flawNvdCvssScore.toString();
+  return rhCvss !== nvdCvssScore;
+});
+
+const cvssString = computed(() => {
+  return `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+});
 </script>
 
 <template>
@@ -167,7 +179,20 @@ const onReset = () => {
             type="text"
             :error="errors.cvss3_score"
           />
-          <LabelStatic v-model="flawNvdCvssScore" label="NVD CVSSv3" type="text" />
+          <div class="row">
+            <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
+              <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
+            </div>
+            <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
+              <CvssNISTForm
+                  :cveid="flaw.cve_id"
+                  :flaw-summary="flaw.summary"
+                  :bugzilla="bugzillaLink"
+                  :cvss="cvssString"
+                  :nistcvss="flawNvdCvssScore?.toString()"
+              />
+            </div>
+          </div>
           <LabelEditable
             v-model="flaw.cwe_id"
             label="CWE ID"
@@ -410,5 +435,8 @@ form.osim-flaw-form :deep(*) {
 
 .osim-doc-text-container {
   max-width: 80ch;
+}
+.cvss-button-div {
+  width: 60%;
 }
 </style>

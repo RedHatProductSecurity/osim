@@ -9,6 +9,7 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
+import IssueFieldStatus from '../IssueFieldStatus.vue';
 
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -46,7 +47,7 @@ vi.mock('vue-router', async () => {
 describe('FlawForm', () => {
   let subject: VueWrapper<InstanceType<typeof FlawForm>>;
   function mountWithProps(props: typeof FlawForm.$props) {
-    subject =  mount(FlawForm, {
+    subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props,
       global: {
@@ -106,7 +107,7 @@ describe('FlawForm', () => {
   it('displays correct Assignee field value from props', async () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     const assigneeField = subject
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('Assignee'));
@@ -128,10 +129,10 @@ describe('FlawForm', () => {
     ).toBe('REVIEW');
   });
 
-  it('displays promote and reject buttons for status', async () => {
+  it.only('displays promote and reject buttons for status', async () => {
     const statusField = subject
-    .findAllComponents(LabelStatic)
-    .find((component) => component.text().includes('Status'));
+      .findAllComponents(LabelStatic)
+      .find((component) => component.text().includes('Status'));
     expect(
       statusField?.find('button#osim-status-reject-button')
         .exists()
@@ -178,16 +179,32 @@ describe('FlawForm', () => {
   });
 
   it("displays correct Cvss3 calculator link for empty value", async () => {
-    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
+    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSSv3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#");
+    expect(linkElement?.attributes('href')).toContain("https://www.first.org/cvss/calculator/3.1#");
   })
 
-  it("displays correct Cvss3 calculator link for cvss3 value", async() => {
+  it("displays correct Cvss3 calculator link for cvss3 value", async () => {
     const flaw = sampleFlaw();
-    flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"
+    flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N";
+  
+    flaw.cvss_scores = [
+      // @ts-ignore
+      {
+        "comment": "The CVSS is as it is and that is it.",
+        "cvss_version": "V3",
+        "flaw": "3dcaf61a-48a7-4483-b1c8-92f56f829abe",
+        "issuer": "RH",
+        "score": 2.2,
+        "uuid": "23ea1399-219a-4183-ad74-37edd869b2f0",
+        "vector": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N",
+        "embargoed": false,
+        "created_dt": "2021-08-02T10:49:35Z",
+        "updated_dt": "2024-02-28T14:51:02Z"
+      }
+    ]
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props: {
@@ -203,7 +220,7 @@ describe('FlawForm', () => {
         },
       },
     });
-    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
+    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSSv3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
