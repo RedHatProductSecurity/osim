@@ -13,18 +13,15 @@ class HomePage(PageFactory):
         "logoutBtn": ('XPATH', "//button[text()='Logout']"),
         "userBtn": ('CSS', "button[class='btn btn-secondary dropdown-toggle osim-user-profile']"),
         "flawList": ("CSS", "div[class='osim-incident-list']"),
+        "flawRow": ("CLASS_NAME", "osim-issue-queue-item"),
         "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
         "flawCheckAllCheckBox": ("XPATH", "//div[@class='osim-incident-list']/table/thead/tr/th/input[@type='checkbox']"),
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
-        # TODO:// I removed the style atrribute on this and added a class  <tr class="osim-issue-queue-item">
-        "flawListContent": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
         "firstFlaw": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
-        # TODO:// I removed the style atrribute on this and added a class  <tr class="osim-issue-queue-item">
-        "flawRow": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[@style='border-top: 1px solid black;']"),
         "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]")
     }
@@ -60,7 +57,7 @@ class HomePage(PageFactory):
         self.flawCheckAllCheckBox.click_button()
 
     def check_is_all_flaw_selected(self):
-        flaw_rows = find_elements_in_page_factory(self, "flawListContent")
+        flaw_rows = find_elements_in_page_factory(self, "flawRow")
         flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
         assert len(flaw_rows) == len(flaw_checkboxes), 'Incorrect checkbox count'
 
@@ -77,13 +74,13 @@ class HomePage(PageFactory):
         self.loadMoreFlawsBtn.visibility_of_element_located()
 
     def click_load_more_flaws_btn(self):
-        old_flaw_count = len(find_elements_in_page_factory(self, "flawListContent"))
+        old_flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
         self.loadMoreFlawsBtn.execute_script("arguments[0].click();")
         return old_flaw_count
 
     def is_more_flaw_loaded(self, old_count):
         self.loadMoreFlawsBtn.element_to_be_clickable()
-        flaw_count = len(find_elements_in_page_factory(self, "flawListContent"))
+        flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
         assert flaw_count > old_count, \
             "No more flaws loaded after click the 'Load More Flaws' button"
 
