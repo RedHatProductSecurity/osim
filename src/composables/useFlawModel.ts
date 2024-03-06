@@ -17,12 +17,6 @@ import {
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export type FlawEmitter = {
-  (e: 'update:flaw', flaw: any): void;
-  (e: 'refresh:flaw'): void;
-  (e: 'add-blank-affect'): void;
-};
-
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
@@ -32,8 +26,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
   const router = useRouter();
   const committedFlaw = ref<Flaw | null>(null);
-  const addComment = ref(false);
-  const newPublicComment = ref('');
 
   const trackerUuids = computed(() => {
     return (flaw.value.affects ?? [])
@@ -89,14 +81,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     emit('refresh:flaw');
   }
 
-  function addPublicComment() {
-    postFlawPublicComment(flaw.value.uuid, newPublicComment.value)
+  function addPublicComment(comment: string) {
+    postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(() => {
-        newPublicComment.value = '';
-        addComment.value = false;
-        emit('refresh:flaw');
-      })
+      .then(() => emit('refresh:flaw'))
       .catch(createCatchHandler('Error saving comment'));
   }
 
@@ -110,8 +98,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawIncidentStates,
     osimLink,
     bugzillaLink,
-    addComment,
-    newPublicComment,
     addPublicComment,
     createFlaw,
     updateFlaw,
