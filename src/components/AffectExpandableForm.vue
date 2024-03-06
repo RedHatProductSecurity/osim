@@ -4,7 +4,7 @@ import { computed, toRef } from 'vue';
 
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferingForm from './AffectedOfferingForm.vue';
-import { type ZodAffectType } from '@/types/zodFlaw';
+import { type ZodAffectType } from '@/types/zodAffect';
 import { useAffectTracker } from '@/composables/useAffectTracker';
 
 import type { TrackersPost } from '@/services/TrackerService';

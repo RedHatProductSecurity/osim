@@ -16,6 +16,16 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
     .catch(createCatchHandler('Error updating Affect:'));
 }
 
+export async function putAffects(affectObjects: any[]) {
+  return osidbFetch({
+    method: 'put',
+    url: '/osidb/api/v1/affects',
+    data: affectObjects,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Affects Updated.' }))
+    .catch(createCatchHandler('Error updating Affects:'));
+}
+
 // export async function postAffect(affectObject: ZodAffectType) {
 export async function postAffect(affectObject: any) {
   return osidbFetch({

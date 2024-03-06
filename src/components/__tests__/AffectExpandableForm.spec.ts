@@ -7,7 +7,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {
   affectResolutions,
   affectAffectedness,
-} from '@/types/zodFlaw';
+} from '@/types/zodAffect';
 
 vi.mock('@/stores/osimRuntime', async () => {
   const osimRuntimeValue = {
