@@ -12,7 +12,7 @@ FLAW_SOURCE_TEXT_XPATH = '//tr[1]/td[4]'
 
 # The following constants are related to flaw filter that should be updated
 # according to the imported test database in the future
-COUNT_FLAWS_SAME_STATE = 20 
+COUNT_FLAWS_SAME_STATE = 20
 COUNT_FLAWS_SAME_SOURCE = 10
 
 
