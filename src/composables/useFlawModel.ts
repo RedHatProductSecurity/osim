@@ -16,13 +16,7 @@ import {
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
 
-export type FlawEmitter = {
-  (e: 'update:flaw', flaw: any): void;
-  (e: 'refresh:flaw'): void;
-  (e: 'add-blank-affect'): void;
-};
-
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: (event: string)=>void) {
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
@@ -31,8 +25,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
-  const addComment = ref(false);
-  const newPublicComment = ref('');
 
   const trackerUuids = computed(() => {
     return (flaw.value.affects ?? [])
@@ -88,14 +80,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     emit('refresh:flaw');
   }
 
-  function addPublicComment() {
-    postFlawPublicComment(flaw.value.uuid, newPublicComment.value)
+  function addPublicComment(comment: string) {
+    postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(() => {
-        newPublicComment.value = '';
-        addComment.value = false;
-        emit('refresh:flaw');
-      })
+      .then(() => emit('refresh:flaw'))
       .catch(createCatchHandler('Error saving comment'));
   }
 
@@ -108,8 +96,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawImpacts,
     osimLink,
     bugzillaLink,
-    addComment,
-    newPublicComment,
     addPublicComment,
     createFlaw,
     updateFlaw,
