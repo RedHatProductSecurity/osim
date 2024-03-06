@@ -251,10 +251,30 @@ const cvssString = computed(() => {
       <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
         <div class="osim-doc-text-container">
           <LabelCollapsable label="Document Text Fields">
-            <LabelTextarea v-model="flaw.summary" label="Summary" />
-            <LabelTextarea v-model="flaw.description" label="Description" />
-            <LabelTextarea v-model="flaw.statement" label="Statement" />
-            <LabelTextarea v-model="flaw.mitigation" label="Mitigation" />
+            <LabelTextarea v-if="flaw.summary" v-model="flaw.summary" label="Summary" />
+            <LabelTextarea v-if="flaw.description" v-model="flaw.description" label="Description" />
+            <LabelTextarea v-if="flaw.statement" v-model="flaw.statement" label="Statement" />
+            <LabelTextarea v-if="flaw.mitigation" v-model="flaw.mitigation" label="Mitigation" />
+            <div v-if="!flaw.summary" class="mb-3">
+              <button class="btn btn-secondary" @click="flaw.summary = 'Summary Text ...'">
+                Add Summary
+              </button>
+            </div>
+            <div v-if="!flaw.description" class="mb-3">
+              <button class="btn btn-secondary" @click="flaw.description = 'Description Text ...'">
+                Add Description
+              </button>
+            </div>
+            <div v-if="!flaw.statement" class="mb-3">
+              <button class="btn btn-secondary" @click="flaw.statement = 'Statement Text ...'">
+                Add Statement
+              </button>
+            </div>
+            <div v-if="!flaw.mitigation" class="mb-3">
+              <button class="btn btn-secondary" @click="flaw.mitigation = 'Mitigation Text ...'">
+                Add Mitigation
+              </button>
+            </div>
           </LabelCollapsable>
           <IssueFieldReferences
             v-model="flawReferences"
