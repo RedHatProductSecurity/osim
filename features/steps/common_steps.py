@@ -2,10 +2,10 @@ from behave import given
 
 from features.utils import (
     check_flaw_list,
-    go_to_flaw_detail_page,
     login_with_valid_account,
     set_bugzilla_api_key,
-    set_jira_api_key
+    set_jira_api_key,
+    go_to_first_flaw_detail_page
 )
 
 
@@ -27,4 +27,4 @@ def step_impl(context):
 
 @given('I go to a flaw detail page')
 def step_impl(context):
-    go_to_flaw_detail_page(context.browser)
+    go_to_first_flaw_detail_page(context.browser)

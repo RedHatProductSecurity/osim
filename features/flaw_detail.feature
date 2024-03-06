@@ -22,3 +22,7 @@ Feature: Flaw detail testing
         |    mitigation |    edit mitigation |
         |    mitigation |                    |
         |    mitigation |     add mitigation |
+
+    Scenario: Add Acknowledgement
+      When I add an acknowledgment to the flaw
+      Then A new acknowledgement added to the flaw
