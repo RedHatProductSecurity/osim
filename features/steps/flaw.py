@@ -137,24 +137,22 @@ def step_impl(context):
     context.browser.quit()
 
 
-@given('Edit statement field leaves it in correct format')
-def step_impl(context):
-    v = "test" + generate_random_text()
+@given('I set the {field} value to {value}')
+def step_impl(context, field, value):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_document_text_fields_button()
-    flaw_detail_page.set_statement(v)
-    context.statement_value = v
+    value = value.strip('"')
+    flaw_detail_page.set_text_field(field, value)
+    context.field_value = value
     flaw_detail_page.click_save_btn()
     flaw_detail_page.wait_flaw_saved_msg()
 
 
-@then('The statement field information is changed')
-def step_impl(context):
+@then('The {field} value is changed')
+def step_impl(context, field):
     go_to_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_document_text_fields_button()
-    v = flaw_detail_page.get_statement_value()
-
-    assert v == context.statement_value, f"set statement value{context.statement_value}, got {v}"
-
+    v = flaw_detail_page.get_text_field(field)
+    assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
     context.browser.quit()
