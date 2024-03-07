@@ -16,8 +16,9 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "vue"],
+  "plugins": ["@typescript-eslint", "vue", "@stylistic/js"],
   "rules": {
+    "@stylistic/js/array-element-newline": ["error", "consistent"],
     "max-len": ["warn", { "code": 100 }],
     "@typescript-eslint/no-explicit-any": "off",
     "indent": ["warn", 2],
