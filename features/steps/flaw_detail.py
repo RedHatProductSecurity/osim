@@ -78,3 +78,20 @@ def step_impl(context):
     flaw_detail_page.click_acknowledgments_drop_down_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
+
+
+@when('I update the dropdown {field} value')
+def step_impl(context, field):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    v = flaw_detail_page.set_select_value(field)
+    context.selected = v
+    flaw_detail_page.click_save_btn()
+    flaw_detail_page.wait_flaw_saved_msg()
+
+@then('The dropdown {field} value is updated')
+def step_impl(context, field):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    _, v = flaw_detail_page.get_select_value(field)
+    assert context.selected == v, f"{field} value should be {context.selected}, got {v}"
+    context.browser.quit()
