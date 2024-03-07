@@ -1,5 +1,8 @@
 from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class FlawDetailPage(PageFactory):
@@ -21,8 +24,14 @@ class FlawDetailPage(PageFactory):
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "saveBtn": ("XPATH", '//button[text()="Save Changes"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
-        "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
-        "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]")
+        "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
+        "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
+        "addAcknowledgementBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
+        "addAcknowledgementInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[1]"),
+        "addAcknowledgementInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
+        "saveAcknowledgementBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
+        "acknowledgementSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
+        "newestAcknowledgement": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]")
     }
 
     def add_comment_btn_exist(self):
@@ -58,3 +67,27 @@ class FlawDetailPage(PageFactory):
 
     def wait_flaw_saved_msg(self):
         self.flawSavedMsg.visibility_of_element_located()
+
+    def click_acknowledgments_drop_down_btn(self):
+        self.acknowledgmentsDropDownBtn.click_button()
+
+    def click_add_acknowledgment_btn(self):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgementBtn)
+        self.driver.execute_script("arguments[0].click();", self.addAcknowledgementBtn)
+
+    def set_acknowledgement(self, left_value, right_value):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgementInputLeft)
+        self.addAcknowledgementInputLeft.set_text(left_value)
+        self.addAcknowledgementInputRight.set_text(right_value)
+
+    def click_save_acknowledgement_btn(self):
+        self.saveAcknowledgementBtn.click_button()
+
+    def wait_acknowledgement_saved_msg(self):
+        self.acknowledgementSavedMsg.visibility_of_element_located()
+
+    def check_acknowledgement_exist(self, value):
+        e = self.driver.find_element(By.XPATH, f'//div[text()="{value}"]')
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of(e)
+        )

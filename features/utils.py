@@ -107,9 +107,9 @@ def check_flaw_list(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_flaw_detail_page(browser):
+def go_to_first_flaw_detail_page(browser):
     """
-    This function is a comment one for all senarios of edit flaw.
+    Enter first flaw detail page which displayed in index page.
     """
     # From the setting page back to flaw list
     home_page = HomePage(browser)
