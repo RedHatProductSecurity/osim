@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import Toast from '../components/widgets/Toast.vue';
 import {useToastStore} from '../stores/ToastStore';
-import {computed, ref} from "vue";
-import {navbarBottom, footerTop, footerHeight} from "@/stores/responsive";
+import {computed} from 'vue';
+import {navbarBottom, footerTop, footerHeight} from '@/stores/responsive';
 import {useSettingsStore} from '@/stores/SettingsStore';
 
 // const props = defineProps<{
 //   // timestamp: moment.Moment,
 // }>();
 
-const {toasts, $reset} = useToastStore();
+const {toasts} = useToastStore();
 const {settings} = useSettingsStore();
 
 const top = computed<string>(() => {
@@ -37,20 +37,30 @@ function clearAll() {
 </script>
 
 <template>
-  <!--  <div class="osim-toast-container toast-container position-fixed top-0 bottom-0 end-0 overflow-auto overflow-x-hidden p-3">-->
+  <!-- <div
+    class="osim-toast-container
+    toast-container position-fixed top-0
+    bottom-0 end-0 overflow-auto overflow-x-hidden p-3"
+  > -->
   <div class="osim-toast-container toast-container p-3">
-    <div class="toast" style="display:block;visibility: hidden;height:0;margin:0;padding:0;border:0;"><!--
+    <div
+      class="toast"
+      style="display:block;visibility: hidden;height:0;margin:0;padding:0;border:0;"
+    ><!--
       Hack: when removing the last toast, the container width is set to 0,
             which causes the toast to clip or squash when being animated.
             This preserves the container width, which fixes animation.
     --></div>
     <Transition name="toast">
-      <div class="osim-toast-container-clear d-flex justify-content-end">
+      <div
+        v-if="settings.showNotifications && toasts.length > 0"
+        class="osim-toast-container-clear d-flex justify-content-end"
+      >
         <button
-            v-if="settings.showNotifications && toasts.length > 0"
-            type="button"
-            class="btn btn-secondary btn-sm mb-3"
-            @click.prevent="clearAll"
+          v-if="settings.showNotifications && toasts.length > 0"
+          type="button"
+          class="btn btn-secondary btn-sm mb-3"
+          @click.prevent="clearAll"
         >Clear All<i class="bi bi-trash3 ms-1"></i></button>
       </div>
     </Transition>

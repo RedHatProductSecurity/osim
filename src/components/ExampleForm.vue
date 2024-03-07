@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <script setup lang="ts">
 import {reactive} from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
@@ -26,6 +27,7 @@ function onReset() {
 
 </script>
 
+<!-- eslint-disable -->
 <template>
   <div class="osim-content container">
     <h2 class="mb-3">Example Form</h2>

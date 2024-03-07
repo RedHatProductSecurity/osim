@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
 import {useSettingsStore} from '@/stores/SettingsStore';
@@ -13,6 +14,7 @@ let settings = reactive<SettingsType>(settingsStore.settings);
 
 </script>
 
+<!-- eslint-disable -->
 <template>
   <div class="osim-content container">
     <h1 class="mb-3">Settings</h1>

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import {RouterView} from 'vue-router'
-import Navbar from './components/Navbar.vue'
+import {RouterView} from 'vue-router';
+import Navbar from './components/Navbar.vue';
 import {osidbHealth, osimRuntime, osimRuntimeStatus, OsimRuntimeStatus} from '@/stores/osimRuntime';
 
 
 import {setup} from '@/stores/osimRuntime';
 import {ref, watchEffect} from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
-import {useElementBounding} from "@vueuse/core";
-import {footerHeight, footerTop} from "@/stores/responsive";
-import { useSettingsStore } from './stores/SettingsStore';
+import {useElementBounding} from '@vueuse/core';
+import {footerHeight, footerTop} from '@/stores/responsive';
 setup();
 
 const elFooter = ref<HTMLElement | null>(null);
@@ -24,18 +23,21 @@ watchEffect(() => {
 <template>
   <template v-if="osimRuntimeStatus === OsimRuntimeStatus.READY">
     <header>
-      <Navbar v-if="!$route.meta.hideNavbar"/>
+      <Navbar v-if="!$route.meta.hideNavbar" />
     </header>
     <div class="osim-content-layered">
-      <ToastContainer/>
+      <ToastContainer />
       <RouterView class="osim-page-view" />
     </div>
-    <footer class="fixed-bottom osim-status-bar" ref="elFooter">
+    <footer ref="elFooter" class="fixed-bottom osim-status-bar">
       <div>OSIDB</div>
-      <div class="osim-status-osidb-env">[env: {{osidbHealth.env}}]</div>
-      <div class="osim-status-osidb-ver">[ver: {{osidbHealth.version}}]</div>
-      <div class="osim-status-osidb-rev">[rev: {{osidbHealth.revision}}]</div>
-      <div class="osim-status-osidb-err" v-if="osimRuntime.error">[err: {{osimRuntime.error}}]</div>
+      <div class="osim-status-osidb-env">[env: {{ osidbHealth.env }}]</div>
+      <div class="osim-status-osidb-ver">[ver: {{ osidbHealth.version }}]</div>
+      <div class="osim-status-osidb-rev">[rev: {{ osidbHealth.revision }}]</div>
+      <div
+        v-if="osimRuntime.error"
+        class="osim-status-osidb-err"
+      >[err: {{ osimRuntime.error }}]</div>
     </footer>
   </template>
   <div v-else-if="osimRuntimeStatus === OsimRuntimeStatus.ERROR" class="osim-backend-error">

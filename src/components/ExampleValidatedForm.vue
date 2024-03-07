@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
@@ -70,6 +71,7 @@ const onReset = (payload: MouseEvent) => {
 };
 </script>
 
+<!-- eslint-disable -->
 <template>
   <div class="osim-content container d-block">
     <hr/>

@@ -3,7 +3,6 @@ import { ref } from 'vue';
 
 import FlawForm from '@/components/FlawForm.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
-import type { ZodFlawType } from '@/types/zodFlaw';
 
 const error = ref('');
 

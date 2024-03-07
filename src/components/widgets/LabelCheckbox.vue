@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineEmits<{
+  'update:modelValue': [value: boolean | undefined],
+}>();
+defineProps<{
   modelValue: boolean;
   label: string;
 }>();
@@ -14,15 +17,14 @@ const props = defineProps<{
         class="form-check-input"
         v-bind="$attrs"
         :value="modelValue"
-        @change="
-          $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).checked)
-        "
+        @change="$emit(
+          'update:modelValue',
+          (($event as InputEvent).target as HTMLInputElement).checked
+        )"
       />
-      <p class="d-flex align-items-center mb-0">
-        <!-- <span class="form-check-label"> -->
-          {{ label }}
-        <!-- </span> -->
-      </p>
+      <span class="form-check-label">
+        {{ label }}
+      </span>
     </label>
   </div>
 </template>

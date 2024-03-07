@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const props = defineProps<{
+defineProps<{
   modelValue: string[],
   error?: string,
 }>();
@@ -40,8 +40,9 @@ function focusInput() {
     @submit.prevent
   >
     <span
-        v-for="(value, index) in values"
-        class="osim-pill-list-item badge text-bg-secondary"
+      v-for="(value, index) in values"
+      :key="index"
+      class="osim-pill-list-item badge text-bg-secondary"
     >
       {{ value }}
       <!--<button-->
@@ -51,28 +52,27 @@ function focusInput() {
 
       <!--</button>-->
       <i
-          class="bi bi-x-square ms-1"
-          tabindex="0"
-          @keydown.enter.prevent="remove(index)"
-          @keydown.space.prevent="remove(index)"
-          @click.prevent="remove(index)"
+        class="bi bi-x-square ms-1"
+        tabindex="0"
+        @keydown.enter.prevent="remove(index)"
+        @keydown.space.prevent="remove(index)"
+        @click.prevent="remove(index)"
       >
         <span class="visually-hidden">Remove</span>
       </i>
     </span>
-      <input
-          class="osim-pill-list-input"
-          type="text"
+    <input
+      ref="elInput"
+      v-model="newItem"
 
-          ref="elInput"
+      class="osim-pill-list-input"
 
-          @submit.prevent
-          @blur="add()"
-          @keydown.enter.prevent="add()"
+      type="text"
+      @submit.prevent
+      @blur="add()"
 
-          v-model="newItem"
-
-      />
+      @keydown.enter.prevent="add()"
+    />
     <!--required-->
     <!--pattern="[Cc][Vv][Ee]-\\d+"-->
   </div>
@@ -88,7 +88,12 @@ function focusInput() {
 }
 .osim-pill-list:focus-within {
   outline: 0;
-  box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0) var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  box-shadow:
+    var(--bs-focus-ring-x, 0)
+    var(--bs-focus-ring-y, 0)
+    var(--bs-focus-ring-blur, 0)
+    var(--bs-focus-ring-width)
+    var(--bs-focus-ring-color);
 }
 
 .osim-pill-list-item {

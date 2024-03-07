@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
+  // eslint-disable-next-line @typescript-eslint/ban-types
   setIssues: Function;
 }>();
 import { computed, ref, watch } from 'vue';
@@ -8,7 +9,7 @@ import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
 import { useToastStore } from '@/stores/ToastStore';
 
-const { addToast } = useToastStore();
+useToastStore();
 
 const route = useRoute();
 
@@ -87,12 +88,21 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
       Advanced Search
     </summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
-      <div class="input-group mb-2" v-for="(facet, index) in facets">
+      <div v-for="(facet, index) in facets" :key="facet.field" class="input-group mb-2">
         <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
-          <option v-if="!facet.field" selected value="" disabled>
+          <option
+            v-if="!facet.field"
+            selected
+            value="" 
+            disabled
+          >
             Select field...
           </option>
-          <option v-for="field in unchosenFields(facet.field)" :value="field">
+          <option
+            v-for="field in unchosenFields(facet.field)"
+            :key="field"
+            :value="field"
+          >
             {{ field }}
           </option>
         </select>
@@ -102,15 +112,15 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           class="form-select"
           @submit.prevent
         >
-          <option v-for="option in optionsFor(facet.field)" :value="option">
+          <option v-for="option in optionsFor(facet.field)" :key="option" :value="option">
             {{ option }}
           </option>
         </select>
         <input
           v-else
+          v-model="facet.value"
           type="text"
           class="form-control"
-          v-model="facet.value"
           :disabled="!facet.field"
         />
         <button

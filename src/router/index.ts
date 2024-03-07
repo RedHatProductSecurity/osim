@@ -4,7 +4,7 @@ import {
   type NavigationGuardNext,
   type RouteLocationNormalized,
 } from 'vue-router';
-import { nextTick as vueNextTick, watch } from 'vue';
+import { nextTick as vueNextTick} from 'vue';
 import IndexView from '../views/IndexView.vue';
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';
@@ -176,11 +176,13 @@ router.beforeEach(async (to, from) => {
   const isAuthenticated = userStore.isAuthenticated;
 
   const { canVisitWithoutAuth } = to.meta;
-  let manualLocationNavigation = from.name === undefined;
+  const manualLocationNavigation = from.name === undefined;
 
   if (!canVisitWithoutAuth && !isAuthenticated) {
     if (isNavigationBackButton) {
-      console.log('unauthenticated (probably just logged out), pressed back, and going to protected route');
+      console.log(
+        'unauthenticated (probably just logged out), pressed back, and going to protected route'
+      );
       history.pushState(popState, '', router.resolve({ name: 'login' }).path);
       return { name: 'login' };
     }
@@ -195,7 +197,7 @@ router.beforeEach(async (to, from) => {
   }
 });
 
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   vueNextTick(() => {
     document.title = 'OSIM | ' + to.meta.title;
   });

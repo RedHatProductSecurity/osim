@@ -46,6 +46,12 @@
         "startTag": "never",
         "selfClosingTag": "always"
       }
+    ],
+    "vue/multi-word-component-names": [
+      "error",
+      {
+        "ignores": ["Modal", "Toast", "Login", "Navbar", "Settings"]
+      }
     ]
   }
 }

@@ -34,9 +34,17 @@ defineEmits<{
 
 <template>
   <tr class="osim-issue-queue-item" :class="$attrs.class">
-    <td><input :checked="selected" @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)" type="checkbox" class="form-check-input" aria-label="Select Issue"></td>
+    <td><input
+      :checked="selected"
+      type="checkbox"
+      class="form-check-input"
+      aria-label="Select Issue"
+      @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)"
+    ></td>
     <td class="osim-issue-title">
-      <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">{{ issue.cve_id || issue.uuid }}</RouterLink>
+      <RouterLink :to="{name: 'flaw-details', params: {id: issue.uuid}}">
+        {{ issue.cve_id || issue.uuid }}
+      </RouterLink>
 
     </td>
     <td>{{ issue.impact }}</td>
@@ -47,14 +55,14 @@ defineEmits<{
     <td>{{ issue.owner }}</td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
-  <tr class="osim-badge-gutter" :class="$attrs.class" v-if="hasBadges">
-    <td colspan="100%" >
-    <div  class="ps-4">
-      <span v-if="isEmbargoed">
-        <span class="badge rounded-pill text-bg-danger">Embargoed</span>
-      </span>
-    </div>
-      </td>
+  <tr v-if="hasBadges" class="osim-badge-gutter" :class="$attrs.class">
+    <td colspan="100%">
+      <div class="ps-4">
+        <span v-if="isEmbargoed">
+          <span class="badge rounded-pill text-bg-danger">Embargoed</span>
+        </span>
+      </div>
+    </td>
   </tr>
 </template>
 
