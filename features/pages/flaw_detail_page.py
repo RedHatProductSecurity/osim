@@ -81,7 +81,7 @@ class FlawDetailPage(PageFactory):
         self.addAcknowledgementInputRight.set_text(right_value)
 
     def click_save_acknowledgement_btn(self):
-        self.saveAcknowledgementBtn.click_button()
+        self.driver.execute_script("arguments[0].click();", self.saveAcknowledgementBtn)
 
     def wait_acknowledgement_saved_msg(self):
         self.acknowledgementSavedMsg.visibility_of_element_located()
