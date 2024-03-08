@@ -7,8 +7,9 @@
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
     >
-      <template #default="{ name, affiliation }">
+      <template #default="{ item: {name, affiliation, uuid} }">
         <div class="form-group">
+          {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
         </div>
       </template>
@@ -50,7 +51,7 @@
           <button
             type="button"
             class="btn btn-danger me-2"
-            @click="emit('acknowledgment:delete', item.uuid), closeModal()"
+            @click="handleDelete(item.uuid, closeModal)"
           >
             Confirm
           </button>
@@ -72,4 +73,10 @@ const emit = defineEmits<{
   'acknowledgment:new': [];
   'acknowledgment:delete': [value: string];
 }>();
+
+function handleDelete(uuid: string, closeModal: () => void) {
+  // emit('acknowledgment:delete', uuid);
+  alert('Delete ' + uuid);
+  closeModal();
+}
 </script>
