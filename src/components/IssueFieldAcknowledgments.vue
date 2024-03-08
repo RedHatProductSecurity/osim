@@ -75,8 +75,8 @@ const emit = defineEmits<{
 }>();
 
 function handleDelete(uuid: string, closeModal: () => void) {
-  // emit('acknowledgment:delete', uuid);
-  alert('Delete ' + uuid);
+  emit('acknowledgment:delete', uuid);
+
   closeModal();
 }
 </script>
