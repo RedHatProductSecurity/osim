@@ -1,8 +1,9 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class FlawDetailPage(PageFactory):
@@ -31,8 +32,46 @@ class FlawDetailPage(PageFactory):
         "addAcknowledgementInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
         "saveAcknowledgementBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
         "acknowledgementSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
-        "newestAcknowledgement": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]")
+        "newestAcknowledgement": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
+        "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
+        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]")
     }
+
+    # Data is from OSIDB allowed sources:
+    # https://github.com/RedHatProductSecurity/osidb/blob/master/osidb/models.py#L419
+    allowed_sources = [
+        'ADOBE',
+        'APPLE',
+        'BUGTRAQ',
+        'CERT',
+        'CUSTOMER',
+        'CVE',
+        'DEBIAN',
+        'DISTROS',
+        'FULLDISCLOSURE',
+        'GENTOO',
+        'GIT',
+        'GOOGLE',
+        'HW_VENDOR',
+        'INTERNET',
+        'LKML',
+        'MAGEIA',
+        'MOZILLA',
+        'OPENSSL',
+        'ORACLE',
+        'OSS_SECURITY',
+        'REDHAT',
+        'RESEARCHER',
+        'SECUNIA',
+        'SKO',
+        'SUN',
+        'SUSE',
+        'TWITTER',
+        'UBUNTU',
+        'UPSTREAM',
+        'VENDORSEC',
+        'XEN',
+    ]
 
     def add_comment_btn_exist(self):
         self.addCommentBtn.visibility_of_element_located()
@@ -91,3 +130,24 @@ class FlawDetailPage(PageFactory):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.visibility_of(e)
         )
+
+    def get_select_value(self, field):
+        field_select = getattr(self, field + 'Select')
+        all_values = field_select.get_all_list_item()
+        selected_item = field_select.get_list_selected_item()
+        current_value = selected_item[0] if selected_item else None
+        return (all_values, current_value)
+
+    def set_select_value(self, field):
+        field_select = getattr(self, field + 'Select')
+        all_values, current_value = self.get_select_value(field)
+        if field == 'source':
+            all_values = self.allowed_sources
+        if current_value:
+            all_values.remove(current_value)
+        if all_values:
+            updated_value = all_values[-1]
+            field_select.select_element_by_value(updated_value)
+        else:
+            updated_value = current_value
+        return updated_value

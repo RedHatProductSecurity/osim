@@ -9,12 +9,12 @@ Feature: Flaw detail testing
       When I add a public comment to the flaw
       Then A comment is added to the flaw
 
-    Scenario Outline: Modify document text fields
+    Scenario Outline: Update Document Text Fields
       When I set the text <field> value to "<value>"
       Then The text <field> value is changed
 
       Examples:
-        |        field  |              value |
+        |         field |              value |
         |       summary |       edit summary |
         |     statement |     edit statement |
         |     statement |                    |
@@ -26,3 +26,13 @@ Feature: Flaw detail testing
     Scenario: Add Acknowledgement
       When I add an acknowledgment to the flaw
       Then A new acknowledgement added to the flaw
+
+
+    Scenario Outline: Update dropdown options
+      When I update the dropdown <field> value
+      Then The dropdown <field> value is updated
+
+      Examples:
+        |         field |
+        |        impact |
+        |        source |
