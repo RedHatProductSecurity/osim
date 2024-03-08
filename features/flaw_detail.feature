@@ -36,3 +36,7 @@ Feature: Flaw detail testing
         |         field |
         |        impact |
         |        source |
+
+    Scenario: Modify Acknowledgement
+      When I edit the first acknowledgement in correct format
+      Then Acknowledgement is changed

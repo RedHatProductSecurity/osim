@@ -88,10 +88,33 @@ def step_impl(context, field):
     flaw_detail_page.click_save_btn()
     flaw_detail_page.wait_flaw_saved_msg()
 
+
 @then('The dropdown {field} value is updated')
 def step_impl(context, field):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     _, v = flaw_detail_page.get_select_value(field)
     assert context.selected == v, f"{field} value should be {context.selected}, got {v}"
+    context.browser.quit()
+
+
+@when("I edit the first acknowledgement in correct format")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.click_first_ack_edit_btn()
+    l, r = generate_random_text(), generate_random_text()
+    flaw_detail_page.edit_first_ack(l, r)
+    flaw_detail_page.click_first_ack_edit_btn()
+    flaw_detail_page.click_save_acknowledgement_btn()
+    flaw_detail_page.wait_ack_updated_msg()
+    context.acknowledgement_value = f"{l} from {r}"
+
+
+@then("Acknowledgement is changed")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
