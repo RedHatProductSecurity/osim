@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
-import { osidbHealth, osimRuntime, osimRuntimeStatus, OsimRuntimeStatus } from '@/stores/osimRuntime';
-
+import {
+  osidbHealth,
+  osimRuntime,
+  osimRuntimeStatus,
+  OsimRuntimeStatus,
+  versionString,
+} from '@/stores/osimRuntime';
 
 import { setup } from '@/stores/osimRuntime';
 import { ref, watchEffect } from 'vue';
@@ -17,7 +22,6 @@ watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
 });
-
 </script>
 
 <template>
@@ -30,6 +34,7 @@ watchEffect(() => {
       <RouterView class="osim-page-view" />
     </div>
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
+      <div>OSIM {{ versionString }}</div>
       <div>OSIDB</div>
       <div class="osim-status-osidb-env">[env: {{ osidbHealth.env }}]</div>
       <div class="osim-status-osidb-ver">[ver: {{ osidbHealth.version }}]</div>
@@ -46,7 +51,6 @@ watchEffect(() => {
 </template>
 
 <style>
-
 :root {
   --osim-status-bar-height: 24px;
 }
@@ -106,5 +110,4 @@ watchEffect(() => {
   border-left: 1px solid #ddd;
   padding: 0 3px;
 }
-
 </style>
