@@ -49,10 +49,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   async function createFlaw() {
     postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-      .then((response) => {
+      .then((response: any) => {
         router.push({
           name: 'flaw-detail',
-          params: { id: response?.data.uuid },
+          params: { id: response?.uuid },
         });
       })
       .catch(createCatchHandler('Error creating Flaw'));
