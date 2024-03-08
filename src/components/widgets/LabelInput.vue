@@ -32,6 +32,8 @@ const props = withDefaults(
   }>(),
   {
     modelValue: '',
+    type: undefined,
+    error: undefined,
   },
 );
 
