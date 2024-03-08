@@ -4,11 +4,16 @@ import { useModal } from '@/composables/useModal';
 import LabelInput from './widgets/LabelInput.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
+import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
 const props = defineProps<{
-  modelValue: boolean;
   cveId: string | null | undefined;
+  isFlawNew: boolean;
 }>();
+
+const modelValue = defineModel<boolean | undefined>();
+
+// const isFlawNew = computed(() => modelValue.value === undefined);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', embargoed: boolean): void;
@@ -17,7 +22,7 @@ const emit = defineEmits<{
 const { isModalOpen, openModal, closeModal } = useModal();
 const confirmationId = ref('');
 const isFlawIdConfirmed = computed(() => confirmationId.value === props.cveId);
-
+console.log(props.isFlawNew, modelValue.value);
 function handleConfirm() {
   emit('update:modelValue', false);
   closeModal();
@@ -29,10 +34,11 @@ function handleConfirm() {
     <template #default>
       <div>
         <div class="d-flex ms-0 p-0 justify-content-between">
-          <div class="osim-embargo-label form-control">
+          <LabelCheckbox v-if="isFlawNew" v-model="modelValue as boolean" :label="'Embargoed?'" />
+          <div v-else class="osim-embargo-label osim-input">
             {{ modelValue ? 'Yes' : 'No' }}
           </div>
-          <div v-if="modelValue">
+          <div v-if="!isFlawNew">
             <button
               type="button"
               class="btn ms-3 btn-danger osim-unembargo-button"
