@@ -15,7 +15,7 @@ import {
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
+import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
 
 export type FlawEmitter = {
   (e: 'update:flaw', flaw: any): void;
@@ -107,7 +107,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawTypes,
     flawSources,
     flawImpacts,
-    flawIncidentStates,
     osimLink,
     bugzillaLink,
     addComment,
