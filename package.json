@@ -15,7 +15,7 @@
     "test:unit": "vitest",
     "test:unit:nowatch": "vitest run",
     "test:e2e": "behave features",
-    "build-only": "vite build && node scripts/version.js",
+    "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "vibe-check": "npx vite-bundle-visualizer",
     "generate-openapi-client": "openapi-generator-cli generate -i osidb-3.4.0.oas3.json --output src/generated-client -g typescript-axios",
