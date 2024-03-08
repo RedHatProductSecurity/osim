@@ -18,6 +18,7 @@ export enum OsimRuntimeStatus {
 }
 
 const status = ref(OsimRuntimeStatus.INIT);
+export const versionString = ref('');
 export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
   return status.value;
 });
@@ -46,7 +47,6 @@ export const osimRuntime = computed<OsimRuntime>(() => {
   return runtime.value;
 });
 
-
 const OsidbHealthy = z.object({
   env: z.string(),
   revision: z.string(),
@@ -62,15 +62,13 @@ export const osidbHealth = computed<OsidbHealthy>(() => {
   return _osidbHealth.value;
 });
 
-
-
 let setupCallCount = 0;
-export function setup() {
+export async function setup() {
   if (setupCallCount > 0) {
     console.warn('osimRuntime.setup called more than once:', setupCallCount + 1);
   }
   setupCallCount++;
-
+  await fetchVersionString();
   return fetchRuntime()
     .then(fetchOsidbHealthy)
     .then(() => {
@@ -82,12 +80,22 @@ export function setup() {
     });
 }
 
+async function fetchVersionString() {
+  return fetch('/version.json', {
+    method: 'GET',
+    cache: 'no-cache',
+  }).then((response) => response.json()).then((json) => {
+    console.debug('Version', json);
+    versionString.value = json.version;
+  }).catch(console.error);
+}
+
 function fetchRuntime() {
   return fetch('/runtime.json', {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((json: OsimRuntime) => {
       console.debug('OsimRuntime', json);
       try {
@@ -98,13 +106,13 @@ function fetchRuntime() {
         status.value = OsimRuntimeStatus.ERROR;
       }
     })
-    .catch(e => {
+    .catch((e) => {
       console.error('Unable to get backends', e);
-      runtime.value.error = 'Error finding backends. ' +
-                            'Possible deployment misconfiguration. Please try again.';
+      runtime.value.error =
+        'Error finding backends. ' +
+        'Possible deployment misconfiguration. Please try again.';
       status.value = OsimRuntimeStatus.ERROR;
     });
-
 }
 
 function fetchOsidbHealthy() {
@@ -112,7 +120,7 @@ function fetchOsidbHealthy() {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((json: OsidbHealthy) => {
       console.debug('OsidbHealthy', json);
       try {
@@ -123,10 +131,11 @@ function fetchOsidbHealthy() {
         status.value = OsimRuntimeStatus.ERROR;
       }
     })
-    .catch(e => {
+    .catch((e) => {
       console.error('Unable to get OSIDB health', e);
-      runtime.value.error = 'Error getting OSIDB health. ' +
-                            'Possible deployment misconfiguration. Please try again.';
+      runtime.value.error =
+        'Error getting OSIDB health. ' +
+        'Possible deployment misconfiguration. Please try again.';
       status.value = OsimRuntimeStatus.ERROR;
     });
 }
