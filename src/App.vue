@@ -23,13 +23,9 @@ watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
 });
-const hoursAgofLastCommit = computed(() => {
-  const difference = DateTime.local().diff(DateTime.fromISO(osimLastCommit.value.date));
-  console.log(difference, osimLastCommit.value.date);
-  const msInHour = 1000 * 60 * 60;
-  const approxHours = (difference.milliseconds / msInHour).toFixed(2);
-  return `${approxHours} hours ago`;
-});
+const hoursAgofLastCommit = computed(() =>
+  DateTime.fromISO(osimLastCommit.value.date).toRelative(),
+);
 </script>
 
 <template>
