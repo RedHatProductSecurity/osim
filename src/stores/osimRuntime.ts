@@ -18,7 +18,7 @@ export enum OsimRuntimeStatus {
 }
 
 const status = ref(OsimRuntimeStatus.INIT);
-export const osimLastBuildDateTime = ref('');
+export const osimLastCommit = ref({date:'', sha:''});
 export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
   return status.value;
 });
@@ -68,8 +68,7 @@ export async function setup() {
     console.warn('osimRuntime.setup called more than once:', setupCallCount + 1);
   }
   setupCallCount++;
-  await fetchOsimLastBuildDateTime();
-  return fetchRuntime()
+  await fetchRuntime()
     .then(fetchOsidbHealthy)
     .then(() => {
       // If an error was not set, then the status is still INIT.
@@ -78,16 +77,22 @@ export async function setup() {
         status.value = OsimRuntimeStatus.READY;
       }
     });
+  await fetchOsimLastCommit();
 }
 
-async function fetchOsimLastBuildDateTime() {
-  return fetch('/last-build-time.json', {
+async function fetchOsimLastCommit() {
+  const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
+  return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
     method: 'GET',
     cache: 'no-cache',
-  }).then((response) => response.json()).then((json) => {
-    console.debug('Version', json);
-    osimLastBuildDateTime.value = json.osimLastBuildTime;
-  }).catch(console.error);
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      console.log(json)
+      osimLastCommit.value.sha = json.sha.substring(0, 7);
+      osimLastCommit.value.date = json.commit.author.date;
+    })
+    .catch(console.error);
 }
 
 function fetchRuntime() {
