@@ -26,18 +26,17 @@ class FlawDetailPage(PageFactory):
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
-        "addAcknowledgementBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
-        "addAcknowledgementInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[1]"),
-        "addAcknowledgementInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
-        "saveAcknowledgementBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
-        "acknowledgementSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
-        "newestAcknowledgement": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
+        "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
+        "addAcknowledgmentInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[1]"),
+        "addAcknowledgmentInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
+        "saveAcknowledgmentBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
+        "acknowledgmentSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
         "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
         "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
-        "firstAcknowledgementEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
-        "firstAckEditInputLeft": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[1]"),
-        "firstAckEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
-        "ackUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']")
+        "firstAcknowledgmentEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
+        "firstAcknowledgmentEditInputLeft": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[1]"),
+        "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
+        "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -79,14 +78,8 @@ class FlawDetailPage(PageFactory):
     def add_comment_btn_exist(self):
         self.addCommentBtn.visibility_of_element_located()
 
-    def click_add_comment_btn(self):
-        self.addCommentBtn.click_button()
-
     def set_comment_value(self, value):
         self.commentTextWindow.set_text(value)
-
-    def click_document_text_fields_button(self):
-        self.documentTextFieldsDropDownBtn.click_button()
 
     def set_text_field(self, field, value):
         field_element = getattr(self, field + 'Text')
@@ -104,29 +97,17 @@ class FlawDetailPage(PageFactory):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
         return field_input.getAttribute("value")
 
-    def click_save_btn(self):
-        self.saveBtn.click_button()
-
-    def wait_flaw_saved_msg(self):
-        self.flawSavedMsg.visibility_of_element_located()
-
-    def click_acknowledgments_drop_down_btn(self):
-        self.acknowledgmentsDropDownBtn.click_button()
-
     def click_add_acknowledgment_btn(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgementBtn)
-        self.driver.execute_script("arguments[0].click();", self.addAcknowledgementBtn)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentBtn)
+        self.driver.execute_script("arguments[0].click();", self.addAcknowledgmentBtn)
 
     def set_acknowledgement(self, left_value, right_value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgementInputLeft)
-        self.addAcknowledgementInputLeft.set_text(left_value)
-        self.addAcknowledgementInputRight.set_text(right_value)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentInputLeft)
+        self.addAcknowledgmentInputLeft.set_text(left_value)
+        self.addAcknowledgmentInputRight.set_text(right_value)
 
-    def click_save_acknowledgement_btn(self):
-        self.driver.execute_script("arguments[0].click();", self.saveAcknowledgementBtn)
-
-    def wait_acknowledgement_saved_msg(self):
-        self.acknowledgementSavedMsg.visibility_of_element_located()
+    def click_save_acknowledgment_btn(self):
+        self.driver.execute_script("arguments[0].click();", self.saveAcknowledgmentBtn)
 
     def check_acknowledgement_exist(self, value):
         e = self.driver.find_element(By.XPATH, f'//div[text()="{value}"]')
@@ -155,16 +136,21 @@ class FlawDetailPage(PageFactory):
             updated_value = current_value
         return updated_value
 
-    def wait_ack_updated_msg(self):
-        self.ackUpdatedMsg.visibility_of_element_located()
+    def click_btn(self, btn_element):
+        element = getattr(self, btn_element)
+        element.click_button()
+
+    def wait_msg(self, msg_element):
+        element = getattr(self, msg_element)
+        element.visibility_of_element_located()
 
     def click_first_ack_edit_btn(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgementEditBtn)
-        self.firstAcknowledgementEditBtn.click_button()
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentEditBtn)
+        self.firstAcknowledgmentEditBtn.click_button()
 
     def edit_first_ack(self, left_v, right_v):
-        self.driver.execute_script("arguments[0].value = '';", self.firstAckEditInputLeft)
-        self.firstAckEditInputLeft.set_text(left_v)
+        self.driver.execute_script("arguments[0].value = '';", self.firstAcknowledgmentEditInputLeft)
+        self.firstAcknowledgmentEditInputLeft.set_text(left_v)
 
-        self.driver.execute_script("arguments[0].value = '';", self.firstAckEditInputRight)
-        self.firstAckEditInputRight.set_text(right_v)
+        self.driver.execute_script("arguments[0].value = '';", self.firstAcknowledgmentEditInputRight)
+        self.firstAcknowledgmentEditInputRight.set_text(right_v)

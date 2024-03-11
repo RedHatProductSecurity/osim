@@ -17,7 +17,7 @@ def step_impl(context):
     time.sleep(2)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.add_comment_btn_exist()
-    flaw_detail_page.click_add_comment_btn()
+    flaw_detail_page.click_btn('addCommentBtn')
 
     # Add the random public comment
     public_comment = generate_random_text()
@@ -25,7 +25,7 @@ def step_impl(context):
     # Save the comment
     context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(2)
-    flaw_detail_page.click_add_comment_btn()
+    flaw_detail_page.click_btn('addCommentBtn')
 
     context.add_comment = public_comment
 
@@ -41,19 +41,19 @@ def step_impl(context):
 @when('I set the text {field} value to {value}')
 def step_impl(context, field, value):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_document_text_fields_button()
+    flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     value = value.strip('"')
     flaw_detail_page.set_text_field(field, value)
     context.field_value = value
-    flaw_detail_page.click_save_btn()
-    flaw_detail_page.wait_flaw_saved_msg()
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
 
 
 @then('The text {field} value is changed')
 def step_impl(context, field):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_document_text_fields_button()
+    flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     v = flaw_detail_page.get_text_field(field)
     assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
     context.browser.quit()
@@ -62,12 +62,12 @@ def step_impl(context, field):
 @when('I add an acknowledgment to the flaw')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.click_add_acknowledgment_btn()
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.set_acknowledgement(l, r)
-    flaw_detail_page.click_save_acknowledgement_btn()
-    flaw_detail_page.wait_acknowledgement_saved_msg()
+    flaw_detail_page.click_save_acknowledgment_btn()
+    flaw_detail_page.wait_msg('acknowledgmentSavedMsg')
     context.acknowledgement_value = f"{l} from {r}"
 
 
@@ -75,7 +75,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
 
@@ -85,8 +85,8 @@ def step_impl(context, field):
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.set_select_value(field)
     context.selected = v
-    flaw_detail_page.click_save_btn()
-    flaw_detail_page.wait_flaw_saved_msg()
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
 
 
 @then('The dropdown {field} value is updated')
@@ -101,13 +101,14 @@ def step_impl(context, field):
 @when("I edit the first acknowledgement in correct format")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.click_first_ack_edit_btn()
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.edit_first_ack(l, r)
     flaw_detail_page.click_first_ack_edit_btn()
-    flaw_detail_page.click_save_acknowledgement_btn()
-    flaw_detail_page.wait_ack_updated_msg()
+    flaw_detail_page.click_save_acknowledgment_btn()
+    flaw_detail_page.wait_msg('acknowledgmentUpdatedMsg')
+
     context.acknowledgement_value = f"{l} from {r}"
 
 
@@ -115,6 +116,6 @@ def step_impl(context):
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_acknowledgments_drop_down_btn()
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
