@@ -7,11 +7,11 @@ import {
   osimRuntime,
   osimRuntimeStatus,
   OsimRuntimeStatus,
-  osimLastBuildDateTime,
+  osimLastCommit,
 } from '@/stores/osimRuntime';
 
 import { setup } from '@/stores/osimRuntime';
-import { ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect} from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
 import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
@@ -22,6 +22,13 @@ const { top: footerTop_, height: footerHeight_ } = useElementBounding(elFooter);
 watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
+});
+const hoursAgofLastCommit = computed(() => {
+  const difference = DateTime.local().diff(DateTime.fromISO(osimLastCommit.value.date));
+  console.log(difference, osimLastCommit.value.date);
+  const msInHour = 1000 * 60 * 60;
+  const approxHours = (difference.milliseconds / msInHour).toFixed(2);
+  return `${approxHours} hours ago`;
 });
 </script>
 
@@ -35,7 +42,7 @@ watchEffect(() => {
       <RouterView class="osim-page-view" />
     </div>
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
-      <div>OSIM build date {{ new Date(Number(osimLastBuildDateTime)) }}</div>
+      <div>OSIM [{{ osimLastCommit.sha }} ({{ hoursAgofLastCommit }})]</div>
       <div>OSIDB</div>
       <div class="osim-status-osidb-env">[env: {{ osidbHealth.env }}]</div>
       <div class="osim-status-osidb-ver">[ver: {{ osidbHealth.version }}]</div>
