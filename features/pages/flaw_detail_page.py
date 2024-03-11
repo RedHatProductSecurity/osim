@@ -2,7 +2,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
 
@@ -34,7 +33,11 @@ class FlawDetailPage(PageFactory):
         "acknowledgementSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
         "newestAcknowledgement": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
         "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
-        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]")
+        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
+        "firstAcknowledgementEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
+        "firstAckEditInputLeft": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[1]"),
+        "firstAckEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
+        "ackUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -151,3 +154,17 @@ class FlawDetailPage(PageFactory):
         else:
             updated_value = current_value
         return updated_value
+
+    def wait_ack_updated_msg(self):
+        self.ackUpdatedMsg.visibility_of_element_located()
+
+    def click_first_ack_edit_btn(self):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgementEditBtn)
+        self.firstAcknowledgementEditBtn.click_button()
+
+    def edit_first_ack(self, left_v, right_v):
+        self.driver.execute_script("arguments[0].value = '';", self.firstAckEditInputLeft)
+        self.firstAckEditInputLeft.set_text(left_v)
+
+        self.driver.execute_script("arguments[0].value = '';", self.firstAckEditInputRight)
+        self.firstAckEditInputRight.set_text(right_v)
