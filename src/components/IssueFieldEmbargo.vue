@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const { isModalOpen, openModal, closeModal } = useModal();
 const confirmationId = ref('');
 const isFlawIdConfirmed = computed(() => confirmationId.value === props.cveId);
-console.log(props.isFlawNew, modelValue.value);
+
 function handleConfirm() {
   emit('update:modelValue', false);
   closeModal();
