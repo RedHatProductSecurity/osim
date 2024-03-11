@@ -38,7 +38,7 @@ function handleConfirm() {
           <div v-else class="osim-embargo-label osim-input">
             {{ modelValue ? 'Yes' : 'No' }}
           </div>
-          <div v-if="!isFlawNew">
+          <div v-if="!isFlawNew && modelValue">
             <button
               type="button"
               class="btn ms-3 btn-danger osim-unembargo-button"
