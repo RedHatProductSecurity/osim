@@ -70,7 +70,7 @@ function handleConfirm() {
                   To prevent an accidental unembargo please confirm your intention by typing
                   {{ cveId }} if you wish to proceed.
                 </div>
-                <LabelInput v-model="confirmationId" :label="'Confirm'" />
+                <LabelInput v-model="confirmationId" label="Confirm" />
                 <p v-if="confirmationId" class="alert alert-warning mt-2">
                   <i class="bi-exclamation-triangle-fill"></i> The embargo will only be removed when
                   the Flaw is saved.
