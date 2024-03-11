@@ -88,7 +88,6 @@ async function fetchOsimLastCommit() {
   })
     .then((response) => response.json())
     .then((json) => {
-      console.log(json)
       osimLastCommit.value.sha = json.sha.substring(0, 7);
       osimLastCommit.value.date = json.commit.author.date;
     })
