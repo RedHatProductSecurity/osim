@@ -37,7 +37,6 @@ const {
   flawTypes, // Visually hidden field
   flawSources,
   flawImpacts,
-  flawIncidentStates,
   osimLink,
   bugzillaLink,
   flawRhCvss,
@@ -79,11 +78,7 @@ const onSubmit = () => {
 const errors = {
   cve_id: null,
   impact: null,
-  cvss3: null,
-  cvss3_score: null,
-  nvd_cvss3: null,
   cwe_id: null,
-  major_incident_state: null,
   reported_dt: null,
   unembargo_dt: null,
   type: null,
@@ -160,7 +155,7 @@ const cvssString = computed(() => {
             :options="flawImpacts"
             :error="errors.impact"
           />
-          <LabelEditable v-model="flawRhCvss.vector" type="text" :error="errors.cvss3">
+          <LabelEditable v-model="flawRhCvss.vector" type="text">
             <template #label>
               <span class="mb-0 pt-2 pb-2">CVSSv3
                 <br />
@@ -176,7 +171,6 @@ const cvssString = computed(() => {
             v-model="flawRhCvss.score"
             label="CVSSv3 Score"
             type="text"
-            :error="errors.cvss3_score"
           />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
@@ -212,12 +206,13 @@ const cvssString = computed(() => {
             :classification="flaw.classification"
             :flawId="flaw.uuid"
           />
-          <LabelSelect
+          <!-- Deprecated field -->
+          <!-- <LabelSelect
             v-model="flaw.major_incident_state"
             label="Incident State"
             :options="flawIncidentStates"
             :error="errors.major_incident_state"
-          />
+          /> -->
           <LabelEditable
             v-model="flaw.reported_dt"
             label="Reported Date"
@@ -438,6 +433,7 @@ form.osim-flaw-form :deep(*) {
 .osim-doc-text-container {
   max-width: 80ch;
 }
+
 .cvss-button-div {
   width: 60%;
 }
