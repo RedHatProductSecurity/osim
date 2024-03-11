@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import {computed, onMounted, reactive, ref, watch} from 'vue';
 import { useRoute } from 'vue-router';
 import { z } from 'zod';
 import { searchFlaws } from '../services/FlawService';
@@ -55,7 +55,7 @@ const searchQuery = z.object({
   }),
 });
 
-onMounted(() => {
+function search() {
   try {
     const parsedRoute = searchQuery.parse(route);
     if (parsedRoute.query.query === '') {
@@ -73,7 +73,10 @@ onMounted(() => {
   } catch (e) {
     console.log('IssueSearch: error advanced searching', e);
   }
-});
+}
+
+onMounted(search);
+watch(() => route.query?.query, search);
 
 function setIssues(loadedIssues: []) {
   issues.value = loadedIssues;
