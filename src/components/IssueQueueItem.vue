@@ -7,9 +7,24 @@ const props = defineProps<{
   selected: boolean,
 }>();
 
-const isEmbargoed = computed(() => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0);
+const isUnembargoDateScheduledForLater = computed(
+  () => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0,
+);
+
+const isEmbargoedButNotScheduled = computed(
+  () => props.issue.embargoed && !props.issue.unembargo_dt,
+);
+
+const isEmbargoed = computed(
+  () => isUnembargoDateScheduledForLater.value || isEmbargoedButNotScheduled.value,
+);
+
 const hasBadges = computed(() => isEmbargoed.value);
-const formattedDate = computed(() => DateTime.fromISO(props.issue.created_dt).toFormat('yyyy-MM-dd'));
+
+const formattedDate = computed(() =>
+  DateTime.fromISO(props.issue.created_dt).toFormat('yyyy-MM-dd'),
+);
+
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
 }>();

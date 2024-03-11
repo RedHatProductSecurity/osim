@@ -19,6 +19,7 @@ const FLAW_LIST_FIELDS = [
   'title',
   'state',
   'unembargo_dt',
+  'embargoed',
   'owner',
 ];
 
