@@ -110,7 +110,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
       <LabelCollapsable
         :isExpanded="directoryOfCollapsed[moduleName].isExpanded"
         class="mb-3"
-        @toggle-expanded="toggle(directoryOfCollapsed[moduleName])"
+        @setExpanded="toggle(directoryOfCollapsed[moduleName])"
       >
         <template #label>
           <label class="ms-2 form-label">
@@ -145,7 +145,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
             :componentName="`${componentName}`"
             :affectedComponent="affectedComponent"
             :isExpanded="directoryOfCollapsed[moduleName][componentName].isExpanded"
-            @toggle-expanded="toggle(directoryOfCollapsed[moduleName][componentName])"
+            @setExpanded="toggle(directoryOfCollapsed[moduleName][componentName])"
             @remove="emit('remove', affectedComponent)"
             @file-tracker="emit('file-tracker', $event)"
           />

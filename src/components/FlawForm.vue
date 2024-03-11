@@ -61,16 +61,22 @@ const {
 
 const initialFlaw = ref<ZodFlawType>();
 
+const isSaving = ref(false);
+
 onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
 });
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (props.mode === 'edit') {
-    updateFlaw();
+    isSaving.value = true;
+    await updateFlaw();
+    isSaving.value = false;
   }
   if (props.mode === 'create') {
-    createFlaw();
+    isSaving.value = true;
+    await createFlaw();
+    isSaving.value = false;
   }
 };
 
@@ -325,7 +331,14 @@ const cvssString = computed(() => {
       <!--        <button type="button" class="btn btn-primary col">Create hardening bug/weakness</button>-->
       <div v-if="mode === 'edit'">
         <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
-        <button type="submit" class="btn btn-primary ms-3">Save Changes</button>
+        <button
+          v-osim-loading.grow="isSaving"
+          type="submit"
+          class="btn btn-primary ms-3"
+          :disabled="isSaving"
+        >
+          Save Changes
+        </button>
       </div>
       <div v-else>
         <button type="submit" class="btn btn-primary col">Create New Flaw</button>
