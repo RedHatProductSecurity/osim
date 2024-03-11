@@ -99,7 +99,6 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
-
 const displayCvssNISTForm = computed(() => {
   const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
   const nvdCvssScore = flawNvdCvssScore.toString();
@@ -181,15 +180,15 @@ const cvssString = computed(() => {
           />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
-              <LabelStatic label="NVD CVSSv3" type="text" v-model="flawNvdCvssScore" />
+              <LabelStatic v-model="flawNvdCvssScore" label="NVD CVSSv3" type="text" />
             </div>
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
               <CvssNISTForm
-                  :cveid="flaw.cve_id"
-                  :flaw-summary="flaw.summary"
-                  :bugzilla="bugzillaLink"
-                  :cvss="cvssString"
-                  :nistcvss="flawNvdCvssScore?.toString()"
+                :cveid="flaw.cve_id"
+                :flaw-summary="flaw.summary"
+                :bugzilla="bugzillaLink"
+                :cvss="cvssString"
+                :nistcvss="flawNvdCvssScore?.toString()"
               />
             </div>
           </div>
@@ -236,12 +235,16 @@ const cvssString = computed(() => {
             type="date"
             :error="errors.unembargo_dt"
           />
-          <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
+          <IssueFieldEmbargo
+            v-model="flaw.embargoed"
+            :isFlawNew="!flaw.uuid"
+            :cveId="flaw.cve_id"
+          />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
-      <div class=" mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
+      <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
         <div class="osim-doc-text-container">
           <LabelCollapsable label="Document Text Fields">
             <LabelTextarea v-model="flaw.summary" label="Summary" />
@@ -263,16 +266,15 @@ const cvssString = computed(() => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
 
-            <LabelCollapsable label="Trackers">
-              <ul>
-                <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-                  <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                    {{ tracker.display }}
-                  </RouterLink>
-                </li>
-              </ul>
-            </LabelCollapsable>
-
+          <LabelCollapsable label="Trackers">
+            <ul>
+              <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
+                <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
+                  {{ tracker.display }}
+                </RouterLink>
+              </li>
+            </ul>
+          </LabelCollapsable>
         </div>
       </div>
 
