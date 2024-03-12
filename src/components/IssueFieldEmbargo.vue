@@ -34,7 +34,7 @@ function handleConfirm() {
     <template #default>
       <div>
         <div class="d-flex ms-0 p-0 justify-content-between">
-          <LabelCheckbox v-if="isFlawNew" v-model="modelValue as boolean" :label="'Embargoed?'" />
+          <LabelCheckbox v-if="isFlawNew" v-model="modelValue" :label="'Embargoed?'" />
           <div v-else class="osim-embargo-label osim-input d-flex align-items-center">
             <span class="form-control">{{ modelValue ? 'Yes' : 'No' }}</span>
           </div>
