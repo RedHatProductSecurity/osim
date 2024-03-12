@@ -119,3 +119,22 @@ def step_impl(context):
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
+
+
+@when("I delete an acknowledgement from acknowledgement list")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    context.ack_value = flaw_detail_page.get_first_ack_value()
+    flaw_detail_page.click_btn('firstAcknowledgmentDeleteBtn')
+    flaw_detail_page.click_btn('confirmAcknowledgmentDeleteBtn')
+    flaw_detail_page.wait_msg('acknowledgmentDeletedMsg')
+
+
+@then("Acknowledgement is removed from flaw")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
+    context.browser.quit()
