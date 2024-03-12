@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed} from 'vue';
 const props = defineProps<{
   diameter: number,
   progress: number,
@@ -14,27 +14,27 @@ const normalizedRadius = computed(() => radius.value - props.stroke / 2);
 const circumference = computed(() => normalizedRadius.value * 2 * Math.PI);
 const strokeDashoffset = computed<number>(() => {
   return Math.min(circumference.value, Math.max(0,
-      circumference.value - props.progress / 100 * circumference.value));
+    circumference.value - props.progress / 100 * circumference.value));
 });
 </script>
 
 <template>
   <div>
     <svg
-        :height="diameter"
-        :width="diameter"
+      :height="diameter"
+      :width="diameter"
     >
       <circle
-          shape-rendering="geometricPrecision"
-          :stroke="color"
-          fill="transparent"
-          :stroke-dasharray="circumference + ' ' + circumference"
-          :style="{ strokeDashoffset }"
-          :class="{down: props.direction === 'down'}"
-          :stroke-width="stroke"
-          :r="normalizedRadius"
-          :cx="radius"
-          :cy="radius"
+        shape-rendering="geometricPrecision"
+        :stroke="color"
+        fill="transparent"
+        :stroke-dasharray="circumference + ' ' + circumference"
+        :style="{ strokeDashoffset }"
+        :class="{down: props.direction === 'down'}"
+        :stroke-width="stroke"
+        :r="normalizedRadius"
+        :cx="radius"
+        :cy="radius"
       />
     </svg>
   </div>

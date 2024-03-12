@@ -1,14 +1,14 @@
-import { VueWrapper, mount, flushPromises } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { VueWrapper, mount, flushPromises } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
 import router from '@/router';
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia } from '@pinia/testing';
 
-import Toast from "../Toast.vue";
-import { useSettingsStore } from "@/stores/SettingsStore";
-import { DateTime } from "luxon";
-import ProgressRing from "../ProgressRing.vue";
+import Toast from '../Toast.vue';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { DateTime } from 'luxon';
+import ProgressRing from '../ProgressRing.vue';
 
-describe("Toast", async () => {
+describe('Toast', async () => {
   let subject: VueWrapper<InstanceType<typeof Toast>>;
   beforeEach(() => {
     vi.useFakeTimers();
@@ -19,7 +19,7 @@ describe("Toast", async () => {
     vi.clearAllMocks();
   });
 
-  it("render toast body, header", async () => {
+  it('render toast body, header', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -39,8 +39,8 @@ describe("Toast", async () => {
         ]
       },
       props: {
-        title: "Toast",
-        body: "body",
+        title: 'Toast',
+        body: 'body',
         timestamp: DateTime.now(),
         timeoutMs: 10000,
       }
@@ -58,7 +58,7 @@ describe("Toast", async () => {
     expect(progressRingElement.length).toBe(1);
   });
 
-  it("trigger close event", async () => {
+  it('trigger close event', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -78,8 +78,8 @@ describe("Toast", async () => {
         ]
       },
       props: {
-        title: "Toast",
-        body: "body",
+        title: 'Toast',
+        body: 'body',
         timestamp: DateTime.now(),
         timeoutMs: 10000,
         onClose: vitest.fn,
@@ -93,7 +93,7 @@ describe("Toast", async () => {
     expect(subject.emitted('close')).toBeTruthy();
   });
 
-  it("trigger close event after timeoutMs", async () => {
+  it('trigger close event after timeoutMs', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -113,8 +113,8 @@ describe("Toast", async () => {
         ]
       },
       props: {
-        title: "Toast",
-        body: "body",
+        title: 'Toast',
+        body: 'body',
         timestamp: DateTime.now(),
         timeoutMs: 1000,
         onClose: vitest.fn,
@@ -129,7 +129,7 @@ describe("Toast", async () => {
     expect(subject.emitted('close')).toBeTruthy();
   });
 
-  it("trigger stale event after freshMs", async () => {
+  it('trigger stale event after freshMs', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -149,8 +149,8 @@ describe("Toast", async () => {
         ]
       },
       props: {
-        title: "Toast",
-        body: "body",
+        title: 'Toast',
+        body: 'body',
         timestamp: DateTime.now(),
         timeoutMs: 10000,
         onClose: vitest.fn,

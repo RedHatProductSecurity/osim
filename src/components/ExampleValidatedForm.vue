@@ -35,12 +35,12 @@ let committedForm: ExampleFormType = reactive({ // form from server
 
 const validationSchema = toTypedSchema(ExampleFormSchema);
 const initialValues = ref<ExampleFormType>({...committedForm});
-const {handleSubmit, errors, setValues, resetForm, values, meta} = useForm({
+const {handleSubmit, errors, setValues, values, meta} = useForm({
   validationSchema,
   initialValues: initialValues.value,
 });
 
-const fruitNotesExample = ref('');
+// const fruitNotesExample = ref('');
 
 const {value: salutation} = useField<string>('salutation');
 const {value: fruitRecipient} = useField<string>('fruitRecipient');
@@ -48,7 +48,7 @@ const {value: chosenFruit} = useField<string>('chosenFruit');
 const {value: fruitNotes} = useField<string>('fruitNotes');
 const {value: fruitOrderDate} = useField<Date>('fruitOrderDate');
 const {value: shipOvernight} = useField<boolean>('shipOvernight');
-const {value: bug} = useField<string>('bug');
+// const {value: bug} = useField<string>('bug');
 
 
 const onSubmit = handleSubmit((values: ExampleFormType) => {
@@ -56,13 +56,13 @@ const onSubmit = handleSubmit((values: ExampleFormType) => {
   console.log('saving values', values);
   committedForm = values;
   Promise.resolve('success')
-      .then(() => {
-        initialValues.value = committedForm;
-        console.log('saved values', values);
-        // committedForm = values;
-      });
+    .then(() => {
+      initialValues.value = committedForm;
+      console.log('saved values', values);
+      // committedForm = values;
+    });
 });
-const onReset = (payload: MouseEvent) => {
+const onReset = () => {
   console.log('onReset');
   setValues(committedForm);
   // initialValues.value = committedForm;
@@ -70,6 +70,7 @@ const onReset = (payload: MouseEvent) => {
 };
 </script>
 
+<!-- eslint-disable -->
 <template>
   <div class="osim-content container d-block">
     <hr/>

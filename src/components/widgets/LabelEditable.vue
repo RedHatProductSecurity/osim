@@ -3,7 +3,7 @@
 import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   // modelValue: string,
   label?: string,
   type: 'text' | 'date',
@@ -28,7 +28,6 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
         <slot name="label">
           {{ label }}
         </slot>
-    
         <!--<br />-->
         <!--<br/>-->
       </span>
@@ -42,7 +41,9 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
       <!--v-bind="$attrs"-->
       <!--:value="modelValue"-->
       <!--@update="doupdate"-->
-      <span v-if="!(type in components)" class="alert alert-danger d-block" role="alert">OSIM BUG: Incorrect LabelEditable type</span>
+      <span v-if="!(type in components)" class="alert alert-danger d-block" role="alert">
+        OSIM BUG: Incorrect LabelEditable type
+      </span>
     <!--<pre>labelEditable value: {{$attrs.modelValue}}</pre>-->
     </div>
   </label>

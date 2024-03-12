@@ -10,13 +10,13 @@ const props = defineProps<{
 
 onMounted(() => {
   getTracker(props.id)
-      .then(theTracker => tracker.value = theTracker)
-      .catch(err => console.error(err))
+    .then(theTracker => tracker.value = theTracker)
+    .catch(err => console.error(err));
 });
 </script>
 
 <template>
   <main>
-    <TrackerDetails v-if="tracker" :tracker="tracker"/>
+    <TrackerDetails v-if="tracker" :tracker="tracker" />
   </main>
 </template>

@@ -40,16 +40,16 @@ const mailto = computed<string>(() => {
   const encodedSubject = encodeURIComponent(subject.value);
 
   const body = (
-      'Description:\n' +
-      description.value + '\n\n' +
-      'Appendix:\n' +
-      (appendixEl.value?.innerText ?? '')
+    'Description:\n' +
+    description.value + '\n\n' +
+    'Appendix:\n' +
+    (appendixEl.value?.innerText ?? '')
   );
   const encodedBody = encodeURIComponent(body);
 
   const mailto = `mailto:${recipient}?cc=${cc}&subject=${encodedSubject}&body=${encodedBody}`;
   return mailto;
-})
+});
 
 const commentSaved = ref<boolean>(false);
 const savingComment = ref<boolean>(false);
@@ -64,23 +64,23 @@ function addPublicCveRequestComment() {
     //   setTimeout(resolve, 5000);
     // })
     postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested')
-        .then(() => {
-          commentSaved.value = true;
-          savingComment.value = false;
-          addToast({
-            title: 'Request CVE',
-            body: 'CVE Request comment saved',
-          });
-        })
-        .catch(e => {
-          commentSaved.value = false;
-          savingComment.value = false;
-          const displayedError = getDisplayedOsidbError(e);
-          addToast({
-            title: 'Request CVE',
-            body: 'Failed to save CVE Request comment:\n' + displayedError,
-          });
-        })
+      .then(() => {
+        commentSaved.value = true;
+        savingComment.value = false;
+        addToast({
+          title: 'Request CVE',
+          body: 'CVE Request comment saved',
+        });
+      })
+      .catch(e => {
+        commentSaved.value = false;
+        savingComment.value = false;
+        const displayedError = getDisplayedOsidbError(e);
+        addToast({
+          title: 'Request CVE',
+          body: 'Failed to save CVE Request comment:\n' + displayedError,
+        });
+      });
   }
 }
 
@@ -101,12 +101,14 @@ function closeModal() {
 </script>
 
 <template>
-  <!--  <div class="osim-toast-container toast-container position-fixed top-0 bottom-0 end-0 overflow-auto overflow-x-hidden p-3">-->
+  <!-- <div class="osim-toast-container toast-container position-fixed
+    top-0 bottom-0 end-0 overflow-auto overflow-x-hidden p-3"> -->
   <div class="osim-cve-request-button">
     <button
-        type="button"
-        class="btn btn-secondary"
-        @click="openModal">
+      type="button"
+      class="btn btn-secondary"
+      @click="openModal"
+    >
       Request CVE
     </button>
 
@@ -115,31 +117,31 @@ function closeModal() {
         Request CVE
       </template>
       <template #body>
-        <LabelInput label="Subject" v-model="subject"/>
-        <LabelTextarea label="Description" v-model="description"/>
+        <LabelInput v-model="subject" label="Subject" />
+        <LabelTextarea v-model="description" label="Description" />
 
         <div class="osim-input mb-3 border-start ps-3">
           <span class="form-label">Appendix</span>
           <p
-              ref="appendixEl"
-              class="form-control"
+            ref="appendixEl"
+            class="form-control"
           >
-            OSIM: <a v-bind:href="osimLink">{{ osimLink }}</a><br/>
-            Bugzilla: <a v-bind:href="bugzillaLink">{{ bugzillaLink }}</a>
+            OSIM: <a :href="osimLink">{{ osimLink }}</a><br />
+            Bugzilla: <a :href="bugzillaLink">{{ bugzillaLink }}</a>
           </p>
         </div>
 
-        <hr/>
+        <hr />
         <h2 class="h6">Step 1</h2>
         <div class="osim-request-cve-actions">
           <!--:href="mailto"-->
           <!--target="_blank"-->
           <!--rel="noopener noreferrer"-->
           <button
-              type="button"
-              @click.prevent="openMailto"
-              class="btn btn-primary"
-              role="button"
+            type="button"
+            class="btn btn-primary"
+            role="button"
+            @click.prevent="openMailto"
           >
             Open CVE Request Email Draft
           </button>
@@ -148,17 +150,21 @@ function closeModal() {
         <p class="mb-2">(After sending the CVE Request Email)</p>
         <div class="osim-request-cve-actions">
           <button
-              type="button"
-              @click.prevent="addPublicCveRequestComment"
-              class="btn btn-primary"
-              role="button"
-              :disabled="commentSaved || savingComment"
+            type="button"
+            class="btn btn-primary"
+            role="button"
+            :disabled="commentSaved || savingComment"
+            @click.prevent="addPublicCveRequestComment"
           >
             Add CVE Request Comment
-            <span class="spinner-border spinner-border-sm d-inline-block" role="status" v-if="savingComment">
+            <span
+              v-if="savingComment" 
+              class="spinner-border spinner-border-sm d-inline-block"
+              role="status"
+            >
               <span class="visually-hidden">Saving...</span>
             </span>
-            <i class="bi bi-check-circle d-inline-block" role="status" v-if="commentSaved">
+            <i v-if="commentSaved" class="bi bi-check-circle d-inline-block" role="status">
               <span class="visually-hidden">Saved</span>
             </i>
           </button>
@@ -167,7 +173,12 @@ function closeModal() {
       </template>
 
       <template #footer>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="closeModal">Close
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          @click="closeModal"
+        >Close
         </button>
       </template>
     </Modal>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
 
-import { groupBy, objectMap, sortedByGroup } from '@/utils/helpers';
+import { objectMap, sortedByGroup } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
 
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';

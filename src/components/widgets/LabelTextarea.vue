@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
+defineEmits<{
+  'update:modelValue': [value: string | undefined],
+}>();
 defineProps<{
   modelValue: string | null | undefined;
   label: string;
@@ -39,7 +42,10 @@ const elTextArea = ref();
         :class="{ 'is-invalid': error != null }"
         :value="modelValue"
         rows="5"
-        @input="$emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)"
+        @input="$emit(
+          'update:modelValue',
+          (($event as InputEvent).target as HTMLInputElement).value)
+        "
       ></textarea>
       <span v-if="error" class="invalid-feedback d-block">{{ error }}</span>
     </div>

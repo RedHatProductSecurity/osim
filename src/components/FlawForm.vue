@@ -318,17 +318,27 @@ const cvssString = computed(() => {
             <button type="button" class="btn btn-primary col" @click="addPublicComment">
               Add Public Comment
             </button>
-            <!--          <button type="button" class="btn btn-primary col">Add Private Comment</button>-->
+            <!--<button type="button" class="btn btn-primary col">Add Private Comment</button>-->
           </div>
         </div>
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-      <!--        <button type="button" class="btn btn-primary col">Customer Pending</button>-->
-      <!--        <button type="button" class="btn btn-primary col">Close this issue without actions</button>-->
-      <!--        <button type="button" class="btn btn-primary col">Move this issue to another source queue</button>-->
-      <!--        <button type="button" class="btn btn-primary col">Create a flaw</button>-->
-      <!--        <button type="button" class="btn btn-primary col">Create hardening bug/weakness</button>-->
+      <!-- <button type="button" class="btn btn-primary col">
+        Customer Pending
+      </button> -->
+      <!-- <button type="button" class="btn btn-primary col">
+        Close this issue without actions
+      </button> -->
+      <!-- <button type="button" class="btn btn-primary col">
+        Move this issue to another source queue
+      </button> -->
+      <!-- <button type="button" class="btn btn-primary col">
+        Create a flaw
+      </button> -->
+      <!-- <button type="button" class="btn btn-primary col">
+        Create hardening bug/weakness
+      </button> -->
       <div v-if="mode === 'edit'">
         <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
         <button

@@ -26,7 +26,6 @@ const emit = defineEmits<{
 const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
-const saveFlashMs = 100;
 
 
 const mask = {
@@ -119,18 +118,18 @@ function beginEdit() {
 }
 
 function commit() {
-    console.log('commit');
-    editing.value = false;
-    if (!boundObject.completed) {
-        emit('update:modelValue', undefined);
-        return;
-    }
-    const date = parseDate(boundObject.masked); // Use parseDate to get the Date object
-    if (!isValidDate(date)) {
-        emit('update:modelValue', undefined);
-    } else {
-        emit('update:modelValue', date.toISOString());
-    }
+  console.log('commit');
+  editing.value = false;
+  if (!boundObject.completed) {
+    emit('update:modelValue', undefined);
+    return;
+  }
+  const date = parseDate(boundObject.masked); // Use parseDate to get the Date object
+  if (!isValidDate(date)) {
+    emit('update:modelValue', undefined);
+  } else {
+    emit('update:modelValue', date.toISOString());
+  }
 }
 
 function abort() {
@@ -189,81 +188,86 @@ function parseDate(input: string): Date {
 }
 
 function isValidDate(d: Date | string): boolean {
-    if (typeof d === 'string') {
-        d = parseDate(d);
-    }
-    return !isNaN(d.getTime());
+  if (typeof d === 'string') {
+    d = parseDate(d);
+  }
+  return !isNaN(d.getTime());
 }
 
 
 function osimFormatDate(date: Date | string | undefined | null): string {
-    if (date == null) {
-        return '[No date selected]';
-    }
-    
-    const formattedDate = formatDate(date); // Use the new formatDate function
-    if (!formattedDate) {
-        return 'Invalid Date';
-    }
+  if (date == null) {
+    return '[No date selected]';
+  }
 
-    return formattedDate;
+  const formattedDate = formatDate(date); // Use the new formatDate function
+  if (!formattedDate) {
+    return 'Invalid Date';
+  }
+
+  return formattedDate;
 }
 
-function validateDatePart(e: KeyboardEvent) {
-  console.log(boundObject);
-  // if (e.repeat) {
-  //   e.preventDefault();
-  //   return false;
-  // }
-  // console.log(e);
-  // if (e.currentTarget instanceof HTMLInputElement) {
-  //   if (!/\d\d\d\d-\d\d-\d\d/.test(e.currentTarget.value + e.key)) {
-  //     e.preventDefault();
-  //     return false;
-  //   }
-  // }
-}
+// function validateDatePart(e: KeyboardEvent) {
+//   console.log(boundObject);
+//   if (e.repeat) {
+//     e.preventDefault();
+//     return false;
+//   }
+//   console.log(e);
+//   if (e.currentTarget instanceof HTMLInputElement) {
+//     if (!/\d\d\d\d-\d\d-\d\d/.test(e.currentTarget.value + e.key)) {
+//       e.preventDefault();
+//       return false;
+//     }
+//   }
+// }
 
 </script>
 
 <template>
   <!-- for invalid-tooltip positioning -->
-  <div class="position-relative col-9 osim-editable-field osim-date"> 
-  <Transition name="flash-bg">
-    <div class="osim-editable-date" v-if="!editing" :tabindex="readOnly ? -1 : 0" @focus="beginEdit">
-      <span
+  <div class="position-relative col-9 osim-editable-field osim-date">
+    <Transition name="flash-bg">
+      <div
+        v-if="!editing"
+        class="osim-editable-date"
+        :tabindex="readOnly ? -1 : 0"
+        @focus="beginEdit"
+      >
+        <span
           class="osim-editable-date-value form-control text-start"
           :class="{'form-control': !readOnly, 'is-invalid': error != null && !readOnly}"
-      >{{osimFormatDate(modelValue)}}</span>
-      <button
+        >{{ osimFormatDate(modelValue) }}</span>
+        <button
+          v-if="!readOnly"
           type="button"
           class="osim-editable-date-pen input-group-text"
-          @click="beginEdit"
-          v-if="!readOnly"
           tabindex="-1"
-      ><i class="bi bi-pencil"></i></button>
-    </div>
-  </Transition>
-    <div 
+          @click="beginEdit"
+        ><i class="bi bi-pencil"></i></button>
+      </div>
+    </Transition>
+    <div
       v-if="editing"
       ref="elDiv"
       class="input-group has-validation row"
       @blur="blur($event)"
     >
 
-    <!--v-maska-->
-    <!--@keydown="validateDatePart($event)"-->
-    <!--<input class="form-control"-->
-    <!--       type="text"-->
-    <!--       ref="elInput"-->
-    <!--       @blur="blur($event)"-->
-    <!--       @keyup.esc="abort"-->
+      <!--v-maska-->
+      <!--@keydown="validateDatePart($event)"-->
+      <!--<input class="form-control"-->
+      <!--       type="text"-->
+      <!--       ref="elInput"-->
+      <!--       @blur="blur($event)"-->
+      <!--       @keyup.esc="abort"-->
 
-    <!--       v-maska="boundObject"-->
-    <!--       data-maska="####-##-##"-->
-    <!--/>-->
-    <!--vue-imask-->
-      <input 
+      <!--       v-maska="boundObject"-->
+      <!--       data-maska="####-##-##"-->
+      <!--/>-->
+      <!--vue-imask-->
+      <input
         ref="elInput"
         v-imask="mask"
         class="form-control"
@@ -276,25 +280,25 @@ function validateDatePart(e: KeyboardEvent) {
         @complete="onComplete"
         @accept="onAccept"
       />
-    <button
+      <button
         type="button"
         class="input-group-text"
+        tabindex="-1"
         @click="commit"
         @blur="blur($event)"
-        tabindex="-1"
-    ><i class="bi bi-check"></i></button>
-    <button
+      ><i class="bi bi-check"></i></button>
+      <button
         type="button"
         class="input-group-text"
+        tabindex="-1"
         @click="abort"
         @blur="blur($event)"
-        tabindex="-1"
-    ><i class="bi bi-x"></i></button>
-  </div>
-  <div
+      ><i class="bi bi-x"></i></button>
+    </div>
+    <div
       v-if="!readOnly && error"
       class="invalid-tooltip d-block"
-  >{{error}}</div>
+    >{{ error }}</div>
   <!--<br/>-->
   <!--<pre>-->
   <!--  Masked value: {{ boundObject.masked }}-->
@@ -337,7 +341,7 @@ function validateDatePart(e: KeyboardEvent) {
 .osim-editable-date {
   // Nest these for specificity
   .osim-editable-date-value {
-    //border-color: transparent;  // TODO decide to keep the hovering effect?
+    // border-color: transparent;  // TODO decide to keep the hovering effect?
   }
   .osim-editable-date-value:before {
     // Prevent field from collapsing when empty

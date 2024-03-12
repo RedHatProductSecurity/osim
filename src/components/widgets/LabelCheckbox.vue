@@ -1,28 +1,24 @@
 <script setup lang="ts">
-const props = defineProps<{
-  modelValue: boolean;
+defineProps<{
   label: string;
 }>();
+
+const modelValue = defineModel<boolean | undefined>();
 </script>
 
 <template>
   <div class="osim-input border-start ps-3">
     <label class="form-check h-100 d-inline-block ps-4 p-1">
       <input
+        v-bind="$attrs"
+        v-model="modelValue"
         type="checkbox"
         :checked="modelValue"
         class="form-check-input"
-        v-bind="$attrs"
-        :value="modelValue"
-        @change="
-          $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).checked)
-        "
       />
-      <p class="d-flex align-items-center mb-0">
-        <!-- <span class="form-check-label"> -->
-          {{ label }}
-        <!-- </span> -->
-      </p>
+      <span class="form-check-label">
+        {{ label }}
+      </span>
     </label>
   </div>
 </template>
@@ -31,5 +27,4 @@ const props = defineProps<{
 .osim-input {
   display: block;
 }
-
 </style>

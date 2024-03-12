@@ -8,8 +8,9 @@ import { createTestingPinia } from '@pinia/testing';
 
 
 vi.mock('vue-router', async () => {
-  const actual = await vi.importActual("vue-router");
+  const actual = await vi.importActual('vue-router');
   return {
+    // eslint-disable-next-line @typescript-eslint/ban-types
     ...actual as {},
     useRoute: vi.fn(),
   };
@@ -28,7 +29,7 @@ describe('IssueSearchAdvanced', () => {
         toasts: [],
       },
     });
-  })
+  });
 
   beforeEach(() => {
     const props: typeof IssueSearchAdvanced.props = {};
@@ -39,9 +40,9 @@ describe('IssueSearchAdvanced', () => {
         mocks: { useRoute },
       }
     });
-  })
+  });
 
   it('should render', () => {
     expect(wrapper.exists()).toBe(true);
-  })
+  });
 });

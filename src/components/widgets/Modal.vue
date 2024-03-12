@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {toRef, toRefs, watch} from 'vue';
+import {toRefs, watch} from 'vue';
 
 const props = defineProps<{
   show: boolean,
@@ -28,38 +28,50 @@ watch(show, () => {
 
 <template>
   <Transition name="modal">
-      <div
-          v-if="show"
-          class="modal fade"
-          :class="{show: show}"
-          :style="{display: show? 'block' : 'none'}"
-          :aria-hidden="!show"
-          tabindex="-1"
-          aria-labelledby="modalTitle"
-          :role="show ? 'dialog' : ''"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <slot name="header">
-                <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
-                <button type="button" class="btn-close" aria-label="Close" @click="emit('close', null)"></button>
-              </slot>
-            </div>
-            <div class="modal-body">
-              <slot name="body">
-                Modal Body
-              </slot>
-            </div>
-            <div class="modal-footer">
-              <slot name="footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="emit('close', null)">Close</button>
-                <button type="button" class="btn btn-primary" @click="emit('close', null)">Save</button>
-              </slot>
-            </div>
+    <div
+      v-if="show"
+      class="modal fade"
+      :class="{show: show}"
+      :style="{display: show? 'block' : 'none'}"
+      :aria-hidden="!show"
+      tabindex="-1"
+      aria-labelledby="modalTitle"
+      :role="show ? 'dialog' : ''"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <slot name="header">
+              <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
+              <button
+                type="button"
+                class="btn-close"
+                aria-label="Close"
+                @click="emit('close', null)"
+              ></button>
+            </slot>
+          </div>
+          <div class="modal-body">
+            <slot name="body">
+              Modal Body
+            </slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                @click="emit('close', null)"
+              >Close</button>
+              <button type="button" class="btn btn-primary" @click="emit('close', null)">
+                Save
+              </button>
+            </slot>
           </div>
         </div>
       </div>
+    </div>
   </Transition>
   <Transition name="modal-bg">
     <div v-if="show" class="modal-backdrop fade show"></div>

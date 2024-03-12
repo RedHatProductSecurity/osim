@@ -1,4 +1,7 @@
 <script setup lang="ts">
+defineEmits<{
+  'update:modelValue': [value: string | undefined],
+}>();
 withDefaults(
   defineProps<{
     modelValue: string | null;

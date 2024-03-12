@@ -33,6 +33,7 @@ export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T 
   return JSON.parse(JSON.stringify(deepToRaw(sourceObj)));
 }
 
+// eslint-disable-next-line max-len
 // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
 export const groupBy = <T>(
   array: T[],
