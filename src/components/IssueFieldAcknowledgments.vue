@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import EditableList from '@/components/widgets/EditableList.vue';
+import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+
+const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
+
+const emit = defineEmits<{
+  'acknowledgment:update': [value: any[]];
+  'acknowledgment:new': [];
+  'acknowledgment:delete': [value: string];
+}>();
+
+function handleDelete(uuid: string, closeModal: () => void) {
+  emit('acknowledgment:delete', uuid);
+
+  closeModal();
+}
+</script>
+
 <template>
   <div>
     <EditableList
@@ -61,22 +80,3 @@
     </EditableList>
   </div>
 </template>
-
-<script setup lang="ts">
-import EditableList from '@/components/widgets/EditableList.vue';
-import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
-
-const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
-
-const emit = defineEmits<{
-  'acknowledgment:update': [value: any[]];
-  'acknowledgment:new': [];
-  'acknowledgment:delete': [value: string];
-}>();
-
-function handleDelete(uuid: string, closeModal: () => void) {
-  emit('acknowledgment:delete', uuid);
-
-  closeModal();
-}
-</script>

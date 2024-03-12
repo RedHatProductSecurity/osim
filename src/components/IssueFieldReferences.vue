@@ -1,3 +1,36 @@
+<script setup lang="ts">
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import LabelInput from '@/components/widgets/LabelInput.vue';
+import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+import EditableList from '@/components/widgets/EditableList.vue';
+import type { ZodFlawReferenceType } from '@/types/zodFlaw';
+import { flawReferenceTypeValues } from '@/types/zodFlaw';
+
+const references = defineModel<ZodFlawReferenceType[]>({ default: null });
+
+const excludedReferenceTypes = ['SOURCE'];
+const allowedReferenceTypes = flawReferenceTypeValues.filter(
+  (referenceType) => !excludedReferenceTypes.includes(referenceType),
+);
+
+const referenceTypeLabel = (label: string) =>
+  ({
+    ARTICLE: 'Red Hat Security Bulletin (RHSB)',
+    EXTERNAL: 'External',
+  })[label] || null;
+
+const emit = defineEmits<{
+  'reference:update': [value: any[]];
+  'reference:new': [];
+  'reference:delete': [value: string];
+}>();
+
+function handleDelete(uuid: string, closeModal: () => void) {
+  emit('reference:delete', uuid);
+  closeModal();
+}
+</script>
+
 <template>
   <div>
     <EditableList
@@ -90,39 +123,6 @@
     </EditableList>
   </div>
 </template>
-
-<script setup lang="ts">
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
-import LabelInput from '@/components/widgets/LabelInput.vue';
-import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import EditableList from '@/components/widgets/EditableList.vue';
-import type { ZodFlawReferenceType } from '@/types/zodFlaw';
-import { flawReferenceTypeValues } from '@/types/zodFlaw';
-
-const references = defineModel<ZodFlawReferenceType[]>({ default: null });
-
-const excludedReferenceTypes = ['SOURCE'];
-const allowedReferenceTypes = flawReferenceTypeValues.filter(
-  (referenceType) => !excludedReferenceTypes.includes(referenceType),
-);
-
-const referenceTypeLabel = (label: string) =>
-  ({
-    ARTICLE: 'Red Hat Security Bulletin (RHSB)',
-    EXTERNAL: 'External',
-  })[label] || null;
-
-const emit = defineEmits<{
-  'reference:update': [value: any[]];
-  'reference:new': [];
-  'reference:delete': [value: string];
-}>();
-
-function handleDelete(uuid: string, closeModal: () => void) {
-  emit('reference:delete', uuid);
-  closeModal();
-}
-</script>
 
 <style lang="scss" scoped>
 select.osim-reference-types {
