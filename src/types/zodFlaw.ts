@@ -130,7 +130,29 @@ export const ZodFlawCommentSchema = z.object({
   type: z.string(),
   external_system_id: z.string(),
   order: z.number(),
-  meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
+  // meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
+  meta_attr: z.object({
+    id: z.string().nullish(),
+    tags: z.string().nullish(),
+    text: z.string().nullish(),
+    time: z.string().nullish(),
+    count: z.string().nullish(),
+    bug_id: z.string().nullish(),
+    creator: z.string().nullish(),
+    creator_id: z.string().nullish(),
+    is_private: z
+      .string()
+      .transform((booleanString) => booleanString === 'True')
+      .or(z.boolean())
+      .nullish(),
+    attachment_id: z.string().nullish(),
+    creation_time: z.string().nullish(),
+    private_groups: z
+      .string()
+      .transform((jsonString: string) => JSON.parse(jsonString))
+      .or(z.array(z.string()))
+      .nullish(),
+  }),
   created_dt: zodOsimDateTime(),
   updated_dt: zodOsimDateTime(),
 });
