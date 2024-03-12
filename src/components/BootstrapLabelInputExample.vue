@@ -1,4 +1,3 @@
-<!-- eslint-disable -->
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
 import {useSettingsStore} from '@/stores/SettingsStore';
@@ -14,7 +13,6 @@ let settings = reactive<SettingsType>(settingsStore.settings);
 
 </script>
 
-<!-- eslint-disable -->
 <template>
   <div class="osim-content container">
     <h1 class="mb-3">Settings</h1>
@@ -23,33 +21,45 @@ let settings = reactive<SettingsType>(settingsStore.settings);
 
 
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="revealSensitive"
-               v-input-label:reveal="inputLabels"
-               value="true"
-               v-model="revealSensitive"
+        <input
+          v-model="revealSensitive"
+          v-input-label:reveal="inputLabels"
+          class="form-check-input"
+          type="radio"
+          name="revealSensitive"
+          value="true"
         >
         <label :for="inputLabels.reveal">Reveal Sensitive Values</label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="revealSensitive"
-               v-input-label:hide="inputLabels"
-               value="false"
-               v-model="revealSensitive"
+        <input
+          v-model="revealSensitive"
+          v-input-label:hide="inputLabels"
+          class="form-check-input"
+          type="radio"
+          name="revealSensitive"
+          value="false"
         >
         <label :for="inputLabels.hide">Hide Sensitive Values</label>
       </div>
 
       <label class="form-check">
-        <input class="form-check-input" type="radio" name="revealSensitive2"
-               value="reveal"
-               v-model="revealSensitive"
+        <input
+          v-model="revealSensitive"
+          class="form-check-input"
+          type="radio"
+          name="revealSensitive2"
+          value="reveal"
         >
         <span class="form-check-label">Reveal Sensitive Values</span>
       </label>
       <label class="form-check">
-        <input class="form-check-input" type="radio" name="revealSensitive2"
-               value="hide"
-               v-model="revealSensitive"
+        <input
+          v-model="revealSensitive"
+          class="form-check-input"
+          type="radio"
+          name="revealSensitive2"
+          value="hide"
         >
         <span class="form-check-label">Hide Sensitive Values</span>
       </label>
@@ -57,8 +67,10 @@ let settings = reactive<SettingsType>(settingsStore.settings);
       <div class="mb-3">
         <label class="d-block">
           <span class="form-label">Bugzilla-Api-Key</span>
-          <input :type="{reveal: 'text', hide: 'password'}[revealSensitive]" class="form-control"
-                 v-model="settings.bugzillaApiKey"
+          <input
+            v-model="settings.bugzillaApiKey"
+            :type="{reveal: 'text', hide: 'password'}[revealSensitive]"
+            class="form-control"
           />
         </label>
         <div class="form-text">
@@ -69,7 +81,8 @@ let settings = reactive<SettingsType>(settingsStore.settings);
             <li>Click the API Keys tab</li>
             <li>Check the "Generate a new API key" box</li>
             <li>Click the "Submit Changes" button</li>
-            <li>Copy the API key from the banner at the top of the page. Optionally, save it to your password manager.
+            <li>Copy the API key from the banner at the top of the page.
+              Optionally, save it to your password manager.
               The API key will not be shown again after you navigate away from the page.
             </li>
           </ul>
