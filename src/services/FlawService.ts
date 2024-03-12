@@ -69,7 +69,7 @@ export async function getFlawQueue() {
   return axios.get('/mock/prod-flaws.json');
 }
 
-export async function getFlaw(uuid: string) {
+export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
     return axios.get('/mock/new-flaws-stage.json').then((response) => {
       const flaw = response.data.results.find((flaw: { uuid: string }) => flaw.uuid === uuid);
