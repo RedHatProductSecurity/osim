@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue';
-import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
+import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
@@ -13,10 +13,16 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
+export type FlawEmitter = {
+  (e: 'refresh:flaw'): void;
+  (e: 'add-blank-affect'): void;
+  (e: 'comment:add-public', value: string): void;
+}
+
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
 
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: (event: string)=>void) {
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
