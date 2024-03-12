@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+import sanitizeHtml from 'sanitize-html';
 
 const props = defineProps<{
   comments: any[];
@@ -67,6 +68,20 @@ const activeFilters = computed(() => {
 const filteredComments = computed(() => transformedComments.value.filter(activeFilters.value));
 
 const filters: CommentFilter[] = ['public', 'private', 'system'];
+
+function linkify(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  // Outputs: ["[jboss:INTLY-10833]"]
+  const jiraRegex = /\[jboss:\w+-\d+\]/g;
+  const bugzillaRegex = /\[bug (\d+)\]/g;
+  return sanitizeHtml(text)
+    .replace(urlRegex, '<a target="_blank" href="$1">$1</a>')
+    .replace(jiraRegex, '')
+    .replace(
+      bugzillaRegex,
+      '<a target="_blank" href="https://bugzilla.redhat.com/show_bug.cgi?id=$1">$1</a>',
+    );
+}
 </script>
 
 <template>
@@ -111,7 +126,7 @@ const filters: CommentFilter[] = ['public', 'private', 'system'];
               {{ comment.meta_attr?.time }}
             </a>
           </p>
-          <p>{{ comment.meta_attr?.text }}</p>
+          <p v-html="linkify(comment.meta_attr?.text)" />
         </li>
       </ul>
       <div v-if="!isAddCommentShown">
