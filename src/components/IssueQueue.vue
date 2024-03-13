@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, onUnmounted } from 'vue';
+import { computed, onMounted, reactive, ref, onUnmounted, watch } from 'vue';
 import { DateTime } from 'luxon';
-import { getFlaws } from '@/services/FlawService';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 
 const { userName } = useUserStore();
+
+const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 
 type FilteredIssue = {
   issue: any;
@@ -15,7 +16,27 @@ type FilteredIssue = {
 
 type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
 
-const issues = ref<any[]>([]);
+const props = defineProps<{
+  issues: any[];
+  isLoading: boolean;
+}>();
+
+const issues = ref<any[]>(props.issues.map(relevantFields));
+const isLoading = ref<boolean>(props.isLoading);
+
+watch(
+  () => props.issues,
+  (newIssues) => {
+    issues.value = newIssues.map(relevantFields);
+  },
+);
+
+watch(
+  () => props.isLoading,
+  (newIsLoading) => {
+    isLoading.value = newIsLoading;
+  },
+);
 
 const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
@@ -76,10 +97,8 @@ const isSelectAllChecked = computed(() => {
   return relevantIssues.value.every((it) => it.selected);
 });
 
-const offset = ref(0); // Added offset state variable
-const pagesize = 20;
-function relevantFields(issues: any[]) {
-  return issues.map((issue: any) => ({
+function relevantFields(issue: any) {
+  return {
     id: issue.cve_id || issue.uuid,
     impact: issue.impact,
     source: issue.source,
@@ -90,49 +109,19 @@ function relevantFields(issues: any[]) {
     embargoed: issue.embargoed,
     owner: issue.owner,
     formattedDate: DateTime.fromISO(issue.created_dt).toFormat('yyyy-MM-dd'),
-  }));
+  };
 }
 
 onMounted(() => {
-  document.addEventListener('scroll', handleScroll); // AutoScroll Option
   tableEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
-  console.log(tableEl.value);
-  getFlaws(offset.value)
-    .then((response) => {
-      issues.value = relevantFields(response.data.results);
-      offset.value += pagesize; // Increase the offset for next fetch
-    })
-    .catch((err) => {
-      console.error('IssueQueue: getFlaws error: ', err);
-    });
+  emit('flaws:fetch');
+});
+
+onUnmounted(() => {
+  tableEl.value?.removeEventListener('scroll', handleScroll);
 });
 
 const isFinalPageFetched = ref(false);
-const isLoading = ref(false);
-
-const loadMoreFlaws = () => {
-  if (isLoading.value || isFinalPageFetched.value) {
-    return; // Early exit if already loading
-  }
-  isLoading.value = true;
-  offset.value += pagesize;
-
-  getFlaws(offset.value, pagesize)
-    .then((response) => {
-      if (response.data.results.length < pagesize) {
-        isFinalPageFetched.value = true;
-        return;
-      }
-      issues.value = [...issues.value, ...relevantFields(response.data.results)];
-      offset.value += pagesize;
-    })
-    .catch((err) => {
-      console.error('Error fetching more flaws: ', err);
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-};
 
 // AutoScroll Method. Maybe have this as a user configurable option in the future?
 function handleScroll() {
@@ -142,13 +131,14 @@ function handleScroll() {
   const scrollPosition = tableEl.value.scrollTop + tableEl.value.clientHeight;
 
   if (scrollPosition >= totalHeight) {
-    loadMoreFlaws();
+    // loadMoreFlaws();
+    emitLoadMore();
   }
 }
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
+function emitLoadMore() {
+  emit('flaws:load-more');
+}
 </script>
 
 <template>
@@ -178,7 +168,7 @@ onUnmounted(() => {
         class="btn btn-primary ms-4"
         type="button"
         :disabled="isLoading"
-        @click="loadMoreFlaws"
+        @click="emitLoadMore"
       >
         <span
           v-if="isLoading"
@@ -187,7 +177,7 @@ onUnmounted(() => {
         >
           <span class="visually-hidden">Loading...</span>
         </span>
-        <span v-if="isLoading"> Loading More Flaws&hellip; </span>
+        <span v-if="isLoading"> Loading Flaws&hellip; </span>
         <span v-else> Load More Flaws </span>
       </button>
     </div>
