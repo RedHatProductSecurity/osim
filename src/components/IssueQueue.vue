@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'; //AutoScroll option requires onUnmounted
+import { computed, onMounted, reactive, ref, onUnmounted } from 'vue';
 import { DateTime } from 'luxon';
 import { getFlaws } from '@/services/FlawService';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
+import LabelCheckbox from './widgets/LabelCheckbox.vue';
+import { useUserStore } from '@/stores/UserStore';
+
+const { userName } = useUserStore();
 
 type FilteredIssue = {
   issue: any;
@@ -16,6 +20,8 @@ const issues = ref<any[]>([]);
 const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
 const isSortedByAscending = ref(false);
+const isMyIssuesSelected = ref(false);
+const tableEl = ref<HTMLElement | null>(null);
 
 const columnsFieldsMap: Record<string, ColumnField> = {
   ID: 'id',
@@ -29,14 +35,16 @@ const columnsFieldsMap: Record<string, ColumnField> = {
 
 const relevantIssues = computed<FilteredIssue[]>(() => {
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
+  const wontUseFilter = issueFilter.value.length === 0;
   return issues.value
     .filter(
       (issue: any) =>
-        issueFilter.value.length === 0 ||
+        wontUseFilter ||
         [issue.title, issue.cve_id, issue.state, issue.source].some(
           (text) => text && text.toLowerCase().includes(filterCaseInsensitive),
         ),
     )
+    .filter((issue: any) => !isMyIssuesSelected.value || issue.owner === userName)
     .sort((a: any, b: any) =>
       isSortedByAscending.value
         ? a[selectedSortField.value].localeCompare(b[selectedSortField.value])
@@ -81,12 +89,14 @@ function relevantFields(issues: any[]) {
     unembargo_dt: issue.unembargo_dt,
     embargoed: issue.embargoed,
     owner: issue.owner,
-    formattedDate: DateTime.fromISO(issue.created_dt).toFormat('yyyy-MM-dd')
+    formattedDate: DateTime.fromISO(issue.created_dt).toFormat('yyyy-MM-dd'),
   }));
 }
 
 onMounted(() => {
-  //window.addEventListener('scroll', handleScroll); AutoScroll Option
+  document.addEventListener('scroll', handleScroll); // AutoScroll Option
+  tableEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
+  console.log(tableEl.value);
   getFlaws(offset.value)
     .then((response) => {
       issues.value = relevantFields(response.data.results);
@@ -124,23 +134,21 @@ const loadMoreFlaws = () => {
     });
 };
 
-/*
-AutoScroll Method. Maybe have this as a user configurable option in the future?
-const handleScroll = () => {
-  if (isLoading.value) return; // Do not load more if already loading
+// AutoScroll Method. Maybe have this as a user configurable option in the future?
+function handleScroll() {
+  if (isLoading.value || !tableEl.value) return; // Do not load more if already loading
 
-  const totalHeight = document.documentElement.scrollHeight;
-  const scrollPosition = window.scrollY + window.innerHeight;
+  const totalHeight = tableEl.value.scrollHeight;
+  const scrollPosition = tableEl.value.scrollTop + tableEl.value.clientHeight;
 
   if (scrollPosition >= totalHeight) {
     loadMoreFlaws();
   }
-};
+}
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
-*/
 </script>
 
 <template>
@@ -164,8 +172,26 @@ onUnmounted(() => {
           placeholder="Filter Issues/Flaws"
         />
       </label>
+      <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
+      <button
+        v-if="!isFinalPageFetched"
+        class="btn btn-primary ms-4"
+        type="button"
+        :disabled="isLoading"
+        @click="loadMoreFlaws"
+      >
+        <span
+          v-if="isLoading"
+          class="spinner-border spinner-border-sm d-inline-block"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </span>
+        <span v-if="isLoading"> Loading More Flaws&hellip; </span>
+        <span v-else> Load More Flaws </span>
+      </button>
     </div>
-    <div class="osim-incident-list">
+    <div ref="tableEl" class="osim-incident-list">
       <table class="table align-middle">
         <thead class="sticky-top">
           <!-- <thead class=""> -->
@@ -211,24 +237,8 @@ onUnmounted(() => {
           </template>
         </tbody>
       </table>
-
-      <span v-if="isFinalPageFetched" role="status">No more pages</span>
-      <button
-        v-if="!isFinalPageFetched"
-        class="btn btn-primary align-self-end"
-        type="button"
-        :disabled="isLoading"
-        @click="loadMoreFlaws"
-      >
-        <span
-          v-if="isLoading"
-          class="spinner-border spinner-border-sm d-inline-block"
-          role="status"
-        >
-          <span class="visually-hidden">Loading...</span>
-        </span>
-        Load More Flaws
-      </button>
+      <p v-if="relevantIssues.length === 0">No results.</p>
+      <span v-if="isFinalPageFetched" role="status">Nothing else to load.</span>
     </div>
   </div>
 </template>
@@ -243,19 +253,16 @@ onUnmounted(() => {
     display: block;
     max-height: calc(100vh - 164px);
     overflow-y: scroll;
+
+    &:hover::-webkit-scrollbar-thumb {
+      background-color: #ee0000aa;
+    }
   }
 
   table {
-    // display: table;
-    // table-layout: fixed; // This makes the columns have the same width
-
-    // table-layout: fixed; // This makes the columns have the same width
-    // thead {
-    //   display: table;
-    //   width: 100%;
-    // }
     th {
       cursor: pointer;
+      user-select: none;
     }
 
     tr td,
@@ -265,16 +272,8 @@ onUnmounted(() => {
       }
     }
 
-    tbody {
-      // display: table;
-      // tr {
-      //   display: table;
-      //   width: 100%;
-      // }
-
-      &:hover::-webkit-scrollbar-thumb {
-        background-color: #ee0000aa;
-      }
+    tbody:hover::-webkit-scrollbar-thumb {
+      background-color: #ee0000aa;
     }
   }
 }

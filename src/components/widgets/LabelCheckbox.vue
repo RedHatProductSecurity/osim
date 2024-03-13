@@ -7,7 +7,7 @@ const modelValue = defineModel<boolean | undefined>();
 </script>
 
 <template>
-  <div class="osim-input border-start ps-3">
+  <div class="osim-input ps-3" :class="$attrs.class">
     <label class="form-check h-100 d-inline-block ps-4 p-1">
       <input
         v-bind="$attrs"
