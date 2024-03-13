@@ -40,7 +40,8 @@ class FlawDetailPage(PageFactory):
         "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
-        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']")
+        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
+        "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -167,3 +168,8 @@ class FlawDetailPage(PageFactory):
     def get_first_ack_value(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
         return self.firstAcknowledgmentValue.get_text()
+
+    def get_text_value(self, field):
+        field_value = getattr(self, field + 'Text')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
+        return field_value.get_text()

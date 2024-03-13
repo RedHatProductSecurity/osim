@@ -130,3 +130,11 @@ def generate_random_text():
     N = 8
     text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
     return text
+
+def go_to_advanced_search_page(browser):
+    """
+    This function is a comment one for all advance search senarios.
+    """
+    home_page = HomePage(browser)
+    home_page.click_advanced_search_drop_down_btn()
+    home_page.click_advanced_search_btn()
