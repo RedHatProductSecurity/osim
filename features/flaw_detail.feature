@@ -44,3 +44,7 @@ Feature: Flaw detail testing
     Scenario: Remove Acknowledgement
       When I delete an acknowledgement from acknowledgement list
       Then Acknowledgement is removed from flaw
+
+    Scenario: Assign flaw to others
+      When I type a username from an authorized person to be the assignee
+      Then The flaw is assigned to the person

@@ -40,7 +40,9 @@ class FlawDetailPage(PageFactory):
         "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
-        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']")
+        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
+        "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
+        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[8]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -167,3 +169,14 @@ class FlawDetailPage(PageFactory):
     def get_first_ack_value(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
         return self.firstAcknowledgmentValue.get_text()
+
+    def set_assignee(self, value):
+        self.click_btn("assigneeEditBtn")
+        self.driver.execute_script("arguments[0].value = '';", self.assigneeInput)
+        self.assigneeInput.set_text(value)
+
+    def check_common_field_value_exist(self, value):
+        e = self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of(e)
+        )
