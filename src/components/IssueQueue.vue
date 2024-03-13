@@ -244,6 +244,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+@import '@/scss/redhat-brand-colors';
+
 .osim-issue-queue {
   font-family: 'Red Hat Mono', monospace;
 
@@ -255,8 +257,12 @@ onUnmounted(() => {
     overflow-y: scroll;
 
     &:hover::-webkit-scrollbar-thumb {
-      background-color: #ee0000aa;
+      background-color: $redhat-red-50;
     }
+  }
+
+  &:hover i {
+    color: $redhat-red-50;
   }
 
   table {
@@ -273,7 +279,7 @@ onUnmounted(() => {
     }
 
     tbody:hover::-webkit-scrollbar-thumb {
-      background-color: #ee0000aa;
+      background-color: $redhat-red-50;
     }
   }
 }
