@@ -40,3 +40,7 @@ Feature: Flaw detail testing
     Scenario: Modify Acknowledgement
       When I edit the first acknowledgement in correct format
       Then Acknowledgement is changed
+
+    Scenario: Remove Acknowledgement
+      When I delete an acknowledgement from acknowledgement list
+      Then Acknowledgement is removed from flaw

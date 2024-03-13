@@ -34,9 +34,13 @@ class FlawDetailPage(PageFactory):
         "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
         "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
         "firstAcknowledgmentEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
+        "firstAcknowledgmentDeleteBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[2]"),
+        "firstAcknowledgmentValue": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
         "firstAcknowledgmentEditInputLeft": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[1]"),
         "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
-        "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']")
+        "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
+        "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
+        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -115,6 +119,11 @@ class FlawDetailPage(PageFactory):
             EC.visibility_of(e)
         )
 
+    def check_acknowledgement_not_exist(self, value):
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.invisibility_of_element_located((By.XPATH, f'//div[text()="{value}"]'))
+        )
+
     def get_select_value(self, field):
         field_select = getattr(self, field + 'Select')
         all_values = field_select.get_all_list_item()
@@ -154,3 +163,7 @@ class FlawDetailPage(PageFactory):
 
         self.driver.execute_script("arguments[0].value = '';", self.firstAcknowledgmentEditInputRight)
         self.firstAcknowledgmentEditInputRight.set_text(right_v)
+
+    def get_first_ack_value(self):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
+        return self.firstAcknowledgmentValue.get_text()
