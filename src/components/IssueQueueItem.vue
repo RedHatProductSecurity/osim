@@ -3,9 +3,11 @@ import { DateTime } from 'luxon';
 import { computed } from 'vue';
 
 const props = defineProps<{
-  issue: any,
-  selected: boolean,
+  issue: any;
+  selected: boolean;
 }>();
+
+const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'state', 'owner'];
 
 const isUnembargoDateScheduledForLater = computed(
   () => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0,
@@ -21,43 +23,36 @@ const isEmbargoed = computed(
 
 const hasBadges = computed(() => isEmbargoed.value);
 
-const formattedDate = computed(() =>
-  DateTime.fromISO(props.issue.created_dt).toFormat('yyyy-MM-dd'),
-);
-const cveOrUuid = computed(() => props.issue.cve_id || props.issue.uuid);
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
 }>();
 // console.log('IssueQueueItem:', props.issue);
-
 </script>
 
 <template>
   <tr class="osim-issue-queue-item" :class="$attrs.class">
-    <td><input
-      :checked="selected"
-      type="checkbox"
-      class="form-check-input"
-      aria-label="Select Issue"
-      @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)"
-    ></td>
-    <td class="osim-issue-title">
-      <RouterLink :to="{name: 'flaw-details', params: {id: cveOrUuid}}">
-        {{ cveOrUuid }}
-      </RouterLink>
-
+    <td :class="{ 'pb-0': hasBadges }">
+      <input
+        :checked="selected"
+        type="checkbox"
+        class="form-check-input"
+        aria-label="Select Issue"
+        @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)"
+      />
     </td>
-    <td>{{ issue.impact }}</td>
-    <td>{{ issue.source }}</td>
-    <td>{{ formattedDate }}</td>
-    <td>{{ issue.title }}</td>
-    <td>{{ issue.state }}</td>
-    <td>{{ issue.owner }}</td>
+    <td class="osim-issue-title" :class="{ 'pb-0': hasBadges }">
+      <RouterLink :to="{ name: 'flaw-details', params: { id: issue.id } }">
+        {{ issue.id }}
+      </RouterLink>
+    </td>
+    <td v-for="field in nonIdFields" :key="field" :class="{ 'pb-0': hasBadges }">
+      {{ issue[field] }}
+    </td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
-  <tr v-if="hasBadges" class="osim-badge-gutter" :class="$attrs.class">
-    <td colspan="100%">
-      <div class="ps-4">
+  <tr v-if="hasBadges" class="osim-badge-lane" :class="$attrs.class">
+    <td colspan="100%" class="pt-0">
+      <div class="ps-4 ms-1">
         <span v-if="isEmbargoed">
           <span class="badge rounded-pill text-bg-danger">Embargoed</span>
         </span>
@@ -67,7 +62,7 @@ defineEmits<{
 </template>
 
 <style lang="scss" scoped>
-@import "@/scss/bootstrap-overrides.scss";
+@import '@/scss/bootstrap-overrides.scss';
 
 td.osim-issue-title {
   max-width: 10rem;
@@ -84,4 +79,17 @@ tr.osim-shaded td {
   background-color: $light-gray;
 }
 
+tr:hover {
+  td {
+    background-color: #ffe3d9;
+  }
+
+  &.osim-issue-queue-item + tr.osim-badge-lane td {
+    background-color: #ffe3d9;
+  }
+}
+
+tr.osim-issue-queue-item:has(+tr.osim-badge-lane:hover) td {
+  background-color: #ffe3d9;
+}
 </style>
