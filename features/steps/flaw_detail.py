@@ -138,3 +138,20 @@ def step_impl(context):
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
     context.browser.quit()
+
+
+@when("I type a username from an authorized person to be the assignee")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.assignee = f"{generate_random_text()}@redhat.com"
+    flaw_detail_page.set_assignee(context.assignee)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The flaw is assigned to the person")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_common_field_value_exist(context.assignee)
+    context.browser.quit()
