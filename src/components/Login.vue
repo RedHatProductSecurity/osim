@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/UserStore';
-import { ref } from 'vue';
+import { osimRuntime } from '@/stores/osimRuntime';
+import { computed,ref } from 'vue';
 
 // const router = useRouter();
 const userStore = useUserStore();
 // const route = useRoute();
 
-// const username = ref('');
+const username = ref('');
+const password = ref('');
 const error = ref('');
 
 // const queryRedirect = z.object({
@@ -16,6 +18,20 @@ const error = ref('');
 // });
 
 const working = ref(false);
+const isPasswordRevelead = ref(false);
+const loginMsg = computed(() => {
+  switch (osimRuntime.value.backends.osidbAuth) {
+  case 'credentials': {
+    return 'Login with credentials';
+  }
+  case 'kerberos': {
+    return 'Login with System GSSAPI';
+  }
+  default: {
+    return 'Login disabled';
+  }
+  }
+});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function login(event: Event) {
@@ -26,7 +42,7 @@ function login(event: Event) {
       working.value = true;
       error.value = '';
     })
-    .then(userStore.login)
+    .then(() => userStore.login(username.value, password.value))
   // .then(() => {
   //   try {
   //     const maybeRedirect = queryRedirect.parse(route);
@@ -49,14 +65,19 @@ function login(event: Event) {
   // })
     .catch(e => {
       console.debug('Error logging in', e);
-      error.value = [
-        'Error logging in.',
-        'Ensure that your system has krb5 configured.',
-        'Ensure that your browser has the correct trusted URIs for Negotiate authentication.',
-        'Ensure that you have logged into Kerberos on your system.',
-        // eslint-disable-next-line max-len
-        'More info: <a class="alert-link" target="_blank" rel="noopener noreferrer nofollow"href="https://people.redhat.com/mikeb/negotiate/">https://people.redhat.com/mikeb/negotiate/</a>',
-      ].join('\n');
+      if (osimRuntime.value.backends.osidbAuth === 'kerberos') {
+        error.value = [
+          'Error logging in.',
+          'Ensure that your system has krb5 configured.',
+          'Ensure that your browser has the correct trusted URIs for Negotiate authentication.',
+          'Ensure that you have logged into Kerberos on your system.',
+          // eslint-disable-next-line max-len
+          'More info: <a class="alert-link" target="_blank" rel="noopener noreferrer nofollow"href="https://people.redhat.com/mikeb/negotiate/">https://people.redhat.com/mikeb/negotiate/</a>',
+        ].join('\n');
+      } else if (osimRuntime.value.backends.osidbAuth === 'credentials') {
+        password.value = '';
+        error.value = 'Error logging in. Wrong username or password.';
+      }
     })
     .finally(() => {
       working.value = false;
@@ -81,7 +102,7 @@ function login(event: Event) {
       <!--  <span class="col">Login</span>-->
       <!--</div>-->
 
-      <!-- <div class="row mb-3">
+      <div v-if="osimRuntime.backends.osidbAuth === 'credentials'" class="row mb-3">
         <div class="col">
           <label for="username" class="visually-hidden">Username</label>
           <div class="input-group">
@@ -92,10 +113,31 @@ function login(event: Event) {
               class="form-control"
               placeholder="username"
             >
-            <div class="input-group-text">@redhat.com</div>
+          </div>
+          <div class="input-group">
+            <input
+              id="password"
+              v-model="password"
+              :type="isPasswordRevelead ? 'text' : 'password'"
+              class="form-control"
+              placeholder="password"
+            >
+            <button
+              id="reveal-password"
+              class="btn btn-outline-secondary"
+              type="button"
+              @click="isPasswordRevelead = !isPasswordRevelead"
+            >
+              <i
+                :class="{
+                  'bi-eye-fill': !isPasswordRevelead,
+                  'bi-eye-slash-fill': isPasswordRevelead}
+                "
+              ></i>
+            </button>
           </div>
         </div>
-      </div> -->
+      </div>
 
       <div class="row mb-3">
         <div class="col">
@@ -104,14 +146,14 @@ function login(event: Event) {
             type="submit"
             :disabled="working"
           >
-            <span 
+            <span
               v-if="working"
               class="spinner-border spinner-border-sm d-inline-block"
               role="status"
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            Login with System GSSAPI
+            {{ loginMsg }}
           </button>
         </div>
       </div>
