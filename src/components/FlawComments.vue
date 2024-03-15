@@ -103,7 +103,6 @@ function linkify(text: string) {
       >
         <div class="form-check form-switch">
           <input
-            id=""
             type="checkbox"
             class="form-check-input warning"
             :checked="selectedFilters[filter]"
