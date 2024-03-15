@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue';
-import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
+import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
@@ -13,14 +13,14 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
-import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
-
 export type FlawEmitter = {
-  (e: 'update:flaw', flaw: any): void;
   (e: 'refresh:flaw'): void;
   (e: 'add-blank-affect'): void;
-};
+  (e: 'comment:add-public', value: string): void;
+}
+
+import { useToastStore } from '@/stores/ToastStore';
+import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
@@ -31,8 +31,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
-  const addComment = ref(false);
-  const newPublicComment = ref('');
 
   const trackerUuids = computed(() => {
     return (flaw.value.affects ?? [])
@@ -88,14 +86,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     emit('refresh:flaw');
   }
 
-  function addPublicComment() {
-    postFlawPublicComment(flaw.value.uuid, newPublicComment.value)
+  function addPublicComment(comment: string) {
+    postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(() => {
-        newPublicComment.value = '';
-        addComment.value = false;
-        emit('refresh:flaw');
-      })
+      .then(() => emit('refresh:flaw'))
       .catch(createCatchHandler('Error saving comment'));
   }
 
@@ -108,8 +102,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawImpacts,
     osimLink,
     bugzillaLink,
-    addComment,
-    newPublicComment,
     addPublicComment,
     createFlaw,
     updateFlaw,
