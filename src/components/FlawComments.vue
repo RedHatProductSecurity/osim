@@ -70,7 +70,7 @@ const filteredComments = computed(() => transformedComments.value.filter(activeF
 const filters: CommentFilter[] = ['public', 'private', 'system'];
 
 function linkify(text: string) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urlRegex = /\b(https?:\/\/[\S]+)\b/g;
   // Outputs: ["[jboss:INTLY-10833]"]
   const jiraRegex = /\[jboss:\w+-\d+\]/g;
   const bugzillaRegex = /\[bug (\d+)\]/g;
