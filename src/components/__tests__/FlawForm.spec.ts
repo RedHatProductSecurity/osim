@@ -279,30 +279,30 @@ describe('FlawForm', () => {
     expect(assigneeField?.html()).toContain('test owner');
   });
 
-  // it('displays correct Status field value from props', async () => {
-  //   const statusField = subject.findComponent(IssueFieldStatus);
+  it('displays correct Status field value from props', async () => {
+    const statusField = subject.findComponent(IssueFieldStatus);
 
-  //   expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
-  //   expect(statusField?.props().classification.state).toBe('REVIEW');
-  // });
+    expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
+    expect(statusField?.props().classification.state).toBe('REVIEW');
+  });
 
-  // it.only('displays promote and reject buttons for status', async () => {
-  //   const statusField = subject
-  //     .findAllComponents(IssueFieldStatus)
-  //     .find((component) => component.text().includes('Status'));
-  //   expect(
-  //     statusField
-  //       ?.findAll('button')
-  //       ?.find((el) => el.text() === 'Reject')
-  //       ?.text(),
-  //   ).toBe('Reject');
-  //   expect(
-  //     statusField
-  //       ?.findAll('button')
-  //       ?.find((el) => el.text().includes('Promote to'))
-  //       ?.text(),
-  //   ).toBe('Promote to New');
-  // });
+  it('displays promote and reject buttons for status', async () => {
+    const statusField = subject
+      .findAllComponents(IssueFieldStatus)
+      .find((component) => component.text().includes('Status'));
+    expect(
+      statusField
+        ?.findAll('button')
+        ?.find((el) => el.text() === 'Reject')
+        ?.text(),
+    ).toBe('Reject');
+    expect(
+      statusField
+        ?.findAll('button')
+        ?.find((el) => el.text().includes('Promote to'))
+        ?.text(),
+    ).toBe('Promote to New');
+  });
 
   it('shows a modal for reject button clicks', async () => {
     const statusField = subject
