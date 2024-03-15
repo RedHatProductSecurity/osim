@@ -55,6 +55,10 @@ const filterFunctions: CommentFilterFunctions = {
 };
 
 const activeFilters = computed(() => {
+  if (Object.values(selectedFilters.value).every((isActive) => !isActive)) {
+    return () => true;
+  }
+
   const activeFilterFunctions = Object.entries(selectedFilters.value)
     .filter(([, isActive]) => isActive)
     .map(([filter]) => filterFunctions[filter as CommentFilter]);
@@ -114,6 +118,12 @@ function linkify(text: string) {
           <p class="border-bottom pb-2">
             <span v-if="comment.meta_attr.is_private" class="badge bg-warning rounded-pill">
               Bugzilla Internal
+            </span>
+            <span
+              v-if="comment.meta_attr.creator === 'bugzilla@redhat.com'"
+              class="badge bg-primary rounded-pill"
+            >
+              System
             </span>
             {{ comment.meta_attr?.creator }} /
             <a :href="'#' + comment.type + '/' + comment.external_system_id">
