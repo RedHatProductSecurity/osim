@@ -152,7 +152,7 @@ export const ZodFlawCommentSchema = z.object({
       .transform((jsonString: string) => JSON.parse(jsonString))
       .or(z.array(z.string()))
       .nullish(),
-  }),
+  }).nullish(),
   created_dt: zodOsimDateTime(),
   updated_dt: zodOsimDateTime(),
 });
