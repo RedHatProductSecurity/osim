@@ -84,7 +84,8 @@ const errors = {
   cwe_id: null,
   major_incident_state: null,
   reported_dt: null,
-  unembargo_dt: null,
+  embargo_old_public_dt: "Set the current or a future date for an embargoed flaw.",
+  unembargo_future_public_dt: "Set the current or an old date for unembargoed flaw.",
   type: null,
   component: null,
   source: null,
@@ -97,6 +98,22 @@ const flawCvss3CaculatorLink = computed(
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
+
+function validateFlawEmbargoDates(flaw) {
+  if (flaw.embargoed) {
+    // if embargoed and updated date is older than now, it shows an error to set the current date or a future date instead
+    if (DateTime.fromISO(flaw.unembargo_dt as string).toISODate() < DateTime.now().toISODate()) {
+      return errors.embargo_old_public_dt;
+    }
+  } else {
+    // if NOT embargoed and updated date is in the future, it shows an error, to set the current date or an older date instead
+    if (DateTime.fromISO(flaw.unembargo_dt as string).toISODate() > DateTime.now().toISODate()) {
+      return errors.unembargo_future_public_dt;
+    }
+  }
+  // otherwise, does not show any error
+  return null;
+}
 </script>
 
 <template>
@@ -202,14 +219,9 @@ const onReset = () => {
           />
           <LabelEditable
             v-model="flaw.unembargo_dt"
-            :label="
-              'Public Date' +
-                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
-                  ? ' [FUTURE]'
-                  : '')
-            "
+            :label="'Public Date'"
             type="date"
-            :error="errors.unembargo_dt"
+            :error="validateFlawEmbargoDates(flaw)"
           />
           <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
