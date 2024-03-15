@@ -130,8 +130,6 @@ describe('FlawForm', () => {
     const cvssV3Field = subject
       .findAllComponents(LabelEditable)
       .find((component) => component.props().label === 'CVSSv3');
-      console.log('🐛'.repeat(233))
-      console.log(cvssV3Field?.props(), cvssV3Field?.vm, cvssV3Field?.vm.label);
     expect(cvssV3Field?.exists()).toBe(true);
 
     const cvssV3ScoreField = subject

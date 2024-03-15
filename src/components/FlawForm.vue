@@ -174,11 +174,7 @@ const cvssString = computed(() => {
             </template>
           </LabelEditable>
 
-          <LabelInput
-            v-model="flawRhCvss.score"
-            label="CVSSv3 Score"
-            type="text"
-          />
+          <LabelInput v-model="flawRhCvss.score" label="CVSSv3 Score" type="text" />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
               <LabelStatic v-model="flawNvdCvssScore" label="NVD CVSSv3" type="text" />
