@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   // eslint-disable-next-line @typescript-eslint/ban-types
   setIssues: Function;
 }>();
