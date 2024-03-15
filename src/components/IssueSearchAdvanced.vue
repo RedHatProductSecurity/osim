@@ -68,7 +68,7 @@ const nameForOption = (fieldName: string) => {
   };
   let name =
     mappings[fieldName] ||
-    fieldName.replace(/__[a-z]/g, (beep) => `: ${beep.charAt(2).toUpperCase()}`);
+    fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
