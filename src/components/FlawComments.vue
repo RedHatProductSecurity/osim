@@ -90,26 +90,19 @@ function linkify(text: string) {
   <section class="osim-comments">
     <h4 class="mt-3 mb-2">Comments</h4>
     <header class="nav">
-      <button
+      <span
         v-for="filter in filters"
         :key="filter"
         type="button"
-        class="btn osim-comment-filter me-2"
-        :class="{
-          'btn-warning ': selectedFilters[filter],
-          'btn-secondary': !selectedFilters[filter],
-        }"
+        class="osim-comment-filter me-3"
         @click="selectedFilters[filter] = !selectedFilters[filter]"
       >
+        <p class="visually-hidden">Comment Filter for toggling {{ filter }} comments</p>
         <div class="form-check form-switch">
-          <input
-            type="checkbox"
-            class="form-check-input warning"
-            :checked="selectedFilters[filter]"
-          />
+          <input type="checkbox" class="form-check-input" :checked="selectedFilters[filter]" />
           {{ filter }}
         </div>
-      </button>
+      </span>
     </header>
     <div class="row">
       <ul class="col-6">
@@ -127,7 +120,7 @@ function linkify(text: string) {
               {{ comment.meta_attr?.time }}
             </a>
           </p>
-          <p v-html="linkify(comment.meta_attr?.text)" />
+          <p class="osim-flaw-comment" v-html="linkify(comment.meta_attr?.text)" />
         </li>
       </ul>
       <div v-if="!isAddCommentShown">
@@ -147,14 +140,20 @@ function linkify(text: string) {
 </template>
 
 <style scoped lang="scss">
-button.osim-comment-filter {
-  text-transform: capitalize;
-}
+.osim-comments {
+  .osim-comment-filter {
+    text-transform: capitalize;
+  }
 
-section.osim-comments {
-  li {
-    list-style-type: none;
-    background-color: red;
+  section.osim-comments {
+    li {
+      list-style-type: none;
+      background-color: red;
+    }
+  }
+
+  .osim-flaw-comment {
+    white-space: pre-wrap;
   }
 }
 </style>
