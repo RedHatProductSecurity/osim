@@ -1,13 +1,9 @@
 #!/bin/bash
 
 # Function to run concurrently and trap exit signal
-start_dev() {
-  yarn run-p "$1" "$2" &
-  PID=$!
 
-  trap "kill $PID" EXIT
-  wait $PID
-}
+yarn run-p "dev-server" "test:unit" &
+osim_dev_pid=$!
 
-
-start_dev  "dev-server" "test:unit"
+trap "kill $osim_dev_pid" EXIT
+wait $osim_dev_pid
