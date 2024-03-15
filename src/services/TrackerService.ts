@@ -23,7 +23,7 @@ export async function getTrackers() {
           'created_dt',
           'updated_dt',
           'classification',
-          'is_major_incident',
+          'is_major_incident', // XXX deprecated: replace with major_incident_state?
           'title',
           'state',
           'unembargo_dt'
@@ -43,7 +43,7 @@ export async function getTrackers() {
         'created_dt',
         'updated_dt',
         'classification',
-        'is_major_incident',
+        'is_major_incident', // XXX deprecated: replace with major_incident_state?
         'title',
         'state',
         'unembargo_dt'

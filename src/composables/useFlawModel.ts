@@ -20,7 +20,7 @@ export type FlawEmitter = {
 }
 
 import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
+import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
@@ -100,6 +100,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawTypes,
     flawSources,
     flawImpacts,
+    flawIncidentStates,
     osimLink,
     bugzillaLink,
     addPublicComment,
