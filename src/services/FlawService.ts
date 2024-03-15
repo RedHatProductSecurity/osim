@@ -242,7 +242,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     },
   })
     .then((response) => response.data)
-    .catch(console.error);
+    .catch(createCatchHandler('Problem searching flaws:'));
 }
 
 export async function postFlaw(requestBody: any) {

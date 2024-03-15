@@ -13,7 +13,7 @@ type FilteredIssue = {
 
 const route = useRoute();
 
-const issues = ref([]);
+const issues = ref<any[]>([]);
 
 let issueFilter = ref('');
 
@@ -35,12 +35,6 @@ let filteredIssues = computed<FilteredIssue[]>(() => {
     })
     .map((issue) => reactive({ issue: issue, selected: false }));
 });
-
-function updateSelectAll(selectedAll: boolean) {
-  for (let filteredIssue of filteredIssues.value) {
-    filteredIssue.selected = selectedAll;
-  }
-}
 
 let isSelectAllIndeterminate = computed(() => {
   if (filteredIssues.value.length === 0) {
@@ -82,16 +76,24 @@ function search() {
 onMounted(search);
 watch(() => route.query?.query, search);
 
-function setIssues(loadedIssues: []) {
+
+function setIssues(loadedIssues: any[]) {
   issues.value = loadedIssues;
 }
+
+function updateSelectAll(selectedAll: boolean) {
+  for (let filteredIssue of filteredIssues.value) {
+    filteredIssue.selected = selectedAll;
+  }
+}
+
 </script>
 
 <template>
   <div class="osim-content container osim-issue-queue-search">
     <div class="osim-incident-filter">
       <div class="col-lg-6 col-md-8 mt-2">
-        <IssueSearchAdvanced :setIssues="setIssues" />
+        <IssueSearchAdvanced @issues:load="setIssues" />
       </div>
       <hr />
       <label>
