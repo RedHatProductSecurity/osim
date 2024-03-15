@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, onUnmounted, watch } from 'vue';
+import { computed, onMounted, reactive, ref, onUnmounted } from 'vue';
 import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
@@ -21,23 +21,7 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const issues = ref<any[]>(props.issues.map(relevantFields));
-const isLoading = ref<boolean>(props.isLoading);
-
-watch(
-  () => props.issues,
-  (newIssues) => {
-    issues.value = newIssues.map(relevantFields);
-  },
-);
-
-watch(
-  () => props.isLoading,
-  (newIsLoading) => {
-    isLoading.value = newIsLoading;
-  },
-);
-
+const issues = computed<any[]>(() => props.issues.map(relevantFields));
 const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
 const isSortedByAscending = ref(false);
@@ -125,13 +109,12 @@ const isFinalPageFetched = ref(false);
 
 // AutoScroll Method. Maybe have this as a user configurable option in the future?
 function handleScroll() {
-  if (isLoading.value || !tableEl.value) return; // Do not load more if already loading
+  if (props.isLoading || !tableEl.value) return; // Do not load more if already loading
 
   const totalHeight = tableEl.value.scrollHeight;
   const scrollPosition = tableEl.value.scrollTop + tableEl.value.clientHeight;
 
   if (scrollPosition >= totalHeight) {
-    // loadMoreFlaws();
     emitLoadMore();
   }
 }
