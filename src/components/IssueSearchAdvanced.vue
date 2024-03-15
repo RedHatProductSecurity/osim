@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
@@ -35,24 +34,25 @@ const fieldsMapping: Record<string, string | string[]> = {
   comments: [],
 };
 
-const excludedFields = [
-  'cvss2',
-  'cvss2_score',
-  'cvss3',
-  'cvss3_score',
-  'major_incident_state',
-  'meta',
-  'updated_dt',
-  'reported_dt',
-  'unembargo_dt',
-  'summary',
-  'requires_summary',
-  'description',
-  'statement',
-  'mitigation',
-  'nvd_cvss2',
-  'nvd_cvss3',
-  'nist_cvss_validation',
+const includedFields = [
+  'type',
+  'uuid',
+  'cve_id',
+  'impact',
+  'component',
+  'title',
+  'owner',
+  'team_id',
+  'trackers',
+  'classification',
+  'cwe_id',
+  'source',
+  'affects',
+  'comments',
+  'cvss_scores',
+  'references',
+  'acknowledgments',
+  'embargoed',
 ];
 
 const nameForOption = (fieldName: string) => {
@@ -79,7 +79,7 @@ const nameForOption = (fieldName: string) => {
 
 const facets = ref<Facet[]>([{ field: '', value: '' }]);
 const flawFields = fieldsFor(ZodFlawSchema)
-  .filter((field) => !excludedFields.includes(field))
+  .filter((field) => includedFields.includes(field))
   .flatMap((field) => fieldsMapping[field] || field)
   .sort();
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
@@ -129,10 +129,6 @@ function removeFacet(index: number) {
   }
 }
 
-function setIsSearching(value: boolean) {
-  isSearching.value = value;
-}
-
 async function submitAdvancedSearch() {
   emit('issues:load', []);
   const params = facets.value.reduce(
@@ -144,15 +140,12 @@ async function submitAdvancedSearch() {
     },
     {} as Record<string, string>,
   );
-  setIsSearching(true);
+  isSearching.value = true;
   const response: { results: any } = await advancedSearchFlaws(params);
   if (response) {
     emit('issues:load', response.results);
   }
-  setIsSearching(false);
-  // .then((response) => {
-  //   props.setIssues(response.results);
-  // });
+  isSearching.value = false;
 }
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
