@@ -76,8 +76,12 @@
     {
       "backends": {
         "osidb": "http://localhost:8000",
+        "osidbAuth": "<kerberos|credentials>"
         "bugzilla": "http://localhost:8001"
       },
       "osimVersion": "0"
     }
   ```
+  * **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate agains OSIDB backend.
+                                         `kerberos` is generally used for stage/prod OSIDB instances,
+                                         `credentials` is generally used for local OSIDB instances.
