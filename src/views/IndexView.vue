@@ -50,6 +50,7 @@ function loadMoreFlaws() {
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
+      :isFinalPageFetched="isFinalPageFetched"
       @flaws:fetch="fetchFlaws"
       @flaws:load-more="loadMoreFlaws"
     />

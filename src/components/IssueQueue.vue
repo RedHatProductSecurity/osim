@@ -19,6 +19,7 @@ type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state'
 const props = defineProps<{
   issues: any[];
   isLoading: boolean;
+  isFinalPageFetched: boolean;
 }>();
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
@@ -105,8 +106,6 @@ onUnmounted(() => {
   tableContainerEl.value?.removeEventListener('scroll', handleScroll);
 });
 
-const isFinalPageFetched = ref(false);
-
 // AutoScroll Method. Maybe have this as a user configurable option in the future?
 function handleScroll() {
   if (props.isLoading || !tableContainerEl.value) return; // Do not load more if already loading
@@ -146,26 +145,18 @@ function emitLoadMore() {
         />
       </label>
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
-      <button
-        v-if="!isFinalPageFetched"
-        class="btn btn-primary ms-4"
-        type="button"
-        :disabled="isLoading"
-        @click="emitLoadMore"
+
+      <span
+        v-if="isLoading"
+        class="spinner-border spinner-border-sm d-inline-block ms-3"
+        role="status"
       >
-        <span
-          v-if="isLoading"
-          class="spinner-border spinner-border-sm d-inline-block"
-          role="status"
-        >
-          <span class="visually-hidden">Loading...</span>
-        </span>
-        <span v-if="isLoading"> Loading Flaws&hellip; </span>
-        <span v-else> Load More Flaws </span>
-      </button>
+        <span class="visually-hidden">Loading...</span>
+      </span>
+      <span v-if="isLoading"> Loading Flaws&hellip; </span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
-      <table class="table align-middle">
+      <table class="table align-middle" :class="{'osim-table-loading': isLoading}">
         <thead class="sticky-top">
           <!-- <thead class=""> -->
           <tr>
@@ -210,6 +201,23 @@ function emitLoadMore() {
           </template>
         </tbody>
       </table>
+      <button
+        v-if="!isFinalPageFetched"
+        class="btn btn-primary ms-4"
+        type="button"
+        :disabled="isLoading"
+        @click="emitLoadMore"
+      >
+        <span
+          v-if="isLoading"
+          class="spinner-border spinner-border-sm d-inline-block"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </span>
+        <span v-if="isLoading"> Loading Flaws&hellip; </span>
+        <span v-else> Load More Flaws </span>
+      </button>
       <p v-if="relevantIssues.length === 0">No results.</p>
       <span v-if="isFinalPageFetched" role="status">Nothing else to load.</span>
     </div>
@@ -239,6 +247,10 @@ function emitLoadMore() {
   }
 
   table {
+    &.osim-table-loading {
+      opacity: 0.5;
+    }
+
     th {
       cursor: pointer;
       user-select: none;

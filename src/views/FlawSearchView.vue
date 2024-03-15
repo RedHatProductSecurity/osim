@@ -60,6 +60,6 @@ function setIssues(loadedIssues: []) {
       <IssueSearchAdvanced :setIssues="setIssues" />
     </div>
     <!-- <IssueSearch :query="query" /> -->
-    <IssueQueue :issues="issues" :isLoading="isLoading" />
+    <IssueQueue :issues="issues" :isLoading="isLoading" :isFinalPageFetched="false" />
   </main>
 </template>
