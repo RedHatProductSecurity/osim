@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { vRef } from '@/utils/helpers';
+
 const props = withDefaults(
   defineProps<{
     label?: string;
-    isExpanded?: boolean | null;
+    isExpanded?: boolean | undefined;
   }>(),
   {
-    isExpanded: null,
+    isExpanded: undefined,
     label: '',
   },
 );
 
-const isExpandedLocal = ref(false);
+const isExpanded = vRef(props, 'isExpanded', false);
+
 const emit = defineEmits<{
-  toggleExpanded: [value: boolean];
+  setExpanded: [value: boolean];
 }>();
 
+const emitToggle = () => emit('setExpanded', !props.isExpanded);
+const localToggle = () => (isExpanded.value = !isExpanded.value);
+
 function handleClick() {
-  console.log(props.isExpanded);
-  if (props.isExpanded !== null) {
-    emit('toggleExpanded', !props.isExpanded);
-  } else {
-    isExpandedLocal.value = !isExpandedLocal.value;
-  }
+  props.isExpanded === undefined ? localToggle() : emitToggle();
 }
 </script>
 
 <template>
   <div class="osim-collapsable-label" v-bind="$attrs">
     <button type="button" class="me-2" @click="handleClick">
-      <i v-if="isExpanded || isExpandedLocal" class="bi bi-dash-square-dotted me-1"></i>
+      <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
       <slot name="label">
         <label class="ms-2 form-label">
@@ -39,7 +39,7 @@ function handleClick() {
     </button>
     <slot name="buttons" />
     <div class="ps-3 border-start">
-      <div :class="{ 'visually-hidden': !(isExpanded || isExpandedLocal) }">
+      <div :class="{ 'visually-hidden': !isExpanded }">
         <slot />
       </div>
     </div>

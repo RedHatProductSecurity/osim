@@ -23,7 +23,6 @@ const emit = defineEmits<{
 const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
-const saveFlashMs = 100;
 
 const editedModelValue = ref<string | null>(unref(props.modelValue));
 
@@ -87,56 +86,61 @@ function blur(e: FocusEvent | null) {
   <!-- for invalid-tooltip positioning -->
   <div class="position-relative col-9 osim-editable-field osim-text"> 
     <!--<Transition name="flash-bg" :duration="2000">-->
-  <Transition name="flash-bg">
-    <div class="osim-editable-text" v-show="!editing" :tabindex="readOnly ? -1 : 0"
-      @focus="beginEdit"
-    >
-      <span
+    <Transition name="flash-bg">
+      <div
+        v-show="!editing"
+        class="osim-editable-text"
+        :tabindex="readOnly ? -1 : 0"
+        @focus="beginEdit"
+      >
+        <span
           class="osim-editable-text-value"
           :class="{'form-control': !readOnly}"
-      >{{modelValue === '' ? placeholder : modelValue}}</span>
-      <!--if a button is inside a label, clicking the label clicks the button?-->
-      <button
+        >{{ modelValue === '' ? placeholder : modelValue }}</span>
+        <!--if a button is inside a label, clicking the label clicks the button?-->
+        <button
+          v-if="!readOnly"
           type="button"
           class="osim-editable-text-pen input-group-text"
-          v-if="!readOnly"
           tabindex="-1"
           @click="beginEdit"
-      ><i class="bi bi-pencil"></i></button>
-    </div>
-  </Transition>
-  <div class="input-group has-validation"
-       v-show="editing"
-       @blur="blur($event)"
-       ref="elDiv"
-  >
-    <input class="form-control"
-           v-model="editedModelValue"
-           type="text"
-           ref="elInput"
-           :placeholder="placeholder"
-           @blur="blur($event)"
-           @keyup.esc="abort"
-    />
-    <button
+        ><i class="bi bi-pencil"></i></button>
+      </div>
+    </Transition>
+    <div
+      v-show="editing"
+      ref="elDiv"
+      class="input-group has-validation"
+      @blur="blur($event)"
+    >
+      <input
+        ref="elInput"
+        v-model="editedModelValue"
+        class="form-control"
+        type="text"
+        :placeholder="placeholder"
+        @blur="blur($event)"
+        @keyup.esc="abort"
+      />
+      <button
         type="button"
         class="input-group-text"
+        tabindex="-1"
         @click="commit"
         @blur="blur($event)"
-        tabindex="-1"
-    ><i class="bi bi-check"></i></button>
-    <button
+      ><i class="bi bi-check"></i></button>
+      <button
         type="button"
         class="input-group-text"
+        tabindex="-1"
         @click="abort"
         @blur="blur($event)"
-        tabindex="-1"
-    ><i class="bi bi-x"></i></button>
-  </div>
-  <div
+      ><i class="bi bi-x"></i></button>
+    </div>
+    <div
       v-if="!readOnly && error"
       class="invalid-tooltip d-block"
-  >{{error}}</div>
+    >{{ error }}</div>
   </div>
 </template>
 
@@ -193,7 +197,7 @@ function blur(e: FocusEvent | null) {
 
 //.osim-editable-text:hover {  // TODO decide to keep the hovering effect?
 .osim-editable-text {
-  
+
   @extend .input-group; // Use pure CSS instead of JS for hover
 
   .osim-editable-text-value {

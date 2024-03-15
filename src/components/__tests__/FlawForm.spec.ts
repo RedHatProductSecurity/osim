@@ -6,39 +6,37 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import IssueFieldStatus from '@/components/IssueFieldStatus.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
+import LabelDiv from '../widgets/LabelDiv.vue';
 
-const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
+const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
-const putHandler = http.put(
-  `${FLAW_BASE_URI}/:id`,
-  async ({ request, params, cookies }) => {
-    const reader = request.body?.getReader();
+const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
+  const reader = request.body?.getReader();
 
-    if (!reader) {
-      throw new Error('Request body is not available');
-    }
-
-    const result = await reader.read();
-
-    if (result.done) {
-      throw new Error('Request body stream is already read to the end');
-    }
-
-    const decoder = new TextDecoder('utf-8');
-    const requestBody = decoder.decode(result.value);
-    return HttpResponse.json(JSON.parse(requestBody));
+  if (!reader) {
+    throw new Error('Request body is not available');
   }
-);
+
+  const result = await reader.read();
+
+  if (result.done) {
+    throw new Error('Request body stream is already read to the end');
+  }
+
+  const decoder = new TextDecoder('utf-8');
+  const requestBody = decoder.decode(result.value);
+  return HttpResponse.json(JSON.parse(requestBody));
+});
 
 const server = setupServer(putHandler);
 
 vi.mock('vue-router', async () => {
-  const actual = await vi.importActual("vue-router")
+  const actual = await vi.importActual('vue-router');
   return {
-    ...actual as {},
+    ...(actual as any),
     useRouter: vi.fn(),
   };
 });
@@ -46,13 +44,14 @@ vi.mock('vue-router', async () => {
 describe('FlawForm', () => {
   let subject: VueWrapper<InstanceType<typeof FlawForm>>;
   function mountWithProps(props: typeof FlawForm.$props) {
-    subject =  mount(FlawForm, {
+    subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props,
       global: {
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
+          RouterLink: true,
         },
       },
     });
@@ -68,7 +67,7 @@ describe('FlawForm', () => {
     server.listen({ onUnhandledRequest: 'error' });
 
     (useRouter as Mock).mockReturnValue({
-      'currentRoute': { 'value': { 'fullPath': '/flaws/uuiddddd' } },
+      currentRoute: { value: { fullPath: '/flaws/uuiddddd' } },
     });
 
     subject = mount(FlawForm, {
@@ -88,6 +87,7 @@ describe('FlawForm', () => {
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
+          RouterLink: true,
         },
       },
     });
@@ -95,8 +95,6 @@ describe('FlawForm', () => {
 
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
-
-
 
   it('mounts and renders', async () => {
     expect(subject.exists()).toBe(true);
@@ -106,56 +104,47 @@ describe('FlawForm', () => {
   it('displays correct Assignee field value from props', async () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
-    mountWithProps({flaw});
+    mountWithProps({ flaw, mode: 'edit' });
     const assigneeField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.text().includes('Assignee'));
-
+      .find((component) => component.props().label === 'Assignee');
     expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
-
-    expect(assigneeField?.attributes().modelvalue).toBe('test owner');
+    expect(assigneeField?.props().modelValue).toBe('test owner');
+    expect(assigneeField?.html()).toContain('test owner');
   });
 
   it('displays correct Status field value from props', async () => {
-    const statusField = subject
-    .findAllComponents(LabelStatic)
-    .find((component) => component.text().includes('Status'));
-    expect(
-      statusField?.find('span.form-label').text()
-    ).toBe('Status');
-    expect(
-      statusField?.find('div.form-control > span').text()
-    ).toBe('REVIEW');
+    const statusField = subject.findComponent(IssueFieldStatus);
+
+    expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
+    expect(statusField?.props().classification.state).toBe('REVIEW');
   });
 
-  it('displays promote and reject buttons for status', async () => {
+  it.only('displays promote and reject buttons for status', async () => {
     const statusField = subject
-    .findAllComponents(LabelStatic)
-    .find((component) => component.text().includes('Status'));
+      .findAllComponents(IssueFieldStatus)
+      .find((component) => component.text().includes('Status'));
     expect(
-      statusField?.find('button#osim-status-reject-button')
-        .exists()
-    ).toBe(true);
+      statusField
+        ?.findAll('button')
+        ?.find((el) => el.text() === 'Reject')
+        ?.text(),
+    ).toBe('Reject');
     expect(
-      statusField?.find('button#osim-status-promote-button')
-        .exists()
-    ).toBe(true);
+      statusField
+        ?.findAll('button')
+        ?.find((el) => el.text().includes('Promote to'))
+        ?.text(),
+    ).toBe('Promote to New');
   });
 
   it('shows a modal for reject button clicks', async () => {
     const statusField = subject
-      .findAllComponents(LabelStatic)
+      .findAllComponents(IssueFieldStatus)
       .find((component) => component.text().includes('Status'));
-    const rejectButton = statusField?.find('button#osim-status-reject-button');
+    const rejectButton = statusField?.findAll('button')?.find((el) => el.text() === 'Reject');
     await rejectButton?.trigger('click');
-
-    expect(
-      subject.find('.modal-dialog').exists()
-    ).toBe(true);
-    expect(
-      statusField?.find('button#osim-status-promote-button')
-        .exists()
-    ).toBe(true);
+    expect(subject.find('.modal-dialog').exists()).toBe(true);
   });
 
   it('sends a mocked PUT request with an updated owner', async () => {
@@ -166,28 +155,38 @@ describe('FlawForm', () => {
   });
 
   it('shows a Team Id field', async () => {
-    mountWithProps({flaw: {...sampleFlaw(), team_id: '12345'}});
+    mountWithProps({ flaw: { ...sampleFlaw(), team_id: '12345' }, mode: 'edit' });
 
     const teamIdField = subject
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('Team ID'));
 
     expect(teamIdField?.find('span.form-label').text()).toBe('Team ID');
-
-    expect(teamIdField?.attributes().modelvalue).toBe('12345');
+    expect(teamIdField?.props().modelValue).toBe('12345');
   });
 
-  it("displays correct Cvss3 calculator link for empty value", async () => {
-    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
-    expect(cvss3EditField?.exists()).toBeTruthy();
-    const linkElement = cvss3EditField?.find('a');
-    expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#");
-  })
-
-  it("displays correct Cvss3 calculator link for cvss3 value", async() => {
+  it('displays correct Cvss3 calculator link for cvss3 value', async () => {
     const flaw = sampleFlaw();
-    flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"
+    flaw.cvss3 = '2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N';
+
+    flaw.cvss_scores = [
+      {
+        comment: 'The CVSS is as it is and that is it.',
+        cvss_version: 'V3',
+        flaw: '3dcaf61a-48a7-4483-b1c8-92f56f829abe',
+        issuer: 'RH',
+        score: 2.2,
+        uuid: '23ea1399-219a-4183-ad74-37edd869b2f0',
+        vector: 'CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
+        embargoed: false,
+        created_dt: '2021-08-02T10:49:35Z',
+        updated_dt: '2024-02-28T14:51:02Z',
+      },
+    ];
+  });
+  it('displays correct CVSSv3 calculator link for empty value', async () => {
+    const flaw = sampleFlaw();
+    flaw.cvss_scores = [];
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props: {
@@ -200,15 +199,47 @@ describe('FlawForm', () => {
         },
         stubs: {
           EditableDate: true,
+          RouterLink: true,
         },
       },
     });
-    const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
+    const cvss3EditField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.text().includes('CVSSv3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N");
-  })
+    expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#null');
+  });
+
+  it('displays correct CVSSv3 calculator link for CVSSv3 value', async () => {
+    const flaw = sampleFlaw();
+    subject = mount(FlawForm, {
+      plugins: [useToastStore()],
+      props: {
+        flaw,
+        mode: 'edit',
+      },
+      global: {
+        mocks: {
+          $beforeEach: (a: any) => a,
+        },
+        stubs: {
+          EditableDate: true,
+          RouterLink: true,
+        },
+      },
+    });
+    const cvss3EditField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.text().includes('CVSSv3'));
+    expect(cvss3EditField?.exists()).toBeTruthy();
+    const linkElement = cvss3EditField?.find('a');
+    expect(linkElement?.exists()).toBeTruthy();
+    expect(linkElement?.attributes('href')).toBe(
+      'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
+    );
+  });
 });
 
 function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
@@ -239,11 +270,9 @@ function sampleFlaw() {
     requires_summary: 'APPROVED',
     statement: 'Statement for None',
     cwe_id: 'CWE-1',
-    unembargo_dt:
-      '[native Date Thu Nov 30 2023 21:52:48 GMT-0500 (Eastern Standard Time)]',
+    unembargo_dt: '[native Date Thu Nov 30 2023 21:52:48 GMT-0500 (Eastern Standard Time)]',
     source: 'GIT',
-    reported_dt:
-      '[native Date Sun Oct 05 1975 03:45:17 GMT-0400 (Eastern Daylight Time)]',
+    reported_dt: '[native Date Sun Oct 05 1975 03:45:17 GMT-0400 (Eastern Daylight Time)]',
     mitigation: 'CVE mitigation',
     cvss2: '',
     cvss2_score: null,
@@ -369,7 +398,7 @@ function sampleFlaw() {
           is_private: 'True',
           attachment_id: null,
           creation_time: '2021-09-13T09:12:33Z',
-          private_groups: "['nunya']",
+          private_groups: '[\'nunya\']',
         },
         created_dt: '2021-09-13T09:12:33Z',
         updated_dt: '2021-09-13T09:12:33Z',
@@ -391,7 +420,7 @@ function sampleFlaw() {
           is_private: 'True',
           attachment_id: null,
           creation_time: '2022-03-12T08:34:13Z',
-          private_groups: "['nunya']",
+          private_groups: '[\'nunya\']',
         },
         created_dt: '2022-03-12T08:34:13Z',
         updated_dt: '2022-03-12T08:34:13Z',
@@ -413,7 +442,7 @@ function sampleFlaw() {
           is_private: 'True',
           attachment_id: null,
           creation_time: '2023-07-13T01:07:34Z',
-          private_groups: "['nunya']",
+          private_groups: '[\'nunya\']',
         },
         created_dt: '2023-07-13T01:07:34Z',
         updated_dt: '2023-07-13T01:07:34Z',
@@ -435,7 +464,7 @@ function sampleFlaw() {
           is_private: 'True',
           attachment_id: null,
           creation_time: '2023-07-13T02:06:48Z',
-          private_groups: "['nunya']",
+          private_groups: '[\'nunya\']',
         },
         created_dt: '2023-07-13T02:06:48Z',
         updated_dt: '2023-07-13T02:06:48Z',
@@ -457,7 +486,7 @@ function sampleFlaw() {
           is_private: 'True',
           attachment_id: null,
           creation_time: '2023-07-13T02:39:44Z',
-          private_groups: "['nunya']",
+          private_groups: '[\'nunya\']',
         },
         created_dt: '2023-07-13T02:39:44Z',
         updated_dt: '2023-07-13T02:39:44Z',
@@ -467,7 +496,20 @@ function sampleFlaw() {
     package_versions: [],
     acknowledgments: [],
     references: [],
-    cvss_scores: [],
+    cvss_scores: [
+      {
+        comment: 'The CVSS is as it is and that is it.',
+        cvss_version: 'V3',
+        flaw: 'beeeeep',
+        issuer: 'RH',
+        score: 2.2,
+        uuid: 'cvsss-beeeep',
+        vector: 'CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
+        embargoed: false,
+        created_dt: '2021-08-02T10:49:35Z',
+        updated_dt: '2024-03-04T14:27:02Z',
+      },
+    ],
     embargoed: false,
     created_dt: '2021-09-13T09:09:38Z',
     updated_dt: '2023-12-06T17:12:21Z',

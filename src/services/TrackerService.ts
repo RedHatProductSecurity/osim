@@ -15,8 +15,19 @@ export async function getTrackers() {
       method: 'get',
       url: '/osidb/api/v1/trackers',
       params: {
-        include_fields:
-          'cve_id,uuid,impact,source,created_dt,updated_dt,classification,is_major_incident,title,state,unembargo_dt',
+        include_fields: [
+          'cve_id',
+          'uuid',
+          'impact',
+          'source',
+          'created_dt',
+          'updated_dt',
+          'classification',
+          'is_major_incident',
+          'title',
+          'state',
+          'unembargo_dt'
+        ].join(',')
       },
     });
   }
@@ -24,8 +35,19 @@ export async function getTrackers() {
     method: 'get',
     url: '/osidb/api/v1/trackers',
     params: {
-      include_fields:
-        'cve_id,uuid,impact,source,created_dt,updated_dt,classification,is_major_incident,title,state,unembargo_dt',
+      include_fields: [
+        'cve_id',
+        'uuid',
+        'impact',
+        'source',
+        'created_dt',
+        'updated_dt',
+        'classification',
+        'is_major_incident',
+        'title',
+        'state',
+        'unembargo_dt'
+      ].join(',')
     },
   });
   // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {

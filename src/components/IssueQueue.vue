@@ -19,11 +19,19 @@ let filteredIssues = computed<FilteredIssue[]>(() => {
   }
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
   return issues.value
-      .filter((issue: any) => {
-        // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
-        return [issue.title, issue.cve_id, issue.state, issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
-      })
-      .map(issue => reactive({issue: issue, selected: false}));
+    .filter((issue: any) => {
+      // return [
+      //   issue.title,
+      //   issue.cve_id,
+      //   issue.state,
+      //   issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
+      return [
+        issue.title,
+        issue.cve_id,
+        issue.state,
+        issue.source].some(text => text && text.toLowerCase().includes(filterCaseInsensitive));
+    })
+    .map(issue => reactive({issue: issue, selected: false}));
 });
 
 function updateSelectAll(selectedAll: boolean) {
@@ -36,12 +44,12 @@ let isSelectAllIndeterminate = computed(() => {
   if (filteredIssues.value.length === 0) {
     return false;
   }
-  return filteredIssues.value.some((it) => it.selected !== filteredIssues.value[0].selected)
-})
+  return filteredIssues.value.some((it) => it.selected !== filteredIssues.value[0].selected);
+});
 
 let isSelectAllChecked = computed(() => {
   return filteredIssues.value.every(it => it.selected);
-})
+});
 
 let offset = ref(0); // Added offset state variable
 let pagesize = 20;
@@ -49,17 +57,17 @@ let pagesize = 20;
 onMounted(() => {
   //window.addEventListener('scroll', handleScroll); AutoScroll Option
   getFlaws(offset.value)
-      .then(response => {
-        console.log('meta.env.DEV', import.meta.env.DEV);
-        console.log('IssueQueue: got flaws: ', response.data);
-        issues.value = response.data.results;
-        offset.value += pagesize; // Increase the offset for next fetch
-      })
-      .catch(err => {
-        console.error('IssueQueue: getFlaws error: ', err);
-      })
+    .then(response => {
+      console.log('meta.env.DEV', import.meta.env.DEV);
+      console.log('IssueQueue: got flaws: ', response.data);
+      issues.value = response.data.results;
+      offset.value += pagesize; // Increase the offset for next fetch
+    })
+    .catch(err => {
+      console.error('IssueQueue: getFlaws error: ', err);
+    });
 
-})
+});
 
 const isFinalPageFetched = ref(false);
 const isLoading = ref(false);
@@ -92,7 +100,7 @@ const loadMoreFlaws = () => {
 AutoScroll Method. Maybe have this as a user configurable option in the future?
 const handleScroll = () => {
   if (isLoading.value) return; // Do not load more if already loading
-  
+
   const totalHeight = document.documentElement.scrollHeight;
   const scrollPosition = window.scrollY + window.innerHeight;
 
@@ -115,58 +123,73 @@ onUnmounted(() => {
         <!--Filter By-->
         <!--<select>-->
         <!--  <option value="Issues assigned to Me">Issues assigned to Me</option>-->
-        <!--  <option value="Issues assigned to team but unowned">Issues assigned to team but unowned</option>-->
+        <!-- <option value="Issues assigned to team but unowned">
+          Issues assigned to team but unowned
+        </option> -->
         <!--  <option value="Oldest">Oldest</option>-->
         <!--  <option value="Newest">Newest</option>-->
         <!--</select>-->
 
-        <input type="text" v-model="issueFilter" class="form-text form-control" placeholder="Filter Issues/Flaws"/>
+        <input
+          v-model="issueFilter"
+          type="text"
+          class="form-text form-control"
+          placeholder="Filter Issues/Flaws"
+        />
       </label>
     </div>
     <div class="osim-incident-list">
       <table class="table align-middle">
         <thead>
-        <tr>
-          <th>
-            <input
-              type="checkbox"
-              class="form-check-input"
-              :indeterminate="isSelectAllIndeterminate"
-              :checked="isSelectAllChecked"
-              @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
-              aria-label="Select All Issues in Table"
-            >
-          </th>
-          <th>ID</th>
-          <th>Impact</th>
-          <th>Source</th>
-          <th class="osim-issue-queue-table-created">Created</th>
-          <th>Title</th>
-          <th>State</th>
-          <th>Owner</th>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                class="form-check-input"
+                :indeterminate="isSelectAllIndeterminate"
+                :checked="isSelectAllChecked"
+                aria-label="Select All Issues in Table"
+                @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
+              >
+            </th>
+            <th>ID</th>
+            <th>Impact</th>
+            <th>Source</th>
+            <th class="osim-issue-queue-table-created">Created</th>
+            <th>Title</th>
+            <th>State</th>
+            <th>Owner</th>
           <!--<th>Assigned</th>-->
-        </tr>
+          </tr>
         </thead>
         <tbody class="table-group-divider">
-        <template v-for="(filteredIssue, index) of filteredIssues">
-          <IssueQueueItem :issue="filteredIssue.issue" v-model:selected="filteredIssue.selected" :class="{'osim-shaded':index % 2===0}" />
-        </template>
+          <template v-for="(filteredIssue, index) of filteredIssues" :key="filteredIssue.uuid">
+            <IssueQueueItem
+              v-model:selected="filteredIssue.selected"
+              :issue="filteredIssue.issue"
+              :class="{'osim-shaded':index % 2===0}"
+            />
+          </template>
         </tbody>
       </table>
-      
+
       <span v-if="isFinalPageFetched" role="status">No more pages</span>
       <button
-            v-if="!isFinalPageFetched"
-            @click="loadMoreFlaws"
-            class="btn btn-primary align-self-end"
-            type="button"
-            :disabled="isLoading"
+        v-if="!isFinalPageFetched"
+        class="btn btn-primary align-self-end"
+        type="button"
+        :disabled="isLoading"
+        @click="loadMoreFlaws"
+      >
+        <span
+          v-if="isLoading"
+          class="spinner-border spinner-border-sm d-inline-block"
+          role="status"
         >
-          <span class="spinner-border spinner-border-sm d-inline-block" role="status" v-if="isLoading">
-            <span class="visually-hidden">Loading...</span>
-          </span>
-          Load More Flaws
-        </button>
+          <span class="visually-hidden">Loading...</span>
+        </span>
+        Load More Flaws
+      </button>
     </div>
   </div>
 </template>

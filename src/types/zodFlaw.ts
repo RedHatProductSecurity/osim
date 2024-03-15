@@ -206,7 +206,7 @@ export const ZodFlawSchema = z.object({
   cvss3: z.string().max(100).nullish(), // XXX deprecated
   cvss3_score: z.number().nullish(), // $float // XXX deprecated
   nvd_cvss3: z.string().max(100).nullish(), // XXX deprecated
-  major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
+  major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(), // XXX deprecated
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
   affects: z.array(ZodAffectSchema), // read-only
   meta: z.array(ZodFlawMetaSchema),

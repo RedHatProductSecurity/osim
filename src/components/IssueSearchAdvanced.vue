@@ -1,8 +1,15 @@
 <script setup lang="ts">
+const props = defineProps<{
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  setIssues: Function;
+}>();
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
+import { useToastStore } from '@/stores/ToastStore';
+
+useToastStore();
 
 type Facet = {
   field: string;
@@ -157,7 +164,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
   <details :open="shouldShowAdvanced" class="osim-advanced-search-container">
     <summary class="mb-2" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
-      <div v-for="(facet, index) in facets" :key="index" class="input-group mb-2">
+      <div v-for="(facet, index) in facets" :key="facet.field" class="input-group mb-2">
         <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
           <option
             v-if="!facet.field"
