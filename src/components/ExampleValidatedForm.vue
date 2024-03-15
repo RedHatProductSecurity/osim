@@ -4,6 +4,7 @@ import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import LabelInputCollapsable from '@/components/widgets/LabelInputCollapsable.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import {toTypedSchema} from '@vee-validate/zod';
 import {useField, useForm} from 'vee-validate';
@@ -14,6 +15,7 @@ const ExampleFormSchema = z.object({
   salutation: z.string(),
   fruitRecipient: z.string().min(2),
   chosenFruit: z.enum(['apple', 'banana', 'orange']),
+  fruitColor: z.enum(['Red', 'Green', 'Yellow', 'Blue']),
   fruitNotes: z.string(),
   // fruitOrderDate: z.string().datetime(), // ISO date string
   fruitOrderDate: z.date().optional(), // ISO date string
@@ -26,6 +28,7 @@ let committedForm: ExampleFormType = reactive({ // form from server
   salutation: 'Dr.',
   fruitRecipient: 'John',
   chosenFruit: 'orange',
+  fruitColor: 'Red',
   fruitNotes: 'box of ripe oranges',
   fruitOrderDate: undefined,
   shipOvernight: true,
@@ -46,6 +49,7 @@ const {value: salutation} = useField<string>('salutation');
 const {value: fruitRecipient} = useField<string>('fruitRecipient');
 const {value: chosenFruit} = useField<string>('chosenFruit');
 const {value: fruitNotes} = useField<string>('fruitNotes');
+const {value: fruitColor} = useField<string>('fruitColor');
 const {value: fruitOrderDate} = useField<Date>('fruitOrderDate');
 const {value: shipOvernight} = useField<boolean>('shipOvernight');
 // const {value: bug} = useField<string>('bug');
@@ -84,6 +88,14 @@ const onReset = () => {
       <!--<LabelEditable v-model="bug" label="Invalid" type="invalid" :error="errors.bug"/>-->
       <LabelInput v-model="fruitRecipient" label="Recipient of the fruit" :error="errors.fruitRecipient"/>
       <LabelSelect :options="availableFruits" v-model="chosenFruit" label="Fruit" :error="errors.chosenFruit"/>
+      <LabelInputCollapsable v-model="fruitColor" label="Fruit color" :error="errors.fruitColor" >
+        <div class="m-auto btn-group w-25">
+          <button class="btn btn-primary border-0" :disabled="fruitColor === 'Red'" @click.prevent="fruitColor = 'Red'" @mousedown="event => event.preventDefault()">Red</button>
+          <button class="btn bg-success border-0" :disabled="fruitColor === 'Green'" @click.prevent="fruitColor = 'Green'" @mousedown="event => event.preventDefault()">Green</button>
+          <button class="btn btn-warning border-0" :disabled="fruitColor === 'Yellow'" @click.prevent="fruitColor = 'Yellow'" @mousedown="event => event.preventDefault()">Yellow</button>
+          <button class="btn btn-info border-0" :disabled="fruitColor === 'Blue'" @click.prevent="fruitColor = 'Blue'" @mousedown="event => event.preventDefault()">Blue</button>
+        </div>
+      </LabelInputCollapsable>
       <!--<LabelTextarea v-model="fruitNotesExample" label="Example invalid field" error="example error"/>-->
       <LabelTextarea v-model="fruitNotes" label="Notes about the fruit" :error="errors.fruitNotes"/>
       <LabelCheckbox v-model="shipOvernight" label="Ship Overnight" :error="errors.shipOvernight"/>
