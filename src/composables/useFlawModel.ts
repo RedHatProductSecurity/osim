@@ -1,7 +1,6 @@
 import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '../types/zodFlaw';
 import { useRouter } from 'vue-router';
-import { type Flaw } from '@/generated-client';
 import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
@@ -15,7 +14,7 @@ import {
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
+import { flawTypes, flawSources, flawImpacts } from '@/types/zodFlaw';
 
 export type FlawEmitter = {
   (e: 'update:flaw', flaw: any): void;
@@ -31,7 +30,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     useFlawAffectsModel(flaw);
 
   const router = useRouter();
-  const committedFlaw = ref<Flaw | null>(null);
+  const committedFlaw = ref<ZodFlawType | null>(null);
   const addComment = ref(false);
   const newPublicComment = ref('');
 
@@ -49,10 +48,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   async function createFlaw() {
     postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-      .then((response) => {
+      .then((response: any) => {
         router.push({
           name: 'flaw-detail',
-          params: { id: response?.data.uuid },
+          params: { id: response?.uuid },
         });
       })
       .catch(createCatchHandler('Error creating Flaw'));
@@ -107,7 +106,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     flawTypes,
     flawSources,
     flawImpacts,
-    flawIncidentStates,
     osimLink,
     bugzillaLink,
     addComment,

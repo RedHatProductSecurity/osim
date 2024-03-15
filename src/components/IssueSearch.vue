@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import {computed, onMounted, reactive, ref, watch} from 'vue';
 import { useRoute } from 'vue-router';
 import { z } from 'zod';
 import { searchFlaws } from '../services/FlawService';
@@ -24,7 +24,11 @@ let filteredIssues = computed<FilteredIssue[]>(() => {
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
   return issues.value
     .filter((issue: any) => {
-      // return [issue.title, issue.cve_id, issue.state, issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
+      // return [
+      //   issue.title,
+      //   issue.cve_id,
+      //   issue.state,
+      //   issue.source].join(' ').toLowerCase().includes(issueFilter.value.toLowerCase());
       return [issue.title, issue.cve_id, issue.state, issue.source].some(
         (text) => text && text.toLowerCase().includes(filterCaseInsensitive),
       );
@@ -55,7 +59,7 @@ const searchQuery = z.object({
   }),
 });
 
-onMounted(() => {
+function search() {
   try {
     const parsedRoute = searchQuery.parse(route);
     if (parsedRoute.query.query === '') {
@@ -73,7 +77,10 @@ onMounted(() => {
   } catch (e) {
     console.log('IssueSearch: error advanced searching', e);
   }
-});
+}
+
+onMounted(search);
+watch(() => route.query?.query, search);
 
 function setIssues(loadedIssues: []) {
   issues.value = loadedIssues;
@@ -91,7 +98,9 @@ function setIssues(loadedIssues: []) {
         <!--Filter By-->
         <!--<select>-->
         <!--  <option value="Issues assigned to Me">Issues assigned to Me</option>-->
-        <!--  <option value="Issues assigned to team but unowned">Issues assigned to team but unowned</option>-->
+        <!-- <option value="Issues assigned to team but unowned">
+          Issues assigned to team but unowned
+        </option> -->
         <!--  <option value="Oldest">Oldest</option>-->
         <!--  <option value="Newest">Newest</option>-->
         <!--</select>-->
@@ -129,7 +138,7 @@ function setIssues(loadedIssues: []) {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <template v-for="filteredIssue of filteredIssues">
+          <template v-for="filteredIssue of filteredIssues" :key="filteredIssue.uuid">
             <IssueQueueItem
               v-model:selected="filteredIssue.selected"
               :issue="filteredIssue.issue"

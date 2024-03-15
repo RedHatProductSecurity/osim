@@ -1,9 +1,9 @@
-import { mount, flushPromises } from "@vue/test-utils";
+import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
 import CvssNISTForm from '../CvssNISTForm.vue';
 
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia } from '@pinia/testing';
 
 describe('CvssNISTForm', () => {
   it('renders a button', () => {

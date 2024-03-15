@@ -1,12 +1,11 @@
-import { VueWrapper, mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { VueWrapper, mount } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
 import router from '@/router';
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia } from '@pinia/testing';
+import App from '@/App.vue';
+import ToastContainer from '../ToastContainer.vue';
 
-import App from '@/App.vue'
-import ToastContainer from "../ToastContainer.vue";
-
-describe("App", async () => {
+describe('App', async () => {
   let subject: VueWrapper<InstanceType<typeof App>>;
   beforeEach(() => {
 
@@ -47,7 +46,7 @@ describe("App", async () => {
           READY: 1,
           ERROR: 2,
         },
-      }
+      };
     });
 
     router.push('/');
@@ -57,7 +56,7 @@ describe("App", async () => {
     vi.clearAllMocks();
   });
 
-  it("renders ToastContainer", async () => {
+  it('renders ToastContainer', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,

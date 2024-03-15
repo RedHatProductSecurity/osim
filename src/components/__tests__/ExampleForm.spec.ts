@@ -18,5 +18,5 @@ describe('ExampleForm', () => {
       },
     });
     expect(wrapper.text()).toContain('Example Form');
-  })
+  });
 });

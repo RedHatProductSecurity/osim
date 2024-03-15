@@ -19,6 +19,7 @@ export type toZod<T> = {
   number: z.ZodNumber;
   boolean: z.ZodBoolean;
   date: z.ZodDate;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   object: z.ZodObject<{ [k in keyof T]: toZod<T[k]> }, { strict: true }, T>;
   rest: never;

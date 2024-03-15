@@ -2,3 +2,4 @@ selenium
 behave
 requests
 selenium-page-factory
+rstr

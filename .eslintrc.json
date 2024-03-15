@@ -16,8 +16,10 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "vue"],
+  "ignorePatterns": ["dist/*"],
+  "plugins": ["@typescript-eslint", "vue", "@stylistic/js"],
   "rules": {
+    "@stylistic/js/array-element-newline": ["error", "consistent"],
     "max-len": ["warn", { "code": 100 }],
     "@typescript-eslint/no-explicit-any": "off",
     "indent": ["warn", 2],
@@ -44,6 +46,12 @@
       {
         "startTag": "never",
         "selfClosingTag": "always"
+      }
+    ],
+    "vue/multi-word-component-names": [
+      "error",
+      {
+        "ignores": ["Modal", "Toast", "Login", "Navbar", "Settings"]
       }
     ]
   }
