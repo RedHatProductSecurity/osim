@@ -26,7 +26,7 @@ const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
 const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
-const tableEl = ref<HTMLElement | null>(null);
+const tableContainerEl = ref<HTMLElement | null>(null);
 
 const columnsFieldsMap: Record<string, ColumnField> = {
   ID: 'id',
@@ -97,22 +97,22 @@ function relevantFields(issue: any) {
 }
 
 onMounted(() => {
-  tableEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
+  tableContainerEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
   emit('flaws:fetch');
 });
 
 onUnmounted(() => {
-  tableEl.value?.removeEventListener('scroll', handleScroll);
+  tableContainerEl.value?.removeEventListener('scroll', handleScroll);
 });
 
 const isFinalPageFetched = ref(false);
 
 // AutoScroll Method. Maybe have this as a user configurable option in the future?
 function handleScroll() {
-  if (props.isLoading || !tableEl.value) return; // Do not load more if already loading
+  if (props.isLoading || !tableContainerEl.value) return; // Do not load more if already loading
 
-  const totalHeight = tableEl.value.scrollHeight;
-  const scrollPosition = tableEl.value.scrollTop + tableEl.value.clientHeight;
+  const totalHeight = tableContainerEl.value.scrollHeight;
+  const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
 
   if (scrollPosition >= totalHeight) {
     emitLoadMore();
@@ -164,7 +164,7 @@ function emitLoadMore() {
         <span v-else> Load More Flaws </span>
       </button>
     </div>
-    <div ref="tableEl" class="osim-incident-list">
+    <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle">
         <thead class="sticky-top">
           <!-- <thead class=""> -->
