@@ -69,6 +69,7 @@ const nameForOption = (fieldName: string) => {
     workflow_state: 'Flaw Status',
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
+    team_id: 'Team ID',
   };
   let name =
     mappings[fieldName] ||
