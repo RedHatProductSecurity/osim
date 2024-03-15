@@ -14,6 +14,9 @@ const emit = defineEmits<{
   'comment:add-public': [value: any];
 }>();
 
+const SYSTEM_EMAIL = 'bugzilla@redhat.com';
+
+
 function handleClick() {
   emit('comment:add-public', newPublicComment.value);
   isAddCommentShown.value = false;
@@ -51,7 +54,7 @@ const selectedFilters = ref<CommentActiveFilters>({
 const filterFunctions: CommentFilterFunctions = {
   public: (comment: any) => !comment.meta_attr.is_private,
   private: (comment: any) => comment.meta_attr.is_private,
-  system: (comment: any) => comment.meta_attr.creator === 'bugzilla@redhat.com',
+  system: (comment: any) => comment.meta_attr.creator === SYSTEM_EMAIL,
 };
 
 const activeFilters = computed(() => {
@@ -71,6 +74,7 @@ const activeFilters = computed(() => {
 });
 
 const filteredComments = computed(() => transformedComments.value.filter(activeFilters.value));
+
 
 const filters: CommentFilter[] = ['public', 'private', 'system'];
 
@@ -120,8 +124,8 @@ function linkify(text: string) {
               Bugzilla Internal
             </span>
             <span
-              v-if="comment.meta_attr.creator === 'bugzilla@redhat.com'"
-              class="badge bg-primary rounded-pill"
+              v-if="comment.meta_attr.creator === SYSTEM_EMAIL"
+              class="badge bg-info rounded-pill"
             >
               System
             </span>
