@@ -66,6 +66,7 @@
     "jsdom": "^22.1.0",
     "msw": "^2.1.2",
     "npm-run-all2": "^6.0.6",
+    "nyc": "^15.1.0",
     "postcss-html": "^1.6.0",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
@@ -78,6 +79,7 @@
     "vite": "^4.4.9",
     "vite-bundle-visualizer": "^1.0.0",
     "vitest": "^0.34.4",
+    "vue-complexity": "^1.0.2",
     "vue-tsc": "^1.8.11"
   }
 }

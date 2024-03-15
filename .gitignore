@@ -32,3 +32,4 @@ coverage
 
 *.py[co]
 __pycache__
+.nyc_output
