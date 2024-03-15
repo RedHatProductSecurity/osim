@@ -7,7 +7,6 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
@@ -17,6 +16,7 @@ import LabelStatic from './widgets/LabelStatic.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
+import CvssCalculator from '@/components/CvssCalculator.vue';
 
 import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
@@ -92,9 +92,9 @@ const errors = {
   source: null,
 };
 
-const flawCvss3CaculatorLink = computed(
-  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
-);
+// const flawCvss3CaculatorLink = computed(
+//   () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
+// );
 
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
@@ -161,22 +161,9 @@ const cvssString = computed(() => {
             :options="flawImpacts"
             :error="errors.impact"
           />
-          <LabelEditable v-model="flawRhCvss.vector" type="text">
-            <template #label>
-              <span class="mb-0 pt-2 pb-2">CVSSv3
-                <br />
-                <a
-                  :href="flawCvss3CaculatorLink"
-                  target="_blank"
-                ><i class="bi-calculator me-1"></i>Calculator</a>
-              </span>
-            </template>
-          </LabelEditable>
-
-          <LabelInput
-            v-model="flawRhCvss.score"
-            label="CVSSv3 Score"
-            type="text"
+          <CvssCalculator
+            v-model:cvss-vector="flawRhCvss.vector"
+            v-model:cvss-score="flawRhCvss.score"
           />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
