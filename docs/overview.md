@@ -89,3 +89,7 @@
   "readOnly": true
 }
 ```
+
+* **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate agains OSIDB backend.
+                                        `kerberos` is generally used for stage/prod OSIDB instances,
+                                        `credentials` is generally used for local OSIDB instances.
