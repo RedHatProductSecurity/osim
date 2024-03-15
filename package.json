@@ -59,6 +59,8 @@
     "@typescript-eslint/parser": "^7.0.1",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-vue": "^4.3.4",
+    "@vitest/coverage-istanbul": "^1.4.0",
+    "@vitest/ui": "^1.4.0",
     "@vue/test-utils": "^2.4.1",
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.56.0",
