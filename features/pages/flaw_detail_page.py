@@ -41,7 +41,15 @@ class FlawDetailPage(PageFactory):
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
         "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
-        "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]")
+        "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
+        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "titleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[1]"),
+        "titleInput": ("XPATH", "(//input[@class='form-control'])[2]"),
+        "componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[2]"),
+        "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
+        "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
+        "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
+	"embargoedText": ("XPATH", "(//span[@class='form-control'])[3]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -86,7 +94,7 @@ class FlawDetailPage(PageFactory):
     def set_comment_value(self, value):
         self.commentTextWindow.set_text(value)
 
-    def set_text_field(self, field, value):
+    def set_document_text_field(self, field, value):
         field_element = getattr(self, field + 'Text')
         field_input = getattr(self, field + 'TextWindow')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
@@ -96,7 +104,7 @@ class FlawDetailPage(PageFactory):
         else:
             field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def get_text_field(self, field):
+    def get_document_text_field(self, field):
         field_element = getattr(self, field + 'Text')
         field_input = getattr(self, field + 'TextWindow')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
@@ -168,6 +176,19 @@ class FlawDetailPage(PageFactory):
     def get_first_ack_value(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
         return self.firstAcknowledgmentValue.get_text()
+
+    def set_input_field(self, field, value):
+        field_btn = field + 'EditBtn'
+        self.click_btn(field_btn)
+        field_input = getattr(self, field + 'Input')
+        self.driver.execute_script("arguments[0].value = '';", field_input)
+        field_input.set_text(value)
+
+    def check_value_exist(self, value):
+        e = self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of(e)
+        )
 
     def get_text_value(self, field):
         field_value = getattr(self, field + 'Text')

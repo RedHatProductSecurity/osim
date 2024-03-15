@@ -88,7 +88,7 @@ class AdvancedSearchPage(PageFactory):
                     if item.get(field):
                         field_value.append(item.get(field))
             # Get the affects' tracters' values
-            if "trackers" in field:
+            else:
                 if "errata" not in field:
                     field = field.split("__")[-1]
                     for item in json.loads(r.text).get('affects'):
@@ -97,7 +97,7 @@ class AdvancedSearchPage(PageFactory):
                                 if tracker.get(field):
                                     field_value.append(tracker.get(field))
                 # Get the errata's related values
-                if "errata" in field:
+                else:
                     field = field.split("__")[-1]
                     for item in json.loads(r.text).get('affects'):
                         if item.get('trackers'):
@@ -105,7 +105,6 @@ class AdvancedSearchPage(PageFactory):
                                 if tracker.get('errata'):
                                     for errata in tracker.get('errata'):
                                         if errata.get(field):
-                                            print(errata.get(field))
                                             field_value.append(errata.get(field))
             return field_value
         # Get the acknowledgment name values

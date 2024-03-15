@@ -18,7 +18,7 @@ Feature: Flaw advance search testing
         |       affects__trackers__external_system_id |                                       1985352 |
         |         affects__trackers__ps_update_stream |                                      rhel-9.0 |
         |                                   component |                                           ssh |
-        |                                      cve_id |                                 CVE-2024-1337 |
+        |                                      cve_id |                                 CVE-2016-5566 |
         |                          cvss_scores__score |                                           4.3 |
         |                         cvss_scores__vector |  CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:L/I:L/A:L |
         |                                      cwe_id |                                        CWE-81 |

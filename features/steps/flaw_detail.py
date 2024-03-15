@@ -38,23 +38,23 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when('I set the text {field} value to {value}')
+@when('I update the document text of {field} to {value}')
 def step_impl(context, field, value):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     value = value.strip('"')
-    flaw_detail_page.set_text_field(field, value)
+    flaw_detail_page.set_document_text_field(field, value)
     context.field_value = value
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then('The text {field} value is changed')
+@then('The document text of {field} is updated')
 def step_impl(context, field):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    v = flaw_detail_page.get_text_field(field)
+    v = flaw_detail_page.get_document_text_field(field)
     assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
     context.browser.quit()
 
@@ -137,4 +137,22 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
+    context.browser.quit()
+
+
+@when("I update the random input {field}")
+def step_impl(context, field):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    value = generate_random_text()
+    flaw_detail_page.set_input_field(field, value)
+    context.field_value = value
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The random input is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_exist(context.field_value)
     context.browser.quit()

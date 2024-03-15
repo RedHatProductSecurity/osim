@@ -5,13 +5,13 @@ Feature: Flaw detail testing
       And I set the bugzilla api key and jira api key
       And I go to a flaw detail page
 
-    Scenario: Add Public Comment for a flaw
+    Scenario: Add public comment for a flaw
       When I add a public comment to the flaw
       Then A comment is added to the flaw
 
     Scenario Outline: Update Document Text Fields
-      When I set the text <field> value to "<value>"
-      Then The text <field> value is changed
+      When I update the document text of <field> to "<value>"
+      Then The document text of <field> is updated
 
       Examples:
         |         field |              value |
@@ -23,7 +23,7 @@ Feature: Flaw detail testing
         |    mitigation |                    |
         |    mitigation |     add mitigation |
 
-    Scenario: Add Acknowledgement
+    Scenario: Add acknowledgement
       When I add an acknowledgment to the flaw
       Then A new acknowledgement added to the flaw
 
@@ -37,10 +37,21 @@ Feature: Flaw detail testing
         |        impact |
         |        source |
 
-    Scenario: Modify Acknowledgement
+    Scenario: Modify acknowledgement
       When I edit the first acknowledgement in correct format
       Then Acknowledgement is changed
 
-    Scenario: Remove Acknowledgement
+    Scenario: Remove acknowledgement
       When I delete an acknowledgement from acknowledgement list
       Then Acknowledgement is removed from flaw
+
+    Scenario Outline: Update editable random input fields
+      When I update the random input <field>
+      Then The random input is updated
+
+      Examples:
+        |         field |
+        |         title |
+        |     component |
+        |      assignee |
+        |        teamid |
