@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   comments: any[];
@@ -70,17 +71,18 @@ const filteredComments = computed(() => transformedComments.value.filter(activeF
 const filters: CommentFilter[] = ['public', 'private', 'system'];
 
 function linkify(text: string) {
+  const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
+
   const urlRegex = /\b(https?:\/\/[\S]+)\b/g;
   // Outputs: ["[jboss:INTLY-10833]"]
-  const jiraRegex = /\[jboss:\w+-\d+\]/g;
+  // const jiraRegex = /\[jboss:\w+-\d+\]/g;
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  return sanitizeHtml(text)
-    .replace(urlRegex, '<a target="_blank" href="$1">$1</a>')
-    .replace(jiraRegex, '')
-    .replace(
-      bugzillaRegex,
-      '<a target="_blank" href="https://bugzilla.redhat.com/show_bug.cgi?id=$1">$1</a>',
-    );
+  return (
+    sanitizeHtml(text)
+      .replace(urlRegex, '<a target="_blank" href="$1">$1</a>')
+      // .replace(jiraRegex, '')
+      .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
+  );
 }
 </script>
 
