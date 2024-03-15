@@ -55,3 +55,7 @@ Feature: Flaw detail testing
         |     component |
         |      assignee |
         |        teamid |
+
+    Scenario: Update CVE ID
+      When I update the CVE ID with a valid data
+      Then The CVE ID is updated

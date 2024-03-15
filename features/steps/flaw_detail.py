@@ -1,3 +1,4 @@
+import rstr
 import time
 from behave import when, then
 from selenium.webdriver.common.by import By
@@ -8,6 +9,10 @@ from features.utils import (
     go_to_first_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
+
+
+CVE_RE_STR = r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})"
+MAX_RETRY = 10
 
 
 @when("I add a public comment to the flaw")
@@ -155,4 +160,30 @@ def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.field_value)
+    context.browser.quit()
+
+
+@when("I update the CVE ID with a valid data")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    count = 0
+    while count < MAX_RETRY:
+        value = rstr.xeger(CVE_RE_STR)
+        flaw_detail_page.set_input_field('cveid', value)
+        flaw_detail_page.click_btn('saveBtn')
+        try:
+            flaw_detail_page.wait_msg('flawSavedMsg')
+        except Exception as e:
+            count += 1
+            continue
+        else:
+            context.value = value
+            break
+
+
+@then("The CVE ID is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_exist(context.value)
     context.browser.quit()
