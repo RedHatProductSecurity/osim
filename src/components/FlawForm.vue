@@ -36,6 +36,7 @@ const {
   flawTypes, // Visually hidden field
   flawSources,
   flawImpacts,
+  flawIncidentStates,
   osimLink,
   bugzillaLink,
   flawRhCvss,
@@ -84,6 +85,7 @@ const errors = {
   cve_id: null,
   impact: null,
   cwe_id: null,
+  major_incident_state: null,
   reported_dt: null,
   unembargo_dt: null,
   type: null,
@@ -211,13 +213,12 @@ const cvssString = computed(() => {
             :classification="flaw.classification"
             :flawId="flaw.uuid"
           />
-          <!-- Deprecated field -->
-          <!-- <LabelSelect
+          <LabelSelect
             v-model="flaw.major_incident_state"
             label="Incident State"
             :options="flawIncidentStates"
             :error="errors.major_incident_state"
-          /> -->
+          />
           <LabelEditable
             v-model="flaw.reported_dt"
             label="Reported Date"

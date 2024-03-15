@@ -15,7 +15,7 @@ const FLAW_LIST_FIELDS = [
   'created_dt',
   'updated_dt',
   'classification',
-  'is_major_incident',
+  // 'is_major_incident', TODO: replace with major_incident_state?
   'title',
   'state',
   'unembargo_dt',
