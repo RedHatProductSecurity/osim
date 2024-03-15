@@ -1,8 +1,5 @@
 <script setup lang="ts">
-defineProps<{
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  setIssues: Function;
-}>();
+
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
