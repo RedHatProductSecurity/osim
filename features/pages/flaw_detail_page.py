@@ -49,9 +49,9 @@ class FlawDetailPage(PageFactory):
         "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
         "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
         "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
+	      "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
         "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]")
-
     }
 
     # Data is from OSIDB allowed sources:
@@ -191,3 +191,8 @@ class FlawDetailPage(PageFactory):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.visibility_of(e)
         )
+
+    def get_text_value(self, field):
+        field_value = getattr(self, field + 'Text')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
+        return field_value.get_text()
