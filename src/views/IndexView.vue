@@ -2,6 +2,10 @@
 import IssueQueue from '../components/IssueQueue.vue';
 import { ref } from 'vue';
 import { getFlaws } from '@/services/FlawService';
+import { advancedSearchFlaws } from '@/services/FlawService';
+import { useUserStore } from '@/stores/UserStore';
+
+const { userName } = useUserStore();
 
 const isFinalPageFetched = ref(false);
 const isLoading = ref(false);
@@ -10,22 +14,14 @@ const offset = ref(0); // Added offset state variable
 const pagesize = 20;
 
 function fetchFlaws() {
-  getFlaws(offset.value)
-    .then((response) => {
-      issues.value = response.data.results;
-      offset.value += pagesize; // Increase the offset for next fetch
-    })
-    .catch((err) => {
-      console.error('IssueQueue: getFlaws error: ', err);
-    });
-}
-
-function loadMoreFlaws() {
   if (isLoading.value || isFinalPageFetched.value) {
     return; // Early exit if already loading
   }
   isLoading.value = true;
-  offset.value += pagesize;
+  // offset.value += pagesize;1
+  if (offset.value === 0) {
+    issues.value = [];
+  }
 
   getFlaws(offset.value, pagesize)
     .then((response) => {
@@ -43,6 +39,21 @@ function loadMoreFlaws() {
       isLoading.value = false;
     });
 }
+
+function fetchOwnFlaws () {
+  isLoading.value = true;
+  advancedSearchFlaws({ owner: userName })
+    .then((response) => {
+      issues.value = response.results;
+    })
+    .catch((err) => {
+      console.error('IssueQueue: getFlaws error: ', err);
+    }).finally(() => {
+      isLoading.value = false;
+      offset.value = 0; // Reset the offset for next fetch
+    });
+}
+
 </script>
 
 <template>
@@ -52,7 +63,7 @@ function loadMoreFlaws() {
       :isLoading="isLoading"
       :isFinalPageFetched="isFinalPageFetched"
       @flaws:fetch="fetchFlaws"
-      @flaws:load-more="loadMoreFlaws"
+      @flaws:fetch-own="fetchOwnFlaws"
     />
   </main>
 </template>
