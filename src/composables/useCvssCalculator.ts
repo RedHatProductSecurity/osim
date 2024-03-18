@@ -1,3 +1,53 @@
+export const factorPatterns: { [key: string]: RegExp } = {
+  CVSS: /CVSS:(?<CVSS>[^/]+)/,
+  // base (required):
+  AV: /AV:(?<AV>[NALP])/,
+  AC: /AC:(?<AC>[LH])/,
+  PR: /PR:(?<PR>[NLH])/,
+  UI: /UI:(?<UI>[NR])/,
+  S: /S:(?<S>[UC])/,
+  C: /C:(?<C>[NLH])/,
+  I: /I:(?<I>[NLH])/,
+  A: /A:(?<A>[NLH])/,
+  // temporal (optional):
+  E: /E:(?<E>[XUPFH])/,
+  RL: /RL:(?<RL>[XOTWU])/,
+  RC: /RC:(?<RC>[XURC])/,
+  // environmental (optional):
+  CR: /CR:(?<CR>[XLMH])/,
+  IR: /IR:(?<IR>[XLMH])/,
+  AR: /AR:(?<AR>[XLMH])/,
+  MAV: /MAV:(?<MAV>[XNALP])/,
+  MAC: /MAC:(?<MAC>[XLH])/,
+  MPR: /MPR:(?<MPR>[XNLH])/,
+  MUI: /MUI:(?<MUI>[XNR])/,
+  MS: /MS:(?<MS>[XUC])/,
+  MC: /MC:(?<MC>[XNLH])/,
+  MI: /MI:(?<MI>[XNLH])/,
+  MA: /MA:(?<MA>[XNLH])/,
+};
+
+export const formatFactor = (key: string, value: string) => {
+  return key === 'CVSS' ? `${key}:${value}` : `/${key}:${value}`;
+};
+
+export function getFactors(cvssVector: string){
+  const factors: Record<string, string> = {};
+  if (!cvssVector) {
+    for (const key in factorPatterns) {
+      factors[key] = '';
+    }
+  } else {
+    for (const key in factorPatterns) {
+      const regex = factorPatterns[key];
+      const match = cvssVector.match(regex);
+      factors[key] = match && match.groups ? 
+        match.groups[key]
+        : '';
+    }
+  }
+  return factors;
+}
 
 export const calculatorButtons = {
   blocks: [
@@ -7,34 +57,38 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'AV',
               label: 'Attack Vector',
               buttons: [
-                { name: 'Network', action: () => { console.log('Network Attack Vector'); } },
-                { name: 'Adjacent', action: () => { console.log('Adjacent Attack Vector'); } },
-                { name: 'Local', action: () => { console.log('Local Attack Vector'); } },
-                { name: 'Physical', action: () => { console.log('Physical Attack Vector'); } },
+                { key: 'N', name: 'Network', value:'Network Attack Vector' },
+                { key: 'A', name: 'Adjacent', value:'Adjacent Attack Vector' },
+                { key: 'L', name: 'Local', value:'Local Attack Vector' },
+                { key: 'P', name: 'Physical', value:'Physical Attack Vector' },
               ],
             },
             {
+              id: 'AC',
               label: 'Attack Complexity',
               buttons: [
-                { name: 'High', action: () => { console.log('High Attack Complexity'); } },
-                { name: 'Low', action: () => { console.log('Low Attack Complexity'); } },
+                { key: 'L', name: 'Low', value:'Low Attack Complexity' },
+                { key: 'H', name: 'High', value:'High Attack Complexity' },
               ],
             },
             {
+              id: 'PR',
               label: 'Privileges Required',
               buttons: [
-                { name: 'None', action: () => { console.log('None Privileges Required'); } },
-                { name: 'Low', action: () => { console.log('Low Privileges Required'); } },
-                { name: 'High', action: () => { console.log('High Privileges Required'); } },
+                { key: 'N', name: 'None', value:'None Privileges Required' },
+                { key: 'L', name: 'Low', value:'Low Privileges Required' },
+                { key: 'H', name: 'High', value:'High Privileges Required' },
               ],
             },
             {
+              id: 'UI',
               label: 'User Interaction',
               buttons: [
-                { name: 'None', action: () => { console.log('User Interaction None'); } },
-                { name: 'Requred', action: () => { console.log('User Interaction Required'); } },
+                { key: 'N', name: 'None', value:'User Interaction None' },
+                { key: 'R', name: 'Requred', value:'User Interaction Required' },
               ],
             },
           ],
@@ -42,34 +96,38 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'S',
               label: 'Scope',
               buttons: [
-                { name: 'Unchanged', action: () => { console.log('Unchanged Scope'); } },
-                { name: 'Changed', action: () => { console.log('Changed Scope'); } },
+                { key: 'U', name: 'Unchanged', value:'Unchanged Scope' },
+                { key: 'C', name: 'Changed', value:'Changed Scope' },
               ],
             },
             {
+              id: 'C',
               label: 'Confidentiality',
               buttons: [
-                { name: 'None', action: () => { console.log('None Confidentiality'); } },
-                { name: 'Low', action: () => { console.log('Low Confidentiality'); } },
-                { name: 'High', action: () => { console.log('High Confidentiality'); } },
+                { key: 'N', name: 'None', value:'None Confidentiality' },
+                { key: 'L', name: 'Low', value:'Low Confidentiality' },
+                { key: 'H', name: 'High', value:'High Confidentiality' },
               ],
             },
             {
+              id: 'I',
               label: 'Integrity',
               buttons: [
-                { name: 'None', action: () => { console.log('None Integrity'); } },
-                { name: 'Low', action: () => { console.log('Low Integrity'); } },
-                { name: 'High', action: () => { console.log('High Integrity'); } },
+                { key: 'N', name: 'None', value:'None Integrity' },
+                { key: 'L', name: 'Low', value:'Low Integrity' },
+                { key: 'H', name: 'High', value:'High Integrity' },
               ],
             },
             {
+              id: 'A',
               label: 'Availability',
               buttons: [
-                { name: 'None', action: () => { console.log('None Availability'); } },
-                { name: 'Low', action: () => { console.log('Low Availability'); } },
-                { name: 'High', action: () => { console.log('High Availability'); } },
+                { key: 'N', name: 'None', value:'None Availability' },
+                { key: 'L', name: 'Low', value:'Low Availability' },
+                { key: 'H', name: 'High', value:'High Availability' },
               ],
             },
           ],
@@ -82,60 +140,63 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'E',
               label: 'Exploit Code Maturity',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Exploit Code Maturity'); 
-                } },
-                { name: 'Unproven', action: () => { 
-                  console.log('Unproven Exploit Code Maturity'); 
-                } },
-                { name: 'Proof-of-Concept', action: () => { 
-                  console.log('Proof-of-Concept Exploit Code Maturity'); 
-                } },
-                { name: 'Functional', action: () => { 
-                  console.log('Functional Exploit Code Maturity'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Exploit Code Maturity'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Exploit Code Maturity'
+                },
+                { key: 'U', name: 'Unproven', value:
+                  'Unproven Exploit Code Maturity'
+                },
+                { key: 'P', name: 'Proof-of-Concept', value:
+                  'Proof-of-Concept Exploit Code Maturity'
+                },
+                { key: 'F', name: 'Functional', value:
+                  'Functional Exploit Code Maturity'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Exploit Code Maturity'
+                },
               ],
             },
             {
+              id: 'RL',
               label: 'Remediation Level',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Remediation Level'); 
-                } },
-                { name: 'Official Fix', action: () => { 
-                  console.log('Official Fix Remediation Level'); 
-                } },
-                { name: 'Temporary Fix', action: () => { 
-                  console.log('Temporary Fix Required'); 
-                } },
-                { name: 'Workaround', action: () => { 
-                  console.log('Workaround Remediation Level'); 
-                } },
-                { name: 'Unavailable', action: () => { 
-                  console.log('Unavailable Remediation Level'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Remediation Level'
+                },
+                { key: 'O', name: 'Official Fix', value:
+                  'Official Fix Remediation Level'
+                },
+                { key: 'T', name: 'Temporary Fix', value:
+                  'Temporary Fix Required'
+                },
+                { key: 'W', name: 'Workaround', value:
+                  'Workaround Remediation Level'
+                },
+                { key: 'U', name: 'Unavailable', value:
+                  'Unavailable Remediation Level'
+                },
               ],
             },
             {
+              id: 'RC',
               label: 'Report Confidence',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Report Confidence'); 
-                } },
-                { name: 'Unknown', action: () => { 
-                  console.log('Unknown Report Confidence'); 
-                } },
-                { name: 'Reasonable', action: () => { 
-                  console.log('Reasonable Report Confidence'); 
-                } },
-                { name: 'Confirmed', action: () => { 
-                  console.log('Confirmed Report Confidence'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Report Confidence'
+                },
+                { key: 'U', name: 'Unknown', value:
+                  'Unknown Report Confidence'
+                },
+                { key: 'R', name: 'Reasonable', value:
+                  'Reasonable Report Confidence'
+                },
+                { key: 'C', name: 'Confirmed', value:
+                  'Confirmed Report Confidence'
+                },
               ],
             }
           ],
@@ -148,54 +209,57 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'CR',
               label: 'Confidentiality Requirement',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Confidentiality Requirement'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Confidentiality Requirement'); 
-                } },
-                { name: 'Medium', action: () => { 
-                  console.log('Medium Confidentiality Requirement'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Confidentiality Requirement'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Confidentiality Requirement'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Confidentiality Requirement'
+                },
+                { key: 'M', name: 'Medium', value:
+                  'Medium Confidentiality Requirement'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Confidentiality Requirement'
+                },
               ],
             },
             {
+              id: 'IR',
               label: 'Integrity Requirement',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Integrity Requirement'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Integrity Requirement'); 
-                } },
-                { name: 'Medium', action: () => { 
-                  console.log('Medium Integrity Requirement'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Integrity Requirement'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Integrity Requirement'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Integrity Requirement'
+                },
+                { key: 'M', name: 'Medium', value:
+                  'Medium Integrity Requirement'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Integrity Requirement'
+                },
               ],
             },
             {
+              id: 'AR',
               label: 'Availability Requirement',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Availability Requirement'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Availability Requirement'); 
-                } },
-                { name: 'Medium', action: () => { 
-                  console.log('Medium Availability Requirement'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Availability Requirement'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Availability Requirement'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Availability Requirement'
+                },
+                { key: 'M', name: 'Medium', value:
+                  'Medium Availability Requirement'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Availability Requirement'
+                },
               ],
             },
           ],
@@ -203,68 +267,72 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'MAV',
               label: 'Modified Attack Vector',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Unchanged Modified Attack Vector'); 
-                } },
-                { name: 'Network', action: () => { 
-                  console.log('Changed Modified Attack Vector'); 
-                } },
-                { name: 'Adjacent Network', action: () => { 
-                  console.log('Changed Modified Attack Vector'); 
-                } },
-                { name: 'Local', action: () => { 
-                  console.log('Changed Modified Attack Vector'); 
-                } },
-                { name: 'Physical', action: () => { 
-                  console.log('Changed Modified Attack Vector'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Unchanged Modified Attack Vector'
+                },
+                { key: 'N', name: 'Network', value:
+                  'Changed Modified Attack Vector'
+                },
+                { key: 'A', name: 'Adjacent Network', value:
+                  'Changed Modified Attack Vector'
+                },
+                { key: 'L', name: 'Local', value:
+                  'Changed Modified Attack Vector'
+                },
+                { key: 'P', name: 'Physical', value:
+                  'Changed Modified Attack Vector'
+                },
               ],
             },
             {
+              id: 'MAC',
               label: 'Modified Attack Complexity',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Attack Complexity'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Modified Modified Attack Complexity'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Modified Modified Attack Complexity'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Attack Complexity'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Modified Modified Attack Complexity'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Modified Modified Attack Complexity'
+                },
               ],
             },
             {
+              id: 'MPR',
               label: 'Modified Privileges Required',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Privileges Required'); 
-                } },
-                { name: 'None', action: () => { 
-                  console.log('None Modified Privileges Required'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Modified Privileges Required'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Modified Privileges Required'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Privileges Required'
+                },
+                { key: 'N', name: 'None', value:
+                  'None Modified Privileges Required'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Modified Privileges Required'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Modified Privileges Required'
+                },
               ],
             },
             {
+              id: 'MUI',
               label: 'Modified User Interaction',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified User Interaction'); 
-                } },
-                { name: 'None', action: () => { 
-                  console.log('None Modified Modified User Interaction'); 
-                } },
-                { name: 'Required', action: () => { 
-                  console.log('Required Modified Modified User Interaction'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified User Interaction'
+                },
+                { key: 'N', name: 'None', value:
+                  'None Modified Modified User Interaction'
+                },
+                { key: 'R', name: 'Required', value:
+                  'Required Modified Modified User Interaction'
+                },
               ],
             },
           ],
@@ -272,68 +340,72 @@ export const calculatorButtons = {
         {
           cols: [
             {
+              id: 'MS',
               label: 'Modified Scope',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Scope'); 
-                } },
-                { name: 'Unchanged', action: () => { 
-                  console.log('Unchanged Modified Scope'); 
-                } },
-                { name: 'Changed', action: () => { 
-                  console.log('Changed Modified Scope'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Scope'
+                },
+                { key: 'U', name: 'Unchanged', value:
+                  'Unchanged Modified Scope'
+                },
+                { key: 'C', name: 'Changed', value:
+                  'Changed Modified Scope'
+                },
               ],
             },
             {
+              id: 'MC',
               label: 'Modified Confidentiality',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Confidentiality'); 
-                } },
-                { name: 'None', action: () => { 
-                  console.log('None Modified Confidentiality'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Modified Modified Confidentiality'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Modified Modified Confidentiality'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Confidentiality'
+                },
+                { key: 'N', name: 'None', value:
+                  'None Modified Confidentiality'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Modified Modified Confidentiality'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Modified Modified Confidentiality'
+                },
               ],
             },
             {
+              id: 'MI',
               label: 'Modified Integrity',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Integrity'); 
-                } },
-                { name: 'None', action: () => { 
-                  console.log('None Modified Integrity'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Modified Modified Integrity'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Modified Modified Integrity'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Integrity'
+                },
+                { key: 'N', name: 'None', value:
+                  'None Modified Integrity'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Modified Modified Integrity'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Modified Modified Integrity'
+                },
               ],
             },
             {
+              id: 'MA',
               label: 'Modified Availability',
               buttons: [
-                { name: 'Not Defined', action: () => { 
-                  console.log('Not Defined Modified Availability'); 
-                } },
-                { name: 'None', action: () => { 
-                  console.log('None Modified Availability'); 
-                } },
-                { name: 'Low', action: () => { 
-                  console.log('Low Modified Modified Availability'); 
-                } },
-                { name: 'High', action: () => { 
-                  console.log('High Modified Modified Availability'); 
-                } },
+                { key: 'X', name: 'Not Defined', value:
+                  'Not Defined Modified Availability'
+                },
+                { key: 'N', name: 'None', value:
+                  'None Modified Availability'
+                },
+                { key: 'L', name: 'Low', value:
+                  'Low Modified Modified Availability'
+                },
+                { key: 'H', name: 'High', value:
+                  'High Modified Modified Availability'
+                },
               ],
             },
           ],
