@@ -145,21 +145,25 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when("I update the random input {field}")
-def step_impl(context, field):
+@when("I update the random input fields")
+def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    value = generate_random_text()
-    flaw_detail_page.set_input_field(field, value)
-    context.field_value = value
+    context.field_values = []
+    for row in context.table:
+        field=row["field"]
+        value = generate_random_text()
+        flaw_detail_page.set_input_field(field, value)
+        context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then("The random input is updated")
+@then("The random input fields are updated")
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_exist(context.field_value)
+    for value in context.field_values:
+        flaw_detail_page.check_value_exist(value)
     context.browser.quit()
 
 
