@@ -49,7 +49,9 @@ class FlawDetailPage(PageFactory):
         "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
         "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
         "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
-	"embargoedText": ("XPATH", "(//span[@class='form-control'])[3]")
+	      "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
+        "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
+        "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]")
     }
 
     # Data is from OSIDB allowed sources:

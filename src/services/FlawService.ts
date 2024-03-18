@@ -15,7 +15,7 @@ const FLAW_LIST_FIELDS = [
   'created_dt',
   'updated_dt',
   'classification',
-  'is_major_incident',
+  // 'is_major_incident', TODO: replace with major_incident_state?
   'title',
   'state',
   'unembargo_dt',
@@ -69,7 +69,7 @@ export async function getFlawQueue() {
   return axios.get('/mock/prod-flaws.json');
 }
 
-export async function getFlaw(uuid: string) {
+export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
     return axios.get('/mock/new-flaws-stage.json').then((response) => {
       const flaw = response.data.results.find((flaw: { uuid: string }) => flaw.uuid === uuid);
@@ -242,7 +242,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     },
   })
     .then((response) => response.data)
-    .catch(console.error);
+    .catch(createCatchHandler('Problem searching flaws:'));
 }
 
 export async function postFlaw(requestBody: any) {
