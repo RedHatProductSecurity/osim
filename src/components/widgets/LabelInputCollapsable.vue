@@ -10,6 +10,7 @@ import { computed, ref } from 'vue';
 
 defineEmits<{
   'update:modelValue': [value: string | undefined],
+  'customInputChange': [value: string | undefined]
 }>();
 
 const props = withDefaults(
@@ -39,7 +40,8 @@ const props = withDefaults(
       | 'tel'
       | 'time'
       | 'url'
-      | 'week';
+      | 'week'
+      | 'custom';
   }>(),
   {
     modelValue: '',
@@ -51,6 +53,12 @@ const props = withDefaults(
 const input = ref();
 const focused = ref(false);
 const type = computed<string>(() => props.type ?? 'text');
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+  }
+};
 </script>
 
 <template>
@@ -61,7 +69,25 @@ const type = computed<string>(() => props.type ?? 'text');
           {{ label }}
         </span>
         <div class="col-9">
+          <div
+            v-if="type==='custom'"
+            ref="input"
+            contenteditable
+            name="customInput"
+            class="form-control text-break"
+            :class="{ 'is-invalid': error != null, 'text-cursor': focused }"
+            v-bind="$attrs"
+            @focus="focused = true"
+            @blur="focused = false"
+            @keydown="handleKeyDown"
+            @input="
+              $emit('customInputChange', input.textContent);
+            "
+          >
+            <slot name="customInput" />
+          </div>
           <input
+            v-else
             ref="input"
             class="form-control"
             :type="type"
@@ -82,7 +108,7 @@ const type = computed<string>(() => props.type ?? 'text');
       class="row"
       :class="{ 'visually-hidden': !focused }"
     >
-      <slot />
+      <slot name="collapsable" />
     </div>
   </div>
 </template>
@@ -90,5 +116,9 @@ const type = computed<string>(() => props.type ?? 'text');
 <style scoped>
 .osim-input {
   display: block;
+}
+
+.text-cursor {
+  cursor: text;
 }
 </style>
