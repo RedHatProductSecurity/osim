@@ -21,6 +21,21 @@ const FLAW_LIST_FIELDS = [
   'unembargo_dt',
   'embargoed',
   'owner',
+  // for updating flaws
+  'type',
+  'component',
+  'description',
+  'summary',
+  'requires_summary',
+  'statement',
+  'cwe_id',
+  'reported_dt',
+  'mitigation',
+  'major_incident_state',
+  'nist_cvss_validation',
+  'group_key',
+  'task_key',
+  'team_id',
 ];
 
 export async function getFlaws(offset = 0, limit = 20) {
@@ -328,11 +343,7 @@ export function putFlawReference(
     .catch(createCatchHandler('Error updating Reference:'));
 }
 
-
-export async function deleteFlawReference(
-  flawId: string,
-  referenceId: string,
-) {
+export async function deleteFlawReference(flawId: string, referenceId: string) {
   return osidbFetch({
     method: 'delete',
     url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
@@ -376,10 +387,7 @@ export async function putFlawAcknowledgment(
     .catch(createCatchHandler('Error updating Acknowledgment:'));
 }
 
-export async function deleteFlawAcknowledgment(
-  flawId: string,
-  acknowledgmentId: string,
-) {
+export async function deleteFlawAcknowledgment(flawId: string, acknowledgmentId: string) {
   return osidbFetch({
     method: 'delete',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,

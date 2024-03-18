@@ -159,13 +159,6 @@ function linkify(text: string) {
     text-transform: capitalize;
   }
 
-  section.osim-comments {
-    li {
-      list-style-type: none;
-      background-color: red;
-    }
-  }
-
   .osim-flaw-comment {
     white-space: pre-wrap;
   }

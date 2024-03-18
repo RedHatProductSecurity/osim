@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, onUnmounted } from 'vue';
+import { computed, watch, onMounted, reactive, ref, onUnmounted } from 'vue';
 import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
+import { putFlaw } from '@/services/FlawService';
 import { useUserStore } from '@/stores/UserStore';
+import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
+import { useToastStore } from '@/stores/ToastStore';
 
 const { userName } = useUserStore();
 
-const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
+const emit = defineEmits(['flaws:fetch', 'flaws:load-more', 'flaws:fetch-own']);
 
 type FilteredIssue = {
   issue: any;
@@ -38,7 +41,17 @@ const columnsFieldsMap: Record<string, ColumnField> = {
   State: 'state',
   Owner: 'owner',
 };
-
+watch(
+  () => isMyIssuesSelected.value,
+  (shouldFetchOwnIssues: boolean) => {
+    console.log('isMyIssuesSelected', shouldFetchOwnIssues);
+    if (shouldFetchOwnIssues) {
+      emit('flaws:fetch-own');
+    } else {
+      emit('flaws:fetch');
+    }
+  },
+);
 const relevantIssues = computed<FilteredIssue[]>(() => {
   const filterCaseInsensitive = issueFilter.value.toLowerCase();
   const wontUseFilter = issueFilter.value.length === 0;
@@ -50,7 +63,6 @@ const relevantIssues = computed<FilteredIssue[]>(() => {
           (text) => text && text.toLowerCase().includes(filterCaseInsensitive),
         ),
     )
-    .filter((issue: any) => !isMyIssuesSelected.value || issue.owner === userName)
     .sort((a: any, b: any) =>
       isSortedByAscending.value
         ? a[selectedSortField.value].localeCompare(b[selectedSortField.value])
@@ -58,6 +70,30 @@ const relevantIssues = computed<FilteredIssue[]>(() => {
     )
     .map((issue) => reactive({ issue, selected: false }));
 });
+
+const selectedIssues = computed<any[]>(() =>
+  relevantIssues.value
+    .filter((issue) => issue.selected)
+    .map((issue) =>
+      props.issues.find((it) => it.uuid === issue.issue.id || it.cve_id === issue.issue.id),
+    ),
+);
+
+async function assignSelectedIssuesToMe() {
+  useToastStore().addToast({
+    title:'Bulk Operation',
+    body: `Saving ${selectedIssues.value.length} flaws...`,
+  });
+  for (const issue of selectedIssues.value) {
+    await putFlaw(issue.uuid, { ...issue, owner: userName })
+      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
+      .catch(createCatchHandler('Could not update Flaw'))
+      .finally(() => {
+        updateSelectAll(false);
+        emit('flaws:fetch');
+      });
+  }
+}
 
 function updateSelectAll(selectedAll: boolean) {
   for (const filteredIssue of relevantIssues.value) {
@@ -114,12 +150,12 @@ function handleScroll() {
   const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
 
   if (scrollPosition >= totalHeight) {
-    emitLoadMore();
+    loadMoreFlaws();
   }
 }
 
-function emitLoadMore() {
-  emit('flaws:load-more');
+function loadMoreFlaws() {
+  emit('flaws:fetch');
 }
 </script>
 
@@ -145,7 +181,19 @@ function emitLoadMore() {
         />
       </label>
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
-
+      <div class="dropdown d-inline-block">
+        <button
+          class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          Bulk Action
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" @click="assignSelectedIssuesToMe"> 🚧 Assign to Me</a>
+          <a class="dropdown-item" href="#" @click="assignSelectedIssuesToMe"> 🚧 Assign to Me</a>
+        </div>
+      </div>
       <span
         v-if="isLoading"
         class="spinner-border spinner-border-sm d-inline-block ms-3"
@@ -156,7 +204,7 @@ function emitLoadMore() {
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
-      <table class="table align-middle" :class="{'osim-table-loading': isLoading}">
+      <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
         <thead class="sticky-top">
           <!-- <thead class=""> -->
           <tr>
@@ -206,7 +254,7 @@ function emitLoadMore() {
         class="btn btn-primary ms-4"
         type="button"
         :disabled="isLoading"
-        @click="emitLoadMore"
+        @click="loadMoreFlaws"
       >
         <span
           v-if="isLoading"
