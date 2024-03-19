@@ -29,6 +29,12 @@ const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
 const isOpenIssuesSelected = ref(false);
 const tableContainerEl = ref<HTMLElement | null>(null);
+
+const filteredStates = computed(() => {
+  const allStates = Object.values(FlawClassificationStateEnum);
+  return allStates.filter(state => state !== 'DONE' && state !== 'REJECTED').join(',');
+});
+
 const filters = computed(() => {
   const filterObj: Record<string, any> = {};
 
@@ -37,17 +43,10 @@ const filters = computed(() => {
   }
   
   if (isOpenIssuesSelected.value) {
-    if (isMyIssuesSelected.value) 
-      filterObj.owner = userName;
     filterObj.workflow_state = filteredStates.value;
   }
 
   return filterObj;
-});
-
-const filteredStates = computed(() => {
-    const allStates = Object.values(FlawClassificationStateEnum);
-    return allStates.filter(state => state !== 'DONE' && state !== 'REJECTED').join(',');
 });
 
 const columnsFieldsMap: Record<string, ColumnField> = {
@@ -142,9 +141,9 @@ function emitLoadMore() {
   emit('flaws:load-more', filters);
 }
 
-watch(filters, (newFilters) => {
-   emit('flaws:fetch', filters);
-}, { deep: true });
+watch(filters, () => {
+  emit('flaws:fetch', filters);
+});
 
 </script>
 
