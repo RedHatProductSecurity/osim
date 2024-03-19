@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import {
@@ -6,7 +7,7 @@ import {
   osimRuntime,
   osimRuntimeStatus,
   OsimRuntimeStatus,
-  versionString,
+  osimLastBuildDateTime,
 } from '@/stores/osimRuntime';
 
 import { setup } from '@/stores/osimRuntime';
@@ -34,7 +35,7 @@ watchEffect(() => {
       <RouterView class="osim-page-view" />
     </div>
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
-      <div>OSIM {{ versionString }}</div>
+      <div>OSIM build date {{ new Date(Number(osimLastBuildDateTime)) }}</div>
       <div>OSIDB</div>
       <div class="osim-status-osidb-env">[env: {{ osidbHealth.env }}]</div>
       <div class="osim-status-osidb-ver">[ver: {{ osidbHealth.version }}]</div>

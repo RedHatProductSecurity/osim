@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import viteBasicSslPlugin from '@vitejs/plugin-basic-ssl';
-import {recordVersionPlugin} from './scripts/version-plugin';
 
 import path from 'node:path';
 
@@ -12,7 +11,6 @@ export default defineConfig({
   plugins: [
     vue(),
     viteBasicSslPlugin(),
-    recordVersionPlugin(),
   ],
   build: {
     sourcemap: true,

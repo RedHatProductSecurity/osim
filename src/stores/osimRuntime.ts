@@ -18,7 +18,7 @@ export enum OsimRuntimeStatus {
 }
 
 const status = ref(OsimRuntimeStatus.INIT);
-export const versionString = ref('');
+export const osimLastBuildDateTime = ref('');
 export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
   return status.value;
 });
@@ -68,7 +68,7 @@ export async function setup() {
     console.warn('osimRuntime.setup called more than once:', setupCallCount + 1);
   }
   setupCallCount++;
-  await fetchVersionString();
+  await fetchOsimLastBuildDateTime();
   return fetchRuntime()
     .then(fetchOsidbHealthy)
     .then(() => {
@@ -80,13 +80,13 @@ export async function setup() {
     });
 }
 
-async function fetchVersionString() {
-  return fetch('/version.json', {
+async function fetchOsimLastBuildDateTime() {
+  return fetch('/last-build-time.json', {
     method: 'GET',
     cache: 'no-cache',
   }).then((response) => response.json()).then((json) => {
     console.debug('Version', json);
-    versionString.value = json.version;
+    osimLastBuildDateTime.value = json.osimLastBuildTime;
   }).catch(console.error);
 }
 
