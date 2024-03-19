@@ -37,6 +37,7 @@ const OsimRuntime = z.object({
     dirty: z.boolean(),
   }),
   error: z.string().default(''),
+  readOnly: z.boolean().default(false),
 });
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
@@ -45,6 +46,7 @@ const runtime = ref<OsimRuntime>({
   backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '' },
   osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
+  readOnly: false,
 });
 export const osimRuntime = readonly(runtime);
 
