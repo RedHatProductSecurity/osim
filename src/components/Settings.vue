@@ -134,6 +134,8 @@ const errors = {
       </div>
     </form>
 
+    <a href="/CHANGELOG.md">Changelog</a>
+
   </div>
 </template>
 
