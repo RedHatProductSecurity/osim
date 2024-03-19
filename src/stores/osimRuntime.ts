@@ -18,7 +18,6 @@ export enum OsimRuntimeStatus {
 }
 
 const status = ref(OsimRuntimeStatus.INIT);
-export const osimLastCommit = ref({date:'', sha:''});
 export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
   return status.value;
 });
@@ -29,18 +28,21 @@ const OsimRuntime = z.object({
     osidbAuth: z.string().default('kerberos'),
     bugzilla: z.string(),
   }),
-  osimVersion: z.string(),
+  osimVersion: z.object({
+    rev: z.string(),
+    tag: z.string(),
+    timestamp: z.string(),
+    dirty: z.boolean(),
+  }),
+  env: z.string().default(''),
   error: z.string().default(''),
 });
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
-  backends: {
-    osidb: '',
-    osidbAuth: '',
-    bugzilla: ''
-  },
-  osimVersion: '',
+  env: '',
+  backends: { osidb: '', osidbAuth: '', bugzilla: '' },
+  osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
 });
 export const osimRuntime = computed<OsimRuntime>(() => {
@@ -77,22 +79,22 @@ export async function setup() {
         status.value = OsimRuntimeStatus.READY;
       }
     });
-  await fetchOsimLastCommit();
+  // await fetchOsimLastCommit();
 }
 
-async function fetchOsimLastCommit() {
-  const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
-  return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
-    method: 'GET',
-    cache: 'no-cache',
-  })
-    .then((response) => response.json())
-    .then((json) => {
-      osimLastCommit.value.sha = json.sha.substring(0, 7);
-      osimLastCommit.value.date = json.commit.author.date;
-    })
-    .catch(console.error);
-}
+// async function fetchOsimLastCommit() {
+//   const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
+//   return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
+//     method: 'GET',
+//     cache: 'no-cache',
+//   })
+//     .then((response) => response.json())
+//     .then((json) => {
+//       osimLastCommit.value.sha = json.sha.substring(0, 7);
+//       osimLastCommit.value.date = json.commit.author.date;
+//     })
+//     .catch(console.error);
+// }
 
 function fetchRuntime() {
   return fetch('/runtime.json', {
@@ -108,6 +110,11 @@ function fetchRuntime() {
         console.error('Unable to parse OsimRuntime', e);
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
+      }
+      if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z' ||
+          runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
+        // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
+        runtime.value.osimVersion.timestamp = new Date().toISOString();
       }
     })
     .catch((e) => {
