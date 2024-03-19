@@ -149,7 +149,7 @@ export const ZodFlawCommentSchema = z.object({
     creation_time: z.string().nullish(),
     private_groups: z
       .string()
-      .transform((jsonString: string) => JSON.parse(jsonString))
+      // .transform((jsonString: string) => JSON.parse(jsonString.replace(/'/g, '"')))
       .or(z.array(z.string()))
       .nullish(),
   }).nullish(),
