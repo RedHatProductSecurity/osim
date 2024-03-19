@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "scripts/dev-osim.sh",
     "dev-server": "vite",
+    "prebuild": "node ./scripts/update-build-time.mjs",
     "build": "run-p type-check lint \"build-only {@}\" \"test:unit:nowatch {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
