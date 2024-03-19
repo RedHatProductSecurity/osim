@@ -156,7 +156,7 @@ const cvssString = computed(() => {
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
-                :description="flaw.description"
+                :description="flaw.summary ?? ''"
               />
             </div>
           </div>
@@ -187,7 +187,7 @@ const cvssString = computed(() => {
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
-                :flaw-summary="flaw.summary"
+                :flaw-summary="flaw.description"
                 :bugzilla="bugzillaLink"
                 :cvss="cvssString"
                 :nistcvss="flawNvdCvssScore?.toString()"
@@ -253,9 +253,9 @@ const cvssString = computed(() => {
         <LabelTextarea v-if="hasMitigation" v-model="flaw.mitigation" label="Mitigation" />
         <div class="d-flex gap-3 mb-3">
           <button
-            v-if="!flaw.description"
+            v-if="!flaw.summary"
             class="btn btn-secondary"
-            @click="flaw.description = 'Description Text ...'"
+            @click="flaw.summary = 'Description Text ...'"
           >
             Add Description
           </button>
