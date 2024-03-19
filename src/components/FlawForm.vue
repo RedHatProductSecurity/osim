@@ -246,59 +246,62 @@ const cvssString = computed(() => {
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
+      <div class="mt-3 pt-4 pb-3 mb-4 border-top">
+        <LabelTextarea v-model="flaw.description" label="Comment#0" />
+        <LabelTextarea v-if="hasSummary" v-model="flaw.summary" label="Description" />
+        <LabelTextarea v-if="hasStatement" v-model="flaw.statement" label="Statement" />
+        <LabelTextarea v-if="hasMitigation" v-model="flaw.mitigation" label="Mitigation" />
+        <div class="d-flex gap-3 mb-3">
+          <button
+            v-if="!flaw.description"
+            class="btn btn-secondary"
+            @click="flaw.description = 'Description Text ...'"
+          >
+            Add Description
+          </button>
+          <button
+            v-if="!flaw.statement"
+            class="btn btn-secondary"
+            @click="flaw.statement = 'Statement Text ...'"
+          >
+            Add Statement
+          </button>
+          <button
+            v-if="!flaw.mitigation"
+            class="btn btn-secondary"
+            @click="flaw.mitigation = 'Mitigation Text ...'"
+          >
+            Add Mitigation
+          </button>
+        </div>
+      </div>
       <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
-        <div class="osim-doc-text-container">
-          <LabelCollapsable label="Document Text Fields">
-            <LabelTextarea v-if="flaw.summary" v-model="flaw.summary" label="Summary" />
-            <LabelTextarea v-if="flaw.description" v-model="flaw.description" label="Description" />
-            <LabelTextarea v-if="flaw.statement" v-model="flaw.statement" label="Statement" />
-            <LabelTextarea v-if="flaw.mitigation" v-model="flaw.mitigation" label="Mitigation" />
-            <div v-if="!flaw.summary" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.summary = 'Summary Text ...'">
-                Add Summary
-              </button>
-            </div>
-            <div v-if="!flaw.description" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.description = 'Description Text ...'">
-                Add Description
-              </button>
-            </div>
-            <div v-if="!flaw.statement" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.statement = 'Statement Text ...'">
-                Add Statement
-              </button>
-            </div>
-            <div v-if="!flaw.mitigation" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.mitigation = 'Mitigation Text ...'">
-                Add Mitigation
-              </button>
-            </div>
-          </LabelCollapsable>
+        <div class="d-flex gap-3">
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
+            class="w-100"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
-            @reference:cancel-new="cancelAddReference"
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
+            class="w-100"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
-            @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
-          <LabelCollapsable label="Trackers">
-            <ul>
-              <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-                <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                  {{ tracker.display }}
-                </RouterLink>
-              </li>
-            </ul>
-          </LabelCollapsable>
         </div>
+        <LabelCollapsable label="Trackers">
+          <ul>
+            <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
+              <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
+                {{ tracker.display }}
+              </RouterLink>
+            </li>
+          </ul>
+        </LabelCollapsable>
       </div>
       <AffectedOfferings
         :theAffects="theAffects"
