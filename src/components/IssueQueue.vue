@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, onUnmounted } from 'vue';
+import { computed, onMounted, reactive, ref, onUnmounted, watch } from 'vue';
 import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
-
+import { FlawClassificationStateEnum } from '../generated-client'; 
 const { userName } = useUserStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
@@ -27,7 +27,28 @@ const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
 const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
+const isOpenIssuesSelected = ref(false);
 const tableContainerEl = ref<HTMLElement | null>(null);
+const filters = computed(() => {
+  const filterObj: Record<string, any> = {};
+
+  if (isMyIssuesSelected.value) {
+    filterObj.owner = userName;
+  }
+  
+  if (isOpenIssuesSelected.value) {
+    if (isMyIssuesSelected.value) 
+      filterObj.owner = userName;
+    filterObj.workflow_state = filteredStates.value;
+  }
+
+  return filterObj;
+});
+
+const filteredStates = computed(() => {
+    const allStates = Object.values(FlawClassificationStateEnum);
+    return allStates.filter(state => state !== 'DONE' && state !== 'REJECTED').join(',');
+});
 
 const columnsFieldsMap: Record<string, ColumnField> = {
   ID: 'id',
@@ -50,7 +71,6 @@ const relevantIssues = computed<FilteredIssue[]>(() => {
           (text) => text && text.toLowerCase().includes(filterCaseInsensitive),
         ),
     )
-    .filter((issue: any) => !isMyIssuesSelected.value || issue.owner === userName)
     .sort((a: any, b: any) =>
       isSortedByAscending.value
         ? a[selectedSortField.value].localeCompare(b[selectedSortField.value])
@@ -99,7 +119,7 @@ function relevantFields(issue: any) {
 
 onMounted(() => {
   tableContainerEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
-  emit('flaws:fetch');
+  emit('flaws:fetch', filters);
 });
 
 onUnmounted(() => {
@@ -119,8 +139,13 @@ function handleScroll() {
 }
 
 function emitLoadMore() {
-  emit('flaws:load-more');
+  emit('flaws:load-more', filters);
 }
+
+watch(filters, (newFilters) => {
+   emit('flaws:fetch', filters);
+}, { deep: true });
+
 </script>
 
 <template>
@@ -144,7 +169,16 @@ function emitLoadMore() {
           placeholder="Filter Issues/Flaws"
         />
       </label>
-      <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
+      <LabelCheckbox 
+        v-model="isMyIssuesSelected" 
+        label="My Issues" 
+        class="d-inline-block"
+      />
+      <LabelCheckbox 
+        v-model="isOpenIssuesSelected" 
+        label="Open Issues" 
+        class="d-inline-block" 
+      />
 
       <span
         v-if="isLoading"
