@@ -1,6 +1,8 @@
 import re
 import rstr
 import time
+from datetime import datetime
+
 from behave import when, then
 from selenium.webdriver.common.by import By
 
@@ -155,7 +157,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     context.field_values = []
     for row in context.table:
-        field=row["field"]
+        field = row["field"]
         value = generate_random_text()
         flaw_detail_page.set_input_field(field, value)
         context.field_values.append(value)
@@ -182,7 +184,7 @@ def step_impl(context):
         flaw_detail_page.click_btn('saveBtn')
         try:
             flaw_detail_page.wait_msg('flawSavedMsg')
-        except Exception as e:
+        except Exception:
             count += 1
             continue
         else:
@@ -197,6 +199,7 @@ def step_impl(context):
     flaw_detail_page.check_value_exist(context.value)
     context.browser.quit()
 
+
 @when("I {action} the CWE ID")
 def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
@@ -210,10 +213,29 @@ def step_impl(context, action):
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
+
 @then("The CWE ID is updated")
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value('cweid')
     assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
+
+
+@when('I update the Reported Date with a valid data')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.v = datetime.today().strftime("%Y%m%d")
+    flaw_detail_page.set_input_field("reportedDate", context.v)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The Reported Date is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
+    get_value = flaw_detail_page.get_input_value("reportedDate")
+    assert get_value == expected, f"get {get_value}, expected {expected}"
     context.browser.quit()
