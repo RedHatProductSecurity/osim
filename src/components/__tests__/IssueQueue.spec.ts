@@ -30,21 +30,21 @@ vi.mock('jwt-decode', () => ({
 describe('IssueQueue', () => {
   const mockData = [
     {
-      "uuid": "709e9ea1-ed0f-49b8-a7ad-9164d4034849",
-      "cve_id": "CVE-2903-0092",
-      "state": "NEW",
-      "impact": "MODERATE",
-      "title": "title",
-      "unembargo_dt": "2024-02-01T00:00:00Z",
-      "source": "XEN",
-      "embargoed": false,
-      "created_dt": "2021-07-29T14:50:50Z",
-      "updated_dt": "2024-03-15T08:53:06Z",
-      "classification": {
-        "workflow": "DEFAULT",
-        "state": "NEW"
+      'uuid': '709e9ea1-ed0f-49b8-a7ad-9164d4034849',
+      'cve_id': 'CVE-2903-0092',
+      'state': 'NEW',
+      'impact': 'MODERATE',
+      'title': 'title',
+      'unembargo_dt': '2024-02-01T00:00:00Z',
+      'source': 'XEN',
+      'embargoed': false,
+      'created_dt': '2021-07-29T14:50:50Z',
+      'updated_dt': '2024-03-15T08:53:06Z',
+      'classification': {
+        'workflow': 'DEFAULT',
+        'state': 'NEW'
       },
-      "owner": "test@redhat.com"
+      'owner': 'test@redhat.com'
     },
   ];
 
@@ -74,7 +74,7 @@ describe('IssueQueue', () => {
     expect(issues.length).toBe(1);
   });
 
-  it('should fetch data from API with specified parameters on MyFlaws checkbox selected', async () => {
+  it('fetch data from API with specified parameters on MyFlaws', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -90,8 +90,9 @@ describe('IssueQueue', () => {
       },
     });
 
-    const myIssuesCheckbox = wrapper.findAllComponents(LabelCheckbox)[0].find('input[type="checkbox"]');
-    await myIssuesCheckbox.setValue(true);
+    const myIssuesCheckbox = wrapper.findAllComponents(LabelCheckbox)[0];
+    const myIssuesCheckboxEl = myIssuesCheckbox.find('input[type="checkbox"]');
+    await myIssuesCheckboxEl.setValue(true);
     await wrapper.vm.$nextTick();
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
@@ -103,7 +104,7 @@ describe('IssueQueue', () => {
     expect(issues.length).toBe(1);
   });
 
-  it('should fetch data from API with specified parameters on OpenFlaws checkbox selected', async () => {
+  it('fetch data from API with specified parameters on OpenFlaws', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -118,8 +119,10 @@ describe('IssueQueue', () => {
         plugins: [pinia, router],
       },
     });
-    const openIssuesCheckbox = wrapper.findAllComponents(LabelCheckbox)[1].find('input[type="checkbox"]');
-    await openIssuesCheckbox.setValue(true);
+
+    const openIssuesCheckox = wrapper.findAllComponents(LabelCheckbox)[1];
+    const openIssuesCheckboxEl = openIssuesCheckox.find('input[type="checkbox"]');
+    await openIssuesCheckboxEl.setValue(true);
     await wrapper.vm.$nextTick();
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
