@@ -23,11 +23,6 @@ Feature: Flaw detail testing
         |    mitigation |                    |
         |    mitigation |     add mitigation |
 
-    Scenario: Add acknowledgement
-      When I add an acknowledgment to the flaw
-      Then A new acknowledgement added to the flaw
-
-
     Scenario Outline: Update dropdown options
       When I update the dropdown <field> value
       Then The dropdown <field> value is updated
@@ -37,6 +32,11 @@ Feature: Flaw detail testing
         |        impact |
         |        source |
 
+    Scenario: Add acknowledgement
+      When I add an acknowledgment to the flaw
+      Then A new acknowledgement added to the flaw
+
+
     Scenario: Modify acknowledgement
       When I edit the first acknowledgement in correct format
       Then Acknowledgement is changed
@@ -45,16 +45,14 @@ Feature: Flaw detail testing
       When I delete an acknowledgement from acknowledgement list
       Then Acknowledgement is removed from flaw
 
-    Scenario Outline: Update editable random input fields
-      When I update the random input <field>
-      Then The random input is updated
-
-      Examples:
+    Scenario: Update editable random input fields
+      When I update the random input fields
         |         field |
         |         title |
         |     component |
         |      assignee |
         |        teamid |
+      Then The random input fields are updated
 
     Scenario: Update CVE ID
       When I update the CVE ID with a valid data
