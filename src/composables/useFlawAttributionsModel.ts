@@ -103,6 +103,10 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
     });
   }
 
+  function cancelAddAcknowledgment(acknowledgment: ZodFlawAcknowledgmentType) {
+    flawAcknowledgments.value = flawAcknowledgments.value.filter((r) => r !== acknowledgment);
+  }
+
   return {
     flawReferences,
     flawAcknowledgments,
@@ -111,6 +115,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
     addBlankReference,
     addBlankAcknowledgment,
     cancelAddReference,
+    cancelAddAcknowledgment,
     createReference,
     updateReference,
     deleteReference,

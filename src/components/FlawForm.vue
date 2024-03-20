@@ -56,6 +56,7 @@ const {
   saveReferences,
   deleteReference,
   cancelAddReference,
+  cancelAddAcknowledgment,
   saveAcknowledgments,
   deleteAcknowledgment,
 } = useFlawModel(props.flaw, emit);
@@ -282,6 +283,7 @@ const cvssString = computed(() => {
             v-model="flawAcknowledgments"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+            @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
 

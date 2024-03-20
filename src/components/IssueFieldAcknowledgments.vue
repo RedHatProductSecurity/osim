@@ -7,6 +7,7 @@ const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 const emit = defineEmits<{
   'acknowledgment:update': [value: any[]];
   'acknowledgment:new': [];
+  'acknowledgment:cancel-new': [value: ZodFlawAcknowledgmentType];
   'acknowledgment:delete': [value: string];
 }>();
 
@@ -45,10 +46,18 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <input v-model="items[itemIndex].name" type="text" />
-            from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+          <div class="d-flex justify-content-between">
+            <div>
+              <input v-model="items[itemIndex].name" type="text" />
+              from
+              <input v-model="items[itemIndex].affiliation" type="text" />
+            </div>
+            <div
+              class="text-end  osim-cancel-new-acknowledgment"
+              @click="emit('acknowledgment:cancel-new', items[itemIndex])"
+            >
+              <i class="bi bi-x" />
+            </div>
           </div>
         </div>
       </template>
@@ -80,3 +89,10 @@ function handleDelete(uuid: string, closeModal: () => void) {
     </EditableList>
   </div>
 </template>
+
+<style scoped>  
+.osim-cancel-new-acknowledgment {
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+</style>
