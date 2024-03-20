@@ -110,6 +110,35 @@ const displayCvssNISTForm = computed(() => {
 const cvssString = computed(() => {
   return `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
 });
+
+const highlightedNvdCvssScore = computed(() => {
+  const nvdCvssArray = flawNvdCvssScore.value?.split('/') ?? ['='];
+  const rhVectorArray = cvssString.value?.split('/') ?? [];
+  
+  const formattedArray = nvdCvssArray.map((nvdCvssElement, index) => {
+    const rhVectorElement = rhVectorArray[index];
+
+    if (rhVectorElement !== nvdCvssElement) {
+      return highlightScore(nvdCvssElement);
+    } else {
+      return nvdCvssElement;
+    }
+  });
+
+  return formattedArray.join('/');
+});
+
+function highlightScore(score) {
+  return `<span class="d-inline text-primary">${score}</span>`;
+}
+
+const displayedValue = computed(() => {
+  const div = document.createElement('div');
+  div.innerHTML = highlightedNvdCvssScore.value;
+  console.log(highlightedNvdCvssScore.value);
+  console.log(div.textContent || div.innerText || '');
+  return div.textContent || div.innerText || '';
+});
 </script>
 
 <template>
@@ -177,7 +206,7 @@ const cvssString = computed(() => {
           <LabelInput v-model="flawRhCvss.score" label="CVSSv3 Score" type="text" />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
-              <LabelStatic v-model="flawNvdCvssScore" label="NVD CVSSv3" type="text" />
+              <LabelStatic v-model="displayedValue" label="NVD CVSSv3" type="text" />
             </div>
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
               <CvssNISTForm
@@ -188,6 +217,9 @@ const cvssString = computed(() => {
                 :nistcvss="flawNvdCvssScore?.toString()"
               />
             </div>
+            <span v-if="displayCvssNISTForm" class="text-info bg-white px-3 py-1 margin-top">
+              Explain non-obvious CVSSv3 score metrics
+            </span>
           </div>
           <LabelEditable
             v-model="flaw.cwe_id"
