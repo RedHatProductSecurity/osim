@@ -11,7 +11,9 @@ const route = useRoute();
 defineProps<{
   query: string;
 }>();
-
+defineEmits<{
+  'issues:load': [any[]];
+}>();
 const issues = ref<any[]>([]);
 const isLoading = ref(false);
 
@@ -49,7 +51,7 @@ function search() {
 onMounted(search);
 watch(() => route.query?.query, search);
 
-function setIssues(loadedIssues: []) {
+function setIssues(loadedIssues: any[]) {
   issues.value = loadedIssues;
 }
 </script>
@@ -57,7 +59,7 @@ function setIssues(loadedIssues: []) {
 <template>
   <main class="mt-3">
     <div class="container">
-      <IssueSearchAdvanced :setIssues="setIssues" />
+      <IssueSearchAdvanced @issues:load="setIssues" />
     </div>
     <!-- <IssueSearch :query="query" /> -->
     <IssueQueue :issues="issues" :isLoading="isLoading" :isFinalPageFetched="false" />
