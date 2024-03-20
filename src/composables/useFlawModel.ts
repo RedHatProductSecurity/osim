@@ -48,8 +48,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
-          name: 'flaw-detail',
-          params: { id: response?.uuid },
+          name: 'flaw-details',
+          params: { id: response?.cve_id || response?.uuid },
         });
       })
       .catch(createCatchHandler('Error creating Flaw'));
