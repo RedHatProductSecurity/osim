@@ -57,7 +57,3 @@ function onReset() {
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>

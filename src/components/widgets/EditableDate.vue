@@ -344,9 +344,11 @@ function osimFormatDate(date: Date | string | undefined | null): string {
 }
 
 .osim-editable-date {
+  @extend .input-group; // Use pure CSS instead of JS for hover
   // Nest these for specificity
   .osim-editable-date-value {
     // border-color: transparent;  // TODO decide to keep the hovering effect?
+    @extend .form-control;
   }
 
   .osim-editable-date-value::before {
@@ -354,19 +356,6 @@ function osimFormatDate(date: Date | string | undefined | null): string {
     content: '\a0';
     display: inline-block;
     width: 0;
-  }
-
-  .osim-editable-date-pen {
-    display: none;
-  }
-}
-
-//.osim-editable-date:hover {  // TODO decide to keep the hovering effect?
-.osim-editable-date {
-  @extend .input-group; // Use pure CSS instead of JS for hover
-
-  .osim-editable-date-value {
-    @extend .form-control;
   }
 
   .osim-editable-date-pen {

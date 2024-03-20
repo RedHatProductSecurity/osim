@@ -117,7 +117,3 @@ Committed values on server:
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>
