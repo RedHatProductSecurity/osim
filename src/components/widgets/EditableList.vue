@@ -4,12 +4,13 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
 
-import LabelCollapsable from './LabelCollapsable.vue';
+// import LabelCollapsable from './LabelCollapsable.vue';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
   entityName: string;
   entitiesName?: string;
+  hasLabel?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -55,7 +56,8 @@ function commitEdit(index: number) {
 </script>
 
 <template>
-  <LabelCollapsable :label="entityNamePlural">
+  <div class="my-3">
+    <p v-if="hasLabel">{{ `${entityNamePlural}:` }}</p>
     <div
       v-for="(item, itemIndex) in items"
       :key="itemIndex"
@@ -165,7 +167,7 @@ function commitEdit(index: number) {
         Add {{ entityName }}
       </button>
     </form>
-  </LabelCollapsable>
+  </div>
 </template>
 
 <style lang="scss" scoped>
