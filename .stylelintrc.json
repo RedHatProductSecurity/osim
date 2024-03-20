@@ -1,8 +1,18 @@
 {
+  "ignoreFiles": "",
   "extends": [
     "stylelint-config-standard",
     "stylelint-config-standard-scss",
     "stylelint-config-recommended-vue",
     "stylelint-config-recommended-vue/scss"
-  ]
+  ],
+  "rules": {
+    "double-slash-comment-whitespace-inside": "never",
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreFunctions": ["v-bind"]
+      }
+    ]
+  }
 }
