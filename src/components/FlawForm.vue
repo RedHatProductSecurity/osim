@@ -254,21 +254,30 @@ const cvssString = computed(() => {
           <button
             v-if="!hasSummary"
             class="btn btn-secondary"
-            @click="hasSummary = true; flaw.summary = 'Description Text ...'"
+            @click="
+              hasSummary = true;
+              flaw.summary = 'Description Text ...';
+            "
           >
             Add Description
           </button>
           <button
             v-if="!hasStatement"
             class="btn btn-secondary"
-            @click="hasStatement = true; flaw.statement = 'Statement Text ...'"
+            @click="
+              hasStatement = true;
+              flaw.statement = 'Statement Text ...';
+            "
           >
             Add Statement
           </button>
           <button
             v-if="!hasMitigation"
             class="btn btn-secondary"
-            @click="hasMitigation = true; flaw.mitigation = 'Mitigation Text ...'"
+            @click="
+              hasMitigation = true;
+              flaw.mitigation = 'Mitigation Text ...';
+            "
           >
             Add Mitigation
           </button>

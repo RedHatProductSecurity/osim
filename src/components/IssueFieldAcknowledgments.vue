@@ -27,7 +27,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
     >
-      <template #default="{ item: {name, affiliation, uuid} }">
+      <template #default="{ item: { name, affiliation, uuid } }">
         <div class="form-group">
           {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
