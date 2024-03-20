@@ -22,6 +22,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
     <EditableList
       v-model="acknowledgments"
       entityName="Acknowledgment"
+      :hasLabel="true"
       @item:save="emit('acknowledgment:update', $event)"
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
