@@ -67,3 +67,7 @@ Feature: Flaw detail testing
         |         update |
         |         delete |
         |            add |
+
+    Scenario: Modify Reported Date
+      When I update the Reported Date with a valid data
+      Then The Reported Date is updated

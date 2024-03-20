@@ -54,7 +54,10 @@ class FlawDetailPage(PageFactory):
         "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]"),
         "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
         "cweidInput": ("XPATH", "(//input[@class='form-control'])[7]"),
-        "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]")
+        "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
+        "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
+        "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]")
     }
 
     # Data is from OSIDB allowed sources:
