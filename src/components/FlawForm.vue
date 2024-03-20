@@ -245,7 +245,7 @@ const cvssString = computed(() => {
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
-      <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
+      <div class="mt-3 pt-4 pb-3 mb-4 border-top">
         <LabelTextarea v-model="flaw.description" label="Comment#0" />
         <LabelTextarea v-if="hasSummary" v-model="flaw.summary" label="Description" />
         <LabelTextarea v-if="hasStatement" v-model="flaw.statement" label="Statement" />
@@ -273,6 +273,8 @@ const cvssString = computed(() => {
             Add Mitigation
           </button>
         </div>
+      </div>
+      <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
         <IssueFieldReferences
           v-model="flawReferences"
           :isEmbargoed="flaw.embargoed"
