@@ -35,7 +35,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
       </template>
 
       <template #edit-form="{ items, itemIndex }">
-        <div class="form-group mb-2" style="max-width: 85%;">
+        <div class="form-group mb-2" style="max-width: 85%">
           <div class="d-flex">
             <input v-model="items[itemIndex].name" class="form-control" type="text" />
             <p class="px-3 my-2">from</p>
@@ -45,7 +45,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
       </template>
 
       <template #create-form="{ items, itemIndex }">
-        <div class="form-group mb-2" style="max-width: 85%;">
+        <div class="form-group mb-2" style="max-width: 85%">
           <div class="d-flex">
             <input v-model="items[itemIndex].name" class="form-control" type="text" />
             <p class="px-3 my-2">from</p>

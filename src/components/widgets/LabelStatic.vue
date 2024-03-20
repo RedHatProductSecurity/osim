@@ -14,7 +14,7 @@ defineProps<{
         {{ label }}
       </span>
       <div :class="{ 'alert alert-warning': !modelValue }">
-        <span class="form-control" style="border-top-left-radius: 0;">{{ modelValue }}</span>
+        <span class="form-control" style="border-top-left-radius: 0">{{ modelValue }}</span>
       </div>
     </div>
     <div v-else class="row">
@@ -35,11 +35,11 @@ defineProps<{
 
 .osim-static-label .osim-static-label-top-style .top-label {
   display: inline-block;
-  background-color: #DEE2E6;
-  border-top-left-radius: .5rem;
-  border-top-right-radius: .5rem;
-  padding-top: .375rem;
-  padding-bottom: .25rem;
+  background-color: #dee2e6;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.25rem;
   padding-left: 1rem;
   padding-right: 1rem;
 }
