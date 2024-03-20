@@ -7,12 +7,13 @@
     "stylelint-config-recommended-vue/scss"
   ],
   "rules": {
-    "double-slash-comment-whitespace-inside": "never",
+    "scss/double-slash-comment-whitespace-inside": null,
     "value-keyword-case": [
       "lower",
       {
         "ignoreFunctions": ["v-bind"]
       }
-    ]
+    ],
+    "scss/at-extend-no-missing-placeholder": null
   }
 }
