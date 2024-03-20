@@ -1,3 +1,4 @@
+import re
 import rstr
 import time
 from behave import when, then
@@ -10,6 +11,10 @@ from features.utils import (
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 
+
+# From: https://github.com/RedHatProductSecurity/osidb/blob/master/osidb/validators.py#L13
+CVE_RE_STR = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
+CWE_RE_STR = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
 
 CVE_RE_STR = r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})"
 MAX_RETRY = 10
@@ -190,4 +195,25 @@ def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.value)
+    context.browser.quit()
+
+@when("I {action} the CWE ID")
+def step_impl(context, action):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    if action == 'delete':
+        flaw_detail_page.clear_input_field('cweid')
+        value = ''
+    else:
+        value = rstr.xeger(CWE_RE_STR)
+        flaw_detail_page.set_input_field('cweid', value)
+    context.field_value = value
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+@then("The CWE ID is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    v = flaw_detail_page.get_input_value('cweid')
+    assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
     context.browser.quit()
