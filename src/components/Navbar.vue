@@ -5,13 +5,13 @@ import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import {useSettingsStore} from '@/stores/SettingsStore';
-import {useToastStore} from '@/stores/ToastStore';
-import {useElementBounding} from '@vueuse/core';
-import {navbarBottom, navbarHeight} from '@/stores/responsive';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
+import { useElementBounding } from '@vueuse/core';
+import { navbarBottom, navbarHeight } from '@/stores/responsive';
 
 const userStore = useUserStore();
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(
@@ -42,10 +42,10 @@ function onSearch(query: string) {
   }
   const maybeCveId =  quickMatchCVE(query);
   if (maybeCveId) {
-    router.push({path: `/flaws/${maybeCveId}`});
+    router.push({ path: `/flaws/${maybeCveId}` });
     return;
   }
-  router.push({name: 'search', query: {query: trimmedQuery}});
+  router.push({ name: 'search', query: { query: trimmedQuery } });
 }
 
 </script>

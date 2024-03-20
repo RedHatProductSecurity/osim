@@ -8,7 +8,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string[]],
 }>();
 
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 const elInput = ref<HTMLInputElement | null>(null);
 const values = ref<string[]>([]);

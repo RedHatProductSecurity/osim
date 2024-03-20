@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import { DateTime } from 'luxon';
 import ProgressRing from '@/components/widgets/ProgressRing.vue';
-import {useSettingsStore} from '@/stores/SettingsStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 
 const props = defineProps<{
   title?: string,

@@ -5,7 +5,7 @@
 // Blurring focus or clicking the save button commits the change
 // Pressing escape or clicking the abort button aborts the change
 
-import {nextTick, ref, unref, watch} from 'vue';
+import { nextTick, ref, unref, watch } from 'vue';
 
 const props = defineProps<{
   modelValue: string | null,

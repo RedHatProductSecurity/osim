@@ -6,8 +6,8 @@
 //       Visit <RouterLink :to="{name: 'settings'}">Settings</RouterLink>.
 //     </div>
 
-import {useSettingsStore} from '@/stores/SettingsStore';
-import {useToastStore} from '@/stores/ToastStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
 // import { useRouter } from 'vue-router';
 
 export function notifyApiKeyUnset() {

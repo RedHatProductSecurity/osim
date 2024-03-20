@@ -1,14 +1,14 @@
-import {computed, watch} from 'vue';
-import {defineStore} from 'pinia';
-import {z} from 'zod';
+import { computed, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
-import type {JwtPayload} from 'jwt-decode';
-import {useSessionStorage} from '@vueuse/core';
+import type { JwtPayload } from 'jwt-decode';
+import { useSessionStorage } from '@vueuse/core';
 
 // const router = useRouter();
 import router from '@/router';
 
-import {osimRuntime} from '@/stores/osimRuntime';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 export const queryRedirect = z.object({
   query: z.object({
@@ -47,7 +47,7 @@ type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
 // but ref doesn't work with the watch; only reactive does.
 // const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
 const _userStoreSession = useSessionStorage(
-  _userStoreKey, {refresh: '', env: '', whoami: null} as UserStoreSessionStorage
+  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreSessionStorage
 );
 // watchEffect(() => {
 //   _userStoreSession.value = _userStore;
@@ -180,7 +180,7 @@ export const useUserStore = defineStore('UserStore', () => {
     //     .then(() => {
     //       router.push({name: 'login'})
     //     })
-    return router.push({name: 'login'});
+    return router.push({ name: 'login' });
   }
 
   /**
@@ -235,7 +235,7 @@ export const useUserStore = defineStore('UserStore', () => {
           const query: any = {};
           query.redirect = currentPath;
           console.log('UserStore unauthenticated path not slash to login');
-          router.push({name: 'login', query});
+          router.push({ name: 'login', query });
           return;
         }
         console.log('UserStore unauthenticated to login');

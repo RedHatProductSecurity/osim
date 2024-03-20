@@ -21,7 +21,7 @@ export function useAffectTracker(affectUuid: string, module: string, component: 
       }
 
       const moduleComponent = response.modules_components.find(
-        ({ps_module, ps_component}: any) =>
+        ({ ps_module, ps_component }: any) =>
           ps_module === module && ps_component === component,
       );
       if (moduleComponent) {
