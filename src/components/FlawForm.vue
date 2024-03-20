@@ -13,7 +13,9 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
-import LabelStatic from './widgets/LabelStatic.vue';
+// import LabelStatic from './widgets/LabelStatic.vue';
+import LabelStaticHighlighted from './widgets/LabelStaticHighlighted.vue';
+
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
@@ -131,14 +133,6 @@ const highlightedNvdCvssScore = computed(() => {
 function highlightScore(score) {
   return `<span class="d-inline text-primary">${score}</span>`;
 }
-
-const displayedValue = computed(() => {
-  const div = document.createElement('div');
-  div.innerHTML = highlightedNvdCvssScore.value;
-  console.log(highlightedNvdCvssScore.value);
-  console.log(div.textContent || div.innerText || '');
-  return div.textContent || div.innerText || '';
-});
 </script>
 
 <template>
@@ -206,7 +200,12 @@ const displayedValue = computed(() => {
           <LabelInput v-model="flawRhCvss.score" label="CVSSv3 Score" type="text" />
           <div class="row">
             <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
-              <LabelStatic v-model="displayedValue" label="NVD CVSSv3" type="text" />
+              <LabelStaticHighlighted 
+                v-model="highlightedNvdCvssScore" 
+                label="NVD CVSSv3" 
+                type="text" 
+              />
+
             </div>
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
               <CvssNISTForm
