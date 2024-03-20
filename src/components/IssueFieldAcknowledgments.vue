@@ -28,28 +28,28 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:new="emit('acknowledgment:new')"
     >
       <template #default="{ item: { name, affiliation, uuid } }">
-        <div class="form-group">
+        <div class="form-group mb-2">
           {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
         </div>
       </template>
 
       <template #edit-form="{ items, itemIndex }">
-        <div class="form-group">
-          <div>
-            <input v-model="items[itemIndex].name" type="text" />
-            from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+        <div class="form-group mb-2" style="max-width: 85%;">
+          <div class="d-flex">
+            <input v-model="items[itemIndex].name" class="form-control" type="text" />
+            <p class="px-3 my-2">from</p>
+            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
           </div>
         </div>
       </template>
 
       <template #create-form="{ items, itemIndex }">
-        <div class="form-group">
-          <div>
-            <input v-model="items[itemIndex].name" type="text" />
-            from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+        <div class="form-group mb-2" style="max-width: 85%;">
+          <div class="d-flex">
+            <input v-model="items[itemIndex].name" class="form-control" type="text" />
+            <p class="px-3 my-2">from</p>
+            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
           </div>
         </div>
       </template>
