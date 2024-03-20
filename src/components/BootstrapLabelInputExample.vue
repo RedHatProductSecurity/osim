@@ -95,8 +95,3 @@ let settings = reactive<SettingsType>(settingsStore.settings);
 
   </div>
 </template>
-
-<style scoped>
-
-
-</style>
