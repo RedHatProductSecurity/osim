@@ -131,8 +131,8 @@ form {
   align-items: center;
   justify-content: center;
 }
-.osim-error-message {
 
+.osim-error-message {
   white-space: pre-wrap;
   text-align: left;
 }

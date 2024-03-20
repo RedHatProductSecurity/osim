@@ -87,16 +87,19 @@ function clearAll() {
 .osim-toast-container-clear button {
   pointer-events: auto;
 }
+
 .osim-toast-container {
   position: v-bind(position);
   top: v-bind(top);
-  /*height: calc(100vh - 100px);*/
+
+  /* height: calc(100vh - 100px); */
   height: v-bind(height);
-  overflow-x: clip;
-  overflow-y: auto;
-  /*clip-path: inset(-100vw 0 -100vw -100vw);*/
+  overflow: clip auto;
+
+  /* clip-path: inset(-100vw 0 -100vw -100vw); */
   right: 0;
-  /*justify-self: end;*/
+
+  /* justify-self: end; */
 }
 
 .osim-toast-container-clear {

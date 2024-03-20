@@ -164,7 +164,7 @@ function blur(e: FocusEvent | null) {
 }
 
 .flash-bg-enter-from .osim-editable-text-value {
-  background-color: #ff0000;
+  background-color: #f00;
 }
 
 .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
@@ -197,7 +197,6 @@ function blur(e: FocusEvent | null) {
 
 //.osim-editable-text:hover {  // TODO decide to keep the hovering effect?
 .osim-editable-text {
-
   @extend .input-group; // Use pure CSS instead of JS for hover
 
   .osim-editable-text-value {
