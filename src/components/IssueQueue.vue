@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
-import { FlawClassificationStateEnum } from '../generated-client'; 
+import { FlawClassificationStateEnum } from '../generated-client';
 const { userName } = useUserStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
@@ -32,7 +32,7 @@ const tableContainerEl = ref<HTMLElement | null>(null);
 
 const filteredStates = computed(() => {
   const allStates = Object.values(FlawClassificationStateEnum);
-  return allStates.filter(state => state !== 'DONE' && state !== 'REJECTED').join(',');
+  return allStates.filter((state) => state !== 'DONE' && state !== 'REJECTED').join(',');
 });
 
 const filters = computed(() => {
@@ -41,7 +41,7 @@ const filters = computed(() => {
   if (isMyIssuesSelected.value) {
     filterObj.owner = userName;
   }
-  
+
   if (isOpenIssuesSelected.value) {
     filterObj.workflow_state = filteredStates.value;
   }
@@ -144,7 +144,6 @@ function emitLoadMore() {
 watch(filters, () => {
   emit('flaws:fetch', filters);
 });
-
 </script>
 
 <template>
@@ -168,16 +167,8 @@ watch(filters, () => {
           placeholder="Filter Issues/Flaws"
         />
       </label>
-      <LabelCheckbox 
-        v-model="isMyIssuesSelected" 
-        label="My Issues" 
-        class="d-inline-block"
-      />
-      <LabelCheckbox 
-        v-model="isOpenIssuesSelected" 
-        label="Open Issues" 
-        class="d-inline-block" 
-      />
+      <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
+      <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
 
       <span
         v-if="isLoading"
@@ -189,7 +180,7 @@ watch(filters, () => {
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
-      <table class="table align-middle" :class="{'osim-table-loading': isLoading}">
+      <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
         <thead class="sticky-top">
           <!-- <thead class=""> -->
           <tr>
