@@ -13,15 +13,10 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
-export type FlawEmitter = {
-  (e: 'refresh:flaw'): void;
-  (e: 'add-blank-affect'): void;
-  (e: 'comment:add-public', value: string): void;
-}
-
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
@@ -83,13 +78,13 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
       await saveCvssScores();
     }
 
-    emit('refresh:flaw');
+    onSaveSuccess();
   }
 
   function addPublicComment(comment: string) {
     postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(() => emit('refresh:flaw'))
+      .then(onSaveSuccess)
       .catch(createCatchHandler('Error saving comment'));
   }
 
@@ -106,10 +101,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     addPublicComment,
     createFlaw,
     updateFlaw,
-    emit,
+    onSaveSuccess,
     ...useCvssScoresModel(flaw),
     ...useFlawAffectsModel(flaw),
-    ...useFlawAttributionsModel(flaw, emit),
+    ...useFlawAttributionsModel(flaw, onSaveSuccess),
   };
 }
 

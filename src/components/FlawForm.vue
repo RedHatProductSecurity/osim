@@ -19,7 +19,7 @@ import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 
-import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
+import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -28,7 +28,15 @@ const props = defineProps<{
   mode: 'create' | 'edit';
 }>();
 
-const emit = defineEmits<FlawEmitter>();
+const emit = defineEmits<{
+  (e: 'refresh:flaw'): void;
+  (e: 'add-blank-affect'): void;
+  (e: 'comment:add-public', value: string): void;
+}>();
+
+function onSaveSuccess() {
+  emit('refresh:flaw');
+}
 
 const {
   flaw,
@@ -59,7 +67,7 @@ const {
   cancelAddAcknowledgment,
   saveAcknowledgments,
   deleteAcknowledgment,
-} = useFlawModel(props.flaw, emit);
+} = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
 
