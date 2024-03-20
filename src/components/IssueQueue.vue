@@ -32,7 +32,13 @@ const tableContainerEl = ref<HTMLElement | null>(null);
 
 const filteredStates = computed(() => {
   const allStates = Object.values(FlawClassificationStateEnum);
-  return allStates.filter((state) => state !== 'DONE' && state !== 'REJECTED').join(',');
+  return allStates
+    .filter(
+      (state) =>
+        state !== FlawClassificationStateEnum.Done &&
+        state !== FlawClassificationStateEnum.Rejected,
+    )
+    .join(',');
 });
 
 const filters = computed(() => {
