@@ -89,6 +89,7 @@ watch(show, () => {
   background-color: transparent;
 
 }
+
 .modal-bg-enter-active,
 .modal-bg-leave-active {
   transition: background-color 0.5s ease;

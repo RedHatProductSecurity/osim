@@ -50,6 +50,7 @@ watchEffect(() => {
 :root {
   --osim-status-bar-height: 24px;
 }
+
 /*
 .osim-view-wrapper {
   position: relative;
@@ -66,6 +67,7 @@ watchEffect(() => {
   display: grid;
   margin-bottom: var(--osim-status-bar-height);
 }
+
 .osim-content-layered > * {
   grid-column-start: 1;
   grid-row-start: 1;
@@ -87,7 +89,7 @@ watchEffect(() => {
 }
 
 .osim-status-bar.fixed-bottom {
-  /*position: fixed;*/
+  /* position: fixed; */
   background: #efefef;
   border-top: 1px solid #ddd;
   height: var(--osim-status-bar-height);

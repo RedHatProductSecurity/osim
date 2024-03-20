@@ -86,6 +86,7 @@ function focusInput() {
   gap: 1em;
   align-items: center;
 }
+
 .osim-pill-list:focus-within {
   outline: 0;
   box-shadow:
@@ -106,6 +107,7 @@ function focusInput() {
   outline: none;
   box-shadow: none;
 }
+
 .osim-pill-list-input:focus,
 .osim-pill-list-input:focus-visible {
   border: none;

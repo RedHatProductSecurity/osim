@@ -171,9 +171,12 @@ function onSearch(query: string) {
 <style>
 .osim-dropdown-menu.dropdown-menu {
   z-index: 1091;
+
   /* --bs-toast-zindex + 1 */
-  /*color: red;*/
-  /*outline: 1px solid deeppink !important;*/
+
+  /* color: red; */
+
+  /* outline: 1px solid deeppink !important; */
 }
 
 
@@ -183,10 +186,12 @@ function onSearch(query: string) {
 
 .osim-home-link {
   flex-shrink: 0;
-  /*margin-right: 5px;*/
+
+  /* margin-right: 5px; */
 }
 
-/*background: white;*/
+/* background: white; */
+
 /*
 filter:
     !*
@@ -223,12 +228,13 @@ filter:
   max-width: 100%;
 
   --vertical-padding: 5px;
+
   padding: var(--vertical-padding) 11px var(--vertical-padding) 0;
   border-right: 1px solid white;
   border-image: linear-gradient(to bottom,
       transparent var(--vertical-padding),
-      rgba(255, 255, 255, 1) var(--vertical-padding),
-      rgba(255, 255, 255, 1) calc(100% - var(--vertical-padding)),
+      rgb(255 255 255 / 100%) var(--vertical-padding),
+      rgb(255 255 255 / 100%) calc(100% - var(--vertical-padding)),
       transparent calc(100% - var(--vertical-padding))) 1;
 }
 
@@ -240,7 +246,7 @@ filter:
 }
 
 .osim-env {
-  /*background-color: gray;*/
+  /* background-color: gray; */
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -269,6 +275,7 @@ filter:
   background: transparent;
   border-color: transparent;
 }
+
 .osim-notification-button .osim-notification-count {
   padding: 0.3em;
 }

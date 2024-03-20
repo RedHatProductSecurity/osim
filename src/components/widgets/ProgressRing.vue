@@ -46,6 +46,7 @@ circle {
   transform: rotate(-90deg);
   transform-origin: center;
 }
+
 circle.down {
   transform: rotate(-90deg) scale(1, -1);
 }
