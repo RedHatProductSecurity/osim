@@ -55,6 +55,7 @@ const {
   addPublicComment,
   saveReferences,
   deleteReference,
+  cancelAddReference,
   saveAcknowledgments,
   deleteAcknowledgment,
 } = useFlawModel(props.flaw, emit);
@@ -274,6 +275,7 @@ const cvssString = computed(() => {
             :isEmbargoed="flaw.embargoed"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
+            @reference:cancel-new="cancelAddReference"
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments

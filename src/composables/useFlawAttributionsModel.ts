@@ -33,6 +33,10 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
     emit('refresh:flaw');
   }
 
+  function cancelAddReference(reference: ZodFlawReferenceType) {
+    flawReferences.value = flawReferences.value.filter((r) => r !== reference);
+  }
+
   async function saveReferences(references: ZodFlawReferenceType[]) {
     for (const reference of references) {
       if (reference.uuid) {
@@ -41,11 +45,6 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
         await createReference(reference);
       }
     }
-    // await Promise.all(
-    //   references.map((reference) =>
-    //     reference.uuid ? updateReference(reference) : createReference(reference),
-    //   ),
-    // );
     emit('refresh:flaw');
   }
 
@@ -111,6 +110,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, emit: any) {
     saveReferences,
     addBlankReference,
     addBlankAcknowledgment,
+    cancelAddReference,
     createReference,
     updateReference,
     deleteReference,
