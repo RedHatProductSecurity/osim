@@ -17,7 +17,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
+  const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
@@ -39,7 +39,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
   async function createFlaw() {
-    postFlaw(flaw.value)
+    isSaving.value = true;
+    await postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
@@ -48,9 +49,11 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
         });
       })
       .catch(createCatchHandler('Error creating Flaw'));
+    isSaving.value = false;
   }
 
   async function updateFlaw() {
+    isSaving.value = true;  
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!newFlaw.success) {
       addToast({
@@ -79,6 +82,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     }
 
     onSaveSuccess();
+    isSaving.value = false;
   }
 
   function addPublicComment(comment: string) {
@@ -90,6 +94,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
   return {
     flaw,
+    isSaving,
     committedFlaw,
     trackerUuids,
     flawTypes,

@@ -67,11 +67,10 @@ const {
   cancelAddAcknowledgment,
   saveAcknowledgments,
   deleteAcknowledgment,
+  isSaving,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
-
-const isSaving = ref(false);
 
 onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
@@ -294,7 +293,6 @@ const cvssString = computed(() => {
             @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
-
           <LabelCollapsable label="Trackers">
             <ul>
               <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
