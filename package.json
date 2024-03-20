@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "scripts/dev-osim.sh",
     "dev-server": "vite",
-    "build": "run-p type-check \"build-only {@}\" \"test:unit:nowatch {@}\" --",
+    "build": "run-p type-check lint \"build-only {@}\" \"test:unit:nowatch {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:unit:nowatch": "vitest run",
