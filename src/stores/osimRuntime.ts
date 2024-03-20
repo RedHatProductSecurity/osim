@@ -1,8 +1,8 @@
 // No need to use Pinia; these values are set on app startup and never changed.
 // Named with camelCase instead of PascalCase to differentiate from Pinia stores.
 
-import {computed, ref} from 'vue';
-import {z} from 'zod';
+import { computed, ref } from 'vue';
+import { z } from 'zod';
 
 // export enum OsimRuntimeDev {
 //   PROD,
@@ -40,9 +40,9 @@ const OsimRuntime = z.object({
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
-  backends: {osidb: '', bugzilla: ''},
-  osimVersion: {rev: '', tag: '', timestamp: '', dirty: true},
   env: '',
+  backends: { osidb: '', bugzilla: '' },
+  osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
   readOnly: false,
 });

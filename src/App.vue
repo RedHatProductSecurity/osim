@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import {RouterView} from 'vue-router';
+import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
-import {osidbHealth, osimRuntime, osimRuntimeStatus, OsimRuntimeStatus} from '@/stores/osimRuntime';
+import { osidbHealth, osimRuntime, osimRuntimeStatus, OsimRuntimeStatus } from '@/stores/osimRuntime';
 
 
-import {setup} from '@/stores/osimRuntime';
-import {ref, watchEffect} from 'vue';
+import { setup } from '@/stores/osimRuntime';
+import { ref, watchEffect } from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
-import {useElementBounding} from '@vueuse/core';
-import {footerHeight, footerTop} from '@/stores/responsive';
+import { useElementBounding } from '@vueuse/core';
+import { footerHeight, footerTop } from '@/stores/responsive';
 setup();
 
 const elFooter = ref<HTMLElement | null>(null);
-const {top: footerTop_, height: footerHeight_} = useElementBounding(elFooter);
+const { top: footerTop_, height: footerHeight_ } = useElementBounding(elFooter);
 watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;

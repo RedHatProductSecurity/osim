@@ -1,6 +1,6 @@
-import {ref, watch} from 'vue';
-import {defineStore} from 'pinia';
-import {z} from 'zod';
+import { ref, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { z } from 'zod';
 
 import serviceWorkerClient from '../services/service-worker-client';
 
@@ -28,7 +28,7 @@ export type SettingsType = z.infer<typeof SettingsSchema>;
 
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>({showNotifications: false});
+  const settings = ref<SettingsType>({ showNotifications: false });
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
   serviceWorkerClient.listen(_settingsStoreKey, value => {
     const newSettingsStore = SettingsSchema.safeParse(value);
@@ -44,11 +44,11 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   });
 
   function save(newSettings: SettingsType) {
-    settings.value = {...newSettings};
+    settings.value = { ...newSettings };
   }
 
   function $reset() {
-    settings.value = {showNotifications: false};
+    settings.value = { showNotifications: false };
   }
 
   return {

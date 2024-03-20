@@ -1,5 +1,5 @@
 
-import type {Directive} from 'vue';
+import type { Directive } from 'vue';
 
 const idPrefix = 'osim-';
 let idCounter = 1000;

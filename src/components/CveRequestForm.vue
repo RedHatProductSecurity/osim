@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import { computed, ref } from 'vue';
 
-import {useToastStore} from '@/stores/ToastStore';
-import {postFlawPublicComment} from '@/services/FlawService';
-import {useUserStore} from '@/stores/UserStore';
+import { useToastStore } from '@/stores/ToastStore';
+import { postFlawPublicComment } from '@/services/FlawService';
+import { useUserStore } from '@/stores/UserStore';
 
 import Modal from '@/components/widgets/Modal.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
+import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 
-const {addToast} = useToastStore();
+const { addToast } = useToastStore();
 const userStore = useUserStore();
 
 const props = defineProps<{
-  subject: string,
-  description: string,
-  osimLink: string,
-  bugzillaLink: string,
+  subject: string;
+  description: string;
+  osimLink: string;
+  bugzillaLink: string;
 }>();
 
 const emit = defineEmits<{
-  'refresh:flaw': [],
+  'refresh:flaw': [];
 }>();
 
 const modalShown = ref(false);
@@ -72,7 +72,7 @@ function addPublicCveRequestComment() {
           body: 'CVE Request comment saved',
         });
       })
-      .catch(e => {
+      .catch((e) => {
         commentSaved.value = false;
         savingComment.value = false;
         const displayedError = getDisplayedOsidbError(e);
@@ -83,7 +83,6 @@ function addPublicCveRequestComment() {
       });
   }
 }
-
 
 function openModal() {
   modalShown.value = true;
@@ -97,35 +96,23 @@ function closeModal() {
     // location.reload(); // TODO extremely ugly hack
   }
 }
-
 </script>
 
 <template>
   <!-- <div class="osim-toast-container toast-container position-fixed
     top-0 bottom-0 end-0 overflow-auto overflow-x-hidden p-3"> -->
   <div class="osim-cve-request-button">
-    <button
-      type="button"
-      class="btn btn-secondary"
-      @click="openModal"
-    >
-      Request CVE
-    </button>
+    <button type="button" class="btn btn-secondary" @click="openModal">Request CVE</button>
 
     <Modal :show="modalShown" @close="closeModal">
-      <template #title>
-        Request CVE
-      </template>
+      <template #title> Request CVE </template>
       <template #body>
         <LabelInput v-model="subject" label="Subject" />
         <LabelTextarea v-model="description" label="Description" />
 
         <div class="osim-input mb-3 border-start ps-3">
           <span class="form-label">Appendix</span>
-          <p
-            ref="appendixEl"
-            class="form-control"
-          >
+          <p ref="appendixEl" class="form-control">
             OSIM: <a :href="osimLink">{{ osimLink }}</a><br />
             Bugzilla: <a :href="bugzillaLink">{{ bugzillaLink }}</a>
           </p>
@@ -157,11 +144,7 @@ function closeModal() {
             @click.prevent="addPublicCveRequestComment"
           >
             Add CVE Request Comment
-            <span
-              v-if="savingComment" 
-              class="spinner-border spinner-border-sm d-inline-block"
-              role="status"
-            >
+            <span v-if="savingComment" class="spinner-border spinner-border-sm d-inline-block" role="status">
               <span class="visually-hidden">Saving...</span>
             </span>
             <i v-if="commentSaved" class="bi bi-check-circle d-inline-block" role="status">
@@ -169,7 +152,6 @@ function closeModal() {
             </i>
           </button>
         </div>
-
       </template>
 
       <template #footer>
@@ -178,8 +160,7 @@ function closeModal() {
           class="btn btn-secondary"
           data-bs-dismiss="modal"
           @click="closeModal"
-        >Close
-        </button>
+        >Close</button>
       </template>
     </Modal>
   </div>
@@ -189,5 +170,4 @@ function closeModal() {
 .osim-cve-request-button :deep(.modal-dialog) {
   max-width: 800px;
 }
-
 </style>

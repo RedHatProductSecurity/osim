@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import TrackerDetails from '../components/TrackerDetails.vue';
-import {getTracker} from '../services/TrackerService';
+import { getTracker } from '../services/TrackerService';
 
 const tracker = ref(null);
 const props = defineProps<{

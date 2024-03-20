@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive} from 'vue';
+import { reactive } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';

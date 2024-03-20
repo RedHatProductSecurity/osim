@@ -5,14 +5,14 @@ import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import {useSettingsStore} from '@/stores/SettingsStore';
-import {useToastStore} from '@/stores/ToastStore';
-import {useElementBounding} from '@vueuse/core';
-import {navbarBottom, navbarHeight} from '@/stores/responsive';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
+import { useElementBounding } from '@vueuse/core';
+import { navbarBottom, navbarHeight } from '@/stores/responsive';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 const userStore = useUserStore();
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(
@@ -43,10 +43,10 @@ function onSearch(query: string) {
   }
   const maybeCveId =  quickMatchCVE(query);
   if (maybeCveId) {
-    router.push({path: `/flaws/${maybeCveId}`});
+    router.push({ path: `/flaws/${maybeCveId}` });
     return;
   }
-  router.push({name: 'search', query: {query: trimmedQuery}});
+  router.push({ name: 'search', query: { query: trimmedQuery } });
 }
 
 </script>
@@ -60,7 +60,7 @@ function onSearch(query: string) {
       </RouterLink>
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
-        <span class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
+        <span v-if="osimRuntime.readOnly" class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
       </RouterLink>
       <!-- <div class="osim-env">
         <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>
