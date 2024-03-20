@@ -23,11 +23,12 @@ function handleDelete(uuid: string, closeModal: () => void) {
     <EditableList
       v-model="acknowledgments"
       entityName="Acknowledgment"
+      :hasLabel="true"
       @item:save="emit('acknowledgment:update', $event)"
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
     >
-      <template #default="{ item: {name, affiliation, uuid} }">
+      <template #default="{ item: { name, affiliation, uuid } }">
         <div class="form-group">
           {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
