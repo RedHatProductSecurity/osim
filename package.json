@@ -14,6 +14,7 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:unit:nowatch": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "behave features",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
