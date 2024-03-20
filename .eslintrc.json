@@ -20,9 +20,11 @@
   "plugins": ["@typescript-eslint", "vue", "@stylistic/js"],
   "rules": {
     "@stylistic/js/array-element-newline": ["error", "consistent"],
-    "max-len": ["warn", { "code": 100 }],
+    "@stylistic/js/object-curly-spacing": ["error", "always"],
+    "max-len": ["warn", { "code": 120 }],
     "@typescript-eslint/no-explicit-any": "off",
     "indent": ["error", 2],
+    "eol-last": ["error", "always"],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
