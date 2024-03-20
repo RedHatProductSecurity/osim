@@ -14,7 +14,7 @@ defineProps<{
         {{ label }}
       </span>
       <div :class="{ 'alert alert-warning': !modelValue }">
-        <span class="form-control">{{ modelValue }}</span>
+        <span class="form-control" style="border-top-left-radius: 0;">{{ modelValue }}</span>
       </div>
     </div>
     <div v-else class="row">
