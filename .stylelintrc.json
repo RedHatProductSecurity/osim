@@ -14,6 +14,7 @@
         "ignoreFunctions": ["v-bind"]
       }
     ],
-    "scss/at-extend-no-missing-placeholder": null
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/no-global-function-names": null
   }
 }
