@@ -98,6 +98,10 @@ const errors = {
   source: null,
 };
 
+const hasSummary = ref(!!flaw.value.summary && flaw.value.summary.trim() != '');
+const hasStatement = ref(!!flaw.value.statement && flaw.value.statement.trim() != '');
+const hasMitigation = ref(!!flaw.value.mitigation && flaw.value.mitigation.trim() != '');
+
 const flawCvss3CaculatorLink = computed(
   () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
 );
@@ -253,23 +257,23 @@ const cvssString = computed(() => {
         <LabelTextarea v-if="hasMitigation" v-model="flaw.mitigation" label="Mitigation" />
         <div class="d-flex gap-3 mb-3">
           <button
-            v-if="!flaw.summary"
+            v-if="!hasSummary"
             class="btn btn-secondary"
-            @click="flaw.summary = 'Description Text ...'"
+            @click="hasSummary = true; flaw.summary = 'Description Text ...'"
           >
             Add Description
           </button>
           <button
-            v-if="!flaw.statement"
+            v-if="!hasStatement"
             class="btn btn-secondary"
-            @click="flaw.statement = 'Statement Text ...'"
+            @click="hasStatement = true; flaw.statement = 'Statement Text ...'"
           >
             Add Statement
           </button>
           <button
-            v-if="!flaw.mitigation"
+            v-if="!hasMitigation"
             class="btn btn-secondary"
-            @click="flaw.mitigation = 'Mitigation Text ...'"
+            @click="hasMitigation = true; flaw.mitigation = 'Mitigation Text ...'"
           >
             Add Mitigation
           </button>
