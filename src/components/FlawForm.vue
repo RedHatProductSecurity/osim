@@ -275,19 +275,23 @@ const cvssString = computed(() => {
         </div>
       </div>
       <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
-        <IssueFieldReferences
-          v-model="flawReferences"
-          :isEmbargoed="flaw.embargoed"
-          @reference:update="saveReferences"
-          @reference:new="addBlankReference(flaw.embargoed)"
-          @reference:delete="deleteReference"
-        />
-        <IssueFieldAcknowledgments
-          v-model="flawAcknowledgments"
-          @acknowledgment:update="saveAcknowledgments"
-          @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
-          @acknowledgment:delete="deleteAcknowledgment"
-        />
+        <div class="d-flex gap-3">
+          <IssueFieldReferences
+            v-model="flawReferences"
+            :isEmbargoed="flaw.embargoed"
+            class="w-100"
+            @reference:update="saveReferences"
+            @reference:new="addBlankReference(flaw.embargoed)"
+            @reference:delete="deleteReference"
+          />
+          <IssueFieldAcknowledgments
+            v-model="flawAcknowledgments"
+            class="w-100"
+            @acknowledgment:update="saveAcknowledgments"
+            @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+            @acknowledgment:delete="deleteAcknowledgment"
+          />
+        </div>
         <LabelCollapsable label="Trackers">
           <ul>
             <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
