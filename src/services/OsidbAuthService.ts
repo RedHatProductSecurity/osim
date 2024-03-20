@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { z } from 'zod';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '../stores/UserStore';
@@ -16,7 +16,7 @@ export async function osidbFetch(config: AxiosRequestConfig) {
       body: 'Operation prevented since OSIM is in read-only mode',
       css: 'danger',
     });
-    return new AxiosError('OSIM is in read-only mode');
+    return Promise.reject(new Error('OSIM is in read-only mode'));
   }
   const settingsStore = useSettingsStore();
   const accessToken = await getNextAccessToken();
