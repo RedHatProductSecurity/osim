@@ -55,14 +55,14 @@ function handleDelete(uuid: string, closeModal: () => void) {
             {{ referenceTypeLabel(type) }}
           </span>
         </a>
-        <div class="form-group">
+        <div class="form-group mt-2">
           <LabelStatic v-model="item.description" label="Description" hasTopLabelStyle />
         </div>
       </template>
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
+          <div class="p-3 pt-4">
             <LabelInput v-model="items[itemIndex].url" label="Link URL" />
             <LabelTextarea v-model="items[itemIndex].description" label="Description" />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
@@ -81,13 +81,13 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <div
-              class="text-end osim-cancel-new-reference"
+          <div class="p-3 pt-4">
+            <button
+              class="btn osim-cancel-new-reference"
               @click="emit('reference:cancel-new', items[itemIndex])"
             >
               <i class="bi bi-x" />
-            </div>
+            </button>
             <LabelInput v-model="items[itemIndex].url" label="Link URL" />
             <LabelTextarea v-model="items[itemIndex].description" label="Description" />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
@@ -138,6 +138,10 @@ select.osim-reference-types {
 }
 
 .osim-cancel-new-reference {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  padding: 0;
   cursor: pointer;
   font-size: 1.5rem;
 }

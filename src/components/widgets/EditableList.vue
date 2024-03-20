@@ -84,7 +84,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited !== itemIndex"
                 type="button"
-                class="btn"
+                class="btn pe-1"
                 @click="setEdit(itemIndex)"
               >
                 <i class="bi bi-pencil">
@@ -94,7 +94,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited !== itemIndex"
                 type="button"
-                class="btn"
+                class="btn ps-1"
                 @click="useModalForItem(item.uuid).openModal"
               >
                 <i class="bi bi-trash">
@@ -103,20 +103,20 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited === itemIndex"
                 type="button"
-                class="btn"
+                class="btn pe-0 pt-0"
                 @click="commitEdit(itemIndex)"
               >
-                <i class="bi bi-check">
+                <i class="bi bi-check fs-4">
                   <span class="visually-hidden">Confirm {{ entityName }} Edit </span>
                 </i>
               </button>
               <button
                 v-if="indexBeingEdited === itemIndex"
                 type="button"
-                class="btn"
+                class="btn ps-0 pt-0 pe-2"
                 @click="cancelEdit(itemIndex)"
               >
-                <i class="bi bi-x">
+                <i class="bi bi-x fs-4">
                   <span class="visually-hidden">Cancel {{ entityName }} Edit </span>
                 </i>
               </button>
@@ -178,12 +178,14 @@ header select {
 }
 
 .osim-editable-list-card {
-  position: relative;
-
   .buttons {
     position: absolute;
     right: 0;
-    top: 4px;
+    top: 0;
+
+    .bi {
+      font-size: 1rem;
+    }
   }
 }
 </style>

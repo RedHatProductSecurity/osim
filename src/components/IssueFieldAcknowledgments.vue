@@ -29,7 +29,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:new="emit('acknowledgment:new')"
     >
       <template #default="{ item: { name, affiliation, uuid } }">
-        <div class="form-group">
+        <div class="form-group mb-2">
           {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
         </div>
@@ -37,28 +37,26 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <input v-model="items[itemIndex].name" type="text" />
-            from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+          <div class="d-flex">
+            <input v-model="items[itemIndex].name" class="form-control" type="text" />
+            <p class="px-3 my-2">from</p>
+            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
           </div>
         </div>
       </template>
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="d-flex justify-content-between">
-            <div>
-              <input v-model="items[itemIndex].name" type="text" />
-              from
-              <input v-model="items[itemIndex].affiliation" type="text" />
-            </div>
-            <div
-              class="text-end  osim-cancel-new-acknowledgment"
+          <div class="d-flex">
+            <input v-model="items[itemIndex].name" class="form-control" type="text" />
+            <p class="px-3 my-2">from</p>
+            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
+            <button
+              class="btn osim-cancel-new-acknowledgment"
               @click="emit('acknowledgment:cancel-new', items[itemIndex])"
             >
               <i class="bi bi-x" />
-            </div>
+            </button>
           </div>
         </div>
       </template>
@@ -92,8 +90,17 @@ function handleDelete(uuid: string, closeModal: () => void) {
 </template>
 
 <style scoped>  
+.form-group {
+  width: 90%;
+  margin-bottom: 10px;
+}
+
 .osim-cancel-new-acknowledgment {
   cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 0;
+  padding: 0;
   font-size: 1.5rem;
 }
 </style>
