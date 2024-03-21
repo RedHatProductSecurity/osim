@@ -24,7 +24,7 @@ describe('SettingsStore', () => {
   });
 
   it('initializes', () => {
-    expect(settingsStore.$state.settings).toEqual({showNotifications: false});
+    expect(settingsStore.$state.settings).toEqual({ showNotifications: false });
   });
   it('saves values', () => {
     settingsStore.save({

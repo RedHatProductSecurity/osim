@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import Toast from '../components/widgets/Toast.vue';
-import {useToastStore} from '../stores/ToastStore';
-import {computed} from 'vue';
-import {navbarBottom, footerTop, footerHeight} from '@/stores/responsive';
-import {useSettingsStore} from '@/stores/SettingsStore';
+import { useToastStore } from '../stores/ToastStore';
+import { computed } from 'vue';
+import { navbarBottom, footerTop, footerHeight } from '@/stores/responsive';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 // const props = defineProps<{
 //   // timestamp: moment.Moment,
 // }>();
 
-const {toasts} = useToastStore();
-const {settings} = useSettingsStore();
+const { toasts } = useToastStore();
+const { settings } = useSettingsStore();
 
 const top = computed<string>(() => {
   return navbarBottom.value > 0 ? 'auto' : '0';
@@ -87,16 +87,19 @@ function clearAll() {
 .osim-toast-container-clear button {
   pointer-events: auto;
 }
+
 .osim-toast-container {
   position: v-bind(position);
   top: v-bind(top);
-  /*height: calc(100vh - 100px);*/
+
+  /* height: calc(100vh - 100px); */
   height: v-bind(height);
-  overflow-x: clip;
-  overflow-y: auto;
-  /*clip-path: inset(-100vw 0 -100vw -100vw);*/
+  overflow: clip auto;
+
+  /* clip-path: inset(-100vw 0 -100vw -100vw); */
   right: 0;
-  /*justify-self: end;*/
+
+  /* justify-self: end; */
 }
 
 .osim-toast-container-clear {
