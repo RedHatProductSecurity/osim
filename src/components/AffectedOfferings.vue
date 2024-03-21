@@ -93,7 +93,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 </script>
 
 <template>
-  <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
+  <div v-if="theAffects && mode === 'edit'" class="osim-affects">
     <h4 class="mb-4">
       Affected Offerings
 

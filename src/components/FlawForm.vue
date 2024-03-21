@@ -118,8 +118,8 @@ const cvssString = computed(() => {
 
 <template>
   <form class="osim-flaw-form" @submit.prevent="onSubmit">
-    <div class="osim-content container-lg pt-5">
-      <div class="row">
+    <div class="osim-content container-lg">
+      <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
           <!-- Alerts might go here -->
         </div>
@@ -245,7 +245,7 @@ const cvssString = computed(() => {
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
-      <div class="mt-3 pt-4 pb-3 mb-4 border-top">
+      <div class="osim-flaw-form-section border-top">
         <LabelTextarea v-model="flaw.description" label="Comment#0" />
         <LabelTextarea v-if="hasSummary" v-model="flaw.summary" label="Description" />
         <LabelTextarea v-if="hasStatement" v-model="flaw.statement" label="Statement" />
@@ -283,7 +283,7 @@ const cvssString = computed(() => {
           </button>
         </div>
       </div>
-      <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
+      <div class="osim-flaw-form-section border-top border-bottom">
         <div class="d-flex gap-3">
           <IssueFieldReferences
             v-model="flawReferences"
@@ -315,12 +315,13 @@ const cvssString = computed(() => {
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
         :mode="mode"
+        class="osim-flaw-form-section"
         @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
-      <div v-if="mode === 'edit'" class="border-top mt-4">
+      <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments :comments="flaw.comments" @comment:add-public="addPublicComment" />
       </div>
     </div>
@@ -358,7 +359,13 @@ const cvssString = computed(() => {
 form.osim-flaw-form :deep(*) {
   line-height: 1.5;
   font-family: 'Red Hat Mono', monospace;
+
+  .osim-flaw-form-section{
+    padding-block: 3rem;
+  }
 }
+
+
 
 :deep(.osim-input) {
   .row {
