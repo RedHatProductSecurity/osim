@@ -36,6 +36,7 @@
     "maska": "^2.1.9",
     "moment": "^2.29.4",
     "pinia": "^2.1.4",
+    "ramda": "^0.29.1",
     "sanitize-html": "^2.12.1",
     "vee-validate": "^4.11.1",
     "vue": "^3.4.19",
