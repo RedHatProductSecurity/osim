@@ -105,7 +105,7 @@ const onReset = () => {
 
 const displayCvssNISTForm = computed(() => {
   const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
-  const nvdCvssScore = flawNvdCvssScore.toString();
+  const nvdCvssScore = flawNvdCvssScore.value?.toString();
   return rhCvss !== nvdCvssScore;
 });
 
@@ -113,25 +113,24 @@ const cvssString = computed(() => {
   return `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
 });
 
+
 const highlightedNvdCvssScore = computed(() => {
-  const nvdCvssArray = flawNvdCvssScore.value?.split('/') ?? ['='];
-  const rhVectorArray = cvssString.value?.split('/') ?? [];
-  
-  const formattedArray = nvdCvssArray.map((nvdCvssElement, index) => {
-    const rhVectorElement = rhVectorArray[index];
-
-    if (rhVectorElement !== nvdCvssElement) {
-      return highlightScore(nvdCvssElement);
+  let result = '';
+  const maxLength = Math.max(flawNvdCvssScore.value.length, cvssString.value.length);
+  for (let i = 0; i < maxLength; i++) {
+    const charFromFlaw = flawNvdCvssScore.value[i] || '';
+    const charFromCvss = cvssString.value[i] || '';
+    if (charFromFlaw === charFromCvss) {
+      result += charFromFlaw;
     } else {
-      return nvdCvssElement;
+      result += highlightScore(charFromFlaw);
     }
-  });
-
-  return formattedArray.join('/');
+  }
+  return result;
 });
 
-function highlightScore(score) {
-  return `<span class="d-inline text-primary">${score}</span>`;
+function highlightScore(char) {
+  return `<span class="d-inline text-primary">${char}</span>`;
 }
 </script>
 
@@ -216,7 +215,10 @@ function highlightScore(score) {
                 :nistcvss="flawNvdCvssScore?.toString()"
               />
             </div>
-            <span v-if="displayCvssNISTForm" class="text-info bg-white px-3 py-1 margin-top">
+            <span 
+              v-if="displayCvssNISTForm" 
+              class="text-info bg-white px-3 py-2 cvssScoreError"
+            >
               Explain non-obvious CVSSv3 score metrics
             </span>
           </div>
@@ -469,5 +471,8 @@ form.osim-flaw-form :deep(*) {
 
 .cvss-button-div {
   width: 60%;
+}
+.cvssScoreError{
+  margin-top: -15px;
 }
 </style>

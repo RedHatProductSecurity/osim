@@ -13,6 +13,7 @@ import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
 import LabelStatic from '../widgets/LabelStatic.vue';
+import LabelStaticHighlighted from '../widgets/LabelStaticHighlighted.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -138,7 +139,7 @@ describe('FlawForm', () => {
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
-      .findAllComponents(LabelStatic)
+      .findAllComponents(LabelStaticHighlighted)
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
@@ -222,7 +223,7 @@ describe('FlawForm', () => {
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
-      .findAllComponents(LabelStatic)
+      .findAllComponents(LabelStaticHighlighted)
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
@@ -405,6 +406,21 @@ describe('FlawForm', () => {
     expect(linkElement?.attributes('href')).toBe(
       'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
     );
+  });
+
+  it('shows a error message when nvd score and Rh score mismatch', async () => {
+    const cvssScoreError = subject.find('span.cvssScoreError');
+    expect(cvssScoreError?.exists()).toBe(true);
+    expect(cvssScoreError?.text()).toBe('Explain non-obvious CVSSv3 score metrics');
+  });
+
+  it('shows a highlighted nvdCvssField value when nvd score and Rh score mismatch', async () => {
+    const nvdCvssField = subject
+      .findAllComponents(LabelStaticHighlighted)
+      .find((component) => component.props().label === 'NVD CVSSv3');
+    expect(nvdCvssField?.exists()).toBe(true);
+    const spanWithClass = nvdCvssField?.find('span.text-primary');
+    expect(spanWithClass.exists()).toBe(true);
   });
 });
 
