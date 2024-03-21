@@ -4,11 +4,13 @@ import { vRef } from '@/utils/helpers';
 const props = withDefaults(
   defineProps<{
     label?: string;
+    length?: number;
     isExpanded?: boolean | undefined;
   }>(),
   {
     isExpanded: undefined,
     label: '',
+    length: -1,
   },
 );
 
@@ -28,12 +30,24 @@ function handleClick() {
 
 <template>
   <div class="osim-collapsable-label" v-bind="$attrs">
-    <button type="button" class="me-2" @click="handleClick">
+    <div v-if="length === 0">
+      <slot name="label">
+        <label class="ms-2 form-label">
+          {{ `${label}: 0` }}
+        </label>
+      </slot>
+    </div>
+    <button
+      v-else
+      type="button"
+      class="me-2"
+      @click="handleClick"
+    >
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
       <slot name="label">
         <label class="ms-2 form-label">
-          {{ label }}
+          {{ length > 0 ? `${label}: ${length}` : `${label}` }}
         </label>
       </slot>
     </button>
