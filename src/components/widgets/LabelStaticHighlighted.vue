@@ -3,7 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 import { computed } from 'vue';
 
 const props = defineProps<{
-  modelValue: string | number | null | undefined;
+  modelValue: string;
   label: string;
   error?: string;
   hasTopLabelStyle?: boolean;

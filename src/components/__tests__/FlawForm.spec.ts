@@ -12,7 +12,6 @@ import { useRouter } from 'vue-router';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
-import LabelStatic from '../widgets/LabelStatic.vue';
 import LabelStaticHighlighted from '../widgets/LabelStaticHighlighted.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';

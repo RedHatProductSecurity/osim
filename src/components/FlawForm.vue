@@ -13,7 +13,6 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
-// import LabelStatic from './widgets/LabelStatic.vue';
 import LabelStaticHighlighted from './widgets/LabelStaticHighlighted.vue';
 
 import IssueFieldReferences from './IssueFieldReferences.vue';
@@ -116,20 +115,25 @@ const cvssString = computed(() => {
 
 const highlightedNvdCvssScore = computed(() => {
   let result = '';
-  const maxLength = Math.max(flawNvdCvssScore.value.length, cvssString.value.length);
+  const flawValue = String(flawNvdCvssScore.value);
+  const cvssValue = String(cvssString.value);
+
+  const maxLength = Math.max(flawValue.length, cvssValue.length);
+
   for (let i = 0; i < maxLength; i++) {
-    const charFromFlaw = flawNvdCvssScore.value[i] || '';
-    const charFromCvss = cvssString.value[i] || '';
+    const charFromFlaw = i < flawValue.length ? flawValue[i] : '';
+    const charFromCvss = i < cvssValue.length ? cvssValue[i] : '';
     if (charFromFlaw === charFromCvss) {
       result += charFromFlaw;
     } else {
       result += highlightScore(charFromFlaw);
     }
   }
+
   return result;
 });
 
-function highlightScore(char) {
+function highlightScore(char: string): string {
   return `<span class="d-inline text-primary">${char}</span>`;
 }
 </script>
