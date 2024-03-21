@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {toRefs, watch} from 'vue';
+import { toRefs, watch } from 'vue';
 
 const props = defineProps<{
   show: boolean,
@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>();
 
 
-const {show} = toRefs(props);
+const { show } = toRefs(props);
 watch(show, () => {
   if (show.value) {
     document.body.classList.add('modal-open');
@@ -22,7 +22,7 @@ watch(show, () => {
     document.body.style.overflow = '';
     document.body.style.padding = '';
   }
-}, {immediate: true});
+}, { immediate: true });
 
 </script>
 
@@ -89,6 +89,7 @@ watch(show, () => {
   background-color: transparent;
 
 }
+
 .modal-bg-enter-active,
 .modal-bg-leave-active {
   transition: background-color 0.5s ease;

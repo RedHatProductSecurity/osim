@@ -1,9 +1,9 @@
-import axios, {type AxiosError} from 'axios';
-import {z} from 'zod';
-import type {AxiosRequestConfig} from 'axios';
-import {osimRuntime} from '@/stores/osimRuntime';
-import {useUserStore} from '../stores/UserStore';
-import {useSettingsStore} from '@/stores/SettingsStore';
+import axios, { type AxiosError } from 'axios';
+import { z } from 'zod';
+import type { AxiosRequestConfig } from 'axios';
+import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '../stores/UserStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const RefreshResponse = z.object({
   access: z.string()

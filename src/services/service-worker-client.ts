@@ -5,14 +5,14 @@ const promises: { [key: string]: () => void } = {};
 
 export function listen(key: string, handler: (value: object) => any): Promise<unknown> {
   connectedStores[key] = handler;
-  navigator.serviceWorker?.controller?.postMessage({_register: key});
+  navigator.serviceWorker?.controller?.postMessage({ _register: key });
   return new Promise<void>(resolve => {
     promises[key] = resolve;
   });
 }
 
 export function put(key: string, value: object) {
-  navigator.serviceWorker?.controller?.postMessage({key, value});
+  navigator.serviceWorker?.controller?.postMessage({ key, value });
 }
 
 const serviceWorkerClient = {
@@ -46,8 +46,8 @@ navigator.serviceWorker?.addEventListener('message', event => {
     }
     return;
   }
-  const {key, value} = event.data;
-  console.log('received message', {key, value});
+  const { key, value } = event.data;
+  console.log('received message', { key, value });
 
   if (promises[key]) {
     promises[key]();
