@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue';
+import { computed } from 'vue';
 const props = defineProps<{
   diameter: number,
   progress: number,
@@ -46,6 +46,7 @@ circle {
   transform: rotate(-90deg);
   transform-origin: center;
 }
+
 circle.down {
   transform: rotate(-90deg) scale(1, -1);
 }

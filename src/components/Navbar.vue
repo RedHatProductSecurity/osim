@@ -5,13 +5,13 @@ import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import {useSettingsStore} from '@/stores/SettingsStore';
-import {useToastStore} from '@/stores/ToastStore';
-import {useElementBounding} from '@vueuse/core';
-import {navbarBottom, navbarHeight} from '@/stores/responsive';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
+import { useElementBounding } from '@vueuse/core';
+import { navbarBottom, navbarHeight } from '@/stores/responsive';
 
 const userStore = useUserStore();
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 // const {height: headerHeight} = useElementSize(
@@ -42,10 +42,10 @@ function onSearch(query: string) {
   }
   const maybeCveId =  quickMatchCVE(query);
   if (maybeCveId) {
-    router.push({path: `/flaws/${maybeCveId}`});
+    router.push({ path: `/flaws/${maybeCveId}` });
     return;
   }
-  router.push({name: 'search', query: {query: trimmedQuery}});
+  router.push({ name: 'search', query: { query: trimmedQuery } });
 }
 
 </script>
@@ -169,9 +169,12 @@ function onSearch(query: string) {
 <style>
 .osim-dropdown-menu.dropdown-menu {
   z-index: 1091;
+
   /* --bs-toast-zindex + 1 */
-  /*color: red;*/
-  /*outline: 1px solid deeppink !important;*/
+
+  /* color: red; */
+
+  /* outline: 1px solid deeppink !important; */
 }
 
 
@@ -181,10 +184,12 @@ function onSearch(query: string) {
 
 .osim-home-link {
   flex-shrink: 0;
-  /*margin-right: 5px;*/
+
+  /* margin-right: 5px; */
 }
 
-/*background: white;*/
+/* background: white; */
+
 /*
 filter:
     !*
@@ -221,12 +226,13 @@ filter:
   max-width: 100%;
 
   --vertical-padding: 5px;
+
   padding: var(--vertical-padding) 11px var(--vertical-padding) 0;
   border-right: 1px solid white;
   border-image: linear-gradient(to bottom,
       transparent var(--vertical-padding),
-      rgba(255, 255, 255, 1) var(--vertical-padding),
-      rgba(255, 255, 255, 1) calc(100% - var(--vertical-padding)),
+      rgb(255 255 255 / 100%) var(--vertical-padding),
+      rgb(255 255 255 / 100%) calc(100% - var(--vertical-padding)),
       transparent calc(100% - var(--vertical-padding))) 1;
 }
 
@@ -238,7 +244,7 @@ filter:
 }
 
 .osim-env {
-  /*background-color: gray;*/
+  /* background-color: gray; */
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -267,6 +273,7 @@ filter:
   background: transparent;
   border-color: transparent;
 }
+
 .osim-notification-button .osim-notification-count {
   padding: 0.3em;
 }

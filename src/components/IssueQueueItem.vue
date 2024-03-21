@@ -62,7 +62,7 @@ defineEmits<{
 </template>
 
 <style lang="scss" scoped>
-@import '@/scss/bootstrap-overrides.scss';
+@import '@/scss/bootstrap-overrides';
 
 td.osim-issue-title {
   max-width: 10rem;

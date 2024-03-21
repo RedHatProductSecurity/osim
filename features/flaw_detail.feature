@@ -57,3 +57,17 @@ Feature: Flaw detail testing
     Scenario: Update CVE ID
       When I update the CVE ID with a valid data
       Then The CVE ID is updated
+
+    Scenario Outline: Update CWE ID
+      When I <action> the CWE ID
+      Then The CWE ID is updated
+
+      Examples:
+        |         action |
+        |         update |
+        |         delete |
+        |            add |
+
+    Scenario: Modify Reported Date
+      When I update the Reported Date with a valid data
+      Then The Reported Date is updated

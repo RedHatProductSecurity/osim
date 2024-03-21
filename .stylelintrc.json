@@ -1,8 +1,20 @@
 {
+  "ignoreFiles": "",
   "extends": [
     "stylelint-config-standard",
     "stylelint-config-standard-scss",
     "stylelint-config-recommended-vue",
     "stylelint-config-recommended-vue/scss"
-  ]
+  ],
+  "rules": {
+    "scss/double-slash-comment-whitespace-inside": null,
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreFunctions": ["v-bind"]
+      }
+    ],
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/no-global-function-names": null
+  }
 }

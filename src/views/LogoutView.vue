@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useUserStore} from '@/stores/UserStore';
+import { useUserStore } from '@/stores/UserStore';
 
 const userStore = useUserStore();
 userStore.logout();

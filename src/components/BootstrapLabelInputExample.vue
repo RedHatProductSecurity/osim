@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
-import {useSettingsStore} from '@/stores/SettingsStore';
-import type {SettingsType} from '@/stores/SettingsStore';
+import { reactive, ref } from 'vue';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import type { SettingsType } from '@/stores/SettingsStore';
 
 const settingsStore = useSettingsStore();
 
@@ -95,8 +95,3 @@ let settings = reactive<SettingsType>(settingsStore.settings);
 
   </div>
 </template>
-
-<style scoped>
-
-
-</style>
