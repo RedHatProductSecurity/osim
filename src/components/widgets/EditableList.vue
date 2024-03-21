@@ -4,7 +4,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
 
-// import LabelCollapsable from './LabelCollapsable.vue';
+import LabelCollapsable from './LabelCollapsable.vue';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
@@ -57,103 +57,106 @@ function commitEdit(index: number) {
 
 <template>
   <div class="my-3">
-    <p v-if="hasLabel">{{ `${entityNamePlural}:` }}</p>
-    <div
-      v-for="(item, itemIndex) in items"
-      :key="itemIndex"
-      class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card"
-      :class="{
-        'bg-light-light-orange': modifiedItemIndexes.includes(itemIndex),
-        'bg-light-light-gray': !modifiedItemIndexes.includes(itemIndex),
-        'bg-light-green': !item.uuid,
-      }"
-    >
-      <div>
-        <div v-if="item.uuid" class="osim-list-edit">
-          <slot
-            v-if="isBeingEdited(itemIndex)"
-            name="edit-form"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
-          <slot
-            v-else
-            name="default"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
+    <LabelCollapsable :label="entityNamePlural" :length="items.length">
+      <div
+        v-for="(item, itemIndex) in items"
+        :key="itemIndex"
+        class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card"
+        :class="{
+          'bg-light-light-orange': modifiedItemIndexes.includes(itemIndex),
+          'bg-light-light-gray': !modifiedItemIndexes.includes(itemIndex),
+          'bg-light-green': !item.uuid,
+        }"
+      >
+        <div>
+          <div v-if="item.uuid" class="osim-list-edit">
+            <slot
+              v-if="isBeingEdited(itemIndex)"
+              name="edit-form"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
+            <slot
+              v-else
+              name="default"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
 
-          <div class="buttons">
-            <button
-              v-if="indexBeingEdited !== itemIndex"
-              type="button"
-              class="btn"
-              @click="setEdit(itemIndex)"
-            >
-              <i class="bi bi-pencil"><span class="visually-hidden">Edit {{ entityName }}</span></i>
-            </button>
-            <button
-              v-if="indexBeingEdited !== itemIndex"
-              type="button"
-              class="btn"
-              @click="useModalForItem(item.uuid).openModal"
-            >
-              <i class="bi bi-trash">
-                <span class="visually-hidden">Delete {{ entityName }}</span></i>
-            </button>
-            <button
-              v-if="indexBeingEdited === itemIndex"
-              type="button"
-              class="btn"
-              @click="commitEdit(itemIndex)"
-            >
-              <i class="bi bi-check">
-                <span class="visually-hidden">Confirm {{ entityName }} Edit </span>
-              </i>
-            </button>
-            <button
-              v-if="indexBeingEdited === itemIndex"
-              type="button"
-              class="btn"
-              @click="cancelEdit(itemIndex)"
-            >
-              <i class="bi bi-x">
-                <span class="visually-hidden">Cancel {{ entityName }} Edit </span>
-              </i>
-            </button>
+            <div class="buttons">
+              <button
+                v-if="indexBeingEdited !== itemIndex"
+                type="button"
+                class="btn"
+                @click="setEdit(itemIndex)"
+              >
+                <i class="bi bi-pencil">
+                  <span class="visually-hidden">Edit {{ entityName }}</span>
+                </i>
+              </button>
+              <button
+                v-if="indexBeingEdited !== itemIndex"
+                type="button"
+                class="btn"
+                @click="useModalForItem(item.uuid).openModal"
+              >
+                <i class="bi bi-trash">
+                  <span class="visually-hidden">Delete {{ entityName }}</span></i>
+              </button>
+              <button
+                v-if="indexBeingEdited === itemIndex"
+                type="button"
+                class="btn"
+                @click="commitEdit(itemIndex)"
+              >
+                <i class="bi bi-check">
+                  <span class="visually-hidden">Confirm {{ entityName }} Edit </span>
+                </i>
+              </button>
+              <button
+                v-if="indexBeingEdited === itemIndex"
+                type="button"
+                class="btn"
+                @click="cancelEdit(itemIndex)"
+              >
+                <i class="bi bi-x">
+                  <span class="visually-hidden">Cancel {{ entityName }} Edit </span>
+                </i>
+              </button>
+            </div>
+          </div>
+          <div v-else class="osim-list-create">
+            <slot
+              name="create-form"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
+          <!-- if new and not saved in DB -->
           </div>
         </div>
-        <div v-else class="osim-list-create">
-          <slot
-            name="create-form"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
-          <!-- if new and not saved in DB -->
-        </div>
+        <Modal
+          v-if="item.uuid"
+          :show="useModalForItem(item.uuid).isModalOpen"
+          @close="useModalForItem(item.uuid).closeModal"
+        >
+          <template #body>
+            <slot
+              name="modal-body"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
+          </template>
+          <template #header>
+            <slot
+              name="modal-header"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
+          </template>
+          <template #footer>
+            <slot
+              name="modal-footer"
+              v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+            />
+          </template>
+        </Modal>
       </div>
-      <Modal
-        v-if="item.uuid"
-        :show="useModalForItem(item.uuid).isModalOpen"
-        @close="useModalForItem(item.uuid).closeModal"
-      >
-        <template #body>
-          <slot
-            name="modal-body"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
-        </template>
-        <template #header>
-          <slot
-            name="modal-header"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
-        </template>
-        <template #footer>
-          <slot
-            name="modal-footer"
-            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
-          />
-        </template>
-      </Modal>
-    </div>
+    </LabelCollapsable>
     <form>
       <button
         type="button"
