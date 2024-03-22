@@ -13,6 +13,7 @@ import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
 import LabelStatic from '../widgets/LabelStatic.vue';
+import LabelInputCollapsable from '../widgets/LabelInputCollapsable.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -128,7 +129,7 @@ describe('FlawForm', () => {
     expect(impactField?.exists()).toBe(true);
 
     const cvssV3Field = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelInputCollapsable)
       .find((component) => component.props().label === 'CVSSv3');
     expect(cvssV3Field?.exists()).toBe(true);
 
@@ -212,7 +213,7 @@ describe('FlawForm', () => {
     expect(impactField?.exists()).toBe(true);
 
     const cvssV3Field = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelInputCollapsable)
       .find((component) => component.html().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
@@ -373,9 +374,10 @@ describe('FlawForm', () => {
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('CVSSv3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
-    const linkElement = cvss3EditField?.find('a');
-    expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#null');
+    // Deprecated due to Cvss calculator. TODO: Calculator unit tests
+    // const linkElement = cvss3EditField?.find('a');
+    // expect(linkElement?.exists()).toBeTruthy();
+    // expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#null');
   });
 
   it('displays correct CVSSv3 calculator link for CVSSv3 value', async () => {
@@ -400,11 +402,12 @@ describe('FlawForm', () => {
       .findAllComponents(LabelEditable)
       .find((component) => component.text().includes('CVSSv3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
-    const linkElement = cvss3EditField?.find('a');
-    expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe(
-      'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
-    );
+    // Deprecated due to Cvss calculator. TODO: Calculator unit tests
+    // const linkElement = cvss3EditField?.find('a');
+    // expect(linkElement?.exists()).toBeTruthy();
+    // expect(linkElement?.attributes('href')).toBe(
+    //   'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
+    // );
   });
 });
 
