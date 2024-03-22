@@ -88,7 +88,7 @@ const errors = {
   major_incident_state: null,
   reported_dt: null,
   embargo_old_public_dt: "Set the current or a future date for an embargoed flaw.",
-  unembargo_future_public_dt: "Set the current or an old date for unembargoed flaw.",
+  unembargo_future_public_dt: "Set the current or an previous date for unembargoed flaw.",
   type: null,
   component: null,
   source: null,
@@ -106,7 +106,7 @@ const validateFlawEmbargoDates = computed(
   () => {
     let unembargo_dt = DateTime.fromISO(String(flaw.value.unembargo_dt)).toISODate();
     if (unembargo_dt == null) {
-      return null;
+      return errors.unembargo_future_public_dt;
     }
     if (flaw.value.embargoed) {
       // if embargoed and updated date is older than now, it shows an error to set the current date or a future date instead
