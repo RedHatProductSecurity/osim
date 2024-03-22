@@ -104,7 +104,7 @@ const onReset = () => {
 
 const validateFlawEmbargoDates = computed(
   () => {
-    let unembargo_dt = DateTime.fromISO(String(flaw.value.unembargo_dt)).toISODate();
+    const unembargo_dt = DateTime.fromISO(String(flaw.value.unembargo_dt)).toISODate();
     if (unembargo_dt == null) {
       return errors.unembargo_future_public_dt;
     }
