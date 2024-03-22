@@ -99,21 +99,27 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
-function validateFlawEmbargoDates(flaw) {
-  if (flaw.embargoed) {
-    // if embargoed and updated date is older than now, it shows an error to set the current date or a future date instead
-    if (DateTime.fromISO(flaw.unembargo_dt as string).toISODate() < DateTime.now().toISODate()) {
-      return errors.embargo_old_public_dt;
+const validateFlawEmbargoDates = computed(
+  () => {
+    let unembargo_dt = DateTime.fromISO(String(flaw.value.unembargo_dt)).toISODate();
+    if (unembargo_dt == null) {
+      return null;
     }
-  } else {
-    // if NOT embargoed and updated date is in the future, it shows an error, to set the current date or an older date instead
-    if (DateTime.fromISO(flaw.unembargo_dt as string).toISODate() > DateTime.now().toISODate()) {
-      return errors.unembargo_future_public_dt;
+    if (flaw.value.embargoed) {
+      // if embargoed and updated date is older than now, it shows an error to set the current date or a future date instead
+      if (unembargo_dt < DateTime.now().toISODate()) {
+        return errors.embargo_old_public_dt;
+      }
+    } else {
+      // if NOT embargoed and updated date is in the future, it shows an error, to set the current date or an older date instead
+      if (unembargo_dt > DateTime.now().toISODate()) {
+        return errors.unembargo_future_public_dt;
+      }
     }
+    // otherwise, does not show any error
+    return null;
   }
-  // otherwise, does not show any error
-  return null;
-}
+);
 </script>
 
 <template>
@@ -219,9 +225,9 @@ function validateFlawEmbargoDates(flaw) {
           />
           <LabelEditable
             v-model="flaw.unembargo_dt"
-            :label="'Public Date'"
+            label='Public Date'
             type="date"
-            :error="validateFlawEmbargoDates(flaw)"
+            :error="validateFlawEmbargoDates"
           />
           <IssueFieldEmbargo v-model="flaw.embargoed" :cveId="flaw.cve_id" />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />

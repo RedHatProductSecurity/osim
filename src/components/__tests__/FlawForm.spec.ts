@@ -9,6 +9,7 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
 
 const FLAW_BASE_URI = `/osidb/api/v1/flaws`;
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -177,17 +178,17 @@ describe('FlawForm', () => {
     expect(teamIdField?.attributes().modelvalue).toBe('12345');
   });
 
-  it("displays correct Cvss3 calculator link for empty value", async () => {
+  it('displays correct Cvss3 calculator link for empty value', async () => {
     const cvss3EditField = subject.findAllComponents(LabelEditable).find((component) => component.text().includes('CVSS3'));
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#");
-  })
+    expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#');
+  });
 
-  it("displays correct Cvss3 calculator link for cvss3 value", async() => {
+  it('displays correct Cvss3 calculator link for cvss3 value', async() => {
     const flaw = sampleFlaw();
-    flaw.cvss3 = "2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N"
+    flaw.cvss3 = '2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N';
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props: {
@@ -207,8 +208,53 @@ describe('FlawForm', () => {
     expect(cvss3EditField?.exists()).toBeTruthy();
     const linkElement = cvss3EditField?.find('a');
     expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe("https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N");
-  })
+    expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N');
+  });
+
+  it('if embargoed and updated date is older than now, it returns an error', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = '2022-02-01';
+    mountWithProps({flaw});
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe('Set the current or a future date for an embargoed flaw.');
+  });
+
+  it('if embargoed and updated date is today or in the future, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = DateTime.now().toISODate();
+    mountWithProps({flaw});
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
+  });
+
+  it('if NOT embargoed and updated date is in the future, it returns an error ', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = '3000-01-01';
+    mountWithProps({flaw});
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe('Set the current or an old date for unembargoed flaw.');
+  });
+
+  it('if embargoed and updated date is today or in the past, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = DateTime.now().toISODate();
+    mountWithProps({flaw});
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
+  });
+
+  it('if embargoed date is null, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = null;
+    mountWithProps({flaw});
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
+  });
 });
 
 function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
