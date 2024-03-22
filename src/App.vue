@@ -10,11 +10,18 @@ import {
   OsimRuntimeStatus,
 } from '@/stores/osimRuntime';
 
-import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
 import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
+
 setup();
+
+watch(osimRuntimeStatus, () => {
+  if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
+    updateRelativeOsimBuildDate();
+  }
+});
 
 const elFooter = ref<HTMLElement | null>(null);
 const { top: footerTop_, height: footerHeight_ } = useElementBounding(elFooter);
@@ -22,9 +29,7 @@ watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
 });
-const relativeOsimBuildDate = ref(
-  DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || ''
-);
+const relativeOsimBuildDate = ref('');
 const updateRelativeOsimBuildDate = () => {
   console.debug('Updating relative build date');
   relativeOsimBuildDate.value =
@@ -34,6 +39,7 @@ let buildDateIntervalId: number = -1;
 onMounted(() => {
   const ms15Minutes = 15 * 60 * 60 * 1000;
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
+  updateRelativeOsimBuildDate();
 });
 onBeforeUnmount(() => {
   clearInterval(buildDateIntervalId);
