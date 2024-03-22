@@ -36,11 +36,28 @@ describe('App', async () => {
     }));
 
     vi.mock('@/stores/osimRuntime', async () => {
+      const osimRuntimeValue = {
+        env: 'unittest',
+        backends: {
+          osidb: 'osidb-backend',
+          bugzilla: 'bugzilla-backend',
+          jira: 'jira-backend',
+        },
+        osimVersion: {
+          rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
+        },
+        error: '',
+      };
       return {
         setup: vi.fn(() => { }),
         osimRuntimeStatus: 1,
-        osidbHealth: {},
-        osimRuntime: {},
+        osidbHealth: {
+          revision: '',
+        },
+        osimRuntime: {
+          value: osimRuntimeValue, // as accessed by <script setup>
+          ...osimRuntimeValue, // as accessed by <template>
+        },
         OsimRuntimeStatus: {
           INIT: 0,
           READY: 1,
@@ -71,5 +88,26 @@ describe('App', async () => {
     });
     const toastContainer = subject.findAllComponents(ToastContainer)?.[0];
     expect(toastContainer?.exists()).toBeTruthy();
+  });
+
+  it('renders runtime information', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    subject = mount(App, {
+      global: {
+        plugins: [
+          pinia,
+          router,
+        ],
+      },
+    });
+    const statusBar = subject.find('.osim-status-bar');
+    expect(statusBar?.exists()).toBeTruthy();
+    console.log(statusBar?.text());
+    expect(statusBar?.text().includes('env: unittest')).toBeTruthy();
+    expect(statusBar?.text().includes('tag: osimtag (dirty)')).toBeTruthy();
+    expect(statusBar?.text().includes('ts : 1970-01-01')).toBeTruthy();
   });
 });
