@@ -4,12 +4,18 @@
 import { computed, ref } from 'vue';
 import { z } from 'zod';
 
-// export enum OsimRuntimeDev {
-//   PROD,
-//   DEV,
-//   MOCK,
-// }
-// export const osimRuntimeDev = OsimRuntimeDev.DEV;
+export enum OsimRuntimeDev {
+  PROD,
+  DEV,
+  MOCK,
+}
+
+// TODO: Handle based on OSIM Environment
+export const osimRuntimeDev: OsimRuntimeDev = OsimRuntimeDev.DEV;
+
+export function isDevEnv() {
+  return osimRuntimeDev === OsimRuntimeDev.DEV;
+}
 
 export enum OsimRuntimeStatus {
   INIT,
