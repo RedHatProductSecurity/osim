@@ -8,6 +8,8 @@
 | `Dockerfile`            | Builds the deployed image                    |
 | `.env.local`            | Local Vue environment variables              |
 | `docs/`                 | The docs                                     |
+| `features/`             | Selenium tests                               |
+| `openshift/`            | OpenShift config (incomplete; for reference) |
 | `scripts/`              | Dev utility scripts                          |
 | `build/`                | Files to support building the deployed image |
 | `dist/`                 | The compiled app                             |
@@ -71,6 +73,8 @@
 * `"osimVersion":{}` must be the last entry in the `OSIM_RUNTIME` JSON object,
   because the osim container substitutes the value in by truncating the rest of
   the string.
+* Logs are written to stdout/stderr, but we may log to a file in the future for
+  more configurable and secure routing options.
 
 ## Local Configuration
 
