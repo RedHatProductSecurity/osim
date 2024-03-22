@@ -24,6 +24,7 @@ export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
 });
 
 const OsimRuntime = z.object({
+  env: z.string().default(''),
   backends: z.object({
     osidb: z.string(),
     osidbAuth: z.string().default('kerberos'),
@@ -35,7 +36,6 @@ const OsimRuntime = z.object({
     timestamp: z.string(),
     dirty: z.boolean(),
   }),
-  env: z.string().default(''),
   error: z.string().default(''),
   readOnly: z.boolean().default(false),
 });

@@ -68,6 +68,9 @@
   user-writable directories in the container image.
     * `/tmp` is not used because other junk may be placed there, and some
       separation of concerns can prevent confusion.
+* `"osimVersion":{}` must be the last entry in the `OSIM_RUNTIME` JSON object,
+  because the osim container substitutes the value in by truncating the rest of
+  the string.
 
 ## Local Configuration
 
