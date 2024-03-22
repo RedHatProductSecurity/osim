@@ -2,7 +2,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import WebDriverWait
+
+from features.page_factory_utils import find_elements_in_page_factory
 
 
 class FlawDetailPage(PageFactory):
@@ -12,14 +15,14 @@ class FlawDetailPage(PageFactory):
         self.timeout = 15
 
     locators = {
+        "summaryBtn": ("XPATH", "//button[contains(text(), 'Add Summary')]"),
         "summaryText": ("XPATH", "//span[text()='Summary']"),
-        "summaryTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[1]"),
+        "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[text()='Description']"),
-        "descriptionTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[2]"),
+        "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
         "statementText": ("XPATH", "//span[text()='Statement']"),
-        "statementTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[3]"),
+        "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
-        "mitigationTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[4]"),
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
@@ -105,8 +108,21 @@ class FlawDetailPage(PageFactory):
         self.commentTextWindow.set_text(value)
 
     def set_document_text_field(self, field, value):
+        field_btn = field + 'Btn'
+        if find_elements_in_page_factory(self, field_btn):
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", getattr(self, field_btn))
+            hide_e1 = self.driver.find_elements(
+                locate_with(By.XPATH, "//footer[@class='fixed-bottom osim-status-bar']"))[0]
+            hide_e2 = self.driver.find_elements(
+                locate_with(By.XPATH, "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"))[0]
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e1)
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e2)
+            self.click_btn(field_btn)
+            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e1)
+            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e2)
         field_element = getattr(self, field + 'Text')
-        field_input = getattr(self, field + 'TextWindow')
+        field_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
         if value:
             self.driver.execute_script("arguments[0].value = '';", field_input)
@@ -115,10 +131,15 @@ class FlawDetailPage(PageFactory):
             field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
     def get_document_text_field(self, field):
-        field_element = getattr(self, field + 'Text')
-        field_input = getattr(self, field + 'TextWindow')
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
-        return field_input.getAttribute("value")
+        field_btn = field + 'Btn'
+        if find_elements_in_page_factory(self, field_btn):
+            return ''
+        else:
+            field_element = getattr(self, field + 'Text')
+            field_input = self.driver.find_elements(
+                locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
+            return field_input.getAttribute("value")
 
     def click_add_acknowledgment_btn(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentBtn)
