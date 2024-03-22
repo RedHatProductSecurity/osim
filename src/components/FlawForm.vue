@@ -103,7 +103,10 @@ const onReset = () => {
 };
 
 const displayCvssNISTForm = computed(() => {
-  const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+  let rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
+  if (rhCvss === 'null/null' || rhCvss === '/') {
+    rhCvss = '';
+  }
   const nvdCvssScore = flawNvdCvssScore.value?.toString();
   return rhCvss !== nvdCvssScore;
 });
