@@ -28,7 +28,7 @@ coverage
 *.sw?
 
 # For local development only
-/public/runtime.json
+/public/runtime*.json
 
 *.py[co]
 __pycache__

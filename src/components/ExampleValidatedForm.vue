@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import { reactive, ref } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import {toTypedSchema} from '@vee-validate/zod';
-import {useField, useForm} from 'vee-validate';
-import {z} from 'zod';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useField, useForm } from 'vee-validate';
+import { z } from 'zod';
 
 type ExampleFormType = z.infer<typeof ExampleFormSchema>;
 const ExampleFormSchema = z.object({
@@ -34,21 +34,21 @@ let committedForm: ExampleFormType = reactive({ // form from server
 // let stagedForm: ExampleFormType = committedForm;
 
 const validationSchema = toTypedSchema(ExampleFormSchema);
-const initialValues = ref<ExampleFormType>({...committedForm});
-const {handleSubmit, errors, setValues, resetForm, values, meta} = useForm({
+const initialValues = ref<ExampleFormType>({ ...committedForm });
+const { handleSubmit, errors, setValues, values, meta } = useForm({
   validationSchema,
   initialValues: initialValues.value,
 });
 
-const fruitNotesExample = ref('');
+// const fruitNotesExample = ref('');
 
-const {value: salutation} = useField<string>('salutation');
-const {value: fruitRecipient} = useField<string>('fruitRecipient');
-const {value: chosenFruit} = useField<string>('chosenFruit');
-const {value: fruitNotes} = useField<string>('fruitNotes');
-const {value: fruitOrderDate} = useField<Date>('fruitOrderDate');
-const {value: shipOvernight} = useField<boolean>('shipOvernight');
-const {value: bug} = useField<string>('bug');
+const { value: salutation } = useField<string>('salutation');
+const { value: fruitRecipient } = useField<string>('fruitRecipient');
+const { value: chosenFruit } = useField<string>('chosenFruit');
+const { value: fruitNotes } = useField<string>('fruitNotes');
+const { value: fruitOrderDate } = useField<Date>('fruitOrderDate');
+const { value: shipOvernight } = useField<boolean>('shipOvernight');
+// const {value: bug} = useField<string>('bug');
 
 
 const onSubmit = handleSubmit((values: ExampleFormType) => {
@@ -56,13 +56,13 @@ const onSubmit = handleSubmit((values: ExampleFormType) => {
   console.log('saving values', values);
   committedForm = values;
   Promise.resolve('success')
-      .then(() => {
-        initialValues.value = committedForm;
-        console.log('saved values', values);
-        // committedForm = values;
-      });
+    .then(() => {
+      initialValues.value = committedForm;
+      console.log('saved values', values);
+      // committedForm = values;
+    });
 });
-const onReset = (payload: MouseEvent) => {
+const onReset = () => {
   console.log('onReset');
   setValues(committedForm);
   // initialValues.value = committedForm;
@@ -70,6 +70,7 @@ const onReset = (payload: MouseEvent) => {
 };
 </script>
 
+<!-- eslint-disable -->
 <template>
   <div class="osim-content container d-block">
     <hr/>
@@ -116,7 +117,3 @@ Committed values on server:
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>

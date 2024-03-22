@@ -1,18 +1,14 @@
-import {ref, computed, watchEffect, watch, type Ref, reactive} from 'vue';
-import {defineStore} from 'pinia';
-import {z} from 'zod';
+import { computed, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
-import type {JwtPayload} from 'jwt-decode';
-import {useSessionStorage} from '@vueuse/core';
+import type { JwtPayload } from 'jwt-decode';
+import { useSessionStorage } from '@vueuse/core';
 
-import {useRouter} from 'vue-router';
 // const router = useRouter();
 import router from '@/router';
 
-import {osimRuntime} from '@/stores/osimRuntime';
-import type {SettingsType} from '@/stores/SettingsStore';
-
-import serviceWorkerClient from '../services/service-worker-client';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 export const queryRedirect = z.object({
   query: z.object({
@@ -47,9 +43,12 @@ const userStoreSessionStorage = z.object({
 });
 type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
 
-// Vue bug: the whole chain of data uses reactivity, but ref doesn't work with the watch; only reactive does.
+// Vue bug: the whole chain of data uses reactivity, 
+// but ref doesn't work with the watch; only reactive does.
 // const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
-const _userStoreSession = useSessionStorage(_userStoreKey, {refresh: '', env: '', whoami: null} as UserStoreSessionStorage);
+const _userStoreSession = useSessionStorage(
+  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreSessionStorage
+);
 // watchEffect(() => {
 //   _userStoreSession.value = _userStore;
 // });
@@ -133,40 +132,40 @@ export const useUserStore = defineStore('UserStore', () => {
       credentials: 'include',
       cache: 'no-cache',
     })
-        .then(async response => {
-          if (!response.ok) {
-            const text = await response.text();
-            // console.log('UserStore: login not ok', response.status, text);
-            throw new Error(text);
-          }
-          const json = await response.json();
-          const parsedLoginResponse = loginResponse.passthrough().parse(json);
-          if (parsedLoginResponse.detail) {
-            throw new Error(parsedLoginResponse.detail);
-          }
-          _userStoreSession.value.refresh = parsedLoginResponse.refresh;
-          _userStoreSession.value.env = parsedLoginResponse.env;
-          return parsedLoginResponse.access;
-        })
-        .then((access) => {
-          return fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
-            credentials: 'include',
-            cache: 'no-cache',
-            headers: {
-              Authorization: `Bearer ${access}`
-            },
-          });
-        })
-        .then(response => response.json())
-        .then(json => {
-          const parsedWhoamiResponse = whoamiResponse.parse(json);
-          _userStoreSession.value.whoami = parsedWhoamiResponse;
-        })
-        .catch(e => {
-          $reset();
-          console.error('UserStore: unsuccessful login request', e);
-          throw e;
+      .then(async response => {
+        if (!response.ok) {
+          const text = await response.text();
+          // console.log('UserStore: login not ok', response.status, text);
+          throw new Error(text);
+        }
+        const json = await response.json();
+        const parsedLoginResponse = loginResponse.passthrough().parse(json);
+        if (parsedLoginResponse.detail) {
+          throw new Error(parsedLoginResponse.detail);
+        }
+        _userStoreSession.value.refresh = parsedLoginResponse.refresh;
+        _userStoreSession.value.env = parsedLoginResponse.env;
+        return parsedLoginResponse.access;
+      })
+      .then((access) => {
+        return fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
+          credentials: 'include',
+          cache: 'no-cache',
+          headers: {
+            Authorization: `Bearer ${access}`
+          },
         });
+      })
+      .then(response => response.json())
+      .then(json => {
+        const parsedWhoamiResponse = whoamiResponse.parse(json);
+        _userStoreSession.value.whoami = parsedWhoamiResponse;
+      })
+      .catch(e => {
+        $reset();
+        console.error('UserStore: unsuccessful login request', e);
+        throw e;
+      });
   }
 
   function logout() {
@@ -181,15 +180,15 @@ export const useUserStore = defineStore('UserStore', () => {
     //     .then(() => {
     //       router.push({name: 'login'})
     //     })
-    return router.push({name: 'login'});
+    return router.push({ name: 'login' });
   }
 
   /**
    * Side effect: wipes tokens if tokens are expired
    */
   const isAuthenticated = computed<boolean>(() => {
-    let now = Date.now();
-    let refreshExp = jwtRefresh.value?.exp;
+    const now = Date.now();
+    const refreshExp = jwtRefresh.value?.exp;
     if (refreshExp != null) {
       return now < refreshExp * 1000;
     }
@@ -207,7 +206,7 @@ export const useUserStore = defineStore('UserStore', () => {
 
         try {
           const maybeRedirect = queryRedirect.parse(router.currentRoute.value);
-          let redirect = maybeRedirect.query.redirect;
+          const redirect = maybeRedirect.query.redirect;
           if (redirect.startsWith('/')) { // avoid possible third-party redirection
             console.log('UserStore watch redirect:', redirect);
             router.push(redirect);
@@ -230,13 +229,13 @@ export const useUserStore = defineStore('UserStore', () => {
         console.log('isAuthenticated became false while not on login page');
 
         // Preserve destination
-        let currentPath = router.currentRoute.value.fullPath;
+        const currentPath = router.currentRoute.value.fullPath;
         console.log('current path:', currentPath);
         if (currentPath !== '/') {
-          let query: any = {};
+          const query: any = {};
           query.redirect = currentPath;
           console.log('UserStore unauthenticated path not slash to login');
-          router.push({name: 'login', query});
+          router.push({ name: 'login', query });
           return;
         }
         console.log('UserStore unauthenticated to login');
@@ -246,7 +245,7 @@ export const useUserStore = defineStore('UserStore', () => {
         return;
       }
     }
-  })
+  });
 
   function $reset() {
     setTokens('', '');

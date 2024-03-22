@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {toRef, toRefs, watch} from 'vue';
+import { toRefs, watch } from 'vue';
 
 const props = defineProps<{
   show: boolean,
@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>();
 
 
-const {show} = toRefs(props);
+const { show } = toRefs(props);
 watch(show, () => {
   if (show.value) {
     document.body.classList.add('modal-open');
@@ -22,44 +22,56 @@ watch(show, () => {
     document.body.style.overflow = '';
     document.body.style.padding = '';
   }
-}, {immediate: true});
+}, { immediate: true });
 
 </script>
 
 <template>
   <Transition name="modal">
-      <div
-          v-if="show"
-          class="modal fade"
-          :class="{show: show}"
-          :style="{display: show? 'block' : 'none'}"
-          :aria-hidden="!show"
-          tabindex="-1"
-          aria-labelledby="modalTitle"
-          :role="show ? 'dialog' : ''"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <slot name="header">
-                <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
-                <button type="button" class="btn-close" aria-label="Close" @click="emit('close', null)"></button>
-              </slot>
-            </div>
-            <div class="modal-body">
-              <slot name="body">
-                Modal Body
-              </slot>
-            </div>
-            <div class="modal-footer">
-              <slot name="footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="emit('close', null)">Close</button>
-                <button type="button" class="btn btn-primary" @click="emit('close', null)">Save</button>
-              </slot>
-            </div>
+    <div
+      v-if="show"
+      class="modal fade"
+      :class="{show: show}"
+      :style="{display: show? 'block' : 'none'}"
+      :aria-hidden="!show"
+      tabindex="-1"
+      aria-labelledby="modalTitle"
+      :role="show ? 'dialog' : ''"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <slot name="header">
+              <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
+              <button
+                type="button"
+                class="btn-close"
+                aria-label="Close"
+                @click="emit('close', null)"
+              ></button>
+            </slot>
+          </div>
+          <div class="modal-body">
+            <slot name="body">
+              Modal Body
+            </slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                @click="emit('close', null)"
+              >Close</button>
+              <button type="button" class="btn btn-primary" @click="emit('close', null)">
+                Save
+              </button>
+            </slot>
           </div>
         </div>
       </div>
+    </div>
   </Transition>
   <Transition name="modal-bg">
     <div v-if="show" class="modal-backdrop fade show"></div>
@@ -77,6 +89,7 @@ watch(show, () => {
   background-color: transparent;
 
 }
+
 .modal-bg-enter-active,
 .modal-bg-leave-active {
   transition: background-color 0.5s ease;

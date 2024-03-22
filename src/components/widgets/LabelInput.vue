@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+defineEmits<{
+  'update:modelValue': [value: string | undefined],
+}>();
 const props = withDefaults(
   defineProps<{
     modelValue: any;
@@ -32,6 +35,8 @@ const props = withDefaults(
   }>(),
   {
     modelValue: '',
+    type: undefined,
+    error: undefined,
   },
 );
 

@@ -43,7 +43,7 @@ COPY ./build/entrypoint.d/30-local-proxy.sh /entrypoint.d/
 ENTRYPOINT ["/osim-entrypoint.sh"]
 
 # Copy the built files to the default Nginx directory
-COPY --from=dev /app/dist /usr/share/nginx/html
+COPY --from=dev /opt/app-root/src/dist /usr/share/nginx/html
 
 # Allow the local dockerfile to use root
 # nginx:x:999:999:Nginx web server:/var/lib/nginx:/sbin/nologin

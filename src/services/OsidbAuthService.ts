@@ -1,9 +1,9 @@
-import axios, {type AxiosError} from 'axios';
-import {z} from 'zod';
-import type {AxiosRequestConfig} from 'axios';
-import {osimRuntime} from '@/stores/osimRuntime';
-import {useUserStore} from '../stores/UserStore';
-import {useSettingsStore} from '@/stores/SettingsStore';
+import axios, { type AxiosError } from 'axios';
+import { z } from 'zod';
+import type { AxiosRequestConfig } from 'axios';
+import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '../stores/UserStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const RefreshResponse = z.object({
   access: z.string()
@@ -11,26 +11,24 @@ const RefreshResponse = z.object({
 
 export async function osidbFetch(config: AxiosRequestConfig) {
   const settingsStore = useSettingsStore();
-  try {
-    const accessToken = await getNextAccessToken();
-    config.headers = config.headers || {};
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
-    if (/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
-      config.headers['Bugzilla-Api-Key'] = settingsStore.settings.bugzillaApiKey;
-    }
-    if (/.+/.test(settingsStore.settings.jiraApiKey ?? '')) {
-      config.headers['Jira-Api-Key'] = settingsStore.settings.jiraApiKey; // Source: osidb/openapi.yml
-    }
-    config.baseURL = osimRuntime.value.backends.osidb;
-    config.withCredentials = true;
-    return axios(config);
-  } catch (e) {
-    throw e;
+  const accessToken = await getNextAccessToken();
+  config.headers = config.headers || {};
+  config.headers['Authorization'] = `Bearer ${accessToken}`;
+  if (/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
+    config.headers['Bugzilla-Api-Key'] = settingsStore.settings.bugzillaApiKey;
   }
+  if (/.+/.test(settingsStore.settings.jiraApiKey ?? '')) {
+    config.headers['Jira-Api-Key'] = settingsStore.settings.jiraApiKey; // Source: osidb/openapi.yml
+  }
+  config.baseURL = osimRuntime.value.backends.osidb;
+  config.withCredentials = true;
+  return axios(config);
 }
 
 export async function getNextAccessToken() {
-  const userStore = useUserStore(); // Moving this to module scope results in "cannot access before initialization" - probably a vite or typescript bug
+  // Moving this to module scope results in "cannot access before initialization" -
+  // probably a vite or typescript bug
+  const userStore = useUserStore();
   let response;
   try {
     response = await axios({
@@ -47,9 +45,9 @@ export async function getNextAccessToken() {
     });
   } catch (e) {
     return userStore.logout()
-        .finally(() => {
-          throw new Error('Refresh token expired');
-        })
+      .finally(() => {
+        throw new Error('Refresh token expired');
+      });
   }
   try {
     const responseBody = response.data;
@@ -57,9 +55,9 @@ export async function getNextAccessToken() {
     return parsedBody.access;
   } catch (e) {
     return userStore.logout()
-        .finally(() => {
-          throw new Error('Unable to parse next access token');
-        })
+      .finally(() => {
+        throw new Error('Unable to parse next access token');
+      });
   }
 }
 
@@ -68,12 +66,19 @@ export function getDisplayedOsidbError(error: AxiosError<any, any>) {
     if (error.response.headers['content-type']?.startsWith('text/html')) {
       // server in debug mode?
       const parser = new DOMParser();
-      const doc = parser.parseFromString(error.response.data, error.response.headers['content-type']);
+      const doc = parser.parseFromString(
+        error.response.data, error.response.headers['content-type']
+      );
       const exception_value = doc.querySelector('.exception_value');
       const text = (exception_value as HTMLElement)?.innerText;
       return 'Likely error between OSIDB and database:\n' + text;
     } else {
-      return `Code ${error.response.status}: ${error.response.data instanceof Object ? JSON.stringify(error.response.data, null, 2) : error.response.data}`;
+      return `Code ${error.response.status}: ` +
+      `${
+        error.response.data instanceof Object ?
+          JSON.stringify(error.response.data, null, 2) :
+          error.response.data
+      }`;
     }
   } else if (error.request) {
     return error.request.toString(); // XMLHttpRequest object

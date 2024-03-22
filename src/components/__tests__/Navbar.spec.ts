@@ -1,14 +1,14 @@
-import { VueWrapper, mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { VueWrapper, mount } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
 import router from '@/router';
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia } from '@pinia/testing';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { useSettingsStore } from "@/stores/SettingsStore";
+import { useSettingsStore } from '@/stores/SettingsStore';
 
-import Navbar from "../Navbar.vue";
+import Navbar from '../Navbar.vue';
 
-describe("Navbar", async () => {
+describe('Navbar', async () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;
   beforeEach(() => {
 
@@ -43,9 +43,9 @@ describe("Navbar", async () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-  })
+  });
 
-  it("renders show notification icon with empty notification count", async () => {
+  it('renders show notification icon with empty notification count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -77,14 +77,14 @@ describe("Navbar", async () => {
     expect(badge.exists()).toBeTruthy();
   });
 
-  it("renders show notification icon with notification count", async () => {
+  it('renders show notification icon with notification count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
     toastStore.$state = {
-      //@ts-ignore
+      //@ts-expect-error missing properties
       toasts: [{}, {}],
     };
     const settingStore = useSettingsStore(pinia);
@@ -109,14 +109,14 @@ describe("Navbar", async () => {
     const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
     expect(badge.text()).toBe('2');
-    await icon.trigger("click");
+    await icon.trigger('click');
     expect(settingStore.settings.showNotifications).toBe(false);
     icon = subject.find('.osim-notification-button .notification-icon');
     expect(icon.exists()).toBeTruthy();
     expect(icon.classes()).toContain('bi-bell-slash-fill');
   });
 
-  it("renders hide notification icon with empty notification count", async () => {
+  it('renders hide notification icon with empty notification count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -148,15 +148,14 @@ describe("Navbar", async () => {
     expect(badge.exists()).toBeTruthy();
   });
 
-  it("renders hide notification icon with notification count", async () => {
+  it('renders hide notification icon with notification count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
-    let newToasts = new Array(1000);
+    const newToasts = new Array(1000);
     toastStore.$state = {
-      //@ts-ignore
       toasts: newToasts,
     };
     const settingStore = useSettingsStore(pinia);
@@ -181,7 +180,7 @@ describe("Navbar", async () => {
     const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
     expect(badge.text()).toBe('99+');
-    await icon.trigger("click");
+    await icon.trigger('click');
     expect(settingStore.settings.showNotifications).toBe(true);
     icon = subject.find('.osim-notification-button .notification-icon');
     expect(icon.exists()).toBeTruthy();

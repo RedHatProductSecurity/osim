@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import RedHatLogoSvg from '../assets/Logo-Red_Hat-B-Standard-RGB.svg'
-import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg'
+import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watchEffect } from 'vue';
 import router from '@/router';
-import {useSettingsStore} from "@/stores/SettingsStore";
-import {useToastStore} from '@/stores/ToastStore';
-import {useElementBounding} from "@vueuse/core";
-import {navbarBottom, navbarHeight} from '@/stores/responsive';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
+import { useElementBounding } from '@vueuse/core';
+import { navbarBottom, navbarHeight } from '@/stores/responsive';
 
 const userStore = useUserStore();
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
-// const {height: headerHeight} = useElementSize(elHeader, {width: 0, height: 0}, {box: 'border-box'});
+// const {height: headerHeight} = useElementSize(
+//   elHeader, {width: 0, height: 0},
+//   {box: 'border-box'}
+// );
 const { height: headerHeight, bottom: headerBottom } = useElementBounding(elHeader);
 watchEffect(() => {
   navbarHeight.value = headerHeight.value;
@@ -26,12 +28,12 @@ watchEffect(() => {
 function quickMatchCVE(query: string) {
   // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
   // with optional surrounding whitespace.
-  const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/
+  const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/;
   // match[1] will be the CVE ID if it exists
   return query.match(cveRegex)?.[1];
 }
 
-const searchIssue = ref("");
+const searchIssue = ref('');
 
 function onSearch(query: string) {
   let trimmedQuery = query.trim();
@@ -40,16 +42,16 @@ function onSearch(query: string) {
   }
   const maybeCveId =  quickMatchCVE(query);
   if (maybeCveId) {
-    router.push({path: `/flaws/${maybeCveId}`});
+    router.push({ path: `/flaws/${maybeCveId}` });
     return;
   }
-  router.push({name: 'search', query: {query: trimmedQuery}});
+  router.push({ name: 'search', query: { query: trimmedQuery } });
 }
 
 </script>
 
 <template>
-  <nav class="osim-navbar navbar navbar-expand navbar-dark" ref="elHeader">
+  <nav ref="elHeader" class="osim-navbar navbar navbar-expand navbar-dark">
     <div class="container">
       <RouterLink to="/" class="osim-home-link">
         <!--<RedHatLogo class="osim-logo"/>-->
@@ -58,9 +60,9 @@ function onSearch(query: string) {
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
       </RouterLink>
-      <!--      <div class="osim-env">-->
-      <!--        <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>-->
-      <!--      </div>-->
+      <!-- <div class="osim-env">
+        <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>
+      </div> -->
       <ul class="navbar-nav me-auto align-items-center">
         <li class="nav-item">
           <RouterLink class="nav-link" :to="{ name: 'index' }">Index</RouterLink>
@@ -77,37 +79,55 @@ function onSearch(query: string) {
       </ul>
 
       <button
-          type="button"
-          class="osim-notification-button position-relative me-3"
-          @click.prevent="settings.showNotifications = !settings.showNotifications">
+        type="button"
+        class="osim-notification-button position-relative me-3"
+        @click.prevent="settings.showNotifications = !settings.showNotifications"
+      >
         <i
-            class="bi notification-icon text-white osim-notification-icon"
-            :class="{
-          'bi-bell-fill': settings.showNotifications,
-          'bi-bell-slash-fill': !settings.showNotifications,
-        }"
+          class="bi notification-icon text-white osim-notification-icon"
+          :class="{
+            'bi-bell-fill': settings.showNotifications,
+            'bi-bell-slash-fill': !settings.showNotifications,
+          }"
         >
           <span class="visually-hidden">Toggle Notifications</span>
         </i>
         <span
-            class="position-absolute start-100 translate-middle badge bg-danger osim-notification-count"
-            v-show="toasts.length > 0"
+          v-show="toasts.length > 0"
+          class="position-absolute start-100
+          translate-middle badge bg-danger osim-notification-count"
         >{{ toasts.length > 99 ? '99+' : toasts.length }}</span>
       </button>
 
       <div class="osim-search me-2">
         <form role="search" @submit.prevent="onSearch(searchIssue)">
           <div class="input-group">
-            <input v-model="searchIssue" type="search" class="form-control" placeholder="Search Issues/Flaws"
-              aria-label="Search Issues/Flaws" />
-            <button class="btn btn-secondary" type="button">
-              <i class="bi-search" @click="onSearch(searchIssue)"></i>
+            <input
+              v-model="searchIssue"
+              type="search"
+              class="form-control"
+              placeholder="Search Issues/Flaws"
+              aria-label="Search Issues/Flaws"
+            />
+            <button class="btn btn-secondary" type="submit" @submit.prevent="onSearch(searchIssue)">
+              <i class="bi-search">
+                <span class="visually-hidden">Search</span>
+              </i>
             </button>
-            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
             </button>
             <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
               <li>
-                <RouterLink class="dropdown-item" :to="{ name: 'search', query: { 'mode': 'advanced' } }">Advanced Search
+                <RouterLink 
+                  class="dropdown-item"
+                  :to="{ name: 'search', query: { 'mode': 'advanced' } }"
+                >
+                  Advanced Search
                 </RouterLink>
               </li>
             </ul>
@@ -115,8 +135,12 @@ function onSearch(query: string) {
         </form>
       </div>
       <div class="btn-group">
-        <button type="button" class="btn btn-secondary dropdown-toggle osim-user-profile" data-bs-toggle="dropdown"
-          aria-expanded="false">
+        <button
+          type="button"
+          class="btn btn-secondary dropdown-toggle osim-user-profile"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
           {{ userStore.userName }}
           <i class="bi-person-circle osim-user-profile-picture"></i>
         </button>
@@ -131,7 +155,9 @@ function onSearch(query: string) {
             <hr class="dropdown-divider">
           </li>
           <li>
-            <button class="dropdown-item" type="button" @click.prevent="userStore.logout">Logout</button>
+            <button class="dropdown-item" type="button" @click.prevent="userStore.logout">
+              Logout
+            </button>
           </li>
         </ul>
       </div>
@@ -143,9 +169,12 @@ function onSearch(query: string) {
 <style>
 .osim-dropdown-menu.dropdown-menu {
   z-index: 1091;
+
   /* --bs-toast-zindex + 1 */
-  /*color: red;*/
-  /*outline: 1px solid deeppink !important;*/
+
+  /* color: red; */
+
+  /* outline: 1px solid deeppink !important; */
 }
 
 
@@ -155,10 +184,12 @@ function onSearch(query: string) {
 
 .osim-home-link {
   flex-shrink: 0;
-  /*margin-right: 5px;*/
+
+  /* margin-right: 5px; */
 }
 
-/*background: white;*/
+/* background: white; */
+
 /*
 filter:
     !*
@@ -195,12 +226,13 @@ filter:
   max-width: 100%;
 
   --vertical-padding: 5px;
+
   padding: var(--vertical-padding) 11px var(--vertical-padding) 0;
   border-right: 1px solid white;
   border-image: linear-gradient(to bottom,
       transparent var(--vertical-padding),
-      rgba(255, 255, 255, 1) var(--vertical-padding),
-      rgba(255, 255, 255, 1) calc(100% - var(--vertical-padding)),
+      rgb(255 255 255 / 100%) var(--vertical-padding),
+      rgb(255 255 255 / 100%) calc(100% - var(--vertical-padding)),
       transparent calc(100% - var(--vertical-padding))) 1;
 }
 
@@ -212,7 +244,7 @@ filter:
 }
 
 .osim-env {
-  /*background-color: gray;*/
+  /* background-color: gray; */
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -225,7 +257,7 @@ filter:
 }
 
 .osim-user-profile .osim-user-profile-picture {
-  /*font-size: 2rem;*/
+  /* font-size: 2rem; */
 }
 
 .osim-logo-container {
@@ -241,6 +273,7 @@ filter:
   background: transparent;
   border-color: transparent;
 }
+
 .osim-notification-button .osim-notification-count {
   padding: 0.3em;
 }

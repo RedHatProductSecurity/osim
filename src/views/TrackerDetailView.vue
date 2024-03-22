@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import TrackerDetails from '../components/TrackerDetails.vue';
-import {getTracker} from '../services/TrackerService';
+import { getTracker } from '../services/TrackerService';
 
 const tracker = ref(null);
 const props = defineProps<{
@@ -10,13 +10,13 @@ const props = defineProps<{
 
 onMounted(() => {
   getTracker(props.id)
-      .then(theTracker => tracker.value = theTracker)
-      .catch(err => console.error(err))
+    .then(theTracker => tracker.value = theTracker)
+    .catch(err => console.error(err));
 });
 </script>
 
 <template>
   <main>
-    <TrackerDetails v-if="tracker" :tracker="tracker"/>
+    <TrackerDetails v-if="tracker" :tracker="tracker" />
   </main>
 </template>

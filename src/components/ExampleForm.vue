@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive} from 'vue';
+import { reactive } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -31,17 +31,22 @@ function onReset() {
     <h2 class="mb-3">Example Form</h2>
 
     <form
-        @submit.prevent="onSubmit"
+      @submit.prevent="onSubmit"
     >
-      <LabelEditable v-model="sampleForm.fruitOrderDate" label="Order Date" type="date"/>
-      <LabelEditable v-model="sampleForm.salutation" label="Salutation" type="text" placeholder="Salutation"/>
-<!--      <LabelEditable v-model="sampleForm.bug" label="Invalid" type="invalid"/>-->
-      <LabelInput v-model="sampleForm.fruitRecipient" label="Recipient of the fruit"/>
-      <LabelSelect :options="fruits" v-model="sampleForm.chosenFruit" label="Fruit"/>
-      <LabelTextarea v-model="sampleForm.fruitNotes" label="Notes about the fruit" error="foobar"/>
-      <LabelCheckbox v-model="sampleForm.shipOvernight" label="Ship Overnight"/>
+      <LabelEditable v-model="sampleForm.fruitOrderDate" label="Order Date" type="date" />
+      <LabelEditable
+        v-model="sampleForm.salutation"
+        label="Salutation"
+        type="text"
+        placeholder="Salutation"
+      />
+      <!--      <LabelEditable v-model="sampleForm.bug" label="Invalid" type="invalid"/>-->
+      <LabelInput v-model="sampleForm.fruitRecipient" label="Recipient of the fruit" />
+      <LabelSelect v-model="sampleForm.chosenFruit" :options="fruits" label="Fruit" />
+      <LabelTextarea v-model="sampleForm.fruitNotes" label="Notes about the fruit" error="foobar" />
+      <LabelCheckbox v-model="sampleForm.shipOvernight" label="Ship Overnight" />
 
-<pre>
+      <pre>
 {{ JSON.stringify(sampleForm, null, 2) }}
 </pre>
 
@@ -52,7 +57,3 @@ function onReset() {
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>

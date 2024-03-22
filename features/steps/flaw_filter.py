@@ -12,7 +12,7 @@ FLAW_SOURCE_TEXT_XPATH = '//tr[1]/td[4]'
 
 # The following constants are related to flaw filter that should be updated
 # according to the imported test database in the future
-COUNT_FLAWS_SAME_STATE = 20 
+COUNT_FLAWS_SAME_STATE = 20
 COUNT_FLAWS_SAME_SOURCE = 10
 
 
@@ -37,7 +37,7 @@ def catch_one_existing_flaw_text_and_locator(context, text_type):
     wait_for_visibility_by_locator(
         context.browser, By.XPATH, context.element_locator)
     try:
-        element=context.browser.find_element(
+        element = context.browser.find_element(
             By.XPATH, context.element_locator)
         return element.text, context.element_locator
     except NoSuchElementException:
@@ -62,7 +62,7 @@ def then_step_mathcher(context, flaws_count):
     """
     # Make sure the flaws were loaded and the flaw was the filtered flaw
     home_page = HomePage(context.browser)
-    current_len=home_page.get_flaw_list_item_count()
+    current_len = home_page.get_flaw_list_item_count()
     assert current_len == int(flaws_count)
     context.browser.quit()
 
@@ -88,7 +88,7 @@ def step_impl(context):
 
 @then('I am able to view flaws matching "state" and the flaws "count" is correct')
 def step_impl(context):
-    flaws_count=COUNT_FLAWS_SAME_STATE
+    flaws_count = COUNT_FLAWS_SAME_STATE
     then_step_mathcher(context, flaws_count)
 
 @when('I input a filter keyword "source" in the "Filter Issues/Flaws" input box')
@@ -97,5 +97,5 @@ def step_impl(context):
 
 @then('I am able to view flaws matching "source" and the flaws "count" is correct')
 def step_impl(context):
-    flaws_count=COUNT_FLAWS_SAME_SOURCE
+    flaws_count = COUNT_FLAWS_SAME_SOURCE
     then_step_mathcher(context, flaws_count)

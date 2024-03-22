@@ -1,5 +1,5 @@
-import {ref, computed} from 'vue'
-import {defineStore} from 'pinia'
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
 
 
 export interface OsimBackends {
@@ -21,4 +21,4 @@ export const useBackendStore = defineStore('BackendStore', () => {
     osidb,
     isReady,
   };
-})
+});

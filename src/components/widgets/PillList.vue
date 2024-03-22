@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const props = defineProps<{
+defineProps<{
   modelValue: string[],
   error?: string,
 }>();
@@ -8,7 +8,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string[]],
 }>();
 
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 const elInput = ref<HTMLInputElement | null>(null);
 const values = ref<string[]>([]);
@@ -40,8 +40,9 @@ function focusInput() {
     @submit.prevent
   >
     <span
-        v-for="(value, index) in values"
-        class="osim-pill-list-item badge text-bg-secondary"
+      v-for="(value, index) in values"
+      :key="index"
+      class="osim-pill-list-item badge text-bg-secondary"
     >
       {{ value }}
       <!--<button-->
@@ -51,28 +52,27 @@ function focusInput() {
 
       <!--</button>-->
       <i
-          class="bi bi-x-square ms-1"
-          tabindex="0"
-          @keydown.enter.prevent="remove(index)"
-          @keydown.space.prevent="remove(index)"
-          @click.prevent="remove(index)"
+        class="bi bi-x-square ms-1"
+        tabindex="0"
+        @keydown.enter.prevent="remove(index)"
+        @keydown.space.prevent="remove(index)"
+        @click.prevent="remove(index)"
       >
         <span class="visually-hidden">Remove</span>
       </i>
     </span>
-      <input
-          class="osim-pill-list-input"
-          type="text"
+    <input
+      ref="elInput"
+      v-model="newItem"
 
-          ref="elInput"
+      class="osim-pill-list-input"
 
-          @submit.prevent
-          @blur="add()"
-          @keydown.enter.prevent="add()"
+      type="text"
+      @submit.prevent
+      @blur="add()"
 
-          v-model="newItem"
-
-      />
+      @keydown.enter.prevent="add()"
+    />
     <!--required-->
     <!--pattern="[Cc][Vv][Ee]-\\d+"-->
   </div>
@@ -86,9 +86,15 @@ function focusInput() {
   gap: 1em;
   align-items: center;
 }
+
 .osim-pill-list:focus-within {
   outline: 0;
-  box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0) var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  box-shadow:
+    var(--bs-focus-ring-x, 0)
+    var(--bs-focus-ring-y, 0)
+    var(--bs-focus-ring-blur, 0)
+    var(--bs-focus-ring-width)
+    var(--bs-focus-ring-color);
 }
 
 .osim-pill-list-item {
@@ -101,6 +107,7 @@ function focusInput() {
   outline: none;
   box-shadow: none;
 }
+
 .osim-pill-list-input:focus,
 .osim-pill-list-input:focus-visible {
   border: none;

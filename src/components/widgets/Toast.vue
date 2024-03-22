@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import { DateTime } from 'luxon';
-import ProgressRing from "@/components/widgets/ProgressRing.vue";
-import {useSettingsStore} from '@/stores/SettingsStore';
+import ProgressRing from '@/components/widgets/ProgressRing.vue';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 
 const props = defineProps<{
   title?: string,
@@ -18,7 +18,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [],
-  stale: [],  // Called when the toast is no longer fresh and visibility should be controlled by showNotifications
+  // Called when the toast is no longer fresh and
+  // visibility should be controlled by showNotifications
+  stale: [],
 }>();
 
 const css = computed(() => {
@@ -36,7 +38,8 @@ const percentTimeRemaining = ref<number>(100);
 const percentFreshTimeRemaining = ref<number>(100);
 let freshAndBecomingStaleStart = ref(true);
 
-let freshCountdownId: number = NaN;  // Use NaN to check if the id has been assigned before clearInterval
+// Use NaN to check if the id has been assigned before clearInterval
+let freshCountdownId: number = NaN;
 onMounted(() => {
   freshCountdownId = setInterval(() => {
     if (settings.showNotifications) {
@@ -65,7 +68,7 @@ onBeforeUnmount(() => {
   if (!Number.isNaN(freshCountdownId)) {
     clearInterval(freshCountdownId);
   }
-})
+});
 
 if (props.timeoutMs) {
   let countdownId: number = NaN;
@@ -96,7 +99,7 @@ const timestampRelative = ref<string>(props.timestamp.toRelative() || '');
 // Update function
 const updateTimestamp = () => {
   timestampRelative.value = props.timestamp.toRelative() || '';
-}
+};
 
 const updateTimestampSecond = (updatesRemaining: number = 60) => {
   updateTimestamp();
@@ -105,7 +108,7 @@ const updateTimestampSecond = (updatesRemaining: number = 60) => {
   } else {
     updateTimestampMinute();
   }
-}
+};
 
 let relativeTimeInterval: number;
 const updateTimestampMinute = (updatesRemaining: number = 60) => {
@@ -115,7 +118,7 @@ const updateTimestampMinute = (updatesRemaining: number = 60) => {
   } else {
     relativeTimeInterval = setInterval(updateTimestamp, 60000 * 5); // 5 minutes
   }
-}
+};
 updateTimestampSecond();
 
 onBeforeUnmount(() => {
@@ -147,14 +150,14 @@ const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
 
 <template>
   <div
-      class="osim-toast toast show"
-      :class="toastClasses"
-      role="alert"
-      aria-labelledby="modalTitle"
-      aria-live="assertive"
-      aria-atomic="true"
-      @mouseover="active = true; transitionDurationMs = 0"
-      @mouseleave="inactiveDate = Date.now(); transitionDurationMs = 16; active = false"
+    class="osim-toast toast show"
+    :class="toastClasses"
+    role="alert"
+    aria-labelledby="modalTitle"
+    aria-live="assertive"
+    aria-atomic="true"
+    @mouseover="active = true; transitionDurationMs = 0"
+    @mouseleave="inactiveDate = Date.now(); transitionDurationMs = 16; active = false"
   >
     <!--:style="{display: show? 'block' : 'none'}"-->
     <div class="toast-header">
@@ -162,26 +165,29 @@ const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
         <strong class="me-auto">{{ title ?? '' }}</strong>
         <small class="text-muted">{{ timestampRelative }}</small>
         <button
-            type="button"
-            class="osim-toast-close-btn btn-close"
-            aria-label="Close"
-            @click="$emit('close')">
+          type="button"
+          class="osim-toast-close-btn btn-close"
+          aria-label="Close"
+          @click="$emit('close')"
+        >
           <ProgressRing
-              class="osim-temporary-toast-timer"
-              v-if="timeoutMs"
-              color="grey"
-              :progress="percentTimeRemaining"
-              :diameter="timeoutRingDiameter"
-              :stroke="2"
-              :transition-duration-ms="transitionDurationMs"
-              direction="down"
+            v-if="timeoutMs"
+            class="osim-temporary-toast-timer"
+            color="grey"
+            :progress="percentTimeRemaining"
+            :diameter="timeoutRingDiameter"
+            :stroke="2"
+            :transition-duration-ms="transitionDurationMs"
+            direction="down"
           />
         </button>
       </slot>
     </div>
     <div class="toast-body osim-toast-body">
       <slot name="body">
+        <!-- eslint-disable vue/no-v-html -->
         <div v-if="bodyHtml" v-html="body"></div>
+        <!-- eslint-enable -->
         <div v-if="!bodyHtml">
           {{ body }}
         </div>
@@ -195,9 +201,11 @@ const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
   min-width: var(--bs-toast-max-width);
   transition: transform ease-in;
 }
+
 .osim-toast-body {
   white-space: pre-wrap;
 }
+
 .osim-toast-timer {
   margin-right: 5px;
 }
@@ -209,21 +217,25 @@ button.osim-toast-close-btn {
   align-items: center;
   justify-content: center;
 }
+
 .osim-temporary-toast-timer {
   position: absolute;
   width: v-bind(timeoutRingDiameterPx);
   height: v-bind(timeoutRingDiameterPx);
 }
+
 .fresh-leave-active {
   animation-duration: v-bind(freshMsCss);
   animation-name: slideout;
   transition: transform;
   animation-timing-function: ease-in;
 }
+
 @keyframes slideout {
   from {
     transform: none;
   }
+
   to {
     transform: translateX(20px);
   }

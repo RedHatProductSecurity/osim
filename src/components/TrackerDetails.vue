@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import type {Tracker} from '@/generated-client';
 
-const props = defineProps<{
+defineProps<{
   // tracker: Tracker
   tracker: any
 }>();
@@ -12,7 +12,7 @@ const props = defineProps<{
 <template>
   <div class="osim-content container">
     <div class="row osim-tracker-fixmeup">
-{{JSON.stringify(tracker, null, 2)}}
+      {{ JSON.stringify(tracker, null, 2) }}
     </div>
   </div>
 </template>

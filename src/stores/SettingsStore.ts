@@ -1,7 +1,6 @@
-import {computed, nextTick, ref, watch} from 'vue';
-import {defineStore} from 'pinia';
-import {z} from 'zod';
-import {useSessionStorage} from '@vueuse/core';
+import { ref, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { z } from 'zod';
 
 import serviceWorkerClient from '../services/service-worker-client';
 
@@ -13,24 +12,26 @@ const _settingsStoreKey = 'SettingsStore';
 
 
 export const SettingsSchema = z.object({
-  // bugzillaApiKey: z.string().length(32, {message: 'Bugzilla API Key is the wrong length!'}).optional(),
-  bugzillaApiKey: z.string().optional().or(z.literal("")),
-  jiraApiKey: z.string().optional().or(z.literal("")),
+  // bugzillaApiKey: z.string().length(
+  //   32, {message: 'Bugzilla API Key is the wrong length!'}
+  // ).optional(),
+  bugzillaApiKey: z.string().optional().or(z.literal('')),
+  jiraApiKey: z.string().optional().or(z.literal('')),
   showNotifications: z.boolean(),
 });
 export type SettingsType = z.infer<typeof SettingsSchema>;
 
-const settingsStoreSessionStorage = z.object({
-  settings: SettingsSchema,
-});
-type SettingsStoreSessionStorage = z.infer<typeof settingsStoreSessionStorage>;
+// const settingsStoreSessionStorage = z.object({
+//   settings: SettingsSchema,
+// });
+// type SettingsStoreSessionStorage = z.infer<typeof settingsStoreSessionStorage>;
 
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>({showNotifications: false});
+  const settings = ref<SettingsType>({ showNotifications: false });
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
   serviceWorkerClient.listen(_settingsStoreKey, value => {
-    let newSettingsStore = SettingsSchema.safeParse(value);
+    const newSettingsStore = SettingsSchema.safeParse(value);
     if (newSettingsStore.success) {
       if (JSON.stringify(newSettingsStore.data) !== JSON.stringify(settings.value)) {
         // New value; update
@@ -43,11 +44,11 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   });
 
   function save(newSettings: SettingsType) {
-    settings.value = {...newSettings};
+    settings.value = { ...newSettings };
   }
 
   function $reset() {
-    settings.value = {showNotifications: false};
+    settings.value = { showNotifications: false };
   }
 
   return {

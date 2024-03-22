@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue';
+import { computed, toRef } from 'vue';
 
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferingForm from './AffectedOfferingForm.vue';

@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import EditableList from '@/components/widgets/EditableList.vue';
+import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+
+const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
+
+const emit = defineEmits<{
+  'acknowledgment:update': [value: any[]];
+  'acknowledgment:new': [];
+  'acknowledgment:delete': [value: string];
+}>();
+
+function handleDelete(uuid: string, closeModal: () => void) {
+  emit('acknowledgment:delete', uuid);
+
+  closeModal();
+}
+</script>
+
 <template>
   <div>
     <EditableList
@@ -7,8 +26,9 @@
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
     >
-      <template #default="{ name, affiliation }">
+      <template #default="{ item: {name, affiliation, uuid} }">
         <div class="form-group">
+          {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
         </div>
       </template>
@@ -50,7 +70,7 @@
           <button
             type="button"
             class="btn btn-danger me-2"
-            @click="emit('acknowledgment:delete', item.uuid), closeModal()"
+            @click="handleDelete(item.uuid, closeModal)"
           >
             Confirm
           </button>
@@ -60,16 +80,3 @@
     </EditableList>
   </div>
 </template>
-
-<script setup lang="ts">
-import EditableList from '@/components/widgets/EditableList.vue';
-import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
-
-const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
-
-const emit = defineEmits<{
-  'acknowledgment:update': [value: any[]];
-  'acknowledgment:new': [];
-  'acknowledgment:delete': [value: string];
-}>();
-</script>

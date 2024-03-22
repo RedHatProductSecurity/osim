@@ -3,7 +3,6 @@ import { onMounted, ref, computed } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
-const { isModalOpen, openModal, closeModal } = useModal();
 
 import LabelCollapsable from './LabelCollapsable.vue';
 
@@ -18,6 +17,12 @@ const emit = defineEmits<{
   'item:new': [];
   'item:delete': [value: string];
 }>();
+
+const modals = Object.fromEntries(items.value.map((item) => [item.uuid, useModal()]));
+
+function useModalForItem(uuid: string) {
+  return modals[uuid];
+}
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
 
@@ -66,9 +71,13 @@ function commitEdit(index: number) {
           <slot
             v-if="isBeingEdited(itemIndex)"
             name="edit-form"
-            v-bind="{ item, items, itemIndex }"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
           />
-          <slot v-else name="default" v-bind="item" />
+          <slot
+            v-else
+            name="default"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+          />
 
           <div class="buttons">
             <button
@@ -83,7 +92,7 @@ function commitEdit(index: number) {
               v-if="indexBeingEdited !== itemIndex"
               type="button"
               class="btn"
-              @click="openModal"
+              @click="useModalForItem(item.uuid).openModal"
             >
               <i class="bi bi-trash">
                 <span class="visually-hidden">Delete {{ entityName }}</span></i>
@@ -111,27 +120,34 @@ function commitEdit(index: number) {
           </div>
         </div>
         <div v-else class="osim-list-create">
-          <slot name="create-form" v-bind="{ item, items, itemIndex }" />
+          <slot
+            name="create-form"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
+          />
           <!-- if new and not saved in DB -->
         </div>
       </div>
-      <Modal :show="isModalOpen" @close="closeModal">
+      <Modal
+        v-if="item.uuid"
+        :show="useModalForItem(item.uuid).isModalOpen"
+        @close="useModalForItem(item.uuid).closeModal"
+      >
         <template #body>
           <slot
             name="modal-body"
-            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
           />
         </template>
         <template #header>
           <slot
             name="modal-header"
-            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
           />
         </template>
         <template #footer>
           <slot
             name="modal-footer"
-            v-bind="{ item, items, itemIndex, closeModal, isModalOpen, openModal }"
+            v-bind="{ item, items, itemIndex, ...useModalForItem(item.uuid) }"
           />
         </template>
       </Modal>
