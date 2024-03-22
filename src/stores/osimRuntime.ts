@@ -28,6 +28,7 @@ const OsimRuntime = z.object({
     osidb: z.string(),
     osidbAuth: z.string().default('kerberos'),
     bugzilla: z.string(),
+    jira: z.string(),
   }),
   osimVersion: z.object({
     rev: z.string(),
@@ -41,7 +42,7 @@ type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
   env: '',
-  backends: { osidb: '', osidbAuth: '', bugzilla: '' },
+  backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '' },
   osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
 });
