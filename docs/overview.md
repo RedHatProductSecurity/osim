@@ -68,18 +68,27 @@
   user-writable directories in the container image.
     * `/tmp` is not used because other junk may be placed there, and some
       separation of concerns can prevent confusion.
+* `"osimVersion":{}` must be the last entry in the `OSIM_RUNTIME` JSON object,
+  because the osim container substitutes the value in by truncating the rest of
+  the string.
 
 ## Local Configuration
 
 * Create `public/runtime.json` with the following contents:
   ```json
     {
+      "env": "dev",
       "backends": {
         "osidb": "http://localhost:8000",
         "osidbAuth": "<kerberos|credentials>"
         "bugzilla": "http://localhost:8001"
       },
-      "osimVersion": "0"
+      "osimVersion": {
+        "rev":"dev",
+        "tag":"dev",
+        "timestamp":"1970-01-01T00:00:00Z",
+        "dirty":true
+      }
     }
   ```
   * **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate agains OSIDB backend.
