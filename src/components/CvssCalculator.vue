@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelInputCollapsable from './widgets/LabelInputCollapsable.vue';
 import { 
   calculatorButtons,
@@ -102,7 +102,7 @@ function calcButton(id: string, key: string) {
       </div>
     </template>
   </LabelInputCollapsable>
-  <LabelStatic
+  <LabelInput
     v-model="cvssScore"
     label="CVSSv3 Score"
     type="text"
