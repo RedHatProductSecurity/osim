@@ -9,7 +9,7 @@ from features.pages.home_page import HomePage
 @when('I click the link of a flaw')
 def step_impl(context):
     home_page = HomePage(context.browser)
-    home_page.click_first_flaw_link()
+    home_page.click_btn("firstFlawLink")
 
 
 @then('I am able to view the flaw detail')
