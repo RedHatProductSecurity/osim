@@ -4,7 +4,7 @@ import {
   type NavigationGuardNext,
   type RouteLocationNormalized,
 } from 'vue-router';
-import { nextTick as vueNextTick} from 'vue';
+import { nextTick as vueNextTick } from 'vue';
 import IndexView from '../views/IndexView.vue';
 import LoginView from '../views/LoginView.vue';
 import FlawEditView from '../views/FlawEditView.vue';

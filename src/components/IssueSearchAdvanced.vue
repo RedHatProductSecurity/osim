@@ -1,8 +1,4 @@
 <script setup lang="ts">
-const props = defineProps<{
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  setIssues: Function;
-}>();
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
@@ -11,14 +7,82 @@ import { useToastStore } from '@/stores/ToastStore';
 
 useToastStore();
 
-const route = useRoute();
-
 type Facet = {
   field: string;
   value: string;
 };
+
+const emit = defineEmits<{
+  'issues:load': [any[]];
+}>();
+
+const route = useRoute();
+
+let isSearching = ref(false);
+
+const fieldsMapping: Record<string, string | string[]> = {
+  classification: 'workflow_state',
+  cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
+  affects: ['affects__ps_module', 'affects__ps_component', 'affects__trackers__ps_update_stream'],
+  acknowledgments: 'acknowledgments__name',
+  trackers: [
+    'affects__trackers__errata__advisory_name',
+    'affects__trackers__ps_update_stream',
+    'affects__trackers__external_system_id',
+  ],
+  references: [],
+  comments: [],
+};
+
+const includedFields = [
+  'type',
+  'uuid',
+  'cve_id',
+  'impact',
+  'component',
+  'title',
+  'owner',
+  'team_id',
+  'trackers',
+  'classification',
+  'cwe_id',
+  'source',
+  'affects',
+  'comments',
+  'cvss_scores',
+  'references',
+  'acknowledgments',
+  'embargoed',
+];
+
+const nameForOption = (fieldName: string) => {
+  const mappings: Record<string, string> = {
+    uuid: 'UUID',
+    cvss_scores__score: 'CVSS Score',
+    cvss_scores__vector: 'CVSS Vector',
+    affects__ps_module: 'Affected Module',
+    affects__ps_component: 'Affected Component',
+    affects__trackers__ps_update_stream: 'Affect Update Stream',
+    acknowledgments__name: 'Acknowledgment Author',
+    affects__trackers__errata__advisory_name: 'Errata Advisory Name',
+    affects__trackers__external_system_id: 'Tracker External System ID',
+    workflow_state: 'Flaw Status',
+    cwe_id: 'CWE ID',
+    cve_id: 'CVE ID',
+    team_id: 'Team ID',
+  };
+  let name =
+    mappings[fieldName] ||
+    fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+  name = name.replace(/_/g, ' ');
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
 const facets = ref<Facet[]>([{ field: '', value: '' }]);
-const flawFields = fieldsFor(ZodFlawSchema);
+const flawFields = fieldsFor(ZodFlawSchema)
+  .filter((field) => includedFields.includes(field))
+  .flatMap((field) => fieldsMapping[field] || field)
+  .sort();
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 watch(facets.value, (changingFacets) => {
@@ -29,18 +93,11 @@ watch(facets.value, (changingFacets) => {
 });
 
 const unchosenFields = (chosenField: string) =>
-  flawFields.filter(
-    (field) => !chosenFields.value.includes(field) || field === chosenField
-  );
+  flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
 
-const {
-  type: zodFlawType,
-  source: zodFlawSource,
-  impact: zodFlawImpacts,
-} = ZodFlawSchema.shape;
+const { type: zodFlawType, source: zodFlawSource, impact: zodFlawImpacts } = ZodFlawSchema.shape;
 
-const extractEnum = (zodEnum: any): string[] =>
-  Object.values(zodEnum.unwrap().unwrap().enum);
+const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
 const flawTypes = extractEnum(zodFlawType);
 const flawSources = extractEnum(zodFlawSource);
@@ -51,7 +108,16 @@ const optionsFor = (field: string) =>
     type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
-  }[field] || null);
+    embargoed: ['true', 'false'],
+    workflow_state: [
+      'DONE',
+      'NEW',
+      'PRE_SECONDARY_ASSESSMENT',
+      'REJECTED',
+      'SECONDARY_ASSESSMENT',
+      'TRIAGE',
+    ],
+  })[field] || null;
 
 function addFacet() {
   facets.value.push({ field: '', value: '' });
@@ -64,46 +130,41 @@ function removeFacet(index: number) {
   }
 }
 
-function submitAdvancedSearch() {
-  const params = facets.value.reduce((fields, { field, value }) => {
-    if (field && value) {
-      fields[field] = value;
-    }
-    return fields;
-  }, {} as Record<string, string>);
-  advancedSearchFlaws(params)
-    .then((response) => {
-      props.setIssues(response.results);
-    })
-    .catch((err) => {
-      console.error('IssueSearch: getFlaws error: ', err);
-    });
+async function submitAdvancedSearch() {
+  emit('issues:load', []);
+  const params = facets.value.reduce(
+    (fields, { field, value }) => {
+      if (field && value) {
+        fields[field] = value;
+      }
+      return fields;
+    },
+    {} as Record<string, string>,
+  );
+  isSearching.value = true;
+  const response: { results: any } = await advancedSearchFlaws(params);
+  if (response) {
+    emit('issues:load', response.results);
+  }
+  isSearching.value = false;
 }
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
 
 <template>
   <details :open="shouldShowAdvanced" class="osim-advanced-search-container">
-    <summary class="mb-2" @click="shouldShowAdvanced = true">
-      Advanced Search
-    </summary>
+    <summary class="mb-2" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div v-for="(facet, index) in facets" :key="facet.field" class="input-group mb-2">
         <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
           <option
             v-if="!facet.field"
             selected
-            value="" 
+            value=""
             disabled
-          >
-            Select field...
-          </option>
-          <option
-            v-for="field in unchosenFields(facet.field)"
-            :key="field"
-            :value="field"
-          >
-            {{ field }}
+          >Select field...</option>
+          <option v-for="field in unchosenFields(facet.field)" :key="field" :value="field">
+            {{ nameForOption(field) }}
           </option>
         </select>
         <select
@@ -123,15 +184,12 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           class="form-control"
           :disabled="!facet.field"
         />
-        <button
-          class="btn btn-outline-primary"
-          type="button"
-          @click="removeFacet(index)"
-        >
+        <button class="btn btn-outline-primary" type="button" @click="removeFacet(index)">
           <i class="bi-x" aria-label="remove field"></i>
         </button>
       </div>
       <button class="btn btn-primary me-3" @click="submitAdvancedSearch">
+        <div v-if="isSearching" class="spinner-border spinner-border-sm"></div>
         Search
       </button>
     </form>

@@ -5,7 +5,8 @@ from features.utils import (
     login_with_valid_account,
     set_bugzilla_api_key,
     set_jira_api_key,
-    go_to_first_flaw_detail_page
+    go_to_first_flaw_detail_page,
+    go_to_advanced_search_page
 )
 
 
@@ -28,3 +29,8 @@ def step_impl(context):
 @given('I go to a flaw detail page')
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
+
+
+@given('I go to the advanced search page')
+def step_impl(context):
+    go_to_advanced_search_page(context.browser)

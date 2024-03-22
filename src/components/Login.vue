@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useUserStore} from '@/stores/UserStore';
-import {ref} from 'vue';
+import { useUserStore } from '@/stores/UserStore';
+import { ref } from 'vue';
 
 // const router = useRouter();
 const userStore = useUserStore();
@@ -131,8 +131,8 @@ form {
   align-items: center;
   justify-content: center;
 }
-.osim-error-message {
 
+.osim-error-message {
   white-space: pre-wrap;
   text-align: left;
 }

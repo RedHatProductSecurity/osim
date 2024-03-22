@@ -1,9 +1,9 @@
-import {describe, it, expect} from 'vitest';
+import { describe, it, expect } from 'vitest';
 
-import {mount} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import ExampleForm from '../ExampleForm.vue';
-import {IMaskDirective} from 'vue-imask';
-import {type Directive} from 'vue';
+import { IMaskDirective } from 'vue-imask';
+import { type Directive } from 'vue';
 
 describe('ExampleForm', () => {
   it('renders properly', () => {

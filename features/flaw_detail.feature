@@ -5,13 +5,13 @@ Feature: Flaw detail testing
       And I set the bugzilla api key and jira api key
       And I go to a flaw detail page
 
-    Scenario: Add Public Comment for a flaw
+    Scenario: Add public comment for a flaw
       When I add a public comment to the flaw
       Then A comment is added to the flaw
 
     Scenario Outline: Update Document Text Fields
-      When I set the text <field> value to "<value>"
-      Then The text <field> value is changed
+      When I update the document text of <field> to "<value>"
+      Then The document text of <field> is updated
 
       Examples:
         |         field |              value |
@@ -23,11 +23,6 @@ Feature: Flaw detail testing
         |    mitigation |                    |
         |    mitigation |     add mitigation |
 
-    Scenario: Add Acknowledgement
-      When I add an acknowledgment to the flaw
-      Then A new acknowledgement added to the flaw
-
-
     Scenario Outline: Update dropdown options
       When I update the dropdown <field> value
       Then The dropdown <field> value is updated
@@ -37,10 +32,42 @@ Feature: Flaw detail testing
         |        impact |
         |        source |
 
-    Scenario: Modify Acknowledgement
+    Scenario: Add acknowledgement
+      When I add an acknowledgment to the flaw
+      Then A new acknowledgement added to the flaw
+
+
+    Scenario: Modify acknowledgement
       When I edit the first acknowledgement in correct format
       Then Acknowledgement is changed
 
-    Scenario: Remove Acknowledgement
+    Scenario: Remove acknowledgement
       When I delete an acknowledgement from acknowledgement list
       Then Acknowledgement is removed from flaw
+
+    Scenario: Update editable random input fields
+      When I update the random input fields
+        |         field |
+        |         title |
+        |     component |
+        |      assignee |
+        |        teamid |
+      Then The random input fields are updated
+
+    Scenario: Update CVE ID
+      When I update the CVE ID with a valid data
+      Then The CVE ID is updated
+
+    Scenario Outline: Update CWE ID
+      When I <action> the CWE ID
+      Then The CWE ID is updated
+
+      Examples:
+        |         action |
+        |         update |
+        |         delete |
+        |            add |
+
+    Scenario: Modify Reported Date
+      When I update the Reported Date with a valid data
+      Then The Reported Date is updated

@@ -22,7 +22,7 @@ class FlawDetailPage(PageFactory):
         "mitigationTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[4]"),
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
-        "saveBtn": ("XPATH", '//button[text()="Save Changes"]'),
+        "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
@@ -40,7 +40,26 @@ class FlawDetailPage(PageFactory):
         "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
-        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']")
+        "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
+        "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
+        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "titleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[1]"),
+        "titleInput": ("XPATH", "(//input[@class='form-control'])[2]"),
+        "titleValue": ("XPATH", "//span[@class='osim-editable-text-value form-control']"),
+        "componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[2]"),
+        "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
+        "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
+        "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
+        "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
+        "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
+        "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]"),
+        "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
+        "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
+        "cweidInput": ("XPATH", "(//input[@class='form-control'])[7]"),
+        "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
+        "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
+        "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -85,7 +104,7 @@ class FlawDetailPage(PageFactory):
     def set_comment_value(self, value):
         self.commentTextWindow.set_text(value)
 
-    def set_text_field(self, field, value):
+    def set_document_text_field(self, field, value):
         field_element = getattr(self, field + 'Text')
         field_input = getattr(self, field + 'TextWindow')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
@@ -95,7 +114,7 @@ class FlawDetailPage(PageFactory):
         else:
             field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def get_text_field(self, field):
+    def get_document_text_field(self, field):
         field_element = getattr(self, field + 'Text')
         field_input = getattr(self, field + 'TextWindow')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
@@ -167,3 +186,32 @@ class FlawDetailPage(PageFactory):
     def get_first_ack_value(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
         return self.firstAcknowledgmentValue.get_text()
+
+    def set_input_field(self, field, value):
+        field_btn = field + 'EditBtn'
+        self.click_btn(field_btn)
+        field_input = getattr(self, field + 'Input')
+        self.driver.execute_script("arguments[0].value = '';", field_input)
+        field_input.set_text(value)
+
+    def get_input_value(self, field):
+        field_value = getattr(self, field + 'Value')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
+        return field_value.get_text()
+
+    def clear_input_field(self, field):
+        field_btn = field + 'EditBtn'
+        self.click_btn(field_btn)
+        field_input = getattr(self, field + 'Input')
+        field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+
+    def check_value_exist(self, value):
+        e = self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of(e)
+        )
+
+    def get_text_value(self, field):
+        field_value = getattr(self, field + 'Text')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
+        return field_value.get_text()

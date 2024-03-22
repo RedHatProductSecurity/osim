@@ -1,36 +1,33 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 import FlawForm from '../components/FlawForm.vue';
-import {getFlaw} from '../services/FlawService';
-import {useToastStore} from '@/stores/ToastStore';
-import {getDisplayedOsidbError} from '@/services/OsidbAuthService';
-import {type Flaw} from '@/generated-client';
+import { getFlaw } from '../services/FlawService';
+import { useToastStore } from '@/stores/ToastStore';
+import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
-
-const flaw = ref<Flaw | null>(null);
-const committedFlaw = ref<Flaw | null>(null);
+const flaw = ref<ZodFlawType | null>(null);
+const committedFlaw = ref<ZodFlawType | null>(null);
 const errorLoadingFlaw = ref(false);
 const props = defineProps<{
-  id: string,
+  id: string;
 }>();
 
-const {addToast} = useToastStore();
+const { addToast } = useToastStore();
 
 refreshFlaw();
 
-watch(() => props.id, () => {
-  refreshFlaw();
-});
+watch(() => props.id, refreshFlaw);
 
 function refreshFlaw() {
   errorLoadingFlaw.value = false;
   getFlaw(props.id)
-    .then(theFlaw => {
+    .then((theFlaw) => {
       flaw.value = Object.assign({}, theFlaw);
       committedFlaw.value = Object.assign({}, theFlaw);
       history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
     })
-    .catch(err => {
+    .catch((err) => {
       errorLoadingFlaw.value = true;
       flaw.value = null;
       addToast({
@@ -40,7 +37,6 @@ function refreshFlaw() {
       console.error(err);
     });
 }
-
 </script>
 
 <template>
@@ -53,7 +49,7 @@ function refreshFlaw() {
     />
     <div v-if="errorLoadingFlaw">
       <div class="row justify-content-around">
-        <div class="m-5  col-lg-6 col-md-8 col-sm-12">
+        <div class="m-5 col-lg-6 col-md-8 col-sm-12">
           <div class="alert alert-warning" role="alert">
             Flaw {{ `${props.id}` }} not found.
             <div class="mt-4">
@@ -73,7 +69,6 @@ function refreshFlaw() {
 </template>
 
 <style scoped>
-
 .osim-action-buttons {
   background: white;
   border-top: 1px solid #ddd;

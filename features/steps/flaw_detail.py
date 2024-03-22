@@ -1,4 +1,8 @@
+import re
+import rstr
 import time
+from datetime import datetime
+
 from behave import when, then
 from selenium.webdriver.common.by import By
 
@@ -8,6 +12,14 @@ from features.utils import (
     go_to_first_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
+
+
+# From: https://github.com/RedHatProductSecurity/osidb/blob/master/osidb/validators.py#L13
+CVE_RE_STR = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
+CWE_RE_STR = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
+
+CVE_RE_STR = r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})"
+MAX_RETRY = 10
 
 
 @when("I add a public comment to the flaw")
@@ -38,23 +50,23 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when('I set the text {field} value to {value}')
+@when('I update the document text of {field} to {value}')
 def step_impl(context, field, value):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     value = value.strip('"')
-    flaw_detail_page.set_text_field(field, value)
+    flaw_detail_page.set_document_text_field(field, value)
     context.field_value = value
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then('The text {field} value is changed')
+@then('The document text of {field} is updated')
 def step_impl(context, field):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    v = flaw_detail_page.get_text_field(field)
+    v = flaw_detail_page.get_document_text_field(field)
     assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
     context.browser.quit()
 
@@ -137,4 +149,93 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
+    context.browser.quit()
+
+
+@when("I update the random input fields")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.field_values = []
+    for row in context.table:
+        field = row["field"]
+        value = generate_random_text()
+        flaw_detail_page.set_input_field(field, value)
+        context.field_values.append(value)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The random input fields are updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    for value in context.field_values:
+        flaw_detail_page.check_value_exist(value)
+    context.browser.quit()
+
+
+@when("I update the CVE ID with a valid data")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    count = 0
+    while count < MAX_RETRY:
+        value = rstr.xeger(CVE_RE_STR)
+        flaw_detail_page.set_input_field('cveid', value)
+        flaw_detail_page.click_btn('saveBtn')
+        try:
+            flaw_detail_page.wait_msg('flawSavedMsg')
+        except Exception:
+            count += 1
+            continue
+        else:
+            context.value = value
+            break
+
+
+@then("The CVE ID is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_exist(context.value)
+    context.browser.quit()
+
+
+@when("I {action} the CWE ID")
+def step_impl(context, action):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    if action == 'delete':
+        flaw_detail_page.clear_input_field('cweid')
+        value = ''
+    else:
+        value = rstr.xeger(CWE_RE_STR)
+        flaw_detail_page.set_input_field('cweid', value)
+    context.field_value = value
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The CWE ID is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    v = flaw_detail_page.get_input_value('cweid')
+    assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
+
+
+@when('I update the Reported Date with a valid data')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.v = datetime.today().strftime("%Y%m%d")
+    flaw_detail_page.set_input_field("reportedDate", context.v)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The Reported Date is updated")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
+    get_value = flaw_detail_page.get_input_value("reportedDate")
+    assert get_value == expected, f"get {get_value}, expected {expected}"
     context.browser.quit()

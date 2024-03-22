@@ -43,6 +43,20 @@ table {
 .card {
   border-radius: 0;
 }
+
 .accordion-button:not(.collapsed) {
   color: #000 !important;
+}
+
+::-webkit-scrollbar {
+  width: .5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bs-gray-300);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bs-gray-500);
+  border-radius: .5rem;
 }

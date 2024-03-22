@@ -26,22 +26,24 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 yarn
 ```
 
-### Compile and Hot-Reload for Development
+### Compile, Hot-Reload, and Run Tests for Development
+
+> Keyboard inputs are not passed to the test and dev server processes. If you need this functionality, run each individually in separate terminal sessions: `yarn dev-server` and `yarn test:unit`.
 
 ```sh
-yarn run dev
+yarn dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Type-Check, Compile, Run Tests, and Minify for Production
 
 ```sh
-yarn run build
+yarn build
 ```
 
 ### Run e2e tests,
 
 ```sh
-yarn run test:e2e
+yarn test:e2e
 ```
 
 ## GitHub Actions for Deploying Docker Images
