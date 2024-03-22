@@ -8,7 +8,7 @@ RUN yarn build
 RUN --mount=target=/mnt \
     cd /mnt \
     && git config --global --add safe.directory /mnt \
-    && printf '{"rev":"%s","tag":"%s","timestamp":"%s","dirty":%s}\n' >/opt/app-root/osim_build.json \
+    && printf '{"rev":"%s","tag":"%s","timestamp":"%s","dirty":%s}\n' >/opt/app-root/src/osim_build.json \
     "$(git rev-parse --verify HEAD)" \
     "$(git describe --always --tags --match 'v[0-9]*')" \
     "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)" \
@@ -54,8 +54,8 @@ ENTRYPOINT ["/osim-entrypoint.sh"]
 
 # Copy the built files to the default Nginx directory
 COPY --from=dev /opt/app-root/src/dist /usr/share/nginx/html
-COPY --from=dev /opt/app-root/osim_build.json /
-COPY --from=dev /opt/app-root/CHANGELOG.md /usr/share/nginx/html
+COPY --from=dev /opt/app-root/src/osim_build.json /
+COPY --from=dev /opt/app-root/src/CHANGELOG.md /usr/share/nginx/html
 
 # nginx:x:999:999:Nginx web server:/var/lib/nginx:/sbin/nologin
 USER 999
