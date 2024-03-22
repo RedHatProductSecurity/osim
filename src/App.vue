@@ -3,14 +3,14 @@ import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import {
+  setup,
   osidbHealth,
   osimRuntime,
   osimRuntimeStatus,
   OsimRuntimeStatus,
 } from '@/stores/osimRuntime';
 
-import { setup } from '@/stores/osimRuntime';
-import { onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
+import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
 import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
@@ -27,7 +27,8 @@ const relativeOsimBuildDate = ref(
 );
 const updateRelativeOsimBuildDate = () => {
   console.debug('Updating relative build date');
-  relativeOsimBuildDate.value = DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || '';
+  relativeOsimBuildDate.value =
+    DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || '';
 };
 onMounted(() => {
   const ms15Minutes = 15 * 60 * 60 * 1000;
@@ -55,10 +56,11 @@ onMounted(() => {
         OSIM
         | env: {{ osimRuntime.env }}
         | <span :title="osimRuntime.osimVersion.rev">
-            tag: {{ osimRuntime.osimVersion.tag }}
-            <span v-if="osimRuntime.osimVersion.dirty">(dirty)</span>
-          </span>
-        | ts : {{ osimRuntime.osimVersion.timestamp.substring(0, osimRuntime.osimVersion.timestamp.indexOf('T')) }}
+          tag: {{ osimRuntime.osimVersion.tag }}
+          <span v-if="osimRuntime.osimVersion.dirty">(dirty)</span>
+        </span>
+        | ts : {{ osimRuntime.osimVersion.timestamp
+          .substring(0, osimRuntime.osimVersion.timestamp.indexOf('T')) }}
         ({{ relativeOsimBuildDate }})
         ]
       </div>
