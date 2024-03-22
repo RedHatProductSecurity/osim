@@ -221,7 +221,7 @@ function highlightScore(char: string): string {
             </div>
             <span 
               v-if="displayCvssNISTForm" 
-              class="text-info bg-white px-3 py-2 cvssScoreError"
+              class="text-info bg-white px-3 py-2 cvss-score-error"
             >
               Explain non-obvious CVSSv3 score metrics
             </span>
@@ -476,7 +476,8 @@ form.osim-flaw-form :deep(*) {
 .cvss-button-div {
   width: 60%;
 }
-.cvssScoreError{
+
+.cvss-score-error{
   margin-top: -15px;
 }
 </style>

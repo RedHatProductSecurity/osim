@@ -52,9 +52,6 @@ const sanitizedModelValue = computed(() => {
   background-color: #DEE2E6;
   border-top-left-radius: .5rem;
   border-top-right-radius: .5rem;
-  padding-top: .375rem;
-  padding-bottom: .25rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 375rem .25rem 1rem 1rem;
 }
 </style>

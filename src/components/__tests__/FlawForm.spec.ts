@@ -408,7 +408,7 @@ describe('FlawForm', () => {
   });
 
   it('shows a error message when nvd score and Rh score mismatch', async () => {
-    const cvssScoreError = subject.find('span.cvssScoreError');
+    const cvssScoreError = subject.find('span.cvss-score-error');
     expect(cvssScoreError?.exists()).toBe(true);
     expect(cvssScoreError?.text()).toBe('Explain non-obvious CVSSv3 score metrics');
   });
