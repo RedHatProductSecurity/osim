@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref} from 'vue';
-import {useSettingsStore} from '@/stores/SettingsStore';
-import type {SettingsType} from '@/stores/SettingsStore';
+import { ref } from 'vue';
+import { useSettingsStore } from '@/stores/SettingsStore';
+import type { SettingsType } from '@/stores/SettingsStore';
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();

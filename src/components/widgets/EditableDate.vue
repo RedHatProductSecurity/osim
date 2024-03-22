@@ -313,8 +313,10 @@ function osimFormatDate(date: Date | string | undefined | null): string {
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
+
 //@import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
+
 //@import "bootstrap/scss/utilities";
 @import "bootstrap/scss/forms";
 
@@ -327,40 +329,33 @@ function osimFormatDate(date: Date | string | undefined | null): string {
   Alternatively, :duration="ms" can be set on the Transition component. */
   transition-duration: 200ms;
 }
+
 .flash-bg-enter-active .osim-editable-date-value {
   transition: background-color 200ms ease-out !important;
 }
+
 .flash-bg-enter-from .osim-editable-date-value {
-  background-color: #ff0000;
+  background-color: #f00;
 }
+
 .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
   transition: none !important;
   display: none !important;
 }
 
 .osim-editable-date {
+  @extend .input-group; // Use pure CSS instead of JS for hover
   // Nest these for specificity
   .osim-editable-date-value {
     // border-color: transparent;  // TODO decide to keep the hovering effect?
+    @extend .form-control;
   }
-  .osim-editable-date-value:before {
+
+  .osim-editable-date-value::before {
     // Prevent field from collapsing when empty
     content: '\a0';
     display: inline-block;
     width: 0;
-  }
-
-  .osim-editable-date-pen {
-    display: none;
-  }
-}
-
-//.osim-editable-date:hover {  // TODO decide to keep the hovering effect?
-.osim-editable-date {
-  @extend .input-group; // Use pure CSS instead of JS for hover
-
-  .osim-editable-date-value {
-    @extend .form-control;
   }
 
   .osim-editable-date-pen {

@@ -1,4 +1,5 @@
 from seleniumpagefactory.Pagefactory import PageFactory
+from selenium.webdriver.common.keys import Keys
 
 from features.page_factory_utils import find_elements_in_page_factory
 
@@ -23,24 +24,16 @@ class HomePage(PageFactory):
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
         "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
-        "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]")
+        "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
+        "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
+        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
+        "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
+        "quickSearchBoxText": ("XPATH", "//form[@role='search']/div/input")
     }
-
-    def click_advanced_search_drop_down_btn(self):
-        self.advancedSearchDropDownBtn.click_button()
-
-    def click_advanced_search_btn(self):
-        self.advancedSearchBtn.click_button()
 
     def click_flaw_index_btn(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.flawIndexBtn)
         self.driver.execute_script("arguments[0].click();", self.flawIndexBtn)
-
-    def click_settings_btn(self):
-        self.settingsBtn.click_button()
-
-    def click_user_btn(self):
-        self.userBtn.click_button()
 
     def logout(self):
         self.userBtn.click_button()
@@ -48,9 +41,6 @@ class HomePage(PageFactory):
 
     def flaw_list_exist(self):
         self.flawList.visibility_of_element_located()
-
-    def click_first_flaw_link(self):
-        self.firstFlawLink.click_button()
 
     def click_flaw_check_all_checkbox(self):
         self.firstFlaw.visibility_of_element_located()
@@ -90,3 +80,21 @@ class HomePage(PageFactory):
     def get_flaw_list_item_count(self):
         self.flawRow.visibility_of_element_located()
         return len(find_elements_in_page_factory(self, "flawRow"))
+
+    def get_field_value(self, field):
+        field_value = getattr(self, field + 'Text')
+        return  field_value.get_text()
+
+    def set_value(self, field, value):
+        field_input = getattr(self, field + 'Box')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
+        field_input.set_text(value)
+
+    def click_btn(self, btn_element):
+        element = getattr(self, btn_element)
+        element.click_button()
+
+    def clear_box(self, field):
+        field_input = getattr(self, field + 'Box')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
+        field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)

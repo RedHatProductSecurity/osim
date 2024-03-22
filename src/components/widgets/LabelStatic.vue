@@ -35,12 +35,9 @@ defineProps<{
 
 .osim-static-label .osim-static-label-top-style .top-label {
   display: inline-block;
-  background-color: #dee2e6;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  padding-top: 0.375rem;
-  padding-bottom: 0.25rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  background-color: #DEE2E6;
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+  padding: .375rem 1rem .25rem;
 }
 </style>

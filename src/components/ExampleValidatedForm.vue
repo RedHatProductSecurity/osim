@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import { reactive, ref } from 'vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import {toTypedSchema} from '@vee-validate/zod';
-import {useField, useForm} from 'vee-validate';
-import {z} from 'zod';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useField, useForm } from 'vee-validate';
+import { z } from 'zod';
 
 type ExampleFormType = z.infer<typeof ExampleFormSchema>;
 const ExampleFormSchema = z.object({
@@ -34,20 +34,20 @@ let committedForm: ExampleFormType = reactive({ // form from server
 // let stagedForm: ExampleFormType = committedForm;
 
 const validationSchema = toTypedSchema(ExampleFormSchema);
-const initialValues = ref<ExampleFormType>({...committedForm});
-const {handleSubmit, errors, setValues, values, meta} = useForm({
+const initialValues = ref<ExampleFormType>({ ...committedForm });
+const { handleSubmit, errors, setValues, values, meta } = useForm({
   validationSchema,
   initialValues: initialValues.value,
 });
 
 // const fruitNotesExample = ref('');
 
-const {value: salutation} = useField<string>('salutation');
-const {value: fruitRecipient} = useField<string>('fruitRecipient');
-const {value: chosenFruit} = useField<string>('chosenFruit');
-const {value: fruitNotes} = useField<string>('fruitNotes');
-const {value: fruitOrderDate} = useField<Date>('fruitOrderDate');
-const {value: shipOvernight} = useField<boolean>('shipOvernight');
+const { value: salutation } = useField<string>('salutation');
+const { value: fruitRecipient } = useField<string>('fruitRecipient');
+const { value: chosenFruit } = useField<string>('chosenFruit');
+const { value: fruitNotes } = useField<string>('fruitNotes');
+const { value: fruitOrderDate } = useField<Date>('fruitOrderDate');
+const { value: shipOvernight } = useField<boolean>('shipOvernight');
 // const {value: bug} = useField<string>('bug');
 
 
@@ -117,7 +117,3 @@ Committed values on server:
     </form>
   </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -5,7 +5,7 @@
 // Blurring focus or clicking the save button commits the change
 // Pressing escape or clicking the abort button aborts the change
 
-import {nextTick, ref, unref, watch} from 'vue';
+import { nextTick, ref, unref, watch } from 'vue';
 
 const props = defineProps<{
   modelValue: string | null,
@@ -164,7 +164,7 @@ function blur(e: FocusEvent | null) {
 }
 
 .flash-bg-enter-from .osim-editable-text-value {
-  background-color: #ff0000;
+  background-color: #f00;
 }
 
 .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
@@ -173,10 +173,13 @@ function blur(e: FocusEvent | null) {
 }
 
 .osim-editable-text {
+  @extend .input-group; // Use pure CSS instead of JS for hover
   // Nest these for specificity
   white-space: nowrap;
 
   .osim-editable-text-value {
+    @extend .form-control;
+
     // border-color: transparent; // TODO decide to keep the hovering effect?
     color: var(--bs-secondary-color);
     text-overflow: ellipsis;
@@ -191,22 +194,7 @@ function blur(e: FocusEvent | null) {
   }
 
   .osim-editable-text-pen {
-    display: none;
-  }
-}
-
-//.osim-editable-text:hover {  // TODO decide to keep the hovering effect?
-.osim-editable-text {
-
-  @extend .input-group; // Use pure CSS instead of JS for hover
-
-  .osim-editable-text-value {
-    @extend .form-control;
-  }
-
-  .osim-editable-text-pen {
     display: flex;
   }
 }
-
 </style>

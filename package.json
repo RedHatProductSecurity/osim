@@ -20,7 +20,9 @@
     "vibe-check": "npx vite-bundle-visualizer",
     "generate-openapi-client": "openapi-generator-cli generate -i osidb-3.4.0.oas3.json --output src/generated-client -g typescript-axios",
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json",
-    "lint": "eslint . --ext .js,.ts,.vue"
+    "lint": "yarn lint-style && yarn lint-ts-vue",
+    "lint-ts-vue": "eslint . --ext .js,.ts,.vue",
+    "lint-style": "npx stylelint '**/*.{vue,css,scss}'"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -63,8 +65,6 @@
     "msw": "^2.1.2",
     "npm-run-all2": "^6.0.6",
     "postcss-html": "^1.6.0",
-    "prettier": "^3.2.5",
-    "prettier-eslint": "^16.3.0",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
     "stylelint": "^16.2.1",

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, onMounted, ref, watchEffect} from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import { DateTime } from 'luxon';
 import ProgressRing from '@/components/widgets/ProgressRing.vue';
-import {useSettingsStore} from '@/stores/SettingsStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
-const {settings} = useSettingsStore();
+const { settings } = useSettingsStore();
 
 const props = defineProps<{
   title?: string,
@@ -201,9 +201,11 @@ const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
   min-width: var(--bs-toast-max-width);
   transition: transform ease-in;
 }
+
 .osim-toast-body {
   white-space: pre-wrap;
 }
+
 .osim-toast-timer {
   margin-right: 5px;
 }
@@ -215,21 +217,25 @@ button.osim-toast-close-btn {
   align-items: center;
   justify-content: center;
 }
+
 .osim-temporary-toast-timer {
   position: absolute;
   width: v-bind(timeoutRingDiameterPx);
   height: v-bind(timeoutRingDiameterPx);
 }
+
 .fresh-leave-active {
   animation-duration: v-bind(freshMsCss);
   animation-name: slideout;
   transition: transform;
   animation-timing-function: ease-in;
 }
+
 @keyframes slideout {
   from {
     transform: none;
   }
+
   to {
     transform: translateX(20px);
   }

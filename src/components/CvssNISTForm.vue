@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue';
+import { computed } from 'vue';
 import Modal from '@/components/widgets/Modal.vue';
 
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';

@@ -83,8 +83,8 @@ def set_jira_api_key(browser):
     set osim jira API key in settings
     """
     home_page = HomePage(browser)
-    home_page.click_user_btn()
-    home_page.click_settings_btn()
+    home_page.click_btn("userBtn")
+    home_page.click_btn("settingsBtn")
 
     settings_page = SettingsPage(browser)
     settings_page.set_jira_api_key(JIRA_API_KEY)
@@ -95,8 +95,8 @@ def set_bugzilla_api_key(browser):
     set osim jira API key in settings
     """
     home_page = HomePage(browser)
-    home_page.click_user_btn()
-    home_page.click_settings_btn()
+    home_page.click_btn("userBtn")
+    home_page.click_btn("settingsBtn")
 
     settings_page = SettingsPage(browser)
     settings_page.set_bugzilla_api_key(BUGZILLA_API_KEY)
@@ -117,7 +117,7 @@ def go_to_first_flaw_detail_page(browser):
     home_page.flaw_list_exist()
 
     # Get the first flaw and go to detail table
-    home_page.click_first_flaw_link()
+    home_page.click_btn("firstFlawLink")
 
     flaw_detail_page = FlawDetailPage(browser)
     flaw_detail_page.add_comment_btn_exist()
@@ -136,5 +136,5 @@ def go_to_advanced_search_page(browser):
     This function is a comment one for all advance search senarios.
     """
     home_page = HomePage(browser)
-    home_page.click_advanced_search_drop_down_btn()
-    home_page.click_advanced_search_btn()
+    home_page.click_btn("advancedSearchDropDownBtn")
+    home_page.click_btn("advancedSearchBtn")
