@@ -45,7 +45,7 @@ COPY ./build/nginx-conf.d-fix-random-uid.conf /etc/nginx/conf.d/fix-random-uid.c
 
 RUN mkdir -p /entrypoint.d/
 COPY ./build/osim-entrypoint.sh /
-COPY ./build/entrypoint.d/20-osim-runtime-json.sh /entrypoint.d/
+COPY ./build/entrypoint.d/*.sh /entrypoint.d/
 #ARG OSIM_COMMIT_HASH=dev
 #ARG OSIM_COMMIT_TAG=dev
 #ARG OSIM_COMMIT_TIMESTAMP=0
