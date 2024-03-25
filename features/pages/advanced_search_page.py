@@ -25,7 +25,8 @@ class AdvancedSearchPage(PageFactory):
         "workflow_stateText": ("XPATH", "//tr[1]/td[7]"),
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "closeKeysetBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
-        "closeSelBtn": ("XPATH", "//i[@class='bi-x']")
+        "closeSelBtn": ("XPATH", "//i[@class='bi-x']"),
+        "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]")
     }
 
     def click_search_btn(self):
@@ -34,6 +35,8 @@ class AdvancedSearchPage(PageFactory):
     def first_flaw_exist(self):
         self.firstFlaw.visibility_of_element_located()
 
+    def first_flaw_embargoed_flag_exist(self):
+        self.embargoedFlag.visibility_of_element_located()
 
     def select_field_and_value_to_search(self, item_key, item_value):
         self.selectKeyList.click_button()
