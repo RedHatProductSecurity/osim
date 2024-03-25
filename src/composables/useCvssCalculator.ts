@@ -49,6 +49,82 @@ export function getFactors(cvssVector: string){
   return factors;
 }
 
+export function calculateBaseScore(factors: Record<string, string>) {
+  const unchangedScope = factors['S'] === 'U';
+
+  // ISS
+  const confidentiality = weights['C'][factors['C']];
+  const integrity = weights['I'][factors['I']];
+  const availability = weights['A'][factors['A']];
+  
+  const iss = 1 - ((1 - confidentiality) * (1 - integrity) * (1 - availability));
+
+  // Impact
+  const impact = unchangedScope ? 6.42 * iss : (7.52 * (iss - 0.029) - (3.25 * ((iss - 0.02)**15)));
+
+  // Exploitability
+  const attackVector = weights['AV'][factors['AV']];
+  const attackComplexity = weights['AC'][factors['AC']];
+  const privilegesRequired = unchangedScope ? weights['PRU'][factors['PR']] : weights['PRC'][factors['PR']];
+  const userInteraction = weights['UI'][factors['UI']];
+
+  const exploitability = 8.22 * attackVector * attackComplexity * privilegesRequired * userInteraction;
+
+  // Base Score
+  let baseScore = 0;
+
+  if(impact > 0) {
+    baseScore = unchangedScope ? Math.min((impact + exploitability), 10)
+      : Math.min(1.08 * (impact + exploitability), 10);
+    // Round up with one decimal precision
+    baseScore = Math.round(Math.ceil(10 * baseScore)) / 10;
+  }
+
+  return baseScore;
+}
+
+export const weights: { [factor: string]: { [value: string]: number } } = {
+  AV: {
+    N: 0.85,
+    A: 0.62,
+    L: 0.55,
+    P: 0.2
+  },
+  AC: {
+    L: 0.77,
+    H: 0.44
+  },
+  PRU: {
+    N: 0.85,
+    L: 0.62,
+    H: 0.27
+  },
+  PRC: {
+    N: 0.85,
+    L: 0.68,
+    H: 0.5
+  },
+  UI: {
+    N: 0.85,
+    R: 0.62
+  },
+  C: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  },
+  I: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  },
+  A: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  }
+};
+
 export const calculatorButtons = {
   blocks: [
     {
