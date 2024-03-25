@@ -87,8 +87,8 @@ const errors = {
   cwe_id: null,
   major_incident_state: null,
   reported_dt: null,
-  embargo_old_public_dt: "Set the current or a future date for an embargoed flaw.",
-  unembargo_future_public_dt: "Set the current or an previous date for unembargoed flaw.",
+  embargo_old_public_dt: 'Set the current or a future date for an embargoed flaw.',
+  unembargo_future_public_dt: 'Set the current or an previous date for unembargoed flaw.',
   type: null,
   component: null,
   source: null,
@@ -109,12 +109,14 @@ const validateFlawEmbargoDates = computed(
       return errors.unembargo_future_public_dt;
     }
     if (flaw.value.embargoed) {
-      // if embargoed and updated date is older than now, it shows an error to set the current date or a future date instead
+      // if embargoed and updated date is older than now,
+      // it shows an error to set the current date or a future date instead
       if (unembargo_dt < DateTime.now().toISODate()) {
         return errors.embargo_old_public_dt;
       }
     } else {
-      // if NOT embargoed and updated date is in the future, it shows an error, to set the current date or an older date instead
+      // if NOT embargoed and updated date is in the future,
+      // it shows an error, to set the current date or an older date instead
       if (unembargo_dt > DateTime.now().toISODate()) {
         return errors.unembargo_future_public_dt;
       }

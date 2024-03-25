@@ -412,7 +412,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = true;
     flaw.unembargo_dt = '2022-02-01';
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
       .toBe('Set the current or a future date for an embargoed flaw.');
   });
@@ -421,7 +421,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = true;
     flaw.unembargo_dt = DateTime.now().toISODate();
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
       .toBe(null);
   });
@@ -430,7 +430,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
     flaw.unembargo_dt = '3000-01-01';
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
       .toBe('Set the current or an previous date for unembargoed flaw.');
   });
@@ -439,7 +439,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
     flaw.unembargo_dt = DateTime.now().toISODate();
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
       .toBe(null);
   });
@@ -448,7 +448,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
     flaw.unembargo_dt = null;
-    mountWithProps({flaw});
+    mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
       .toBe('Set the current or an previous date for unembargoed flaw.');
   });
