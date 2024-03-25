@@ -15,6 +15,7 @@ class FlawDetailPage(PageFactory):
         self.timeout = 15
 
     locators = {
+        "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "summaryBtn": ("XPATH", "//button[contains(text(), 'Add Summary')]"),
         "summaryText": ("XPATH", "//span[text()='Summary']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
@@ -26,7 +27,9 @@ class FlawDetailPage(PageFactory):
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
+        "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
+        "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
         "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
         "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
@@ -62,7 +65,10 @@ class FlawDetailPage(PageFactory):
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
         "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
         "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
-        "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]")
+        "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
+        "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
+        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+
     }
 
     # Data is from OSIDB allowed sources:
