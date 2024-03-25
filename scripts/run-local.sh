@@ -14,4 +14,7 @@ docker="$(command -v podman || command -v docker)"
 set -x
 
 "$docker" build -f local.Dockerfile -t osim:local
-"$docker" run --rm -p 8080:8080 --env OSIM_RUNTIME='{"backends":{"osidb":"/osidb","bugzilla":"http://bugzilla-service:8001"},"osimVersion":"0"}' --env OSIDB_BACKEND="$(cat ./public/runtime.json | jq -r .backends.osidb)" osim:local
+"$docker" run --rm -p 8080:8080 --env OSIM_ENV="dev" --env OSIM_BACKENDS_OSIDB="http://osidb-service:8000" --env OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001" --env OSIM_BACKENDS_JIRA="http://jira-service:8002" --env OSIDB_BACKEND="$(cat ./public/runtime.json | jq -r .backends.osidb)" osim:local
+
+
+

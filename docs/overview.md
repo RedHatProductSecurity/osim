@@ -65,14 +65,12 @@
 
 ## Deployment
 
-* `OSIM_RUNTIME` stores static information about the UI and backends.
+* `OSIM_`-prefixed environment variables store static information about the UI
+  and backends.
 * The runtime configuration is written to `/dev/shm` because that is one of 2
   user-writable directories in the container image.
     * `/tmp` is not used because other junk may be placed there, and some
       separation of concerns can prevent confusion.
-* `"osimVersion":{}` must be the last entry in the `OSIM_RUNTIME` JSON object,
-  because the osim container substitutes the value in by truncating the rest of
-  the string.
 * Logs are written to stdout/stderr, but we may log to a file in the future for
   more configurable and secure routing options.
 
@@ -84,8 +82,9 @@
       "env": "dev",
       "backends": {
         "osidb": "http://localhost:8000",
-        "osidbAuth": "<kerberos|credentials>"
-        "bugzilla": "http://localhost:8001"
+        "osidbAuth": "<kerberos|credentials>",
+        "bugzilla": "http://localhost:8001",
+        "jira": "http://localhost:8002"
       },
       "osimVersion": {
         "rev":"dev",
