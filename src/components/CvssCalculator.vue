@@ -5,6 +5,7 @@ import {
   calculatorButtons,
   getFactors,
   formatFactor,
+  calculateBaseScore,
 } from '@/composables/useCvssCalculator';
 import { ref } from 'vue';
 
@@ -17,7 +18,6 @@ const tabIndex = ref(0);
 const cvssFactors = ref();
 
 function updateFactors(newCvssVector: string | undefined | null){
-
   if(newCvssVector){
     console.log(newCvssVector);
     cvssFactors.value = getFactors(newCvssVector);
@@ -29,11 +29,11 @@ function updateFactors(newCvssVector: string | undefined | null){
 updateFactors(cvssVector.value);
 
 function calcButton(id: string, key: string) {
-  console.log(cvssFactors);
   if(!cvssFactors.value['CVSS']) {
     cvssFactors.value = getFactors('CVSS:3.1');
   }
   cvssFactors.value[id] = key;
+  cvssScore.value = calculateBaseScore(cvssFactors.value);
 }
 </script>
 
