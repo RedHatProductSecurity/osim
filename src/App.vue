@@ -31,7 +31,6 @@ watchEffect(() => {
 });
 const relativeOsimBuildDate = ref('');
 const updateRelativeOsimBuildDate = () => {
-  console.debug('Updating relative build date');
   relativeOsimBuildDate.value =
     DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || '';
 };
