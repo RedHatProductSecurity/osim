@@ -246,38 +246,44 @@ const cvssString = computed(() => {
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
-        <LabelTextarea v-model="flaw.description" label="Comment#0" />
-        <LabelTextarea v-if="hasSummary" v-model="flaw.summary" label="Description" />
-        <LabelTextarea v-if="hasStatement" v-model="flaw.statement" label="Statement" />
-        <LabelTextarea v-if="hasMitigation" v-model="flaw.mitigation" label="Mitigation" />
+        <LabelTextarea v-model="flaw.description" label="Comment#0" placeholder="Comment#0 ..." />
+        <LabelTextarea
+          v-if="hasSummary"
+          v-model="flaw.summary" 
+          label="Description"
+          placeholder="Description Text ..."
+        />
+        <LabelTextarea
+          v-if="hasStatement"
+          v-model="flaw.statement"
+          label="Statement"
+          placeholder="Statement Text ..."
+        />
+        <LabelTextarea
+          v-if="hasMitigation"
+          v-model="flaw.mitigation"
+          label="Mitigation"
+          placeholder="Mitigation Text ..."
+        />
         <div class="d-flex gap-3 mb-3">
           <button
             v-if="!hasSummary"
             class="btn btn-secondary"
-            @click="
-              hasSummary = true;
-              flaw.summary = 'Description Text ...';
-            "
+            @click="hasSummary = true"
           >
             Add Description
           </button>
           <button
             v-if="!hasStatement"
             class="btn btn-secondary"
-            @click="
-              hasStatement = true;
-              flaw.statement = 'Statement Text ...';
-            "
+            @click="hasStatement = true"
           >
             Add Statement
           </button>
           <button
             v-if="!hasMitigation"
             class="btn btn-secondary"
-            @click="
-              hasMitigation = true;
-              flaw.mitigation = 'Mitigation Text ...';
-            "
+            @click="hasMitigation = true"
           >
             Add Mitigation
           </button>
