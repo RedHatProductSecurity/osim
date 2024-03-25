@@ -105,7 +105,6 @@ describe('App', async () => {
     });
     const statusBar = subject.find('.osim-status-bar');
     expect(statusBar?.exists()).toBeTruthy();
-    console.log(statusBar?.text());
     expect(statusBar?.text().includes('env: unittest')).toBeTruthy();
     expect(statusBar?.text().includes('tag: osimtag (dirty)')).toBeTruthy();
     expect(statusBar?.text().includes('ts : 1970-01-01')).toBeTruthy();
