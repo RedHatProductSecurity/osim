@@ -74,6 +74,16 @@
 * Logs are written to stdout/stderr, but we may log to a file in the future for
   more configurable and secure routing options.
 
+### Environment Variables
+
+```
+OSIM_ENV="dev"
+OSIM_BACKENDS_OSIDB="http://osidb-service:8000"
+OSIM_BACKENDS_OSIDB_AUTH="kerberos"
+OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
+OSIM_BACKENDS_JIRA="http://jira-service:8002"
+```
+
 ## Local Configuration
 
 * Create `public/runtime.json` with the following contents:
