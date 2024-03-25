@@ -8,18 +8,23 @@ from selenium.webdriver.common.by import By
 
 from features.utils import (
     wait_for_visibility_by_locator,
+    generate_cve,
+    generate_cwe,
     generate_random_text,
     go_to_first_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 
 
-# From: https://github.com/RedHatProductSecurity/osidb/blob/master/osidb/validators.py#L13
-CVE_RE_STR = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
-CWE_RE_STR = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
-
-CVE_RE_STR = r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})"
 MAX_RETRY = 10
+DOCUMENT_TEXT_FIELDS = {
+    # Exclude 'description' because it's mandatory in creation
+    'add': ['summary', 'statement', 'mitigation'],
+    # requires_summary can not be REQUESTED if summary is missing
+    'delete': ['statement', 'mitigation'],
+    # Exclude 'description' because of OSIDB-2308
+    'update': ['summary', 'statement', 'mitigation']
+}
 
 
 @when("I add a public comment to the flaw")
@@ -50,24 +55,32 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when('I update the document text of {field} to {value}')
-def step_impl(context, field, value):
+@when('I {action} the document text fields')
+def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    value = value.strip('"')
-    flaw_detail_page.set_document_text_field(field, value)
-    context.field_value = value
+    fields = DOCUMENT_TEXT_FIELDS.get(action)
+    text_dict = dict.fromkeys(fields, '')
+    if action != 'delete':
+        for field in fields:
+            text_dict[field] = generate_random_text()
+    for field in fields:
+        flaw_detail_page.set_document_text_field(field, text_dict[field])
+
+    context.texts = text_dict
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then('The document text of {field} is updated')
-def step_impl(context, field):
+@then('The document text fields are updated')
+def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    v = flaw_detail_page.get_document_text_field(field)
-    assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
+    fields = context.texts.keys()
+    for field in fields:
+        v = flaw_detail_page.get_document_text_field(field)
+        assert v == context.texts.get(field), f"{field} text should be {context.texts.get(field)}, got {v}"
     context.browser.quit()
 
 
@@ -179,7 +192,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     count = 0
     while count < MAX_RETRY:
-        value = rstr.xeger(CVE_RE_STR)
+        value = generate_cve()
         flaw_detail_page.set_input_field('cveid', value)
         flaw_detail_page.click_btn('saveBtn')
         try:
@@ -207,7 +220,7 @@ def step_impl(context, action):
         flaw_detail_page.clear_input_field('cweid')
         value = ''
     else:
-        value = rstr.xeger(CWE_RE_STR)
+        value = generate_cwe()
         flaw_detail_page.set_input_field('cweid', value)
     context.field_value = value
     flaw_detail_page.click_btn('saveBtn')
