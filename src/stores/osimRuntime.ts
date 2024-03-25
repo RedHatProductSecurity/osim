@@ -46,9 +46,7 @@ const runtime = ref<OsimRuntime>({
   osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
 });
-export const osimRuntime = computed<OsimRuntime>(() => {
-  return runtime.value;
-});
+export const osimRuntime = readonly(runtime.value);
 
 const OsidbHealthy = z.object({
   env: z.string(),
