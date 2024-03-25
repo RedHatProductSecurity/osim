@@ -57,6 +57,7 @@ class FlawDetailPage(PageFactory):
         "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
         "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
         "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
+        "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
         "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
