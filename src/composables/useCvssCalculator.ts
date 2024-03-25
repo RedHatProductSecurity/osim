@@ -1,36 +1,9 @@
-export const factorPatterns: { [key: string]: RegExp } = {
-  CVSS: /CVSS:(?<CVSS>[^/]+)/,
-  // base (required):
-  AV: /AV:(?<AV>[NALP])/,
-  AC: /AC:(?<AC>[LH])/,
-  PR: /PR:(?<PR>[NLH])/,
-  UI: /UI:(?<UI>[NR])/,
-  S: /S:(?<S>[UC])/,
-  C: /C:(?<C>[NLH])/,
-  I: /I:(?<I>[NLH])/,
-  A: /A:(?<A>[NLH])/,
-  // temporal (optional):
-  E: /E:(?<E>[XUPFH])/,
-  RL: /RL:(?<RL>[XOTWU])/,
-  RC: /RC:(?<RC>[XURC])/,
-  // environmental (optional):
-  CR: /CR:(?<CR>[XLMH])/,
-  IR: /IR:(?<IR>[XLMH])/,
-  AR: /AR:(?<AR>[XLMH])/,
-  MAV: /MAV:(?<MAV>[XNALP])/,
-  MAC: /MAC:(?<MAC>[XLH])/,
-  MPR: /MPR:(?<MPR>[XNLH])/,
-  MUI: /MUI:(?<MUI>[XNR])/,
-  MS: /MS:(?<MS>[XUC])/,
-  MC: /MC:(?<MC>[XNLH])/,
-  MI: /MI:(?<MI>[XNLH])/,
-  MA: /MA:(?<MA>[XNLH])/,
-};
-
-export const formatFactor = (key: string, value: string) => {
+// Format Factor for Vector
+export function formatFactor(key: string, value: string) {
   return key === 'CVSS' ? `${key}:${value}` : `/${key}:${value}`;
-};
+}
 
+// Get Factor Values from Vector
 export function getFactors(cvssVector: string){
   const factors: Record<string, string> = {};
   if (!cvssVector) {
@@ -49,6 +22,7 @@ export function getFactors(cvssVector: string){
   return factors;
 }
 
+// Calculates Base Score
 export function calculateBaseScore(factors: Record<string, string>) {
   const unchangedScope = factors['S'] === 'U';
 
@@ -83,6 +57,7 @@ export function calculateBaseScore(factors: Record<string, string>) {
   return baseScore;
 }
 
+// Factors Weights
 export const weights: { [factor: string]: { [value: string]: number } } = {
   AV: {
     N: 0.85,
@@ -125,6 +100,37 @@ export const weights: { [factor: string]: { [value: string]: number } } = {
   }
 };
 
+// Factor RegExp Patterns
+export const factorPatterns: { [key: string]: RegExp } = {
+  CVSS: /CVSS:(?<CVSS>[^/]+)/,
+  // base (required):
+  AV: /AV:(?<AV>[NALP])/,
+  AC: /AC:(?<AC>[LH])/,
+  PR: /PR:(?<PR>[NLH])/,
+  UI: /UI:(?<UI>[NR])/,
+  S: /S:(?<S>[UC])/,
+  C: /C:(?<C>[NLH])/,
+  I: /I:(?<I>[NLH])/,
+  A: /A:(?<A>[NLH])/,
+  // temporal (optional):
+  E: /E:(?<E>[XUPFH])/,
+  RL: /RL:(?<RL>[XOTWU])/,
+  RC: /RC:(?<RC>[XURC])/,
+  // environmental (optional):
+  CR: /CR:(?<CR>[XLMH])/,
+  IR: /IR:(?<IR>[XLMH])/,
+  AR: /AR:(?<AR>[XLMH])/,
+  MAV: /MAV:(?<MAV>[XNALP])/,
+  MAC: /MAC:(?<MAC>[XLH])/,
+  MPR: /MPR:(?<MPR>[XNLH])/,
+  MUI: /MUI:(?<MUI>[XNR])/,
+  MS: /MS:(?<MS>[XUC])/,
+  MC: /MC:(?<MC>[XNLH])/,
+  MI: /MI:(?<MI>[XNLH])/,
+  MA: /MA:(?<MA>[XNLH])/,
+};
+
+// Calculator Buttons Data
 export const calculatorButtons = {
   blocks: [
     {
