@@ -71,6 +71,60 @@ export function calculateTemporalScore(baseScore: number, factors: Record<string
   return temporalScore;
 }
 
+// Calculates Enviromental Score
+export function calculateEnviromentalScore(factors: Record<string, string>) {
+  const unchangedModifiedScope = factors['MS'] === 'U';
+
+  // MISS
+  const confidentialityRequeriment = weights['CR'][factors['CR']];
+  const integrityRequeriment = weights['IR'][factors['IR']];
+  const availabilityRequeriment = weights['AR'][factors['AR']];
+  const modifiedConfidentiality = weights['MC'][factors['MC']];
+  const modifiedIntegrity = weights['MI'][factors['MI']];
+  const modifiedAvailability = weights['MA'][factors['MA']];
+  
+  const miss = Math.min(
+    1 - (
+      (1 - (modifiedConfidentiality * confidentialityRequeriment)) 
+      * (1 - (modifiedIntegrity * integrityRequeriment)) 
+      * (1 - (modifiedAvailability * availabilityRequeriment))
+    ),
+    0.915
+  );
+
+  // Modified Impact
+  const modifiedImpact = unchangedModifiedScope ? 6.42 * miss 
+    : (7.52 * (miss - 0.029) - (3.25 * (((miss * 0.9731) - 0.02)**13)));
+
+  // Modified Exploitability
+  const modifiedAttackVector = weights['MAV'][factors['MAV']];
+  const modifiedAttackComplexity = weights['MAC'][factors['MAC']];
+  const modifiedPrivilegesRequired = unchangedModifiedScope ? weights['MPRU'][factors['MPR']] 
+    : weights['MPRC'][factors['MPR']];
+  const modifiedUserInteraction = weights['MUI'][factors['MUI']];
+
+  const modifiedExploitability = 8.22 * modifiedAttackVector * modifiedAttackComplexity 
+    * modifiedPrivilegesRequired * modifiedUserInteraction;
+
+  // Enviromental Score
+  let enviromentalScore = 0;
+
+  if(modifiedImpact > 0) {
+    enviromentalScore = unchangedModifiedScope ? Math.min((modifiedImpact + modifiedExploitability), 10)
+      : Math.min(1.08 * (modifiedImpact + modifiedExploitability), 10);
+
+    const exploitCodeMaturity = weights['E'][factors['E']];
+    const remediationLevel = weights['RL'][factors['RL']];
+    const reportConfidence = weights['RC'][factors['RC']];
+
+    enviromentalScore = enviromentalScore * exploitCodeMaturity * remediationLevel * reportConfidence;
+    // Round up with one decimal precision
+    enviromentalScore = Math.round(Math.ceil(10 * enviromentalScore)) / 10;
+  }
+
+  return enviromentalScore;
+}
+
 // Factors Weights
 export const weights: { [factor: string]: { [value: string]: number } } = {
   AV: {
@@ -113,25 +167,82 @@ export const weights: { [factor: string]: { [value: string]: number } } = {
     H: 0.56
   },
   E: {
+    X: 1.0,
     U: 0.91,
     P: 0.94,
     F: 0.97,
-    H: 1.0,
-    X: 1.0
+    H: 1.0
   },
   RL: {
+    X: 1.0,
     U: 1.0,
     W: 0.97,
     T: 0.96,
-    O: 0.95,
-    X: 1.0
+    O: 0.95
   },
   RC: {
+    X: 1.0,
     C: 1.0,
     R: 0.96,
-    U: 0.92,
-    X: 1.0
-  }
+    U: 0.92
+  },
+  CR: {
+    X: 1.0,
+    L: 0.5,
+    M: 1.0,
+    H: 1.5
+  },
+  IR: {
+    X: 1.0,
+    L: 0.5,
+    M: 1.0,
+    H: 1.5
+  },
+  AR: {
+    X: 1.0,
+    L: 0.5,
+    M: 1.0,
+    H: 1.5
+  },
+  MAV: {
+    N: 0.85,
+    A: 0.62,
+    L: 0.55,
+    P: 0.2
+  },
+  MAC: {
+    L: 0.77,
+    H: 0.44
+  },
+  MPRU: {
+    N: 0.85,
+    L: 0.62,
+    H: 0.27
+  },
+  MPRC: {
+    N: 0.85,
+    L: 0.68,
+    H: 0.5
+  },
+  MUI: {
+    N: 0.85,
+    R: 0.62
+  },
+  MC: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  },
+  MI: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  },
+  MA: {
+    N: 0.0,
+    L: 0.22,
+    H: 0.56
+  },
 };
 
 // Factor RegExp Patterns
