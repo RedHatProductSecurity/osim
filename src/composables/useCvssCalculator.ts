@@ -57,6 +57,20 @@ export function calculateBaseScore(factors: Record<string, string>) {
   return baseScore;
 }
 
+// Calculates Temporal Score
+export function calculateTemporalScore(baseScore: number, factors: Record<string, string>) {
+  const exploitCodeMaturity = weights['E'][factors['E']];
+  const remediationLevel = weights['RL'][factors['RL']];
+  const reportConfidence = weights['RC'][factors['RC']];
+  
+  let temporalScore = baseScore * exploitCodeMaturity * remediationLevel * reportConfidence;
+
+  // Round up with one decimal precision
+  temporalScore = Math.round(Math.ceil(10 * temporalScore)) / 10;
+
+  return temporalScore;
+}
+
 // Factors Weights
 export const weights: { [factor: string]: { [value: string]: number } } = {
   AV: {
@@ -97,6 +111,26 @@ export const weights: { [factor: string]: { [value: string]: number } } = {
     N: 0.0,
     L: 0.22,
     H: 0.56
+  },
+  E: {
+    U: 0.91,
+    P: 0.94,
+    F: 0.97,
+    H: 1.0,
+    X: 1.0
+  },
+  RL: {
+    U: 1.0,
+    W: 0.97,
+    T: 0.96,
+    O: 0.95,
+    X: 1.0
+  },
+  RC: {
+    C: 1.0,
+    R: 0.96,
+    U: 0.92,
+    X: 1.0
   }
 };
 
