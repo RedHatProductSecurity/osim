@@ -1,15 +1,27 @@
 <script setup lang="ts">
+import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
-import { osidbHealth, osimRuntime, osimRuntimeStatus, OsimRuntimeStatus } from '@/stores/osimRuntime';
+import {
+  setup,
+  osidbHealth,
+  osimRuntime,
+  osimRuntimeStatus,
+  OsimRuntimeStatus,
+} from '@/stores/osimRuntime';
 
-
-import { setup } from '@/stores/osimRuntime';
-import { ref, watchEffect } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
 import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
+
 setup();
+
+watch(osimRuntimeStatus, () => {
+  if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
+    updateRelativeOsimBuildDate();
+  }
+});
 
 const elFooter = ref<HTMLElement | null>(null);
 const { top: footerTop_, height: footerHeight_ } = useElementBounding(elFooter);
@@ -17,7 +29,20 @@ watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;
 });
-
+const relativeOsimBuildDate = ref('');
+const updateRelativeOsimBuildDate = () => {
+  relativeOsimBuildDate.value =
+    DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || '';
+};
+let buildDateIntervalId: number = -1;
+onMounted(() => {
+  const ms15Minutes = 15 * 60 * 60 * 1000;
+  buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
+  updateRelativeOsimBuildDate();
+});
+onBeforeUnmount(() => {
+  clearInterval(buildDateIntervalId);
+});
 </script>
 
 <template>
@@ -30,14 +55,31 @@ watchEffect(() => {
       <RouterView class="osim-page-view" />
     </div>
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
-      <div>OSIDB</div>
-      <div class="osim-status-osidb-env">[env: {{ osidbHealth.env }}]</div>
-      <div class="osim-status-osidb-ver">[ver: {{ osidbHealth.version }}]</div>
-      <div class="osim-status-osidb-rev">[rev: {{ osidbHealth.revision }}]</div>
-      <div
-        v-if="osimRuntime.error"
-        class="osim-status-osidb-err"
-      >[err: {{ osimRuntime.error }}]</div>
+      <!--TODO add active request count-->
+      <!--<div>[ Requests: {{ activeRequestCount }} ]</div>-->
+      <div>
+        [
+        OSIM
+        | env: {{ osimRuntime.env }}
+        | <span :title="osimRuntime.osimVersion.rev">
+          tag: {{ osimRuntime.osimVersion.tag }}
+          <span v-if="osimRuntime.osimVersion.dirty">(dirty)</span>
+        </span>
+        | ts : {{ osimRuntime.osimVersion.timestamp
+          .substring(0, osimRuntime.osimVersion.timestamp.indexOf('T')) }}
+        ({{ relativeOsimBuildDate }})
+        ]
+      </div>
+      <div>
+        [
+        OSIDB
+        | env: {{ osidbHealth.env }}
+        | <span :title="osidbHealth.revision.substring(0, 7)">ver: {{ osidbHealth.version }}</span>
+        ]
+      </div>
+      <div v-if="osimRuntime.error" class="osim-status-osidb-err">
+        [err: {{ osimRuntime.error }}]
+      </div>
     </footer>
   </template>
   <div v-else-if="osimRuntimeStatus === OsimRuntimeStatus.ERROR" class="osim-backend-error">
@@ -46,7 +88,6 @@ watchEffect(() => {
 </template>
 
 <style>
-
 :root {
   --osim-status-bar-height: 24px;
 }
@@ -106,5 +147,4 @@ watchEffect(() => {
   border-left: 1px solid #ddd;
   padding: 0 3px;
 }
-
 </style>
