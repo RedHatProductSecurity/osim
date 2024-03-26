@@ -57,6 +57,7 @@ const {
   deleteReference,
   saveAcknowledgments,
   deleteAcknowledgment,
+  errors,
 } = useFlawModel(props.flaw, emit);
 
 const initialFlaw = ref<ZodFlawType>();
@@ -78,19 +79,6 @@ const onSubmit = async () => {
     await createFlaw();
     isSaving.value = false;
   }
-};
-
-// TODO
-const errors = {
-  cve_id: null,
-  impact: null,
-  cwe_id: null,
-  major_incident_state: null,
-  reported_dt: null,
-  unembargo_dt: null,
-  type: null,
-  component: null,
-  source: null,
 };
 
 const flawCvss3CaculatorLink = computed(
