@@ -10,18 +10,14 @@ Feature: Flaw detail testing
       Then A comment is added to the flaw
 
     Scenario Outline: Update Document Text Fields
-      When I update the document text of <field> to "<value>"
-      Then The document text of <field> is updated
+      When I <action> the document text fields
+      Then The document text fields are updated
 
       Examples:
-        |         field |              value |
-        |       summary |       edit summary |
-        |     statement |     edit statement |
-        |     statement |                    |
-        |     statement |      add statement |
-        |    mitigation |    edit mitigation |
-        |    mitigation |                    |
-        |    mitigation |     add mitigation |
+        |         action |
+        |         update |
+        |         delete |
+        |            add |
 
     Scenario Outline: Update dropdown options
       When I update the dropdown <field> value
