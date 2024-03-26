@@ -1,7 +1,7 @@
 // No need to use Pinia; these values are set on app startup and never changed.
 // Named with camelCase instead of PascalCase to differentiate from Pinia stores.
 
-import { computed, ref } from 'vue';
+import { computed, readonly, ref } from 'vue';
 import { z } from 'zod';
 
 // export enum OsimRuntimeDev {
@@ -49,7 +49,7 @@ const runtime = ref<OsimRuntime>({
   error: '',
   readOnly: false,
 });
-export const osimRuntime = readonly(runtime.value);
+export const osimRuntime = readonly(runtime);
 
 const OsidbHealthy = z.object({
   env: z.string(),
