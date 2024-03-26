@@ -9,7 +9,7 @@ import { useAffectTracker } from '@/composables/useAffectTracker';
 import type { TrackersPost } from '@/services/TrackerService';
 
 const props = defineProps<{
-  error?: Record<string, any>;
+  error: Record<string, any>;
   isExpanded: boolean;
   componentName: string;
   affectedComponent: ZodAffectType;
