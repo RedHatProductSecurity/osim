@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import EditableList from '@/components/widgets/EditableList.vue';
+import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+
+defineProps<{
+  error: Record<string, any>;
+}>();
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 
@@ -36,9 +41,19 @@ function handleDelete(uuid: string, closeModal: () => void) {
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
           <div>
-            <input v-model="items[itemIndex].name" type="text" />
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
             from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
         </div>
       </template>
@@ -46,9 +61,19 @@ function handleDelete(uuid: string, closeModal: () => void) {
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
           <div>
-            <input v-model="items[itemIndex].name" type="text" />
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
             from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
         </div>
       </template>

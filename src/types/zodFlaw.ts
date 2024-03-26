@@ -52,11 +52,41 @@ export const FlawReferenceSchema = z.object({
   url: z.string().default(''),
   embargoed: z.boolean().default(false),
   updated_dt: zodOsimDateTime().nullish().default(null),
+}).superRefine((reference, zodContext)=>{
+  if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//) ) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Red Hat Security Bulletin URLs must be from https://access.redhat.com/',
+      path: ['url'],
+    });
+  }
+
+  if (!reference.url.match(/^https:\/\//) ) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference URL must begin with https://',
+      path: ['url'],
+    });
+  }
+  
+  if (!reference.url) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference URL cannot be empty',
+      path: ['url'],
+    });
+  }
+
+  if (!reference.description) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference description cannot be empty',
+      path: ['url'],
+    });
+  }
 });
 
-export const flawReferenceTypeValues = Object.values(
-  FlawReferenceSchema.shape.type._def.innerType.enum,
-);
+export const flawReferenceTypeValues = Object.values(FlawReferenceType);
 
 export type ZodFlawCVSSType = z.infer<typeof FlawCVSSSchema>;
 export const FlawCVSSSchema = z.object({
