@@ -104,7 +104,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited === itemIndex"
                 type="button"
-                class="btn"
+                class="btn pe-1"
                 @click="commitEdit(itemIndex)"
               >
                 <i class="bi bi-check">
@@ -114,7 +114,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited === itemIndex"
                 type="button"
-                class="btn"
+                class="btn ps-1"
                 @click="cancelEdit(itemIndex)"
               >
                 <i class="bi bi-x">
