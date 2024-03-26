@@ -72,12 +72,20 @@
 ## Local Configuration
 
 * Create `public/runtime.json` with the following contents:
-  ```json
-    {
-      "backends": {
-        "osidb": "http://localhost:8000",
-        "bugzilla": "http://localhost:8001"
-      },
-      "osimVersion": "0"
-    }
-  ```
+```json
+{
+  "backends": {
+    "osidb": "https://localhost:8000",
+    "bugzilla": "https://localhost:8001",
+    "jira": "https://localhost:8002",
+    "osidbAuth": "kerberos",
+  },
+  "osimVersion":{
+    "rev": "rev",
+    "tag": "tag",
+    "timestamp": "2020-06-19T14:00:00Z",
+    "dirty": false
+  },
+  "readOnly": true
+}
+```
