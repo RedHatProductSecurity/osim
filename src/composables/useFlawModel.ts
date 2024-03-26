@@ -40,7 +40,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   async function createFlaw() {
     isSaving.value = true;
-    await postFlaw(flaw.value)
+    postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
@@ -48,12 +48,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
           params: { id: response?.cve_id || response?.uuid },
         });
       })
-      .catch(createCatchHandler('Error creating Flaw'));
-    isSaving.value = false;
+      .catch(createCatchHandler('Error creating Flaw'))
+      .finally(() => { isSaving.value = false; });
   }
 
   async function updateFlaw() {
-    isSaving.value = true;  
+    isSaving.value = true;
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!newFlaw.success) {
       addToast({
@@ -61,6 +61,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
         body: newFlaw.error.toString(),
         css: 'warning',
       });
+      isSaving.value = false;
       console.error(newFlaw.error);
       return; // Abort if schema validation fails
     }

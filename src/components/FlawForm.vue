@@ -78,14 +78,10 @@ onMounted(() => {
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
-    isSaving.value = true;
-    await updateFlaw();
-    isSaving.value = false;
+    updateFlaw();
   }
   if (props.mode === 'create') {
-    isSaving.value = true;
-    await createFlaw();
-    isSaving.value = false;
+    createFlaw();
   }
 };
 
