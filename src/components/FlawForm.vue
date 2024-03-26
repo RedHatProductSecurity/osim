@@ -307,7 +307,7 @@ const cvssString = computed(() => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsable label="Trackers" :length="trackerUuids.length">
+        <LabelCollapsable :label="`Trackers: ${trackerUuids.length}`" :isExpandable="trackerUuids.length !== 0">
           <ul>
             <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
               <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">

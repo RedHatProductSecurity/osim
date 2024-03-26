@@ -10,7 +10,6 @@ const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
   entityName: string;
   entitiesName?: string;
-  hasLabel?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -57,7 +56,7 @@ function commitEdit(index: number) {
 
 <template>
   <div>
-    <LabelCollapsable :label="entityNamePlural" :length="items.length">
+    <LabelCollapsable :label="`${entityNamePlural}: ${items.length}`" :isExpandable="items.length > 0">
       <div
         v-for="(item, itemIndex) in items"
         :key="itemIndex"
