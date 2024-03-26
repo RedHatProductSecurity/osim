@@ -45,6 +45,16 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
 
   async function createFlaw() {
     postFlaw(flaw.value)
+      .then((response) => {
+        if(response.uuid) {
+          if(flaw.value.acknowledgments.length > 0) {
+            useFlawAttributionsModel(flaw, emit).saveAcknowledgments(flaw.value.acknowledgments);
+          }
+          if(flaw.value.references.length > 0) {
+            useFlawAttributionsModel(flaw, emit).saveReferences(flaw.value.references);
+          }
+        }
+      })
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
