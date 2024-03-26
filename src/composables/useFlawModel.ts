@@ -141,6 +141,7 @@ export function blankFlaw(): ZodFlawType {
       workflow: '',
     },
     component: '',
+    unembargo_dt: '',
     uuid: '',
     cve_id: '',
     cvss3: '',
