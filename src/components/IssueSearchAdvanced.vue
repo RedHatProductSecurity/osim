@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
+import { fieldsFor, ZodFlawSchema, flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
-import { useToastStore } from '@/stores/ToastStore';
 
-useToastStore();
 
 type Facet = {
   field: string;
@@ -95,13 +93,6 @@ watch(facets.value, (changingFacets) => {
 const unchosenFields = (chosenField: string) =>
   flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
 
-const { type: zodFlawType, source: zodFlawSource, impact: zodFlawImpacts } = ZodFlawSchema.shape;
-
-const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
-
-const flawTypes = extractEnum(zodFlawType);
-const flawSources = extractEnum(zodFlawSource);
-const flawImpacts = extractEnum(zodFlawImpacts);
 
 const optionsFor = (field: string) =>
   ({
