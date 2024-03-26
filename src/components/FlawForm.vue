@@ -294,14 +294,14 @@ const cvssString = computed(() => {
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
-            class="w-100"
+            class="w-100 my-3"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
-            class="w-100"
+            class="w-100 my-3"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
             @acknowledgment:delete="deleteAcknowledgment"

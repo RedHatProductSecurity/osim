@@ -56,7 +56,7 @@ function commitEdit(index: number) {
 </script>
 
 <template>
-  <div class="my-3">
+  <div>
     <LabelCollapsable :label="entityNamePlural" :length="items.length">
       <div
         v-for="(item, itemIndex) in items"
