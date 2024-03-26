@@ -14,7 +14,7 @@ defineProps<{
         {{ label }}
       </span>
       <div :class="{ 'alert alert-warning': !modelValue }">
-        <span class="form-control" style="border-top-left-radius: 0">{{ modelValue }}</span>
+        <span class="form-control">{{ modelValue }}</span>
       </div>
     </div>
     <div v-else class="row">
@@ -39,5 +39,9 @@ defineProps<{
   border-top-left-radius: .5rem;
   border-top-right-radius: .5rem;
   padding: .375rem 1rem .25rem;
+}
+
+.osim-static-label-top-style .form-control {
+  border-top-left-radius: 0;
 }
 </style>
