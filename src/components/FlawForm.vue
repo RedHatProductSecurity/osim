@@ -93,9 +93,9 @@ const errors = {
   source: null,
 };
 
-const hasSummary = ref(!!flaw.value.summary && flaw.value.summary.trim() != '');
-const hasStatement = ref(!!flaw.value.statement && flaw.value.statement.trim() != '');
-const hasMitigation = ref(!!flaw.value.mitigation && flaw.value.mitigation.trim() != '');
+const hasSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const hasStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
+const hasMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const flawCvss3CaculatorLink = computed(
   () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
