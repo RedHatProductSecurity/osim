@@ -9,7 +9,7 @@ import { useAffectTracker } from '@/composables/useAffectTracker';
 import type { TrackersPost } from '@/services/TrackerService';
 
 const props = defineProps<{
-  error?: string;
+  error: Record<string, any>;
   isExpanded: boolean;
   componentName: string;
   affectedComponent: ZodAffectType;
@@ -107,7 +107,7 @@ function componentLabel(affectedComponent: ZodAffectType) {
         </button>
       </div>
     </template>
-    <AffectedOfferingForm v-model="modelValue" />
+    <AffectedOfferingForm v-model="modelValue" :error="error" />
   </LabelCollapsable>
 </template>
 

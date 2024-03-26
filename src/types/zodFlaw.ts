@@ -15,6 +15,7 @@ import {
   FlawReferenceType,
 } from '../generated-client';
 import { DateTime } from 'luxon';
+import { cveRegex } from '@/utils/helpers';
 
 const FlawTypeWithBlank = { '': '', ...FlawType } as const;
 const ImpactEnumWithBlank = { '': '', ...ImpactEnum } as const;
@@ -29,8 +30,7 @@ const zodOsimDateTime = () =>
   z
     .date()
     .transform((val) => DateTime.fromJSDate(val).toUTC().toISO())
-    .or(z.string().datetime())
-    .nullish();
+    .or(z.string().datetime());
 
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
@@ -40,8 +40,8 @@ export const FlawAcknowledgmentSchema = z.object({
   flaw: z.string().default(''),
   uuid: z.string().default(''),
   embargoed: z.boolean().default(false),
-  created_dt: zodOsimDateTime(),
-  updated_dt: zodOsimDateTime(),
+  created_dt: zodOsimDateTime().nullish(),
+  updated_dt: zodOsimDateTime().nullish(),
 });
 
 export type ZodFlawReferenceType = z.infer<typeof FlawReferenceSchema>;
@@ -51,12 +51,42 @@ export const FlawReferenceSchema = z.object({
   type: z.nativeEnum(FlawReferenceType).default('ARTICLE'),
   url: z.string().default(''),
   embargoed: z.boolean().default(false),
-  updated_dt: zodOsimDateTime().default(null),
+  updated_dt: zodOsimDateTime().nullish().default(null),
+}).superRefine((reference, zodContext)=>{
+  if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//) ) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Red Hat Security Bulletin URLs must be from https://access.redhat.com/',
+      path: ['url'],
+    });
+  }
+
+  if (!reference.url.match(/^https:\/\//) ) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference URL must begin with https://',
+      path: ['url'],
+    });
+  }
+  
+  if (!reference.url) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference URL cannot be empty',
+      path: ['url'],
+    });
+  }
+
+  if (!reference.description) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Reference description cannot be empty',
+      path: ['description'],
+    });
+  }
 });
 
-export const flawReferenceTypeValues = Object.values(
-  FlawReferenceSchema.shape.type._def.innerType.enum,
-);
+export const flawReferenceTypeValues = Object.values(FlawReferenceType);
 
 export type ZodFlawCVSSType = z.infer<typeof FlawCVSSSchema>;
 export const FlawCVSSSchema = z.object({
@@ -68,8 +98,8 @@ export const FlawCVSSSchema = z.object({
   uuid: z.string().uuid().nullable(), // read-only
   vector: z.string().nullable(),
   embargoed: z.boolean().nullable(),
-  created_dt: zodOsimDateTime(), // $date-time, // read-only
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 export const AffectCVSSSchema = z.object({
@@ -81,16 +111,16 @@ export const AffectCVSSSchema = z.object({
   uuid: z.string().uuid().nullable(), // read-only
   vector: z.string().nullable(),
   embargoed: z.boolean().nullable(),
-  created_dt: zodOsimDateTime(), // $date-time, // read-only
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 export const ErratumSchema = z.object({
   et_id: z.number(),
   advisory_name: z.string(),
   shipped_dt: z.string().nullable(),
-  created_dt: zodOsimDateTime(), // $date-time,
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time,
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 export const TrackerSchema = z.object({
@@ -116,8 +146,8 @@ export const TrackerSchema = z.object({
   uuid: z.string().uuid().nullable(),
   embargoed: z.boolean().readonly(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
-  created_dt: zodOsimDateTime(), // $date-time,
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time,
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 export const ZodFlawClassification = z.object({
@@ -153,8 +183,8 @@ export const ZodFlawCommentSchema = z.object({
       .or(z.array(z.string()))
       .nullish(),
   }).nullish(),
-  created_dt: zodOsimDateTime(),
-  updated_dt: zodOsimDateTime(),
+  created_dt: zodOsimDateTime().nullish(),
+  updated_dt: zodOsimDateTime().nullish(),
 });
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
@@ -186,8 +216,8 @@ export const ZodAffectSchema = z.object({
   cvss_scores: z.array(AffectCVSSSchema),
   classification: ZodFlawClassification.nullish(),
   embargoed: z.boolean(), // read-only
-  created_dt: zodOsimDateTime(), // $date-time,
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time,
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 export const ZodFlawMetaSchema = z.object({
@@ -195,32 +225,43 @@ export const ZodFlawMetaSchema = z.object({
   type: z.nativeEnum(FlawMetaType).nullish(),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
   embargoed: z.boolean(), // read-only
-  created_dt: zodOsimDateTime(), // $date-time,
-  updated_dt: zodOsimDateTime(), // $date-time,
+  created_dt: zodOsimDateTime().nullish(), // $date-time,
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
 // const flawTypes: string[] = Object.values(FlawType);
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
+export type ZodFlawPartialType = z.infer<typeof ZodFlawSchemaPartial>;
 export const ZodFlawSchema = z.object({
   // type: z.nativeEnum(FlawType).optional(),
   type: z.nativeEnum(FlawTypeWithBlank).nullish(),
   uuid: z.string().default(''),
-  cve_id: z.string().nullish(),
-  impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
-  component: z.string().max(100).nullish(),
-  title: z.string().min(1),
+  cve_id: z.string().refine(
+    (cve) => cveRegex.test(cve),
+    { message: 'You must enter a valid CVE ID before saving the Flaw.' }
+  ),
+  impact: z.nativeEnum(ImpactEnumWithBlank)
+    .refine(
+      Boolean,
+      { message: 'You must select an impact before saving the Flaw.' }
+    ),
+  component: z.string().max(100).min(1),
+  title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
-  description: z.string(),
+  description: z.string().min(10),
   summary: z.string().nullish(),
   requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime(), // $date-time,
-  source: z.nativeEnum(Source8d8EnumWithBlank).nullish(),
-  reported_dt: zodOsimDateTime(), // $date-time,
+  source: z.nativeEnum(Source8d8EnumWithBlank).refine(
+    Boolean,
+    { message: 'You must specify a source for this Flaw before saving.' }
+  ),
+  reported_dt: zodOsimDateTime().nullish(), // $date-time,
   mitigation: z.string().nullish(),
   cvss2: z.string().max(100).nullish(), // XXX deprecated
   cvss2_score: z.number().nullish(), // $float // XXX deprecated
@@ -237,8 +278,10 @@ export const ZodFlawSchema = z.object({
   references: z.array(FlawReferenceSchema),
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
-  updated_dt: zodOsimDateTime(), // $date-time,
+  updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
+const ZodFlawSchemaPartial = ZodFlawSchema.partial();
+
 
 type RegisteredSchemaType =
   | typeof FlawCVSSSchema
@@ -254,16 +297,14 @@ export const fieldsFor = (schema: RegisteredSchemaType) => Object.keys(schema.sh
 
 const {
   type: zodFlawType,
-  source: zodFlawSource,
-  impact: zodFlawImpacts,
   major_incident_state: zodFlawMajorIncidentState,
 } = ZodFlawSchema.shape;
 
 const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
 export const flawTypes = extractEnum(zodFlawType);
-export const flawSources = extractEnum(zodFlawSource);
-export const flawImpacts = extractEnum(zodFlawImpacts);
+export const flawSources = Object.values(Source8d8EnumWithBlank); // TODO: handle blank in the component
+export const flawImpacts = Object.values(ImpactEnumWithBlank); // TODO: handle blank in the component
 export const flawIncidentStates = extractEnum(zodFlawMajorIncidentState);
 
 const {
