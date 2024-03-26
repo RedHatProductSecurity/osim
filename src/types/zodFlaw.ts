@@ -231,6 +231,7 @@ export const ZodFlawMetaSchema = z.object({
 
 // const flawTypes: string[] = Object.values(FlawType);
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
+export type ZodFlawPartialType = z.infer<typeof ZodFlawSchemaPartial>;
 export const ZodFlawSchema = z.object({
   // type: z.nativeEnum(FlawType).optional(),
   type: z.nativeEnum(FlawTypeWithBlank).nullish(),
@@ -239,7 +240,7 @@ export const ZodFlawSchema = z.object({
     (cve) => cveRegex.test(cve),
     { message: 'You must enter a valid CVE ID before saving the Flaw.' }
   ),
-  impact: z.nativeEnum(ImpactEnum)
+  impact: z.nativeEnum(ImpactEnumWithBlank)
     .refine(
       Boolean,
       { message: 'You must select an impact before saving the Flaw.' }
@@ -256,7 +257,7 @@ export const ZodFlawSchema = z.object({
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime(), // $date-time,
-  source: z.nativeEnum(Source8d8Enum).refine(
+  source: z.nativeEnum(Source8d8EnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' }
   ),
@@ -279,6 +280,8 @@ export const ZodFlawSchema = z.object({
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
+const ZodFlawSchemaPartial = ZodFlawSchema.partial();
+
 
 type RegisteredSchemaType =
   | typeof FlawCVSSSchema
