@@ -240,25 +240,25 @@ const cvssString = computed(() => {
             <LabelTextarea
               v-if="flaw.summary"
               v-model="flaw.summary"
-              error="errors.summary"
+              :error="errors.summary"
               label="Summary"
             />
             <LabelTextarea
               v-if="flaw.description"
               v-model="flaw.description"
-              error="errors.description"
+              :error="errors.description"
               label="Description"
             />
             <LabelTextarea
               v-if="flaw.statement"
               v-model="flaw.statement"
-              error="errors.statement"
+              :error="errors.statement"
               label="Statement"
             />
             <LabelTextarea
               v-if="flaw.mitigation"
               v-model="flaw.mitigation"
-              error="errors.mitigation"
+              :error="errors.mitigation"
               label="Mitigation"
             />
             <div v-if="!flaw.summary" class="mb-3">
