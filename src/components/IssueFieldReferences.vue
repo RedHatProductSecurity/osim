@@ -43,7 +43,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
     >
       <template #default="{ item: { url, type, updated_dt, ...item } }">
         <a :href="url" target="_blank">
-          <span class="mx-3">{{ updated_dt }}</span>
+          <span class="me-2">{{ updated_dt }}</span>
           <span
             class="badge rounded-pill"
             :class="{

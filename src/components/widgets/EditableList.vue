@@ -85,7 +85,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited !== itemIndex"
                 type="button"
-                class="btn"
+                class="btn pe-1"
                 @click="setEdit(itemIndex)"
               >
                 <i class="bi bi-pencil">
@@ -95,7 +95,7 @@ function commitEdit(index: number) {
               <button
                 v-if="indexBeingEdited !== itemIndex"
                 type="button"
-                class="btn"
+                class="btn ps-1"
                 @click="useModalForItem(item.uuid).openModal"
               >
                 <i class="bi bi-trash">
