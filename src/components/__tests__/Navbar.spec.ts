@@ -45,6 +45,39 @@ describe('Navbar', async () => {
     vi.clearAllMocks();
   });
 
+  it('hides widget test option when not dev environment', () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    vi.mock('@/stores/osimRuntime', async () => {
+      const osimRuntimeValue = { env: 'unittest' };
+      return {
+        osimRuntime: {
+          value: osimRuntimeValue, // as accessed by <script setup>
+          ...osimRuntimeValue, // as accessed by <template>
+        }
+      };
+    });
+    subject = mount(Navbar, {
+      global: {
+        plugins: [
+          pinia,
+          router,
+        ]
+      }
+    });
+    const listItems = subject.findAll('.dropdown-item');
+    let widgetTestOptionExists = false;
+    for (const item of listItems) {
+      if (item.text() === 'Widget Test') {
+        widgetTestOptionExists = true;
+        break;
+      }
+    }
+    expect(widgetTestOptionExists).toBe(false);
+  });
+
   it('renders show notification icon with empty notification count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
