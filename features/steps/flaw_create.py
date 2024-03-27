@@ -1,16 +1,18 @@
 from datetime import datetime
+
 from behave import *
 
+from features.pages.advanced_search_page import AdvancedSearchPage
+from features.pages.flaw_detail_page import FlawDetailPage
 from features.utils import (
     generate_cve,
     generate_random_text,
     go_to_advanced_search_page
 )
-from features.pages.flaw_detail_page import FlawDetailPage
-from features.pages.advanced_search_page import AdvancedSearchPage
 
 
 MAX_RETRY = 10
+
 
 def create_flaw_with_valid_data(context, type):
     flaw_page = FlawDetailPage(context.browser)
@@ -41,6 +43,7 @@ def create_flaw_with_valid_data(context, type):
         else:
             break
 
+
 def check_created_flaw_exist(context, type):
     go_to_advanced_search_page(context.browser)
     advanced_search_page = AdvancedSearchPage(context.browser)
@@ -61,14 +64,17 @@ def step_impl(context):
 def step_impl(context):
     create_flaw_with_valid_data(context, "unembargoed")
 
+
 @then('A new flaw is created')
 def step_impl(context):
     check_created_flaw_exist(context, "unembargoed")
     context.browser.quit()
 
+
 @when('I create new embargoed flaw with valid data')
 def step_impl(context):
     create_flaw_with_valid_data(context, "embargoed")
+
 
 @then('The flaw is created and marked as an embargoed flaw')
 def step_impl(context):
