@@ -54,8 +54,7 @@ describe('Navbar', async () => {
       const osimRuntimeValue = { env: 'unittest' };
       return {
         osimRuntime: {
-          value: osimRuntimeValue, // as accessed by <script setup>
-          ...osimRuntimeValue, // as accessed by <template>
+          ...osimRuntimeValue,
         }
       };
     });
