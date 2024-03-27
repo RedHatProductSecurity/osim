@@ -233,6 +233,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value('cweid')
     assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
+    context.browser.quit()
 
 
 @when('I update the Reported Date with a valid data')
@@ -268,7 +269,7 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page.click_btn("toastMsgCloseBtn")
 
 
-@when("I add two external reference to the flaw")
+@when("I add two external references to the flaw")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn("referenceDropdownBtn")
@@ -281,7 +282,7 @@ def step_impl(context):
     add_a_reference_to_first_flaw(context, context.second_value, "referenceCreatedMsg")
 
 
-@then("Two external reference added")
+@then("Two external references added")
 def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
@@ -291,7 +292,7 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when("I add two RHSB reference to the flaw")
+@when("I add two RHSB references to the flaw")
 def step_impl(context):
     context.first_value = f"https://access.redhat.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg", external=False)

@@ -15,20 +15,19 @@ class HomePage(PageFactory):
         "userBtn": ('CSS', "button[class='btn btn-secondary dropdown-toggle osim-user-profile']"),
         "flawList": ("CSS", "div[class='osim-incident-list']"),
         "flawRow": ("CLASS_NAME", "osim-issue-queue-item"),
-        "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
         "flawCheckAllCheckBox": ("XPATH", "//div[@class='osim-incident-list']/table/thead/tr/th/input[@type='checkbox']"),
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
         "firstFlaw": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]'),
+        "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
         "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
-        "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
-        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
         "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
-        "quickSearchBoxText": ("XPATH", "//form[@role='search']/div/input")
+        "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
+        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button")
     }
 
     def click_flaw_index_btn(self):

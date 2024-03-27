@@ -3,13 +3,30 @@ from behave import *
 from features.pages.home_page import HomePage
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
-FIELD_FLAW_LIST = ["uuid", "cve_id", "impact", "source", "title", "workflow_state", "owner"]
-FIELD_IN_DATABASE = ["type", "affects__ps_component", "affects__ps_module",
-                    "affects__trackers__ps_update_stream",
-                    "affects__trackers__external_system_id",
-                    "affects__trackers__errata__advisory_name",
-                    "component", "cwe_id", "cvss_scores__vector",
-                    "cvss_scores__score", "team_id", "acknowledgments__name"]
+
+
+FIELD_FLAW_LIST = [
+    "uuid",
+    "cve_id",
+    "impact",
+    "source",
+    "title",
+    "workflow_state",
+    "owner"
+]
+FIELD_IN_DATABASE = [
+    "type",
+    "affects__ps_component",
+    "affects__ps_module",
+    "affects__trackers__ps_update_stream",
+    "affects__trackers__external_system_id",
+    "affects__trackers__errata__advisory_name",
+    "component", "cwe_id",
+    "cvss_scores__vector",
+    "cvss_scores__score",
+    "team_id",
+    "acknowledgments__name"
+]
 
 
 @when('I am searching for all flaws')
@@ -29,8 +46,8 @@ def step_impl(context):
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     for row in context.table:
-        field=row["field"]
-        value=row["value"]
+        field = row["field"]
+        value = row["value"]
         advanced_search_page.clear_search_select()
         advanced_search_page.select_field_and_value_to_search(field, value)
         advanced_search_page.click_search_btn()
@@ -69,12 +86,14 @@ def step_impl(context):
         # the future.
     context.browser.quit()
 
+
 @when('I am searching flaws with two fields and two values')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.select_field_and_value_to_search("source", "CUSTOMER")
     advanced_search_page.select_second_field_and_value_to_search("impact", "LOW")
     advanced_search_page.click_search_btn()
+
 
 @then('I am able to view flaws matching the search with two selected fileds')
 def step_impl(context):

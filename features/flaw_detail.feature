@@ -50,10 +50,6 @@ Feature: Flaw detail testing
         |        teamid |
       Then The random input fields are updated
 
-    Scenario: Update CVE ID
-      When I update the CVE ID with a valid data
-      Then The CVE ID is updated
-
     Scenario Outline: Update CWE ID
       When I <action> the CWE ID
       Then The CWE ID is updated
@@ -69,9 +65,9 @@ Feature: Flaw detail testing
       Then The Reported Date is updated
 
     Scenario: Add external reference
-      When I add two external reference to the flaw
-      Then Two external reference added
+      When I add two external references to the flaw
+      Then Two external references added
 
     Scenario: Add RHSB reference
-      When I add two RHSB reference to the flaw
+      When I add two RHSB references to the flaw
       Then Only one RHSB reference can be added

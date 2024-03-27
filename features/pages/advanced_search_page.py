@@ -1,4 +1,6 @@
-import json, requests, urllib.parse
+import json
+import requests
+import urllib.parse
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.common.by import By
 from features.constants import OSIDB_URL
