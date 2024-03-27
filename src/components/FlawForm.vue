@@ -109,7 +109,7 @@ const validateFlawEmbargoDates = computed(
     if (flaw.value.embargoed) {
       // if embargoed and dt is not set, it returns null
       // This behaviour is acceptable because if flaw is embargoed, we don't know yet when we are going to unembargo it
-      if (unembargo_dt == null) {
+      if (unembargo_dt == null) {
         return null;
       }
       // if embargoed and updated date is older than now,
@@ -121,7 +121,7 @@ const validateFlawEmbargoDates = computed(
       // if embargoed and dt is not set, shows up the error
       // This behaviour is not acceptable because if a flaw is unboargoed,
       // it means the flaw is public already which requires the date when this was made public.
-      if (unembargo_dt == null) {
+      if (unembargo_dt == null) {
         return errors.set_unembargo_dt;
       }
       // if NOT embargoed and updated date is in the future,
