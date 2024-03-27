@@ -26,7 +26,7 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
     flaw.value.cvss_scores.find((score) => score.issuer === 'NIST'),
   );
   const flawNvdCvssScore = computed(
-    () => nistCvssScore.value?.score || flaw.value.nvd_cvss3 || '-',
+    () => nistCvssScore.value?.score || flaw.value.nvd_cvss3 || '',
   );
 
   async function saveCvssScores() {
