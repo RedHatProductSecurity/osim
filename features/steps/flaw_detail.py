@@ -308,3 +308,34 @@ def step_impl(context):
     flaw_detail_page.check_value_exist(context.first_value)
     flaw_detail_page.check_value_not_exist(context.second_value)
     context.browser.quit()
+
+
+@when("I update the flaw and click 'Reset Changes' button")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    go_to_first_flaw_detail_page(context.browser)
+    context.title = flaw_page.get_input_value('title')
+    flaw_page.set_input_field('title', generate_random_text())
+    _, context.impact = flaw_page.get_select_value('impact')
+    flaw_page.set_select_value('impact')
+    _, context.source = flaw_page.get_select_value('source')
+    flaw_page.set_select_value('source')
+    context.reported_date = flaw_page.get_input_value('reportedDate')
+    flaw_page.set_input_field(
+        'reportedDate', datetime.today().strftime("%Y%m%d"))
+    flaw_page.click_btn('documentTextFieldsDropDownBtn')
+    context.description = flaw_page.get_document_text_field('description')
+    flaw_page.set_document_text_field(
+        'description', generate_random_text())
+    flaw_page.click_btn('resetBtn')
+
+
+@then("All changes are reset")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    assert context.title == flaw_page.get_input_value('title')
+    assert context.impact == flaw_page.get_select_value('impact')[1]
+    assert context.source == flaw_page.get_select_value('source')[1]
+    assert context.reported_date == flaw_page.get_input_value('reportedDate')
+    assert context.description == flaw_page.get_document_text_field('description')
+    context.browser.quit()
