@@ -9,8 +9,7 @@ import { z } from 'zod';
 //   DEV,
 //   MOCK,
 // }
-
-// export const osimRuntimeDev: OsimRuntimeDev = OsimRuntimeDev.DEV;
+// export const osimRuntimeDev = OsimRuntimeDev.DEV;
 
 export enum OsimRuntimeStatus {
   INIT,
