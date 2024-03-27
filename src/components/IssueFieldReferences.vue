@@ -22,6 +22,7 @@ const referenceTypeLabel = (label: string) =>
 const emit = defineEmits<{
   'reference:update': [value: any[]];
   'reference:new': [];
+  'reference:cancel-new': [value: ZodFlawReferenceType];
   'reference:delete': [value: string];
 }>();
 
@@ -80,6 +81,12 @@ function handleDelete(uuid: string, closeModal: () => void) {
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
           <div>
+            <div
+              class="text-end osim-cancel-new-reference"
+              @click="emit('reference:cancel-new', items[itemIndex])"
+            >
+              <i class="bi bi-x" />
+            </div>
             <LabelInput v-model="items[itemIndex].url" label="Link URL" />
             <LabelTextarea v-model="items[itemIndex].description" label="Description" />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
@@ -127,5 +134,10 @@ function handleDelete(uuid: string, closeModal: () => void) {
 <style lang="scss" scoped>
 select.osim-reference-types {
   max-width: 28rem;
+}
+
+.osim-cancel-new-reference {
+  cursor: pointer;
+  font-size: 1.5rem;
 }
 </style>

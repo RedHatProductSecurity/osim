@@ -13,16 +13,11 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
-export type FlawEmitter = {
-  (e: 'refresh:flaw'): void;
-  (e: 'add-blank-affect'): void;
-  (e: 'comment:add-public', value: string): void;
-}
-
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitter) {
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
+  const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
@@ -44,18 +39,21 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
   async function createFlaw() {
+    isSaving.value = true;
     postFlaw(flaw.value)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
-          name: 'flaw-detail',
-          params: { id: response?.uuid },
+          name: 'flaw-details',
+          params: { id: response?.cve_id || response?.uuid },
         });
       })
-      .catch(createCatchHandler('Error creating Flaw'));
+      .catch(createCatchHandler('Error creating Flaw'))
+      .finally(() => { isSaving.value = false; });
   }
 
   async function updateFlaw() {
+    isSaving.value = true;
     const newFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!newFlaw.success) {
       addToast({
@@ -63,6 +61,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
         body: newFlaw.error.toString(),
         css: 'warning',
       });
+      isSaving.value = false;
       console.error(newFlaw.error);
       return; // Abort if schema validation fails
     }
@@ -83,18 +82,20 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
       await saveCvssScores();
     }
 
-    emit('refresh:flaw');
+    onSaveSuccess();
+    isSaving.value = false;
   }
 
   function addPublicComment(comment: string) {
     postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(() => emit('refresh:flaw'))
+      .then(onSaveSuccess)
       .catch(createCatchHandler('Error saving comment'));
   }
 
   return {
     flaw,
+    isSaving,
     committedFlaw,
     trackerUuids,
     flawTypes,
@@ -106,10 +107,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), emit: FlawEmitt
     addPublicComment,
     createFlaw,
     updateFlaw,
-    emit,
+    onSaveSuccess,
     ...useCvssScoresModel(flaw),
     ...useFlawAffectsModel(flaw),
-    ...useFlawAttributionsModel(flaw, emit),
+    ...useFlawAttributionsModel(flaw, onSaveSuccess),
   };
 }
 

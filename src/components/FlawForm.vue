@@ -19,7 +19,7 @@ import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 
-import { useFlawModel, type FlawEmitter } from '@/composables/useFlawModel';
+import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -28,7 +28,15 @@ const props = defineProps<{
   mode: 'create' | 'edit';
 }>();
 
-const emit = defineEmits<FlawEmitter>();
+const emit = defineEmits<{
+  (e: 'refresh:flaw'): void;
+  (e: 'add-blank-affect'): void;
+  (e: 'comment:add-public', value: string): void;
+}>();
+
+function onSaveSuccess() {
+  emit('refresh:flaw');
+}
 
 const {
   flaw,
@@ -55,13 +63,14 @@ const {
   addPublicComment,
   saveReferences,
   deleteReference,
+  cancelAddReference,
+  cancelAddAcknowledgment,
   saveAcknowledgments,
   deleteAcknowledgment,
-} = useFlawModel(props.flaw, emit);
+  isSaving,
+} = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
-
-const isSaving = ref(false);
 
 onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
@@ -69,14 +78,10 @@ onMounted(() => {
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
-    isSaving.value = true;
-    await updateFlaw();
-    isSaving.value = false;
+    updateFlaw();
   }
   if (props.mode === 'create') {
-    isSaving.value = true;
-    await createFlaw();
-    isSaving.value = false;
+    createFlaw();
   }
 };
 
@@ -274,15 +279,16 @@ const cvssString = computed(() => {
             :isEmbargoed="flaw.embargoed"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
+            @reference:cancel-new="cancelAddReference"
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+            @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
-
           <LabelCollapsable label="Trackers">
             <ul>
               <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
