@@ -57,6 +57,7 @@ const {
   deleteReference,
   saveAcknowledgments,
   deleteAcknowledgment,
+  errors,
 } = useFlawModel(props.flaw, emit);
 
 const initialFlaw = ref<ZodFlawType>();
@@ -78,19 +79,6 @@ const onSubmit = async () => {
     await createFlaw();
     isSaving.value = false;
   }
-};
-
-// TODO
-const errors = {
-  cve_id: null,
-  impact: null,
-  cwe_id: null,
-  major_incident_state: null,
-  reported_dt: null,
-  unembargo_dt: null,
-  type: null,
-  component: null,
-  source: null,
 };
 
 const flawCvss3CaculatorLink = computed(
@@ -120,7 +108,12 @@ const cvssString = computed(() => {
           <!-- Alerts might go here -->
         </div>
         <div class="col-6">
-          <LabelEditable v-model="flaw.title" label="Title" type="text" />
+          <LabelEditable
+            v-model="flaw.title"
+            label="Title"
+            type="text"
+            :error="errors.title"
+          />
           <LabelEditable
             v-model="flaw.component"
             label="Component"
@@ -244,10 +237,30 @@ const cvssString = computed(() => {
       <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
         <div class="osim-doc-text-container">
           <LabelCollapsable label="Document Text Fields">
-            <LabelTextarea v-if="flaw.summary" v-model="flaw.summary" label="Summary" />
-            <LabelTextarea v-if="flaw.description" v-model="flaw.description" label="Description" />
-            <LabelTextarea v-if="flaw.statement" v-model="flaw.statement" label="Statement" />
-            <LabelTextarea v-if="flaw.mitigation" v-model="flaw.mitigation" label="Mitigation" />
+            <LabelTextarea
+              v-if="flaw.summary"
+              v-model="flaw.summary"
+              :error="errors.summary"
+              label="Summary"
+            />
+            <LabelTextarea
+              v-if="flaw.description"
+              v-model="flaw.description"
+              :error="errors.description"
+              label="Description"
+            />
+            <LabelTextarea
+              v-if="flaw.statement"
+              v-model="flaw.statement"
+              :error="errors.statement"
+              label="Statement"
+            />
+            <LabelTextarea
+              v-if="flaw.mitigation"
+              v-model="flaw.mitigation"
+              :error="errors.mitigation"
+              label="Mitigation"
+            />
             <div v-if="!flaw.summary" class="mb-3">
               <button class="btn btn-secondary" @click="flaw.summary = 'Summary Text ...'">
                 Add Summary
@@ -272,12 +285,14 @@ const cvssString = computed(() => {
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
+            :error="errors.references"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
+            :error="errors.acknowledgments"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
             @acknowledgment:delete="deleteAcknowledgment"
@@ -298,13 +313,14 @@ const cvssString = computed(() => {
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
         :mode="mode"
+        :error="errors.affects"
         @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top mt-4">
-        <FlawComments :comments="flaw.comments" @comment:add-public="addPublicComment" />
+        <FlawComments :comments="flaw.comments" :error="errors.comments" @comment:add-public="addPublicComment" />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

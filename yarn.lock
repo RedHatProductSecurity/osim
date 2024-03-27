@@ -904,6 +904,13 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
+"@types/ramda@^0.29.11":
+  version "0.29.11"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.11.tgz#86d4ff34320862535fbcef54c9f33d14bdb12951"
+  integrity sha512-jm1+PmNOpE7aPS+mMcuB4a72VkCXUJqPSaQRu2YqR8MbsFfaowYXgKxc7bluYdDpRHNXT5Z+xu+Lgr3/ml6wSA==
+  dependencies:
+    types-ramda "^0.29.9"
+
 "@types/sanitize-html@^2.11.0":
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@types/sanitize-html/-/sanitize-html-2.11.0.tgz#582d8c72215c0228e3af2be136e40e0b531addf2"
@@ -3825,6 +3832,11 @@ quick-format-unescaped@^4.0.3:
   resolved "https://registry.yarnpkg.com/quick-format-unescaped/-/quick-format-unescaped-4.0.4.tgz#93ef6dd8d3453cbc7970dd614fad4c5954d6b5a7"
   integrity sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==
 
+ramda@^0.29.1:
+  version "0.29.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.29.1.tgz#408a6165b9555b7ba2fc62555804b6c5a2eca196"
+  integrity sha512-OfxIeWzd4xdUNxlWhgFazxsA/nl3mS4/jGZI5n00uWOoSSFRhC1b6gl6xvmzUamgmqELraWp0J/qqVlXYPDPyA==
+
 react-is@^18.0.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
@@ -4475,6 +4487,11 @@ ts-api-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.2.1.tgz#f716c7e027494629485b21c0df6180f4d08f5e8b"
   integrity sha512-RIYA36cJn2WiH9Hy77hdF9r7oEwxAtB/TS9/S4Qd90Ap4z5FSiin5zEiTL44OII1Y3IIlEvxwxFUVgrHSZ/UpA==
 
+ts-toolbelt@^9.6.0:
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-9.6.0.tgz#50a25426cfed500d4a09bd1b3afb6f28879edfd5"
+  integrity sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==
+
 tslib@2.6.2, tslib@^2.1.0, tslib@^2.2.0, tslib@^2.3.1, tslib@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
@@ -4524,6 +4541,13 @@ type-is@^1.6.18:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.24"
+
+types-ramda@^0.29.9:
+  version "0.29.9"
+  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.9.tgz#b1995d99421a3519cab9e800c6db3c0921816a8e"
+  integrity sha512-B+VbLtW68J4ncG/rccKaYDhlirKlVH/Izh2JZUfaPJv+3Tl2jbbgYsB1pvole1vXKSgaPlAe/wgEdOnMdAu52A==
+  dependencies:
+    ts-toolbelt "^9.6.0"
 
 typescript@~5.2.0:
   version "5.2.2"

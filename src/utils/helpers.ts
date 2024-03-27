@@ -1,6 +1,5 @@
-// Source: https://github.com/vuejs/core/issues/5303#issuecomment-1543596383
-
 import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch } from 'vue';
+import * as R from 'ramda';
 
 export function vRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
@@ -65,3 +64,19 @@ export const sortedByGroup = <T extends Record<string, any>>(array: T[], key: st
       .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
     (item: T) => item[key],
   );
+
+type DeepMappable = any[] | Record<string, any>
+
+const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
+const isNonArrayObject = (value: any) => R.is(Object, value) && !R.is(Array, value);
+const isDeepMappable = (value: DeepMappable) => isNonEmptyArray(value) || isNonArrayObject(value);
+
+export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any =>
+  R.map(
+    (val: any) => isDeepMappable(val)
+      ? deepMap(transform, val)
+      : transform(val)
+    , object
+  );
+
+export const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/;
