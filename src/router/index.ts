@@ -18,6 +18,7 @@ import TrackerDetailView from '@/views/TrackerDetailView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
 import WidgetTestView from '@/views/WidgetTestView.vue';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 // FIXME: Fix URL handling when clicking logout, then pressing the back button.
 //        The URL should remain at /login while not logged-in.
@@ -110,6 +111,11 @@ const router = createRouter({
         canVisitWithoutAuth: true,
         title: 'Sample',
       },
+      beforeEnter() {
+        if(osimRuntime.value.env !== 'dev'){
+          return { name: 'not-found' };
+        }
+      }
     },
 
     {
