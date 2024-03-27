@@ -8,18 +8,23 @@ from selenium.webdriver.common.by import By
 
 from features.utils import (
     wait_for_visibility_by_locator,
+    generate_cve,
+    generate_cwe,
     generate_random_text,
     go_to_first_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 
 
-# From: https://github.com/RedHatProductSecurity/osidb/blob/master/osidb/validators.py#L13
-CVE_RE_STR = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
-CWE_RE_STR = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
-
-CVE_RE_STR = r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})"
 MAX_RETRY = 10
+DOCUMENT_TEXT_FIELDS = {
+    # Exclude 'description' because it's mandatory in creation
+    'add': ['summary', 'statement', 'mitigation'],
+    # requires_summary can not be REQUESTED if summary is missing
+    'delete': ['statement', 'mitigation'],
+    # Exclude 'description' because of OSIDB-2308
+    'update': ['summary', 'statement', 'mitigation']
+}
 
 
 @when("I add a public comment to the flaw")
@@ -50,24 +55,32 @@ def step_impl(context):
     context.browser.quit()
 
 
-@when('I update the document text of {field} to {value}')
-def step_impl(context, field, value):
+@when('I {action} the document text fields')
+def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    value = value.strip('"')
-    flaw_detail_page.set_document_text_field(field, value)
-    context.field_value = value
+    fields = DOCUMENT_TEXT_FIELDS.get(action)
+    text_dict = dict.fromkeys(fields, '')
+    if action != 'delete':
+        for field in fields:
+            text_dict[field] = generate_random_text()
+    for field in fields:
+        flaw_detail_page.set_document_text_field(field, text_dict[field])
+
+    context.texts = text_dict
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then('The document text of {field} is updated')
-def step_impl(context, field):
+@then('The document text fields are updated')
+def step_impl(context):
     go_to_first_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
-    v = flaw_detail_page.get_document_text_field(field)
-    assert v == context.field_value, f"{field} value should be {context.field_value}, got {v}"
+    fields = context.texts.keys()
+    for field in fields:
+        v = flaw_detail_page.get_document_text_field(field)
+        assert v == context.texts.get(field), f"{field} text should be {context.texts.get(field)}, got {v}"
     context.browser.quit()
 
 
@@ -75,7 +88,7 @@ def step_impl(context, field):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
-    flaw_detail_page.click_add_acknowledgment_btn()
+    flaw_detail_page.click_button_with_js("addAcknowledgmentBtn")
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.set_acknowledgement(l, r)
     flaw_detail_page.click_save_acknowledgment_btn()
@@ -179,7 +192,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     count = 0
     while count < MAX_RETRY:
-        value = rstr.xeger(CVE_RE_STR)
+        value = generate_cve()
         flaw_detail_page.set_input_field('cveid', value)
         flaw_detail_page.click_btn('saveBtn')
         try:
@@ -207,7 +220,7 @@ def step_impl(context, action):
         flaw_detail_page.clear_input_field('cweid')
         value = ''
     else:
-        value = rstr.xeger(CWE_RE_STR)
+        value = generate_cwe()
         flaw_detail_page.set_input_field('cweid', value)
     context.field_value = value
     flaw_detail_page.click_btn('saveBtn')
@@ -220,6 +233,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value('cweid')
     assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
+    context.browser.quit()
 
 
 @when('I update the Reported Date with a valid data')
@@ -238,4 +252,59 @@ def step_impl(context):
     expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
     get_value = flaw_detail_page.get_input_value("reportedDate")
     assert get_value == expected, f"get {get_value}, expected {expected}"
+    context.browser.quit()
+
+
+def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_button_with_js("addReferenceBtn")
+    if external:
+        flaw_detail_page.add_reference_select_external_type()
+    flaw_detail_page.add_reference_set_link_url(value)
+    flaw_detail_page.add_reference_set_description(value)
+    flaw_detail_page.click_button_with_js("saveReferenceBtn")
+    flaw_detail_page.wait_msg(wait_msg)
+    flaw_detail_page.click_btn("toastMsgCloseBtn")
+
+
+@when("I add two external references to the flaw")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.delete_all_reference()
+    # add first
+    context.first_value = f"https://test.com/{generate_random_text()}"
+    add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg")
+    # add second
+    context.second_value = f"https://test.com/{generate_random_text()}"
+    add_a_reference_to_first_flaw(context, context.second_value, "referenceCreatedMsg")
+
+
+@then("Two external references added")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.check_value_exist(context.first_value)
+    flaw_detail_page.check_value_exist(context.second_value)
+    context.browser.quit()
+
+
+@when("I add two RHSB references to the flaw")
+def step_impl(context):
+    context.first_value = f"https://access.redhat.com/{generate_random_text()}"
+    add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg", external=False)
+    context.second_value = f"https://access.redhat.com/{generate_random_text()}"
+    add_a_reference_to_first_flaw(context, context.second_value, "addMultipleRHSBReferenceErrorMsg", external=False)
+
+
+@then("Only one RHSB reference can be added")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.check_value_exist(context.first_value)
+    flaw_detail_page.check_value_not_exist(context.second_value)
     context.browser.quit()

@@ -22,7 +22,7 @@
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json",
     "lint": "yarn lint-style && yarn lint-ts-vue",
     "lint-ts-vue": "eslint . --ext .js,.ts,.vue",
-    "lint-style": "npx stylelint '**/*.{vue,css,scss}'"
+    "lint-style": "stylelint '**/*.{vue,css,scss}'"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
