@@ -9,6 +9,7 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import IssueFieldStatus from '@/components/IssueFieldStatus.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
@@ -405,6 +406,60 @@ describe('FlawForm', () => {
     expect(linkElement?.attributes('href')).toBe(
       'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
     );
+  });
+
+  it('if embargoed and updated date is older than now, it returns an error', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = '2022-02-01';
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe('Set the current or a future date for an embargoed flaw.');
+  });
+
+  it('if embargoed and updated date is today or in the future, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = DateTime.now().toISODate();
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
+  });
+
+  it('if NOT embargoed and updated date is in the future, it returns an error ', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = '3000-01-01';
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe('Set the current or an previous date for unembargoed flaw.');
+  });
+
+  it('if embargoed and updated date is today or in the past, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = DateTime.now().toISODate();
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
+  });
+
+  it('if not embargoed and embargoed date is null, it returns an error message', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe('Set a date for the unembargoed flaw.');
+  });
+
+  it('if embargoed and embargoed date is null, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
   });
 });
 

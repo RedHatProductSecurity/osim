@@ -87,7 +87,9 @@ const errors = {
   cwe_id: null,
   major_incident_state: null,
   reported_dt: null,
-  unembargo_dt: null,
+  embargo_old_public_dt: 'Set the current or a future date for an embargoed flaw.',
+  unembargo_future_public_dt: 'Set the current or an previous date for unembargoed flaw.',
+  set_unembargo_dt: 'Set a date for the unembargoed flaw.',
   type: null,
   component: null,
   source: null,
@@ -101,6 +103,37 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
+const validateFlawEmbargoDates = computed(
+  () => {
+    const unembargo_dt = DateTime.fromISO(String(flaw.value.unembargo_dt)).toISODate();
+    if (flaw.value.embargoed) {
+      // if embargoed and dt is not set, it returns null
+      // This behaviour is acceptable because if flaw is embargoed, we don't know yet when we are going to unembargo it
+      if (unembargo_dt == null) {
+        return null;
+      }
+      // if embargoed and updated date is older than now,
+      // it shows an error to set the current date or a future date instead
+      if (unembargo_dt < DateTime.now().toISODate()) {
+        return errors.embargo_old_public_dt;
+      }
+    } else {
+      // if embargoed and dt is not set, shows up the error
+      // This behaviour is not acceptable because if a flaw is unboargoed,
+      // it means the flaw is public already which requires the date when this was made public.
+      if (unembargo_dt == null) {
+        return errors.set_unembargo_dt;
+      }
+      // if NOT embargoed and updated date is in the future,
+      // it shows an error, to set the current date or an older date instead
+      if (unembargo_dt > DateTime.now().toISODate()) {
+        return errors.unembargo_future_public_dt;
+      }
+    }
+    // otherwise, does not show any error
+    return null;
+  }
+);
 const displayCvssNISTForm = computed(() => {
   const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
   const nvdCvssScore = flawNvdCvssScore.toString();
@@ -223,14 +256,9 @@ const cvssString = computed(() => {
           />
           <LabelEditable
             v-model="flaw.unembargo_dt"
-            :label="
-              'Public Date' +
-                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
-                  ? ' [FUTURE]'
-                  : '')
-            "
+            label='Public Date'
             type="date"
-            :error="errors.unembargo_dt"
+            :error="validateFlawEmbargoDates"
           />
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
@@ -310,14 +338,14 @@ const cvssString = computed(() => {
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
       <!-- <button type="button" class="btn btn-primary col">Customer Pending</button>-->
       <!-- <button type="button" class="btn btn-primary col">
-        Close this issue without actions 
+        Close this issue without actions
       </button>-->
       <!-- <button type="button" class="btn btn-primary col">
         Move this issue to another source queue
       </button>-->
       <!-- <button type="button" class="btn btn-primary col">Create a flaw</button>-->
       <!-- <button type="button" class="btn btn-primary col">
-        Create hardening bug/weakness 
+        Create hardening bug/weakness
       </button>-->
       <div v-if="mode === 'edit'">
         <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>

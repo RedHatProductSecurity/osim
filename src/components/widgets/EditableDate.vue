@@ -295,10 +295,10 @@ function osimFormatDate(date: Date | string | undefined | null): string {
         @blur="blur($event)"
       ><i class="bi bi-x"></i></button>
     </div>
-    <div
-      v-if="!readOnly && error"
-      class="invalid-tooltip d-block"
-    >{{ error }}</div>
+    <!--<div-->
+    <!--  v-if="!readOnly && error"-->
+    <!--  class="invalid-tooltip d-block"-->
+    <!-- >{{ error }}</div>-->
   <!--<br/>-->
   <!--<pre>-->
   <!--  Masked value: {{ boundObject.masked }}-->
@@ -306,6 +306,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
   <!--</pre>-->
   <!--<span v-if="boundObject.completed">✅ Mask completed</span>-->
   </div>
+  <span v-if="error" class="invalid-feedback d-block">{{ error }}</span>
 </template>
 
 <style lang="scss">
