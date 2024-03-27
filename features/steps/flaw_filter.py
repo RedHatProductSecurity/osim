@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from features.pages.home_page import HomePage
 from features.utils import wait_for_visibility_by_locator
 
+
 FLAW_TITLE_TEXT_XPATH = "//tr[1]/td[6]"
 FLAW_CVE_ID_TEXT_XPATH = "//tr[1]/td[2]/a"
 FLAW_STATE_TEXT_XPATH = '//tr[1]/td[7]'
