@@ -1,7 +1,7 @@
 // No need to use Pinia; these values are set on app startup and never changed.
 // Named with camelCase instead of PascalCase to differentiate from Pinia stores.
 
-import { computed, ref } from 'vue';
+import { computed, readonly, ref } from 'vue';
 import { z } from 'zod';
 
 export enum OsimRuntimeDev {
@@ -29,24 +29,30 @@ export const osimRuntimeStatus = computed<OsimRuntimeStatus>(() => {
 });
 
 const OsimRuntime = z.object({
+  env: z.string().default(''),
   backends: z.object({
     osidb: z.string(),
+    osidbAuth: z.string().default('kerberos'),
     bugzilla: z.string(),
+    jira: z.string(),
   }),
-  osimVersion: z.string(),
+  osimVersion: z.object({
+    rev: z.string(),
+    tag: z.string(),
+    timestamp: z.string(),
+    dirty: z.boolean(),
+  }),
   error: z.string().default(''),
 });
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
-  backends: { osidb: '', bugzilla: '' },
-  osimVersion: '',
+  env: '',
+  backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '' },
+  osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
 });
-export const osimRuntime = computed<OsimRuntime>(() => {
-  return runtime.value;
-});
-
+export const osimRuntime = readonly(runtime);
 
 const OsidbHealthy = z.object({
   env: z.string(),
@@ -63,16 +69,13 @@ export const osidbHealth = computed<OsidbHealthy>(() => {
   return _osidbHealth.value;
 });
 
-
-
 let setupCallCount = 0;
-export function setup() {
+export async function setup() {
   if (setupCallCount > 0) {
     console.warn('osimRuntime.setup called more than once:', setupCallCount + 1);
   }
   setupCallCount++;
-
-  return fetchRuntime()
+  await fetchRuntime()
     .then(fetchOsidbHealthy)
     .then(() => {
       // If an error was not set, then the status is still INIT.
@@ -81,14 +84,29 @@ export function setup() {
         status.value = OsimRuntimeStatus.READY;
       }
     });
+  // await fetchOsimLastCommit();
 }
+
+// async function fetchOsimLastCommit() {
+//   const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
+//   return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
+//     method: 'GET',
+//     cache: 'no-cache',
+//   })
+//     .then((response) => response.json())
+//     .then((json) => {
+//       osimLastCommit.value.sha = json.sha.substring(0, 7);
+//       osimLastCommit.value.date = json.commit.author.date;
+//     })
+//     .catch(console.error);
+// }
 
 function fetchRuntime() {
   return fetch('/runtime.json', {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((json: OsimRuntime) => {
       console.debug('OsimRuntime', json);
       try {
@@ -98,14 +116,19 @@ function fetchRuntime() {
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
+      if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z' ||
+          runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
+        // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
+        runtime.value.osimVersion.timestamp = new Date().toISOString();
+      }
     })
-    .catch(e => {
+    .catch((e) => {
       console.error('Unable to get backends', e);
-      runtime.value.error = 'Error finding backends. ' +
-                            'Possible deployment misconfiguration. Please try again.';
+      runtime.value.error =
+        'Error finding backends. ' +
+        'Possible deployment misconfiguration. Please try again.';
       status.value = OsimRuntimeStatus.ERROR;
     });
-
 }
 
 function fetchOsidbHealthy() {
@@ -113,7 +136,7 @@ function fetchOsidbHealthy() {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((json: OsidbHealthy) => {
       console.debug('OsidbHealthy', json);
       try {
@@ -124,10 +147,11 @@ function fetchOsidbHealthy() {
         status.value = OsimRuntimeStatus.ERROR;
       }
     })
-    .catch(e => {
+    .catch((e) => {
       console.error('Unable to get OSIDB health', e);
-      runtime.value.error = 'Error getting OSIDB health. ' +
-                            'Possible deployment misconfiguration. Please try again.';
+      runtime.value.error =
+        'Error getting OSIDB health. ' +
+        'Possible deployment misconfiguration. Please try again.';
       status.value = OsimRuntimeStatus.ERROR;
     });
 }
