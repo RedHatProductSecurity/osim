@@ -149,7 +149,7 @@ function onSearch(query: string) {
           <li>
             <RouterLink class="dropdown-item" :to="{ name: 'settings' }">Settings</RouterLink>
           </li>
-          <li v-show="osimRuntime.env === 'dev'">
+          <li v-if="osimRuntime.env === 'dev'">
             <RouterLink class="dropdown-item" :to="{ name: 'widget-test' }">Widget Test</RouterLink>
           </li>
           <li>
