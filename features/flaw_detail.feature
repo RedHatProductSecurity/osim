@@ -71,3 +71,7 @@ Feature: Flaw detail testing
     Scenario: Add RHSB reference
       When I add two RHSB references to the flaw
       Then Only one RHSB reference can be added
+
+    Scenario: Reset changes
+       When I update the flaw and click 'Reset Changes' button
+       Then All changes are reset

@@ -28,6 +28,7 @@ class FlawDetailPage(PageFactory):
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
