@@ -60,18 +60,11 @@ class AdvancedSearchPage(PageFactory):
         self.cve_idText.click_button()
  
     def get_first_flaw_id(self):
-        try:
-            return self.cve_idText.get_text()
-        except:
-            print("Can't get any flaws with this query.")
-            return None
+        return self.cve_idText.get_text()
 
     def get_field_value_from_flawlist(self, field):
         field_value = getattr(self, field + 'Text')
         return  field_value.get_text()
-
-    def get_first_flaw_uuid(self):
-        return self.cve_idText.getAttribute("href").split("/")[-1]
 
     def close_setting_keys_window(self):
         self.closeKeysetBtn.click_button()
@@ -79,24 +72,30 @@ class AdvancedSearchPage(PageFactory):
     def clear_search_select(self):
         self.closeSelBtn.click_button()
 
-    def get_value_from_osidb(self, field):
-        uuid = self.get_first_flaw_uuid()
-        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws/") + uuid
-        r = requests.get(url)
+    def get_value_from_osidb(self, field, token):
+        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
+        first_flaw_id = self.get_first_flaw_id()
+        headers = {"Authorization": f"Bearer {token}"}
+        if "CVE" in first_flaw_id:
+            params = {"cve_id": first_flaw_id}
+        else:
+            params = {"uuid": first_flaw_id}
+        r = requests.get(url, params = params, headers = headers)
+        flaw_info = json.loads(r.text).get('results')[0]
         # Get the values that related to affects
+        field_value = []
         if "affects" in field:
             #Get the affects__ps_component and affects__ps_module values
-            field_value = []
             if "trackers" not in field:
                 field = field.split("__")[-1]
-                for item in json.loads(r.text).get('affects'):
+                for item in flaw_info.get('affects'):
                     if item.get(field):
                         field_value.append(item.get(field))
             # Get the affects' tracters' values
             else:
                 if "errata" not in field:
                     field = field.split("__")[-1]
-                    for item in json.loads(r.text).get('affects'):
+                    for item in flaw_info.get('affects'):
                         if item.get('trackers'):
                             for tracker in item.get('trackers'):
                                 if tracker.get(field):
@@ -104,7 +103,7 @@ class AdvancedSearchPage(PageFactory):
                 # Get the errata's related values
                 else:
                     field = field.split("__")[-1]
-                    for item in json.loads(r.text).get('affects'):
+                    for item in flaw_info.get('affects'):
                         if item.get('trackers'):
                             for tracker in item.get('trackers'):
                                 if tracker.get('errata'):
@@ -114,11 +113,20 @@ class AdvancedSearchPage(PageFactory):
             return field_value
         # Get the acknowledgment name values
         elif "acknowledgments" in field:
-            field_value = []
-            for ack in json.loads(r.text).get('acknowledgments'):
+            for ack in flaw_info.get('acknowledgments'):
                 if ack.get('name'):
                     field_value.append(ack.get('name'))
             return field_value
+        elif "cvss_scores" in field:
+            if field == "cvss_scores__score":
+                for cvss_score in flaw_info.get('cvss_scores'):
+                    if cvss_score.get('score'):
+                        field_value.append(str(cvss_score.get('score')))
+            if field == "cvss_scores__vector":
+                for cvss_score in flaw_info.get('cvss_scores'):
+                    if cvss_score.get('vector'):
+                        field_value.append(cvss_score.get('vector'))
+            return field_value
         # Get the other values
         else:
-            return json.loads(r.text).get(field)
+            return flaw_info.get(field)
