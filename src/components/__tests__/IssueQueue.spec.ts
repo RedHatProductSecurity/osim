@@ -69,7 +69,9 @@ describe('IssueQueue', () => {
     });
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[0][0]._value).toEqual({});
+    expect(fetchEvents[0][0]._value).toEqual({
+      order: '-created_dt'
+    });
     const issues = wrapper.findAllComponents(IssueQueueItem);
     expect(issues.length).toBe(1);
   });
@@ -97,6 +99,7 @@ describe('IssueQueue', () => {
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[1][0]._value).toEqual({
+      order: '-created_dt',
       owner: 'test@example.com',
     });
 
@@ -126,10 +129,45 @@ describe('IssueQueue', () => {
     await wrapper.vm.$nextTick();
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({
+    expect(fetchEvents[1][0]._value).toEqual({ 
+      order: '-created_dt',
       workflow_state: 'NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT',
+     
     });
     const issues = wrapper.findAllComponents(IssueQueueItem);
     expect(issues.length).toBe(0);
+  });
+
+  it('fetch data from API with specified parameters on sort', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: false,
+        isFinalPageFetched: false,
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const idColumn = wrapper.findAll('th').at(1);
+    await idColumn.trigger('click');
+    const fetchEvents = wrapper.emitted('flaws:fetch');
+    expect(fetchEvents[1][0]._value).toEqual({ 
+      order: '-cve_id,-uuid',
+    });
+    // change sort order
+    await idColumn.trigger('click');
+    expect(fetchEvents[1][0]._value).toEqual({ 
+      order: 'cve_id,uuid',
+    });
+    const impactColumn = wrapper.findAll('th').at(2);
+    await impactColumn.trigger('click');
+    expect(fetchEvents[1][0]._value).toEqual({ 
+      order: '-impact',
+    });
   });
 });

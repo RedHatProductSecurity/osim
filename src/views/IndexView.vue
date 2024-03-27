@@ -9,11 +9,12 @@ const issues = ref<any[]>([]);
 const offset = ref(0); // Added offset state variable
 const pagesize = 20;
 
-function fetchFlaws(filters: any = {}) {
+function fetchFlaws(params: any = {}) {
   offset.value = 0;
-  isFinalPageFetched.value = false;
+  isFinalPageFetched.value = false;  
+  isLoading.value = true;
 
-  getFlaws(offset.value, 0, filters.value)
+  getFlaws(offset.value, 0, params.value)
     .then((response) => {
       if (response.data.results.length < pagesize) {
         isFinalPageFetched.value = true;
@@ -23,17 +24,20 @@ function fetchFlaws(filters: any = {}) {
     })
     .catch((err) => {
       console.error('IssueQueue: getFlaws error: ', err);
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
-function loadMoreFlaws(filters: any = {}) {
+function loadMoreFlaws(params: any = {}) {
   if (isLoading.value || isFinalPageFetched.value) {
     return; // Early exit if already loading
   }
   isLoading.value = true;
   offset.value += pagesize;
 
-  getFlaws(offset.value, pagesize, filters.value)
+  getFlaws(offset.value, pagesize, params.value)
     .then((response) => {
       if (response.data.results.length < pagesize) {
         isFinalPageFetched.value = true;
