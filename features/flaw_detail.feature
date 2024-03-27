@@ -67,3 +67,11 @@ Feature: Flaw detail testing
     Scenario: Modify Reported Date
       When I update the Reported Date with a valid data
       Then The Reported Date is updated
+
+    Scenario: Add external reference
+      When I add two external reference to the flaw
+      Then Two external reference added
+
+    Scenario: Add RHSB reference
+      When I add two RHSB reference to the flaw
+      Then Only one RHSB reference can be added
