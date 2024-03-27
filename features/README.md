@@ -14,7 +14,7 @@ Refer to the README of osim-selenium-image and Start the osim-selenium-image.
 ## Run the tests
 There are a few methods how you can run test cases. Always run the commands from
 osim root directory.
-
+Before run the testing, please run kinit.
 1. Run all tests using `yarn run test:e2e` or `behave`
 2. Run a feature only: `behave features/$featurefile`
 3. Run a scenario only: `behave -n 'scenario name'`

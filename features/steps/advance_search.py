@@ -1,12 +1,11 @@
 from behave import *
 
-from features.pages.home_page import HomePage
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
+from features.utils import get_osidb_token
 
 
 FIELD_FLAW_LIST = [
-    "uuid",
     "cve_id",
     "impact",
     "source",
@@ -15,6 +14,7 @@ FIELD_FLAW_LIST = [
     "owner"
 ]
 FIELD_IN_DATABASE = [
+    "uuid",
     "type",
     "affects__ps_component",
     "affects__ps_module",
@@ -27,7 +27,6 @@ FIELD_IN_DATABASE = [
     "team_id",
     "acknowledgments__name"
 ]
-
 
 @when('I am searching for all flaws')
 def step_impl(context):
@@ -45,6 +44,7 @@ def step_impl(context):
 @then('I select the field and value to search flaws and I am able to view flaws matching the search')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
+    osidb_token = get_osidb_token()
     for row in context.table:
         field = row["field"]
         value = row["value"]
@@ -56,18 +56,9 @@ def step_impl(context):
         if advanced_search_page.get_first_flaw_id():
         #Check the result in the flaw list page, no need to go into detail page
             if field in FIELD_FLAW_LIST:
-                if field == "uuid":
-                    field_value = advanced_search_page.get_first_flaw_uuid()
-                else:
-                    field_value = advanced_search_page.get_field_value_from_flawlist(field)
+                field_value = advanced_search_page.get_field_value_from_flawlist(field)
             elif field in FIELD_IN_DATABASE:
-                if field == "cvss_scores__vector":
-                    field = "cvss3"
-                if field == "cvss_scores__score":
-                    field = "cvss3_score"
-                field_value = advanced_search_page.get_value_from_osidb(field)
-                if field == "cvss3_score":
-                    field_value = str(field_value)
+                field_value = advanced_search_page.get_value_from_osidb(field, osidb_token)
             #Check the result in the flaw detail page.
             else:
                 advanced_search_page.go_to_first_flaw_detail()
