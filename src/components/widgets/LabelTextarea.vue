@@ -7,9 +7,9 @@ defineEmits<{
 defineProps<{
   modelValue: string | null | undefined;
   label: string;
+  placeholder?: string;
   error?: string;
 }>();
-
 const elTextArea = ref();
 
 // onMounted(() => {
@@ -40,6 +40,7 @@ const elTextArea = ref();
         :ref="elTextArea"
         class="form-control col-9 d-inline-block"
         :class="{ 'is-invalid': error != null }"
+        :placeholder="placeholder"
         :value="modelValue"
         rows="5"
         @input="$emit(

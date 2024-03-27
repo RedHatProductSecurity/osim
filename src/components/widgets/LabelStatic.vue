@@ -40,4 +40,8 @@ defineProps<{
   border-top-right-radius: .5rem;
   padding: .375rem 1rem .25rem;
 }
+
+.osim-static-label-top-style .form-control {
+  border-top-left-radius: 0;
+}
 </style>
