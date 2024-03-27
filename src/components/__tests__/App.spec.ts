@@ -50,7 +50,6 @@ describe('App', async () => {
       };
       return {
         setup: vi.fn(() => { }),
-        isDevEnv: vi.fn(() => { }),
         osimRuntimeStatus: 1,
         osidbHealth: {
           revision: '',
@@ -63,11 +62,6 @@ describe('App', async () => {
           INIT: 0,
           READY: 1,
           ERROR: 2,
-        },
-        OsimRuntimeDev: {
-          PROD: 0,
-          DEV: 1,
-          MOCK: 2,
         },
       };
     });

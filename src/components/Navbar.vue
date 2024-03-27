@@ -9,7 +9,7 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useElementBounding } from '@vueuse/core';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
-import { isDevEnv } from '@/stores/osimRuntime';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
@@ -149,7 +149,7 @@ function onSearch(query: string) {
           <li>
             <RouterLink class="dropdown-item" :to="{ name: 'settings' }">Settings</RouterLink>
           </li>
-          <li v-show="isDevEnv()">
+          <li v-show="osimRuntime.env === 'dev'">
             <RouterLink class="dropdown-item" :to="{ name: 'widget-test' }">Widget Test</RouterLink>
           </li>
           <li>
