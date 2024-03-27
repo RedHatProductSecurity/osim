@@ -450,7 +450,16 @@ describe('FlawForm', () => {
     flaw.unembargo_dt = null;
     mountWithProps({ flaw });
     expect(subject.vm.validateFlawEmbargoDates)
-      .toBe('Set the current or an previous date for unembargoed flaw.');
+      .toBe('Set a date for the unembargoed flaw.');
+  });
+
+  it('if embargoed and embargoed date is null, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw });
+    expect(subject.vm.validateFlawEmbargoDates)
+      .toBe(null);
   });
 });
 
