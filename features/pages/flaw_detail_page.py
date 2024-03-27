@@ -85,6 +85,8 @@ class FlawDetailPage(PageFactory):
         "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "addMultipleRHSBReferenceErrorMsg": ("XPATH", "//div[contains(text(),'A flaw has 2 article links, but only 1 is allowed.')]"),
         "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[2]"),
+        "firstReferenceDeleteBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[2]"),
+        "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
