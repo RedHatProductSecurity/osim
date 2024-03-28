@@ -134,7 +134,8 @@ function handleScroll() {
 
   const totalHeight = tableContainerEl.value.scrollHeight;
   const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
-  if (scrollPosition >= totalHeight - 5) {
+  // make sure user scrolls 99% of screensize
+  if (scrollPosition >= totalHeight * 0.99) { 
     emitLoadMore();
   }
 }
