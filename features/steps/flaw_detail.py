@@ -365,3 +365,36 @@ def step_impl(context):
     flaw_detail_page.click_btn("referenceDropdownBtn")
     flaw_detail_page.check_value_not_exist(context.expected)
     context.browser.quit()
+
+
+@when("I edit a internal/external reference")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    try:
+        flaw_detail_page.get_input_value("firstReferenceDescription")
+    except ElementNotFoundException:
+        v = f"https://access.redhat.com/{generate_random_text()}"
+        add_a_reference_to_first_flaw(context, v, "referenceCreatedMsg")
+        go_to_first_flaw_detail_page(context.browser)
+        flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    context.expected = f"https://access.redhat.com/{generate_random_text()}"
+    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
+    flaw_detail_page.clear_text_with_js("addReferenceLinkUrlInput")
+    flaw_detail_page.add_reference_set_link_url(context.expected)
+    flaw_detail_page.clear_text_with_js('addReferenceDescriptionInput')
+    flaw_detail_page.add_reference_set_description(context.expected)
+    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
+    flaw_detail_page.click_button_with_js("saveReferenceBtn")
+    flaw_detail_page.wait_msg("referenceUpdatedMsg")
+
+
+@then("The reference information is changed")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.check_value_exist(context.expected)
+    context.browser.quit()
