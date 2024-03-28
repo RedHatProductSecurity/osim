@@ -15,6 +15,7 @@ import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelCollapsable from '../widgets/LabelCollapsable.vue';
 import LabelStatic from '../widgets/LabelStatic.vue';
+import LabelTextarea from '../widgets/LabelTextarea.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -193,6 +194,12 @@ describe('FlawForm', () => {
       .findAllComponents(LabelCollapsable)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers?.exists()).toBe(true);
+
+    const comment0Field = subject
+      .findAllComponents(LabelTextarea)
+      .find((component) => component.props().label === 'Comment#0');
+    expect(comment0Field?.exists()).toBe(true);
+    expect(comment0Field?.props().disabled).toBe(true);
   });
 
   it('shows the expected fields in create mode', async () => {
@@ -277,6 +284,12 @@ describe('FlawForm', () => {
       .findAllComponents(LabelCollapsable)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers).toBe(undefined);
+
+    const comment0Field = subject
+      .findAllComponents(LabelTextarea)
+      .find((component) => component.props().label === 'Comment#0');
+    expect(comment0Field?.exists()).toBe(true);
+    expect(comment0Field?.props().disabled).toBe(false);
   });
 
   it('displays correct Assignee field value from props', async () => {

@@ -263,10 +263,11 @@ const onReset = () => {
           label="Comment#0"
           placeholder="Comment#0 ..."
           :error="errors.description"
+          :disabled="mode === 'edit'"
         />
         <LabelTextarea
           v-if="showSummary"
-          v-model="flaw.summary" 
+          v-model="flaw.summary"
           label="Description"
           placeholder="Description Text ..."
           :error="errors.summary"
