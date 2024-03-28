@@ -41,7 +41,6 @@ function loadMoreFlaws(params: any = {}) {
     .then((response) => {
       if (response.data.results.length < pagesize) {
         isFinalPageFetched.value = true;
-        return;
       }
       issues.value = [...issues.value, ...response.data.results];
       offset.value += response.data.results.length;
