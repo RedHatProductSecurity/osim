@@ -20,7 +20,7 @@ function fetchFlaws(params: any = {}) {
         isFinalPageFetched.value = true;
       }
       issues.value = response.data.results;
-      offset.value += pagesize; // Increase the offset for next fetch
+      offset.value += response.data.results.length; // Increase the offset for next fetch
     })
     .catch((err) => {
       console.error('IssueQueue: getFlaws error: ', err);
@@ -44,7 +44,7 @@ function loadMoreFlaws(params: any = {}) {
         return;
       }
       issues.value = [...issues.value, ...response.data.results];
-      offset.value += pagesize;
+      offset.value += response.data.results.length;
     })
     .catch((err) => {
       console.error('Error fetching more flaws: ', err);
