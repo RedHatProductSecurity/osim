@@ -26,7 +26,7 @@ const elTextArea = ref();
 </script>
 
 <template>
-  <label class="osim-input has-validation mb-3 ps-3">
+  <label class="osim-input mb-3 ps-3">
     <div class="row">
       <span class="form-label col-3">
         {{ label }}

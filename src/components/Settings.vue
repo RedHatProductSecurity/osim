@@ -64,7 +64,7 @@ const errors = {
       </div>
 
       <div class="form-control mb-3">
-        <label class="d-block has-validation">
+        <label class="d-block">
           <span class="form-label">Bugzilla API Key</span>
           <input 
             v-model="settings.bugzillaApiKey"
@@ -99,7 +99,7 @@ const errors = {
         </div>
       </div>
       <div class="form-control mb-3">
-        <label class="d-block has-validation">
+        <label class="d-block">
           <span class="form-label">JIRA API Key</span>
           <input 
             v-model="settings.jiraApiKey"
