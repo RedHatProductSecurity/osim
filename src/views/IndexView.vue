@@ -14,7 +14,7 @@ function fetchFlaws(params: any = {}) {
   isFinalPageFetched.value = false;  
   isLoading.value = true;
 
-  getFlaws(offset.value, 0, params.value)
+  getFlaws(offset.value, 100, params.value)
     .then((response) => {
       if (response.data.results.length < pagesize) {
         isFinalPageFetched.value = true;

@@ -55,14 +55,15 @@ const params = computed(() => {
   if(issueFilter.value.length > 0) {
     paramsObj.filter = issueFilter.value;
   }
+
   const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
-  if(selectedSortField.value === 'id') {
-    paramsObj.order = `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`;
-  } else if(selectedSortField.value === 'state') {
-    paramsObj.order = `${sortOrderPrefix}workflow_state`;
-  } else {
-    paramsObj.order = `${sortOrderPrefix}${selectedSortField.value}`;
-  }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
+  paramsObj.order = {
+    id: `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`,
+    state: `${sortOrderPrefix}workflow_state`,
+  }[selectedSortField.value] || `${sortOrderPrefix}${selectedSortField.value}`;
+
   return paramsObj;
 });
 
