@@ -4,6 +4,8 @@ from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
+from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 
 from features.page_factory_utils import find_elements_in_page_factory
 
@@ -26,6 +28,7 @@ class FlawDetailPage(PageFactory):
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
         "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
@@ -70,6 +73,24 @@ class FlawDetailPage(PageFactory):
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
 
+        "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[2]"),
+        "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
+        "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
+        "referenceList": ("XPATH", "(//div[@class='ps-3 border-start'])[2]/div/div"),
+        "referenceCreatedMsg": ("XPATH", "//div[text()='Reference created.']"),
+        "referenceDelConfirmBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
+        "referenceDeletedMsg": ("XPATH", "//div[text()='Reference deleted.']"),
+        "addReferenceSelect": ("XPATH", "//select[@class='form-select mb-3 osim-reference-types']"),
+        'addReferenceLinkUrlInput': ("XPATH", "(//input[@class='form-control' and @type='text'])[9]"),
+        "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        "addMultipleRHSBReferenceErrorMsg": ("XPATH", "//div[contains(text(),'A flaw has 2 article links, but only 1 is allowed.')]"),
+        "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[2]"),
+        "firstReferenceDeleteBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[2]"),
+        "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
+
+        "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
+        "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
+        "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -147,10 +168,6 @@ class FlawDetailPage(PageFactory):
                 locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
             self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
             return field_input.getAttribute("value")
-
-    def click_add_acknowledgment_btn(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentBtn)
-        self.driver.execute_script("arguments[0].click();", self.addAcknowledgmentBtn)
 
     def set_acknowledgement(self, left_value, right_value):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentInputLeft)
@@ -239,7 +256,57 @@ class FlawDetailPage(PageFactory):
             EC.visibility_of(e)
         )
 
+    def check_value_not_exist(self, value):
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.invisibility_of_element_located((By.XPATH, f'//span[contains(text(), "{value}")]'))
+        )
+
     def get_text_value(self, field):
         field_value = getattr(self, field + 'Text')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
         return field_value.get_text()
+
+    def click_button_with_js(self, btn_element):
+        element = getattr(self, btn_element)
+        element.execute_script("arguments[0].scrollIntoView(true);")
+        element.execute_script("arguments[0].click();")
+
+    def delete_all_reference(self):
+        # edit ((//div[@class='osim-list-edit'])[n]/div[2]/button)[1]
+        # delete ((//div[@class='osim-list-edit'])[n]/div[2]/button)[2]
+        try:
+            reference_list = find_elements_in_page_factory(self, "referenceList")
+        except NoSuchElementException:
+            # reference not exist, no-op
+            pass
+        else:
+            # delete all reference
+            reference_count = len(reference_list)
+            for i in range(1, reference_count+1):
+                del_btn_xpath = f"((//div[@class='osim-list-edit'])[{i}]/div[2]/button)[2]"
+                del_btn = self.driver.find_element(By.XPATH, del_btn_xpath)
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", del_btn)
+                self.driver.execute_script("arguments[0].click();", del_btn)
+                self.referenceDelConfirmBtn.click_button()
+                self.wait_msg("referenceDeletedMsg")
+                self.toastMsgCloseBtn.click_button()
+
+    def add_reference_select_external_type(self):
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
+            self.saveReferenceBtn)
+        try:
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomBar)
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomFooter)
+        except ElementNotVisibleException:
+            pass
+
+        self.addReferenceSelect.select_element_by_text("External")
+
+    def add_reference_set_link_url(self, value):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceLinkUrlInput)
+        self.addReferenceLinkUrlInput.set_text(value)
+
+    def add_reference_set_description(self, value):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
+        self.addReferenceDescriptionInput.set_text(value)

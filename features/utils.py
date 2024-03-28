@@ -1,8 +1,11 @@
+import json
+import os
 import re
 import rstr
 import requests
 import random
 import string
+import urllib.parse
 from functools import wraps
 
 from selenium import webdriver
@@ -10,7 +13,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY
+from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY, OSIDB_URL
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
@@ -148,3 +151,11 @@ def generate_cve():
 def generate_cwe():
     cwe_re_str = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
     return rstr.xeger(cwe_re_str)
+
+def get_osidb_token():
+    url = urllib.parse.urljoin(OSIDB_URL, "auth/token")
+    cli = f"curl -H 'Content-Type: application/json' --negotiate -u  : {url} > token"
+    os.system(cli)
+    f = open("token", "r")
+    text = f.read()
+    return json.loads(text).get('access')

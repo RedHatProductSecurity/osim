@@ -8,6 +8,8 @@
 | `Dockerfile`            | Builds the deployed image                    |
 | `.env.local`            | Local Vue environment variables              |
 | `docs/`                 | The docs                                     |
+| `features/`             | Selenium tests                               |
+| `openshift/`            | OpenShift config (incomplete; for reference) |
 | `scripts/`              | Dev utility scripts                          |
 | `build/`                | Files to support building the deployed image |
 | `dist/`                 | The compiled app                             |
@@ -63,21 +65,45 @@
 
 ## Deployment
 
-* `OSIM_RUNTIME` stores static information about the UI and backends.
+* `OSIM_`-prefixed environment variables store static information about the UI
+  and backends.
 * The runtime configuration is written to `/dev/shm` because that is one of 2
   user-writable directories in the container image.
     * `/tmp` is not used because other junk may be placed there, and some
       separation of concerns can prevent confusion.
+* Logs are written to stdout/stderr, but we may log to a file in the future for
+  more configurable and secure routing options.
+
+### Environment Variables
+
+```
+OSIM_ENV="dev"
+OSIM_BACKENDS_OSIDB="http://osidb-service:8000"
+OSIM_BACKENDS_OSIDB_AUTH="kerberos"
+OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
+OSIM_BACKENDS_JIRA="http://jira-service:8002"
+```
 
 ## Local Configuration
 
 * Create `public/runtime.json` with the following contents:
   ```json
     {
+      "env": "dev",
       "backends": {
         "osidb": "http://localhost:8000",
-        "bugzilla": "http://localhost:8001"
+        "osidbAuth": "<kerberos|credentials>",
+        "bugzilla": "http://localhost:8001",
+        "jira": "http://localhost:8002"
       },
-      "osimVersion": "0"
+      "osimVersion": {
+        "rev":"dev",
+        "tag":"dev",
+        "timestamp":"1970-01-01T00:00:00Z",
+        "dirty":true
+      }
     }
   ```
+  * **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate agains OSIDB backend.
+                                         `kerberos` is generally used for stage/prod OSIDB instances,
+                                         `credentials` is generally used for local OSIDB instances.

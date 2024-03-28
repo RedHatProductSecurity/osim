@@ -125,12 +125,26 @@ export const useUserStore = defineStore('UserStore', () => {
     _userStoreSession.value.env = env_;
   }
 
-  async function login() {
+  async function login(username: string = '', password: string = '') {
     // return fetch('https://osidb-stage.prodsec.redhat.com/auth/token', {
+    console.log(osimRuntime.value.backends.osidbAuth);
+
+    const requestMetadata: { [key: string]: any } = {};
+    if (osimRuntime.value.backends.osidbAuth == 'kerberos') {
+      requestMetadata['method'] = 'GET';
+    } else if (osimRuntime.value.backends.osidbAuth == 'credentials') {
+      requestMetadata['method'] = 'POST';
+      requestMetadata['body'] = JSON.stringify({ username: username, password: password });
+      requestMetadata['headers'] = {
+        'Content-Type': 'application/json'
+      };
+    }
+
     return fetch(`${osimRuntime.value.backends.osidb}/auth/token`, {
       // credentials: 'same-origin',
       credentials: 'include',
       cache: 'no-cache',
+      ...requestMetadata,
     })
       .then(async response => {
         if (!response.ok) {
