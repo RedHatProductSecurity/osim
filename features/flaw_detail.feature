@@ -72,6 +72,10 @@ Feature: Flaw detail testing
       When I add two RHSB references to the flaw
       Then Only one RHSB reference can be added
 
+    Scenario: Delete reference
+      When I delete a reference from a flaw
+      Then The reference is deleted from this flaw
+
     Scenario: Reset changes
        When I update the flaw and click 'Reset Changes' button
        Then All changes are reset
