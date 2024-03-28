@@ -55,13 +55,13 @@ const params = computed(() => {
   if(issueFilter.value.length > 0) {
     paramsObj.filter = issueFilter.value;
   }
-  const sortOrder = isSortedByAscending.value ? '' : '-';
+  const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
   if(selectedSortField.value === 'id') {
-    paramsObj.order = `${sortOrder}cve_id,${sortOrder}uuid`;
+    paramsObj.order = `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`;
   } else if(selectedSortField.value === 'state') {
-    paramsObj.order = `${sortOrder}workflow_state`;
+    paramsObj.order = `${sortOrderPrefix}workflow_state`;
   } else {
-    paramsObj.order = `${sortOrder}${selectedSortField.value}`;
+    paramsObj.order = `${sortOrderPrefix}${selectedSortField.value}`;
   }
   return paramsObj;
 });
@@ -134,7 +134,7 @@ function handleScroll() {
 
   const totalHeight = tableContainerEl.value.scrollHeight;
   const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
-  // make sure user scrolls 99% of screensize
+  // Trigger loading more content when the user has scrolled to 99% of the container's height, 
   if (scrollPosition >= totalHeight * 0.99) { 
     emitLoadMore();
   }
