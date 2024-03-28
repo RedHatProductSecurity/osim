@@ -41,18 +41,28 @@ const filteredStates = computed(() => {
     .join(',');
 });
 
-const filters = computed(() => {
-  const filterObj: Record<string, any> = {};
+const params = computed(() => {
+  const paramsObj: Record<string, any> = {};
 
   if (isMyIssuesSelected.value) {
-    filterObj.owner = userName;
+    paramsObj.owner = userName;
   }
 
   if (isOpenIssuesSelected.value) {
-    filterObj.workflow_state = filteredStates.value;
+    paramsObj.workflow_state = filteredStates.value;
   }
 
-  return filterObj;
+  if(issueFilter.value.length > 0) {
+    paramsObj.filter = issueFilter.value;
+  }
+
+  const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
+  paramsObj.order = {
+    [selectedSortField.value]: `${sortOrderPrefix}${selectedSortField.value}`,
+    id: `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`,
+    state: `${sortOrderPrefix}workflow_state`,
+  }[selectedSortField.value];
+  return paramsObj;
 });
 
 const columnsFieldsMap: Record<string, ColumnField> = {
@@ -66,21 +76,7 @@ const columnsFieldsMap: Record<string, ColumnField> = {
 };
 
 const relevantIssues = computed<FilteredIssue[]>(() => {
-  const filterCaseInsensitive = issueFilter.value.toLowerCase();
-  const wontUseFilter = issueFilter.value.length === 0;
   return issues.value
-    .filter(
-      (issue: any) =>
-        wontUseFilter ||
-        [issue.title, issue.cve_id, issue.state, issue.source].some(
-          (text) => text && text.toLowerCase().includes(filterCaseInsensitive),
-        ),
-    )
-    .sort((a: any, b: any) =>
-      isSortedByAscending.value
-        ? a[selectedSortField.value].localeCompare(b[selectedSortField.value])
-        : b[selectedSortField.value].localeCompare(a[selectedSortField.value]),
-    )
     .map((issue) => reactive({ issue, selected: false }));
 });
 
@@ -124,7 +120,7 @@ function relevantFields(issue: any) {
 
 onMounted(() => {
   tableContainerEl.value?.addEventListener('scroll', handleScroll); // AutoScroll Option
-  emit('flaws:fetch', filters);
+  emit('flaws:fetch', params);
 });
 
 onUnmounted(() => {
@@ -137,18 +133,18 @@ function handleScroll() {
 
   const totalHeight = tableContainerEl.value.scrollHeight;
   const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
-
-  if (scrollPosition >= totalHeight) {
+  // Trigger loading more content when the user has scrolled to 99% of the container's height, 
+  if (scrollPosition >= totalHeight * 0.99) { 
     emitLoadMore();
   }
 }
 
 function emitLoadMore() {
-  emit('flaws:load-more', filters);
+  emit('flaws:load-more', params);
 }
 
-watch(filters, () => {
-  emit('flaws:fetch', filters);
+watch(params, () => {
+  emit('flaws:fetch', params);
 });
 </script>
 
