@@ -57,13 +57,11 @@ const params = computed(() => {
   }
 
   const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-expect-error
   paramsObj.order = {
+    [selectedSortField.value]: `${sortOrderPrefix}${selectedSortField.value}`,
     id: `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`,
     state: `${sortOrderPrefix}workflow_state`,
-  }[selectedSortField.value] || `${sortOrderPrefix}${selectedSortField.value}`;
-
+  }[selectedSortField.value];
   return paramsObj;
 });
 
