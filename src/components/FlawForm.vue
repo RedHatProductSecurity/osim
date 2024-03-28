@@ -7,7 +7,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelInput from '@/components/widgets/LabelInput.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
@@ -172,7 +172,7 @@ const onReset = () => {
             </template>
           </LabelEditable>
 
-          <LabelInput v-model="flawRhCvss3.score" label="CVSSv3 Score" type="text" />
+          <LabelStatic v-model="flawRhCvss3.score" label="CVSSv3 Score" type="text" />
           <div class="row">
             <div class="col">
               <LabelDiv label="NVD CVSSv3">

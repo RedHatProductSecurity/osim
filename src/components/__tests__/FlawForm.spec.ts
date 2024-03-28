@@ -13,8 +13,9 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
-import LabelInput from '../widgets/LabelInput.vue';
 import LabelCollapsable from '../widgets/LabelCollapsable.vue';
+import LabelStatic from '../widgets/LabelStatic.vue';
+
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
@@ -134,7 +135,7 @@ describe('FlawForm', () => {
     expect(cvssV3Field?.exists()).toBe(true);
 
     const cvssV3ScoreField = subject
-      .findAllComponents(LabelInput)
+      .findAllComponents(LabelStatic)
       .find((component) => component.props().label === 'CVSSv3 Score');
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
@@ -223,7 +224,7 @@ describe('FlawForm', () => {
     expect(cvssV3Field?.exists()).toBe(true);
 
     const cvssV3ScoreField = subject
-      .findAllComponents(LabelInput)
+      .findAllComponents(LabelStatic)
       .find((component) => component.props().label === 'CVSSv3 Score');
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
