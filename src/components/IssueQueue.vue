@@ -5,7 +5,7 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from './widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '../generated-client';
-const { userName } = useUserStore();
+const userStore = useUserStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 
@@ -45,7 +45,7 @@ const params = computed(() => {
   const paramsObj: Record<string, any> = {};
 
   if (isMyIssuesSelected.value) {
-    paramsObj.owner = userName;
+    paramsObj.owner = userStore.userName;
   }
 
   if (isOpenIssuesSelected.value) {
