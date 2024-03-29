@@ -27,7 +27,9 @@ class HomePage(PageFactory):
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
         "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
-        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button")
+        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
+        "myissueCheckBox": ("XPATH", "//input[@class='d-inline-block form-check-input']"),
+        "ownerText": ("XPATH", "//tr[1]/td[8]")
     }
 
     def click_flaw_index_btn(self):

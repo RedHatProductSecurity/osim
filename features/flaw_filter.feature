@@ -19,3 +19,7 @@ Feature: Flaw filter testing
     Scenario: Filter the flaws with source keyword
       When I input a filter keyword "source" in the "Filter Issues/Flaws" input box
       Then I am able to view flaws matching "source" and the flaws "count" is correct
+
+    Scenario: Filter my issues
+     When I check 'My Issues' checkbox in index page
+     Then All issues assigned to me should be listed in flaw table

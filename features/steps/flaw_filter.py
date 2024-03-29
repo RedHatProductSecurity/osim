@@ -100,3 +100,19 @@ def step_impl(context):
 def step_impl(context):
     flaws_count = COUNT_FLAWS_SAME_SOURCE
     then_step_mathcher(context, flaws_count)
+
+@when("I check 'My Issues' checkbox in index page")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.flaw_list_exist()
+    home_page.click_btn("myissueCheckBox")
+
+@then("All issues assigned to me should be listed in flaw table")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    user_name = home_page.userBtn.get_text()
+    home_page.flaw_list_exist()
+    owner = home_page.get_field_value("owner")
+    assert user_name == owner
+    # Need to check the count of my issues that depends on testdata
+    context.browser.quit()
