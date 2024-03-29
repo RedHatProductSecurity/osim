@@ -12,8 +12,6 @@ import { useRouter } from 'vue-router';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
-import LabelStaticHighlighted from '../widgets/LabelStaticHighlighted.vue';
-
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
@@ -138,7 +136,7 @@ describe('FlawForm', () => {
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
-      .findAllComponents(LabelStaticHighlighted)
+      .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
@@ -222,7 +220,7 @@ describe('FlawForm', () => {
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
-      .findAllComponents(LabelStaticHighlighted)
+      .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
@@ -415,7 +413,7 @@ describe('FlawForm', () => {
 
   it('shows a highlighted nvdCvssField value when nvd score and Rh score mismatch', async () => {
     const nvdCvssField = subject
-      .findAllComponents(LabelStaticHighlighted)
+      .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
     const spanWithClass = nvdCvssField?.find('span.text-primary');
@@ -686,6 +684,18 @@ function sampleFlaw() {
         score: 2.2,
         uuid: 'cvsss-beeeep',
         vector: 'CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
+        embargoed: false,
+        created_dt: '2021-08-02T10:49:35Z',
+        updated_dt: '2024-03-04T14:27:02Z',
+      },
+      {
+        comment: 'The CVSS is as it is and that is it.',
+        cvss_version: 'V3',
+        flaw: 'beeeeep',
+        issuer: 'NIST',
+        score: 4.0,
+        uuid: 'cvsss-beeeep',
+        vector: 'CVSS:3.1/AV:N/AC:H/PR:E/UI:N/S:U/C:N/I:L/A:R',
         embargoed: false,
         created_dt: '2021-08-02T10:49:35Z',
         updated_dt: '2024-03-04T14:27:02Z',
