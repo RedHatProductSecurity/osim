@@ -2,6 +2,7 @@ Feature: Flaw list testing
 
     Background: Before run scenarios
       Given I am an analyst AND I am logged into OSIM
+      And I set the bugzilla api key and jira api key
       And I am on the flaw list
 
     Scenario: Redirect to the flaw page when click flaw link
@@ -24,3 +25,7 @@ Feature: Flaw list testing
       Given Not all flaws are loaded
       When  I click the button 'Load More Flaws'
       Then More flaws are loaded into the list
+
+    Scenario: Bulk assign flaws to me
+      When I select some flaws from flaw list and click 'Assign to Me'
+      Then The owner of selected flaws is updated to me

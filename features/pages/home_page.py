@@ -1,5 +1,7 @@
 from seleniumpagefactory.Pagefactory import PageFactory
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.relative_locator import locate_with
 
 from features.page_factory_utils import find_elements_in_page_factory
 
@@ -15,6 +17,7 @@ class HomePage(PageFactory):
         "userBtn": ('CSS', "button[class='btn btn-secondary dropdown-toggle osim-user-profile']"),
         "flawList": ("CSS", "div[class='osim-incident-list']"),
         "flawRow": ("CLASS_NAME", "osim-issue-queue-item"),
+        # "cveId": ("CLASS_NAME", "osim-issue-title"),
         "flawCheckAllCheckBox": ("XPATH", "//div[@class='osim-incident-list']/table/thead/tr/th/input[@type='checkbox']"),
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
@@ -27,7 +30,10 @@ class HomePage(PageFactory):
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
         "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
-        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button")
+        "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
+        "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
+        "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
+        "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']")
     }
 
     def click_flaw_index_btn(self):
@@ -97,3 +103,36 @@ class HomePage(PageFactory):
         field_input = getattr(self, field + 'Box')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+
+    def wait_msg(self, msg_element):
+        element = getattr(self, msg_element)
+        element.visibility_of_element_located()
+
+    def select_bulk_flaws(self, length=1):
+        self.firstFlaw.visibility_of_element_located()
+        flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
+        links = []
+        for i in range(1, length+1):
+            checkbox = flaw_checkboxes[i]
+            checkbox.click()
+            flaw_link = self.driver.find_element(
+                    By.XPATH, f"(//td[contains(@class, 'osim-issue-title')])[{i}]/a")
+            links.append(flaw_link)
+        return links
+
+    def bulk_assign(self):
+        self.click_btn('bulkActionBtn')
+        hide = self.driver.find_elements(
+            locate_with(By.XPATH, "//div[@class='osim-incident-list']/table/thead"))[0]
+        self.driver.execute_script("arguments[0].style.visibility='hidden'", hide)
+        self.click_btn('assignToMeBtn')
+        self.driver.execute_script("arguments[0].style.visibility='visible'", hide)
+
+    def check_bulk_assign(self, flaw_link):
+        from features.utils import wait_for_visibility_by_locator
+        flaw_link.click()
+        wait_for_visibility_by_locator(self.driver, By.XPATH, '//button[text()=" Save Changes "]')
+        assignee_value_element = self.driver.find_elements(
+             locate_with(By.XPATH, ("(//span[@class='osim-editable-text-value form-control'])[6]")))[0]
+        login_user = self.userBtn.get_text()
+        assert assignee_value_element.get_text() == login_user.strip(), 'Bulk assign failed'
