@@ -60,6 +60,7 @@ function onSearch(query: string) {
       </RouterLink>
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
+        <span class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
       </RouterLink>
       <!-- <div class="osim-env">
         <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>
