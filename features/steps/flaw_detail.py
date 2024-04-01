@@ -312,7 +312,6 @@ def step_impl(context):
 @when("I update the flaw and click 'Reset Changes' button")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    go_to_first_flaw_detail_page(context.browser)
     context.title = flaw_page.get_input_value('title')
     flaw_page.set_input_field('title', generate_random_text())
     _, context.impact = flaw_page.get_select_value('impact')
