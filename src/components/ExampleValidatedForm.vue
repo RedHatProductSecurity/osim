@@ -16,9 +16,9 @@ const ExampleFormSchema = z.object({
   chosenFruit: z.enum(['apple', 'banana', 'orange']),
   fruitNotes: z.string(),
   // fruitOrderDate: z.string().datetime(), // ISO date string
-  fruitOrderDate: z.date().optional(), // ISO date string
-  shipOvernight: z.boolean().optional(),
-  bug: z.string().optional(),
+  fruitOrderDate: z.date().nullish(), // ISO date string
+  shipOvernight: z.boolean().nullish(),
+  bug: z.string().nullish(),
 });
 const availableFruits = Object.keys(ExampleFormSchema.shape.chosenFruit.Values);
 
@@ -27,9 +27,9 @@ let committedForm: ExampleFormType = reactive({ // form from server
   fruitRecipient: 'John',
   chosenFruit: 'orange',
   fruitNotes: 'box of ripe oranges',
-  fruitOrderDate: undefined,
+  fruitOrderDate: null,
   shipOvernight: true,
-  bug: undefined,
+  bug: null,
 });
 // let stagedForm: ExampleFormType = committedForm;
 
@@ -83,7 +83,7 @@ const onReset = () => {
       <LabelEditable v-model="salutation" label="Salutation" type="text" placeholder="Salutation" :error="errors.salutation"/>
       <!--<LabelEditable v-model="bug" label="Invalid" type="invalid" :error="errors.bug"/>-->
       <LabelInput v-model="fruitRecipient" label="Recipient of the fruit" :error="errors.fruitRecipient"/>
-      <LabelSelect :options="availableFruits" v-model="chosenFruit" label="Fruit" :error="errors.chosenFruit"/>
+      <LabelSelect :options="availableFruits" v-model="chosenFruit" label="Fruit" :error="errors.chosenFruit || null"/>
       <!--<LabelTextarea v-model="fruitNotesExample" label="Example invalid field" error="example error"/>-->
       <LabelTextarea v-model="fruitNotes" label="Notes about the fruit" :error="errors.fruitNotes"/>
       <LabelCheckbox v-model="shipOvernight" label="Ship Overnight" :error="errors.shipOvernight"/>

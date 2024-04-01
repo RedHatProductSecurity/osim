@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { date, z } from 'zod';
 import {
   FlawType,
   ImpactEnum,
@@ -30,8 +30,16 @@ const zodOsimDateTime = () =>
   z
     .date()
     .transform((val) => DateTime.fromJSDate(val).toUTC().toISO())
-    .or(z.string().datetime());
-
+    .or(z.string().superRefine((dateString, zodContext) => {
+      if (!z.string().datetime().safeParse(dateString).success) {
+        zodContext.addIssue({
+          message: `Invalid date format for ${dateString}`,
+          code: z.ZodIssueCode.custom,
+          path: zodContext.path,
+        });
+      }
+    }));
+    
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
   name: z.string().default(''),
@@ -231,7 +239,7 @@ export const ZodFlawMetaSchema = z.object({
 
 // const flawTypes: string[] = Object.values(FlawType);
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
-export type ZodFlawPartialType = z.infer<typeof ZodFlawSchemaPartial>;
+
 export const ZodFlawSchema = z.object({
   // type: z.nativeEnum(FlawType).optional(),
   type: z.nativeEnum(FlawTypeWithBlank).nullish(),
@@ -256,12 +264,13 @@ export const ZodFlawSchema = z.object({
   requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
-  unembargo_dt: zodOsimDateTime(), // $date-time,
+  unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
+  reported_dt: zodOsimDateTime().nullish(), // $date-time,
   source: z.nativeEnum(Source8d8EnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' }
   ),
-  reported_dt: zodOsimDateTime().nullish(), // $date-time,
+  meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
   mitigation: z.string().nullish(),
   cvss2: z.string().max(100).nullish(), // XXX deprecated
   cvss2_score: z.number().nullish(), // $float // XXX deprecated
@@ -279,33 +288,59 @@ export const ZodFlawSchema = z.object({
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+}).superRefine((zodFlaw, zodContext)=>{
+
+  const raiseDateIssue = (message: string) =>{
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message,
+      path: ['unembargo_dt'],
+    });
+  };
+  const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
+
+  if (zodFlaw.embargoed && unembargo_dt && unembargo_dt < DateTime.now().toISODate()) {
+    raiseDateIssue('An embargoed flaw must have a public date in the future.');
+  }
+
+  if (!zodFlaw.embargoed && !unembargo_dt) {
+    // if embargoed and dt is not set, shows up the error
+    // This behaviour is not acceptable because if a flaw is unembargoed,
+    // it means the flaw is public already which requires the date when this was made public.
+    raiseDateIssue('A public flaw must have a public date set.');
+  }
+
+  if (!zodFlaw.embargoed && unembargo_dt && unembargo_dt > DateTime.now().toISODate()) {
+    // if NOT embargoed and updated date is in the future,
+    // it shows an error, to set the current date or an older date instead
+    raiseDateIssue('A public flaw cannot have a public date in the future.');
+  }
 });
-const ZodFlawSchemaPartial = ZodFlawSchema.partial();
 
+// const ZodFlawSchemaPartial = ZodFlawSchema.partial();
 
-type RegisteredSchemaType =
+type SchemaType =
   | typeof FlawCVSSSchema
   | typeof AffectCVSSSchema
   | typeof ErratumSchema
   | typeof TrackerSchema
   | typeof ZodAffectSchema
   | typeof ZodFlawMetaSchema
-  | typeof ZodFlawSchema
   | typeof ZodFlawClassification;
 
-export const fieldsFor = (schema: RegisteredSchemaType) => Object.keys(schema.shape);
+type SchemaTypeWithEffect = SchemaType | typeof ZodFlawSchema;
 
-const {
-  type: zodFlawType,
-  major_incident_state: zodFlawMajorIncidentState,
-} = ZodFlawSchema.shape;
+export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName === 'ZodEffects' 
+  ? Object.keys(schema._def.schema.shape)
+  : Object.keys((schema as SchemaType).shape);
+
 
 const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
-export const flawTypes = extractEnum(zodFlawType);
+export const flawTypes = Object.values(FlawTypeWithBlank);
 export const flawSources = Object.values(Source8d8EnumWithBlank); // TODO: handle blank in the component
 export const flawImpacts = Object.values(ImpactEnumWithBlank); // TODO: handle blank in the component
-export const flawIncidentStates = extractEnum(zodFlawMajorIncidentState);
+export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
 
 const {
   impact: zodAffectImpact,
