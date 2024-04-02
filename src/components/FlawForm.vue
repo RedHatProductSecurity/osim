@@ -98,9 +98,9 @@ const errors = {
   source: null,
 };
 
-const hasSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
-const hasStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
-const hasMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
+const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
+const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const flawCvss3CaculatorLink = computed(
   () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
@@ -253,44 +253,44 @@ const cvssString = computed(() => {
       <div class="osim-flaw-form-section border-top">
         <LabelTextarea v-model="flaw.description" label="Comment#0" placeholder="Comment#0 ..." />
         <LabelTextarea
-          v-if="hasSummary"
+          v-if="showSummary"
           v-model="flaw.summary" 
           label="Description"
           placeholder="Description Text ..."
         />
         <LabelTextarea
-          v-if="hasStatement"
+          v-if="showStatement"
           v-model="flaw.statement"
           label="Statement"
           placeholder="Statement Text ..."
         />
         <LabelTextarea
-          v-if="hasMitigation"
+          v-if="showMitigation"
           v-model="flaw.mitigation"
           label="Mitigation"
           placeholder="Mitigation Text ..."
         />
         <div class="d-flex gap-3 mb-3">
           <button
-            v-if="!hasSummary"
+            type="button"
             class="btn btn-secondary"
-            @click="hasSummary = true"
+            @click="showSummary = !showSummary"
           >
-            Add Description
+            {{ showSummary ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
-            v-if="!hasStatement"
+            type="button"
             class="btn btn-secondary"
-            @click="hasStatement = true"
+            @click="showStatement = !showStatement"
           >
-            Add Statement
+            {{ showStatement ? 'Remove Statement' : 'Add Statement' }}
           </button>
           <button
-            v-if="!hasMitigation"
+            type="button"
             class="btn btn-secondary"
-            @click="hasMitigation = true"
+            @click="showMitigation = !showMitigation"
           >
-            Add Mitigation
+            {{ showMitigation ? 'Remove Mitigation' : 'Add Mitigation' }}
           </button>
         </div>
       </div>
