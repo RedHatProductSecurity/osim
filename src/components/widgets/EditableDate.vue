@@ -173,7 +173,8 @@ function blur(e: FocusEvent | null) {
 
 // This function takes a Date or string and returns it in the 'YYYY-MM-DD' format.
 function formatDate(input: Date | string): string {
-  const dt = DateTime.fromJSDate(new Date(input)).toUTC();
+  // TODO: 🚩⚠️ Temporary work around
+  const dt = DateTime.fromJSDate(new Date(input)).plus({ hours: 23, minutes: 55 }).toUTC();
   const result = dt.toISODate(); // returns in 'YYYY-MM-DD' format
   // if (result === null) {
   //   throw new Error('Could not format date');
@@ -184,7 +185,10 @@ function formatDate(input: Date | string): string {
 
 // This function takes a string in 'YYYY-MM-DD' format and returns a Date object.
 function parseDate(input: string): Date {
-  return DateTime.fromISO(input, { zone: 'utc' }).toJSDate();
+  const date = DateTime.fromISO(input, { zone: 'utc' });
+  const jsDate = date.toJSDate();
+  console.log(jsDate, date, jsDate.toISOString());
+  return jsDate;
 }
 
 function isValidDate(d: Date | string): boolean {
