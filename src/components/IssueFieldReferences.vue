@@ -37,7 +37,6 @@ function handleDelete(uuid: string, closeModal: () => void) {
     <EditableList
       v-model="references"
       entityName="Reference"
-      :hasLabel="true"
       @item:save="emit('reference:update', $event)"
       @item:delete="emit('reference:delete', $event)"
       @item:new="emit('reference:new')"
