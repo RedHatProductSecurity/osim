@@ -3,6 +3,14 @@
 ## [Unreleased]
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
+* Changed layout for Descriptions, References and Acknowledgements
+* Renamed `Description` (to Comment#0) and `Summary` (to Description)
+* Made text area fields visible with empty content
+* Minor style adjustments on `Flaw` views
+
+### Fixed
+* Fixed overlap on edit buttons at References and Acknowledgements items
+* Fixed inconsistent style on read-only fields with empty value
 
 ## [2024.1.0]
 

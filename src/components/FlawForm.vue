@@ -98,6 +98,10 @@ const errors = {
   source: null,
 };
 
+const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
+const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
+
 const flawCvss3CaculatorLink = computed(
   () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
 );
@@ -119,8 +123,8 @@ const cvssString = computed(() => {
 
 <template>
   <form class="osim-flaw-form" @submit.prevent="onSubmit">
-    <div class="osim-content container-lg pt-5">
-      <div class="row">
+    <div class="osim-content container-lg">
+      <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
           <!-- Alerts might go here -->
         </div>
@@ -156,7 +160,7 @@ const cvssString = computed(() => {
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
-                :description="flaw.description"
+                :description="flaw.summary ?? ''"
               />
             </div>
           </div>
@@ -187,7 +191,7 @@ const cvssString = computed(() => {
             <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
-                :flaw-summary="flaw.summary"
+                :flaw-summary="flaw.description"
                 :bugzilla="bugzillaLink"
                 :cvss="cvssString"
                 :nistcvss="flawNvdCvssScore?.toString()"
@@ -246,37 +250,56 @@ const cvssString = computed(() => {
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
-      <div class="mt-3 pt-4 pb-3 mb-4 border-top border-bottom">
-        <div class="osim-doc-text-container">
-          <LabelCollapsable label="Document Text Fields">
-            <LabelTextarea v-if="flaw.summary" v-model="flaw.summary" label="Summary" />
-            <LabelTextarea v-if="flaw.description" v-model="flaw.description" label="Description" />
-            <LabelTextarea v-if="flaw.statement" v-model="flaw.statement" label="Statement" />
-            <LabelTextarea v-if="flaw.mitigation" v-model="flaw.mitigation" label="Mitigation" />
-            <div v-if="!flaw.summary" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.summary = 'Summary Text ...'">
-                Add Summary
-              </button>
-            </div>
-            <div v-if="!flaw.description" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.description = 'Description Text ...'">
-                Add Description
-              </button>
-            </div>
-            <div v-if="!flaw.statement" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.statement = 'Statement Text ...'">
-                Add Statement
-              </button>
-            </div>
-            <div v-if="!flaw.mitigation" class="mb-3">
-              <button class="btn btn-secondary" @click="flaw.mitigation = 'Mitigation Text ...'">
-                Add Mitigation
-              </button>
-            </div>
-          </LabelCollapsable>
+      <div class="osim-flaw-form-section border-top">
+        <LabelTextarea v-model="flaw.description" label="Comment#0" placeholder="Comment#0 ..." />
+        <LabelTextarea
+          v-if="showSummary"
+          v-model="flaw.summary" 
+          label="Description"
+          placeholder="Description Text ..."
+        />
+        <LabelTextarea
+          v-if="showStatement"
+          v-model="flaw.statement"
+          label="Statement"
+          placeholder="Statement Text ..."
+        />
+        <LabelTextarea
+          v-if="showMitigation"
+          v-model="flaw.mitigation"
+          label="Mitigation"
+          placeholder="Mitigation Text ..."
+        />
+        <div class="d-flex gap-3 mb-3">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="showSummary = !showSummary"
+          >
+            {{ showSummary ? 'Remove Description' : 'Add Description' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="showStatement = !showStatement"
+          >
+            {{ showStatement ? 'Remove Statement' : 'Add Statement' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="showMitigation = !showMitigation"
+          >
+            {{ showMitigation ? 'Remove Mitigation' : 'Add Mitigation' }}
+          </button>
+        </div>
+      </div>
+      <div class="osim-flaw-form-section border-top border-bottom">
+        <div class="d-flex gap-3">
           <IssueFieldReferences
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
+            class="w-100 my-3"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
             @reference:cancel-new="cancelAddReference"
@@ -284,32 +307,34 @@ const cvssString = computed(() => {
           />
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
+            class="w-100 my-3"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
             @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
-          <LabelCollapsable label="Trackers">
-            <ul>
-              <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-                <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                  {{ tracker.display }}
-                </RouterLink>
-              </li>
-            </ul>
-          </LabelCollapsable>
         </div>
+        <LabelCollapsable :label="`Trackers: ${trackerUuids.length}`" :isExpandable="trackerUuids.length !== 0">
+          <ul>
+            <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
+              <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
+                {{ tracker.display }}
+              </RouterLink>
+            </li>
+          </ul>
+        </LabelCollapsable>
       </div>
       <AffectedOfferings
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
         :mode="mode"
+        class="osim-flaw-form-section"
         @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
-      <div v-if="mode === 'edit'" class="border-top mt-4">
+      <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments :comments="flaw.comments" @comment:add-public="addPublicComment" />
       </div>
     </div>
@@ -347,7 +372,13 @@ const cvssString = computed(() => {
 form.osim-flaw-form :deep(*) {
   line-height: 1.5;
   font-family: 'Red Hat Mono', monospace;
+
+  .osim-flaw-form-section{
+    padding-block: 3rem;
+  }
 }
+
+
 
 :deep(.osim-input) {
   .row {
