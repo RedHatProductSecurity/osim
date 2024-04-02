@@ -13,11 +13,12 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldStatus from './IssueFieldStatus.vue';
-import LabelStatic from './widgets/LabelStatic.vue';
+
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
@@ -48,11 +49,14 @@ const {
   osimLink,
   bugzillaLink,
   flawRhCvss,
-  flawNvdCvssScore,
+  nvdCvssString,
   flawReferences,
   flawAcknowledgments,
   theAffects,
   affectsToDelete,
+  cvssString,
+  highlightedNvdCvssScore,
+  shouldDisplayEmailNistForm,
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
@@ -110,15 +114,6 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
-const displayCvssNISTForm = computed(() => {
-  const rhCvss = `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
-  const nvdCvssScore = flawNvdCvssScore.toString();
-  return rhCvss !== nvdCvssScore;
-});
-
-const cvssString = computed(() => {
-  return `${flawRhCvss.value?.score}/${flawRhCvss.value?.vector}`;
-});
 </script>
 
 <template>
@@ -185,18 +180,36 @@ const cvssString = computed(() => {
 
           <LabelInput v-model="flawRhCvss.score" label="CVSSv3 Score" type="text" />
           <div class="row">
-            <div :class="['col', { 'cvss-button-div': displayCvssNISTForm }]">
-              <LabelStatic v-model="flawNvdCvssScore" label="NVD CVSSv3" type="text" />
+            <div class="col">
+              <LabelDiv label="NVD CVSSv3">
+                <div class="form-control text-break h-100">
+                  <div class="p-0 h-100">
+                    <span
+                      v-for="char in highlightedNvdCvssScore"
+                      :key="char.char"
+                      :class="{'text-primary': char.isHighlighted}"
+                    >
+                      {{ char.char }}
+                    </span>
+                  </div>
+                </div>
+              </LabelDiv>
             </div>
-            <div v-if="displayCvssNISTForm" class="col-auto align-self-end mb-3">
+            <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
                 :flaw-summary="flaw.description"
                 :bugzilla="bugzillaLink"
                 :cvss="cvssString"
-                :nistcvss="flawNvdCvssScore?.toString()"
+                :nistcvss="nvdCvssString"
               />
             </div>
+            <span 
+              v-if="shouldDisplayEmailNistForm" 
+              class="text-info bg-white px-3 py-2 cvss-score-error"
+            >
+              Explain non-obvious CVSSv3 score metrics
+            </span>
           </div>
           <LabelEditable
             v-model="flaw.cwe_id"
@@ -473,7 +486,8 @@ form.osim-flaw-form :deep(*) {
   max-width: 80ch;
 }
 
-.cvss-button-div {
-  width: 60%;
+.cvss-score-error{
+  margin-top: -15px;
 }
+
 </style>
