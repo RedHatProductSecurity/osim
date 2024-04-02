@@ -10,7 +10,7 @@ from features.utils import (
     generate_cve,
     generate_cwe,
     generate_random_text,
-    go_to_first_flaw_detail_page
+    go_to_specific_flaw_detail_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 
@@ -73,7 +73,7 @@ def step_impl(context, action):
 
 @then('The document text fields are updated')
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     fields = context.texts.keys()
@@ -97,7 +97,7 @@ def step_impl(context):
 
 @then("A new acknowledgement added to the flaw")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
@@ -115,7 +115,7 @@ def step_impl(context, field):
 
 @then('The dropdown {field} value is updated')
 def step_impl(context, field):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     _, v = flaw_detail_page.get_select_value(field)
     assert context.selected == v, f"{field} value should be {context.selected}, got {v}"
@@ -138,7 +138,7 @@ def step_impl(context):
 
 @then("Acknowledgement is changed")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
@@ -157,7 +157,7 @@ def step_impl(context):
 
 @then("Acknowledgement is removed from flaw")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
@@ -179,7 +179,7 @@ def step_impl(context):
 
 @then("The random input fields are updated")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     for value in context.field_values:
         flaw_detail_page.check_value_exist(value)
@@ -206,7 +206,7 @@ def step_impl(context):
 
 @then("The CVE ID is updated")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.value)
     context.browser.quit()
@@ -228,7 +228,7 @@ def step_impl(context, action):
 
 @then("The CWE ID is updated")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value('cweid')
     assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
@@ -246,7 +246,7 @@ def step_impl(context):
 
 @then("The Reported Date is updated")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
     get_value = flaw_detail_page.get_input_value("reportedDate")
@@ -256,9 +256,9 @@ def step_impl(context):
 
 def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
-    go_to_first_flaw_detail_page(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page.click_button_with_js("addReferenceBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     if external:
         flaw_detail_page.add_reference_select_external_type()
     flaw_detail_page.add_reference_set_link_url(value)
@@ -271,7 +271,7 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
 @when("I add two external references to the flaw")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.delete_all_reference()
     # add first
     context.first_value = f"https://test.com/{generate_random_text()}"
@@ -283,9 +283,9 @@ def step_impl(context):
 
 @then("Two external references added")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.first_value)
     flaw_detail_page.check_value_exist(context.second_value)
     context.browser.quit()
@@ -301,9 +301,9 @@ def step_impl(context):
 
 @then("Only one RHSB reference can be added")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.first_value)
     flaw_detail_page.check_value_not_exist(context.second_value)
     context.browser.quit()
@@ -342,15 +342,15 @@ def step_impl(context):
 @when("I delete a reference from a flaw")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
 
     try:
         context.expected = flaw_detail_page.get_input_value("firstReferenceDescription")
     except ElementNotFoundException:
         context.expected = f"https://test.com/{generate_random_text()}"
         add_a_reference_to_first_flaw(context, context.expected, "referenceCreatedMsg")
-        go_to_first_flaw_detail_page(context.browser)
-        flaw_detail_page.click_btn("referenceDropdownBtn")
+        go_to_specific_flaw_detail_page(context.browser)
+        flaw_detail_page.click_reference_dropdown_button()
 
     flaw_detail_page.click_button_with_js("firstReferenceDeleteBtn")
     flaw_detail_page.click_btn('referenceDelConfirmBtn')
@@ -359,9 +359,9 @@ def step_impl(context):
 
 @then("The reference is deleted from this flaw")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_not_exist(context.expected)
     context.browser.quit()
 
@@ -369,15 +369,15 @@ def step_impl(context):
 @when("I edit a internal/external reference")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
 
     try:
         flaw_detail_page.get_input_value("firstReferenceDescription")
     except ElementNotFoundException:
         v = f"https://access.redhat.com/{generate_random_text()}"
         add_a_reference_to_first_flaw(context, v, "referenceCreatedMsg")
-        go_to_first_flaw_detail_page(context.browser)
-        flaw_detail_page.click_btn("referenceDropdownBtn")
+        go_to_specific_flaw_detail_page(context.browser)
+        flaw_detail_page.click_reference_dropdown_button()
 
     context.expected = f"https://access.redhat.com/{generate_random_text()}"
     flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
@@ -392,8 +392,27 @@ def step_impl(context):
 
 @then("The reference information is changed")
 def step_impl(context):
-    go_to_first_flaw_detail_page(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.expected)
+    context.browser.quit()
+
+
+@when("I add a RHSB reference to the flaw with incorrect link")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_reference_dropdown_button()
+    flaw_detail_page.delete_all_reference()
+    context.v = f"https://test.com/{generate_random_text()}"
+    add_a_reference_to_first_flaw(
+        context, context.v, "rhsbReferenceLinkFormatErrorMsg", external=False)
+
+
+@then("I got an error message and no RHSB reference added to the flaw")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_reference_dropdown_button()
+    flaw_detail_page.check_value_not_exist(context.v)
     context.browser.quit()
