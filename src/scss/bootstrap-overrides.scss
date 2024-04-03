@@ -2,17 +2,17 @@
 
 @font-face {
   font-family: 'Red Hat Text';
-  src: url('/fonts/RedHatTextVFModified.woff2');
+  src: url('@/assets/fonts/RedHatTextVFModified.woff2');
 }
 
 @font-face {
   font-family: 'Red Hat Display';
-  src: url('/fonts/RedHatDisplayVFModified.woff2');
+  src: url('@/assets/fonts/RedHatDisplayVFModified.woff2');
 }
 
 @font-face {
   font-family: 'Red Hat Mono';
-  src: url('/fonts/RedHatMono-VariableFont_wght.ttf');
+  src: url('@/assets/fonts/RedHatMono-VariableFont_wght.ttf');
 }
 
 $font-family-base: 'Red Hat Text';

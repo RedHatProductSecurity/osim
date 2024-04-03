@@ -7,6 +7,11 @@ import Settings from '../Settings.vue';
 
 const subject = mount(Settings, {
   plugins: [mockSettingsStore],
+  global: {
+    stubs: {
+      ChangeLog: true
+    }
+  }
 });
 
 describe('Settings', () => {

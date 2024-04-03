@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import type { SettingsType } from '@/stores/SettingsStore';
+import ChangeLog from '@/components/ChangeLog.vue';
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
@@ -133,9 +134,7 @@ const errors = {
         </div>
       </div>
     </form>
-
-    <a href="/CHANGELOG.md">Changelog</a>
-
+    <ChangeLog />
   </div>
 </template>
 

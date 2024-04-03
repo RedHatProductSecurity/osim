@@ -5,3 +5,5 @@ openshift
 node_modules
 dist
 /selenium
+openapi.yml
+public/CHANGELOG.md
