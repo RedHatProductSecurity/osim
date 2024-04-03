@@ -96,7 +96,7 @@ function linkify(text: string) {
 
 <template>
   <section class="osim-comments">
-    <h4 class="mt-3 mb-2">Comments</h4>
+    <h4 class="mb-2">Comments</h4>
     <header class="nav">
       <span
         v-for="filter in filters"

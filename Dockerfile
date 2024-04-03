@@ -18,15 +18,12 @@ RUN --mount=target=/mnt \
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 EXPOSE 8080
+ARG OSIM_ENV=dev
 
 STOPSIGNAL SIGQUIT
 
 RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx \
     && microdnf clean all \
-# Set up container logging
-    && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log \
-    && chmod 755 /var/log/nginx \
 # Set up unprivileged nginx
     && sed -i '/^user nginx;$/d' /etc/nginx/nginx.conf \
     && sed -i '/^pid \/run\/nginx.pid;$/c pid /tmp/nginx.pid;' /etc/nginx/nginx.conf \

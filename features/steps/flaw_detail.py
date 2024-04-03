@@ -1,10 +1,9 @@
-import re
-import rstr
 import time
 from datetime import datetime
 
 from behave import when, then
 from selenium.webdriver.common.by import By
+from seleniumpagefactory.Pagefactory import ElementNotFoundException
 
 from features.utils import (
     wait_for_visibility_by_locator,
@@ -313,7 +312,6 @@ def step_impl(context):
 @when("I update the flaw and click 'Reset Changes' button")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    go_to_first_flaw_detail_page(context.browser)
     context.title = flaw_page.get_input_value('title')
     flaw_page.set_input_field('title', generate_random_text())
     _, context.impact = flaw_page.get_select_value('impact')
@@ -338,4 +336,64 @@ def step_impl(context):
     assert context.source == flaw_page.get_select_value('source')[1]
     assert context.reported_date == flaw_page.get_input_value('reportedDate')
     assert context.description == flaw_page.get_document_text_field('description')
+    context.browser.quit()
+
+
+@when("I delete a reference from a flaw")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    try:
+        context.expected = flaw_detail_page.get_input_value("firstReferenceDescription")
+    except ElementNotFoundException:
+        context.expected = f"https://test.com/{generate_random_text()}"
+        add_a_reference_to_first_flaw(context, context.expected, "referenceCreatedMsg")
+        go_to_first_flaw_detail_page(context.browser)
+        flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    flaw_detail_page.click_button_with_js("firstReferenceDeleteBtn")
+    flaw_detail_page.click_btn('referenceDelConfirmBtn')
+    flaw_detail_page.wait_msg("referenceDeletedMsg")
+
+
+@then("The reference is deleted from this flaw")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.check_value_not_exist(context.expected)
+    context.browser.quit()
+
+
+@when("I edit a internal/external reference")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    try:
+        flaw_detail_page.get_input_value("firstReferenceDescription")
+    except ElementNotFoundException:
+        v = f"https://access.redhat.com/{generate_random_text()}"
+        add_a_reference_to_first_flaw(context, v, "referenceCreatedMsg")
+        go_to_first_flaw_detail_page(context.browser)
+        flaw_detail_page.click_btn("referenceDropdownBtn")
+
+    context.expected = f"https://access.redhat.com/{generate_random_text()}"
+    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
+    flaw_detail_page.clear_text_with_js("addReferenceLinkUrlInput")
+    flaw_detail_page.add_reference_set_link_url(context.expected)
+    flaw_detail_page.clear_text_with_js('addReferenceDescriptionInput')
+    flaw_detail_page.add_reference_set_description(context.expected)
+    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
+    flaw_detail_page.click_button_with_js("saveReferenceBtn")
+    flaw_detail_page.wait_msg("referenceUpdatedMsg")
+
+
+@then("The reference information is changed")
+def step_impl(context):
+    go_to_first_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_btn("referenceDropdownBtn")
+    flaw_detail_page.check_value_exist(context.expected)
     context.browser.quit()

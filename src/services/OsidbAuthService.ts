@@ -1,15 +1,23 @@
-import axios, { type AxiosError } from 'axios';
+import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { z } from 'zod';
-import type { AxiosRequestConfig } from 'axios';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '../stores/UserStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { useToastStore } from '@/stores/ToastStore';
 
 const RefreshResponse = z.object({
-  access: z.string()
+  access: z.string(),
 });
 
 export async function osidbFetch(config: AxiosRequestConfig) {
+  if (osimRuntime.value.readOnly && config.method?.toLowerCase() !== 'get') {
+    useToastStore().addToast({
+      title: 'Operation Not Permitted',
+      body: 'Operation prevented since OSIM is in read-only mode',
+      css: 'danger',
+    });
+    return Promise.reject(new Error('OSIM is in read-only mode'));
+  }
   const settingsStore = useSettingsStore();
   const accessToken = await getNextAccessToken();
   config.headers = config.headers || {};

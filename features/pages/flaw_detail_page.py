@@ -85,6 +85,10 @@ class FlawDetailPage(PageFactory):
         "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
         "addMultipleRHSBReferenceErrorMsg": ("XPATH", "//div[contains(text(),'A flaw has 2 article links, but only 1 is allowed.')]"),
         "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[2]"),
+        "firstReferenceDeleteBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[2]"),
+        "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
+        "firstReferenceEditBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[1]"),
+        "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
@@ -268,6 +272,11 @@ class FlawDetailPage(PageFactory):
         element = getattr(self, btn_element)
         element.execute_script("arguments[0].scrollIntoView(true);")
         element.execute_script("arguments[0].click();")
+
+    def clear_text_with_js(self, element_name):
+        element = getattr(self, element_name)
+        element.execute_script("arguments[0].scrollIntoView(true);")
+        element.execute_script("arguments[0].value = '';")
 
     def delete_all_reference(self):
         # edit ((//div[@class='osim-list-edit'])[n]/div[2]/button)[1]

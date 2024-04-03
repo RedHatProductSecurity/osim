@@ -107,8 +107,9 @@ def set_bugzilla_api_key(browser):
     settings_page.set_bugzilla_api_key(BUGZILLA_API_KEY)
 
 
-def check_flaw_list(browser):
+def go_to_home_page(browser):
     home_page = HomePage(browser)
+    home_page.click_flaw_index_btn()
     home_page.flaw_list_exist()
 
 
@@ -117,11 +118,9 @@ def go_to_first_flaw_detail_page(browser):
     Enter first flaw detail page which displayed in index page.
     """
     # From the setting page back to flaw list
-    home_page = HomePage(browser)
-    home_page.click_flaw_index_btn()
-    home_page.flaw_list_exist()
-
+    go_to_home_page(browser)
     # Get the first flaw and go to detail table
+    home_page = HomePage(browser)
     home_page.click_btn("firstFlawLink")
 
     flaw_detail_page = FlawDetailPage(browser)

@@ -21,5 +21,7 @@ Feature: Flaw filter testing
       Then I am able to view flaws matching "source" and the flaws "count" is correct
 
     Scenario: Filter my issues
-     When I check 'My Issues' checkbox in index page
-     Then All issues assigned to me should be listed in flaw table
+      Given I set the bugzilla api key and jira api key
+      Given I assgin one issue to me
+      When I check 'My Issues' checkbox in index page
+      Then All issues assigned to me should be listed in flaw table

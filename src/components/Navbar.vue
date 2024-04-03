@@ -9,6 +9,7 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useElementBounding } from '@vueuse/core';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
@@ -59,6 +60,7 @@ function onSearch(query: string) {
       </RouterLink>
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
+        <span class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
       </RouterLink>
       <!-- <div class="osim-env">
         <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>
@@ -148,7 +150,7 @@ function onSearch(query: string) {
           <li>
             <RouterLink class="dropdown-item" :to="{ name: 'settings' }">Settings</RouterLink>
           </li>
-          <li>
+          <li v-if="osimRuntime.env === 'dev'">
             <RouterLink class="dropdown-item" :to="{ name: 'widget-test' }">Widget Test</RouterLink>
           </li>
           <li>

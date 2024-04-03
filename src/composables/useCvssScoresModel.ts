@@ -25,9 +25,41 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
   const nistCvssScore = computed(() =>
     flaw.value.cvss_scores.find((score) => score.issuer === 'NIST'),
   );
-  const flawNvdCvssScore = computed(
-    () => nistCvssScore.value?.score || flaw.value.nvd_cvss3 || '-',
-  );
+
+  const nvdCvssString = computed(() => {
+    const values = [nistCvssScore.value?.score, nistCvssScore.value?.vector].filter(Boolean);
+    return values.join('/') || flaw.value.nvd_cvss3 || '-';
+  });
+
+  const cvssString = computed(() => {
+    const values = [flawRhCvss.value?.score, flawRhCvss.value?.vector].filter(Boolean);
+    return values.join('/');
+  });
+
+  const shouldDisplayEmailNistForm = computed(() => {
+    if(cvssString.value === '' || nvdCvssString.value === '-') {
+      return false;
+    }
+    return `${cvssString.value}` !== `${nvdCvssString.value}`;
+  });
+
+  const highlightedNvdCvssScore = computed(() => {
+    const result = [];
+    const nvdCvssValue = nvdCvssString.value;
+    const cvssValue = cvssString.value;
+    const maxLength = Math.max(nvdCvssValue.length, cvssValue.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const charFromFlaw = i < nvdCvssValue.length ? nvdCvssValue[i] : '';
+      const charFromCvss = i < cvssValue.length ? cvssValue[i] : '';
+      result.push({ 
+        char: charFromFlaw, 
+        isHighlighted: shouldDisplayEmailNistForm.value && charFromFlaw !== charFromCvss,
+      });
+    }
+
+    return result;
+  });
 
   async function saveCvssScores() {
     if (flawRhCvss.value.created_dt) {
@@ -55,8 +87,11 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
 
   return {
     wasCvssModified,
-    flawNvdCvssScore,
     flawRhCvss,
+    shouldDisplayEmailNistForm,
+    highlightedNvdCvssScore,
+    cvssString,
+    nvdCvssString,
     saveCvssScores,
   };
 }
