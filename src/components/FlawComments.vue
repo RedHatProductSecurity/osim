@@ -31,7 +31,7 @@ function parseGroups(serializedJson: string) {
 }
 
 function parseIsPrivate(isPrivate: string) {
-  return isPrivate.constructor === String 
+  return isPrivate?.constructor === String
     ? isPrivate.toLowerCase() === 'true'
     : Boolean(isPrivate);
 }
