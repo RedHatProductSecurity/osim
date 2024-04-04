@@ -14,6 +14,7 @@ import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
+import LabelCollapsable from '../widgets/LabelCollapsable.vue';
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
@@ -186,6 +187,11 @@ describe('FlawForm', () => {
       .findAllComponents(LabelEditable)
       .find((component) => component.props().label === 'Assignee');
     expect(assigneeField?.exists()).toBe(true);
+
+    const trackers = subject
+      .findAllComponents(LabelCollapsable)
+      .find((component) => component.props().label.startsWith('Trackers'));
+    expect(trackers?.exists()).toBe(true);
   });
 
   it('shows the expected fields in create mode', async () => {
@@ -265,6 +271,11 @@ describe('FlawForm', () => {
       .findAllComponents(LabelEditable)
       .find((component) => component.props().label === 'Assignee');
     expect(assigneeField?.exists()).toBe(true);
+
+    const trackers = subject
+      .findAllComponents(LabelCollapsable)
+      .find((component) => component.props().label.startsWith('Trackers'));
+    expect(trackers).toBe(undefined);
   });
 
   it('displays correct Assignee field value from props', async () => {
