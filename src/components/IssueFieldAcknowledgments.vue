@@ -41,14 +41,13 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="d-flex">
+          <div class="ps-3">
             <LabelInput
               v-model="items[itemIndex].name"
               label="Name"
               :error="error[itemIndex].name"
               type="text"
             />
-            <p class="px-3 my-2">from</p>
             <LabelInput
               v-model="items[itemIndex].affiliation"
               label="Affiliation"
