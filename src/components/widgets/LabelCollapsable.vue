@@ -8,7 +8,7 @@ const props = withDefaults(
     isExpandable?: boolean | undefined;
   }>(),
   {
-    isExpandable: undefined,
+    isExpandable: true,
     isExpanded: undefined,
     label: '',
   },
