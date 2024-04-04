@@ -1,3 +1,4 @@
+import { type ZodFlawType } from '@/types/zodFlaw';
 import axios from 'axios';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
@@ -9,6 +10,7 @@ import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import IssueFieldStatus from '@/components/IssueFieldStatus.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelInput from '../widgets/LabelInput.vue';
@@ -43,8 +45,7 @@ vi.mock('vue-router', async () => {
 });
 
 describe('FlawForm', () => {
-  let subject: VueWrapper<InstanceType<typeof FlawForm>>;
-  function mountWithProps(props: typeof FlawForm.$props) {
+  function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw(), mode: 'edit' }) {
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props,
@@ -57,6 +58,7 @@ describe('FlawForm', () => {
       },
     });
   }
+  let subject: VueWrapper<InstanceType<typeof FlawForm>>;
   beforeAll(() => {
     // Store below depends on global pinia test instance
     createTestingPinia({
@@ -281,7 +283,7 @@ describe('FlawForm', () => {
     const statusField = subject.findComponent(IssueFieldStatus);
 
     expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
-    expect(statusField?.props().classification.state).toBe('REVIEW');
+    expect(statusField?.props().classification.state).toBe('NEW');
   });
 
   it('displays promote and reject buttons for status', async () => {
@@ -299,7 +301,7 @@ describe('FlawForm', () => {
         ?.findAll('button')
         ?.find((el) => el.text().includes('Promote to'))
         ?.text(),
-    ).toBe('Promote to New');
+    ).toBe('Promote to Triage');
   });
 
   it('shows a modal for reject button clicks', async () => {
@@ -417,9 +419,74 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
     const spanWithClass = nvdCvssField?.find('span.text-primary');
-    expect(spanWithClass.exists()).toBe(true);
+    expect(spanWithClass?.exists()).toBe(true);
+  });
+
+  it('if embargoed and public date is in the past, it returns an error', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = '2022-02-01';
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe('An embargoed flaw must have a public date in the future.');
+  });
+  
+  it('if embargoed and public date is later today (in the future) it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe(null);
+  });
+
+  it('if embargoed and public date is in the future, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe(null);
+  });
+  
+  it('if NOT embargoed and public date is in the future, it returns an error ', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = '3000-01-01';
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe('A public flaw cannot have a public date in the future.');
+  });
+  
+  it('if NOT embargoed and public date is today or in the past, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = DateTime.now().toISODate() + 'T00:00:00Z';
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe(null);
+  });
+  
+  it('if NOT embargoed and public date is null, it returns an error message', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = false;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe('A public flaw must have a public date set.');
+  });
+  
+  it('if embargoed and public date is null, it returns null', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw, mode: 'edit' });
+    expect((subject.vm as any).errors.unembargo_dt)
+      .toBe(null);
   });
 });
+
+
 
 function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
   return axios({
@@ -433,13 +500,12 @@ function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
     .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
 }
 
-function sampleFlaw() {
+function sampleFlaw(): ZodFlawType {
   return {
     uuid: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
     type: 'VULNERABILITY',
     cve_id: 'CVE-2007-97239',
-    state: 'NEW',
-    resolution: '',
+    // resolution: '',
     impact: 'LOW',
     component: 'reality.',
     title: 'sample title',
@@ -459,7 +525,7 @@ function sampleFlaw() {
     cvss3: '',
     cvss3_score: null,
     nvd_cvss3: '',
-    is_major_incident: true,
+    // is_major_incident: true,
     major_incident_state: 'APPROVED',
     nist_cvss_validation: '',
     affects: [
@@ -472,10 +538,10 @@ function sampleFlaw() {
         ps_module: 'openshift-4',
         ps_component: 'openshift',
         impact: 'LOW',
-        cvss2: '',
-        cvss2_score: null,
-        cvss3: '',
-        cvss3_score: null,
+        // cvss2: '',
+        // cvss2_score: null,
+        // cvss3: '',
+        // cvss3_score: null,
         trackers: [],
         delegated_resolution: null,
         cvss_scores: [],
@@ -552,7 +618,7 @@ function sampleFlaw() {
           bug_id: '1984541',
           creator: 'ex-maple@example.com',
           creator_id: '412888',
-          is_private: 'False',
+          is_private: false,
           attachment_id: null,
           creation_time: '2021-09-13T09:09:38Z',
           private_groups: '[]',
@@ -574,7 +640,7 @@ function sampleFlaw() {
           bug_id: '1984541',
           creator: 'ex-maple@example.com',
           creator_id: '412888',
-          is_private: 'True',
+          is_private: true,
           attachment_id: null,
           creation_time: '2021-09-13T09:12:33Z',
           private_groups: '[\'nunya\']',
@@ -662,7 +728,8 @@ function sampleFlaw() {
           bug_id: '1984541',
           creator: 'former-maple@example.com',
           creator_id: '171532',
-          is_private: 'True',
+          // is_private: 'True',
+          is_private: true,
           attachment_id: null,
           creation_time: '2023-07-13T02:39:44Z',
           private_groups: '[\'nunya\']',
@@ -672,7 +739,7 @@ function sampleFlaw() {
       },
     ],
     meta_attr: { bz_id: '1984541' },
-    package_versions: [],
+    // package_versions: [],
     acknowledgments: [],
     references: [],
     cvss_scores: [
@@ -702,16 +769,16 @@ function sampleFlaw() {
       },
     ],
     embargoed: false,
-    created_dt: '2021-09-13T09:09:38Z',
+    // created_dt: '2021-09-13T09:09:38Z',
     updated_dt: '2023-12-06T17:12:21Z',
-    classification: { workflow: 'DEFAULT', state: 'REVIEW' },
-    group_key: '',
+    classification: { workflow: 'DEFAULT', state: 'NEW' },
+    // group_key: '',
     owner: '',
-    task_key: '',
+    // task_key: '',
     team_id: '',
-    dt: '2024-01-17T22:31:19.131516Z',
-    revision: 'b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c',
-    version: '3.5.2',
-    env: 'stage',
+    // dt: '2024-01-17T22:31:19.131516Z',
+    // revision: 'b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c',
+    // version: '3.5.2',
+    // env: 'stage',
   };
 }

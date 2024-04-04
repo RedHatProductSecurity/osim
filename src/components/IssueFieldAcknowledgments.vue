@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import EditableList from '@/components/widgets/EditableList.vue';
+import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+
+defineProps<{
+  error: Record<string, any>;
+}>();
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 
@@ -36,27 +41,45 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="d-flex">
-            <input v-model="items[itemIndex].name" class="form-control" type="text" />
-            <p class="px-3 my-2">from</p>
-            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
+          <div class="ps-3">
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
         </div>
       </template>
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="d-flex">
-            <input v-model="items[itemIndex].name" class="form-control" type="text" />
-            <p class="px-3 my-2">from</p>
-            <input v-model="items[itemIndex].affiliation" class="form-control" type="text" />
-            <button
-              class="btn osim-cancel-new-acknowledgment"
-              @click="emit('acknowledgment:cancel-new', items[itemIndex])"
-            >
-              <i class="bi bi-x" />
-            </button>
+          <div class="ps-3">
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
+          <button
+            class="btn osim-cancel-new-acknowledgment"
+            @click="emit('acknowledgment:cancel-new', items[itemIndex])"
+          >
+            <i class="bi bi-x" />
+          </button>
         </div>
       </template>
       <template #modal-header>

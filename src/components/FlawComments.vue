@@ -30,12 +30,18 @@ function parseGroups(serializedJson: string) {
   }
 }
 
+function parseIsPrivate(isPrivate: string) {
+  return isPrivate?.constructor === String
+    ? isPrivate.toLowerCase() === 'true'
+    : Boolean(isPrivate);
+}
+
 const transformedComments = computed(() =>
   props.comments.map((comment) => ({
     ...comment,
     meta_attr: {
       ...comment.meta_attr,
-      is_private: (comment.meta_attr?.is_private || '').toLowerCase() === 'true',
+      is_private: parseIsPrivate(comment.meta_attr?.is_private),
       private_groups: parseGroups(comment.meta_attr?.private_groups),
     },
   })),
