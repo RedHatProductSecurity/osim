@@ -1,57 +1,9 @@
 <script setup lang="ts">
 import IssueQueue from '../components/IssueQueue.vue';
-import { ref } from 'vue';
-import { getFlaws } from '@/services/FlawService';
+import { useFlaws }  from '../composables/useFlaws';
 
-const isFinalPageFetched = ref(false);
-const isLoading = ref(false);
-const issues = ref<any[]>([]);
-const offset = ref(0); // Added offset state variable
-const pagesize = 20;
+const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
 
-function fetchFlaws(params: any = {}) {
-  offset.value = 0;
-  isFinalPageFetched.value = false;  
-  isLoading.value = true;
-
-  getFlaws(offset.value, 100, params.value)
-    .then((response) => {
-      if (response.data.results.length < pagesize) {
-        isFinalPageFetched.value = true;
-      }
-      issues.value = response.data.results;
-      offset.value += response.data.results.length; // Increase the offset for next fetch
-    })
-    .catch((err) => {
-      console.error('IssueQueue: getFlaws error: ', err);
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-}
-
-function loadMoreFlaws(params: any = {}) {
-  if (isLoading.value || isFinalPageFetched.value) {
-    return; // Early exit if already loading
-  }
-  isLoading.value = true;
-  offset.value += pagesize;
-
-  getFlaws(offset.value, pagesize, params.value)
-    .then((response) => {
-      if (response.data.results.length < pagesize) {
-        isFinalPageFetched.value = true;
-      }
-      issues.value = [...issues.value, ...response.data.results];
-      offset.value += response.data.results.length;
-    })
-    .catch((err) => {
-      console.error('Error fetching more flaws: ', err);
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-}
 </script>
 
 <template>
@@ -60,7 +12,7 @@ function loadMoreFlaws(params: any = {}) {
       :issues="issues"
       :isLoading="isLoading"
       :isFinalPageFetched="isFinalPageFetched"
-      @flaws:fetch="fetchFlaws"
+      @flaws:fetch="loadFlaws"
       @flaws:load-more="loadMoreFlaws"
     />
   </main>
