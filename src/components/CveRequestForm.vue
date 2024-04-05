@@ -18,6 +18,7 @@ const props = defineProps<{
   description: string;
   osimLink: string;
   bugzillaLink: string;
+  embargoed: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -63,7 +64,7 @@ function addPublicCveRequestComment() {
     // new Promise((resolve, reject) => {
     //   setTimeout(resolve, 5000);
     // })
-    postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested')
+    postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested', props.embargoed)
       .then(() => {
         commentSaved.value = true;
         savingComment.value = false;
