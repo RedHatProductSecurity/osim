@@ -10,6 +10,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import { useElementBounding } from '@vueuse/core';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { cveRegex } from '@/utils/helpers';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
@@ -29,7 +30,6 @@ watchEffect(() => {
 function quickMatchCVE(query: string) {
   // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
   // with optional surrounding whitespace.
-  const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/;
   // match[1] will be the CVE ID if it exists
   return query.match(cveRegex)?.[1];
 }
@@ -60,7 +60,7 @@ function onSearch(query: string) {
       </RouterLink>
       <RouterLink to="/" class="osim-home-text">
         <abbr title="Open Security Issue Management">OSIM</abbr>
-        <span class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
+        <span v-if="osimRuntime.readOnly" class="rounded-pill badge bg-danger ms-2">Read Only Mode</span>
       </RouterLink>
       <!-- <div class="osim-env">
         <span class="badge bg-secondary osim-env-label">[ {{ userStore.env.toUpperCase() }} ]</span>

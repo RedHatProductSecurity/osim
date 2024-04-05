@@ -80,22 +80,22 @@ export async function setup() {
         status.value = OsimRuntimeStatus.READY;
       }
     });
-  // await fetchOsimLastCommit();
+
 }
 
-// async function fetchOsimLastCommit() {
-//   const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
-//   return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
-//     method: 'GET',
-//     cache: 'no-cache',
-//   })
-//     .then((response) => response.json())
-//     .then((json) => {
-//       osimLastCommit.value.sha = json.sha.substring(0, 7);
-//       osimLastCommit.value.date = json.commit.author.date;
-//     })
-//     .catch(console.error);
-// }
+async function fetchOsimVersionFallback() {
+  const branch = osidbHealth.value.env === 'stage' ? 'integration' : 'main';
+  return fetch(`https://api.github.com/repos/RedHatProductSecurity/osim/commits/${branch}`, {
+    method: 'GET',
+    cache: 'no-cache',
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      runtime.value.osimVersion.rev = json.sha.substring(0, 7);
+      runtime.value.osimVersion.tag = '[fetched from Github]';
+    })
+    .catch(console.error);
+}
 
 function fetchRuntime() {
   return fetch('/runtime.json', {
@@ -116,6 +116,9 @@ function fetchRuntime() {
           runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
         // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
         runtime.value.osimVersion.timestamp = new Date().toISOString();
+      }
+      if (runtime.value.osimVersion.rev === '' && runtime.value.osimVersion.tag === '') {
+        fetchOsimVersionFallback();
       }
     })
     .catch((e) => {

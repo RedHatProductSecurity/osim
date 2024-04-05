@@ -30,12 +30,18 @@ function parseGroups(serializedJson: string) {
   }
 }
 
+function parseIsPrivate(isPrivate: string) {
+  return isPrivate?.constructor === String
+    ? isPrivate.toLowerCase() === 'true'
+    : Boolean(isPrivate);
+}
+
 const transformedComments = computed(() =>
   props.comments.map((comment) => ({
     ...comment,
     meta_attr: {
       ...comment.meta_attr,
-      is_private: (comment.meta_attr?.is_private || '').toLowerCase() === 'true',
+      is_private: parseIsPrivate(comment.meta_attr?.is_private),
       private_groups: parseGroups(comment.meta_attr?.private_groups),
     },
   })),
@@ -96,7 +102,7 @@ function linkify(text: string) {
 
 <template>
   <section class="osim-comments">
-    <h4 class="mt-3 mb-2">Comments</h4>
+    <h4 class="mb-2">Comments</h4>
     <header class="nav">
       <span
         v-for="filter in filters"

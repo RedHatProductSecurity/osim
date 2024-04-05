@@ -7,6 +7,7 @@ withDefaults(
     modelValue: string | null;
     options: string[];
     label: string;
+    error: string | null;
   }>(),
   {
     modelValue: '',
@@ -30,6 +31,7 @@ withDefaults(
             // },
           }"
           class="form-select"
+          :class="{'is-invalid': error != null}"
           @change="
             $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)
           "
@@ -43,14 +45,26 @@ withDefaults(
             {{ option }}
           </option>
         </select>
+        <div
+          v-if="error"
+          class="invalid-tooltip"
+        >{{ error }}</div>
       </div>
-      <!--<pre>select value: {{modelValue}}</pre>-->
     </div>
   </label>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .osim-input {
   display: block;
+  position: relative;
+
+  .invalid-tooltip {
+    display: none;
+  }
+  
+  &:hover .invalid-tooltip {
+    display: block;
+  }
 }
 </style>

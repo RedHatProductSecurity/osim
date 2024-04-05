@@ -12,6 +12,7 @@ const props = defineProps<{
   mode: string;
   theAffects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
+  error: Record<string, any>[];
 }>();
 
 const emit = defineEmits<{
@@ -93,7 +94,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 </script>
 
 <template>
-  <div v-if="theAffects && mode === 'edit'" class="osim-affects mb-3">
+  <div v-if="theAffects && mode === 'edit'" class="osim-affects">
     <h4 class="mb-4">
       Affected Offerings
 
@@ -145,6 +146,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
             :componentName="`${componentName}`"
             :affectedComponent="affectedComponent"
             :isExpanded="directoryOfCollapsed[moduleName][componentName].isExpanded"
+            :error="error[theAffects.indexOf(affectedComponent)]"
             @setExpanded="toggle(directoryOfCollapsed[moduleName][componentName])"
             @remove="emit('remove', affectedComponent)"
             @file-tracker="emit('file-tracker', $event)"
@@ -156,6 +158,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
     <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
       <AffectedOfferingForm
         v-model="ungroupedAffects[affectIndex]"
+        :error="error[affectIndex]"
         @remove="emit('remove', affect)"
       />
     </div>

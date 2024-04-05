@@ -42,7 +42,12 @@ function onReset() {
       />
       <!--      <LabelEditable v-model="sampleForm.bug" label="Invalid" type="invalid"/>-->
       <LabelInput v-model="sampleForm.fruitRecipient" label="Recipient of the fruit" />
-      <LabelSelect v-model="sampleForm.chosenFruit" :options="fruits" label="Fruit" />
+      <LabelSelect
+        v-model="sampleForm.chosenFruit"
+        :options="fruits"
+        label="Fruit"
+        :error="null"
+      />
       <LabelTextarea v-model="sampleForm.fruitNotes" label="Notes about the fruit" error="foobar" />
       <LabelCheckbox v-model="sampleForm.shipOvernight" label="Ship Overnight" />
 

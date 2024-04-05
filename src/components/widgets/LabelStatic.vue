@@ -13,16 +13,21 @@ defineProps<{
       <span class="top-label">
         {{ label }}
       </span>
-      <div :class="{ 'alert alert-warning': !modelValue }">
-        <span class="form-control">{{ modelValue }}</span>
+      <div class="top-left-corner">
+        <span 
+          class="form-control top-left-corner" 
+          :class="{ 'alert alert-warning': !modelValue }"
+        >
+          {{ modelValue }}
+        </span>
       </div>
     </div>
     <div v-else class="row">
       <span class="form-label col-3">
         {{ label }}
       </span>
-      <div class="col-9" :class="{ 'alert alert-warning': !modelValue }">
-        <span class="form-control">{{ modelValue }}</span>
+      <div class="col-9">
+        <span class="form-control" :class="{ 'alert alert-warning': !modelValue }">{{ modelValue }}</span>
       </div>
     </div>
   </div>
@@ -39,5 +44,9 @@ defineProps<{
   border-top-left-radius: .5rem;
   border-top-right-radius: .5rem;
   padding: .375rem 1rem .25rem;
+}
+
+.top-left-corner {
+  border-top-left-radius: 0;
 }
 </style>

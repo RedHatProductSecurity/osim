@@ -297,7 +297,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
     </div>
     <div
       v-if="!readOnly && error"
-      class="invalid-tooltip d-block"
+      class="invalid-tooltip"
     >{{ error }}</div>
   <!--<br/>-->
   <!--<pre>-->
@@ -322,45 +322,49 @@ function osimFormatDate(date: Date | string | undefined | null): string {
 
 //@import "bootstrap/scss/bootstrap";
 
-
-.flash-bg-enter-active {
-  /* The vue framework checks for root-level transition-duration.
-  Without this, the class is not automatically applied for the correct duration.
-  Alternatively, :duration="ms" can be set on the Transition component. */
-  transition-duration: 200ms;
-}
-
-.flash-bg-enter-active .osim-editable-date-value {
-  transition: background-color 200ms ease-out !important;
-}
-
-.flash-bg-enter-from .osim-editable-date-value {
-  background-color: #f00;
-}
-
-.flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
-  transition: none !important;
-  display: none !important;
-}
-
-.osim-editable-date {
-  @extend .input-group; // Use pure CSS instead of JS for hover
-  // Nest these for specificity
-  .osim-editable-date-value {
-    // border-color: transparent;  // TODO decide to keep the hovering effect?
-    @extend .form-control;
+.osim-editable-field {
+  &:hover .invalid-tooltip {
+    display: block;
   }
 
-  .osim-editable-date-value::before {
-    // Prevent field from collapsing when empty
-    content: '\a0';
-    display: inline-block;
-    width: 0;
+  .flash-bg-enter-active {
+    /* The vue framework checks for root-level transition-duration.
+    Without this, the class is not automatically applied for the correct duration.
+    Alternatively, :duration="ms" can be set on the Transition component. */
+    transition-duration: 200ms;
   }
 
-  .osim-editable-date-pen {
-    display: flex;
+  .flash-bg-enter-active .osim-editable-date-value {
+    transition: background-color 200ms ease-out !important;
+  }
+
+  .flash-bg-enter-from .osim-editable-date-value {
+    background-color: #f00;
+  }
+
+  .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
+    transition: none !important;
+    display: none !important;
+  }
+
+  .osim-editable-date {
+    @extend .input-group; // Use pure CSS instead of JS for hover
+    // Nest these for specificity
+    .osim-editable-date-value {
+      // border-color: transparent;  // TODO decide to keep the hovering effect?
+      @extend .form-control;
+    }
+
+    .osim-editable-date-value::before {
+      // Prevent field from collapsing when empty
+      content: '\a0';
+      display: inline-block;
+      width: 0;
+    }
+
+    .osim-editable-date-pen {
+      display: flex;
+    }
   }
 }
-
 </style>

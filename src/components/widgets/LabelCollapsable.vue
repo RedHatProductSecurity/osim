@@ -5,8 +5,10 @@ const props = withDefaults(
   defineProps<{
     label?: string;
     isExpanded?: boolean | undefined;
+    isExpandable?: boolean | undefined;
   }>(),
   {
+    isExpandable: true,
     isExpanded: undefined,
     label: '',
   },
@@ -28,7 +30,13 @@ function handleClick() {
 
 <template>
   <div class="osim-collapsable-label" v-bind="$attrs">
-    <button type="button" class="me-2" @click="handleClick">
+    <button
+      :disabled="!isExpandable"
+      type="button"
+      class="me-2"
+      :class="{ 'pe-none': !isExpandable }"
+      @click="handleClick"
+    >
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
       <slot name="label">

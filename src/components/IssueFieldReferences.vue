@@ -8,6 +8,10 @@ import { flawReferenceTypeValues } from '@/types/zodFlaw';
 
 const references = defineModel<ZodFlawReferenceType[]>({ default: null });
 
+defineProps<{
+  error: Record<string, any>;
+}>();
+
 const excludedReferenceTypes = ['SOURCE'];
 const allowedReferenceTypes = flawReferenceTypeValues.filter(
   (referenceType) => !excludedReferenceTypes.includes(referenceType),
@@ -54,16 +58,20 @@ function handleDelete(uuid: string, closeModal: () => void) {
             {{ referenceTypeLabel(type) }}
           </span>
         </a>
-        <div class="form-group">
+        <div class="form-group mt-2">
           <LabelStatic v-model="item.description" label="Description" hasTopLabelStyle />
         </div>
       </template>
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <LabelInput v-model="items[itemIndex].url" label="Link URL" />
-            <LabelTextarea v-model="items[itemIndex].description" label="Description" />
+          <div class="p-3 pt-4">
+            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error[itemIndex].url" />
+            <LabelTextarea
+              v-model="items[itemIndex].description" 
+              label="Description"
+              :error="error[itemIndex].description"
+            />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>
               <option
@@ -80,15 +88,19 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <div
-              class="text-end osim-cancel-new-reference"
+          <div class="p-3 pt-4">
+            <button
+              class="btn osim-cancel-new-reference"
               @click="emit('reference:cancel-new', items[itemIndex])"
             >
               <i class="bi bi-x" />
-            </div>
-            <LabelInput v-model="items[itemIndex].url" label="Link URL" />
-            <LabelTextarea v-model="items[itemIndex].description" label="Description" />
+            </button>
+            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error[itemIndex].url" />
+            <LabelTextarea
+              v-model="items[itemIndex].description"
+              label="Description"
+              :error="error[itemIndex].description"
+            />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>
               <option
@@ -137,6 +149,10 @@ select.osim-reference-types {
 }
 
 .osim-cancel-new-reference {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  padding: 0;
   cursor: pointer;
   font-size: 1.5rem;
 }

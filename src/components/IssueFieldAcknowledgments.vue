@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import EditableList from '@/components/widgets/EditableList.vue';
+import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+
+defineProps<{
+  error: Record<string, any>;
+}>();
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 
@@ -27,8 +32,8 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:delete="emit('acknowledgment:delete', $event)"
       @item:new="emit('acknowledgment:new')"
     >
-      <template #default="{ item: {name, affiliation, uuid} }">
-        <div class="form-group">
+      <template #default="{ item: { name, affiliation, uuid } }">
+        <div class="form-group mb-2">
           {{ uuid }}
           <div>{{ name }} from {{ affiliation }}</div>
         </div>
@@ -36,29 +41,45 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
-          <div>
-            <input v-model="items[itemIndex].name" type="text" />
-            from
-            <input v-model="items[itemIndex].affiliation" type="text" />
+          <div class="ps-3">
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
         </div>
       </template>
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="d-flex justify-content-between">
-            <div>
-              <input v-model="items[itemIndex].name" type="text" />
-              from
-              <input v-model="items[itemIndex].affiliation" type="text" />
-            </div>
-            <div
-              class="text-end  osim-cancel-new-acknowledgment"
-              @click="emit('acknowledgment:cancel-new', items[itemIndex])"
-            >
-              <i class="bi bi-x" />
-            </div>
+          <div class="ps-3">
+            <LabelInput
+              v-model="items[itemIndex].name"
+              label="Name"
+              :error="error[itemIndex].name"
+              type="text"
+            />
+            <LabelInput
+              v-model="items[itemIndex].affiliation"
+              label="Affiliation"
+              :error="error[itemIndex].affiliation"
+              type="text"
+            />
           </div>
+          <button
+            class="btn osim-cancel-new-acknowledgment"
+            @click="emit('acknowledgment:cancel-new', items[itemIndex])"
+          >
+            <i class="bi bi-x" />
+          </button>
         </div>
       </template>
       <template #modal-header>
@@ -91,8 +112,17 @@ function handleDelete(uuid: string, closeModal: () => void) {
 </template>
 
 <style scoped>  
+.form-group {
+  width: 90%;
+  margin-bottom: 10px;
+}
+
 .osim-cancel-new-acknowledgment {
   cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 0;
+  padding: 0;
   font-size: 1.5rem;
 }
 </style>
