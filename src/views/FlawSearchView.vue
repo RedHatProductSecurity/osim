@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { z } from 'zod';
-import { searchFlaws } from '../services/FlawService';
-import { onMounted, watch, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import IssueQueue from '@/components/IssueQueue.vue';
+import { useFlaws }  from '../composables/useFlaws';
+
+const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
 
 const route = useRoute();
+
+const filters = ref<Record<string, string>>({});
+const tableFilters = ref<Record<string, string>>({});
 
 defineProps<{
   query: string;
@@ -14,54 +19,64 @@ defineProps<{
 defineEmits<{
   'issues:load': [any[]];
 }>();
-const issues = ref<any[]>([]);
-const isLoading = ref(false);
 
 const searchQuery = z.object({
   query: z.object({
-    query: z.string(),
+    query: z.string().nullish(),
   }),
 });
 
-function search() {
-  try {
-    const parsedRoute = searchQuery.parse(route);
-    if (parsedRoute.query.query === '') {
-      // TODO handle error
-      return;
-    }
-    isLoading.value = true;
-    searchFlaws(parsedRoute.query.query)
-      .then((response) => {
-        console.log('IssueSearch: got flaws: ', response.data);
-        issues.value = response.results;
-      })
-      .catch((err) => {
-        console.error('IssueSearch: getFlaws error: ', err);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
-  } catch (e) {
-    console.log('IssueSearch: error advanced searching', e);
-    isLoading.value = false;
+const params = computed(() => {
+  const parsedRoute = searchQuery.parse(route);
+  const paramsObj = {
+    ...filters.value,
+    ...tableFilters.value
+  };
+  if (parsedRoute.query.query) {
+    paramsObj.search = parsedRoute.query.query;
   }
+  return paramsObj;
+});
+
+watch(() => params, () => {
+  loadFlaws(params);
+}, {
+  deep: true
+});
+
+function fetchMoreFlaws() {
+  loadMoreFlaws(params);
 }
 
-onMounted(search);
-watch(() => route.query?.query, search);
-
-function setIssues(loadedIssues: any[]) {
-  issues.value = loadedIssues;
+function setFilters(newFilters : Record<string, string>) {
+  filters.value = {
+    ...newFilters
+  };
 }
+
+function setTableFilters(newFilters: any = {}) {
+  tableFilters.value = {
+    ...newFilters.value
+  };
+}
+
 </script>
 
 <template>
   <main class="mt-3">
     <div class="container">
-      <IssueSearchAdvanced @issues:load="setIssues" />
+      <IssueSearchAdvanced 
+        :isLoading="isLoading"
+        @set:filters="setFilters"
+      />
     </div>
     <!-- <IssueSearch :query="query" /> -->
-    <IssueQueue :issues="issues" :isLoading="isLoading" :isFinalPageFetched="false" />
+    <IssueQueue
+      :issues="issues"
+      :isLoading="isLoading"
+      :isFinalPageFetched="isFinalPageFetched"
+      @flaws:fetch="setTableFilters"
+      @flaws:load-more="fetchMoreFlaws"
+    />
   </main>
 </template>
