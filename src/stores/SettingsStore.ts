@@ -8,7 +8,7 @@ import { useStorage } from '@vueuse/core';
 // Consideration: we may want some settings to be persistently stored,
 //   but other settings must be in-memory only, e.g. api keys
 
-const _settingsStoreKey = 'SettingsStore';
+// const _settingsStoreKey = 'SettingsStore';
 
 
 export const SettingsSchema = z.object({
