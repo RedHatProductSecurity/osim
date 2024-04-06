@@ -24,7 +24,14 @@ describe('App', async () => {
         bottom: 1000,
         height: 100,
         top: 100
-      }))
+      })),
+      useStorage: vi.fn((key, defaults = {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+        showNotifications: false,
+      }) => ({
+        value: defaults,
+      })),
     }));
 
     vi.mock('jwt-decode', () => ({
