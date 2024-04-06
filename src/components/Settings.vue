@@ -32,8 +32,8 @@ watch(settings, () => {
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">
-      These values are saved in the current session.
-      The session is wiped upon closing the browser.
+      These values are saved in browser local storage, and should persist across tabs 
+      and browser sessions. Ensure that security best practices are followed.
     </div>
 
     <!--@submit.prevent="settingsStore.save(settings)"-->

@@ -111,12 +111,12 @@ export const FlawCVSSSchema = z.object({
 });
 
 export const AffectCVSSSchema = z.object({
-  affect: z.string().uuid(),
+  // affect: z.string().uuid(),
   comment: z.string().nullable(),
   cvss_version: z.string(),
   issuer: z.nativeEnum(IssuerEnum),
   score: z.number(), // $float
-  uuid: z.string().uuid().nullable(), // read-only
+  uuid: z.string().uuid().nullish(), // read-only
   vector: z.string().nullable(),
   embargoed: z.boolean().nullable(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
@@ -197,7 +197,7 @@ export const ZodFlawCommentSchema = z.object({
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
-  uuid: z.string().uuid(),
+  uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   type: z.nativeEnum(AffectType).nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
@@ -205,7 +205,7 @@ export const ZodAffectSchema = z.object({
   ps_module: z.string().max(100),
   ps_component: z.string().max(255),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
-  trackers: z.array(TrackerSchema),
+  trackers: z.array(TrackerSchema).or(z.array(z.any())),
   meta_attr: z
     .object({
       affectedness: z.string(),

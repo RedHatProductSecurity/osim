@@ -354,8 +354,8 @@ const onReset = () => {
         :mode="mode"
         class="osim-flaw-form-section"
         :error="errors.affects"
-        @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
-        @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
+        @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
+        @affect:remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />

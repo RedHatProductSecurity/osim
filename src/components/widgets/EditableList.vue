@@ -144,7 +144,7 @@ function commitEdit(index: number) {
         </div>
         <Modal
           v-if="item.uuid"
-          :show="useModalForItem(item.uuid).isModalOpen"
+          :show="useModalForItem(item.uuid).isModalOpen.value"
           @close="useModalForItem(item.uuid).closeModal"
         >
           <template #body>
