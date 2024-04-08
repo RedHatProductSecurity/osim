@@ -6,6 +6,7 @@ from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.utils import (
     generate_cve,
+    generate_cwe,
     generate_random_text,
     go_to_advanced_search_page
 )
@@ -14,7 +15,7 @@ from features.utils import (
 MAX_RETRY = 10
 
 
-def create_flaw_with_valid_data(context, embargoed=False):
+def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     flaw_page = FlawDetailPage(context.browser)
     context.cve_id = generate_cve()
     description = generate_random_text()
@@ -22,15 +23,18 @@ def create_flaw_with_valid_data(context, embargoed=False):
     flaw_page.set_input_field('title', generate_random_text())
     flaw_page.set_input_field('component', 'autocomponent')
     flaw_page.set_input_field('cveid', context.cve_id)
-    flaw_page.set_select_value('impact')
-    flaw_page.set_select_value('source')
     flaw_page.set_input_field('reportedDate', reported_date)
+    flaw_page.set_select_value('source')
+    flaw_page.set_select_value('impact')
     if embargoed:
         flaw_page.click_btn("embargeodCheckBox")
     else:
         flaw_page.set_input_field('publicDate', reported_date)
-    flaw_page.click_btn('documentTextFieldsDropDownBtn')
-    flaw_page.set_document_text_field('description', description)
+    flaw_page.set_document_text_field('comment#0', generate_random_text())
+    if with_optional:
+        flaw_page.set_input_field('cweid', generate_cwe())
+        flaw_page.set_document_text_field('description', generate_random_text())
+        flaw_page.set_document_text_field('statement', generate_random_text())
     count = 0
     while count < MAX_RETRY:
         flaw_page.click_btn('createNewFlawBtn')
@@ -60,7 +64,7 @@ def step_impl(context):
     flaw_page.click_btn('createFlawLink')
 
 
-@when('I fill flaw form with valid data and click create new flaw')
+@when('I create flaw with valid mandatory data')
 def step_impl(context):
     create_flaw_with_valid_data(context)
 
@@ -80,3 +84,7 @@ def step_impl(context):
 def step_impl(context):
     check_created_flaw_exist(context, embargoed=True)
     context.browser.quit()
+
+@when('I create flaw with valid data including optional fields')
+def step_impl(context):
+    create_flaw_with_valid_data(context, with_optional=True)
