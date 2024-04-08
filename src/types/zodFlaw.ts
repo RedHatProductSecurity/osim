@@ -293,30 +293,40 @@ export const ZodFlawSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 }).superRefine((zodFlaw, zodContext)=>{
 
-  const raiseDateIssue = (message: string) =>{
+  const raiseIssue = (message: string, path: string[]) =>{
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
       message,
-      path: ['unembargo_dt'],
+      path,
     });
   };
+
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
+  const reported_dt = DateTime.fromISO(`${zodFlaw.reported_dt}`).toISODate();
 
   if (zodFlaw.embargoed && unembargo_dt && unembargo_dt < DateTime.now().toISODate()) {
-    raiseDateIssue('An embargoed flaw must have a public date in the future.');
+    raiseIssue('An embargoed flaw must have a public date in the future.', ['unembargo_dt']);
   }
 
   if (!zodFlaw.embargoed && !unembargo_dt) {
     // if embargoed and dt is not set, shows up the error
     // This behaviour is not acceptable because if a flaw is unembargoed,
     // it means the flaw is public already which requires the date when this was made public.
-    raiseDateIssue('A public flaw must have a public date set.');
+    raiseIssue('A public flaw must have a public date set.', ['unembargo_dt']);
   }
 
   if (!zodFlaw.embargoed && unembargo_dt && unembargo_dt > DateTime.now().toISODate()) {
     // if NOT embargoed and updated date is in the future,
     // it shows an error, to set the current date or an older date instead
-    raiseDateIssue('A public flaw cannot have a public date in the future.');
+    raiseIssue('A public flaw cannot have a public date in the future.', ['unembargo_dt']);
+  }
+
+  if (!zodFlaw.reported_dt) {
+    raiseIssue('Reported date is required.', ['reported_dt']);
+  }
+  
+  if (reported_dt && reported_dt > DateTime.now().toISODate()) {
+    raiseIssue('Reported date cannot be in the future.', ['reported_dt']);
   }
 });
 
