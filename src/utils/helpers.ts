@@ -79,6 +79,6 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
     , object
   );
 
-export const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/;
+export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
 
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
