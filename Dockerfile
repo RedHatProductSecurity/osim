@@ -12,7 +12,7 @@ RUN --mount=target=/mnt \
     "$(git rev-parse --verify HEAD)" \
     "$(git describe --always --tags --match 'v[0-9]*')" \
     "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)" \
-    "$(if git diff-files --quiet || git diff-index --cached --quiet HEAD --; then echo true; else echo false; fi)"
+    "$(if [ "$(git status --porcelain)" = "" ]; then echo false; else echo true; fi)"
 
 # Production stage
 FROM registry.access.redhat.com/ubi9/ubi-minimal

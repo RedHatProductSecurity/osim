@@ -16,7 +16,7 @@ import { useWindowSize } from '@vueuse/core';
 const { width: screenWidth } = useWindowSize();
 
 defineProps<{
-  error?: string;
+  error: Record<string, any>;
 }>();
 
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
@@ -36,28 +36,51 @@ const affectCvssScore = ref(
 <template>
   <div class="row osim-affected-offerings pt-2">
     <div class="col-6">
-      <LabelEditable v-model="modelValue.ps_module" type="text" label="Affected Module" />
-      <LabelEditable v-model="modelValue.ps_component" type="text" label="Affected Component" />
+      <LabelEditable
+        v-model="modelValue.ps_module"
+        :error="error.ps_module"
+        type="text"
+        label="Affected Module"
+      />
+      <LabelEditable
+        v-model="modelValue.ps_component"
+        :error="error.ps_component"
+        type="text"
+        label="Affected Component"
+      />
       <!--Hiding the Type field until we have more options to choose from-->
       <LabelSelect
         v-model="modelValue.type"
+        :error="error.type"
         class="col-6 visually-hidden"
         label="Type"
         :options="affectTypes"
       />
       <LabelSelect
         v-model="modelValue.affectedness"
+        :error="error.affectedness"
         label="Affectedness"
         :options="affectAffectedness"
       />
       <LabelSelect
         v-model="modelValue.resolution"
+        :error="error.resolution"
         label="Resolution"
         :options="affectResolutions"
       />
-      <LabelSelect v-model="modelValue.impact" label="Impact" :options="affectImpacts" />
+      <LabelSelect
+        v-model="modelValue.impact"
+        :error="error.impact"
+        label="Impact"
+        :options="affectImpacts"
+      />
       <!-- TODO: Should CVSSv3 be inherited from Flaw? -->
-      <LabelEditable v-model="affectCvssScore" type="text" label="CVSSv3" />
+      <LabelEditable
+        v-model="affectCvssScore"
+        :error="error.cvss_scores"
+        type="text"
+        label="CVSSv3"
+      />
       <div class="row">
         <div class="col ps-0 mb-4">
           <button

@@ -15,6 +15,9 @@ import {
 
 import { useToastStore } from '@/stores/ToastStore';
 import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
+import { modifyPath } from 'ramda';
+import { deepMap } from '@/utils/helpers';
+import type { ZodIssue } from 'zod';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
   const isSaving = ref(false);
@@ -40,7 +43,11 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   async function createFlaw() {
     isSaving.value = true;
-    postFlaw(flaw.value)
+    const validatedFlaw = validate();
+    if (!validatedFlaw.success) {
+      return;
+    }
+    postFlaw(validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
@@ -52,18 +59,25 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       .finally(() => { isSaving.value = false; });
   }
 
-  async function updateFlaw() {
-    isSaving.value = true;
-    const newFlaw = ZodFlawSchema.safeParse(flaw.value);
-    if (!newFlaw.success) {
+  function validate(){
+    const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
+    if (!validatedFlaw.success) {
+      console.log(validatedFlaw.error.issues);
+      const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
       addToast({
-        title: 'Error validating Flaw (schema error)',
-        body: newFlaw.error.toString(),
+        title: 'Flaw validation failed before submission',
+        body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
         css: 'warning',
       });
-      isSaving.value = false;
-      console.error(newFlaw.error);
-      return; // Abort if schema validation fails
+      console.log(validatedFlaw.error);
+    }
+    return validatedFlaw;
+  }
+
+  async function updateFlaw() {
+    const validatedFlaw = validate();
+    if (!validatedFlaw.success) {
+      return;
     }
 
     if (wereAffectsModified.value) {
@@ -74,7 +88,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       await deleteAffects();
     }
 
-    await putFlaw(flaw.value.uuid, newFlaw.data)
+    await putFlaw(flaw.value.uuid, validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
       .catch(createCatchHandler('Could not update Flaw'));
 
@@ -93,9 +107,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       .catch(createCatchHandler('Error saving comment'));
   }
 
+  const errors = computed(() => flawErrors(flaw.value));
+
   return {
     flaw,
     isSaving,
+    errors,
     committedFlaw,
     trackerUuids,
     flawTypes,
@@ -122,6 +139,7 @@ export function blankFlaw(): ZodFlawType {
       workflow: '',
     },
     component: '',
+    unembargo_dt: '',
     uuid: '',
     cve_id: '',
     cvss3: '',
@@ -145,4 +163,21 @@ export function blankFlaw(): ZodFlawType {
     references: [],
     acknowledgments: [],
   };
+}
+
+function flawErrors(flaw: ZodFlawType) {
+  const parsedFlaw = ZodFlawSchema.safeParse(flaw);
+  let mirroredFlaw = deepMap(() => null, flaw);
+
+  if (parsedFlaw.success) {
+    return mirroredFlaw;
+  }
+
+  parsedFlaw.error.errors
+    .map(({ path, message }) => ({ path, message }))
+    .forEach(({ path, message }) => {
+      mirroredFlaw = modifyPath(path, () => message, mirroredFlaw);
+    });
+
+  return mirroredFlaw;
 }

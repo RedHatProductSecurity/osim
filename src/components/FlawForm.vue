@@ -72,6 +72,7 @@ const {
   saveAcknowledgments,
   deleteAcknowledgment,
   isSaving,
+  errors,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
@@ -89,18 +90,6 @@ const onSubmit = async () => {
   }
 };
 
-// TODO
-const errors = {
-  cve_id: null,
-  impact: null,
-  cwe_id: null,
-  major_incident_state: null,
-  reported_dt: null,
-  unembargo_dt: null,
-  type: null,
-  component: null,
-  source: null,
-};
 
 const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
@@ -124,7 +113,12 @@ const onReset = () => {
           <!-- Alerts might go here -->
         </div>
         <div class="col-6">
-          <LabelEditable v-model="flaw.title" label="Title" type="text" />
+          <LabelEditable
+            v-model="flaw.title"
+            label="Title"
+            type="text"
+            :error="errors.title"
+          />
           <LabelEditable
             v-model="flaw.component"
             label="Component"
@@ -264,24 +258,32 @@ const onReset = () => {
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
-        <LabelTextarea v-model="flaw.description" label="Comment#0" placeholder="Comment#0 ..." />
+        <LabelTextarea
+          v-model="flaw.description"
+          label="Comment#0"
+          placeholder="Comment#0 ..."
+          :error="errors.description"
+        />
         <LabelTextarea
           v-if="showSummary"
           v-model="flaw.summary" 
           label="Description"
           placeholder="Description Text ..."
+          :error="errors.summary"
         />
         <LabelTextarea
           v-if="showStatement"
           v-model="flaw.statement"
           label="Statement"
           placeholder="Statement Text ..."
+          :error="errors.statement"
         />
         <LabelTextarea
           v-if="showMitigation"
           v-model="flaw.mitigation"
           label="Mitigation"
           placeholder="Mitigation Text ..."
+          :error="errors.mitigation"
         />
         <div class="d-flex gap-3 mb-3">
           <button
@@ -313,6 +315,7 @@ const onReset = () => {
             v-model="flawReferences"
             :isEmbargoed="flaw.embargoed"
             class="w-100 my-3"
+            :error="errors.references"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
             @reference:cancel-new="cancelAddReference"
@@ -321,13 +324,14 @@ const onReset = () => {
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
             class="w-100 my-3"
+            :error="errors.acknowledgments"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
             @acknowledgment:cancel-new="cancelAddAcknowledgment"
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsable :label="`Trackers: ${trackerUuids.length}`" :isExpandable="trackerUuids.length !== 0">
+        <LabelCollapsable v-if="mode === 'edit'" :label="`Trackers: ${trackerUuids.length}`" :isExpandable="trackerUuids.length !== 0">
           <ul>
             <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
               <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
@@ -342,13 +346,14 @@ const onReset = () => {
         :affectsToDelete="affectsToDelete"
         :mode="mode"
         class="osim-flaw-form-section"
+        :error="errors.affects"
         @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
         @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
-        <FlawComments :comments="flaw.comments" @comment:add-public="addPublicComment" />
+        <FlawComments :comments="flaw.comments" :error="errors.comments" @comment:add-public="addPublicComment" />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

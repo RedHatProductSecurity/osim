@@ -95,7 +95,10 @@ function blur(e: FocusEvent | null) {
       >
         <span
           class="osim-editable-text-value"
-          :class="{'form-control': !readOnly}"
+          :class="{
+            'form-control': !readOnly,
+            'is-invalid': error != null
+          }"
         >{{ modelValue === '' ? placeholder : modelValue }}</span>
         <!--if a button is inside a label, clicking the label clicks the button?-->
         <button
@@ -117,6 +120,7 @@ function blur(e: FocusEvent | null) {
         ref="elInput"
         v-model="editedModelValue"
         class="form-control"
+        :class="{'is-invalid': error != null}"
         type="text"
         :placeholder="placeholder"
         @blur="blur($event)"
@@ -139,7 +143,7 @@ function blur(e: FocusEvent | null) {
     </div>
     <div
       v-if="!readOnly && error"
-      class="invalid-tooltip d-block"
+      class="invalid-tooltip"
     >{{ error }}</div>
   </div>
 </template>
@@ -152,49 +156,56 @@ function blur(e: FocusEvent | null) {
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/forms";
 
-.flash-bg-enter-active {
-  /* The vue framework checks for root-level transition-duration.
-  Without this, the class is not automatically applied for the correct duration.
-  Alternatively, :duration="ms" can be set on the Transition component. */
-  transition-duration: 200ms;
-}
-
-.flash-bg-enter-active .osim-editable-text-value {
-  transition: background-color 200ms ease-out !important;
-}
-
-.flash-bg-enter-from .osim-editable-text-value {
-  background-color: #f00;
-}
-
-.flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
-  transition: none !important;
-  display: none !important;
-}
-
-.osim-editable-text {
-  @extend .input-group; // Use pure CSS instead of JS for hover
-  // Nest these for specificity
-  white-space: nowrap;
-
-  .osim-editable-text-value {
-    @extend .form-control;
-
-    // border-color: transparent; // TODO decide to keep the hovering effect?
-    color: var(--bs-secondary-color);
-    text-overflow: ellipsis;
-    overflow: hidden;
+.osim-editable-field {
+  &:hover .invalid-tooltip {
+    display: block;
   }
 
-  .osim-editable-text-value::before {
-    // Prevent field from collapsing when empty
-    content: '\a0';
-    display: inline-block;
-    width: 0;
+  .flash-bg-enter-active {
+    /* The vue framework checks for root-level transition-duration.
+    Without this, the class is not automatically applied for the correct duration.
+    Alternatively, :duration="ms" can be set on the Transition component. */
+    transition-duration: 200ms;
+  
+    .osim-editable-text-value {
+      transition: background-color 200ms ease-out !important;
+    }
   }
-
-  .osim-editable-text-pen {
-    display: flex;
+  
+  .flash-bg-enter-from .osim-editable-text-value {
+    background-color: #f00;
+  }
+  
+  .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
+    transition: none !important;
+    display: none !important;
+  }
+  
+  .osim-editable-text {
+    @extend .input-group; // Use pure CSS instead of JS for hover
+    // Nest these for specificity
+    white-space: nowrap;
+  
+  
+    .osim-editable-text-value {
+      @extend .form-control;
+  
+      // border-color: transparent; // TODO decide to keep the hovering effect?
+      color: var(--bs-secondary-color);
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  
+    .osim-editable-text-value::before {
+      // Prevent field from collapsing when empty
+      content: '\a0';
+      display: inline-block;
+      width: 0;
+    }
+  
+    .osim-editable-text-pen {
+      display: flex;
+    }
   }
 }
 </style>
