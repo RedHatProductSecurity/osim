@@ -13,7 +13,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY, OSIDB_URL
+from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY, OSIDB_URL, TEST_FLAW_CVE_ID
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
@@ -113,15 +113,17 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_first_flaw_detail_page(browser):
+def go_to_specific_flaw_detail_page(browser, cvd_id=TEST_FLAW_CVE_ID):
     """
     Enter first flaw detail page which displayed in index page.
     """
     # From the setting page back to flaw list
     go_to_home_page(browser)
-    # Get the first flaw and go to detail table
+    # Get flaw and go to detail table
     home_page = HomePage(browser)
-    home_page.click_btn("firstFlawLink")
+    home_page.quickSearchBox.clear_text()
+    home_page.quickSearchBox.set_text(cvd_id)
+    home_page.click_btn('quickSearchBtn')
 
     flaw_detail_page = FlawDetailPage(browser)
     flaw_detail_page.add_comment_btn_exist()
@@ -135,6 +137,7 @@ def generate_random_text():
     text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
     return text
 
+
 def go_to_advanced_search_page(browser):
     """
     This function is a comment one for all advance search senarios.
@@ -143,13 +146,16 @@ def go_to_advanced_search_page(browser):
     home_page.click_btn("advancedSearchDropDownBtn")
     home_page.click_btn("advancedSearchBtn")
 
+
 def generate_cve():
     cve_re_str = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
     return rstr.xeger(cve_re_str)
 
+
 def generate_cwe():
     cwe_re_str = re.compile(r"CWE-[1-9]\d*(\[auto\])?", flags=re.IGNORECASE)
     return rstr.xeger(cwe_re_str)
+
 
 def get_osidb_token():
     url = urllib.parse.urljoin(OSIDB_URL, "auth/token")

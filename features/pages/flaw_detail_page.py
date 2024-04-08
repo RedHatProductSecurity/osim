@@ -73,22 +73,24 @@ class FlawDetailPage(PageFactory):
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
 
-        "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[2]"),
+        "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
+        "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
-        "referenceList": ("XPATH", "(//div[@class='ps-3 border-start'])[2]/div/div"),
+        "referenceList": ("XPATH", "(//div[@class='ps-3 border-start'])[1]/div/div"),
         "referenceCreatedMsg": ("XPATH", "//div[text()='Reference created.']"),
         "referenceDelConfirmBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "referenceDeletedMsg": ("XPATH", "//div[text()='Reference deleted.']"),
         "addReferenceSelect": ("XPATH", "//select[@class='form-select mb-3 osim-reference-types']"),
-        'addReferenceLinkUrlInput': ("XPATH", "(//input[@class='form-control' and @type='text'])[9]"),
-        "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        'addReferenceLinkUrlInput': ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block is-invalid'])[1]"),
         "addMultipleRHSBReferenceErrorMsg": ("XPATH", "//div[contains(text(),'A flaw has 2 article links, but only 1 is allowed.')]"),
-        "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[2]"),
+        "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[1]"),
         "firstReferenceDeleteBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[2]"),
         "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
         "firstReferenceEditBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[1]"),
         "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
+        "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
@@ -317,3 +319,9 @@ class FlawDetailPage(PageFactory):
     def add_reference_set_description(self, value):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
         self.addReferenceDescriptionInput.set_text(value)
+
+    def click_reference_dropdown_button(self):
+        v = self.referenceCountLabel.get_text()
+        reference_count = int(v.split(": ")[1])
+        if reference_count > 0:
+            self.click_button_with_js("referenceDropdownBtn")

@@ -80,6 +80,10 @@ Feature: Flaw detail testing
       When I edit a internal/external reference
       Then The reference information is changed
 
+    Scenario: Add RHSB reference with incorrect link
+      When I add a RHSB reference to the flaw with incorrect link
+      Then I got an error message and no RHSB reference added to the flaw
+
     Scenario: Reset changes
        When I update the flaw and click 'Reset Changes' button
        Then All changes are reset
