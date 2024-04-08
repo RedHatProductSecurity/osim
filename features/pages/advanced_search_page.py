@@ -4,9 +4,6 @@ import urllib.parse
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.common.by import By
 from features.constants import OSIDB_URL
-from features.utils import (
-        go_to_advanced_search_page
-)
 
 
 class AdvancedSearchPage(PageFactory):
@@ -133,9 +130,3 @@ class AdvancedSearchPage(PageFactory):
         # Get the other values
         else:
             return flaw_info.get(field)
-
-    def advance_specific_flaw_and_goto_detail(self, cve_id):
-        go_to_advanced_search_page(self.driver)
-        self.select_field_and_value_to_search("cve_id", cve_id)
-        self.click_search_btn()
-        self.go_to_first_flaw_detail()
