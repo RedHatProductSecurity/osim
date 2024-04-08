@@ -245,8 +245,8 @@ export const ZodFlawSchema = z.object({
   type: z.nativeEnum(FlawTypeWithBlank).nullish(),
   uuid: z.string().default(''),
   cve_id: z.string().refine(
-    (cve) => cveRegex.test(cve),
-    { message: 'You must enter a valid CVE ID before saving the Flaw.' }
+    (cve) => cveRegex.test(cve) || cve === '',
+    { message: 'The CVE ID is invalid: It must begin with "CVE-", have a year between 1999-2999, and have an identifier at least 4 digits long (e.g. use 0001 for 1). Please also check for unexpected characters like spaces.' }
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank)
     .refine(
@@ -259,7 +259,10 @@ export const ZodFlawSchema = z.object({
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
-  description: z.string().min(10),
+  description: z.string().refine(
+    description => description.trim().length > 0,
+    { message: 'Comment#0 cannot be empty.' }
+  ),
   summary: z.string().nullish(),
   requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
   statement: z.string().nullish(),

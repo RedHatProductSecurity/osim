@@ -62,8 +62,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function validate(){
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
-      console.log(validatedFlaw.error.issues);
-      const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
+
+      const temporaryFieldRenaming = (fieldName: string | number) => 
+        fieldName === 'description' ? 'Comment#0' : fieldName;
+
+      const errorMessage = ({ message, path }: ZodIssue) => `${path.map(temporaryFieldRenaming).join('/')}: ${message}`;
+
       addToast({
         title: 'Flaw validation failed before submission',
         body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
