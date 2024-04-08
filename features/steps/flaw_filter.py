@@ -1,9 +1,15 @@
 import time
-from behave import when, then
+from behave import *
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from features.pages.home_page import HomePage
-from features.utils import wait_for_visibility_by_locator
+from features.pages.flaw_detail_page import FlawDetailPage
+from pages.advanced_search_page import AdvancedSearchPage
+
+from features.utils import (
+        wait_for_visibility_by_locator,
+        go_to_home_page
+)
 
 
 FLAW_TITLE_TEXT_XPATH = "//tr[1]/td[6]"
@@ -100,3 +106,35 @@ def step_impl(context):
 def step_impl(context):
     flaws_count = COUNT_FLAWS_SAME_SOURCE
     then_step_mathcher(context, flaws_count)
+
+@given("I assgin one issue to me")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    detail_page = FlawDetailPage(context.browser)
+    advance_search = AdvancedSearchPage(context.browser)
+    # Get the current username
+    context.user_name = home_page.userBtn.get_text()
+    # Advance search the specific flaw that could be updated
+    advance_search.advance_specific_flaw_and_goto_detail("CVE-2023-2023")
+    # Assign this flaw to the current user
+    detail_page.set_input_field("assignee", context.user_name)
+    detail_page.click_btn('saveBtn')
+    detail_page.wait_msg('flawSavedMsg')
+
+@when("I check 'My Issues' checkbox in index page")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    go_to_home_page(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    home_page.click_btn("myissueCheckBox")
+
+@then("All issues assigned to me should be listed in flaw table")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    # Only firstFlaw.visibility_of_element_located can't work
+    time.sleep(1)
+    owner = home_page.get_field_value("owner")
+    assert context.user_name == owner
+    # Need to check the count of my issues that depends on testdata
+    context.browser.quit()

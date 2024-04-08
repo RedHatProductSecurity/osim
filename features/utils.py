@@ -120,6 +120,7 @@ def go_to_first_flaw_detail_page(browser):
     # From the setting page back to flaw list
     go_to_home_page(browser)
     # Get the first flaw and go to detail table
+    home_page = HomePage(browser)
     home_page.click_btn("firstFlawLink")
 
     flaw_detail_page = FlawDetailPage(browser)

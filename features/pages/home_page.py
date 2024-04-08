@@ -31,6 +31,8 @@ class HomePage(PageFactory):
         "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
         "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
+        "myissueCheckBox": ("XPATH", "//input[@class='d-inline-block form-check-input']"),
+        "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']")
