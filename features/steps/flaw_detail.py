@@ -17,12 +17,12 @@ from features.pages.flaw_detail_page import FlawDetailPage
 
 MAX_RETRY = 10
 DOCUMENT_TEXT_FIELDS = {
-    # Exclude 'description' because it's mandatory in creation
-    'add': ['summary', 'statement', 'mitigation'],
+    # Exclude 'comment#0' because it's mandatory in creation
+    'add': ['description', 'statement', 'mitigation'],
     # requires_summary can not be REQUESTED if summary is missing
     'delete': ['statement', 'mitigation'],
     # Exclude 'description' because of OSIDB-2308
-    'update': ['summary', 'statement', 'mitigation']
+    'update': ['description', 'statement', 'mitigation']
 }
 
 
@@ -57,7 +57,6 @@ def step_impl(context):
 @when('I {action} the document text fields')
 def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     fields = DOCUMENT_TEXT_FIELDS.get(action)
     text_dict = dict.fromkeys(fields, '')
     if action != 'delete':

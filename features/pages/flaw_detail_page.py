@@ -18,8 +18,7 @@ class FlawDetailPage(PageFactory):
 
     locators = {
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
-        "summaryBtn": ("XPATH", "//button[contains(text(), 'Add Summary')]"),
-        "summaryText": ("XPATH", "//span[text()='Summary']"),
+        "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[text()='Description']"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
@@ -33,15 +32,14 @@ class FlawDetailPage(PageFactory):
         "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
-        "documentTextFieldsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
         "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
         "addAcknowledgmentInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[1]"),
         "addAcknowledgmentInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
         "saveAcknowledgmentBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
         "acknowledgmentSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
-        "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
-        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
+        "impactSelect": ("XPATH", "(//select[@class='form-select is-invalid'])[1]"),
+        "sourceSelect": ("XPATH", "(//select[@class='form-select is-invalid'])[2]"),
         "firstAcknowledgmentEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
         "firstAcknowledgmentDeleteBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[2]"),
         "firstAcknowledgmentValue": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
@@ -53,16 +51,16 @@ class FlawDetailPage(PageFactory):
         "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
         "assigneeInput": ("XPATH", "(//input[@class='form-control'])[8]"),
         "titleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[1]"),
-        "titleInput": ("XPATH", "(//input[@class='form-control'])[2]"),
+        "titleInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "titleValue": ("XPATH", "//span[@class='osim-editable-text-value form-control']"),
         "componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[2]"),
-        "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
+        "componentInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
         "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
         "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
-        "cveidInput": ("XPATH", "(//input[@class='form-control'])[4]"),
+        "cveidInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
         "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
         "cweidInput": ("XPATH", "(//input[@class='form-control'])[7]"),
@@ -71,7 +69,7 @@ class FlawDetailPage(PageFactory):
         "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
-        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "publicDateInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
 
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
@@ -140,18 +138,23 @@ class FlawDetailPage(PageFactory):
         self.commentTextWindow.set_text(value)
 
     def set_document_text_field(self, field, value):
-        field_btn = field + 'Btn'
-        if find_elements_in_page_factory(self, field_btn):
-            self.driver.execute_script("arguments[0].scrollIntoView(true);", getattr(self, field_btn))
-            hide_e1 = self.driver.find_elements(
-                locate_with(By.XPATH, "//footer[@class='fixed-bottom osim-status-bar']"))[0]
-            hide_e2 = self.driver.find_elements(
-                locate_with(By.XPATH, "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"))[0]
-            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e1)
-            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e2)
-            self.click_btn(field_btn)
-            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e1)
-            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e2)
+        if field != 'comment#0':
+            field_btn = field + 'Btn'
+            if find_elements_in_page_factory(self, field_btn):
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", getattr(self, field_btn))
+                hide_e1 = self.driver.find_elements(
+                    locate_with(By.XPATH, "//footer[@class='fixed-bottom osim-status-bar']")
+                )[0]
+                hide_e2 = self.driver.find_elements(
+                    locate_with(
+                        By.XPATH,
+                        "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']")
+                )[0]
+                self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e1)
+                self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e2)
+                self.click_btn(field_btn)
+                self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e1)
+                self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e2)
         field_element = getattr(self, field + 'Text')
         field_input = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
@@ -163,15 +166,15 @@ class FlawDetailPage(PageFactory):
             field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
     def get_document_text_field(self, field):
-        field_btn = field + 'Btn'
-        if find_elements_in_page_factory(self, field_btn):
-            return ''
-        else:
-            field_element = getattr(self, field + 'Text')
-            field_input = self.driver.find_elements(
-                locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
-            self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
-            return field_input.getAttribute("value")
+        if field != 'comment#0':
+            field_btn = field + 'Btn'
+            if find_elements_in_page_factory(self, field_btn):
+                return ''
+        field_element = getattr(self, field + 'Text')
+        field_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
+        return field_input.getAttribute("value")
 
     def set_acknowledgement(self, left_value, right_value):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentInputLeft)

@@ -133,7 +133,7 @@ def generate_random_text():
     """
     This function is used to generate random text
     """
-    N = 8
+    N = 10
     text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
     return text
 
@@ -148,7 +148,7 @@ def go_to_advanced_search_page(browser):
 
 
 def generate_cve():
-    cve_re_str = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})")
+    cve_re_str = re.compile(r"CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,7})")
     return rstr.xeger(cve_re_str)
 
 
