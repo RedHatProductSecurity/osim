@@ -63,7 +63,12 @@ function commitEdit(index: number) {
 
 <template>
   <div>
-    <LabelCollapsable :label="`${entityNamePlural}: ${items.length}`" :isExpandable="items.length > 0" :isExpanded="isExpanded" @setExpanded="isExpanded = !isExpanded">
+    <LabelCollapsable
+      :label="`${entityNamePlural}: ${items.length}`"
+      :isExpandable="items.length > 0"
+      :isExpanded="isExpanded"
+      @setExpanded="isExpanded = !isExpanded"
+    >
       <div
         v-for="(item, itemIndex) in items"
         :key="itemIndex"

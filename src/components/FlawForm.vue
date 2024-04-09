@@ -331,7 +331,11 @@ const onReset = () => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsable v-if="mode === 'edit'" :label="`Trackers: ${trackerUuids.length}`" :isExpandable="trackerUuids.length !== 0">
+        <LabelCollapsable
+          v-if="mode === 'edit'"
+          :label="`Trackers: ${trackerUuids.length}`" 
+          :isExpandable="trackerUuids.length !== 0"
+        >
           <ul>
             <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
               <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
