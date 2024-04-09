@@ -8,7 +8,8 @@ from pages.advanced_search_page import AdvancedSearchPage
 
 from features.utils import (
         wait_for_visibility_by_locator,
-        go_to_home_page
+        go_to_home_page,
+        go_to_specific_flaw_detail_page
 )
 
 
@@ -111,11 +112,10 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     detail_page = FlawDetailPage(context.browser)
-    advance_search = AdvancedSearchPage(context.browser)
     # Get the current username
     context.user_name = home_page.userBtn.get_text()
-    # Advance search the specific flaw that could be updated
-    advance_search.advance_specific_flaw_and_goto_detail("CVE-2023-2023")
+    # Go to a specific flaw detail page
+    go_to_specific_flaw_detail_page(context.browser, "CVE-2023-2023")
     # Assign this flaw to the current user
     detail_page.set_input_field("assignee", context.user_name)
     detail_page.click_btn('saveBtn')
