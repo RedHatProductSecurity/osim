@@ -47,7 +47,14 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     if (!validatedFlaw.success) {
       return;
     }
-    postFlaw(validatedFlaw.data)
+    // Remove any empty fields before request
+    const flawForPost: any = Object.assign({}, validatedFlaw.data);
+    Object.entries(flawForPost).forEach(([key, value])=>{
+      if (value === '') {
+        delete flawForPost[key];
+      }
+    });
+    postFlaw(flawForPost)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
