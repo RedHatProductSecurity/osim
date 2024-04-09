@@ -90,8 +90,9 @@ function handleDelete(uuid: string, closeModal: () => void) {
         <div class="form-group">
           <div class="p-3 pt-4">
             <button
+              type="button"
               class="btn osim-cancel-new-reference"
-              @click.prevent="emit('reference:cancel-new', items[itemIndex])"
+              @click="emit('reference:cancel-new', items[itemIndex])"
             >
               <i class="bi bi-x" />
             </button>

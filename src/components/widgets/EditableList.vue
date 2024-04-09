@@ -177,7 +177,7 @@ function commitEdit(index: number) {
       >
         Save Changes to {{ entityNamePlural }}
       </button>
-      <button type="button" class="btn btn-secondary" @click.prevent="addItem()">
+      <button type="button" class="btn btn-secondary" @click="addItem()">
         Add {{ entityName }}
       </button>
     </form>
