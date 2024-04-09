@@ -76,7 +76,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
           </div>
           <button
             class="btn osim-cancel-new-acknowledgment"
-            @click="emit('acknowledgment:cancel-new', items[itemIndex])"
+            @click.prevent="emit('acknowledgment:cancel-new', items[itemIndex])"
           >
             <i class="bi bi-x" />
           </button>
