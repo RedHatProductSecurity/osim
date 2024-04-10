@@ -1,9 +1,25 @@
+import time
 from behave import given, when, then
 from selenium.common.exceptions import NoSuchElementException
 
 from features.utils import skip_step_when_needed
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
+
+
+def order_and_check_the_order(context, field, desc = True):
+    home_page = HomePage(context.browser)
+    fieldbtn = field + "Btn"
+    # Order the flaw list
+    home_page.click_btn(fieldbtn)
+    # Wait for sorting and loading the sorted flaw list
+    time.sleep(3)
+    # Get three flaw from the flaw list and check the values' order
+    value = home_page.get_three_flaws_field_value(field)
+    if desc:
+        assert value[0] >= value[1] >= value[2]
+    else:
+        assert value[0] <= value[1] <= value[2]
 
 
 @when('I click the link of a flaw')
@@ -95,4 +111,12 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.check_bulk_assign(context.links[0])
+    context.browser.quit()
+
+@then("I click the field of flaw list to order the flaw list, the flaw list is sorted")
+def step_impl(context):
+    for row in context.table:
+        field = row["field"]
+        order_and_check_the_order(context, field, desc = True )
+        order_and_check_the_order(context, field, desc = False)
     context.browser.quit()

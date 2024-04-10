@@ -29,3 +29,14 @@ Feature: Flaw list testing
     Scenario: Bulk assign flaws to me
       When I select some flaws from flaw list and click 'Assign to Me'
       Then The owner of selected flaws is updated to me
+
+    Scenario: Sort flaw list on home page
+      Then I click the field of flaw list to order the flaw list, the flaw list is sorted
+      |     field |
+      |         ID|
+      |     Impact|
+      |     Source|
+      |    Created|
+      |      Title|
+      |      State|
+      |      Owner|
