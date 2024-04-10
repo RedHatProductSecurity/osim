@@ -142,14 +142,8 @@ class FlawDetailPage(PageFactory):
             field_btn = field + 'Btn'
             if find_elements_in_page_factory(self, field_btn):
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", getattr(self, field_btn))
-                hide_e1 = self.driver.find_elements(
-                    locate_with(By.XPATH, "//footer[@class='fixed-bottom osim-status-bar']")
-                )[0]
-                hide_e2 = self.driver.find_elements(
-                    locate_with(
-                        By.XPATH,
-                        "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']")
-                )[0]
+                hide_e1 = find_elements_in_page_factory(self, 'bottomFooter')[0]
+                hide_e2 = find_elements_in_page_factory(self, 'bottomBar')[0]
                 self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e1)
                 self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e2)
                 self.click_btn(field_btn)
