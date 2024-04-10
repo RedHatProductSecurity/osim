@@ -113,17 +113,12 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_specific_flaw_detail_page(browser, cvd_id=TEST_FLAW_CVE_ID):
+def go_to_specific_flaw_detail_page(browser, cve_id=TEST_FLAW_CVE_ID):
     """
     Enter first flaw detail page which displayed in index page.
     """
-    # From the setting page back to flaw list
-    go_to_home_page(browser)
-    # Get flaw and go to detail table
-    home_page = HomePage(browser)
-    home_page.quickSearchBox.clear_text()
-    home_page.quickSearchBox.set_text(cvd_id)
-    home_page.click_btn('quickSearchBtn')
+    flaw_url = urllib.parse.urljoin(OSIM_URL, "flaws/" + cve_id)
+    browser.get(flaw_url)
 
     flaw_detail_page = FlawDetailPage(browser)
     flaw_detail_page.add_comment_btn_exist()
