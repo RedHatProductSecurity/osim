@@ -115,7 +115,7 @@ def step_impl(context):
     # Get the current username
     context.user_name = home_page.userBtn.get_text()
     # Go to a specific flaw detail page
-    go_to_specific_flaw_detail_page(context.browser, "CVE-2023-2023")
+    go_to_specific_flaw_detail_page(context.browser)
     # Assign this flaw to the current user
     detail_page.set_input_field("assignee", context.user_name)
     detail_page.click_btn('saveBtn')

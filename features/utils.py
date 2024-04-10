@@ -13,7 +13,15 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from constants import TIMEOUT, OSIM_URL, BUGZILLA_API_KEY, JIRA_API_KEY, OSIDB_URL, TEST_FLAW_CVE_ID
+from constants import (
+    TIMEOUT,
+    OSIDB_URL,
+    OSIM_URL,
+    BUGZILLA_API_KEY,
+    JIRA_API_KEY,
+    EMBARGOED_FLAW_CVE_ID,
+    PUBLIC_FLAW_CVE_ID
+)
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
@@ -113,15 +121,16 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_specific_flaw_detail_page(browser, cve_id=TEST_FLAW_CVE_ID):
+def go_to_specific_flaw_detail_page(browser, embargoed=False):
     """
     Enter first flaw detail page which displayed in index page.
     """
+    cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
     flaw_url = urllib.parse.urljoin(OSIM_URL, "flaws/" + cve_id)
     browser.get(flaw_url)
 
     flaw_detail_page = FlawDetailPage(browser)
-    flaw_detail_page.add_comment_btn_exist()
+    flaw_detail_page.save_button_exist()
 
 
 def generate_random_text():

@@ -15,7 +15,7 @@ def step_impl(context):
 @then('I am able to view the flaw detail')
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    flaw_page.add_comment_btn_exist()
+    flaw_page.save_button_exist()
     context.browser.quit()
 
 
