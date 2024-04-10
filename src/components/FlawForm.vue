@@ -48,14 +48,14 @@ const {
   flawIncidentStates,
   osimLink,
   bugzillaLink,
-  flawRhCvss,
-  nvdCvssString,
+  flawRhCvss3,
+  nvdCvss3String,
   flawReferences,
   flawAcknowledgments,
   theAffects,
   affectsToDelete,
-  cvssString,
-  highlightedNvdCvssScore,
+  rhCvss3String,
+  highlightedNvdCvss3String,
   shouldDisplayEmailNistForm,
   addBlankReference,
   addBlankAcknowledgment,
@@ -96,7 +96,7 @@ const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !=
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const flawCvss3CaculatorLink = computed(
-  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss.value?.vector}`,
+  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss3.value?.vector}`,
 );
 
 const onReset = () => {
@@ -160,7 +160,7 @@ const onReset = () => {
             :options="flawImpacts"
             :error="errors.impact"
           />
-          <LabelEditable v-model="flawRhCvss.vector" type="text">
+          <LabelEditable v-model="flawRhCvss3.vector" type="text">
             <template #label>
               <span class="mb-0 pt-2 pb-2">CVSSv3
                 <br />
@@ -172,14 +172,14 @@ const onReset = () => {
             </template>
           </LabelEditable>
 
-          <LabelInput v-model="flawRhCvss.score" label="CVSSv3 Score" type="text" />
+          <LabelInput v-model="flawRhCvss3.score" label="CVSSv3 Score" type="text" />
           <div class="row">
             <div class="col">
               <LabelDiv label="NVD CVSSv3">
                 <div class="form-control text-break h-100">
                   <div class="p-0 h-100">
                     <span
-                      v-for="char in highlightedNvdCvssScore"
+                      v-for="char in highlightedNvdCvss3String"
                       :key="char.char"
                       :class="{'text-primary': char.isHighlighted}"
                     >
@@ -194,8 +194,8 @@ const onReset = () => {
                 :cveid="flaw.cve_id"
                 :flaw-summary="flaw.description"
                 :bugzilla="bugzillaLink"
-                :cvss="cvssString"
-                :nistcvss="nvdCvssString"
+                :cvss="rhCvss3String"
+                :nistcvss="nvdCvss3String"
               />
             </div>
             <span 
