@@ -136,12 +136,11 @@ def go_to_specific_flaw_detail_page(browser, embargoed=False):
     flaw_detail_page.save_button_exist()
 
 
-def generate_random_text():
+def generate_random_text(length=8):
     """
     This function is used to generate random text
     """
-    N = 10
-    text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+    text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     return text
 
 

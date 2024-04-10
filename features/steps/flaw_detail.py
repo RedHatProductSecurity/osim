@@ -84,7 +84,7 @@ def step_impl(context):
 @when('I add an acknowledgment to the flaw')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.click_button_with_js("addAcknowledgmentBtn")
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.set_acknowledgement(l, r)
@@ -97,7 +97,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
 
@@ -123,7 +123,7 @@ def step_impl(context, field):
 @when("I edit the first acknowledgement in correct format")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.click_first_ack_edit_btn()
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.edit_first_ack(l, r)
@@ -138,7 +138,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
 
@@ -146,7 +146,7 @@ def step_impl(context):
 @when("I delete an acknowledgement from acknowledgement list")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     context.ack_value = flaw_detail_page.get_first_ack_value()
     flaw_detail_page.click_btn('firstAcknowledgmentDeleteBtn')
     flaw_detail_page.click_btn('confirmAcknowledgmentDeleteBtn')
@@ -157,7 +157,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
     context.browser.quit()
 
@@ -256,7 +256,6 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page.click_button_with_js("addReferenceBtn")
-    flaw_detail_page.click_reference_dropdown_button()
     if external:
         flaw_detail_page.add_reference_select_external_type()
     flaw_detail_page.add_reference_set_link_url(value)
@@ -291,6 +290,9 @@ def step_impl(context):
 
 @when("I add two RHSB references to the flaw")
 def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_reference_dropdown_button()
+    flaw_detail_page.delete_all_reference()
     context.first_value = f"https://access.redhat.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg", external=False)
     context.second_value = f"https://access.redhat.com/{generate_random_text()}"
@@ -378,10 +380,10 @@ def step_impl(context):
 
     context.expected = f"https://access.redhat.com/{generate_random_text()}"
     flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
-    flaw_detail_page.clear_text_with_js("addReferenceLinkUrlInput")
-    flaw_detail_page.add_reference_set_link_url(context.expected)
-    flaw_detail_page.clear_text_with_js('addReferenceDescriptionInput')
-    flaw_detail_page.add_reference_set_description(context.expected)
+    flaw_detail_page.clear_text_with_js("firstReferenceLinkUrlInput")
+    flaw_detail_page.edit_reference_set_link_url(context.expected)
+    flaw_detail_page.clear_text_with_js('firstReferenceDescriptionTextArea')
+    flaw_detail_page.edit_reference_set_description(context.expected)
     flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
     flaw_detail_page.click_button_with_js("saveReferenceBtn")
     flaw_detail_page.wait_msg("referenceUpdatedMsg")
