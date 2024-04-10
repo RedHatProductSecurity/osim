@@ -35,36 +35,53 @@ fetchChangeLog();
     <a href="#" class="m-0 p-0" @click.prevent="openModal">Changelog</a>
     <Modal :show="isModalOpen" @close="closeModal">
       <template #header>
-        <div class="d-flex justify-content-between w-100">
-
+        <div class="d-flex justify-content-between w-100 alert alert-info m-0">
           <div v-html="html.header" />
-          <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            @click="closeModal"
-          ></button>
+          <div>
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+              @click="closeModal"
+            ></button>
+          </div>
         </div> 
   
       </template>
       <template #body>
-        <div v-html="html.body" />
-      </template>
-      <template #footer>
-        <button class="btn btn-primary" @click="closeModal">Close</button>
+        <div class="px-2" v-html="html.body" />
       </template>
     </Modal>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.osim-changelog :deep(.modal-dialog) {
-  max-width: 80ch;
-  max-height: 80vh;
-  overflow-y: auto;
+.osim-changelog {
+  :deep(.modal-dialog) {
+    max-width: 80ch;
 
-  * {
-    width: 100%;
+    h1, h2, h3 {
+      font-family: 'Red Hat Mono', monospace;
+    }
+
+    .modal-body{
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 0;
+      border: none;
+
+      > div {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    .modal-footer {
+      display: none;
+    }
   }
 }
 </style>
