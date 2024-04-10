@@ -48,7 +48,6 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.6.0",
     "@pinia/testing": "^0.1.3",
-    "@rollup-extras/plugin-copy": "^1.9.3",
     "@stoplight/prism-cli": "^5.0.1",
     "@stylistic/eslint-plugin-js": "^1.6.3",
     "@tsconfig/node18": "^18.2.2",
