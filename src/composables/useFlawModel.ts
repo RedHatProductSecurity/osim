@@ -86,6 +86,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   }
 
   async function updateFlaw() {
+    isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
       return;
