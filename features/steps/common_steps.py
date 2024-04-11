@@ -26,9 +26,14 @@ def step_impl(context):
     go_to_home_page(context.browser)
 
 
-@given('I go to a flaw detail page')
+@given('I go to a public flaw detail page')
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
+
+
+@given('I go to an embargoed flaw detail page')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser, True)
 
 
 @given('I go to the advanced search page')

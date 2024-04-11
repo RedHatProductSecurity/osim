@@ -69,7 +69,13 @@ class FlawDetailPage(PageFactory):
         "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
-        "publicDateInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        # TODO: Here needs to separeate locators because the same field has different locators
+        # in flaw creation and update page.
+        # The publicDateInput locator in flaw creation form
+        # "publicDateInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        # The publicDateInput locator in flaw update form
+        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
 
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
@@ -92,7 +98,9 @@ class FlawDetailPage(PageFactory):
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
-        "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']")
+        "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
+
+        "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]')
     }
 
     # Data is from OSIDB allowed sources:
@@ -133,6 +141,9 @@ class FlawDetailPage(PageFactory):
 
     def add_comment_btn_exist(self):
         self.addCommentBtn.visibility_of_element_located()
+
+    def save_button_exist(self):
+        self.saveBtn.visibility_of_element_located()
 
     def set_comment_value(self, value):
         self.commentTextWindow.set_text(value)

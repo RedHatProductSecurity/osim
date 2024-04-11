@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import date, datetime
 
 from behave import when, then
 from selenium.webdriver.common.by import By
@@ -414,4 +414,37 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_not_exist(context.v)
+    context.browser.quit()
+
+
+@when("I update the embargoed flaw with a past public date")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.v = date(2024, 1, 1).strftime("%Y%m%d")
+    flaw_detail_page.set_input_field("publicDate", context.v)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('embargoedPublicDateErrorMsg')
+
+
+@then("The embargoed flaw update is failed")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    v = flaw_detail_page.get_input_value("publicDate")
+    assert v != context.v, f"Public date is updated to a past date {v}"
+    context.browser.quit()
+
+
+@when("I update the embargoed flaw with a future public date")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.v = date(2040, 1, 1).strftime("%Y%m%d")
+    flaw_detail_page.set_input_field("publicDate", context.v)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+@then("The embargoed flaw is updated")
+def step_impl(context):
     context.browser.quit()
