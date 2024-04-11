@@ -13,7 +13,9 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const emit = defineEmits(['set:filters']);
+const emit = defineEmits<{
+  'set:filters': [value: Record<string, string>] 
+}>();
 
 const route = useRoute();
 

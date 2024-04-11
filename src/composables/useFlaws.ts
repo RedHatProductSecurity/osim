@@ -1,4 +1,4 @@
-import {  ref } from 'vue';
+import { ref } from 'vue';
 import { getFlaws } from '@/services/FlawService';
 
 export function useFlaws() {
@@ -16,11 +16,16 @@ export function useFlaws() {
 
     getFlaws(offset.value, 100, params.value)
       .then((response) => {
-        if (response.data.results.length < pagesize) {
-          isFinalPageFetched.value = true;
-        }
         issues.value = response.data.results;
-        offset.value += response.data.results.length; // Increase the offset for next fetch
+        // response will have next property for next api call
+        if (response.data.next) {
+          const url = new URL(response.data.next);
+          const params = new URLSearchParams(url.search);
+          offset.value = params.get('offset') || 0;
+        } else {
+          isFinalPageFetched.value = true;
+          offset.value += response.data.results.length; 
+        }
       })
       .catch((err) => {
         console.error('IssueQueue: getFlaws error: ', err);
@@ -38,11 +43,16 @@ export function useFlaws() {
 
     getFlaws(offset.value, pagesize, params.value)
       .then((response) => {
-        if (response.data.results.length < pagesize) {
-          isFinalPageFetched.value = true;
-        }
         issues.value = [...issues.value, ...response.data.results];
-        offset.value += response.data.results.length;
+        // response will have next property for next api call
+        if (response.data.next) {
+          const url = new URL(response.data.next);
+          const params = new URLSearchParams(url.search);
+          offset.value = params.get('offset') || 0;
+        } else {
+          isFinalPageFetched.value = true;
+          offset.value += response.data.results.length; 
+        }
       })
       .catch((err) => {
         console.error('Error fetching more flaws: ', err);
@@ -51,6 +61,7 @@ export function useFlaws() {
         isLoading.value = false;
       });
   }
+
   return {
     issues,
     isFinalPageFetched,
@@ -60,5 +71,4 @@ export function useFlaws() {
     loadFlaws,
     loadMoreFlaws
   };
-
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { z } from 'zod';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlaws }  from '../composables/useFlaws';
@@ -48,13 +48,13 @@ function fetchMoreFlaws() {
   loadMoreFlaws(params);
 }
 
-function setFilters(newFilters : Record<string, string>) {
+function setFilters(newFilters : Record<string, string> ) {
   filters.value = {
     ...newFilters
   };
 }
 
-function setTableFilters(newFilters: any = {}) {
+function setTableFilters(newFilters: Ref<Record<string, string>>) {
   tableFilters.value = {
     ...newFilters.value
   };
