@@ -46,7 +46,7 @@ const type = computed<string>(() => props.type ?? 'text');
 <template>
   <label class="osim-input has-validation mb-3 ps-3">
     <div class="row">
-      <span class="form-label col-3">
+      <span class="form-label col-3 gx-2">
         {{ label }}
         <!--attrs: {{ $attrs }}-->
       </span>

@@ -11,6 +11,9 @@
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
 * Fixed inconsistent style on read-only fields with empty value
+* Fixed `References` and `Acknowledgements` don't open when new item is added
+* Fixed editing bugs on `References` and `Acknowledgements` lists
+* Fixed `Affiliation` text overflow on `Acknowledgements` labels
 
 ## [2024.1.0]
 

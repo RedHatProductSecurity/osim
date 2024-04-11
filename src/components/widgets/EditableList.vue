@@ -26,6 +26,8 @@ function useModalForItem(uuid: string) {
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
 
+const isExpanded = ref(false);
+
 onMounted(() => (priorValues.value = deepCopyFromRaw(items.value)));
 
 const indexBeingEdited = ref<number | null>(null);
@@ -37,6 +39,11 @@ const itemsToSave = computed((): any[] => [
   ...items.value.filter((item, index) => modifiedItemIndexes.value.includes(index)),
   ...items.value.filter(({ uuid }) => !uuid),
 ]);
+
+function addItem() {
+  isExpanded.value = true;
+  emit('item:new');
+}
 
 function cancelEdit(index: number) {
   items.value[index] = deepCopyFromRaw(priorValues.value[index]);
@@ -56,7 +63,12 @@ function commitEdit(index: number) {
 
 <template>
   <div>
-    <LabelCollapsable :label="`${entityNamePlural}: ${items.length}`" :isExpandable="items.length > 0">
+    <LabelCollapsable
+      :label="`${entityNamePlural}: ${items.length}`"
+      :isExpandable="items.length > 0"
+      :isExpanded="isExpanded"
+      @setExpanded="isExpanded = !isExpanded"
+    >
       <div
         v-for="(item, itemIndex) in items"
         :key="itemIndex"
@@ -165,7 +177,7 @@ function commitEdit(index: number) {
       >
         Save Changes to {{ entityNamePlural }}
       </button>
-      <button type="button" class="btn btn-secondary" @click.prevent="emit('item:new')">
+      <button type="button" class="btn btn-secondary" @click="addItem()">
         Add {{ entityName }}
       </button>
     </form>

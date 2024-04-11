@@ -90,6 +90,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
         <div class="form-group">
           <div class="p-3 pt-4">
             <button
+              type="button"
               class="btn osim-cancel-new-reference"
               @click="emit('reference:cancel-new', items[itemIndex])"
             >

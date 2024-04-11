@@ -34,7 +34,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, onSaveSuccess: 
   }
 
   function cancelAddReference(reference: ZodFlawReferenceType) {
-    flawReferences.value = flawReferences.value.filter((r) => r !== reference);
+    flawReferences.value.splice(flawReferences.value.indexOf(reference),1);
   }
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
@@ -97,7 +97,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, onSaveSuccess: 
   }
 
   function cancelAddAcknowledgment(acknowledgment: ZodFlawAcknowledgmentType) {
-    flawAcknowledgments.value = flawAcknowledgments.value.filter((r) => r !== acknowledgment);
+    flawAcknowledgments.value.splice(flawAcknowledgments.value.indexOf(acknowledgment),1);
   }
 
   return {
