@@ -7,7 +7,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
 const props = defineProps<{
-  cveId: string | null | undefined;
+  flawId: string | null | undefined;
   isFlawNew: boolean;
 }>();
 
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 
 const { isModalOpen, openModal, closeModal } = useModal();
 const confirmationId = ref('');
-const isFlawIdConfirmed = computed(() => confirmationId.value === props.cveId);
+const isFlawIdConfirmed = computed(() => confirmationId.value === props.flawId);
 
 function handleConfirm() {
   emit('update:modelValue', false);
@@ -68,7 +68,7 @@ function handleConfirm() {
                 </ol>
                 <div class="alert alert-info">
                   To prevent an accidental unembargo please confirm your intention by typing
-                  {{ cveId }} if you wish to proceed.
+                  {{ flawId }} if you wish to proceed.
                 </div>
                 <LabelInput v-model="confirmationId" label="Confirm" />
                 <p v-if="confirmationId" class="alert alert-warning mt-2">
