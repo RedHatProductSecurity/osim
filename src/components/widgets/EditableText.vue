@@ -113,7 +113,7 @@ function blur(e: FocusEvent | null) {
     <div
       v-show="editing"
       ref="elDiv"
-      class="input-group has-validation"
+      class="input-group"
       @blur="blur($event)"
     >
       <input

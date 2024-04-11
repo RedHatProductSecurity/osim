@@ -251,7 +251,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
     <div
       v-if="editing"
       ref="elDiv"
-      class="input-group has-validation"
+      class="input-group"
       @blur="blur($event)"
     >
 

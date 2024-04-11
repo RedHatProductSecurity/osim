@@ -4,11 +4,16 @@ import { ref } from 'vue';
 defineEmits<{
   'update:modelValue': [value: string | undefined],
 }>();
-defineProps<{
+withDefaults(defineProps<{
   modelValue: string | null | undefined;
   label: string;
   error?: string;
-}>();
+  disabled?: boolean;
+}>(), {
+  error: '',
+  disabled: false
+});
+
 const elTextArea = ref();
 
 // onMounted(() => {
@@ -26,7 +31,7 @@ const elTextArea = ref();
 </script>
 
 <template>
-  <label class="osim-input has-validation mb-3 ps-3">
+  <label class="osim-input mb-3 ps-3">
     <div class="row">
       <span class="form-label col-3">
         {{ label }}
@@ -38,8 +43,9 @@ const elTextArea = ref();
         v-bind="$attrs"
         :ref="elTextArea"
         class="form-control col-9 d-inline-block"
-        :class="{ 'is-invalid': error != null }"
+        :class="{ 'is-invalid': error }"
         :value="modelValue"
+        :disabled="disabled"
         rows="5"
         @input="$emit(
           'update:modelValue',
