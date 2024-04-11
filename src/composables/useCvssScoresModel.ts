@@ -6,11 +6,19 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 const onSucceed = createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' });
 const onError = createCatchHandler('Error updating Flaw CVSS data');
 
+// TODO: This composable should be ideally refactored into a more modular
+// solution when CVSSv4 starts being used
 export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
+
+  function getCvssData(issuer: string, version: string) {
+    return flaw.value.cvss_scores.find(
+      (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
+    );
+  }
+
   const wasCvssModified = ref(false);
-  const redHatCvssData = flaw.value.cvss_scores.find((assessment) => assessment.issuer === 'RH');
-  const flawRhCvss = ref(
-    redHatCvssData || {
+  const flawRhCvss3 = ref(
+    getCvssData('RH', 'V3') || {
       vector: null,
       uuid: null,
       issuer: null,
@@ -20,40 +28,38 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
     }, // empty for creating a flaw, or if no CVSS data exists
   );
 
-  watch(flawRhCvss, () => (wasCvssModified.value = true), { deep: true });
+  watch(flawRhCvss3, () => (wasCvssModified.value = true), { deep: true });
 
-  const nistCvssScore = computed(() =>
-    flaw.value.cvss_scores.find((score) => score.issuer === 'NIST'),
-  );
+  const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 
-  const nvdCvssString = computed(() => {
-    const values = [nistCvssScore.value?.score, nistCvssScore.value?.vector].filter(Boolean);
-    return values.join('/') || flaw.value.nvd_cvss3 || '-';
+  const nvdCvss3String = computed(() => {
+    const values = [flawNvdCvss3.value?.score, flawNvdCvss3.value?.vector].filter(Boolean);
+    return values.join('/') || '-';
   });
 
-  const cvssString = computed(() => {
-    const values = [flawRhCvss.value?.score, flawRhCvss.value?.vector].filter(Boolean);
+  const rhCvss3String = computed(() => {
+    const values = [flawRhCvss3.value?.score, flawRhCvss3.value?.vector].filter(Boolean);
     return values.join('/');
   });
 
   const shouldDisplayEmailNistForm = computed(() => {
-    if(cvssString.value === '' || nvdCvssString.value === '-') {
+    if(rhCvss3String.value === '' || nvdCvss3String.value === '-') {
       return false;
     }
-    return `${cvssString.value}` !== `${nvdCvssString.value}`;
+    return `${rhCvss3String.value}` !== `${nvdCvss3String.value}`;
   });
 
-  const highlightedNvdCvssScore = computed(() => {
+  const highlightedNvdCvss3String = computed(() => {
     const result = [];
-    const nvdCvssValue = nvdCvssString.value;
-    const cvssValue = cvssString.value;
+    const nvdCvssValue = nvdCvss3String.value;
+    const cvssValue = rhCvss3String.value;
     const maxLength = Math.max(nvdCvssValue.length, cvssValue.length);
 
     for (let i = 0; i < maxLength; i++) {
       const charFromFlaw = i < nvdCvssValue.length ? nvdCvssValue[i] : '';
       const charFromCvss = i < cvssValue.length ? cvssValue[i] : '';
-      result.push({ 
-        char: charFromFlaw, 
+      result.push({
+        char: charFromFlaw,
         isHighlighted: shouldDisplayEmailNistForm.value && charFromFlaw !== charFromCvss,
       });
     }
@@ -62,11 +68,11 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
   });
 
   async function saveCvssScores() {
-    if (flawRhCvss.value.created_dt) {
+    if (flawRhCvss3.value.created_dt) {
       return putFlawCvssScores(
         flaw.value.uuid,
-        flawRhCvss.value.uuid || '',
-        flawRhCvss.value as unknown,
+        flawRhCvss3.value.uuid || '',
+        flawRhCvss3.value as unknown,
       )
         .then(onSucceed)
         .catch(onError);
@@ -74,10 +80,10 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
 
     const requestBody = {
       // "score":  is recalculated based on the vector by OSIDB and does not need to be included
-      comment: flawRhCvss.value.comment,
+      comment: flawRhCvss3.value.comment,
       cvss_version: 'V3',
       issuer: 'RH',
-      vector: flawRhCvss.value.vector,
+      vector: flawRhCvss3.value.vector,
       embargoed: flaw.value.embargoed,
     };
     return postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
@@ -87,11 +93,11 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
 
   return {
     wasCvssModified,
-    flawRhCvss,
+    flawRhCvss3,
+    rhCvss3String,
+    nvdCvss3String,
+    highlightedNvdCvss3String,
     shouldDisplayEmailNistForm,
-    highlightedNvdCvssScore,
-    cvssString,
-    nvdCvssString,
     saveCvssScores,
   };
 }

@@ -14,6 +14,7 @@
 * Fixed `References` and `Acknowledgements` don't open when new item is added
 * Fixed editing bugs on `References` and `Acknowledgements` lists
 * Fixed `Affiliation` text overflow on `Acknowledgements` labels
+* Fixed possible incorrect CVSS2 instead of CVSS3 display (OSIDB-2308)
 
 ## [2024.1.0]
 
