@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema, flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
-import { advancedSearchFlaws } from '@/services/FlawService';
 import { useRoute } from 'vue-router';
 
 
@@ -10,13 +9,16 @@ type Facet = {
   value: string;
 };
 
+const props = defineProps<{
+  isLoading: boolean;
+}>();
+
 const emit = defineEmits<{
-  'issues:load': [any[]];
+  'set:filters': [value: Record<string, string>] 
 }>();
 
 const route = useRoute();
 
-let isSearching = ref(false);
 
 const fieldsMapping: Record<string, string | string[]> = {
   classification: 'workflow_state',
@@ -122,7 +124,6 @@ function removeFacet(index: number) {
 }
 
 async function submitAdvancedSearch() {
-  emit('issues:load', []);
   const params = facets.value.reduce(
     (fields, { field, value }) => {
       if (field && value) {
@@ -132,13 +133,9 @@ async function submitAdvancedSearch() {
     },
     {} as Record<string, string>,
   );
-  isSearching.value = true;
-  const response: { results: any } = await advancedSearchFlaws(params);
-  if (response) {
-    emit('issues:load', response.results);
-  }
-  isSearching.value = false;
+  emit('set:filters', params);
 }
+
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
 
@@ -179,8 +176,8 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           <i class="bi-x" aria-label="remove field"></i>
         </button>
       </div>
-      <button class="btn btn-primary me-3" @click="submitAdvancedSearch">
-        <div v-if="isSearching" class="spinner-border spinner-border-sm"></div>
+      <button class="btn btn-primary me-3" type="submit" :disabled="props.isLoading">
+        <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
         Search
       </button>
     </form>
