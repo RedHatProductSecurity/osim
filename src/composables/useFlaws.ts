@@ -21,7 +21,7 @@ export function useFlaws() {
         if (response.data.next) {
           const url = new URL(response.data.next);
           const params = new URLSearchParams(url.search);
-          offset.value = params.get('offset') || 0;
+          offset.value = Number(params.get('offset') || 0);
         } else {
           isFinalPageFetched.value = true;
           offset.value += response.data.results.length; 
@@ -48,7 +48,7 @@ export function useFlaws() {
         if (response.data.next) {
           const url = new URL(response.data.next);
           const params = new URLSearchParams(url.search);
-          offset.value = params.get('offset') || 0;
+          offset.value = Number(params.get('offset') || 0);
         } else {
           isFinalPageFetched.value = true;
           offset.value += response.data.results.length; 
