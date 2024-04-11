@@ -98,9 +98,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       await deleteAffects();
     }
 
+
     await putFlaw(flaw.value.uuid, validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-      .catch(createCatchHandler('Could not update Flaw'));
+      .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));
 
     if (wasCvssModified.value) {
       await saveCvssScores();
@@ -116,7 +117,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   
   function addPublicComment(comment: string) {
     isSaving.value = true;
-    postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)
+    postFlawPublicComment(flaw.value.uuid, comment)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
       .then(afterSaveSuccess)
       .catch(createCatchHandler('Error saving comment'))

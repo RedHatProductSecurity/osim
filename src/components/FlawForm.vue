@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
@@ -23,6 +23,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
+
 
 const props = defineProps<{
   flaw: any;
@@ -81,6 +82,11 @@ onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
 });
 
+watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
+  initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  onReset();
+});
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
     updateFlaw();
@@ -106,7 +112,7 @@ const onReset = () => {
 </script>
 
 <template>
-  <form class="osim-flaw-form" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-form-disabled': isSaving }" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
@@ -365,6 +371,7 @@ const onReset = () => {
           :error="errors.comments"
           :isSaving="isSaving"
           @comment:addPublicComment="addPublicComment"
+          @refresh:flaw="emit('refresh:flaw')"
         />
       </div>
     </div>
@@ -505,6 +512,11 @@ form.osim-flaw-form :deep(*) {
 
 .cvss-score-error{
   margin-top: -15px;
+}
+
+.osim-form-disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 </style>
