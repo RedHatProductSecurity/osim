@@ -39,7 +39,7 @@ vi.mock('vue-router', async () => {
 vi.mock('../../composables/useFlaws', () => ({
   useFlaws: vi.fn(() => ({
     issues: [],
-    isLoading: true,
+    isLoading: false,
     isFinalPageFetched: false,
     loadFlaws: vi.fn(),
     loadMoreFlaws: vi.fn(),
@@ -48,7 +48,7 @@ vi.mock('../../composables/useFlaws', () => ({
 
 
 (useRoute as Mock).mockReturnValue({
-  'query': { query: 'search' },
+  'query': { query: 'search', mode: 'advanced' },
 });
 
 describe('FlawSearchView', () => {
@@ -58,7 +58,7 @@ describe('FlawSearchView', () => {
   beforeEach(() => {
     vi.mocked(useFlaws).mockReturnValue({
       issues: [],
-      isLoading: true,
+      isLoading: false,
       isFinalPageFetched: false,
       loadFlaws: vi.fn(),
       loadMoreFlaws: vi.fn(),
@@ -87,5 +87,29 @@ describe('FlawSearchView', () => {
   it('should call Load on mounted', async () => {
     await flushPromises();
     expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
+      'order': '-created_dt',
+      'search': 'search',
+    });
+  });
+
+  it('should call loadFlaws on search', async () => {
+    await flushPromises();
+    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
+    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
+    await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
+    await selectDropdown.trigger('change');
+    const inputField = wrapper.find('input.form-control');
+    await inputField.setValue('test'); 
+    const searchButton = wrapper.find('button[type="submit"]');
+    expect(searchButton.exists()).toBeTruthy();
+    await searchButton.trigger('submit');
+    await flushPromises();
+    expect(useFlaws().loadFlaws).toHaveBeenCalledTimes(2);
+    expect(useFlaws().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
+      'acknowledgments__name': 'test',
+      'order': '-created_dt',
+      'search': 'search',
+    });
   });
 });
