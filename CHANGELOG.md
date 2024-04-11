@@ -10,6 +10,7 @@
 * Validates Flaw form fields with visual fieldback 
 * Provided save operation indications
 * Implemented read-only mode (network requests involving write operations are disabled)
+* Disables form on save
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -25,6 +26,8 @@
 * Saving indication for saving Flaw edits
 * Supplied missing validation indication fo Reported Date
 * Removed CVE as required field
+* Refreshing behavior fixed
+
 
 ## [2024.1.0]
 
