@@ -23,7 +23,6 @@ const props = defineProps<{
 }>();
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
-const issueFilter = ref('');
 const selectedSortField = ref<ColumnField>('created_dt');
 const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
@@ -50,10 +49,6 @@ const params = computed(() => {
 
   if (isOpenIssuesSelected.value) {
     paramsObj.workflow_state = filteredStates.value;
-  }
-
-  if(issueFilter.value.length > 0) {
-    paramsObj.filter = issueFilter.value;
   }
 
   const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
@@ -151,24 +146,6 @@ watch(params, () => {
 <template>
   <div class="osim-content container osim-issue-queue">
     <div class="osim-incident-filter">
-      <label>
-        <!--Filter By-->
-        <!--<select>-->
-        <!--  <option value="Issues assigned to Me">Issues assigned to Me</option>-->
-        <!-- <option value="Issues assigned to team but unowned">
-          Issues assigned to team but unowned
-        </option> -->
-        <!--  <option value="Oldest">Oldest</option>-->
-        <!--  <option value="Newest">Newest</option>-->
-        <!--</select>-->
-
-        <input
-          v-model="issueFilter"
-          type="text"
-          class="form-text form-control"
-          placeholder="Filter Issues/Flaws"
-        />
-      </label>
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
 
