@@ -140,9 +140,6 @@ watch(settings, () => {
         </div>
       </div>
     </form>
-
-    <a href="/CHANGELOG.md">Changelog</a>
-
   </div>
 </template>
 

@@ -87,6 +87,9 @@ describe('App', async () => {
     });
     subject = mount(App, {
       global: {
+        stubs: {
+          ChangeLog: true
+        },
         plugins: [
           pinia,
           router
@@ -104,6 +107,9 @@ describe('App', async () => {
     });
     subject = mount(App, {
       global: {
+        stubs: {
+          ChangeLog: true
+        },
         plugins: [
           pinia,
           router,
