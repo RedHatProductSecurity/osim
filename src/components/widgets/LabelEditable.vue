@@ -2,6 +2,7 @@
 
 import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
+import EditableTime from './EditableTime.vue';
 
 withDefaults(defineProps<{
   // modelValue: string,
@@ -17,6 +18,7 @@ withDefaults(defineProps<{
 const components = {
   text: EditableText,
   date: EditableDate,
+  time: EditableTime
 };
 const modelValue = defineModel<string | undefined | null | number | Date>();
 </script>

@@ -248,6 +248,13 @@ const onReset = () => {
             type="date"
             :error="errors.unembargo_dt"
           />
+          <LabelEditable
+            v-if="flaw.embargoed"
+            v-model="flaw.unembargo_at_dt"
+            :label="'Public Time'"
+            type="time"
+            :error="errors.unembargo_at_dt"
+            />
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
             :isFlawNew="!flaw.uuid"

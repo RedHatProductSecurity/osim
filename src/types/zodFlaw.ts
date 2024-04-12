@@ -265,6 +265,7 @@ export const ZodFlawSchema = z.object({
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
+  unembargo_at_dt: zodOsimDateTime().nullish(), // $date-time,
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
   source: z.nativeEnum(Source8d8EnumWithBlank).refine(
     Boolean,
