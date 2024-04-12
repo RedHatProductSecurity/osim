@@ -111,7 +111,7 @@ export const FlawCVSSSchema = z.object({
 });
 
 export const AffectCVSSSchema = z.object({
-  // affect: z.string().uuid(),
+  affect: z.string().uuid(),
   comment: z.string().nullable(),
   cvss_version: z.string(),
   issuer: z.nativeEnum(IssuerEnum),
