@@ -52,6 +52,7 @@ ENTRYPOINT ["/osim-entrypoint.sh"]
 # Copy the built files to the default Nginx directory
 COPY --from=dev /opt/app-root/src/dist /usr/share/nginx/html
 COPY --from=dev /opt/app-root/src/osim_build.json /
+COPY --from=dev /opt/app-root/src/CHANGELOG.md /usr/share/nginx/html
 
 # nginx:x:999:999:Nginx web server:/var/lib/nginx:/sbin/nologin
 USER 999
