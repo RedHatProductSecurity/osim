@@ -26,7 +26,7 @@ const { theAffects, affectsToDelete } = toRefs(props);
 
 const isProductStreamDefined = (affect: ZodAffectType) => affect.ps_module && affect.ps_component;
 
-const affectedModules = uniques(theAffects.value.map((affect) => affect.ps_module));
+const affectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
 
 const componentAffectsInModule = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName); 
@@ -44,18 +44,16 @@ const streamsAccordionState = ref(
     )
 );
 
-watchArray(theAffects.value, (nextList, priorList, addedAffects) => {
-  addedAffects
-    .reduce(
-      (accordionStates: Record<string, boolean>, affect) => {
-        accordionStates[streamPath(affect)] = false;
-        accordionStates[affect.ps_module] = false;
-        return accordionStates;
-      },
-      {}
-    );
-},
-{ deep: true });
+watchArray(
+  theAffects.value,
+  (nextList, priorList, addedAffects) => {
+    addedAffects.forEach((affect) => {
+      streamsAccordionState.value[streamPath(affect)] = false;
+      streamsAccordionState.value[affect.ps_module] = false;
+    });
+  },
+  { deep: true }
+);
 
 
 function collapseAll() {
