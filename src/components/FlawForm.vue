@@ -112,7 +112,7 @@ const onReset = () => {
 </script>
 
 <template>
-  <form class="osim-flaw-form" :class="{'osim-form-disabled': isSaving }" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving }" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
@@ -512,11 +512,6 @@ form.osim-flaw-form :deep(*) {
 
 .cvss-score-error{
   margin-top: -15px;
-}
-
-.osim-form-disabled {
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 </style>

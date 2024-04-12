@@ -60,3 +60,8 @@ table {
   background: var(--bs-gray-500);
   border-radius: .5rem;
 }
+
+.osim-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
