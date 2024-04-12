@@ -98,23 +98,30 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       await deleteAffects();
     }
 
+
     await putFlaw(flaw.value.uuid, validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-      .catch(createCatchHandler('Could not update Flaw'));
+      .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));
 
     if (wasCvssModified.value) {
       await saveCvssScores();
     }
 
+    afterSaveSuccess();
+  }
+
+  function afterSaveSuccess() {
     onSaveSuccess();
     isSaving.value = false;
   }
-
+  
   function addPublicComment(comment: string) {
+    isSaving.value = true;
     postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(onSaveSuccess)
-      .catch(createCatchHandler('Error saving comment'));
+      .then(afterSaveSuccess)
+      .catch(createCatchHandler('Error saving comment'))
+      .finally(() => isSaving.value = false);
   }
 
   const errors = computed(() => flawErrors(flaw.value));
@@ -134,10 +141,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     addPublicComment,
     createFlaw,
     updateFlaw,
-    onSaveSuccess,
+    afterSaveSuccess,
     ...useCvssScoresModel(flaw),
     ...useFlawAffectsModel(flaw),
-    ...useFlawAttributionsModel(flaw, onSaveSuccess),
+    ...useFlawAttributionsModel(flaw, afterSaveSuccess),
   };
 }
 

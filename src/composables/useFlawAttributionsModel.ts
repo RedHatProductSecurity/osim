@@ -13,24 +13,24 @@ import {
 } from '@/services/FlawService';
 import { ref, type Ref } from 'vue';
 
-export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, onSaveSuccess: () => void) {
+export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, afterSaveSuccess: () => void) {
 
   const flawReferences = ref<ZodFlawReferenceType[]>(flaw.value.references);
   const flawAcknowledgments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
 
   async function updateReference(reference: ZodFlawReferenceType & { uuid: string }) {
     await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
     await postFlawReference(flaw.value.uuid, reference);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   async function deleteReference(referenceId: string) {
     await deleteFlawReference(flaw.value.uuid, referenceId);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   function cancelAddReference(reference: ZodFlawReferenceType) {
@@ -60,17 +60,17 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, onSaveSuccess: 
 
   async function createAcknowledgment(acknowlegdment: any) {
     await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
     await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   async function updateAcknowledgment(acknowlegdment: any) {
     await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
-    onSaveSuccess();
+    afterSaveSuccess();
   }
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
