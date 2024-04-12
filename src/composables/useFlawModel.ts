@@ -24,7 +24,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
-  const { wereAffectsModified, saveAffects, deleteAffects, affectsToDelete } =
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } =
     useFlawAffectsModel(flaw);
 
   const router = useRouter();
@@ -80,7 +80,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       return;
     }
 
-    if (wereAffectsModified.value) {
+    if (affectsToSave.value.length) {
       await saveAffects();
     }
 

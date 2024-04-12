@@ -22,7 +22,7 @@ const modelValue = defineModel<ZodAffectType>({ default: null });
 const emit = defineEmits<{
   'file-tracker': [value: object];
   'update:modelValue': [value: object];
-  remove: [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
   recover: [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
@@ -101,7 +101,7 @@ function componentLabel(affectedComponent: ZodAffectType) {
         <button
           type="button"
           class="btn btn-white btn-outline-black btn-sm"
-          @click.prevent="emit('remove', modelValue)"
+          @click="emit('affect:remove', modelValue)"
         >
           <i class="bi bi-trash" />
         </button>

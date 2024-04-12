@@ -3,8 +3,8 @@ import * as R from 'ramda';
 
 export function vRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
-  watch(reffedProp, (value) => flexRef.value = value);
   const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
+  watch(reffedProp, (value) => flexRef.value = value);
   return flexRef;
 }
 
@@ -80,3 +80,5 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
   );
 
 export const cveRegex = /^\s*(CVE-\d{4}-\d{4,7})\s*$/;
+
+export const uniques = <T>(array: T[]) => Array.from(new Set(array));

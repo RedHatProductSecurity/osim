@@ -3,14 +3,6 @@ import { defineStore } from 'pinia';
 import { z } from 'zod';
 import { useStorage } from '@vueuse/core';
 
-
-
-// Consideration: we may want some settings to be persistently stored,
-//   but other settings must be in-memory only, e.g. api keys
-
-// const _settingsStoreKey = 'SettingsStore';
-
-
 export const SettingsSchema = z.object({
   // bugzillaApiKey: z.string().length(
   //   32, {message: 'Bugzilla API Key is the wrong length!'}
@@ -19,12 +11,11 @@ export const SettingsSchema = z.object({
   jiraApiKey: z.string().optional().or(z.literal('')),
   showNotifications: z.boolean(),
 });
-export type SettingsType = z.infer<typeof SettingsSchema>;
 
+export type SettingsType = z.infer<typeof SettingsSchema>;
 
 const defaultValues: SettingsType = { bugzillaApiKey: '', jiraApiKey: '', showNotifications: false };
 const apiKeys = useStorage('OSIM::API-KEYS', defaultValues);
-
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const settings = ref<SettingsType>(apiKeys.value);

@@ -12,7 +12,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   const affectsToSave = computed(() =>
     [
-      ...theAffects.value.filter((affect) => modifiedAffectIds.value.includes(affect.uuid)),
+      ...theAffects.value.filter((affect) => affect.uuid && modifiedAffectIds.value.includes(affect.uuid)),
       ...theAffects.value.filter((affect) => !affect.uuid),
     ].filter((affect) => !affectsToDelete.value.includes(affect)),
   );
@@ -20,7 +20,24 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const { addToast } = useToastStore();
 
   function addBlankAffect() {
-    theAffects.value.push({} as ZodAffectType);
+    const embargoed = flaw.value.embargoed;
+    theAffects.value.push({
+      embargoed,
+      affectedness: '',
+      delegated_resolution: '',
+      ps_module: '',
+      ps_component: '',
+      impact: '',
+      cvss_scores: flaw.value.cvss_scores.map((cvss) => ({
+        // affect: z.string().uuid(),
+        cvss_version: cvss.cvss_version,
+        issuer: cvss.issuer,
+        score: cvss.score,
+        vector: cvss.vector,
+        embargoed,
+      })),
+      trackers: [{ errata: [] }],
+    } as ZodAffectType);
   }
 
   function removeAffect(affectIdx: number) {
@@ -35,7 +52,9 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   theAffects.value.forEach((affect) => {
     watch(affect, () => {
-      reportAffectAsModified(affect.uuid);
+      if (affect.uuid) {
+        reportAffectAsModified(affect.uuid);
+      }
     });
   });
 
@@ -60,7 +79,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         flaw: flaw.value?.uuid,
         type: affect.type,
         affectedness: affect.affectedness,
-        resolution: affect.resolution,
+        delegated_resolution: affect.delegated_resolution,
         ps_module: affect.ps_module,
         ps_component: affect.ps_component,
         impact: affect.impact,
@@ -117,5 +136,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     theAffects,
     wereAffectsModified,
     affectsToDelete,
+    affectsToSave,
   };
 }
