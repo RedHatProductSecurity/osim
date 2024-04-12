@@ -29,7 +29,7 @@ export function notifyApiKeyUnset() {
 
     addToast({
       css: 'warning',
-      title: 'Read-Only Mode',
+      title: 'Cannot Edit/Create Flaws',
       bodyHtml: true,
       body: `You have not set the following keys in this tab: <ul>${lis}</ul>` +
       'Flaw creation requires your Bugzilla API or JIRA key to be set. ' +
