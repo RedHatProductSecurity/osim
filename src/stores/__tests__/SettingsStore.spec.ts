@@ -1,18 +1,17 @@
 import { describe, it, expect } from 'vitest';
-
 import { useSettingsStore } from '../SettingsStore';
-
 import { createTestingPinia } from '@pinia/testing';
-
 import { createPinia, setActivePinia } from 'pinia';
+
+const initialState = {
+  bugzillaApiKey: '',
+  jiraApiKey: '',
+  showNotifications: false,
+};
 
 // While not used in this file, store below depends on global pinia test instance
 export const mockSettingsStore = createTestingPinia({
-  initialState: {
-    bugzillaApiKey: '',
-    jiraApiKey: '',
-    showNotification:true
-  }
+  initialState
 });
 
 describe('SettingsStore', () => {
@@ -24,7 +23,7 @@ describe('SettingsStore', () => {
   });
 
   it('initializes', () => {
-    expect(settingsStore.$state.settings).toEqual({ showNotifications: false });
+    expect(settingsStore.$state.settings).toEqual(initialState);
   });
   it('saves values', () => {
     settingsStore.save({

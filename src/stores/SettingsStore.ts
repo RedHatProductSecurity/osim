@@ -1,14 +1,14 @@
 import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { z } from 'zod';
+import { useStorage } from '@vueuse/core';
 
-import serviceWorkerClient from '../services/service-worker-client';
 
 
 // Consideration: we may want some settings to be persistently stored,
 //   but other settings must be in-memory only, e.g. api keys
 
-const _settingsStoreKey = 'SettingsStore';
+// const _settingsStoreKey = 'SettingsStore';
 
 
 export const SettingsSchema = z.object({
@@ -21,26 +21,27 @@ export const SettingsSchema = z.object({
 });
 export type SettingsType = z.infer<typeof SettingsSchema>;
 
-// const settingsStoreSessionStorage = z.object({
-//   settings: SettingsSchema,
-// });
-// type SettingsStoreSessionStorage = z.infer<typeof settingsStoreSessionStorage>;
+
+const defaultValues: SettingsType = { bugzillaApiKey: '', jiraApiKey: '', showNotifications: false };
+const apiKeys = useStorage('OSIM::API-KEYS', defaultValues);
 
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>({ showNotifications: false });
+  const settings = ref<SettingsType>(apiKeys.value);
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
-  serviceWorkerClient.listen(_settingsStoreKey, value => {
-    const newSettingsStore = SettingsSchema.safeParse(value);
-    if (newSettingsStore.success) {
-      if (JSON.stringify(newSettingsStore.data) !== JSON.stringify(settings.value)) {
-        // New value; update
-        settings.value = newSettingsStore.data;
-      }
+
+  const validatedSettings = SettingsSchema.safeParse(settings.value);
+  if (validatedSettings.success) {
+    if (JSON.stringify(validatedSettings.data) !== JSON.stringify(settings.value)) {
+
+      settings.value = validatedSettings.data;
     }
-  });
+  } else {
+    settings.value = defaultValues;
+  }
+
   watch(settings, () => {
-    serviceWorkerClient.put(_settingsStoreKey, JSON.parse(JSON.stringify(settings.value)));
+    apiKeys.value = settings.value;
   });
 
   function save(newSettings: SettingsType) {
