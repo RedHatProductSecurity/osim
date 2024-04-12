@@ -47,7 +47,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     if (!validatedFlaw.success) {
       return;
     }
-    postFlaw(validatedFlaw.data)
+    // Remove any empty fields before request
+    const flawForPost: any = Object.fromEntries(
+      Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
+    );
+
+    postFlaw(flawForPost)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
@@ -62,8 +67,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function validate(){
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
-      console.log(validatedFlaw.error.issues);
-      const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
+
+      const temporaryFieldRenaming = (fieldName: string | number) => 
+        fieldName === 'description' ? 'Comment#0' : fieldName;
+
+      const errorMessage = ({ message, path }: ZodIssue) => `${path.map(temporaryFieldRenaming).join('/')}: ${message}`;
+
       addToast({
         title: 'Flaw validation failed before submission',
         body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
@@ -75,6 +84,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   }
 
   async function updateFlaw() {
+    isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
       return;
@@ -140,6 +150,7 @@ export function blankFlaw(): ZodFlawType {
     },
     component: '',
     unembargo_dt: '',
+    reported_dt: '',
     uuid: '',
     cve_id: '',
     cvss3: '',

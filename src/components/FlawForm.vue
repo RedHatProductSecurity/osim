@@ -253,7 +253,7 @@ const onReset = () => {
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
             :isFlawNew="!flaw.uuid"
-            :cveId="flaw.cve_id"
+            :flawId="flaw.cve_id || flaw.uuid"
           />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />

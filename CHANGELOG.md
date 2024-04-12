@@ -7,6 +7,9 @@
 * Renamed `Description` (to Comment#0) and `Summary` (to Description)
 * Made text area fields visible with empty content
 * Minor style adjustments on `Flaw` views
+* Validates Flaw form fields with visual fieldback 
+* Provided save operation indications
+* Implemented read-only mode (network requests involving write operations are disabled)
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -18,7 +21,10 @@
 * Flaw CVSS3 score is now readonly (OSIDB-2308)
 * Flaw Comment#0 (former description) field is now writable only upon Flaw creation (OSIDB-2308)
 * Fixed ability to create comments on public flaws
-
+* Provide unembargo confirmation ID for Embargoed Flaws without a CVE
+* Saving indication for saving Flaw edits
+* Supplied missing validation indication fo Reported Date
+* Removed CVE as required field
 
 ## [2024.1.0]
 

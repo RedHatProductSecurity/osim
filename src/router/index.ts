@@ -102,6 +102,11 @@ const router = createRouter({
       meta: {
         title: 'Settings',
       },
+      beforeEnter() {
+        if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
+          notifyApiKeyUnset();
+        }
+      }
     },
     {
       path: '/widget-test',
@@ -152,20 +157,35 @@ const router = createRouter({
   ],
 });
 
+function areApiKeysNotSet(): boolean {
+  const {
+    settings: { bugzillaApiKey, jiraApiKey },
+  } = useSettingsStore();
+  return !bugzillaApiKey || !jiraApiKey;
+}
+
 function apiKeysGuard(shouldRedirectToSettings = false) {
   return (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext
   ) => {
-    const {
-      settings: { bugzillaApiKey, jiraApiKey },
-    } = useSettingsStore();
-    const noKeysAreSet = !bugzillaApiKey || !jiraApiKey;
+    const noKeysAreSet = areApiKeysNotSet();
 
-    if (noKeysAreSet) notifyApiKeyUnset();
-    if (noKeysAreSet && shouldRedirectToSettings) next('/settings');
-    // if (noKeysAreSet && !shouldRedirectToSettings)
+    if (osimRuntime.value.readOnly) {
+      next();
+      return;
+    }
+
+    if (noKeysAreSet) {
+      notifyApiKeyUnset();
+    }
+    
+    if (noKeysAreSet && shouldRedirectToSettings) {
+      next('/settings');
+      return;
+    }
+
     next();
   };
 }
