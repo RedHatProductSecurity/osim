@@ -45,7 +45,6 @@ const streamsAccordionState = ref(
 );
 
 watchArray(theAffects.value, (nextList, priorList, addedAffects) => {
-  console.log('addedAffects', addedAffects);
   addedAffects
     .reduce(
       (accordionStates: Record<string, boolean>, affect) => {
