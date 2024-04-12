@@ -32,7 +32,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
   (e: 'add-blank-affect'): void;
-  (e: 'comment:add-public', value: string): void;
+  (e: 'comment:addPublicComment', value: string): void;
 }>();
 
 function onSaveSuccess() {
@@ -146,6 +146,7 @@ const onReset = () => {
               class="col-auto align-self-end mb-3"
             >
               <CveRequestForm
+                :embargoed="flaw.embargoed"
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
@@ -224,6 +225,7 @@ const onReset = () => {
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"
+            @refresh:flaw="emit('refresh:flaw')"
           />
           <LabelSelect
             v-model="flaw.major_incident_state"
@@ -358,7 +360,12 @@ const onReset = () => {
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
-        <FlawComments :comments="flaw.comments" :error="errors.comments" @comment:add-public="addPublicComment" />
+        <FlawComments
+          :comments="flaw.comments"
+          :error="errors.comments"
+          :isSaving="isSaving"
+          @comment:addPublicComment="addPublicComment"
+        />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

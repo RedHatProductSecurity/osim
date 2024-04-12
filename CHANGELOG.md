@@ -11,15 +11,14 @@
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
 * Fixed inconsistent style on read-only fields with empty value
-<<<<<<< HEAD
 * Fixed `References` and `Acknowledgements` don't open when new item is added
 * Fixed editing bugs on `References` and `Acknowledgements` lists
 * Fixed `Affiliation` text overflow on `Acknowledgements` labels
 * Fixed possible incorrect CVSS2 instead of CVSS3 display (OSIDB-2308)
-=======
 * Flaw CVSS3 score is now readonly (OSIDB-2308)
 * Flaw Comment#0 (former description) field is now writable only upon Flaw creation (OSIDB-2308)
->>>>>>> 57276b7 (Update changelog)
+* Fixed ability to create comments on public flaws
+
 
 ## [2024.1.0]
 

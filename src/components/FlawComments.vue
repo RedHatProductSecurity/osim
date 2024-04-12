@@ -6,20 +6,21 @@ import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   comments: any[];
+  isSaving: boolean;
 }>();
 const newPublicComment = ref('');
-const isAddCommentShown = ref(false);
+const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:add-public': [value: any];
+  'comment:addPublicComment': [value: any];
 }>();
 
 const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 
 function handleClick() {
-  emit('comment:add-public', newPublicComment.value);
-  isAddCommentShown.value = false;
+  emit('comment:addPublicComment', newPublicComment.value);
+  isAddingNewComment.value = false;
 }
 
 function parseGroups(serializedJson: string) {
@@ -143,15 +144,23 @@ function linkify(text: string) {
           <p class="osim-flaw-comment" v-html="linkify(comment.meta_attr?.text)" />
         </li>
       </ul>
-      <div v-if="!isAddCommentShown">
-        <button type="button" class="btn btn-secondary col" @click="isAddCommentShown = true">
+      <div v-if="!isAddingNewComment">
+        <button
+          type="button"
+          class="btn btn-secondary col"
+          :disabled="isSaving"
+          @click="isAddingNewComment = true"
+        >
           Add Public Comment
         </button>
       </div>
-      <div v-if="isAddCommentShown">
+      <div v-if="isAddingNewComment">
         <LabelTextarea v-model="newPublicComment" label="New Public Comment" />
         <button type="button" class="btn btn-primary col" @click="handleClick">
-          Add Public Comment
+          Save Public Comment
+        </button>
+        <button type="button" class="btn ms-3 btn-secondary col" @click="isAddingNewComment = false">
+          Cancel
         </button>
         <!--<button type="button" class="btn btn-primary col">Add Private Comment</button>-->
       </div>
