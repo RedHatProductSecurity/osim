@@ -32,7 +32,9 @@ fetchChangeLog();
 
 <template>
   <div class="osim-changelog" attrs="$attrs">
-    <a href="#" class="m-0 p-0" @click.prevent="openModal">Changelog</a>
+    <a href="#" class="m-0 p-0" @click.prevent="openModal">
+      <span class="badge bg-success rounded-pill">🪵 OSIM CHANGELOG 🪵</span>
+    </a>
     <Modal :show="isModalOpen" @close="closeModal">
       <template #header>
         <div class="d-flex justify-content-between w-100 alert alert-info m-0">
