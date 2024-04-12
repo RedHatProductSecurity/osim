@@ -31,12 +31,5 @@ Feature: Flaw list testing
       Then The owner of selected flaws is updated to me
 
     Scenario: Sort flaw list on home page
-      Then I click the field of flaw list to order the flaw list, the flaw list is sorted
-      |     field |
-      |         ID|
-      |     Impact|
-      |     Source|
-      |    Created|
-      |      Title|
-      |      State|
-      |      Owner|
+      When I click the field header of flaw list table
+      Then The flaw list is sorted by the field
