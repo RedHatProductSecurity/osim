@@ -98,7 +98,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       await deleteAffects();
     }
 
-
     await putFlaw(flaw.value.uuid, validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
       .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));

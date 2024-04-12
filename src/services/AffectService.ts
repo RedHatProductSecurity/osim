@@ -7,7 +7,11 @@ export async function putAffect(uuid: string, affectObject: any) {
     method: 'put',
     url: `/osidb/api/v1/affects/${uuid}`,
     data: affectObject,
-  })
+  });
+}
+
+export async function putAffectWithHandlers(uuid: string, affectObject: any) {
+  return putAffect(uuid, affectObject)
     .then(createSuccessHandler({ title: 'Success!', body: 'Affect Updated.' }))
     .catch(createCatchHandler('Error updating Affect:'));
 }

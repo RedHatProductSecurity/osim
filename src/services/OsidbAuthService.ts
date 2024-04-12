@@ -81,7 +81,7 @@ export function getDisplayedOsidbError(error: AxiosError<any, any>) {
       const text = (exception_value as HTMLElement)?.innerText;
       return 'Likely error between OSIDB and database:\n' + text;
     } else {
-      return `Code ${error.response.status}: ` +
+      return `From OSIDB: Code ${error.response.status}: ` +
       `${
         error.response.data instanceof Object ?
           JSON.stringify(error.response.data, null, 2) :
