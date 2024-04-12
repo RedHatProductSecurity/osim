@@ -68,8 +68,8 @@ const hasTrackers = computed(() =>
         :options="affectAffectedness"
       />
       <LabelSelect
-        v-model="modelValue.delegated_resolution"
-        :error="error.delegated_resolution"
+        v-model="modelValue.resolution"
+        :error="error.resolution"
         label="Resolution"
         :options="affectResolutions"
       />
