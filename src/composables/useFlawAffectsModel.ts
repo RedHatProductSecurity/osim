@@ -24,7 +24,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     theAffects.value.push({
       embargoed,
       affectedness: '',
-      delegated_resolution: '',
+      resolution: '',
+      delegated_resolution: '', // should this be null
       ps_module: '',
       ps_component: '',
       impact: '',
@@ -79,6 +80,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         flaw: flaw.value?.uuid,
         type: affect.type,
         affectedness: affect.affectedness,
+        resolution: affect.resolution,
         delegated_resolution: affect.delegated_resolution,
         ps_module: affect.ps_module,
         ps_component: affect.ps_component,

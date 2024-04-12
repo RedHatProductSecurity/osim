@@ -220,7 +220,7 @@ export const ZodAffectSchema = z.object({
       resolution: z.string(),
     })
     .nullish(),
-  delegated_resolution: z.string().nullable(),
+  delegated_resolution: z.string().nullish(),
   cvss_scores: z.array(AffectCVSSSchema),
   classification: ZodFlawClassification.nullish(),
   embargoed: z.boolean(), // read-only
