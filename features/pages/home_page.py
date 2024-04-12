@@ -1,3 +1,4 @@
+import random
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -35,7 +36,21 @@ class HomePage(PageFactory):
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
-        "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']")
+        "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
+        "IDBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'ID')]"),
+        "ImpactBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Impact')]"),
+        "SourceBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Source')]"),
+        "CreatedBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Created')]"),
+        "TitleBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Title')]"),
+        "StateBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'State')]"),
+        "OwnerBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Owner')]"),
+        "IDFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[2]"),
+        "ImpactFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[3]"),
+        "SourceFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[4]"),
+        "CreatedFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[5]"),
+        "TitleFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[6]"),
+        "StateFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[7]"),
+        "OwnerFirstText": ("XPATH", "//tr[@class='osim-issue-queue-item'][1]/td[8]")
     }
 
     def click_flaw_index_btn(self):
@@ -90,6 +105,7 @@ class HomePage(PageFactory):
 
     def get_field_value(self, field):
         field_value = getattr(self, field + 'Text')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
         return  field_value.get_text()
 
     def set_value(self, field, value):
@@ -99,6 +115,7 @@ class HomePage(PageFactory):
 
     def click_btn(self, btn_element):
         element = getattr(self, btn_element)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         element.click_button()
 
     def clear_box(self, field):
@@ -138,3 +155,27 @@ class HomePage(PageFactory):
              locate_with(By.XPATH, ("(//span[@class='osim-editable-text-value form-control'])[6]")))[0]
         login_user = self.userBtn.get_text()
         assert assignee_value_element.get_text() == login_user.strip(), 'Bulk assign failed'
+
+    def get_element_locator(self, field):
+        # Get the second and third flaws sequentially in sorted flaw_list
+        field_first_locator = self.locators[f"{field}FirstText"][1]
+        column = field_first_locator.split('/')[-1]
+        second_row = random.randint(1, 25)
+        third_row = random.randint(25, 50)
+        second_locator = f"//tr[@class='osim-issue-queue-item'][{second_row}]" + f"/{column}"
+        self.locators[f"{field}SecondText"] = ("XPATH", second_locator)
+        third_locator = f"//tr[@class='osim-issue-queue-item'][{third_row}]" + f"/{column}"
+        self.locators[f"{field}ThirdText"] = ("XPATH", third_locator)
+        return self.locators
+
+    def get_three_flaws_field_value(self, field):
+        self.locator = self.get_element_locator(field)
+        # Get three flaws from the sorted list
+        value = []
+        for item in ["First", "Second", "Third"]:
+            fieldText =  field + item
+            if "Title" not in field:
+                value.append(self.get_field_value(f"{fieldText}"))
+            else:
+                value.append(self.get_field_value(f"{fieldText}").lower())
+        return value
