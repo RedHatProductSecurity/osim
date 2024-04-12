@@ -31,7 +31,8 @@ function quickMatchCVE(query: string) {
   // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
   // with optional surrounding whitespace.
   // match[1] will be the CVE ID if it exists
-  return query.match(cveRegex)?.[1];
+  let trimmedQuery = query.trim();
+  return trimmedQuery.match(cveRegex)?.[0];
 }
 
 const searchIssue = ref('');
@@ -41,7 +42,7 @@ function onSearch(query: string) {
   if (trimmedQuery === '') {
     return;
   }
-  const maybeCveId =  quickMatchCVE(query);
+  const maybeCveId = quickMatchCVE(query);
   if (maybeCveId) {
     router.push({ path: `/flaws/${maybeCveId}` });
     return;
