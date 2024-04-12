@@ -245,6 +245,10 @@ watch(params, () => {
     }
   }
 
+  .osim-incident-filter {
+    margin-left: -0.5rem;
+  }
+
   &:hover i {
     color: $redhat-red-50;
   }
