@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
@@ -19,6 +18,7 @@ import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
+import CvssCalculator from '@/components/CvssCalculator.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
@@ -100,10 +100,6 @@ const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
-const flawCvss3CaculatorLink = computed(
-  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss3.value?.vector}`,
-);
-
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
@@ -159,26 +155,16 @@ const onReset = () => {
               />
             </div>
           </div>
-
           <LabelSelect
             v-model="flaw.impact"
             label="Impact"
             :options="flawImpacts"
             :error="errors.impact"
           />
-          <LabelEditable v-model="flawRhCvss3.vector" type="text">
-            <template #label>
-              <span class="mb-0 pt-2 pb-2">CVSSv3
-                <br />
-                <a
-                  :href="flawCvss3CaculatorLink"
-                  target="_blank"
-                ><i class="bi-calculator me-1"></i>Calculator</a>
-              </span>
-            </template>
-          </LabelEditable>
-
-          <LabelStatic v-model="flawRhCvss3.score" label="CVSSv3 Score" type="text" />
+          <CvssCalculator
+            v-model:cvss-vector="flawRhCvss3.vector"
+            v-model:cvss-score="flawRhCvss3.score"
+          />
           <div class="row">
             <div class="col">
               <LabelDiv label="NVD CVSSv3">

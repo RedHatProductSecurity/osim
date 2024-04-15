@@ -1,10 +1,16 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue';
+
+const props = defineProps<{
   modelValue: string | number | null | undefined;
   label: string;
   error?: string;
   hasTopLabelStyle?: boolean;
 }>();
+
+const emptyModel = computed(() => {
+  return props.modelValue === null || props.modelValue === undefined;
+});
 </script>
 
 <template>
@@ -16,7 +22,7 @@ defineProps<{
       <div class="top-left-corner">
         <span 
           class="form-control top-left-corner" 
-          :class="{ 'alert alert-warning': !modelValue }"
+          :class="{ 'alert alert-warning': emptyModel }"
         >
           {{ modelValue }}
         </span>
@@ -27,7 +33,7 @@ defineProps<{
         {{ label }}
       </span>
       <div class="col-9">
-        <span class="form-control" :class="{ 'alert alert-warning': !modelValue }">{{ modelValue }}</span>
+        <span class="form-control" :class="{ 'alert alert-warning': emptyModel }">{{ modelValue }}</span>
       </div>
     </div>
   </div>
@@ -36,6 +42,10 @@ defineProps<{
 <style scoped>
 .osim-static-label span.form-control {
   word-wrap: break-word;
+}
+
+span.form-control.alert {
+  padding-block: 10px;
 }
 
 .osim-static-label .osim-static-label-top-style .top-label {
