@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { computed, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import IssueQueue from '@/components/IssueQueue.vue';
-import { useFlaws }  from '../composables/useFlaws';
+import { useFlaws } from '@/composables/useFlaws';
+import { flawFields } from '@/utils/flawFields';
 
 const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
 
@@ -35,6 +36,14 @@ const params = computed(() => {
   if (parsedRoute.query.query) {
     paramsObj.search = parsedRoute.query.query;
   }
+  if (route.query && Object.keys(route.query).length > 0) {
+    Object.keys(route.query).forEach(key => {
+      if (flawFields.includes(key) && typeof route.query[key] === 'string') {
+        paramsObj[key] =  route.query[key]as string;
+      }
+    });
+  }
+
   return paramsObj;
 });
 
@@ -46,12 +55,6 @@ watch(() => params, () => {
 
 function fetchMoreFlaws() {
   loadMoreFlaws(params);
-}
-
-function setFilters(newFilters : Record<string, string> ) {
-  filters.value = {
-    ...newFilters
-  };
 }
 
 function setTableFilters(newFilters: Ref<Record<string, string>>) {
@@ -67,7 +70,6 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
     <div class="container">
       <IssueSearchAdvanced 
         :isLoading="isLoading"
-        @set:filters="setFilters"
       />
     </div>
     <!-- <IssueSearch :query="query" /> -->

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { fieldsFor, ZodFlawSchema, flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
-import { useRoute } from 'vue-router';
-
+import { useRoute, useRouter } from 'vue-router';
 
 type Facet = {
   field: string;
@@ -13,12 +12,9 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const emit = defineEmits<{
-  'set:filters': [value: Record<string, string>] 
-}>();
-
 const route = useRoute();
 
+const router = useRouter();
 
 const fieldsMapping: Record<string, string | string[]> = {
   classification: 'workflow_state',
@@ -78,11 +74,29 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-const facets = ref<Facet[]>([{ field: '', value: '' }]);
 const flawFields = fieldsFor(ZodFlawSchema)
   .filter((field) => includedFields.includes(field))
   .flatMap((field) => fieldsMapping[field] || field)
   .sort();
+
+const populateFacets = (): Facet[] => {
+  const facets: Facet[] = [];
+
+  if (route.query && Object.keys(route.query).length > 0) {
+    Object.keys(route.query).forEach(key => {
+      if (flawFields.includes(key) && typeof route.query[key] === 'string') {
+        facets.push({ field: key, value: route.query[key] as string });
+      }
+    });
+  }
+
+  facets.push({ field: '', value: '' });
+
+  return facets;
+};
+
+const facets = ref<Facet[]>(populateFacets());
+
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 watch(facets.value, (changingFacets) => {
@@ -133,7 +147,12 @@ async function submitAdvancedSearch() {
     },
     {} as Record<string, string>,
   );
-  emit('set:filters', params);
+  router.replace({
+    query:{
+      ...(route.query.query && ({ query: route.query.query })),
+      ...params,
+    }
+  });
 }
 
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');

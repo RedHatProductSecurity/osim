@@ -1,6 +1,6 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import { describe, it, expect, vi, type Mock } from 'vitest';
-import { useRoute } from 'vue-router';
+import { describe, it, expect, vi } from 'vitest';
+import { useRoute, useRouter } from 'vue-router';
 import { createTestingPinia } from '@pinia/testing';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import { useFlaws }  from '../../composables/useFlaws';
@@ -26,17 +26,20 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
+  const replaceMock = vi.fn();
+  
   return {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    ...actual as {},
-    useRoute: vi.fn(),
+    ...actual,
+    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRouter: vi.fn(() => ({
+      replace: replaceMock
+    }))
   };
 });
 
-vi.mock('../../composables/useFlaws', () => ({
+vi.mock('../../composables/useFlaws',  () => ({
   useFlaws: vi.fn(() => ({
     issues: [],
     isLoading: false,
@@ -45,11 +48,6 @@ vi.mock('../../composables/useFlaws', () => ({
     loadMoreFlaws: vi.fn(),
   })),
 }));
-
-
-(useRoute as Mock).mockReturnValue({
-  'query': { query: 'search', mode: 'advanced' },
-});
 
 describe('FlawSearchView', () => {
   let wrapper: VueWrapper<any>;
@@ -105,11 +103,8 @@ describe('FlawSearchView', () => {
     expect(searchButton.exists()).toBeTruthy();
     await searchButton.trigger('submit');
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledTimes(2);
-    expect(useFlaws().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
-      'acknowledgments__name': 'test',
-      'order': '-created_dt',
-      'search': 'search',
-    });
+    expect(useRouter().replace).toHaveBeenCalled();
+    expect(useRouter().replace.mock.calls[0][0])
+      .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
   });
 });
