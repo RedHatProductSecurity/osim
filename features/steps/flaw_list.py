@@ -1,6 +1,8 @@
+import time
 from behave import given, when, then
 from selenium.common.exceptions import NoSuchElementException
 
+from features.utils import is_sorted
 from features.utils import skip_step_when_needed
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
@@ -95,4 +97,29 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.check_bulk_assign(context.links[0])
+    context.browser.quit()
+
+
+@when("I click the field header of flaw list table")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    sort_fields = ['id', 'impact', 'source', 'created', 'title', 'state', 'owner']
+    value_dict = {}
+    for field in sort_fields:
+        fieldbtn = field + "Btn"
+        home_page.click_btn(fieldbtn)
+        time.sleep(3)
+        desc_values = home_page.get_sort_field_values(field, sort_fields)
+        home_page.click_btn(fieldbtn)
+        time.sleep(3)
+        asce_values = home_page.get_sort_field_values(field, sort_fields)
+        value_dict[field] = {'desc': desc_values, 'asce': asce_values}
+    context.value_dict = value_dict
+
+
+@then("The flaw list is sorted by the field")
+def step_impl(context):
+    for k, v in context.value_dict.items():
+        for order, values in v.items():
+            assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."
     context.browser.quit()

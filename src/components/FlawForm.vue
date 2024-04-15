@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
@@ -24,6 +24,7 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
+
 const props = defineProps<{
   flaw: any;
   mode: 'create' | 'edit';
@@ -32,7 +33,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
   (e: 'add-blank-affect'): void;
-  (e: 'comment:add-public', value: string): void;
+  (e: 'comment:addPublicComment', value: string): void;
 }>();
 
 function onSaveSuccess() {
@@ -81,6 +82,11 @@ onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
 });
 
+watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
+  initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  onReset();
+});
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
     updateFlaw();
@@ -106,7 +112,7 @@ const onReset = () => {
 </script>
 
 <template>
-  <form class="osim-flaw-form" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving }" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
@@ -146,6 +152,7 @@ const onReset = () => {
               class="col-auto align-self-end mb-3"
             >
               <CveRequestForm
+                :embargoed="flaw.embargoed"
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
@@ -224,6 +231,7 @@ const onReset = () => {
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"
+            @refresh:flaw="emit('refresh:flaw')"
           />
           <LabelSelect
             v-model="flaw.major_incident_state"
@@ -251,7 +259,7 @@ const onReset = () => {
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
             :isFlawNew="!flaw.uuid"
-            :cveId="flaw.cve_id"
+            :flawId="flaw.cve_id || flaw.uuid"
           />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
@@ -352,13 +360,19 @@ const onReset = () => {
         :mode="mode"
         class="osim-flaw-form-section"
         :error="errors.affects"
-        @recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
-        @remove="(affect) => removeAffect(theAffects.indexOf(affect))"
+        @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
+        @affect:remove="(affect) => removeAffect(theAffects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
-        <FlawComments :comments="flaw.comments" :error="errors.comments" @comment:add-public="addPublicComment" />
+        <FlawComments
+          :comments="flaw.comments"
+          :error="errors.comments"
+          :isSaving="isSaving"
+          @comment:addPublicComment="addPublicComment"
+          @refresh:flaw="emit('refresh:flaw')"
+        />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

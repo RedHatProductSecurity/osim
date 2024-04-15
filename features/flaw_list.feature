@@ -29,3 +29,7 @@ Feature: Flaw list testing
     Scenario: Bulk assign flaws to me
       When I select some flaws from flaw list and click 'Assign to Me'
       Then The owner of selected flaws is updated to me
+
+    Scenario: Sort flaw list on home page
+      When I click the field header of flaw list table
+      Then The flaw list is sorted by the field

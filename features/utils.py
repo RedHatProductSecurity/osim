@@ -168,3 +168,10 @@ def get_osidb_token():
     f = open("token", "r")
     text = f.read()
     return json.loads(text).get('access')
+
+
+def is_sorted(l, order):
+    if order == 'desc':
+        return all(l[i] >= l[i+1] for i in range(len(l) - 1))
+    else:
+        return all(l[i] <= l[i+1] for i in range(len(l) - 1))

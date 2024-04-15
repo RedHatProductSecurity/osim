@@ -1,3 +1,4 @@
+import random
 from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -35,7 +36,14 @@ class HomePage(PageFactory):
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
-        "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']")
+        "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
+        "idBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'ID')]"),
+        "impactBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Impact')]"),
+        "sourceBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Source')]"),
+        "createdBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Created')]"),
+        "titleBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Title')]"),
+        "stateBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'State')]"),
+        "ownerBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Owner')]")
     }
 
     def click_flaw_index_btn(self):
@@ -90,7 +98,8 @@ class HomePage(PageFactory):
 
     def get_field_value(self, field):
         field_value = getattr(self, field + 'Text')
-        return  field_value.get_text()
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
+        return field_value.get_text()
 
     def set_value(self, field, value):
         field_input = getattr(self, field + 'Box')
@@ -99,6 +108,7 @@ class HomePage(PageFactory):
 
     def click_btn(self, btn_element):
         element = getattr(self, btn_element)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         element.click_button()
 
     def clear_box(self, field):
@@ -138,3 +148,21 @@ class HomePage(PageFactory):
              locate_with(By.XPATH, ("(//span[@class='osim-editable-text-value form-control'])[6]")))[0]
         login_user = self.userBtn.get_text()
         assert assignee_value_element.get_text() == login_user.strip(), 'Bulk assign failed'
+
+    def get_sort_flaws(self, field, sort_fields):
+        sorted_numbers = sorted(random.sample(range(1, 50), 3))
+        field_column = sort_fields.index(field) + 2
+        for number in sorted_numbers:
+            locator = f"//tr[@class='osim-issue-queue-item'][{number}]/td[{field_column}]"
+            self.locators[f"{field}{number}Text"] = ("XPATH", locator)
+        return sorted_numbers
+
+    def get_sort_field_values(self, field, sort_fields):
+        sorted_numbers = self.get_sort_flaws(field, sort_fields)
+        value = []
+        for number in sorted_numbers:
+            if "title" not in field:
+                value.append(self.get_field_value(f"{field}{number}"))
+            else:
+                value.append(self.get_field_value(f"{field}{number}").lower())
+        return value

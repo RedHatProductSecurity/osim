@@ -22,14 +22,19 @@ defineProps<{
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
-
 const emit = defineEmits<{
-  'update:modelValue': [value: object];
-  remove: [value: object];
+  'update:modelValue': [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
 }>();
 
 const affectCvssScore = ref(
   modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
+);
+
+const hasTrackers = computed(() => 
+  Boolean(modelValue.value.trackers)
+  && modelValue.value?.trackers?.length > 0
+  && modelValue.value?.trackers.every(({ ps_update_stream }) => ps_update_stream)
 );
 </script>
 
@@ -87,7 +92,7 @@ const affectCvssScore = ref(
             v-if="!modelValue.uuid"
             type="button"
             class="osim-affected-offering-remove btn btn-secondary"
-            @click.prevent="emit('remove', modelValue)"
+            @click="emit('affect:remove', modelValue)"
           >
             Remove This Affect
           </button>
@@ -98,12 +103,12 @@ const affectCvssScore = ref(
       <div class="bg-dark rounded-top-2 text-info">
         <h5 class="affect-trackers-heading p-2 ps-3 m-0">Trackers</h5>
       </div>
-      <p v-if="!modelValue.trackers || modelValue.trackers?.length === 0" class="ps-1 mt-3">
+      <p v-if="!hasTrackers" class="ps-1 mt-3">
         <em>&mdash; None yet.</em>
       </p>
 
       <div
-        v-for="(tracker, trackerIndex) in modelValue.trackers"
+        v-for="(tracker, trackerIndex) in modelValue.trackers.filter(({ ps_update_stream }) => ps_update_stream)"
         :key="trackerIndex"
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >

@@ -27,7 +27,14 @@ describe('Navbar', async () => {
       useElementBounding: vi.fn(() => ({
         bottom: 1000,
         height: 100,
-      }))
+      })),
+      useStorage: vi.fn((key, defaults = {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+        showNotifications: false,
+      }) => ({
+        value: defaults,
+      })),
     }));
 
     vi.mock('jwt-decode', () => ({
