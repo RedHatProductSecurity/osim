@@ -36,7 +36,6 @@ def step_impl(context):
         if field == "title":
             value = detail_page.get_input_value(field)
         else:
-            detail_page.click_btn('documentTextFieldsDropDownBtn')
             value = detail_page.get_document_text_field(field)
         assert text in value
     context.browser.quit()

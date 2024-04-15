@@ -14,7 +14,7 @@ class HomePage(PageFactory):
         self.timeout = 15
 
     locators = {
-        "logoutBtn": ('XPATH', "//button[text()='Logout']"),
+        "logoutBtn": ('XPATH', "//button[contains(text(), 'Logout')]"),
         "userBtn": ('CSS', "button[class='btn btn-secondary dropdown-toggle osim-user-profile']"),
         "flawList": ("CSS", "div[class='osim-incident-list']"),
         "flawRow": ("CLASS_NAME", "osim-issue-queue-item"),

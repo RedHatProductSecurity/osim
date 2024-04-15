@@ -74,7 +74,6 @@ def step_impl(context, action):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('documentTextFieldsDropDownBtn')
     fields = context.texts.keys()
     for field in fields:
         v = flaw_detail_page.get_document_text_field(field)
@@ -320,7 +319,6 @@ def step_impl(context):
     context.reported_date = flaw_page.get_input_value('reportedDate')
     flaw_page.set_input_field(
         'reportedDate', datetime.today().strftime("%Y%m%d"))
-    flaw_page.click_btn('documentTextFieldsDropDownBtn')
     context.description = flaw_page.get_document_text_field('description')
     flaw_page.set_document_text_field(
         'description', generate_random_text())
