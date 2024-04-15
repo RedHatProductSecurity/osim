@@ -11,6 +11,6 @@ Feature: Flaw quick search testing
       Then I search the flaw with text and I am able to view flaws list matching the search
         |       field |             text |
         |       title |    title-test-sw |
-        | description | description-test |
+        |   comment#0 | description-test |
         |   statement |   statement-test |
-        |     summary |     summary-test |
+        | description |     summary-test |

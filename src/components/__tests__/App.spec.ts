@@ -24,7 +24,14 @@ describe('App', async () => {
         bottom: 1000,
         height: 100,
         top: 100
-      }))
+      })),
+      useStorage: vi.fn((key, defaults = {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+        showNotifications: false,
+      }) => ({
+        value: defaults,
+      })),
     }));
 
     vi.mock('jwt-decode', () => ({
@@ -80,6 +87,9 @@ describe('App', async () => {
     });
     subject = mount(App, {
       global: {
+        stubs: {
+          ChangeLog: true
+        },
         plugins: [
           pinia,
           router
@@ -97,6 +107,9 @@ describe('App', async () => {
     });
     subject = mount(App, {
       global: {
+        stubs: {
+          ChangeLog: true
+        },
         plugins: [
           pinia,
           router,

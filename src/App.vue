@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
 import Navbar from './components/Navbar.vue';
@@ -12,6 +13,7 @@ import {
 
 import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 import ToastContainer from '@/components/ToastContainer.vue';
+import ChangeLog from '@/components/ChangeLog.vue';
 import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
 
@@ -57,6 +59,7 @@ onBeforeUnmount(() => {
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
       <!--TODO add active request count-->
       <!--<div>[ Requests: {{ activeRequestCount }} ]</div>-->
+      <ChangeLog />
       <div>
         [
         OSIM

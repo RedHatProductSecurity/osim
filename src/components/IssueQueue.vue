@@ -205,8 +205,8 @@ watch(params, () => {
         </tbody>
       </table>
       <button
-        v-if="!isFinalPageFetched"
-        class="btn btn-primary ms-4"
+        v-if="relevantIssues.length !== 0 && !isFinalPageFetched"
+        class="btn btn-primary"
         type="button"
         :disabled="isLoading"
         @click="emitLoadMore"

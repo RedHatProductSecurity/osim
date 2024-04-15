@@ -16,6 +16,13 @@ vi.mock('@vueuse/core', () => ({
       },
     },
   })),
+  useStorage: vi.fn((key, defaults = {
+    bugzillaApiKey: '',
+    jiraApiKey: '',
+    showNotifications: false,
+  }) => ({
+    value: defaults,
+  })),
 }));
 
 vi.mock('jwt-decode', () => ({

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch } from 'vue';
+import { computed, toRefs, ref } from 'vue';
 
-import { objectMap, sortedByGroup } from '@/utils/helpers';
 import { type ZodAffectType } from '@/types/zodFlaw';
-
+import { uniques } from '@/utils/helpers';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import { watchArray } from '@vueuse/core';
 
 const props = defineProps<{
   mode: string;
@@ -17,71 +17,53 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'file-tracker': [value: object];
-  remove: [value: ZodAffectType];
-  recover: [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
+  'affect:recover': [value: ZodAffectType];
   'add-blank-affect': [];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const affectsWithDefinedModules = computed(() =>
-  theAffects.value.filter((affect) => affect.ps_module && affect.ps_component),
-);
+const isProductStreamDefined = (affect: ZodAffectType) => affect.ps_module && affect.ps_component;
 
-const affectedModules = computed(() =>
-  objectMap(sortedByGroup(affectsWithDefinedModules.value, 'ps_module'), (module, components) =>
-    // Convert to object by extracting inner array value
-    objectMap(sortedByGroup(components, 'ps_component'), (k, v) => v[0]),
-  ),
-);
+const affectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
 
-const directoryOfCollapsed = ref(initializeCollapsedStates(theAffects.value));
+const componentAffectsInModule = (moduleName: string) =>
+  theAffects.value.filter((affect) => affect.ps_module === moduleName); 
 
-props.theAffects.forEach(
-  (affect) => {
-    watch(
-      () => [affect.ps_module, affect.ps_component],
-      () => {
-        if (affect.ps_module && affect.ps_component) {
-          directoryOfCollapsed.value[affect.ps_module] = {
-            ...initializeCollapsedStates(affectsWithDefinedModules.value)[affect.ps_module],
-            ...directoryOfCollapsed.value[affect.ps_module],
-          };
-        }
+const streamsAccordionState = ref(
+  theAffects.value
+    .filter(isProductStreamDefined)
+    .reduce(
+      (accordionStates: Record<string, boolean>, affect) => {
+        accordionStates[streamPath(affect)] = false;
+        accordionStates[affect.ps_module] = false;
+        return accordionStates;
       },
-    );
-  },
-  { deep: true },
+      {}
+    )
 );
 
-// watch(
-//   props.theAffects,
-//   () => {
-//     console.log('changed');
-//     directoryOfCollapsed.value = {
-//       ...directoryOfCollapsed.value,
-//       ...initializeCollapsedStates(affectsWithDefinedModules.value),
-//     };
-//   },
-//   { deep: true },
-// );
+watchArray(
+  theAffects.value,
+  (nextList, priorList, addedAffects) => {
+    addedAffects.forEach((affect) => {
+      streamsAccordionState.value[streamPath(affect)] = false;
+      streamsAccordionState.value[affect.ps_module] = false;
+    });
+  },
+  { deep: true }
+);
+
 
 function collapseAll() {
-  directoryOfCollapsed.value = initializeCollapsedStates(theAffects.value);
+  for (const streamName in streamsAccordionState.value) {
+    streamsAccordionState.value[streamName] = false;
+  }
 }
 
-function toggle(reference: any) {
-  reference.isExpanded = !reference.isExpanded;
-}
-
-function initializeCollapsedStates(affects: ZodAffectType[], isExpanded = false) {
-  return objectMap(
-    sortedByGroup(affects, 'ps_module'),
-    (key, value): Record<string, any> => ({
-      isExpanded,
-      ...Object.fromEntries(value.map((affect: any) => [affect.ps_component, { isExpanded }])),
-    }),
-  );
+function toggle(path: string) {
+  streamsAccordionState.value[path] = !streamsAccordionState.value[path];
 }
 
 const ungroupedAffects = computed(() =>
@@ -89,7 +71,11 @@ const ungroupedAffects = computed(() =>
 );
 
 function moduleComponentName(moduleName: string = '<module not set>', componentName: string) {
-  return `${moduleName}::${componentName}`;
+  return `${moduleName}/${componentName}`;
+}
+
+function streamPath(affect: ZodAffectType) {
+  return `${affect.ps_module}/${affect.ps_component}`;
 }
 </script>
 
@@ -97,9 +83,8 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
   <div v-if="theAffects && mode === 'edit'" class="osim-affects">
     <h4 class="mb-4">
       Affected Offerings
-
       <button
-        v-if="Object.values(directoryOfCollapsed).some(({ isExpanded }) => isExpanded)"
+        v-if="Object.values(streamsAccordionState).some(Boolean)"
         type="button"
         class="btn btn-sm btn-secondary"
         @click="collapseAll()"
@@ -107,19 +92,19 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
         Collapse All
       </button>
     </h4>
-    <div v-for="(affectedComponents, moduleName) in affectedModules" :key="moduleName">
+    <div v-for="(moduleName) in affectedModules" :key="moduleName">
       <LabelCollapsable
-        :isExpanded="directoryOfCollapsed[moduleName].isExpanded"
+        :isExpanded="streamsAccordionState[moduleName]"
         class="mb-3"
-        @setExpanded="toggle(directoryOfCollapsed[moduleName])"
+        @setExpanded="toggle(moduleName)"
       >
         <template #label>
           <label class="ms-2 form-label">
-            {{ `${moduleName} (${Object.keys(affectedComponents).length} affected)` }}
+            {{ `${moduleName} (${Object.keys(componentAffectsInModule(moduleName)).length} affected)` }}
           </label>
         </template>
         <template #buttons>
-          <div v-if="directoryOfCollapsed[moduleName].isExpanded" class="btn-group">
+          <div v-if="streamsAccordionState?.[moduleName]" class="btn-group">
             <div class="dropdown">
               <button
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
@@ -137,29 +122,29 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           </div>
         </template>
         <div
-          v-for="(affectedComponent, componentName) in affectedComponents"
-          :key="componentName"
+          v-for="(affectedComponent, index) in componentAffectsInModule(moduleName)"
+          :key="index"
           class="affected-offering"
         >
           <AffectExpandableForm
-            v-model="affectedComponents[componentName]"
-            :componentName="`${componentName}`"
+            v-model="componentAffectsInModule(moduleName)[index]"
+            :componentName="affectedComponent.ps_component"
             :affectedComponent="affectedComponent"
-            :isExpanded="directoryOfCollapsed[moduleName][componentName].isExpanded"
+            :isExpanded="streamsAccordionState[streamPath(affectedComponent)]"
             :error="error[theAffects.indexOf(affectedComponent)]"
-            @setExpanded="toggle(directoryOfCollapsed[moduleName][componentName])"
-            @remove="emit('remove', affectedComponent)"
+            @setExpanded="toggle(streamPath(affectedComponent))"
+            @affect:remove="emit('affect:remove', affectedComponent)"
             @file-tracker="emit('file-tracker', $event)"
           />
         </div>
       </LabelCollapsable>
     </div>
-    <h5 v-if="ungroupedAffects.length">Ungrouped Affected Offerings</h5>
+    <h5 v-if="ungroupedAffects.length">Unsaved/Modified Affected Offerings</h5>
     <div v-for="(affect, affectIndex) in ungroupedAffects" :key="affectIndex">
       <AffectedOfferingForm
         v-model="ungroupedAffects[affectIndex]"
         :error="error[affectIndex]"
-        @remove="emit('remove', affect)"
+        @affect:remove="emit('affect:remove', affect)"
       />
     </div>
     <button type="button" class="btn btn-secondary mt-3" @click.prevent="emit('add-blank-affect')">
@@ -171,12 +156,14 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
         <div v-for="(affect, affectIndex) in affectsToDelete" :key="affectIndex">
           <ul>
             <li>
-              {{ moduleComponentName(affect.ps_module, affect.ps_component) }}
-              {{ !affect.uuid ? "(doesn't exist yet in OSIDB)" : '' }}
+              <span class="bg-primary">
+                {{ moduleComponentName(affect.ps_module, affect.ps_component) }}
+                {{ !affect.uuid ? "(doesn't exist yet in OSIDB)" : '' }}
+              </span>
               <button
                 type="button"
                 class="btn btn-secondary"
-                @click.prevent="emit('recover', affect)"
+                @click.prevent="emit('affect:recover', affect)"
               >
                 Recover
               </button>

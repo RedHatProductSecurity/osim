@@ -126,8 +126,11 @@ def go_to_specific_flaw_detail_page(browser, embargoed=False):
     Enter first flaw detail page which displayed in index page.
     """
     cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
-    flaw_url = urllib.parse.urljoin(OSIM_URL, "flaws/" + cve_id)
-    browser.get(flaw_url)
+    go_to_home_page(browser)
+    home_page = HomePage(browser)
+    home_page.quickSearchBox.clear_text()
+    home_page.quickSearchBox.set_text(cve_id)
+    home_page.click_btn('quickSearchBtn')
 
     flaw_detail_page = FlawDetailPage(browser)
     flaw_detail_page.save_button_exist()

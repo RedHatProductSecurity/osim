@@ -2,7 +2,7 @@ import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 import { AxiosError, type AxiosResponse } from 'axios';
 
-export function createCatchHandler(title: string = 'Error', shouldThrow: boolean = true) {
+export function createCatchHandler(title: string = 'Error', callback?: () => void, shouldThrow: boolean = true) {
   return (error: AxiosError) => {
     const displayedError = getDisplayedOsidbError(error);
     const { addToast } = useToastStore();
@@ -12,6 +12,11 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
       css: 'warning',
     });
     console.error('❌ ', error);
+
+    if (callback) {
+      callback();
+    }
+
     if (shouldThrow) {
       throw error;
     }

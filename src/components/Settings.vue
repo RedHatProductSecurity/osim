@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import type { SettingsType } from '@/stores/SettingsStore';
 type SensitiveFormInput = 'password' | 'text';
@@ -13,10 +13,17 @@ const onSubmit = (values: SettingsType) => {
   settingsStore.save(values);
 };
 
-const errors = {
-  bugzillaApiKey: null,
-  jiraApiKey: null,
-};
+const isValid = ref({
+  bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
+  jiraApiKey: Boolean(settings.value.jiraApiKey),
+});
+
+watch(settings, () => {
+  isValid.value = {
+    bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
+    jiraApiKey: Boolean(settings.value.jiraApiKey),
+  };
+}, { deep: true });
 
 </script>
 
@@ -25,8 +32,8 @@ const errors = {
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">
-      These values are saved in the current session.
-      The session is wiped upon closing the browser.
+      These values are saved in browser local storage, and should persist across tabs 
+      and browser sessions. Ensure that security best practices are followed.
     </div>
 
     <!--@submit.prevent="settingsStore.save(settings)"-->
@@ -70,14 +77,14 @@ const errors = {
             v-model="settings.bugzillaApiKey"
             class="form-control"
             :type="revealSensitive"
-            :class="{'is-invalid': errors.bugzillaApiKey != null}"
+            :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
             placeholder="[none saved]"
           />
           <span
-            v-if="errors.bugzillaApiKey"
+            v-if="!isValid.bugzillaApiKey"
             class="invalid-feedback d-block"
           >
-            {{ errors.bugzillaApiKey }}
+            Please provide a Bugzilla key.
           </span>
         </label>
         <div class="form-text">
@@ -105,14 +112,14 @@ const errors = {
             v-model="settings.jiraApiKey"
             class="form-control"
             :type="revealSensitive"
-            :class="{'is-invalid': errors.jiraApiKey != null}"
+            :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
             placeholder="[none saved]"
           />
           <span
-            v-if="errors.jiraApiKey"
+            v-if="!isValid.jiraApiKey"
             class="invalid-feedback d-block"
           >
-            {{ errors.jiraApiKey }}
+            Please provide a Jira key.
           </span>
         </label>
         <div class="form-text">
@@ -133,9 +140,6 @@ const errors = {
         </div>
       </div>
     </form>
-
-    <a href="/CHANGELOG.md">Changelog</a>
-
   </div>
 </template>
 

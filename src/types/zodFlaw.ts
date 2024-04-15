@@ -116,7 +116,7 @@ export const AffectCVSSSchema = z.object({
   cvss_version: z.string(),
   issuer: z.nativeEnum(IssuerEnum),
   score: z.number(), // $float
-  uuid: z.string().uuid().nullable(), // read-only
+  uuid: z.string().uuid().nullish(), // read-only
   vector: z.string().nullable(),
   embargoed: z.boolean().nullable(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
@@ -197,7 +197,7 @@ export const ZodFlawCommentSchema = z.object({
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 export const ZodAffectSchema = z.object({
-  uuid: z.string().uuid(),
+  uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   type: z.nativeEnum(AffectType).nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
@@ -205,7 +205,7 @@ export const ZodAffectSchema = z.object({
   ps_module: z.string().max(100),
   ps_component: z.string().max(255),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
-  trackers: z.array(TrackerSchema),
+  trackers: z.array(TrackerSchema).or(z.array(z.any())),
   meta_attr: z
     .object({
       affectedness: z.string(),
@@ -220,7 +220,7 @@ export const ZodAffectSchema = z.object({
       resolution: z.string(),
     })
     .nullish(),
-  delegated_resolution: z.string().nullable(),
+  delegated_resolution: z.string().nullish(),
   cvss_scores: z.array(AffectCVSSSchema),
   classification: ZodFlawClassification.nullish(),
   embargoed: z.boolean(), // read-only
@@ -244,9 +244,9 @@ export const ZodFlawSchema = z.object({
   // type: z.nativeEnum(FlawType).optional(),
   type: z.nativeEnum(FlawTypeWithBlank).nullish(),
   uuid: z.string().default(''),
-  cve_id: z.string().refine(
-    (cve) => cveRegex.test(cve),
-    { message: 'You must enter a valid CVE ID before saving the Flaw.' }
+  cve_id: z.string().nullable().refine(
+    (cve) => !cve || cveRegex.test(cve),
+    { message: 'The CVE ID is invalid: It must begin with "CVE-", have a year between 1999-2999, and have an identifier at least 4 digits long (e.g. use 0001 for 1). Please also check for unexpected characters like spaces.' }
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank)
     .refine(
@@ -259,7 +259,10 @@ export const ZodFlawSchema = z.object({
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
-  description: z.string().min(10),
+  description: z.string().refine(
+    description => description.trim().length > 0,
+    { message: 'Comment#0 cannot be empty.' }
+  ),
   summary: z.string().nullish(),
   requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
   statement: z.string().nullish(),
@@ -290,30 +293,40 @@ export const ZodFlawSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 }).superRefine((zodFlaw, zodContext)=>{
 
-  const raiseDateIssue = (message: string) =>{
+  const raiseIssue = (message: string, path: string[]) =>{
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
       message,
-      path: ['unembargo_dt'],
+      path,
     });
   };
+
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
+  const reported_dt = DateTime.fromISO(`${zodFlaw.reported_dt}`).toISODate();
 
   if (zodFlaw.embargoed && unembargo_dt && unembargo_dt < DateTime.now().toISODate()) {
-    raiseDateIssue('An embargoed flaw must have a public date in the future.');
+    raiseIssue('An embargoed flaw must have a public date in the future.', ['unembargo_dt']);
   }
 
   if (!zodFlaw.embargoed && !unembargo_dt) {
     // if embargoed and dt is not set, shows up the error
     // This behaviour is not acceptable because if a flaw is unembargoed,
     // it means the flaw is public already which requires the date when this was made public.
-    raiseDateIssue('A public flaw must have a public date set.');
+    raiseIssue('A public flaw must have a public date set.', ['unembargo_dt']);
   }
 
   if (!zodFlaw.embargoed && unembargo_dt && unembargo_dt > DateTime.now().toISODate()) {
     // if NOT embargoed and updated date is in the future,
     // it shows an error, to set the current date or an older date instead
-    raiseDateIssue('A public flaw cannot have a public date in the future.');
+    raiseIssue('A public flaw cannot have a public date in the future.', ['unembargo_dt']);
+  }
+
+  if (!zodFlaw.reported_dt) {
+    raiseIssue('Reported date is required.', ['reported_dt']);
+  }
+  
+  if (reported_dt && reported_dt > DateTime.now().toISODate()) {
+    raiseIssue('Reported date cannot be in the future.', ['reported_dt']);
   }
 });
 

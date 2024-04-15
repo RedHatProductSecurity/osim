@@ -24,7 +24,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
-  const { wereAffectsModified, saveAffects, deleteAffects, affectsToDelete } =
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } =
     useFlawAffectsModel(flaw);
 
   const router = useRouter();
@@ -47,7 +47,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     if (!validatedFlaw.success) {
       return;
     }
-    postFlaw(validatedFlaw.data)
+    // Remove any empty fields before request
+    const flawForPost: any = Object.fromEntries(
+      Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
+    );
+
+    postFlaw(flawForPost)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
@@ -62,8 +67,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function validate(){
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
-      console.log(validatedFlaw.error.issues);
-      const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
+
+      const temporaryFieldRenaming = (fieldName: string | number) => 
+        fieldName === 'description' ? 'Comment#0' : fieldName;
+
+      const errorMessage = ({ message, path }: ZodIssue) => `${path.map(temporaryFieldRenaming).join('/')}: ${message}`;
+
       addToast({
         title: 'Flaw validation failed before submission',
         body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
@@ -75,12 +84,13 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   }
 
   async function updateFlaw() {
+    isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
       return;
     }
 
-    if (wereAffectsModified.value) {
+    if (affectsToSave.value.length) {
       await saveAffects();
     }
 
@@ -88,23 +98,30 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       await deleteAffects();
     }
 
+
     await putFlaw(flaw.value.uuid, validatedFlaw.data)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-      .catch(createCatchHandler('Could not update Flaw'));
+      .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));
 
     if (wasCvssModified.value) {
       await saveCvssScores();
     }
 
+    afterSaveSuccess();
+  }
+
+  function afterSaveSuccess() {
     onSaveSuccess();
     isSaving.value = false;
   }
-
+  
   function addPublicComment(comment: string) {
-    postFlawPublicComment(flaw.value.uuid, comment)
+    isSaving.value = true;
+    postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
-      .then(onSaveSuccess)
-      .catch(createCatchHandler('Error saving comment'));
+      .then(afterSaveSuccess)
+      .catch(createCatchHandler('Error saving comment'))
+      .finally(() => isSaving.value = false);
   }
 
   const errors = computed(() => flawErrors(flaw.value));
@@ -124,10 +141,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     addPublicComment,
     createFlaw,
     updateFlaw,
-    onSaveSuccess,
+    afterSaveSuccess,
     ...useCvssScoresModel(flaw),
     ...useFlawAffectsModel(flaw),
-    ...useFlawAttributionsModel(flaw, onSaveSuccess),
+    ...useFlawAttributionsModel(flaw, afterSaveSuccess),
   };
 }
 
@@ -140,6 +157,7 @@ export function blankFlaw(): ZodFlawType {
     },
     component: '',
     unembargo_dt: '',
+    reported_dt: '',
     uuid: '',
     cve_id: '',
     cvss3: '',
