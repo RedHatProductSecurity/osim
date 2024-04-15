@@ -14,9 +14,6 @@ const route = useRoute();
 const filters = ref<Record<string, string>>({});
 const tableFilters = ref<Record<string, string>>({});
 
-defineProps<{
-  query: string;
-}>();
 defineEmits<{
   'issues:load': [any[]];
 }>();
