@@ -284,14 +284,14 @@ function osimFormatDate(date: Date | string | undefined | null): string {
         type="button"
         class="input-group-text"
         tabindex="-1"
-        @click="commit"
+        @mouseup="commit"
         @blur="blur($event)"
       ><i class="bi bi-check"></i></button>
       <button
         type="button"
         class="input-group-text"
         tabindex="-1"
-        @click="abort"
+        @mouseup="abort"
         @blur="blur($event)"
       ><i class="bi bi-x"></i></button>
     </div>
