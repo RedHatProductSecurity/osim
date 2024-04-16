@@ -251,7 +251,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
     <div
       v-if="editing"
       ref="elDiv"
-      class="input-group"
+      class="input-group osim-date-edit-field"
       @blur="blur($event)"
     >
 
@@ -282,14 +282,14 @@ function osimFormatDate(date: Date | string | undefined | null): string {
       />
       <button
         type="button"
-        class="input-group-text"
+        class="input-group-text osim-confirm"
         tabindex="-1"
         @mouseup="commit"
         @blur="blur($event)"
       ><i class="bi bi-check"></i></button>
       <button
         type="button"
-        class="input-group-text"
+        class="input-group-text osim-cancel"
         tabindex="-1"
         @mouseup="abort"
         @blur="blur($event)"
