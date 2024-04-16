@@ -43,36 +43,9 @@ const userStoreLocalStorage = z.object({
 });
 type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
-// Vue bug: the whole chain of data uses reactivity, 
-// but ref doesn't work with the watch; only reactive does.
-// const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
 const _userStoreSession = useLocalStorage(
   _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreLocalStorage
 );
-// watchEffect(() => {
-//   _userStoreSession.value = _userStore;
-// });
-//
-// const workerReady = serviceWorkerClient.listen(_userStoreKey, value => {
-//   if (value == null) {
-//     Object.assign(_userStore, {refresh: '', env: '', whoami: null});
-//   }
-//   let newUserStore = userStoreSessionStorage.safeParse(value);
-//   if (newUserStore.success) {
-//     if (JSON.stringify(newUserStore.data) !== JSON.stringify(_userStore)) {
-//       // New value; update
-//       Object.assign(_userStore, newUserStore.data);
-//       // _userStore = newUserStore.data;
-//     }
-//   }
-// });
-// // Top-level await is not available in the configured target environment "es2020"
-// // await workerReady;
-// export {workerReady};
-//
-// watch(_userStore, () => {
-//   serviceWorkerClient.put(_userStoreKey, JSON.parse(JSON.stringify(_userStore)));
-// });
 
 export const useUserStore = defineStore('UserStore', () => {
 

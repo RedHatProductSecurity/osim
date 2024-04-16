@@ -14,7 +14,6 @@ import 'bootstrap-icons/font/bootstrap-icons.scss';
 import './scss/index.scss';
 import './assets/main.css';
 
-import './services/service-worker-client';
 import 'bootstrap/js/index.esm.js';
 
 const app = createApp(App);
