@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
-import { useSessionStorage } from '@vueuse/core';
+import { useLocalStorage } from '@vueuse/core';
 
 // const router = useRouter();
 import router from '@/router';
@@ -36,18 +36,18 @@ const whoamiResponse = z.object({
 });
 type WhoamiType = z.infer<typeof whoamiResponse>;
 
-const userStoreSessionStorage = z.object({
+const userStoreLocalStorage = z.object({
   refresh: z.string(),
   env: z.string(),
   whoami: whoamiResponse.nullable(),
 });
-type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
+type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 // Vue bug: the whole chain of data uses reactivity, 
 // but ref doesn't work with the watch; only reactive does.
 // const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
-const _userStoreSession = useSessionStorage(
-  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreSessionStorage
+const _userStoreSession = useLocalStorage(
+  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreLocalStorage
 );
 // watchEffect(() => {
 //   _userStoreSession.value = _userStore;
