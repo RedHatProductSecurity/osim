@@ -67,6 +67,10 @@ watch(facets.value, (changingFacets) => {
   }
 });
 
+watch(() => route.query.query, () => {
+  facets.value = populateFacets();
+});
+
 const unchosenFields = (chosenField: string) =>
   flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
 
