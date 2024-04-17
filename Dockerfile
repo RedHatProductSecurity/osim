@@ -8,7 +8,7 @@ RUN yarn build
 RUN --mount=target=/mnt \
     cd /mnt \
     && git config --global --add safe.directory /mnt \
-    && printf '{"rev":"%s","tag":"%s","timestamp":"%s","dirty":%s}\n' >/opt/app-root/src/osim_build.json \
+    && printf '{"rev":"%s","tag":"%s","timestamp":"%s","dirty":%s}' >/opt/app-root/src/osim_build.json \
     "$(git rev-parse --verify HEAD)" \
     "$(git describe --always --tags --match 'v[0-9]*')" \
     "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)" \
