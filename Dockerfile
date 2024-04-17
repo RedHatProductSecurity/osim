@@ -1,5 +1,5 @@
 # Use a multi-stage build to separate the build environment from the production environment
-# Build stage
+# App build stage
 FROM registry.access.redhat.com/ubi9/nodejs-20 AS dev
 RUN npm install -g yarn
 COPY . .
@@ -14,8 +14,8 @@ RUN --mount=target=/mnt \
     "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)" \
     "$(if [ "$(git status --porcelain)" = "" ]; then echo false; else echo true; fi)"
 
-# Production stage
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+# Nginx service stage
+FROM registry.access.redhat.com/ubi9/ubi-minimal AS nginx-base
 
 EXPOSE 8080
 ARG OSIM_ENV=dev
@@ -49,6 +49,9 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
 #
     && sed -i '/^\s*listen\b/d' /etc/nginx/nginx.conf \
     && true
+
+# Final image stage
+FROM nginx-base
 
 COPY ./build/nginx-default.d-osim.conf /etc/nginx/default.d/osim.conf
 COPY ./build/nginx-conf.d-fix-random-uid.conf /etc/nginx/conf.d/fix-random-uid.conf
