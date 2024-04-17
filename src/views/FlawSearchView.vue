@@ -5,7 +5,7 @@ import { computed, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlaws } from '@/composables/useFlaws';
-import { flawFields } from '@/utils/flawFields';
+import { flawFields } from '@/constants/flawFields';
 
 const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
 

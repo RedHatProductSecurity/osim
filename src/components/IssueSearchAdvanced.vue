@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { fieldsFor, ZodFlawSchema, flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
+import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { useRoute, useRouter } from 'vue-router';
+import { flawFields } from '@/constants/flawFields';
 
 type Facet = {
   field: string;
@@ -15,41 +16,6 @@ const props = defineProps<{
 const route = useRoute();
 
 const router = useRouter();
-
-const fieldsMapping: Record<string, string | string[]> = {
-  classification: 'workflow_state',
-  cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
-  affects: ['affects__ps_module', 'affects__ps_component', 'affects__trackers__ps_update_stream'],
-  acknowledgments: 'acknowledgments__name',
-  trackers: [
-    'affects__trackers__errata__advisory_name',
-    'affects__trackers__ps_update_stream',
-    'affects__trackers__external_system_id',
-  ],
-  references: [],
-  comments: [],
-};
-
-const includedFields = [
-  'type',
-  'uuid',
-  'cve_id',
-  'impact',
-  'component',
-  'title',
-  'owner',
-  'team_id',
-  'trackers',
-  'classification',
-  'cwe_id',
-  'source',
-  'affects',
-  'comments',
-  'cvss_scores',
-  'references',
-  'acknowledgments',
-  'embargoed',
-];
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -73,11 +39,6 @@ const nameForOption = (fieldName: string) => {
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
-
-const flawFields = fieldsFor(ZodFlawSchema)
-  .filter((field) => includedFields.includes(field))
-  .flatMap((field) => fieldsMapping[field] || field)
-  .sort();
 
 const populateFacets = (): Facet[] => {
   const facets: Facet[] = [];
