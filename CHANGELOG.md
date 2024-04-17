@@ -28,6 +28,7 @@
 * Removed CVE as required field
 * Refreshing behavior fixed
 * Fixed incorrect prompt message on `References` deletion
+* Fixed `Reference` external url validation to accept `http://`
 
 
 ## [2024.1.0]
