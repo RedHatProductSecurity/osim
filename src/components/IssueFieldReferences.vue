@@ -117,13 +117,13 @@ function handleDelete(uuid: string, closeModal: () => void) {
       </template>
       <template #modal-header>
         <div>
-          <h5>Confirm Acknowledgment Deletion</h5>
+          <h5>Confirm Reference Deletion</h5>
         </div>
       </template>
       <template #modal-body>
         <div>
           <p class="text-danger">
-            Are you sure you want to delete this acknowledgment? This action will take place
+            Are you sure you want to delete this reference? This action will take place
             immediately and will not require saving the Flaw to take effect.
           </p>
         </div>
