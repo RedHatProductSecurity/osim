@@ -18,7 +18,7 @@ RUN --mount=target=/mnt \
 FROM registry.access.redhat.com/ubi9/ubi-minimal AS nginx-base
 
 EXPOSE 8080
-ARG OSIM_ENV=dev
+ENV OSIM_ENV=dev
 
 STOPSIGNAL SIGQUIT
 
