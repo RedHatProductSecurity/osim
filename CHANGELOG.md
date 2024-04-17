@@ -27,6 +27,7 @@
 * Supplied missing validation indication fo Reported Date
 * Removed CVE as required field
 * Refreshing behavior fixed
+* Fixed incorrect prompt message on `References` deletion
 
 
 ## [2024.1.0]
