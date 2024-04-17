@@ -27,6 +27,19 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
 # Set up unprivileged nginx
     && sed -i '/^user nginx;$/d' /etc/nginx/nginx.conf \
     && sed -i '/^pid \/run\/nginx.pid;$/c pid /tmp/nginx.pid;' /etc/nginx/nginx.conf \
+# Log to symlinks in tmp
+    && sed -i 's,/var/log/nginx/access.log,/tmp/logs/nginx.access.log,' /etc/nginx/nginx.conf \
+    && sed -i 's,/var/log/nginx/error.log,/tmp/logs/nginx.error.log,' /etc/nginx/nginx.conf \
+# Create new dir in tmp to avoid sticky bit
+    && mkdir -p /tmp/logs \
+# Allow non root user to change log target
+    && chmod 777 /tmp/logs \
+# Create default log target
+    && ln -sf /var/log/nginx/access.log /tmp/logs/nginx.access.log \
+    && ln -sf /var/log/nginx/error.log /tmp/logs/nginx.error.log \
+# Set permissions for nginx user to write log files
+    && install -o999 -g999 /dev/null /var/log/nginx/access.log \
+    && install -o999 -g999 /dev/null /var/log/nginx/error.log \
 #
 # Replace port 80 with 8080 for unprivileged nginx.
 # osim-entrypoint.sh wants to delete the ipv6 line if ipv6 is not supported,
