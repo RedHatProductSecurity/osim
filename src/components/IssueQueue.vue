@@ -105,7 +105,7 @@ function relevantFields(issue: any) {
     source: issue.source,
     created_dt: issue.created_dt,
     title: issue.title,
-    state: issue.state,
+    workflowState: issue.classification.state,
     unembargo_dt: issue.unembargo_dt,
     embargoed: issue.embargoed,
     owner: issue.owner,
