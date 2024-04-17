@@ -246,7 +246,12 @@ export const ZodFlawSchema = z.object({
   uuid: z.string().default(''),
   cve_id: z.string().nullable().refine(
     (cve) => !cve || cveRegex.test(cve),
-    { message: 'The CVE ID is invalid: It must begin with "CVE-", have a year between 1999-2999, and have an identifier at least 4 digits long (e.g. use 0001 for 1). Please also check for unexpected characters like spaces.' }
+    {
+      message: 'The CVE ID is invalid: It must begin with "CVE-", ' +
+        'have a year between 1999-2999, and have an identifier at least ' +
+        '4 digits long (e.g. use 0001 for 1). Please also check for ' +
+        'unexpected characters like spaces.'
+    }
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank)
     .refine(
