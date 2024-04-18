@@ -126,7 +126,7 @@ def step_impl(context):
     home_page = HomePage(context.browser)
     go_to_home_page(context.browser)
     home_page.firstFlaw.visibility_of_element_located()
-    home_page.click_btn("myissueCheckBox")
+    home_page.click_btn("myIssuesCheckbox")
 
 @then("All issues assigned to me should be listed in flaw table")
 def step_impl(context):
