@@ -53,6 +53,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
               'bg-primary': type === 'ARTICLE',
               'bg-warning': type !== 'ARTICLE',
             }"
+            :style="type !== 'ARTICLE' ? 'color: black' : ''"
           >
             {{ referenceTypeLabel(type) }}
           </span>
