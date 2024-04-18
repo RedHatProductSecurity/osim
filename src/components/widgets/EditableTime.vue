@@ -53,13 +53,13 @@ const mask = {
             maxLength: 2,
         }
     },
-    // define date -> str conversion
+    // define dateTime -> str conversion
     format: function (date: Date | string) { // required to complete input
-        return formatDate(date);
+        return formatDateTime(date);
     },
-    // define str -> date conversion
+    // define str -> dateTime conversion
     parse: function (str: string) { // required to complete input
-        return parseDate(str);
+        return parseDateTime(str);
     },
 
     autofix: true
@@ -116,12 +116,12 @@ function commit() {
         emit('update:modelValue', undefined);
         return;
     }
-    const date = parseDate(boundObject.masked); // Use parseDate to get the Date object
-    if (!isValidDate(date)) {
+    const date = parseDateTime(boundObject.masked); // Use parseDate to get the Date object
+    if (!isValidDateTime(date)) {
         emit('update:modelValue', undefined);
     } else {
-        console.log("commit: " + date.toISOString());
-        emit('update:modelValue', date.toISOString());
+        console.log("commit: " + date.toISOTime());
+        emit('update:modelValue', date.toISOTime());
     }
 }
 
@@ -155,24 +155,25 @@ function blur(e: FocusEvent | null) {
 }
 
 // This function takes a Date or string and returns it in the 'HH:mm:ss' format.
-function formatDate(input: Date | string): string {
-    const dt = DateTime.fromJSDate(new Date(input)).toUTC();
+function formatDateTime(input: Date | string): string {
+    const inputDate = new Date(input);
+    inputDate.setDate(0);
+    const dt = DateTime.fromJSDate(inputDate).toUTC();
     // returns in 'HH:mm:ss' format without Z and milliseconds
     const result = dt.toISOTime({ suppressMilliseconds: true, includeOffset: false });
-    console.log(result);
     return result || '';
 }
 
 // This function takes a string in 'HH:mm:ss' format and returns a Date object.
-function parseDate(input: string): Date {
-    return DateTime.fromISO(input, { zone: 'utc' }).toISOTime();
+function parseDateTime(input: string): DateTime {
+    return DateTime.fromISO(input, { zone: 'utc' });
 }
 
-function isValidDate(d: Date | string): boolean {
-    if (typeof d === 'string') {
-        d = parseDate(d);
+function isValidDateTime(dt: DateTime | string): boolean {
+    if (typeof dt === 'string') {
+        dt = formatDate(dt);
     }
-    return !isNaN(d.getTime());
+    return !isNaN(dt.toISOTime());
 }
 
 function osimFormatDate(date: Date | string | undefined | null): string {
