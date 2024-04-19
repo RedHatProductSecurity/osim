@@ -1,4 +1,3 @@
-import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { z } from 'zod';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '../stores/UserStore';
@@ -9,48 +8,120 @@ const RefreshResponse = z.object({
   access: z.string(),
 });
 
-export async function osidbFetch(config: AxiosRequestConfig) {
-  if (osimRuntime.value.readOnly && config.method?.toLowerCase() !== 'get') {
-    useToastStore().addToast({
-      title: 'Operation Not Permitted',
-      body: 'Operation prevented since OSIM is in read-only mode',
-      css: 'danger',
+
+type OsidbFetchCallbacks = {
+  beforeFetch?: (args: {url: string, options?: OsidbFetchOptions}) => Promise<void> | void;
+  // afterFetch?: (response: Response) => Promise<void> | void;
+};
+
+type OsidbFetchOptions = {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'get' | 'post' | 'put' | 'delete'; // | 'PATCH' | 'OPTIONS' | 'HEAD',
+  data?: Record<string, any>;
+  params?: Record<string, any>;
+  url: string;
+};
+
+export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: OsidbFetchCallbacks) {
+
+  if (factoryOptions?.beforeFetch) {
+    await factoryOptions.beforeFetch(config);
+  }
+
+  const body = config?.data ? JSON.stringify(config.data) : undefined;
+  const queryString = queryStringFromParams(config?.params ?? {});
+  const baseUrl = osimRuntime.value.backends.osidb;
+
+  if (config?.method?.toUpperCase() !== 'GET' && osimRuntime.value.readOnly) {
+    useToastStore().addToast({ title: 'Operation Not Permitted', body: 'OSIM is in read-only mode.' });
+    return Promise.reject('OSIM is in read-only mode.');
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${baseUrl}${config.url}${queryString}`, {
+      method: config?.method ?? 'GET',
+      headers: await osimRequestHeaders(),
+      mode: 'cors',
+      credentials: 'include',
+      body,
     });
-    return Promise.reject(new Error('OSIM is in read-only mode'));
+  } catch (e) {
+    return Promise.reject(e);
   }
+
+  if (!response.ok) {
+    let data;
+    if (response.headers.get('content-type')?.startsWith('text/html')) {
+      data = await response.text();
+    } else {
+      data = await response.json();
+    }
+
+    return Promise.reject({ 
+      response: {
+        headers: Object.fromEntries(response.headers.entries()),
+        ok: response.ok,
+        redirected: response.redirected,
+        status: response.status,
+        statusText: response.statusText,
+        type: response.type,
+        url: response.url,
+        data,
+      },
+      data,
+    }, 
+    );
+  }
+
+  return { data: await response.json(), response };
+}
+
+async function osimRequestHeaders() {
   const settingsStore = useSettingsStore();
-  const accessToken = await getNextAccessToken();
-  config.headers = config.headers || {};
-  config.headers['Authorization'] = `Bearer ${accessToken}`;
-  if (/.+/.test(settingsStore.settings.bugzillaApiKey ?? '')) {
-    config.headers['Bugzilla-Api-Key'] = settingsStore.settings.bugzillaApiKey;
+  const token = await getNextAccessToken();
+  return new Headers({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Bugzilla-Api-Key': settingsStore.settings.bugzillaApiKey,
+    'Jira-Api-Key': settingsStore.settings.jiraApiKey,
+  });
+}
+
+function paramsFrom(params: Record<string, any>) {
+  const urlParams = new URLSearchParams();
+  for (const key in params) {
+    if (params[key] !== undefined) {
+      urlParams.set(key, params[key]);
+    }
   }
-  if (/.+/.test(settingsStore.settings.jiraApiKey ?? '')) {
-    config.headers['Jira-Api-Key'] = settingsStore.settings.jiraApiKey; // Source: osidb/openapi.yml
-  }
-  config.baseURL = osimRuntime.value.backends.osidb;
-  config.withCredentials = true;
-  return axios(config);
+  return urlParams;
+}
+
+function queryStringFromParams(params: Record<string, any>) {
+  const urlParams = paramsFrom(params);
+  const queryString = urlParams.toString();
+  return queryString ? `?${queryString}` : '';
 }
 
 export async function getNextAccessToken() {
   // Moving this to module scope results in "cannot access before initialization" -
   // probably a vite or typescript bug
+  const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
   const userStore = useUserStore();
   let response;
   try {
-    response = await axios({
+    const fetchResponse = await fetch(url, {
       method: 'post',
-      url: '/auth/token/refresh',
-      baseURL: osimRuntime.value.backends.osidb,
-      withCredentials: true,
-      data: {
-        refresh: userStore.refresh,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
       },
-      // headers: {
-      //   'Authorization': `Bearer`
-      // },
+      credentials: 'include',
+      body: JSON.stringify({
+        refresh: userStore.refresh,
+      }),
     });
+    response = await fetchResponse.json();
   } catch (e) {
     return userStore.logout()
       .finally(() => {
@@ -58,10 +129,11 @@ export async function getNextAccessToken() {
       });
   }
   try {
-    const responseBody = response.data;
+    const responseBody = response;
     const parsedBody = RefreshResponse.parse(responseBody);
     return parsedBody.access;
   } catch (e) {
+    console.log('error', e);
     return userStore.logout()
       .finally(() => {
         throw new Error('Unable to parse next access token');
@@ -69,9 +141,15 @@ export async function getNextAccessToken() {
   }
 }
 
-export function getDisplayedOsidbError(error: AxiosError<any, any>) {
+function parseOsidbErrorsJson(data: Record<string, any>) { 
+  return Object.entries(data)
+    .filter(([key]) => !['dt','env','revision','version'].includes(key))
+    .map(([key, value]) => `${key}: ${value}`);
+}
+
+export function getDisplayedOsidbError(error: any) {
   if (error.response) {
-    if (error.response.headers['content-type']?.startsWith('text/html')) {
+    if (error.response.headers?.['content-type']?.startsWith('text/html')) {
       // server in debug mode?
       const parser = new DOMParser();
       const doc = parser.parseFromString(
@@ -79,12 +157,15 @@ export function getDisplayedOsidbError(error: AxiosError<any, any>) {
       );
       const exception_value = doc.querySelector('.exception_value');
       const text = (exception_value as HTMLElement)?.innerText;
+
       return 'Likely error between OSIDB and database:\n' + text;
     } else {
-      return `From OSIDB: Code ${error.response.status}: ` +
+      const { status, statusText } = error.response;
+      return `OSIDB responded with error ${status} (${statusText}). \n` +
       `${
         error.response.data instanceof Object ?
-          JSON.stringify(error.response.data, null, 2) :
+          // JSON.stringify(error.response.data, null, 2) :
+          parseOsidbErrorsJson(error.response.data):
           error.response.data
       }`;
     }

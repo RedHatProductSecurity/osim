@@ -84,28 +84,40 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   }
 
   async function updateFlaw() {
+    const queue = [];
     isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
+      isSaving.value = false;
       return;
     }
 
     if (affectsToSave.value.length) {
-      await saveAffects();
+      queue.push(async () => await saveAffects().catch(() => isSaving.value = false));
     }
-
+    
     if (affectsToDelete.value.length) {
-      await deleteAffects();
+      queue.push(async () => await deleteAffects().catch(() => isSaving.value = false));
     }
-
-    await putFlaw(flaw.value.uuid, validatedFlaw.data)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-      .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));
-
+    
+    queue.push(
+      async () => await putFlaw(flaw.value.uuid, validatedFlaw.data)
+        .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
+        .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false))
+    );
+    
     if (wasCvssModified.value) {
-      await saveCvssScores();
+      queue.push(async () => await saveCvssScores().catch(() => isSaving.value = false));
     }
 
+    // queue.push(afterSaveSuccess);
+    
+    for (const action of queue) {
+      const result = await action();
+      if (result === false) {
+        return;
+      }
+    }
     afterSaveSuccess();
   }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 
@@ -27,9 +27,9 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
 }>();
 
-const affectCvssScore = ref(
-  modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
-);
+// const affectCvssScore = ref(
+//   modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
+// );
 
 const hasTrackers = computed(() => 
   Boolean(modelValue.value.trackers)
@@ -80,12 +80,12 @@ const hasTrackers = computed(() =>
         :options="affectImpacts"
       />
       <!-- TODO: Should CVSSv3 be inherited from Flaw? -->
-      <LabelEditable
+      <!-- <LabelEditable
         v-model="affectCvssScore"
         :error="error.cvss_scores"
         type="text"
         label="CVSSv3"
-      />
+      /> -->
       <div class="row">
         <div class="col ps-0 mb-4">
           <button

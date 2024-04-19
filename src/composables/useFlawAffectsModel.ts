@@ -101,8 +101,9 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           .catch((error) => {
             const displayedError = getDisplayedOsidbError(error);
             addToast({
-              title: 'Error saving Affect',
+              title: 'Error updating Affect',
               body: displayedError,
+              css: 'warning',
             });
             throw new Error(error);
           });
