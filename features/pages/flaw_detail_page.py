@@ -1,3 +1,8 @@
+import json
+import random
+import requests
+import time
+import urllib.parse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from seleniumpagefactory.Pagefactory import PageFactory
@@ -8,7 +13,11 @@ from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 
 from features.page_factory_utils import find_elements_in_page_factory
-
+from features.constants import (
+    OSIDB_URL,
+    EMBARGOED_FLAW_CVE_ID,
+    PUBLIC_FLAW_CVE_ID
+)
 
 class FlawDetailPage(PageFactory):
 
@@ -76,7 +85,6 @@ class FlawDetailPage(PageFactory):
         # The publicDateInput locator in flaw update form
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
-
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
@@ -95,12 +103,28 @@ class FlawDetailPage(PageFactory):
         "firstReferenceEditBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[1]"),
         "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
         "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
-
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
-
-        "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]')
+        "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
+        # Affects locators
+        "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[4]"),
+        "affects__ps_moduleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[8]"),
+        "affects__ps_moduleInput": ("XPATH", "(//input[@class='form-control'])[9]"),
+        "affects__ps_moduleText": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[8]"),
+        "affects__ps_moduleCheckMark": ("XPATH", "(//button[@class='input-group-text'])[15]"),
+        "affects__ps_componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[9]"),
+        "affects__ps_componentInput": ("XPATH", "(//input[@class='form-control'])[10]"),
+        "affects__ps_componentText": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[9]"),
+        "affects__ps_componentCheckMark": ("XPATH", "(//button[@class='input-group-text'])[17]"),
+        "affects__cvss3_scoreEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[10]"),
+        "affects__cvss3_scoreInput": ("XPATH", "(//input[@class='form-control'])[11]"),
+        "affects__cvss3_scoreText": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[10]"),
+        "affects__cvss3_scoreCheckMark": ("XPATH", "(//button[@class='input-group-text'])[19]"),
+        "affects__affectednessSelect":("XPATH", "(//div[@class='col-9'])[10]/select"),
+        "affects__resolutionSelect":("XPATH", "(//div[@class='col-9'])[11]/select"),
+        "affects_impactSelect":("XPATH", "(//div[@class='col-9'])[12]/select"),
+        "affectSaveMsg": ("XPATH", "//div[text()='Affect Updated.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -209,6 +233,7 @@ class FlawDetailPage(PageFactory):
 
     def set_select_value(self, field):
         field_select = getattr(self, field + 'Select')
+        self.driver.execute_script("arguments[0].value = '';", field_select)
         all_values, current_value = self.get_select_value(field)
         if field == 'source':
             all_values = self.allowed_sources
@@ -223,6 +248,9 @@ class FlawDetailPage(PageFactory):
 
     def click_btn(self, btn_element):
         element = getattr(self, btn_element)
+        if 'affects' in btn_element:
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+            time.sleep(1)
         element.click_button()
 
     def wait_msg(self, msg_element):
@@ -250,6 +278,11 @@ class FlawDetailPage(PageFactory):
         field_input = getattr(self, field + 'Input')
         self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.set_text(value)
+        # In affects, if we won't click the CheckMark for module and go to
+        # component, the affects will be hidden
+        if "affects" in field:
+            field_savebtn = field + 'CheckMark'
+            self.click_btn(field_savebtn)
 
     def get_input_value(self, field):
         field_value = getattr(self, field + 'Value')
@@ -333,3 +366,44 @@ class FlawDetailPage(PageFactory):
         reference_count = int(v.split(": ")[1])
         if reference_count > 0:
             self.click_button_with_js("referenceDropdownBtn")
+
+    def get_an_available_ps_module(self, affect_module):
+        # Get the suitable ps_modules for update
+        # The modules which under data/community_projects, except fedora-all,
+        # have no limitation
+        # https://gitlab.cee.redhat.com/prodsec/product-definitions/
+        n = affect_module.split('-')[-1]
+        num = random.randint(11, 40)
+        while True:
+            if str(num) == n:
+                num = random.randint(11, 40)
+            else:
+                break
+        ps_module = "fedora-" + str(num)
+        return ps_module
+
+    def set_select_specific_value(self, field, value):
+        field_select = getattr(self, field + 'Select')
+        field_select.select_element_by_value(value)
+
+    def get_affect_value_from_osidb(self, fields, token, component_value,
+            embargoed=False):
+        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
+        headers = {"Authorization": f"Bearer {token}"}
+        cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
+        params = {"cve_id": cve_id}
+        r = requests.get(url, params = params, headers = headers)
+        flaw_info = json.loads(r.text).get('results')[0]
+        # Get the field value dict that related to the updated affect
+        field_value_dict = {}
+        for affect in flaw_info.get('affects'):
+            # One module and one module combination should be unique.
+            # One unique component is associated one affect in affect list
+            if affect.get('ps_component') == component_value:
+                for field in fields:
+                    if affect.get(field):
+                        field_value = affect.get(field)
+                        field_value_dict[field] = field_value
+                    else:
+                        field_value_dict[field] = ''
+        return field_value_dict
