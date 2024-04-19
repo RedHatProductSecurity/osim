@@ -46,11 +46,19 @@ const streamsAccordionState = ref(
 
 watchArray(
   theAffects.value,
-  (nextList, priorList, addedAffects) => {
-    addedAffects.forEach((affect) => {
-      streamsAccordionState.value[streamPath(affect)] = false;
-      streamsAccordionState.value[affect.ps_module] = false;
-    });
+  (nextList) => {
+    streamsAccordionState.value = nextList
+      .filter(isProductStreamDefined)
+      .reduce(
+        (accordionStates: Record<string, boolean>, affect) => {
+          const currentPSComponentValue = streamsAccordionState.value[streamPath(affect)];
+          const currentPSModuleValue = streamsAccordionState.value[affect.ps_module];
+          accordionStates[streamPath(affect)] = currentPSComponentValue || false;
+          accordionStates[affect.ps_module] = currentPSModuleValue || false;
+          return accordionStates;
+        },
+        {}
+      );
   },
   { deep: true }
 );
