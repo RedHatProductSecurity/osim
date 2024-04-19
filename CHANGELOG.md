@@ -1,6 +1,11 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Fixed
+* The session is now shared across tabs
+
+
+## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
 * Changed layout for Descriptions, References and Acknowledgements
