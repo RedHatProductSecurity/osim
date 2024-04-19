@@ -6,7 +6,7 @@
 // Pressing escape or clicking the abort button aborts the change
 
 import { DateTime } from 'luxon';
-import { ref, nextTick, reactive, unref } from 'vue';
+import { ref, nextTick, reactive } from 'vue';
 import { IMask } from 'vue-imask';
 
 const props = defineProps<{
@@ -67,11 +67,6 @@ const mask = {
 
   autofix: true,
 };
-// const editedMaskedModelValue = ref('');
-// const boundObject = reactive<MaskaDetail>({completed: false, masked: '', unmasked: ''});
-
-const editedModelValue = ref<string | undefined>(unref(props.modelValue));
-
 
 const boundObject = reactive({
   completed: false,
@@ -83,20 +78,20 @@ if (props.modelValue != null) {
   boundObject.masked = mask.format(props.modelValue);
 }
 
+// vue-imask Event handler
 function onAccept(e: CustomEvent) {
   const maskRef = e.detail;
   boundObject.completed = false;
   boundObject.masked = maskRef.value;
   boundObject.unmasked = maskRef.unmaskedValue;
-  // console.log('accept', maskRef);
 }
 
+// vue-imask Event handler
 function onComplete(e: CustomEvent) {
   const maskRef = e.detail;
   boundObject.completed = true;
   boundObject.masked = maskRef.value;
   boundObject.unmasked = maskRef.unmaskedValue;
-  // console.log('complete', maskRef.value);
 }
 
 function beginEdit() {
@@ -104,7 +99,6 @@ function beginEdit() {
     return;
   }
   editing.value = true;
-  // elInput.value?.dispatchEvent(new Event('keyup'));
   nextTick(() => {
     if (elInput.value != null) {
       elInput.value.focus();
@@ -134,11 +128,12 @@ function commit() {
 
 function abort() {
   editing.value = false;
-  editedModelValue.value = props.modelValue;
+  boundObject.masked = props.modelValue || '';
+  boundObject.unmasked = props.modelValue || '';
   console.log('abort');
 }
 
-function blur(e: FocusEvent | null) {
+function onBlur(e: FocusEvent | null) {
   if (e == null || e.currentTarget == null) {
     commit();
     return;
@@ -146,22 +141,23 @@ function blur(e: FocusEvent | null) {
   // if (e.currentTarget.contains(e.relatedTarget)) {
   // || elDiv.value?.contains(e.currentTarget)
 
-  if (e.relatedTarget == null) {
+  if (e.relatedTarget == null && editing.value) {
     commit();
     return;
   }
+  
 
   if (e.relatedTarget instanceof Node) {
     if (elDiv.value?.contains(e.relatedTarget)) {
       // abort();
       // Do not commit or abort while navigating within this component (e.g. with tab or clicking)
       return;
-    } else {
-      // Commit when focus transfers out of this component
+    } else if (editing.value) {
       commit();
       return;
     }
   }
+
 
   // if (e.currentTarget instanceof Node) {
   //   if (elDiv.value?.contains(e.currentTarget)) {
@@ -252,7 +248,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
       v-if="editing"
       ref="elDiv"
       class="input-group osim-date-edit-field"
-      @blur="blur($event)"
+      @blur="onBlur($event)"
     >
 
       <!--v-maska-->
@@ -275,7 +271,7 @@ function osimFormatDate(date: Date | string | undefined | null): string {
         :readonly="readOnly"
         type="text"
         :value="boundObject.masked"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
         @keyup.esc="abort"
         @complete="onComplete"
         @accept="onAccept"
@@ -285,14 +281,14 @@ function osimFormatDate(date: Date | string | undefined | null): string {
         class="input-group-text osim-confirm"
         tabindex="-1"
         @mouseup="commit"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
       ><i class="bi bi-check"></i></button>
       <button
         type="button"
         class="input-group-text osim-cancel"
         tabindex="-1"
         @mouseup="abort"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
       ><i class="bi bi-x"></i></button>
     </div>
     <div
