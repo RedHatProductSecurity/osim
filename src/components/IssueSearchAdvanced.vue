@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref  } from 'vue';
 import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
+import { useSearchParams } from '@/composables/useSearchParams';
 
-type Facet = {
-  field: string;
-  value: string;
-};
+const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
 const props = defineProps<{
   isLoading: boolean;
 }>();
 
 const route = useRoute();
-
-const router = useRouter();
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -40,36 +36,7 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-const populateFacets = (): Facet[] => {
-  const facets: Facet[] = [];
-
-  if (route.query && Object.keys(route.query).length > 0) {
-    Object.keys(route.query).forEach(key => {
-      if (flawFields.includes(key) && typeof route.query[key] === 'string') {
-        facets.push({ field: key, value: route.query[key] as string });
-      }
-    });
-  }
-
-  facets.push({ field: '', value: '' });
-
-  return facets;
-};
-
-const facets = ref<Facet[]>(populateFacets());
-
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
-
-watch(facets.value, (changingFacets) => {
-  const newFacet = changingFacets[changingFacets.length - 1];
-  if (newFacet?.field && newFacet?.value) {
-    addFacet();
-  }
-});
-
-watch(() => route.query.query, () => {
-  facets.value = populateFacets();
-});
 
 const unchosenFields = (chosenField: string) =>
   flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
@@ -90,36 +57,6 @@ const optionsFor = (field: string) =>
       'TRIAGE',
     ],
   })[field] || null;
-
-function addFacet() {
-  facets.value.push({ field: '', value: '' });
-}
-
-function removeFacet(index: number) {
-  facets.value.splice(index, 1);
-  if (!facets.value.length) {
-    addFacet();
-  }
-}
-
-async function submitAdvancedSearch() {
-  const params = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && value) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  router.replace({
-    query:{
-      ...(route.query.query && ({ query: route.query.query })),
-      ...params,
-    }
-  });
-}
-
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
 
