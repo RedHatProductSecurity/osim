@@ -45,7 +45,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:delete="emit('reference:delete', $event)"
       @item:new="emit('reference:new')"
     >
-      <template #default="{ item: { url, type, updated_dt, ...item } }">
+      <template #default="{ item: { url, type, ...item } }">
         <div class="info-group">
           <span
             class="badge rounded-pill"
@@ -57,7 +57,6 @@ function handleDelete(uuid: string, closeModal: () => void) {
           >
             {{ referenceTypeLabel(type) }}
           </span>
-          <span class="timestamp">{{ updated_dt }}</span>
           <a class="ref-link" :href="url" target="_blank">{{ url }}</a>
         </div>
         <div class="form-group mt-2">
@@ -165,14 +164,8 @@ select.osim-reference-types {
   flex-direction: column;
 }
 
-.timestamp {
-  margin-inline: 5px;
-  margin-top: 5px;
-}
-
 .ref-link {
-  margin-left: 5px;
-  margin-bottom: 5px;
+  margin: 5px;
 }
 
 .badge {
