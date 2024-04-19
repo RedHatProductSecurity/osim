@@ -28,7 +28,7 @@
 * Removed CVE as required field
 * Refreshing behavior fixed
 * Fixed incorrect prompt message on `References` deletion
-* Restore clickability to save/cancel buttons on Date field
+* Date Field: Restore clickability to save/cancel buttons on Date field, Fixes escape key functionality, Prevents reappearing value from cancelled edit
 
 
 ## [2024.1.0]
