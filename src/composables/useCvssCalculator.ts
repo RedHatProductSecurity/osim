@@ -89,23 +89,22 @@ function calculateBaseScore(factors: Record<string, string>) {
 }
 
 // Gets color for factor weight
-export function getFactorColor(factor: string, value: string) {
-  const severity = factorSeverities[factor][value];
-  switch (severity) {
-  case 'Good':
-    return '#4CBD52'; // Green
-  case 'Bad':
-    return '#FBC94B'; // Yellow
-  case 'Worse':
-    return '#FF841F'; // Orange
-  default:
-    return '#FF5447'; // Red
-  }
-  
-}
+// export function getFactorColor(factor: string, value: string) {
+//   const severity = factorSeverities[factor][value];
+//   switch (severity) {
+//   case 'Good':
+//     return '#4CBD52'; // Green
+//   case 'Bad':
+//     return '#FBC94B'; // Yellow
+//   case 'Worse':
+//     return '#FF841F'; // Orange
+//   default:
+//     return '#FF5447'; // Red
+//   }
+// }
 
 // Factors Weights
-const weights: { [factor: string]: { [value: string]: number } } = {
+export const weights: { [factor: string]: { [value: string]: number } } = {
   AV: { N: 0.85, A: 0.62, L: 0.55, P: 0.2 },
   AC: { L: 0.77, H: 0.44 },
   PRU: { N: 0.85, L: 0.62, H: 0.27 },
@@ -114,9 +113,11 @@ const weights: { [factor: string]: { [value: string]: number } } = {
   C: { N: 0.0, L: 0.22, H: 0.56 },
   I: { N: 0.0, L: 0.22, H: 0.56 },
   A: { N: 0.0, L: 0.22, H: 0.56 },
+  S: { U: .5, C: 1 },
+  PR: { N: 0.85, L: 0.62, H: 0.33 },
+
 };
 
-// Factors severities
 export const factorSeverities: { [factor: string]: { [value: string]: string } } = {
   AV: { N: 'Worst', A: 'Worse', L: 'Bad', P: 'Bad' },
   AC: { L: 'Worst', H: 'Bad' },

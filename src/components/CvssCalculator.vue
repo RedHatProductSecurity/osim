@@ -6,10 +6,11 @@ import {
   getFactors,
   formatFactor,
   calculateScore,
-  getFactorColor,
+  // getFactorColor,
   formatFactors,
   factorSeverities,
-  validateCvssVector
+  validateCvssVector,
+  weights,
 } from '@/composables/useCvssCalculator';
 
 const cvssVector = defineModel<string | undefined | null>('cvssVector');
@@ -19,6 +20,8 @@ const error = computed(() => validateCvssVector(cvssVector.value));
 
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
+const highlightedFactor = ref<string | null>(null);
+
 const cvssDiv = ref();
 const cvssVectorInput = ref();
 
@@ -26,7 +29,7 @@ function updateFactors(newCvssVector: string | undefined | null) {
   if(cvssVector.value !== newCvssVector) {
     cvssVector.value = newCvssVector;
   }
-  cvssFactors.value =  getFactors(newCvssVector ?? '');
+  cvssFactors.value = getFactors(newCvssVector ?? '');
 }
 
 updateFactors(cvssVector.value);
@@ -58,6 +61,26 @@ function reset() {
   cvssVector.value = null;
   cvssFactors.value = {};
 }
+
+const getFactorColor = computed(() => (weight: number, isHovered: boolean = false) => {
+  const hue = isHovered ? 200 : (1 - weight) * 80; // red being 0, 80 being green
+  const alpha = highlightedFactor.value === null 
+    ? 1 
+    : isHovered
+      ? 1 
+      : 0.75;
+  console.log(hue, alpha);
+  const hslForText = `hsla(${hue}, 100%, 35%, ${alpha})`;
+  const hslForBackground = `hsla(${hue}, 100%, 95%, ${alpha})`;
+  return {
+    'color': hslForText,
+    'background-color': hslForBackground,
+  };
+});
+
+function highlightFactor(factor: string | null) {
+  highlightedFactor.value = factor;
+}
 </script>
 
 <template>
@@ -88,8 +111,10 @@ function reset() {
               <span
                 v-if="value"
                 :style="isFocused && key.toString() !== 'CVSS'
-                  ?`color: ${getFactorColor(key.toString(), value)}`
-                  : (isFocused ? 'color: white' : 'color: black')"
+                  ? getFactorColor(weights[key][value], key === highlightedFactor)
+                  : (isFocused ? {color: 'white'} : {color: 'black'})"
+                @mouseover="highlightFactor(key)"
+                @mouseleave="highlightFactor(null)"
               >
                 {{ formatFactor(key.toString(), value) }}
               </span>
@@ -132,21 +157,33 @@ function reset() {
               :key="colIndex" 
               class="col-group"
             >
-              <div class="btn-group-vertical btn-group-sm">
-                <button class="btn-group-header btn lh-sm" disabled>{{ col.label }}</button>
+              <div
+                class="btn-group-vertical btn-group-sm osim-factor-severity-select"
+                @mouseover="highlightFactor(col.id)"
+                @mouseleave="highlightFactor(null)"
+              >
+                <button
+                  class="btn-group-header btn lh-sm" 
+                  :class="{ 'osim-factor-highlight': col.id === highlightedFactor}"
+                  disabled
+                >{{ col.label }}</button>
                 <template v-for="(button, btnIndex) in col.buttons" :key="btnIndex">
                   <button
                     type="button"
                     class="btn lh-sm"
-                    :style="{
-                      backgroundColor: cvssFactors[col.id] === button.key ?
-                        getFactorColor(col.id, button.key) : '#E0E0E0',
-                      color: (cvssFactors[col.id] === button.key && factorSeverities[col.id][button.key] !== 'Bad') ?
-                        'white' : 'inherit'
-                    }"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
+
+                    :style="
+                      cvssFactors[col.id] === button.key ?
+                        getFactorColor(weights[col.id][button.key]) : {
+                          backgroundColor:'#E0E0E0',
+                          color: (cvssFactors[col.id] === button.key
+                            && factorSeverities[col.id][button.key] !== 'Bad')
+                            ? 'white'
+                            : 'inherit'
+                        }"
                     @click="factorButton(col.id, button.key)"
                     @mousedown="event => event.preventDefault()"
                   >
@@ -198,7 +235,7 @@ function reset() {
     .vector-input.alert {
       padding-block: 10px;
     }
-
+    
   }
 
   .erase-button {
@@ -234,6 +271,11 @@ function reset() {
         border: 0;
         padding-block: 7.5px;
         font-weight: 600;
+
+        &.osim-factor-highlight {
+          background-color: hsl(200deg 100% 95%) !important;
+          color: hsl(200deg 100% 35%) !important;
+        }
       }
 
       .btn, .btn:hover {
