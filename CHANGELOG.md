@@ -34,6 +34,7 @@
 * Removed CVE as required field
 * Refreshing behavior fixed
 * Fixed incorrect prompt message on `References` deletion
+* Fixed `Reference` external url validation to accept `http://`
 * Date Field: Restore clickability to save/cancel buttons on Date field, Fixes escape key functionality, Prevents reappearing value from cancelled edit
 * Fixed NVD and RH CVSS Score diff highlight
 

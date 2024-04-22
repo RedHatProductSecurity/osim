@@ -69,10 +69,10 @@ export const FlawReferenceSchema = z.object({
     });
   }
 
-  if (!reference.url.match(/^https:\/\//) ) {
+  if (!reference.url.match(/^(?:https?:\/\/)/) ) {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'Reference URL must begin with https://',
+      message: 'Reference URL must begin with either https:// or http://',
       path: ['url'],
     });
   }
