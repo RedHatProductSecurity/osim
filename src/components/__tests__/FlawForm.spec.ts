@@ -16,6 +16,7 @@ import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelCollapsable from '../widgets/LabelCollapsable.vue';
 import LabelStatic from '../widgets/LabelStatic.vue';
 import LabelTextarea from '../widgets/LabelTextarea.vue';
+import LabelAutocomplete from '../widgets/LabelAutocomplete.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -176,7 +177,7 @@ describe('FlawForm', () => {
     expect(publicDateField?.exists()).toBe(true);
 
     const teamIdField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelAutocomplete)
       .find((component) => component.props().label === 'Team ID');
     expect(teamIdField?.exists()).toBe(true);
 
@@ -266,7 +267,7 @@ describe('FlawForm', () => {
     expect(publicDateField?.exists()).toBe(true);
 
     const teamIdField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelAutocomplete)
       .find((component) => component.props().label === 'Team ID');
     expect(teamIdField?.exists()).toBe(true);
 
@@ -349,7 +350,7 @@ describe('FlawForm', () => {
     mountWithProps({ flaw: { ...sampleFlaw(), team_id: '12345' }, mode: 'edit' });
 
     const teamIdField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelAutocomplete)
       .find((component) => component.text().includes('Team ID'));
 
     expect(teamIdField?.find('span.form-label').text()).toBe('Team ID');
