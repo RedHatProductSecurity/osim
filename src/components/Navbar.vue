@@ -11,11 +11,13 @@ import { useElementBounding } from '@vueuse/core';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { cveRegex } from '@/utils/helpers';
+import { useSearchParams } from '@/composables/useSearchParams';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
+const { submitQuickSearch } = useSearchParams();
 // const {height: headerHeight} = useElementSize(
 //   elHeader, {width: 0, height: 0},
 //   {box: 'border-box'}
@@ -47,7 +49,7 @@ function onSearch(query: string) {
     router.push({ path: `/flaws/${maybeCveId}` });
     return;
   }
-  router.push({ name: 'search', query: { query: trimmedQuery } });
+  submitQuickSearch(trimmedQuery);
 }
 
 </script>

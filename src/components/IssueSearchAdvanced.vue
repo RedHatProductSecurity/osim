@@ -1,59 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { fieldsFor, ZodFlawSchema, flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
+import { computed, ref  } from 'vue';
+import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
+import { flawFields } from '@/constants/flawFields';
+import { useSearchParams } from '@/composables/useSearchParams';
 
-
-type Facet = {
-  field: string;
-  value: string;
-};
+const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
 const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const emit = defineEmits<{
-  'set:filters': [value: Record<string, string>] 
-}>();
-
 const route = useRoute();
-
-
-const fieldsMapping: Record<string, string | string[]> = {
-  classification: 'workflow_state',
-  cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
-  affects: ['affects__ps_module', 'affects__ps_component', 'affects__trackers__ps_update_stream'],
-  acknowledgments: 'acknowledgments__name',
-  trackers: [
-    'affects__trackers__errata__advisory_name',
-    'affects__trackers__ps_update_stream',
-    'affects__trackers__external_system_id',
-  ],
-  references: [],
-  comments: [],
-};
-
-const includedFields = [
-  'type',
-  'uuid',
-  'cve_id',
-  'impact',
-  'component',
-  'title',
-  'owner',
-  'team_id',
-  'trackers',
-  'classification',
-  'cwe_id',
-  'source',
-  'affects',
-  'comments',
-  'cvss_scores',
-  'references',
-  'acknowledgments',
-  'embargoed',
-];
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -78,19 +36,7 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-const facets = ref<Facet[]>([{ field: '', value: '' }]);
-const flawFields = fieldsFor(ZodFlawSchema)
-  .filter((field) => includedFields.includes(field))
-  .flatMap((field) => fieldsMapping[field] || field)
-  .sort();
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
-
-watch(facets.value, (changingFacets) => {
-  const newFacet = changingFacets[changingFacets.length - 1];
-  if (newFacet?.field && newFacet?.value) {
-    addFacet();
-  }
-});
 
 const unchosenFields = (chosenField: string) =>
   flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
@@ -111,31 +57,6 @@ const optionsFor = (field: string) =>
       'TRIAGE',
     ],
   })[field] || null;
-
-function addFacet() {
-  facets.value.push({ field: '', value: '' });
-}
-
-function removeFacet(index: number) {
-  facets.value.splice(index, 1);
-  if (!facets.value.length) {
-    addFacet();
-  }
-}
-
-async function submitAdvancedSearch() {
-  const params = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && value) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  emit('set:filters', params);
-}
-
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
 
