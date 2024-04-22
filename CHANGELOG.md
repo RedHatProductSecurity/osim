@@ -1,6 +1,11 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Fixed
+* The session is now shared across tabs
+
+
+## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
 * Changed layout for Descriptions, References and Acknowledgements
@@ -28,7 +33,8 @@
 * Removed CVE as required field
 * Refreshing behavior fixed
 * Fixed incorrect prompt message on `References` deletion
-* Fixed NVD CVSS Score diff highlight
+* Date Field: Restore clickability to save/cancel buttons on Date field, Fixes escape key functionality, Prevents reappearing value from cancelled edit
+* Fixed NVD and RH CVSS Score diff highlight
 
 
 ## [2024.1.0]

@@ -10,16 +10,21 @@ describe('App', async () => {
   beforeEach(() => {
 
     vi.mock('@vueuse/core', () => ({
-      useSessionStorage: vi.fn(() => ({
-        value: {
-          refresh: 'mocked_refresh_token',
-          env: 'mocked_env',
-          whoami: {
-            email: 'test@example.com',
-            username: 'testuser',
+      useLocalStorage: vi.fn((key: string, defaults) => {
+        return {
+          UserStore: {
+            value: defaults || {
+              // Set your fake user data here
+              refresh: 'mocked_refresh_token',
+              env: 'mocked_env',
+              whoami: {
+                email: 'test@example.com',
+                username: 'testuser',
+              },
+            },
           },
-        },
-      })),
+        }[key];
+      }),
       useElementBounding: vi.fn(() => ({
         bottom: 1000,
         height: 100,

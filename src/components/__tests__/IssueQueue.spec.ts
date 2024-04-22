@@ -7,23 +7,32 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
-  useSessionStorage: vi.fn(() => ({
-    value: {
-      refresh: 'mocked_refresh_token',
-      env: 'mocked_env',
-      whoami: {
-        email: 'test@example.com',
-        username: 'testuser',
+  useLocalStorage: vi.fn((key: string) => {
+    return {
+      UserStore: {
+        value: {
+          // Set your fake user data here
+          refresh: 'mocked_refresh_token',
+          env: 'mocked_env',
+          whoami: {
+            email: 'test@example.com',
+            username: 'testuser',
+          },
+        },
       },
-    },
-  })),
-  useStorage: vi.fn((key, defaults = {
-    bugzillaApiKey: '',
-    jiraApiKey: '',
-    showNotifications: false,
-  }) => ({
-    value: defaults,
-  })),
+    }[key];
+  }),
+  useStorage: vi.fn((key: string, defaults) => {
+    return {
+      'OSIM::API-KEYS': {
+        value: defaults || {
+          bugzillaApiKey: '',
+          jiraApiKey: '',
+          showNotifications: false,
+        },
+      },
+    }[key];
+  }),
 }));
 
 vi.mock('jwt-decode', () => ({

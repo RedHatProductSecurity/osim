@@ -123,3 +123,23 @@ def step_impl(context):
         for order, values in v.items():
             assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."
     context.browser.quit()
+
+
+@when("I check 'Open Issues' checkbox of flaw list")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.click_btn('openIssuesCheckbox')
+    # Sort flaw list by state and check if any closed ones. States:
+    # NEW, TRIAGE, PRE_SECONDARY_ASSESSMENT, SECONDARY_ASSESSMENT, DONE
+    home_page.click_btn('stateBtn')
+    time.sleep(3)
+    home_page.click_btn('stateBtn')
+    time.sleep(3)
+    context.state = home_page.get_specified_cell_value(1, 7)
+
+
+@then("Only open issues are listed in flaw list")
+def step_impl(context):
+    # Check the first state value in the asce sorted flaw list
+    assert context.state != 'DONE', 'Closed issue(s) in open issues filter result'
+    context.browser.quit()

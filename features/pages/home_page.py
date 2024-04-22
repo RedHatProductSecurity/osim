@@ -32,7 +32,8 @@ class HomePage(PageFactory):
         "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
         "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
-        "myissueCheckBox": ("XPATH", "//input[@class='d-inline-block form-check-input']"),
+        "myIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[1]"),
+        "openIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[2]"),
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
@@ -166,3 +167,7 @@ class HomePage(PageFactory):
             else:
                 value.append(self.get_field_value(f"{field}{number}").lower())
         return value
+
+    def get_specified_cell_value(self, row, column):
+        locator = f"//tr[@class='osim-issue-queue-item'][{row}]/td[{column}]"
+        return self.driver.find_element(By.XPATH, locator).text

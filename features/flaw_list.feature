@@ -33,3 +33,7 @@ Feature: Flaw list testing
     Scenario: Sort flaw list on home page
       When I click the field header of flaw list table
       Then The flaw list is sorted by the field
+
+    Scenario: List all open issues
+      When I check 'Open Issues' checkbox of flaw list
+      Then Only open issues are listed in flaw list
