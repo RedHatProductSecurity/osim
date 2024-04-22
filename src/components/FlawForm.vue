@@ -9,6 +9,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelAutocomplete from '@/components/widgets/LabelAutocomplete.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
@@ -108,6 +109,9 @@ const flawCvss3CaculatorLink = computed(
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
+
+// TODO Replace with OSIDB fetched Team-IDs
+const teamArray: string[] = Array.from({ length: 1000 }, (_, i) => `VM-${i.toString().padStart(4, '0')}`);
 
 </script>
 
@@ -262,7 +266,7 @@ const onReset = () => {
             :flawId="flaw.cve_id || flaw.uuid"
           />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
-          <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
+          <LabelAutocomplete v-model="flaw.team_id" :options="teamArray" label="Team ID" />
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
