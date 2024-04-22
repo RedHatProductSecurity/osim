@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
-import { useSessionStorage } from '@vueuse/core';
+import { useLocalStorage } from '@vueuse/core';
 
 // const router = useRouter();
 import router from '@/router';
@@ -36,43 +36,16 @@ const whoamiResponse = z.object({
 });
 type WhoamiType = z.infer<typeof whoamiResponse>;
 
-const userStoreSessionStorage = z.object({
+const userStoreLocalStorage = z.object({
   refresh: z.string(),
   env: z.string(),
   whoami: whoamiResponse.nullable(),
 });
-type UserStoreSessionStorage = z.infer<typeof userStoreSessionStorage>;
+type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
-// Vue bug: the whole chain of data uses reactivity, 
-// but ref doesn't work with the watch; only reactive does.
-// const _userStore = reactive<UserStoreSessionStorage>({refresh: '', env: '', whoami: null});
-const _userStoreSession = useSessionStorage(
-  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreSessionStorage
+const _userStoreSession = useLocalStorage(
+  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreLocalStorage
 );
-// watchEffect(() => {
-//   _userStoreSession.value = _userStore;
-// });
-//
-// const workerReady = serviceWorkerClient.listen(_userStoreKey, value => {
-//   if (value == null) {
-//     Object.assign(_userStore, {refresh: '', env: '', whoami: null});
-//   }
-//   let newUserStore = userStoreSessionStorage.safeParse(value);
-//   if (newUserStore.success) {
-//     if (JSON.stringify(newUserStore.data) !== JSON.stringify(_userStore)) {
-//       // New value; update
-//       Object.assign(_userStore, newUserStore.data);
-//       // _userStore = newUserStore.data;
-//     }
-//   }
-// });
-// // Top-level await is not available in the configured target environment "es2020"
-// // await workerReady;
-// export {workerReady};
-//
-// watch(_userStore, () => {
-//   serviceWorkerClient.put(_userStoreKey, JSON.parse(JSON.stringify(_userStore)));
-// });
 
 export const useUserStore = defineStore('UserStore', () => {
 
@@ -126,7 +99,6 @@ export const useUserStore = defineStore('UserStore', () => {
   }
 
   async function login(username: string = '', password: string = '') {
-    // return fetch('https://osidb-stage.prodsec.redhat.com/auth/token', {
     console.log(osimRuntime.value.backends.osidbAuth);
 
     const requestMetadata: { [key: string]: any } = {};

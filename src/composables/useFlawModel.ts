@@ -157,7 +157,7 @@ export function blankFlaw(): ZodFlawType {
     },
     component: '',
     unembargo_dt: '',
-    reported_dt: '',
+    reported_dt: new Date().toISOString(),
     uuid: '',
     cve_id: '',
     cvss3: '',
