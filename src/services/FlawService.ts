@@ -3,8 +3,57 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import { 
+  getDisplayedOsidbError,
+  type OsidbFetchOptions
+} from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+import { isFlawIdentifierValid } from '@/utils/helpers';
+
+import { ZodFlawSchema } from '@/types/zodFlaw';
+
+
+function isFlaw(data: any) {
+  return !!ZodFlawSchema.safeParse(data).success;
+}
+
+function parseFlawId(options: any) {
+  if (isFlaw(options.data) && options.data.uuid) {
+    return options.data.uuid;
+  }
+
+  // Look for the presence of a flaw id on Affects, CVSS Scores, and other entities 'belonging to' flaws
+  if (options.data?.flaw && isFlawIdentifierValid(options.data.flaw?.toString())) {
+    return options.data.flaw;
+  }
+
+  const flawOsidbIdRegex = /flaws\/(.+?)\/.*/;
+  const maybeFlawId = options.url.match(flawOsidbIdRegex)?.[1];
+  if (maybeFlawId) {
+    return maybeFlawId;
+  }
+  return null;
+}
+
+export async function beforeFetch(options: OsidbFetchOptions) {
+  if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
+    const flawId = parseFlawId(options);
+    if (flawId === null) {
+      return;
+    }
+    try {
+      const flaw = await getFlawUpdatedDt(flawId);
+      options.data.updated_dt = flaw.updated_dt;
+      if (!flaw.updated_dt) {
+        console.error('During multi-stage operation, an updated_dt could not be fetched', flaw, flawId);
+        throw new Error('During multi-stage operation, an updated_dt could not be fetched');
+      }
+    } catch (error) {
+      console.error('Problem fetching flaw for sequential update:', error);
+      throw new Error('Problem fetching flaw for sequential update');
+    }
+  }
+}
 
 const FLAW_LIST_FIELDS = [
   'cve_id',
@@ -47,12 +96,25 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   }).then((response) => response.data);
 }
 
+export async function getFlawUpdatedDt(uuid: string): Promise<ZodFlawType> {
+  return osidbFetch({
+    method: 'get',
+    url: `/osidb/api/v1/flaws/${uuid}`,
+    params: {
+      include_fields: 'updated_dt',
+    },
+  }).then((response) => response.data);
+}
+
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
   return osidbFetch({
     method: 'put',
     url: `/osidb/api/v1/flaws/${uuid}`,
     data: flawObject,
-  }).then((response) => response.data);
+  }, { beforeFetch })
+    .then((response) => response.data)
+    .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
+    .catch(createCatchHandler('Could not update Flaw'));
 }
 
 // {
@@ -77,7 +139,7 @@ export async function putFlawCvssScores(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
     data: putObject,
-  })
+  }, { beforeFetch })
     .then((response) => response.data)
     .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
@@ -96,7 +158,7 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
     data: postObject,
-  })
+  }, { beforeFetch })
     .then((response) => response.data)
     .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
 }
@@ -131,8 +193,8 @@ export async function promoteFlaw(uuid: string) {
     .catch((error) => {
       const displayedError = getDisplayedOsidbError(error);
       addToast({
-        title: displayedError,
-        body: error.response.data,
+        title: 'Error Promoting Flaw',
+        body: displayedError,
         css: 'warning',
       });
       console.error('❌ Problem promoting flaw:', error);
@@ -152,14 +214,15 @@ export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
         title: 'Flaw Rejected',
         body: response.data.classification.state,
         css: 'success',
-      });      return response.data;
+      });
+      return response.data;
     })
     .catch((error) => {
       const { addToast } = useToastStore();
       const displayedError = getDisplayedOsidbError(error);
       addToast({
-        title: displayedError,
-        body: error.response.data,
+        title: 'Error Rejecting Flaw',
+        body: displayedError,
         css: 'warning',
       });
       console.error('❌ Problem rejecting flaw:', error);
@@ -254,7 +317,7 @@ export function postFlawReference(flawId: string, requestBody: FlawReferencePost
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/references`,
     data: requestBody,
-  })
+  }, { beforeFetch })
     .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
     .catch(createCatchHandler('Error creating Reference:'));
 }
@@ -272,7 +335,7 @@ export function putFlawReference(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
     data: requestBody,
-  })
+  }, { beforeFetch })
     .then(createSuccessHandler({ title: 'Success!', body: 'Reference updated.' }))
     .catch(createCatchHandler('Error updating Reference:'));
 }
@@ -302,7 +365,7 @@ export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAc
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments`,
     data: requestBody,
-  })
+  }, { beforeFetch })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment created.' }))
     .catch(createCatchHandler('Error creating Acknowledgment:'));
 }
@@ -320,7 +383,7 @@ export async function putFlawAcknowledgment(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
     data: requestBody,
-  })
+  }, { beforeFetch })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' }))
     .catch(createCatchHandler('Error updating Acknowledgment:'));
 }

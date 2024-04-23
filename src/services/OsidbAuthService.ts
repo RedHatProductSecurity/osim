@@ -8,18 +8,36 @@ const RefreshResponse = z.object({
   access: z.string(),
 });
 
-
-type OsidbFetchCallbacks = {
-  beforeFetch?: (args: {url: string, options?: OsidbFetchOptions}) => Promise<void> | void;
+export type OsidbFetchCallbacks = {
+  beforeFetch?: (options: OsidbFetchOptions) => Promise<void> | void;
   // afterFetch?: (response: Response) => Promise<void> | void;
 };
 
-type OsidbFetchOptions = {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'get' | 'post' | 'put' | 'delete'; // | 'PATCH' | 'OPTIONS' | 'HEAD',
-  data?: Record<string, any>;
-  params?: Record<string, any>;
+export type OsidbGetFetchOptions = {
   url: string;
+  method: 'GET' | 'get';
+  params?: Record<string, any>;
+  data?: never;
 };
+
+export type OsidbPutPostFetchOptions = {
+  url: string;
+  method: 'POST' | 'PUT' | 'post' | 'put';
+  data?: Record<string, any>;
+  params?: never;
+};
+
+export type OsidbDeleteFetchOptions = {
+  url: string;
+  method: 'DELETE' | 'delete';
+  data?: never;
+  params?: never;
+};
+
+export type OsidbFetchOptions =
+  | OsidbGetFetchOptions
+  | OsidbPutPostFetchOptions
+  | OsidbDeleteFetchOptions;
 
 export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: OsidbFetchCallbacks) {
 

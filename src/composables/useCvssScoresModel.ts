@@ -22,13 +22,14 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
       vector: null,
       uuid: null,
       issuer: null,
-      comment: null,
+      // comment: null,
+      comment: 'hardcoded comment', // TODO: remove this line when the comment field is added to the UI
       created_dt: null,
       score: null,
     }, // empty for creating a flaw, or if no CVSS data exists
   );
 
-  watch(flawRhCvss3, () => (wasCvssModified.value = true), { deep: true });
+  watch(flawRhCvss3, () => { wasCvssModified.value = true; }, { deep: true });
 
   const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 
