@@ -12,7 +12,7 @@
     "strict": true,
     "strictNullChecks": true,
     "lib": [
-      "ES2020",
+      "ES2022",
       "DOM",
       "DOM.Iterable"
     ],
