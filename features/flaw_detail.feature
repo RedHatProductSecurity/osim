@@ -35,7 +35,6 @@ Feature: Flaw detail testing
       When I add an acknowledgment to the flaw
       Then A new acknowledgement added to the flaw
 
-
     Scenario: Modify acknowledgement
       Given I go to a public flaw detail page
       When I edit the first acknowledgement in correct format

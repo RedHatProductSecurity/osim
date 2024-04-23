@@ -26,56 +26,58 @@ class FlawDetailPage(PageFactory):
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
         "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
-        "commentTextWindow": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block'])[5]"),
+        "newCommentText": ("XPATH", "//span[text()='New Public Comment']"),
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
-        "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[3]"),
+
+        "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
-        "addAcknowledgmentInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[1]"),
-        "addAcknowledgmentInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/input)[2]"),
+        "addAcknowledgmentInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/label/div/div/input)[1]"),
+        "addAcknowledgmentInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/label/div/div/input)[2]"),
         "saveAcknowledgmentBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
         "acknowledgmentSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
-        "impactSelect": ("XPATH", "(//select[@class='form-select is-invalid'])[1]"),
-        "sourceSelect": ("XPATH", "(//select[@class='form-select is-invalid'])[2]"),
         "firstAcknowledgmentEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
         "firstAcknowledgmentDeleteBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[2]"),
         "firstAcknowledgmentValue": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
-        "firstAcknowledgmentEditInputLeft": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[1]"),
-        "firstAcknowledgmentEditInputRight": ("XPATH", "(//div[@class='osim-list-edit']/div[1]/div/input)[2]"),
+        "firstAcknowledgmentEditInputLeft": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[1]/div/div/input"),
+        "firstAcknowledgmentEditInputRight": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[2]/div/div/input"),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
         "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
+        "acknowledgmentCountLabel": ("XPATH", "(//label[@class='ms-2 form-label'])[2]"),
+
+        "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
+        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
         "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
-        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "titleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[1]"),
-        "titleInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        "titleInput": ("XPATH", "(//input[@class='form-control'])[2]"),
         "titleValue": ("XPATH", "//span[@class='osim-editable-text-value form-control']"),
         "componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[2]"),
-        "componentInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
         "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
-        "teamidInput": ("XPATH", "(//input[@class='form-control'])[9]"),
+        "teamidInput": ("XPATH", "(//input[@class='form-control'])[8]"),
         "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
+
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
         "cveidInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
+
         "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
-        "cweidInput": ("XPATH", "(//input[@class='form-control'])[7]"),
+        "cweidInput": ("XPATH", "(//input[@class='form-control'])[6]"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
+
         "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
-        "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
+        "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
+
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
-        # TODO: Here needs to separeate locators because the same field has different locators
-        # in flaw creation and update page.
-        # The publicDateInput locator in flaw creation form
-        # "publicDateInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
-        # The publicDateInput locator in flaw update form
-        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[8]"),
-        "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
+        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
+        "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
@@ -95,6 +97,8 @@ class FlawDetailPage(PageFactory):
         "firstReferenceEditBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[1]"),
         "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
         "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
+        "firstReferenceLinkUrlInput": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[1]/div/div/input"),
+        "firstReferenceDescriptionTextArea": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[2]/div/textarea"),
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
@@ -146,7 +150,12 @@ class FlawDetailPage(PageFactory):
         self.saveBtn.visibility_of_element_located()
 
     def set_comment_value(self, value):
-        self.commentTextWindow.set_text(value)
+        self.addCommentBtn.execute_script("arguments[0].scrollIntoView(true);")
+        div = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "div").above(self.newCommentText))[0]
+        comment_text_area = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").below(div))[0]
+        comment_text_area.send_keys(value)
 
     def set_document_text_field(self, field, value):
         if field != 'comment#0':
@@ -328,8 +337,26 @@ class FlawDetailPage(PageFactory):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
         self.addReferenceDescriptionInput.set_text(value)
 
+    def edit_reference_set_link_url(self, value):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstReferenceLinkUrlInput)
+        self.firstReferenceLinkUrlInput.set_text(value)
+
+    def edit_reference_set_description(self, value):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
+        self.firstReferenceDescriptionTextArea.set_text(value)
+
     def click_reference_dropdown_button(self):
         v = self.referenceCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
         if reference_count > 0:
             self.click_button_with_js("referenceDropdownBtn")
+
+    def click_acknowledgments_dropdown_btn(self):
+        v = self.acknowledgmentCountLabel.get_text()
+        reference_count = int(v.split(": ")[1])
+        if reference_count > 0:
+            reference_count = int(self.referenceCountLabel.get_text().split(": ")[1])
+            if reference_count > 0:
+                self.click_button_with_js("acknowledgmentsDropDownBtn")
+            else:
+                self.click_button_with_js("referenceDropdownBtn")
