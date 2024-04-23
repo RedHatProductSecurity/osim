@@ -204,7 +204,7 @@ describe('IssueQueue', () => {
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
-    const totalElement = filterEl.find('span.float-end');
+    const totalElement = filterEl.find('span.float-end.fw-bold');
     expect(totalElement.exists()).toBeTruthy();
     expect(totalElement.text()).toBe('Total: 100');
   });
