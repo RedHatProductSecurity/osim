@@ -17,6 +17,7 @@
 * Implemented read-only mode (network requests involving write operations are disabled)
 * Disables form on save
 * Implemented Advanced Search Query to URL
+* Added Total count for IndexView and AdvancedSearch Page
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items

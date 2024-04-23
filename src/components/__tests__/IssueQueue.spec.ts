@@ -186,4 +186,26 @@ describe('IssueQueue', () => {
       order: '-impact',
     });
   });
+
+  it('should render total count', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(100).fill(mockData[0]),
+        isLoading: false,
+        isFinalPageFetched: false,
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const totalElement = filterEl.find('span.float-end');
+    expect(totalElement.exists()).toBeTruthy();
+    expect(totalElement.text()).toBe('Total: 100');
+  });
 });

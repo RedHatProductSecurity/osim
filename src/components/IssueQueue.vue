@@ -157,6 +157,7 @@ watch(params, () => {
         <span class="visually-hidden">Loading...</span>
       </span>
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
+      <span class="float-end"> Total: {{ issues.length }}</span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
