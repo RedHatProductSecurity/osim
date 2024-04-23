@@ -238,7 +238,7 @@ watch(params, () => {
   div.osim-incident-list {
     display: block;
     max-height: calc(100vh - 164px);
-    overflow-y: scroll;
+    overflow-y: auto;
 
     &:hover::-webkit-scrollbar-thumb {
       background-color: $redhat-red-50;
