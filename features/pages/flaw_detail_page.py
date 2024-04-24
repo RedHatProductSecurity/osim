@@ -1,6 +1,5 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import Select
@@ -9,16 +8,16 @@ from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 
 from features.page_factory_utils import find_elements_in_page_factory
+from features.pages.base import BasePage
 
 
-class FlawDetailPage(PageFactory):
+class FlawDetailPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver
         self.timeout = 15
 
     locators = {
-        "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[text()='Description']"),
@@ -237,14 +236,6 @@ class FlawDetailPage(PageFactory):
             updated_value = current_value
         return updated_value
 
-    def click_btn(self, btn_element):
-        element = getattr(self, btn_element)
-        element.click_button()
-
-    def wait_msg(self, msg_element):
-        element = getattr(self, msg_element)
-        element.visibility_of_element_located()
-
     def click_first_ack_edit_btn(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentEditBtn)
         self.firstAcknowledgmentEditBtn.click_button()
@@ -262,7 +253,7 @@ class FlawDetailPage(PageFactory):
 
     def set_input_field(self, field, value):
         field_btn = field + 'EditBtn'
-        self.click_btn(field_btn)
+        self.click_button_with_js(field_btn)
         field_input = getattr(self, field + 'Input')
         self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.set_text(value)
@@ -293,16 +284,6 @@ class FlawDetailPage(PageFactory):
         field_value = getattr(self, field + 'Text')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
         return field_value.get_text()
-
-    def click_button_with_js(self, btn_element):
-        element = getattr(self, btn_element)
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].click();")
-
-    def clear_text_with_js(self, element_name):
-        element = getattr(self, element_name)
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].value = '';")
 
     def delete_all_reference(self):
         # edit ((//div[@class='osim-list-edit'])[n]/div[2]/button)[1]

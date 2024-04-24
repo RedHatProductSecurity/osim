@@ -117,7 +117,7 @@ def set_bugzilla_api_key(browser):
 
 def go_to_home_page(browser):
     home_page = HomePage(browser)
-    home_page.click_flaw_index_btn()
+    home_page.click_btn('flawIndexBtn')
     home_page.flaw_list_exist()
 
 
@@ -149,8 +149,8 @@ def go_to_advanced_search_page(browser):
     This function is a comment one for all advance search senarios.
     """
     home_page = HomePage(browser)
-    home_page.click_btn("advancedSearchDropDownBtn")
-    home_page.click_btn("advancedSearchBtn")
+    home_page.click_button_with_js("advancedSearchDropDownBtn")
+    home_page.click_button_with_js("advancedSearchBtn")
 
 
 def generate_cve():
