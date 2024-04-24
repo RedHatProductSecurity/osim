@@ -152,7 +152,7 @@ describe('FlawForm', () => {
 
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Source');
+      .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
 
     const statusField = subject
@@ -247,7 +247,7 @@ describe('FlawForm', () => {
 
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Source');
+      .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
 
     const incidentStateField = subject
