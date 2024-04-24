@@ -7,7 +7,9 @@ const props = defineProps<{
   selected: boolean;
 }>();
 
-const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'workflowState', 'owner'];
+// Temporary hiding source field [OSIDB-2424]
+// const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'workflowState', 'owner'];
+const nonIdFields = ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
 
 const isUnembargoDateScheduledForLater = computed(
   () => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0,
