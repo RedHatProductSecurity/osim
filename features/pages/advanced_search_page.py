@@ -1,12 +1,14 @@
 import json
 import requests
 import urllib.parse
-from seleniumpagefactory.Pagefactory import PageFactory
+
 from selenium.webdriver.common.by import By
 from features.constants import OSIDB_URL
 
+from features.pages.base import BasePage
 
-class AdvancedSearchPage(PageFactory):
+
+class AdvancedSearchPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver
