@@ -18,6 +18,8 @@
 * Disables form on save
 * Links on references are now displayed as urls
 * Implemented Advanced Search Query to URL
+* `Source` column hidden on flaw lists
+* `Source` field renamed to `CVE Source` on flaw form and advanced search
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
