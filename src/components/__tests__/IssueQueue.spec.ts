@@ -191,6 +191,28 @@ describe('IssueQueue', () => {
     });
   });
 
+  it('shouldn\'t render total count when no issues', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end');
+    expect(countEL.exists()).toBeFalsy();
+  });
+
   it('should render total count', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
@@ -198,7 +220,7 @@ describe('IssueQueue', () => {
     });
     const wrapper = mount(IssueQueue, {
       props: {
-        issues: new Array(100).fill(mockData[0]),
+        issues: new Array(50).fill(mockData[0]),
         isLoading: false,
         isFinalPageFetched: false,
         total: 100
@@ -209,11 +231,31 @@ describe('IssueQueue', () => {
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
-    const countEL = filterEl.find('div.float-end.fw-bold');
+    const countEL = filterEl.find('span.float-end');
     expect(countEL.exists()).toBeTruthy();
-    const spanEL = countEL.findAll('span');
-    expect(spanEL.length).toBe(2);
-    expect(spanEL[0].text()).toBe('Total: 100');
-    expect(spanEL[1].text()).toBe('Loaded: 100');
+    expect(countEL.text()).toBe('Loaded 50 of 100');
+  });
+
+  it('should render total count when loading', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(25).fill(mockData[0]),
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end.text-secondary');
+    expect(countEL.exists()).toBeTruthy();
+    expect(countEL.text()).toBe('Loaded 25 of 100');
   });
 });
