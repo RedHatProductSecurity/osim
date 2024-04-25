@@ -5,7 +5,7 @@ import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlaws } from '@/composables/useFlaws';
 import { useSearchParams } from '@/composables/useSearchParams';
 
-const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
 const { getSearchParams } = useSearchParams();
 
 const filters = ref<Record<string, string>>({});
@@ -50,11 +50,11 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
         :isLoading="isLoading"
       />
     </div>
-    <!-- <IssueSearch :query="query" /> -->
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
       :isFinalPageFetched="isFinalPageFetched"
+      :total="total"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />

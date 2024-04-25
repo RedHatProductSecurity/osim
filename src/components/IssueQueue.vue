@@ -20,6 +20,7 @@ const props = defineProps<{
   issues: any[];
   isLoading: boolean;
   isFinalPageFetched: boolean;
+  total: number
 }>();
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
@@ -157,7 +158,10 @@ watch(params, () => {
         <span class="visually-hidden">Loading...</span>
       </span>
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
-      <span class="float-end fw-bold"> Total: {{ issues.length }}</span>
+      <div class="float-end fw-bold">
+        <span> Total: {{ props.total }}</span>
+        <span class="mx-1"> Loaded: {{ issues.length }}</span>
+      </div>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">

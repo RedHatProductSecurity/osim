@@ -78,6 +78,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -102,6 +103,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -133,6 +135,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -164,6 +167,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -197,6 +201,7 @@ describe('IssueQueue', () => {
         issues: new Array(100).fill(mockData[0]),
         isLoading: false,
         isFinalPageFetched: false,
+        total: 100
       },
       global: {
         plugins: [pinia, router],
@@ -204,8 +209,11 @@ describe('IssueQueue', () => {
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
-    const totalElement = filterEl.find('span.float-end.fw-bold');
-    expect(totalElement.exists()).toBeTruthy();
-    expect(totalElement.text()).toBe('Total: 100');
+    const countEL = filterEl.find('div.float-end.fw-bold');
+    expect(countEL.exists()).toBeTruthy();
+    const spanEL = countEL.findAll('span');
+    expect(spanEL.length).toBe(2);
+    expect(spanEL[0].text()).toBe('Total: 100');
+    expect(spanEL[1].text()).toBe('Loaded: 100');
   });
 });

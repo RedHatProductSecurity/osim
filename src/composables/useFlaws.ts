@@ -7,12 +7,14 @@ export function useFlaws() {
   const issues = ref<any[]>([]);
   const offset = ref(0);
   const pagesize = 20;
+  const total = ref(0);
 
   function loadFlaws(params: any = {}) {
     offset.value = 0;
     isFinalPageFetched.value = false;  
     isLoading.value = true;
     issues.value = [];
+    total.value = 0;
 
     getFlaws(offset.value, 100, params.value)
       .then((response) => {
@@ -26,6 +28,8 @@ export function useFlaws() {
           isFinalPageFetched.value = true;
           offset.value += response.data.results.length; 
         }
+
+        total.value = response.data.count;
       })
       .catch((err) => {
         console.error('IssueQueue: getFlaws error: ', err);
@@ -68,6 +72,7 @@ export function useFlaws() {
     isLoading,
     offset,
     pagesize,
+    total,
     loadFlaws,
     loadMoreFlaws
   };
