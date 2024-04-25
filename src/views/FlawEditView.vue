@@ -54,7 +54,7 @@ function refreshFlaw() {
             Flaw {{ `${props.id}` }} not found.
             <div class="mt-4">
               <RouterLink class="btn btn-primary me-3" to="/flaws/new">Create New Flaw</RouterLink>
-              <RouterLink class="btn btn-primary" to="/flaws">See All Flaws</RouterLink>
+              <RouterLink class="btn btn-primary" to="/">See All Flaws</RouterLink>
             </div>
           </div>
         </div>

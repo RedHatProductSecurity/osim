@@ -53,4 +53,13 @@ describe('IssueSearchAdvanced', () => {
     expect(useRouter().replace.mock.calls[0][0])
       .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
   });
+
+  it('shouldn\'t render duplicate options on dropdown', () => {
+    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
+    const allOptionsEL = selectDropdown.findAll('option');
+    expect(allOptionsEL.length).toBe(21);
+    const allValues = allOptionsEL.map(item => item.element.value);
+    const uniqueValues = [...new Set(allValues)];
+    expect(allValues).toStrictEqual(uniqueValues);
+  });
 });

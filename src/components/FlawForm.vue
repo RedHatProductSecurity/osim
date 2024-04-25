@@ -220,7 +220,7 @@ const onReset = () => {
           />
           <LabelSelect
             v-model="flaw.source"
-            label="Source"
+            label="CVE Source"
             :options="flawSources"
             :error="errors.source"
           />

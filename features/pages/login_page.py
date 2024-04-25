@@ -1,7 +1,7 @@
-from seleniumpagefactory.Pagefactory import PageFactory
+from features.pages.base import BasePage
 
 
-class LoginPage(PageFactory):
+class LoginPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver

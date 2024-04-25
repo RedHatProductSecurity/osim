@@ -3,7 +3,7 @@ import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
 const fieldsMapping: Record<string, string | string[]> = {
   classification: 'workflow_state',
   cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
-  affects: ['affects__ps_module', 'affects__ps_component', 'affects__trackers__ps_update_stream'],
+  affects: ['affects__ps_module', 'affects__ps_component'],
   acknowledgments: 'acknowledgments__name',
   trackers: [
     'affects__trackers__errata__advisory_name',
