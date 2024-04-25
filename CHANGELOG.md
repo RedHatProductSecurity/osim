@@ -16,6 +16,7 @@
 * Provided save operation indications
 * Implemented read-only mode (network requests involving write operations are disabled)
 * Disables form on save
+* Links on references are now displayed as urls
 * Implemented Advanced Search Query to URL
 
 ### Fixed
