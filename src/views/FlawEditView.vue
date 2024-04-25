@@ -7,7 +7,6 @@ import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const flaw = ref<ZodFlawType | null>(null);
-const committedFlaw = ref<ZodFlawType | null>(null);
 const errorLoadingFlaw = ref(false);
 const props = defineProps<{
   id: string;
@@ -24,7 +23,6 @@ function refreshFlaw() {
   getFlaw(props.id)
     .then((theFlaw) => {
       flaw.value = Object.assign({}, theFlaw);
-      committedFlaw.value = Object.assign({}, theFlaw);
       history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
     })
     .catch((err) => {
