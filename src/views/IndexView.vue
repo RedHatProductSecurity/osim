@@ -2,7 +2,7 @@
 import IssueQueue from '../components/IssueQueue.vue';
 import { useFlaws }  from '../composables/useFlaws';
 
-const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
 
 </script>
 
@@ -11,6 +11,7 @@ const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useF
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
+      :total="total"
       :isFinalPageFetched="isFinalPageFetched"
       @flaws:fetch="loadFlaws"
       @flaws:load-more="loadMoreFlaws"
