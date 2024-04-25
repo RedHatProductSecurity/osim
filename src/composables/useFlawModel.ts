@@ -45,6 +45,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
+      isSaving.value = false;
       return;
     }
     // Remove any empty fields before request
@@ -87,6 +88,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = true;
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
+      isSaving.value = false;
       return;
     }
 
