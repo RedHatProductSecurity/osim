@@ -24,7 +24,6 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
-
 const props = defineProps<{
   flaw: any;
   mode: 'create' | 'edit';
@@ -73,6 +72,7 @@ const {
   saveAcknowledgments,
   deleteAcknowledgment,
   isSaving,
+  isValid,
   errors,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
@@ -87,15 +87,21 @@ watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any 
   onReset();
 });
 
+const isPublic = computed(() => !initialFlaw.value?.embargoed);
+const showUnembargoingModal = ref(false);
+const unembargoing = computed(() => !isPublic.value && !flaw.value.embargoed);
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
-    updateFlaw();
-  }
-  if (props.mode === 'create') {
+    if(isValid() && unembargoing.value) {
+      showUnembargoingModal.value = true;
+    } else {
+      updateFlaw();
+    }
+  } else if (props.mode === 'create') {
     createFlaw();
   }
 };
-
 
 const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
@@ -258,8 +264,11 @@ const onReset = () => {
           />
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
+            v-model:showModal="showUnembargoingModal"
             :isFlawNew="!flaw.uuid"
+            :isPublic="isPublic"
             :flawId="flaw.cve_id || flaw.uuid"
+            @updateFlaw="updateFlaw"
           />
           <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
