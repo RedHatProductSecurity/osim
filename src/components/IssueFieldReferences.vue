@@ -57,7 +57,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
           >
             {{ referenceTypeLabel(type) }}
           </span>
-          <a class="ref-link" :href="url" target="_blank">{{ url }}</a>
+          <a class="m-1" :href="url" target="_blank">{{ url }}</a>
         </div>
         <div class="form-group mt-2">
           <LabelStatic v-model="item.description" label="Description" hasTopLabelStyle />
@@ -162,10 +162,6 @@ select.osim-reference-types {
 .info-group {
   display: flex;
   flex-direction: column;
-}
-
-.ref-link {
-  margin: 5px;
 }
 
 .badge {
