@@ -41,6 +41,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
+  function isValid() {
+    return ZodFlawSchema.safeParse(flaw.value).success;
+  }
+
   async function createFlaw() {
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -131,6 +135,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   return {
     flaw,
     isSaving,
+    isValid,
     errors,
     committedFlaw,
     trackerUuids,
