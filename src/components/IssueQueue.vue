@@ -14,7 +14,8 @@ type FilteredIssue = {
   selected: boolean;
 };
 
-// Temporary hiding source field [OSIDB-2424]
+// Temporarily hiding 'Source' column to avoid displaying incorrect information.
+// TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 // type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner'; 
 type ColumnField = 'id' | 'impact' | 'created_dt' | 'title' | 'state' | 'owner';
 
