@@ -79,7 +79,6 @@ const hasTrackers = computed(() =>
         label="Impact"
         :options="affectImpacts"
       />
-      <!-- TODO: Should CVSSv3 be inherited from Flaw? -->
       <LabelEditable
         v-model="affectCvssScore"
         :error="error.cvss_scores"

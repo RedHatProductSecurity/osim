@@ -18,14 +18,16 @@ import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types
 import { modifyPath } from 'ramda';
 import { deepMap } from '@/utils/helpers';
 import type { ZodIssue } from 'zod';
+import { useNetworkQueue } from './useNetworkQueue';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
-  const { wasCvssModified, saveCvssScores } = useCvssScoresModel(flaw);
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } =
-    useFlawAffectsModel(flaw);
+  const cvssScoresModel = useCvssScoresModel(flaw);
+  const flawAffectsModel = useFlawAffectsModel(flaw);
+  const { wasCvssModified, saveCvssScores } = cvssScoresModel;
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -84,27 +86,37 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   }
 
   async function updateFlaw() {
+    const { execute } = useNetworkQueue();
+    const queue: Array<() => Promise<any>> = [];
+
     isSaving.value = true;
     const validatedFlaw = validate();
+
     if (!validatedFlaw.success) {
+      isSaving.value = false;
       return;
     }
 
     if (affectsToSave.value.length) {
-      await saveAffects();
+      queue.push(saveAffects);
     }
-
+    
     if (affectsToDelete.value.length) {
-      await deleteAffects();
+      queue.push(deleteAffects);
     }
-
-
-    await putFlaw(flaw.value.uuid, validatedFlaw.data)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-      .catch(createCatchHandler('Could not update Flaw', () => isSaving.value = false));
 
     if (wasCvssModified.value) {
-      await saveCvssScores();
+      queue.push(saveCvssScores);
+    }
+
+    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data));
+
+    try {
+      await execute(...queue);
+    } catch (error) {
+      console.error('Error updating flaw:', error);
+      isSaving.value = false;
+      return;
     }
 
     afterSaveSuccess();
@@ -142,8 +154,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     createFlaw,
     updateFlaw,
     afterSaveSuccess,
-    ...useCvssScoresModel(flaw),
-    ...useFlawAffectsModel(flaw),
+    ...cvssScoresModel,
+    ...flawAffectsModel,
     ...useFlawAttributionsModel(flaw, afterSaveSuccess),
   };
 }

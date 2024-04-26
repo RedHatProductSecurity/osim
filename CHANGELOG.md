@@ -44,6 +44,7 @@
 * Fixed duplicated search option on `AdvancedSearch` page
 * Fixed redirect `Flaws` link on `Flaw` edit page when `Flaw` is not found.
 * Fixed Scroll bar on `Flaws` list
+* Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 
 
 ## [2024.1.0]
