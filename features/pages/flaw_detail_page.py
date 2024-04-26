@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException
+from selenium.webdriver.remote.webelement import WebElement
 
 from features.page_factory_utils import find_elements_in_page_factory
 from features.pages.base import BasePage
@@ -216,7 +217,11 @@ class FlawDetailPage(BasePage):
         )
 
     def get_select_value(self, field):
-        field_select = getattr(self, field + 'Select')
+        if not isinstance(field, WebElement):
+            field_select = getattr(self, field + 'Select')
+        else:
+            field_select = field
+
         all_values = field_select.get_all_list_item()
         selected_item = field_select.get_list_selected_item()
         current_value = selected_item[0] if selected_item else None

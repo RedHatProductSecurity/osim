@@ -1,3 +1,4 @@
+from selenium.webdriver.remote.webelement import WebElement
 from seleniumpagefactory.Pagefactory import PageFactory
 
 
@@ -12,7 +13,10 @@ class BasePage(PageFactory):
         self.timeout = 15
 
     def click_button_with_js(self, btn_element):
-        element = getattr(self, btn_element)
+        if not isinstance(btn_element, WebElement):
+            element = getattr(self, btn_element)
+        else:
+            element = btn_element
         element.execute_script("arguments[0].scrollIntoView(true);")
         element.execute_script("arguments[0].click();")
 
