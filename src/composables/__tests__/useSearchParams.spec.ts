@@ -15,7 +15,8 @@ vi.mock('vue-router', async () => {
     }))
   };
 });
-describe('useFlaws', () => {
+
+describe('useSearchParams', () => {
   beforeEach(() => {
     (useRoute as Mock).mockReturnValue({
       'query': { mode: 'advanced', query: 'search' },

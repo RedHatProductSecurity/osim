@@ -445,6 +445,25 @@ def step_impl(context):
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
+
 @then("The embargoed flaw is updated")
 def step_impl(context):
+    context.browser.quit()
+
+
+@when("I add a new affect with valid data")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js('addNewAffectBtn')
+    context.ps_component = flaw_detail_page.set_new_affect_inputs()
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('affectCreatedMsg')
+
+
+@then("The affect is added")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_exist(context.ps_component)
     context.browser.quit()

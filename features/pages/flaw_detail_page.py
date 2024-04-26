@@ -1,23 +1,23 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.relative_locator import locate_with
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 
 from features.page_factory_utils import find_elements_in_page_factory
+from features.pages.base import BasePage
 
 
-class FlawDetailPage(PageFactory):
+class FlawDetailPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver
         self.timeout = 15
 
     locators = {
-        "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[text()='Description']"),
@@ -104,7 +104,13 @@ class FlawDetailPage(PageFactory):
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
 
-        "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]')
+        "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
+
+        "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
+        "editpens": ("XPATH", "//button[@class='osim-editable-text-pen input-group-text']"),
+        "peninputs": ("XPATH", "//input[@class='form-control']"),
+        "selects": ("XPATH", "//select[@class='form-select']"),
+        "affectCreatedMsg": ("XPATH", "//div[text()='Affect Created.']"),
     }
 
     # Data is from OSIDB allowed sources:
@@ -230,14 +236,6 @@ class FlawDetailPage(PageFactory):
             updated_value = current_value
         return updated_value
 
-    def click_btn(self, btn_element):
-        element = getattr(self, btn_element)
-        element.click_button()
-
-    def wait_msg(self, msg_element):
-        element = getattr(self, msg_element)
-        element.visibility_of_element_located()
-
     def click_first_ack_edit_btn(self):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentEditBtn)
         self.firstAcknowledgmentEditBtn.click_button()
@@ -255,7 +253,7 @@ class FlawDetailPage(PageFactory):
 
     def set_input_field(self, field, value):
         field_btn = field + 'EditBtn'
-        self.click_btn(field_btn)
+        self.click_button_with_js(field_btn)
         field_input = getattr(self, field + 'Input')
         self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.set_text(value)
@@ -272,10 +270,10 @@ class FlawDetailPage(PageFactory):
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
     def check_value_exist(self, value):
-        e = self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
-        return WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of(e)
-        )
+        try:
+            self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
+        except NoSuchElementException:
+            raise
 
     def check_value_not_exist(self, value):
         return WebDriverWait(self.driver, self.timeout).until(
@@ -286,16 +284,6 @@ class FlawDetailPage(PageFactory):
         field_value = getattr(self, field + 'Text')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
         return field_value.get_text()
-
-    def click_button_with_js(self, btn_element):
-        element = getattr(self, btn_element)
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].click();")
-
-    def clear_text_with_js(self, element_name):
-        element = getattr(self, element_name)
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].value = '';")
 
     def delete_all_reference(self):
         # edit ((//div[@class='osim-list-edit'])[n]/div[2]/button)[1]
@@ -360,3 +348,35 @@ class FlawDetailPage(PageFactory):
                 self.click_button_with_js("acknowledgmentsDropDownBtn")
             else:
                 self.click_button_with_js("referenceDropdownBtn")
+
+    def set_new_affect_inputs(self):
+        from features.utils import generate_random_text
+        edit_pens = find_elements_in_page_factory(self, 'editpens')
+        (psmodule_pen, pscomponent_pen, cvssv3_pen) = edit_pens[-3:]
+        pen_inputs = find_elements_in_page_factory(self, 'peninputs')
+        (psmodule_input, pscomponent_input, cvssv3_input) = pen_inputs[-3:]
+
+        # Set new affect inputs: PS module, PS component, CVSSv3
+        psmodule_pen.execute_script("arguments[0].click();")
+        psmodule_input.send_keys('fedora-38')
+        pscomponent_pen.execute_script("arguments[0].click();")
+        ps_component_value = generate_random_text()
+        pscomponent_input.send_keys(ps_component_value)
+        cvssv3_pen.execute_script("arguments[0].click();")
+        cvssv3_input.send_keys('4.3')
+
+        # Set select value for Affectedness, Resolution and Impact
+        selects = find_elements_in_page_factory(self, 'selects')
+        (affectedness, resolution, impact) = selects[-3:]
+        affectedness_select = Select(affectedness)
+        affectedness_select.select_by_value('NEW')
+        resolution_select = Select(resolution)
+        resolution_select.select_by_value('')
+        impact.execute_script("arguments[0].scrollIntoView(true);")
+
+        hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
+        self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_bar)
+        impact_select = Select(impact)
+        impact_select.select_by_value('LOW')
+        self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
+        return ps_component_value

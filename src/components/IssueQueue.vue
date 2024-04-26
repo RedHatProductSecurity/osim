@@ -14,12 +14,16 @@ type FilteredIssue = {
   selected: boolean;
 };
 
-type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
+// Temporarily hiding 'Source' column to avoid displaying incorrect information.
+// TODO: unhide it once final issue sources are defined. [OSIDB-2424]
+// type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner'; 
+type ColumnField = 'id' | 'impact' | 'created_dt' | 'title' | 'state' | 'owner';
 
 const props = defineProps<{
   issues: any[];
   isLoading: boolean;
   isFinalPageFetched: boolean;
+  total: number
 }>();
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
@@ -63,7 +67,7 @@ const params = computed(() => {
 const columnsFieldsMap: Record<string, ColumnField> = {
   ID: 'id',
   Impact: 'impact',
-  Source: 'source',
+  // Source: 'source',
   Created: 'created_dt',
   Title: 'title',
   State: 'state',
@@ -102,7 +106,7 @@ function relevantFields(issue: any) {
   return {
     id: issue.cve_id || issue.uuid,
     impact: issue.impact,
-    source: issue.source,
+    // source: issue.source,
     created_dt: issue.created_dt,
     title: issue.title,
     workflowState: issue.classification.state,
@@ -157,6 +161,11 @@ watch(params, () => {
         <span class="visually-hidden">Loading...</span>
       </span>
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
+      <span
+        v-if="issues.length"
+        class="float-end"
+        :class="{'text-secondary': isLoading}"
+      > Loaded {{ issues.length }} of {{ total }}</span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">

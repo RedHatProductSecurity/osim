@@ -16,8 +16,12 @@
 * Provided save operation indications
 * Implemented read-only mode (network requests involving write operations are disabled)
 * Disables form on save
+* Links on references are now displayed as urls
 * Implemented Advanced Search Query to URL
 * Unembargo confirmation now happens on saving flaw
+* `Source` column hidden on flaw lists
+* `Source` field renamed to `CVE Source` on flaw form and advanced search
+* Added Total count for IndexView and AdvancedSearch Page
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items

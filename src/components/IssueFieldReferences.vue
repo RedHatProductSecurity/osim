@@ -45,19 +45,20 @@ function handleDelete(uuid: string, closeModal: () => void) {
       @item:delete="emit('reference:delete', $event)"
       @item:new="emit('reference:new')"
     >
-      <template #default="{ item: { url, type, updated_dt, ...item } }">
-        <a :href="url" target="_blank">
-          <span class="me-2">{{ updated_dt }}</span>
+      <template #default="{ item: { url, type, ...item } }">
+        <div class="info-group">
           <span
             class="badge rounded-pill"
             :class="{
               'bg-primary': type === 'ARTICLE',
               'bg-warning': type !== 'ARTICLE',
             }"
+            :style="type !== 'ARTICLE' ? 'color: black' : ''"
           >
             {{ referenceTypeLabel(type) }}
           </span>
-        </a>
+          <a class="m-1" :href="url" target="_blank">{{ url }}</a>
+        </div>
         <div class="form-group mt-2">
           <LabelStatic v-model="item.description" label="Description" hasTopLabelStyle />
         </div>
@@ -156,5 +157,14 @@ select.osim-reference-types {
   padding: 0;
   cursor: pointer;
   font-size: 1.5rem;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge {
+  max-width: fit-content;
 }
 </style>

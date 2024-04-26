@@ -98,8 +98,8 @@ Feature: Flaw detail testing
 
     Scenario: Reset changes
       Given I go to a public flaw detail page
-       When I update the flaw and click 'Reset Changes' button
-       Then All changes are reset
+      When I update the flaw and click 'Reset Changes' button
+      Then All changes are reset
 
     Scenario: Modify embargoed flaw with past public date
       Given I go to an embargoed flaw detail page
@@ -110,3 +110,8 @@ Feature: Flaw detail testing
       Given I go to an embargoed flaw detail page
       When I update the embargoed flaw with a future public date
       Then The embargoed flaw is updated
+
+    Scenario: Add new affect to flaw
+      Given I go to a public flaw detail page
+      When I add a new affect with valid data
+      Then The affect is added
