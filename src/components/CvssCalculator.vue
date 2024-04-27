@@ -81,10 +81,32 @@ const getFactorColor = computed(() => (weight: number, isHovered: boolean = fals
 function highlightFactor(factor: string | null) {
   highlightedFactor.value = factor;
 }
+
+function handlePaste(e: ClipboardEvent) {
+  let maybeCvss = e.clipboardData?.getData('text');
+  if (!maybeCvss) {
+    return; 
+  }
+
+  updateFactors(maybeCvss);
+  if (!getFactors(maybeCvss)['CVSS']) {
+    cvssFactors.value['CVSS'] = '3.1';
+  }
+
+  updateFactors(formatFactors(cvssFactors.value));
+  cvssScore.value = calculateScore(cvssFactors.value);
+}
+
+
 </script>
 
 <template>
-  <div ref="cvssDiv" tabindex="0" @focus="onInputFocus">
+  <div
+    ref="cvssDiv"
+    tabindex="0"
+    @focus="onInputFocus"
+    @paste="handlePaste"
+  >
     <div class="osim-input vector-row">
       <label class="label-group row">
         <span class="form-label col-2">
