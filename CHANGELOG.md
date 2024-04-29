@@ -1,6 +1,11 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Fixed
+* The session is now shared across tabs
+
+
+## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
 * Changed layout for Descriptions, References and Acknowledgements
@@ -11,6 +16,11 @@
 * Provided save operation indications
 * Implemented read-only mode (network requests involving write operations are disabled)
 * Disables form on save
+* Links on references are now displayed as urls
+* Implemented Advanced Search Query to URL
+* `Source` column hidden on flaw lists
+* `Source` field renamed to `CVE Source` on flaw form and advanced search
+* Added Total count for IndexView and AdvancedSearch Page
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -28,6 +38,13 @@
 * Removed CVE as required field
 * Refreshing behavior fixed
 * Fixed incorrect prompt message on `References` deletion
+* Fixed `Reference` external url validation to accept `http://`
+* Date Field: Restore clickability to save/cancel buttons on Date field, Fixes escape key functionality, Prevents reappearing value from cancelled edit
+* Fixed NVD and RH CVSS Score diff highlight
+* Fixed duplicated search option on `AdvancedSearch` page
+* Fixed redirect `Flaws` link on `Flaw` edit page when `Flaw` is not found.
+* Fixed Scroll bar on `Flaws` list
+* Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 
 
 ## [2024.1.0]

@@ -1,20 +1,21 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import { describe, it, expect, vi, type Mock } from 'vitest';
-import { useRoute } from 'vue-router';
+import { describe, it, expect, vi } from 'vitest';
+import { useRoute, useRouter } from 'vue-router';
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
+  const replaceMock = vi.fn();
+  
   return {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    ...actual as {},
-    useRoute: vi.fn(),
+    ...actual,
+    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRouter: vi.fn(() => ({
+      replace: replaceMock
+    }))
   };
 });
 
-(useRoute as Mock).mockReturnValue({
-  'query': { mode: 'advanced' },
-});
 
 describe('IssueSearchAdvanced', () => {
   let wrapper: VueWrapper<any>;
@@ -24,7 +25,7 @@ describe('IssueSearchAdvanced', () => {
     wrapper = mount(IssueSearchAdvanced, {
       props,
       global: {
-        mocks: { useRoute },
+        mocks: { useRoute, useRouter },
       }
     });
   });
@@ -38,16 +39,7 @@ describe('IssueSearchAdvanced', () => {
     expect(content.exists()).toBe(true);
   });
 
-  it('should emit on search button click', async () => {
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    const setFilterEvent = wrapper.emitted('set:filters');
-    expect(setFilterEvent[0][0]).toEqual({});
-  });
-
-  it('should emit with filters on search button click', async () => {
+  it('should update router with filters on search button click', async () => {
     const selectDropdown = wrapper.find('select.form-select.search-facet-field');
     await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
     await selectDropdown.trigger('change');
@@ -57,7 +49,17 @@ describe('IssueSearchAdvanced', () => {
     expect(searchButton.exists()).toBeTruthy();
     await searchButton.trigger('submit');
     await flushPromises();
-    const setFilterEvent = wrapper.emitted('set:filters');
-    expect(setFilterEvent[0][0]).toEqual({ acknowledgments__name: 'test' });
+    expect(useRouter().replace).toHaveBeenCalled();
+    expect(useRouter().replace.mock.calls[0][0])
+      .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
+  });
+
+  it('shouldn\'t render duplicate options on dropdown', () => {
+    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
+    const allOptionsEL = selectDropdown.findAll('option');
+    expect(allOptionsEL.length).toBe(21);
+    const allValues = allOptionsEL.map(item => item.element.value);
+    const uniqueValues = [...new Set(allValues)];
+    expect(allValues).toStrictEqual(uniqueValues);
   });
 });

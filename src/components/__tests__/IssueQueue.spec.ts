@@ -7,23 +7,32 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
-  useSessionStorage: vi.fn(() => ({
-    value: {
-      refresh: 'mocked_refresh_token',
-      env: 'mocked_env',
-      whoami: {
-        email: 'test@example.com',
-        username: 'testuser',
+  useLocalStorage: vi.fn((key: string) => {
+    return {
+      UserStore: {
+        value: {
+          // Set your fake user data here
+          refresh: 'mocked_refresh_token',
+          env: 'mocked_env',
+          whoami: {
+            email: 'test@example.com',
+            username: 'testuser',
+          },
+        },
       },
-    },
-  })),
-  useStorage: vi.fn((key, defaults = {
-    bugzillaApiKey: '',
-    jiraApiKey: '',
-    showNotifications: false,
-  }) => ({
-    value: defaults,
-  })),
+    }[key];
+  }),
+  useStorage: vi.fn((key: string, defaults) => {
+    return {
+      'OSIM::API-KEYS': {
+        value: defaults || {
+          bugzillaApiKey: '',
+          jiraApiKey: '',
+          showNotifications: false,
+        },
+      },
+    }[key];
+  }),
 }));
 
 vi.mock('jwt-decode', () => ({
@@ -69,6 +78,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -93,6 +103,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -124,6 +135,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -155,6 +167,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -176,5 +189,73 @@ describe('IssueQueue', () => {
     expect(fetchEvents[1][0]._value).toEqual({ 
       order: '-impact',
     });
+  });
+
+  it('shouldn\'t render total count when no issues', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end');
+    expect(countEL.exists()).toBeFalsy();
+  });
+
+  it('should render total count', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(50).fill(mockData[0]),
+        isLoading: false,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end');
+    expect(countEL.exists()).toBeTruthy();
+    expect(countEL.text()).toBe('Loaded 50 of 100');
+  });
+
+  it('should render total count when loading', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(25).fill(mockData[0]),
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end.text-secondary');
+    expect(countEL.exists()).toBeTruthy();
+    expect(countEL.text()).toBe('Loaded 25 of 100');
   });
 });

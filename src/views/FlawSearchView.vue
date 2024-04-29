@@ -1,40 +1,27 @@
 <script setup lang="ts">
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
-import { z } from 'zod';
 import { computed, ref, watch, type Ref } from 'vue';
-import { useRoute } from 'vue-router';
 import IssueQueue from '@/components/IssueQueue.vue';
-import { useFlaws }  from '../composables/useFlaws';
+import { useFlaws } from '@/composables/useFlaws';
+import { useSearchParams } from '@/composables/useSearchParams';
 
-const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
-
-const route = useRoute();
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
+const { getSearchParams } = useSearchParams();
 
 const filters = ref<Record<string, string>>({});
 const tableFilters = ref<Record<string, string>>({});
 
-defineProps<{
-  query: string;
-}>();
 defineEmits<{
   'issues:load': [any[]];
 }>();
 
-const searchQuery = z.object({
-  query: z.object({
-    query: z.string().nullish(),
-  }),
-});
-
 const params = computed(() => {
-  const parsedRoute = searchQuery.parse(route);
   const paramsObj = {
     ...filters.value,
-    ...tableFilters.value
+    ...tableFilters.value,
+    ...getSearchParams()
   };
-  if (parsedRoute.query.query) {
-    paramsObj.search = parsedRoute.query.query;
-  }
+
   return paramsObj;
 });
 
@@ -46,12 +33,6 @@ watch(() => params, () => {
 
 function fetchMoreFlaws() {
   loadMoreFlaws(params);
-}
-
-function setFilters(newFilters : Record<string, string> ) {
-  filters.value = {
-    ...newFilters
-  };
 }
 
 function setTableFilters(newFilters: Ref<Record<string, string>>) {
@@ -67,14 +48,13 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
     <div class="container">
       <IssueSearchAdvanced 
         :isLoading="isLoading"
-        @set:filters="setFilters"
       />
     </div>
-    <!-- <IssueSearch :query="query" /> -->
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
       :isFinalPageFetched="isFinalPageFetched"
+      :total="total"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />

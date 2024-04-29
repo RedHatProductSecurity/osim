@@ -1,28 +1,37 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import { describe, it, expect, vi, type Mock } from 'vitest';
-import { useRoute } from 'vue-router';
+import { describe, it, expect, vi } from 'vitest';
+import { useRoute, useRouter } from 'vue-router';
 import { createTestingPinia } from '@pinia/testing';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import { useFlaws }  from '../../composables/useFlaws';
 
 vi.mock('@vueuse/core', () => ({
-  useSessionStorage: vi.fn(() => ({
-    value: {
-      refresh: 'mocked_refresh_token',
-      env: 'mocked_env',
-      whoami: {
-        email: 'test@example.com',
-        username: 'testuser',
+  useLocalStorage: vi.fn((key: string, defaults) => {
+    return {
+      UserStore: {
+        value: defaults || {
+          // Set your fake user data here
+          refresh: 'mocked_refresh_token',
+          env: 'mocked_env',
+          whoami: {
+            email: 'test@example.com',
+            username: 'testuser',
+          },
+        },
       },
-    },
-  })),
-  useStorage: vi.fn((key, defaults = {
-    bugzillaApiKey: '',
-    jiraApiKey: '',
-    showNotifications: false,
-  }) => ({
-    value: defaults,
-  })),
+    }[key];
+  }),
+  useStorage: vi.fn((key: string, defaults) => {
+    return {
+      'OSIM::API-KEYS': {
+        value: defaults || {
+          bugzillaApiKey: '',
+          jiraApiKey: '',
+          showNotifications: false,
+        },
+      },
+    }[key];
+  }),
 }));
 
 vi.mock('jwt-decode', () => ({
@@ -33,30 +42,29 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
+  const replaceMock = vi.fn();
+  
   return {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    ...actual as {},
-    useRoute: vi.fn(),
+    ...actual,
+    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRouter: vi.fn(() => ({
+      replace: replaceMock
+    }))
   };
 });
 
-vi.mock('../../composables/useFlaws', () => ({
+vi.mock('../../composables/useFlaws',  () => ({
   useFlaws: vi.fn(() => ({
     issues: [],
     isLoading: false,
     isFinalPageFetched: false,
+    total:0,
     loadFlaws: vi.fn(),
     loadMoreFlaws: vi.fn(),
   })),
 }));
-
-
-(useRoute as Mock).mockReturnValue({
-  'query': { query: 'search', mode: 'advanced' },
-});
 
 describe('FlawSearchView', () => {
   let wrapper: VueWrapper<any>;
@@ -67,6 +75,7 @@ describe('FlawSearchView', () => {
       issues: [],
       isLoading: false,
       isFinalPageFetched: false,
+      total:0,
       loadFlaws: vi.fn(),
       loadMoreFlaws: vi.fn(),
     });
@@ -112,11 +121,8 @@ describe('FlawSearchView', () => {
     expect(searchButton.exists()).toBeTruthy();
     await searchButton.trigger('submit');
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledTimes(2);
-    expect(useFlaws().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
-      'acknowledgments__name': 'test',
-      'order': '-created_dt',
-      'search': 'search',
-    });
+    expect(useRouter().replace).toHaveBeenCalled();
+    expect(useRouter().replace.mock.calls[0][0])
+      .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
   });
 });

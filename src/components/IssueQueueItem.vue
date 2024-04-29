@@ -7,7 +7,10 @@ const props = defineProps<{
   selected: boolean;
 }>();
 
-const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'state', 'owner'];
+// Temporarily hiding 'Source' column to avoid displaying incorrect information.
+// TODO: unhide it once final issue sources are defined. [OSIDB-2424]
+// const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'workflowState', 'owner'];
+const nonIdFields = ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
 
 const isUnembargoDateScheduledForLater = computed(
   () => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0,
@@ -26,7 +29,7 @@ const hasBadges = computed(() => isEmbargoed.value);
 defineEmits<{
   (e: 'update:selected', selected: boolean): void;
 }>();
-// console.log('IssueQueueItem:', props.issue);
+
 </script>
 
 <template>

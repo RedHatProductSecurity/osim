@@ -91,7 +91,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       if (affect.uuid != null) {
         await putAffect(affect.uuid, requestBody)
           .then(() => {
-            console.log('saved newAffect', requestBody);
             addToast({
               title: 'Info',
               body: `Affect ${index + 1} of ${affectsToSaveQuantity} Saved: ${
@@ -102,28 +101,14 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           .catch((error) => {
             const displayedError = getDisplayedOsidbError(error);
             addToast({
-              title: 'Error saving Affect',
+              title: 'Error updating Affect',
               body: displayedError,
+              css: 'warning',
             });
-            console.log(error);
+            throw new Error(error);
           });
       } else {
-        await postAffect(requestBody)
-          .then(() => {
-            console.log('saved newAffect', requestBody);
-            addToast({
-              title: 'Info',
-              body: `Affect Saved: ${requestBody.ps_component}`,
-            });
-          })
-          .catch((error) => {
-            const displayedError = getDisplayedOsidbError(error);
-            addToast({
-              title: 'Error saving Affect',
-              body: displayedError,
-            });
-            console.log(error);
-          });
+        await postAffect(requestBody);
       }
     }
   }

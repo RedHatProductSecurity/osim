@@ -35,7 +35,6 @@ Feature: Flaw detail testing
       When I add an acknowledgment to the flaw
       Then A new acknowledgement added to the flaw
 
-
     Scenario: Modify acknowledgement
       Given I go to a public flaw detail page
       When I edit the first acknowledgement in correct format
@@ -99,8 +98,8 @@ Feature: Flaw detail testing
 
     Scenario: Reset changes
       Given I go to a public flaw detail page
-       When I update the flaw and click 'Reset Changes' button
-       Then All changes are reset
+      When I update the flaw and click 'Reset Changes' button
+      Then All changes are reset
 
     Scenario: Modify embargoed flaw with past public date
       Given I go to an embargoed flaw detail page
@@ -115,3 +114,9 @@ Feature: Flaw detail testing
     Scenario: Update affects
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved
+
+    Scenario: Add new affect to flaw
+      Given I go to a public flaw detail page
+      When I add a new affect with valid data
+      Then The affect is added
+    

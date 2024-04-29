@@ -24,7 +24,6 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
-
 const props = defineProps<{
   flaw: any;
   mode: 'create' | 'edit';
@@ -220,7 +219,7 @@ const onReset = () => {
           />
           <LabelSelect
             v-model="flaw.source"
-            label="Source"
+            label="CVE Source"
             :options="flawSources"
             :error="errors.source"
           />

@@ -86,7 +86,7 @@ def step_impl(context):
 @when('I add an acknowledgment to the flaw')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.click_button_with_js("addAcknowledgmentBtn")
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.set_acknowledgement(l, r)
@@ -99,7 +99,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
 
@@ -125,7 +125,7 @@ def step_impl(context, field):
 @when("I edit the first acknowledgement in correct format")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.click_first_ack_edit_btn()
     l, r = generate_random_text(), generate_random_text()
     flaw_detail_page.edit_first_ack(l, r)
@@ -140,7 +140,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
     context.browser.quit()
 
@@ -148,7 +148,7 @@ def step_impl(context):
 @when("I delete an acknowledgement from acknowledgement list")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     context.ack_value = flaw_detail_page.get_first_ack_value()
     flaw_detail_page.click_btn('firstAcknowledgmentDeleteBtn')
     flaw_detail_page.click_btn('confirmAcknowledgmentDeleteBtn')
@@ -159,7 +159,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_btn('acknowledgmentsDropDownBtn')
+    flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
     context.browser.quit()
 
@@ -258,7 +258,6 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page.click_button_with_js("addReferenceBtn")
-    flaw_detail_page.click_reference_dropdown_button()
     if external:
         flaw_detail_page.add_reference_select_external_type()
     flaw_detail_page.add_reference_set_link_url(value)
@@ -293,6 +292,9 @@ def step_impl(context):
 
 @when("I add two RHSB references to the flaw")
 def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_reference_dropdown_button()
+    flaw_detail_page.delete_all_reference()
     context.first_value = f"https://access.redhat.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg", external=False)
     context.second_value = f"https://access.redhat.com/{generate_random_text()}"
@@ -380,10 +382,10 @@ def step_impl(context):
 
     context.expected = f"https://access.redhat.com/{generate_random_text()}"
     flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
-    flaw_detail_page.clear_text_with_js("addReferenceLinkUrlInput")
-    flaw_detail_page.add_reference_set_link_url(context.expected)
-    flaw_detail_page.clear_text_with_js('addReferenceDescriptionInput')
-    flaw_detail_page.add_reference_set_description(context.expected)
+    flaw_detail_page.clear_text_with_js("firstReferenceLinkUrlInput")
+    flaw_detail_page.edit_reference_set_link_url(context.expected)
+    flaw_detail_page.clear_text_with_js('firstReferenceDescriptionTextArea')
+    flaw_detail_page.edit_reference_set_description(context.expected)
     flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
     flaw_detail_page.click_button_with_js("saveReferenceBtn")
     flaw_detail_page.wait_msg("referenceUpdatedMsg")
@@ -445,9 +447,11 @@ def step_impl(context):
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
+
 @then("The embargoed flaw is updated")
 def step_impl(context):
     context.browser.quit()
+
 
 @when("I update the affects of the flaw and click 'Save Changes' button")
 def step_impl(context):
@@ -458,8 +462,8 @@ def step_impl(context):
     # Click the second affect component dropdown button
     flaw_detail_page.click_button_with_js("affectDropdownBtn")
     # Get the current value of the affect ps_module and affectedness
-    current_module = flaw_detail_page.get_text_value('affects__ps_module')
-    current_affectedness = flaw_detail_page.get_select_value('affects__affectedness')
+    current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
+    current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
     # Get the valid/available values to update
     # 1. Get an available ps_module to be updated
     ps_module = flaw_detail_page.get_an_available_ps_module(current_module)
@@ -483,7 +487,7 @@ def step_impl(context):
     for item in context.value_dict.items():
         field = 'affects__' + item[0]
         if field in ['affects__ps_module', 'affects__ps_component', 'affects__cvss3_score']:
-            flaw_detail_page.set_input_field(field, item[1])
+            flaw_detail_page.set_field_value(field, item[1])
             # This is a background of bug OSIDB-2539
             if field == 'affects__ps_module':
                 flaw_detail_page.click_button_with_js("affectDropdownBtn")
@@ -492,21 +496,40 @@ def step_impl(context):
             flaw_detail_page.set_select_specific_value(field, item[1])
 
     # Update afffect impact
-    updated_value = flaw_detail_page.set_select_value('affects_impact')
+    updated_value = flaw_detail_page.set_select_value_for_affect('affects__impact')
     context.value_dict['impact'] = updated_value
     # Save all the updates
     flaw_detail_page.click_btn('saveBtn')
-    # This step is blocked by OSIDB-2565
     flaw_detail_page.wait_msg('affectSaveMsg')
  
 @then("All changes are saved")
 def step_impl(context):
     # Check the affect updates have been saved
-    # Now this check is blocked by OSIDB-2505
     osidb_token = get_osidb_token()
     flaw_detail_page = FlawDetailPage(context.browser)
     component_value = context.value_dict['ps_component']
     field_value_dict = flaw_detail_page.get_affect_value_from_osidb(
                     context.value_dict.keys(), osidb_token, component_value)
+    # There is a bug OSIDB-2600
+    print("There is a bug OSIDB-2600")
+    print(f"The setted values: {context.value_dict}")
+    print(f"The updated values: {field_value_dict}")
     assert context.value_dict == field_value_dict
+    context.browser.quit()
+
+@when("I add a new affect with valid data")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js('addNewAffectBtn')
+    context.ps_component = flaw_detail_page.set_new_affect_inputs()
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('affectCreatedMsg')
+
+
+@then("The affect is added")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_exist(context.ps_component)
     context.browser.quit()

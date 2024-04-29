@@ -14,12 +14,16 @@ type FilteredIssue = {
   selected: boolean;
 };
 
-type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
+// Temporarily hiding 'Source' column to avoid displaying incorrect information.
+// TODO: unhide it once final issue sources are defined. [OSIDB-2424]
+// type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner'; 
+type ColumnField = 'id' | 'impact' | 'created_dt' | 'title' | 'state' | 'owner';
 
 const props = defineProps<{
   issues: any[];
   isLoading: boolean;
   isFinalPageFetched: boolean;
+  total: number
 }>();
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
@@ -63,7 +67,7 @@ const params = computed(() => {
 const columnsFieldsMap: Record<string, ColumnField> = {
   ID: 'id',
   Impact: 'impact',
-  Source: 'source',
+  // Source: 'source',
   Created: 'created_dt',
   Title: 'title',
   State: 'state',
@@ -102,10 +106,10 @@ function relevantFields(issue: any) {
   return {
     id: issue.cve_id || issue.uuid,
     impact: issue.impact,
-    source: issue.source,
+    // source: issue.source,
     created_dt: issue.created_dt,
     title: issue.title,
-    state: issue.state,
+    workflowState: issue.classification.state,
     unembargo_dt: issue.unembargo_dt,
     embargoed: issue.embargoed,
     owner: issue.owner,
@@ -157,6 +161,11 @@ watch(params, () => {
         <span class="visually-hidden">Loading...</span>
       </span>
       <span v-if="isLoading"> Loading Flaws&hellip; </span>
+      <span
+        v-if="issues.length"
+        class="float-end"
+        :class="{'text-secondary': isLoading}"
+      > Loaded {{ issues.length }} of {{ total }}</span>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
@@ -176,7 +185,6 @@ watch(params, () => {
             <th
               v-for="(field, columnName) in columnsFieldsMap"
               :key="columnName"
-              :class="{ 'osim-issue-queue-table-created': columnName === 'Created' }"
               @click="selectSortField(field)"
             >
               {{ columnName }}
@@ -238,7 +246,7 @@ watch(params, () => {
   div.osim-incident-list {
     display: block;
     max-height: calc(100vh - 164px);
-    overflow-y: scroll;
+    overflow-y: auto;
 
     &:hover::-webkit-scrollbar-thumb {
       background-color: $redhat-red-50;
@@ -254,6 +262,8 @@ watch(params, () => {
   }
 
   table {
+    table-layout: fixed;
+
     &.osim-table-loading {
       opacity: 0.5;
     }
@@ -263,10 +273,73 @@ watch(params, () => {
       user-select: none;
     }
 
+
     tr td,
     tr th {
-      &:not(:first-child) {
-        min-width: 12ch;
+      padding: 1ch;
+
+      &:nth-of-type(1) {
+        // min-width: 1ch;
+        // max-width: 1ch;
+        // min-width: 2.5%;
+        // max-width: 2.5%;
+        width: 2.5%;
+      }
+
+      &:nth-of-type(2) {
+        // min-width: 15ch;
+        // max-width: 15ch;
+        // min-width: 12.5%;
+        // max-width: 12.5%;
+        width: 12.5%;
+      }
+
+      &:nth-of-type(3) {
+        // min-width: 11ch;
+        // max-width: 11ch;
+        // min-width: 8.5%;
+        // max-width: 8.5%;
+        width: 8.5%;
+      }
+
+      &:nth-of-type(4) {
+        // min-width: 12ch;
+        // max-width: 12ch;
+        // min-width: 9.5%;
+        // max-width: 9.5%;
+        width: 9.5%;
+      }
+      
+      &:nth-of-type(5) {
+        // min-width: 12ch;
+        // max-width: 12ch;
+        // min-width: 9.5%;
+        // max-width: 9.5%;
+        width: 9.5%;
+      }
+
+      &:nth-of-type(6) {
+        // min-width: 12ch;
+        // max-width: 12ch;
+        // min-width: 32%;
+        // max-width: 32%;
+        width: 32%;
+      }
+      
+      &:nth-of-type(7) {
+        // min-width: 10ch;
+        // max-width: 10ch;
+        // min-width: 8.5%;
+        // max-width: 8.5%;
+        width: 8.5%;
+      }
+      
+      &:nth-of-type(8) {
+        // min-width: 20ch;
+        // max-width: 20ch;
+        // min-width: 17%;
+        // max-width: 17%;
+        width: 17%;
       }
     }
 

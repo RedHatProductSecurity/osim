@@ -69,10 +69,10 @@ export const FlawReferenceSchema = z.object({
     });
   }
 
-  if (!reference.url.match(/^https:\/\//) ) {
+  if (!reference.url.match(/^(?:https?:\/\/)/) ) {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'Reference URL must begin with https://',
+      message: 'Reference URL must begin with either https:// or http://',
       path: ['url'],
     });
   }
@@ -111,9 +111,9 @@ export const FlawCVSSSchema = z.object({
 });
 
 export const AffectCVSSSchema = z.object({
-  affect: z.string().uuid(),
-  comment: z.string().nullable(),
-  cvss_version: z.string(),
+  affect: z.string().uuid().nullish(),
+  // comment: z.string().nullable(),
+  // cvss_version: z.string(),
   issuer: z.nativeEnum(IssuerEnum),
   score: z.number(), // $float
   uuid: z.string().uuid().nullish(), // read-only

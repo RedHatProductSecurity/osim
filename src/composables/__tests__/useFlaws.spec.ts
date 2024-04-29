@@ -37,19 +37,19 @@ describe('useFlaws', () => {
       data: 
       { 
         results: mockIusses.slice(0,20), 
-        total: 30,
+        count: 30,
         next: 'https://osidb-stage.prodsec.redhat.com/osidb/api/v1/flaws?offset=20',
       }, 
     }).mockResolvedValueOnce({
       data: 
       { 
         results: mockIusses.slice(20),
-        total: 30,
+        count: 30,
         next: null
       },
     });
 
-    const { loadFlaws, loadMoreFlaws, issues, isLoading } = useFlaws();
+    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlaws();
 
     loadFlaws();
     await flushPromises();
@@ -60,18 +60,19 @@ describe('useFlaws', () => {
     expect(getFlaws).toHaveBeenCalledTimes(2);
     expect(isLoading.value).toBe(false);
     expect(issues.value.length).toBe(mockIusses.length); 
+    expect(total.value).toBe(30);
   });
 
   it('should not loading more flaws', async () => {
     vi.mocked(getFlaws).mockResolvedValueOnce({
       data: { 
         results: mockIusses.slice(0,10), 
-        total: 10,
+        count: 10,
         next: null
       },
     });
 
-    const { loadFlaws, loadMoreFlaws, issues, isLoading } = useFlaws();
+    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlaws();
 
     loadFlaws();
     await flushPromises();
@@ -82,6 +83,7 @@ describe('useFlaws', () => {
     expect(getFlaws).toHaveBeenCalledTimes(1);
     expect(isLoading.value).toBe(false);
     expect(issues.value.length).toBe(10); 
+    expect(total.value).toBe(10);
   });
 
 });
