@@ -256,9 +256,7 @@ const onReset = () => {
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
           />
-          <!-- <LabelEditable v-model="flaw.owner" label="Asignee" type="text" class="mb-0" style="margin-bottom: 0;" /> -->
           <FlawFormAssignee v-model="flaw.owner" />
-          <!-- <button type="button" class="btn btn-primary">Self-Assign</button> -->
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>

@@ -30,13 +30,20 @@ const isAssignedToMe = computed(() => owner.value === userStore.userName);
         type="text"
       >
         <template v-if="!isAssignedToMe" #buttons-out-of-editing-mode="{ onBlur }">
-          <button type="button" class="btn btn-primary" @click.prevent.stop="handleClick(onBlur)">Self Assign</button>
+          <button
+            type="button"
+            class="btn btn-primary osim-self-assign"
+            @click.prevent.stop="handleClick(onBlur)"
+          >Self Assign</button>
         </template>
         <template v-if="!isAssignedToMe" #buttons-in-editing-mode="{ onBlur }">
-          <button type="button" class="btn btn-primary" @click.prevent.stop="handleClick(onBlur)">Self Assign</button>
+          <button
+            type="button"
+            class="btn btn-primary osim-self-assign"
+            @click.prevent.stop="handleClick(onBlur)"
+          >Self Assign</button>
         </template>
       </EditableText>  
-
     </div>
   </label>
 </template>
