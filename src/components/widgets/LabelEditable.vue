@@ -28,23 +28,15 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
         <slot name="label">
           {{ label }}
         </slot>
-        <!--<br />-->
-        <!--<br/>-->
       </span>
-      <!-- https://github.com/vuejs/language-tools/issues/3138 -->
       <component
         :is="components[type as keyof typeof components] as any"
         v-model="modelValue"
         v-bind="$attrs"
       />
-      <!--class="form-control"-->
-      <!--v-bind="$attrs"-->
-      <!--:value="modelValue"-->
-      <!--@update="doupdate"-->
       <span v-if="!(type in components)" class="alert alert-danger d-block" role="alert">
         OSIM BUG: Incorrect LabelEditable type
       </span>
-    <!--<pre>labelEditable value: {{$attrs.modelValue}}</pre>-->
     </div>
   </label>
 

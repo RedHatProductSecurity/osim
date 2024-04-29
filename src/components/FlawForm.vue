@@ -12,7 +12,7 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldState from './IssueFieldState.vue';
-
+import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
@@ -256,7 +256,9 @@ const onReset = () => {
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
           />
-          <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
+          <!-- <LabelEditable v-model="flaw.owner" label="Asignee" type="text" class="mb-0" style="margin-bottom: 0;" /> -->
+          <FlawFormAssignee v-model="flaw.owner" />
+          <!-- <button type="button" class="btn btn-primary">Self-Assign</button> -->
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>

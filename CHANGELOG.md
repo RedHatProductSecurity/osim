@@ -1,5 +1,13 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Self-Assign button for Flaws
+
+### Fixed
+* The session is now shared across tabs
+
+
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
 ### Added
