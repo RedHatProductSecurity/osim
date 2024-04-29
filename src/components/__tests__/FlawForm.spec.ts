@@ -7,7 +7,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import IssueFieldStatus from '@/components/IssueFieldStatus.vue';
+import IssueFieldState from '@/components/IssueFieldState.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
@@ -155,10 +155,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
 
-    const statusField = subject
+    const workflowStateField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'Status');
-    expect(statusField?.exists()).toBe(true);
+      .find((component) => component.props().label === 'State');
+    expect(workflowStateField?.exists()).toBe(true);
 
     const incidentStateField = subject
       .findAllComponents(LabelSelect)
@@ -304,25 +304,25 @@ describe('FlawForm', () => {
     expect(assigneeField?.html()).toContain('test owner');
   });
 
-  it('displays correct Status field value from props', async () => {
-    const statusField = subject.findComponent(IssueFieldStatus);
+  it('displays correct State field value from props', async () => {
+    const workflowStateField = subject.findComponent(IssueFieldState);
 
-    expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
-    expect(statusField?.props().classification.state).toBe('NEW');
+    expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
+    expect(workflowStateField?.props().classification.state).toBe('NEW');
   });
 
-  it('displays promote and reject buttons for status', async () => {
-    const statusField = subject
-      .findAllComponents(IssueFieldStatus)
-      .find((component) => component.text().includes('Status'));
+  it('displays promote and reject buttons for state', async () => {
+    const workflowStateField = subject
+      .findAllComponents(IssueFieldState)
+      .find((component) => component.text().includes('State'));
     expect(
-      statusField
+      workflowStateField
         ?.findAll('button')
         ?.find((el) => el.text() === 'Reject')
         ?.text(),
     ).toBe('Reject');
     expect(
-      statusField
+      workflowStateField
         ?.findAll('button')
         ?.find((el) => el.text().includes('Promote to'))
         ?.text(),
@@ -330,10 +330,10 @@ describe('FlawForm', () => {
   });
 
   it('shows a modal for reject button clicks', async () => {
-    const statusField = subject
-      .findAllComponents(IssueFieldStatus)
-      .find((component) => component.text().includes('Status'));
-    const rejectButton = statusField?.findAll('button')?.find((el) => el.text() === 'Reject');
+    const workflowStateField = subject
+      .findAllComponents(IssueFieldState)
+      .find((component) => component.text().includes('State'));
+    const rejectButton = workflowStateField?.findAll('button')?.find((el) => el.text() === 'Reject');
     await rejectButton?.trigger('click');
     expect(subject.find('.modal-dialog').exists()).toBe(true);
   });

@@ -15,15 +15,15 @@ const emit = defineEmits<{ 'refresh:flaw': [] }>();
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
 
-const workflowStatuses = ZodFlawClassification.shape.state.enum;
+const workflowStates = ZodFlawClassification.shape.state.enum;
 
-type WorkflowPhases = (typeof workflowStatuses)[keyof typeof workflowStatuses];
+type WorkflowPhases = (typeof workflowStates)[keyof typeof workflowStates];
 
-const DONE_STATUS = workflowStatuses.Done as string;
-const REJECTED_STATUS = workflowStatuses.Rejected as string;
+const DONE_STATE = workflowStates.Done as string;
+const REJECTED_STATE = workflowStates.Rejected as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATUS, REJECTED_STATUS].includes(props.classification.state),
+  () => ![DONE_STATE, REJECTED_STATE].includes(props.classification.state),
 );
 
 function openModal() {
@@ -43,16 +43,16 @@ function onPromote(flawId: string) {
   promoteFlaw(flawId).then(() => emit('refresh:flaw'));
 }
 
-function nextPhase(flawStatus: WorkflowPhases) {
-  const [labels, phases] = [Object.keys(workflowStatuses), Object.values(workflowStatuses)];
-  const index = phases.indexOf(flawStatus);
+function nextPhase(workflowState: WorkflowPhases) {
+  const [labels, phases] = [Object.keys(workflowStates), Object.values(workflowStates)];
+  const index = phases.indexOf(workflowState);
   return labels[index + 1] || labels.slice(-1)[0];
 }
 </script>
 
 <template>
-  <div class="osim-workflow-status-container mb-3">
-    <LabelDiv label="Status" type="text" class="osim-workflow-status-display">
+  <div class="osim-workflow-state-container mb-3">
+    <LabelDiv label="State" type="text" class="osim-workflow-state-display">
       <span class="form-control">{{ classification.state }}</span>
       <Modal :show="shouldShowRejectionModal" @close="closeModal">
         <template #title> Reject Flaw </template>
@@ -73,7 +73,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
     <div class="row">
       <div class="col-lg-3 col-md-1"></div>
       <div class="col-lg-9 col-md-11">
-        <div v-if="shouldShowWorkflowButtons" class="osim-workflow-status-buttons mb-3">
+        <div v-if="shouldShowWorkflowButtons" class="osim-workflow-state-buttons mb-3">
           <button
             type="button"
             class="btn btn-warning ms-2 osim-workflow-button"
@@ -96,7 +96,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
 </template>
 
 <style lang="scss" scoped>
-.osim-workflow-status-container {
+.osim-workflow-state-container {
   button.osim-workflow-button {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -106,7 +106,7 @@ function nextPhase(flawStatus: WorkflowPhases) {
     display: block;
   }
 
-  .osim-workflow-status-display {
+  .osim-workflow-state-display {
     margin-bottom: 0 !important;
   }
 }
