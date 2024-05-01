@@ -1,13 +1,13 @@
 import random
-from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.relative_locator import locate_with
 
 from features.page_factory_utils import find_elements_in_page_factory
+from features.pages.base import BasePage
 
 
-class HomePage(PageFactory):
+class HomePage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver
@@ -46,10 +46,6 @@ class HomePage(PageFactory):
         "stateBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'State')]"),
         "ownerBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Owner')]")
     }
-
-    def click_flaw_index_btn(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.flawIndexBtn)
-        self.driver.execute_script("arguments[0].click();", self.flawIndexBtn)
 
     def logout(self):
         self.userBtn.click_button()
@@ -107,19 +103,10 @@ class HomePage(PageFactory):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
         field_input.set_text(value)
 
-    def click_btn(self, btn_element):
-        element = getattr(self, btn_element)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        element.click_button()
-
     def clear_box(self, field):
         field_input = getattr(self, field + 'Box')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
-
-    def wait_msg(self, msg_element):
-        element = getattr(self, msg_element)
-        element.visibility_of_element_located()
 
     def select_bulk_flaws(self, length=1):
         self.firstFlaw.visibility_of_element_located()

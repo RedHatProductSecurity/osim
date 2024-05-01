@@ -1,9 +1,10 @@
-from seleniumpagefactory.Pagefactory import PageFactory
 from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.common.by import By
 
+from features.pages.base import BasePage
 
-class SettingsPage(PageFactory):
+
+class SettingsPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver

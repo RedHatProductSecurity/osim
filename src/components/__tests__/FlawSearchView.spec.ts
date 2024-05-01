@@ -67,6 +67,7 @@ vi.mock('../../composables/useFlaws',  () => ({
     issues: [],
     isLoading: false,
     isFinalPageFetched: false,
+    total:0,
     loadFlaws: vi.fn(),
     loadMoreFlaws: vi.fn(),
   })),
@@ -81,6 +82,7 @@ describe('FlawSearchView', () => {
       issues: [],
       isLoading: false,
       isFinalPageFetched: false,
+      total:0,
       loadFlaws: vi.fn(),
       loadMoreFlaws: vi.fn(),
     });

@@ -30,6 +30,7 @@ const nameForOption = (fieldName: string) => {
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     team_id: 'Team ID',
+    source: 'CVE Source',
   };
   let name =
     mappings[fieldName] ||

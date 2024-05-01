@@ -5,7 +5,9 @@ import { useFlaws }  from '../composables/useFlaws';
 import { useSearchStore } from '@/stores/SearchStore';
 
 const searchStore = useSearchStore();
-const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
+
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
+
 const tableFilters = ref<Record<string, string>>({});
 
 const showFilter = computed(() => 
@@ -39,7 +41,6 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
   };
 }
 
-
 </script>
 
 <template>
@@ -48,6 +49,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
       v-model:isDefaultFilterSelected="isDefaultFilterSelected"
       :issues="issues"
       :isLoading="isLoading"
+      :total="total"
       :isFinalPageFetched="isFinalPageFetched"
       :showFilter="showFilter"
       @flaws:fetch="setTableFilters"

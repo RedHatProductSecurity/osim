@@ -78,6 +78,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -102,6 +103,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -133,6 +135,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -164,6 +167,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
+        total:10,
       },
       global: {
         plugins: [pinia, router],
@@ -185,6 +189,74 @@ describe('IssueQueue', () => {
     expect(fetchEvents[1][0]._value).toEqual({ 
       order: '-impact',
     });
+  });
+
+  it('shouldn\'t render total count when no issues', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end');
+    expect(countEL.exists()).toBeFalsy();
+  });
+
+  it('should render total count', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(50).fill(mockData[0]),
+        isLoading: false,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end');
+    expect(countEL.exists()).toBeTruthy();
+    expect(countEL.text()).toBe('Loaded 50 of 100');
+  });
+
+  it('should render total count when loading', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: new Array(25).fill(mockData[0]),
+        isLoading: true,
+        isFinalPageFetched: false,
+        total: 100
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const filterEl = wrapper.find('div.osim-incident-filter');
+    expect(filterEl.exists()).toBeTruthy();
+    const countEL = filterEl.find('span.float-end.text-secondary');
+    expect(countEL.exists()).toBeTruthy();
+    expect(countEL.text()).toBe('Loaded 25 of 100');
   });
 
   it('shouldn\'t render useDefault filter button', async () => {

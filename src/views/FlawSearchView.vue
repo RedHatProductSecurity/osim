@@ -7,10 +7,12 @@ import { useSearchParams } from '@/composables/useSearchParams';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
+const { getSearchParams, facets } = useSearchParams();
+
+const filters = ref<Record<string, string>>({});
 const searchStore = useSearchStore();
 const { addToast } = useToastStore();
-const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
-const { getSearchParams, facets } = useSearchParams();
 const tableFilters = ref<Record<string, string>>({});
 
 defineEmits<{
@@ -69,11 +71,11 @@ function saveFilter() {
         @filter:save="saveFilter"
       />
     </div>
-    <!-- <IssueSearch :query="query" /> -->
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
       :isFinalPageFetched="isFinalPageFetched"
+      :total="total"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />

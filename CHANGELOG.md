@@ -16,7 +16,11 @@
 * Provided save operation indications
 * Implemented read-only mode (network requests involving write operations are disabled)
 * Disables form on save
+* Links on references are now displayed as urls
 * Implemented Advanced Search Query to URL
+* `Source` column hidden on flaw lists
+* `Source` field renamed to `CVE Source` on flaw form and advanced search
+* Added Total count for IndexView and AdvancedSearch Page
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -40,6 +44,7 @@
 * Fixed duplicated search option on `AdvancedSearch` page
 * Fixed redirect `Flaws` link on `Flaw` edit page when `Flaw` is not found.
 * Fixed Scroll bar on `Flaws` list
+* Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 
 
 ## [2024.1.0]
