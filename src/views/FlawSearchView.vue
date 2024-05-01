@@ -4,11 +4,13 @@ import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlaws } from '@/composables/useFlaws';
 import { useSearchParams } from '@/composables/useSearchParams';
+import { useSearchStore } from '@/stores/SearchStore';
+import { useToastStore } from '@/stores/ToastStore';
 
+const searchStore = useSearchStore();
+const { addToast } = useToastStore();
 const { issues, isLoading, isFinalPageFetched, loadFlaws, loadMoreFlaws } = useFlaws();
-const { getSearchParams } = useSearchParams();
-
-const filters = ref<Record<string, string>>({});
+const { getSearchParams, facets } = useSearchParams();
 const tableFilters = ref<Record<string, string>>({});
 
 defineEmits<{
@@ -17,7 +19,6 @@ defineEmits<{
 
 const params = computed(() => {
   const paramsObj = {
-    ...filters.value,
     ...tableFilters.value,
     ...getSearchParams()
   };
@@ -41,6 +42,23 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
   };
 }
 
+function saveFilter() {
+  const filters = facets.value.reduce(
+    (fields, { field, value }) => {
+      if (field && value) {
+        fields[field] = value;
+      }
+      return fields;
+    },
+      {} as Record<string, string>,
+  );
+  searchStore.saveFilter(filters); 
+  addToast({
+    title: 'Default Filter',
+    body: 'User\'s default filter saved',
+  });
+}
+
 </script>
 
 <template>
@@ -48,6 +66,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
     <div class="container">
       <IssueSearchAdvanced 
         :isLoading="isLoading"
+        @filter:save="saveFilter"
       />
     </div>
     <!-- <IssueSearch :query="query" /> -->

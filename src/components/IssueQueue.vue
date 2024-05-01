@@ -20,7 +20,10 @@ const props = defineProps<{
   issues: any[];
   isLoading: boolean;
   isFinalPageFetched: boolean;
+  showFilter?: boolean
 }>();
+
+const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
 const selectedSortField = ref<ColumnField>('created_dt');
@@ -148,6 +151,12 @@ watch(params, () => {
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
+      <LabelCheckbox
+        v-if="showFilter"
+        v-model="isDefaultFilterSelected"
+        label="Default Filters"
+        class="d-inline-block"
+      />
 
       <span
         v-if="isLoading"

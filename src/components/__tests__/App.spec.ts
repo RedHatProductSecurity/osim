@@ -23,6 +23,11 @@ describe('App', async () => {
               },
             },
           },
+          SearchStore: {
+            value: defaults || {
+              searchFilters: { 'test':'test' }
+            }
+          }
         }[key];
       }),
       useElementBounding: vi.fn(() => ({
