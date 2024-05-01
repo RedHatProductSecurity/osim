@@ -10,7 +10,6 @@ import { useToastStore } from '@/stores/ToastStore';
 const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
 const { getSearchParams, facets } = useSearchParams();
 
-const filters = ref<Record<string, string>>({});
 const searchStore = useSearchStore();
 const { addToast } = useToastStore();
 const tableFilters = ref<Record<string, string>>({});

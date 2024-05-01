@@ -89,7 +89,7 @@ describe('IndexView', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('should call Load on mounted with default filters', async () => {
+  it('should call Load on mounted with default filter', async () => {
     await flushPromises();
     expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
     expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({

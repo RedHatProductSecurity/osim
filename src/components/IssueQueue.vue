@@ -158,7 +158,7 @@ watch(params, () => {
       <LabelCheckbox
         v-if="showFilter"
         v-model="isDefaultFilterSelected"
-        label="Default Filters"
+        label="Default Filter"
         class="d-inline-block"
       />
 
