@@ -310,15 +310,15 @@ watch(params, () => {
         width: 9.5%;
       }
       
-      &:nth-of-type(5) {
-        // min-width: 12ch;
-        // max-width: 12ch;
-        // min-width: 9.5%;
-        // max-width: 9.5%;
-        width: 9.5%;
-      }
+      //&:nth-of-type(5) {
+      //  // min-width: 12ch;
+      //  // max-width: 12ch;
+      //  // min-width: 9.5%;
+      //  // max-width: 9.5%;
+      //  width: 9.5%;
+      //}
 
-      &:nth-of-type(6) {
+      &:nth-of-type(5) {
         // min-width: 12ch;
         // max-width: 12ch;
         // min-width: 32%;
@@ -326,7 +326,7 @@ watch(params, () => {
         width: 32%;
       }
       
-      &:nth-of-type(7) {
+      &:nth-of-type(6) {
         // min-width: 10ch;
         // max-width: 10ch;
         // min-width: 8.5%;
