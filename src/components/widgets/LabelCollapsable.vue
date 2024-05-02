@@ -33,7 +33,7 @@ function handleClick() {
     <button
       :disabled="!isExpandable"
       type="button"
-      class="me-2"
+      class="me-2 osim-collapsible-toggle"
       :class="{ 'pe-none': !isExpandable }"
       @click="handleClick"
     >
