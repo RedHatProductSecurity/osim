@@ -1,7 +1,7 @@
 import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch } from 'vue';
 import * as R from 'ramda';
 
-export function vRef(prop: Record<string, any>, property: string, defaultValue: any) {
+export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
   const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
   watch(reffedProp, (value) => flexRef.value = value);

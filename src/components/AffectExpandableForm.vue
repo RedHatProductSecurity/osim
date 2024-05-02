@@ -9,7 +9,7 @@ import { useAffectTracker } from '@/composables/useAffectTracker';
 import type { TrackersPost } from '@/services/TrackerService';
 
 const props = defineProps<{
-  error: Record<string, any>;
+  error: Record<string, any> | null;
   isExpanded: boolean;
   componentName: string;
   affectedComponent: ZodAffectType;
@@ -51,22 +51,28 @@ function handleTrackAffect(stream: string) {
   } as TrackersPost);
 }
 
-function componentLabel(affectedComponent: ZodAffectType) {
-  return affectedComponent.uuid
-    ? `(${affectedComponent.trackers?.length || 0} trackers)`
-    : '(unsaved in OSIDB)';
-}
+const isAffectNew =  computed (() => !modelValue.value.uuid);
+
+const trackersCount =  computed(
+  () => `${modelValue.value.trackers?.length || 0} trackers`
+);
 </script>
 
 <template>
-  <LabelCollapsable :is-expanded="isExpanded" class="mt-2">
+  <LabelCollapsable :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
     <template #label>
-      <label class="ms-2 form-label">
-        {{ `${componentName} ${componentLabel(affectedComponent)}` }}
+      <label class="mx-2 form-label">
+        {{ `${componentName}` }}
       </label>
+      <span v-if="isAffectNew" class="badge bg-warning text-black">
+        Not Saved in OSIDB
+      </span>
+      <span v-else class="badge bg-info ">
+        {{ `${trackersCount}` }}
+      </span>
     </template>
     <template #buttons>
-      <div class="btn-group ms-2" role="group" aria-label="Tracker Actions">
+      <div class="btn-group" role="group" aria-label="Tracker Actions">
         <button
           v-if="updateStreamNames.length === 0"
           type="button"

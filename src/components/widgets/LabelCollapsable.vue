@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { vRef } from '@/utils/helpers';
+import { watchedPropRef } from '@/utils/helpers';
 
 const props = withDefaults(
   defineProps<{
@@ -14,7 +14,7 @@ const props = withDefaults(
   },
 );
 
-const isExpanded = vRef(props, 'isExpanded', false);
+const isExpanded = watchedPropRef(props, 'isExpanded', false);
 
 const emit = defineEmits<{
   setExpanded: [value: boolean];

@@ -350,9 +350,9 @@ const onReset = () => {
         </LabelCollapsable>
       </div>
       <AffectedOfferings
+        v-if="mode === 'edit'"
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
-        :mode="mode"
         class="osim-flaw-form-section"
         :error="errors.affects"
         @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"

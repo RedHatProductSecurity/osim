@@ -4,7 +4,7 @@ import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
 
 defineProps<{
-  error: Record<string, any>;
+  error: Record<string, any>[] | null;
 }>();
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
@@ -45,13 +45,13 @@ function handleDelete(uuid: string, closeModal: () => void) {
             <LabelInput
               v-model="items[itemIndex].name"
               label="Name"
-              :error="error[itemIndex].name"
+              :error="error?.[itemIndex].name"
               type="text"
             />
             <LabelInput
               v-model="items[itemIndex].affiliation"
               label="Affiliation"
-              :error="error[itemIndex].affiliation"
+              :error="error?.[itemIndex].affiliation"
               type="text"
             />
           </div>
@@ -64,13 +64,13 @@ function handleDelete(uuid: string, closeModal: () => void) {
             <LabelInput
               v-model="items[itemIndex].name"
               label="Name"
-              :error="error[itemIndex].name"
+              :error="error?.[itemIndex].name"
               type="text"
             />
             <LabelInput
               v-model="items[itemIndex].affiliation"
               label="Affiliation"
-              :error="error[itemIndex].affiliation"
+              :error="error?.[itemIndex].affiliation"
               type="text"
             />
           </div>
