@@ -84,11 +84,12 @@ OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
 OSIM_BACKENDS_JIRA="http://jira-service:8002"
 OSIM_BACKENDS_ERRATA="http://errata-service:8003"
 OSIM_NGINX_PROXY_JIRA=
+OSIM_NGINX_PROXY_CA=
 ```
 
 * `OSIM_NGINX_PROXY_JIRA`: If set, creates a /proxy/jira/ endpoint in the OSIM
   server, to simplify CORS configuration. `OSIM_BACKENDS_JIRA` should be updated
-  to point to OSIM's proxy.
+  to point to OSIM's proxy. It might be required to also add the `OSIM_NGINX_PROXY_CA` with the certificate's endpoint for the proxy authorization.
 
 ## Local Configuration
 
