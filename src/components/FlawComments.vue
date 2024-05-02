@@ -81,19 +81,33 @@ function linkify(text: string) {
 
 <template>
   <section class="osim-comments">
-    <h4 class="mb-2">Comments</h4>
-    <header class="nav">
-      <span
-        v-for="filter in filters"
-        :key="filter"
-        type="button"
-        class="osim-comment-filter me-3"
-        @click="selectedFilters[filter] = !selectedFilters[filter]"
-      >
-        <p class="visually-hidden">Comment Filter for toggling {{ filter }} comments</p>
-        <div class="form-check form-switch">
-          <input type="checkbox" class="form-check-input" :checked="selectedFilters[filter]" />
-          {{ filter }}
+    <h4 class="mb-4">Comments</h4>
+    <!--<button type="button" @click="aux">jiraTest</button> -->
+    <Tabs
+      :labels="tabLabels"
+      :default="0"
+      @tab-change="handleTabChange"
+    >
+      <template #header-actions>
+        <div class="tab-actions">
+          <button
+            v-if="(!isAddingNewComment && selectedTab !== 2) && (isAvailable() || selectedTab !== 1)"
+            type="button"
+            class="btn btn-secondary tab-btn"
+            :disabled="isSaving"
+            @click="isAddingNewComment = true"
+          >
+            Add {{ tabLabels[selectedTab].slice(0, -1) }}
+          </button>
+          <a
+            v-if="(selectedTab === 1 && isAvailable())"
+            :href="taskUrl(taskKey ?? '#')"
+            target="_blank"
+            class="btn btn-secondary tab-btn"
+            :disabled="isSaving"
+          >
+            View on Jira
+          </a>
         </div>
       </span>
     </header>
