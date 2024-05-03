@@ -16,19 +16,15 @@ import { useWindowSize } from '@vueuse/core';
 const { width: screenWidth } = useWindowSize();
 
 defineProps<{
-  error: Record<string, any>;
+  error: Record<string, any> | null;
 }>();
 
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
-const emit = defineEmits<{
-  'update:modelValue': [value: ZodAffectType];
-  'affect:remove': [value: ZodAffectType];
-}>();
 
 const affectCvssScore = ref(
-  modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.score || '',
+  modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.vector || '',
 );
 
 const hasTrackers = computed(() => 
@@ -43,60 +39,48 @@ const hasTrackers = computed(() =>
     <div class="col-6">
       <LabelEditable
         v-model="modelValue.ps_module"
-        :error="error.ps_module"
+        :error="error?.ps_module"
         type="text"
         label="Affected Module"
       />
       <LabelEditable
         v-model="modelValue.ps_component"
-        :error="error.ps_component"
+        :error="error?.ps_component"
         type="text"
         label="Affected Component"
       />
       <!--Hiding the Type field until we have more options to choose from-->
       <LabelSelect
         v-model="modelValue.type"
-        :error="error.type"
+        :error="error?.type"
         class="col-6 visually-hidden"
         label="Type"
         :options="affectTypes"
       />
       <LabelSelect
         v-model="modelValue.affectedness"
-        :error="error.affectedness"
+        :error="error?.affectedness"
         label="Affectedness"
         :options="affectAffectedness"
       />
       <LabelSelect
         v-model="modelValue.resolution"
-        :error="error.resolution"
+        :error="error?.resolution"
         label="Resolution"
         :options="affectResolutions"
       />
       <LabelSelect
         v-model="modelValue.impact"
-        :error="error.impact"
+        :error="error?.impact"
         label="Impact"
         :options="affectImpacts"
       />
       <LabelEditable
         v-model="affectCvssScore"
-        :error="error.cvss_scores"
+        :error="error?.cvss_scores?.vector || null"
         type="text"
         label="CVSSv3"
       />
-      <div class="row">
-        <div class="col ps-0 mb-4">
-          <button
-            v-if="!modelValue.uuid"
-            type="button"
-            class="osim-affected-offering-remove btn btn-secondary"
-            @click="emit('affect:remove', modelValue)"
-          >
-            Remove This Affect
-          </button>
-        </div>
-      </div>
     </div>
     <div class="col-6 p-0">
       <div class="bg-dark rounded-top-2 text-info">

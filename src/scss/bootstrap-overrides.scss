@@ -30,6 +30,8 @@ $danger: $redhat-danger-50;
 $success: $redhat-success-40;
 $black: $redhat-gray-95;
 $info: $redhat-teal-40;
+$light-teal: $redhat-teal-10;
+$light-info: $redhat-teal-10;
 $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
 $blue: $redhat-blue-40;
@@ -52,6 +54,8 @@ $theme-colors: (
   'light-green': $light-green,
   'light-yellow': $light-yellow,
   'light-orange': $light-orange,
+  'light-info': $light-info,
+  'light-teal': $light-teal,
   'primary': $primary,
   'secondary': $secondary,
   'info': $info,

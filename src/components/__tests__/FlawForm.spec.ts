@@ -13,7 +13,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
-import LabelCollapsable from '../widgets/LabelCollapsable.vue';
+import LabelCollapsible from '../widgets/LabelCollapsible.vue';
 import LabelTextarea from '../widgets/LabelTextarea.vue';
 import CvssCalculator from '../CvssCalculator.vue';
 import FlawFormAssignee from '../FlawFormAssignee.vue';
@@ -190,7 +190,7 @@ describe('FlawForm', () => {
     expect(assigneeField?.exists()).toBe(true);
 
     const trackers = subject
-      .findAllComponents(LabelCollapsable)
+      .findAllComponents(LabelCollapsible)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers?.exists()).toBe(true);
 
@@ -275,7 +275,7 @@ describe('FlawForm', () => {
     expect(embargoedField?.exists()).toBe(true);
 
     const trackers = subject
-      .findAllComponents(LabelCollapsable)
+      .findAllComponents(LabelCollapsible)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers).toBe(undefined);
 

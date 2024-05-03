@@ -31,6 +31,10 @@
 * Added Total count for IndexView and AdvancedSearch Page
 * Add Default Filter on IndexView Page
 * Cvss vector and score fields converted to static (only editable through calculator)
+* Changed affect form
+  * Removed modified/unsaved affects section
+  * Added UI indications for unsaved affects
+  * Improved recovery/deletion UI
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
