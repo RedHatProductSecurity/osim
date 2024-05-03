@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 import { computed, toRef } from 'vue';
 
@@ -67,7 +68,7 @@ const trackersCount =  computed(
       <span v-if="isAffectNew" class="badge bg-warning text-black">
         Not Saved in OSIDB
       </span>
-      <span v-else class="badge bg-info ">
+      <span v-else class="badge bg-light-info text-dark border border-info">
         {{ `${trackersCount}` }}
       </span>
     </template>
