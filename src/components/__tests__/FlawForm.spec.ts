@@ -16,6 +16,7 @@ import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelCollapsable from '../widgets/LabelCollapsable.vue';
 import LabelTextarea from '../widgets/LabelTextarea.vue';
 import CvssCalculator from '../CvssCalculator.vue';
+import FlawFormAssignee from '../FlawFormAssignee.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -185,9 +186,7 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
+    const assigneeField = subject.findComponent(FlawFormAssignee);
     expect(assigneeField?.exists()).toBe(true);
 
     const trackers = subject
@@ -275,11 +274,6 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
-    expect(assigneeField?.exists()).toBe(true);
-
     const trackers = subject
       .findAllComponents(LabelCollapsable)
       .find((component) => component.props().label.startsWith('Trackers'));
@@ -296,9 +290,7 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
     mountWithProps({ flaw, mode: 'edit' });
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
+    const assigneeField = subject.findComponent(FlawFormAssignee);
     expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
     expect(assigneeField?.props().modelValue).toBe('test owner');
     expect(assigneeField?.html()).toContain('test owner');
@@ -306,7 +298,6 @@ describe('FlawForm', () => {
 
   it('displays correct State field value from props', async () => {
     const workflowStateField = subject.findComponent(IssueFieldState);
-
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
     expect(workflowStateField?.props().classification.state).toBe('NEW');
   });

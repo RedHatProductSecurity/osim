@@ -47,7 +47,7 @@ function abort() {
   editedModelValue.value = props.modelValue;
   console.log('abort');
 }
-function blur(e: FocusEvent | null) {
+function onBlur(e: FocusEvent | null) {
   if (e == null || e.currentTarget == null) {
     commit();
     return;
@@ -108,13 +108,14 @@ function blur(e: FocusEvent | null) {
           tabindex="-1"
           @click="beginEdit"
         ><i class="bi bi-pencil"></i></button>
+        <slot name="buttons-out-of-editing-mode" v-bind="{ commit, onBlur }"></slot>
       </div>
     </Transition>
     <div
       v-show="editing"
       ref="elDiv"
       class="input-group"
-      @blur="blur($event)"
+      @blur="onBlur($event)"
     >
       <input
         ref="elInput"
@@ -123,7 +124,7 @@ function blur(e: FocusEvent | null) {
         :class="{'is-invalid': error != null}"
         type="text"
         :placeholder="placeholder"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
         @keyup.esc="abort"
       />
       <button
@@ -131,15 +132,16 @@ function blur(e: FocusEvent | null) {
         class="input-group-text"
         tabindex="-1"
         @click="commit"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
       ><i class="bi bi-check"></i></button>
       <button
         type="button"
         class="input-group-text"
         tabindex="-1"
         @click="abort"
-        @blur="blur($event)"
+        @blur="onBlur($event)"
       ><i class="bi bi-x"></i></button>
+      <slot name="buttons-in-editing-mode" v-bind="{ commit, onBlur }"></slot>
     </div>
     <div
       v-if="!readOnly && error"
