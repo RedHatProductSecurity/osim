@@ -11,7 +11,7 @@ import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
-import IssueFieldStatus from './IssueFieldStatus.vue';
+import IssueFieldState from './IssueFieldState.vue';
 
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
@@ -219,7 +219,7 @@ const onReset = () => {
         </div>
 
         <div class="col-6">
-          <IssueFieldStatus
+          <IssueFieldState
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"
