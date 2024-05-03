@@ -4,7 +4,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
 
-import LabelCollapsable from './LabelCollapsable.vue';
+import LabelCollapsible from './LabelCollapsible.vue';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
@@ -63,7 +63,7 @@ function commitEdit(index: number) {
 
 <template>
   <div>
-    <LabelCollapsable
+    <LabelCollapsible
       :label="`${entityNamePlural}: ${items.length}`"
       :isExpandable="items.length > 0"
       :isExpanded="isExpanded"
@@ -167,7 +167,7 @@ function commitEdit(index: number) {
           </template>
         </Modal>
       </div>
-    </LabelCollapsable>
+    </LabelCollapsible>
     <form>
       <button
         type="button"

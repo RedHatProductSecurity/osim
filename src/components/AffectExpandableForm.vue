@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue';
 
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferingForm from './AffectedOfferingForm.vue';
 import { type ZodAffectType } from '@/types/zodFlaw';
 import { useAffectTracker } from '@/composables/useAffectTracker';
@@ -59,7 +59,7 @@ const trackersCount =  computed(
 </script>
 
 <template>
-  <LabelCollapsable :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
+  <LabelCollapsible :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
     <template #label>
       <label class="mx-2 form-label">
         {{ `${componentName}` }}
@@ -114,7 +114,7 @@ const trackersCount =  computed(
       </div>
     </template>
     <AffectedOfferingForm v-model="modelValue" :error="error" />
-  </LabelCollapsable>
+  </LabelCollapsible>
 </template>
 
 <style scoped lang="scss">

@@ -29,7 +29,7 @@ function handleClick() {
 </script>
 
 <template>
-  <div class="osim-collapsable-label" v-bind="$attrs">
+  <div class="osim-collapsible-label" v-bind="$attrs">
     <button
       :disabled="!isExpandable"
       type="button"
@@ -55,18 +55,18 @@ function handleClick() {
 </template>
 
 <style scoped>
-.osim-collapsable-label button {
+.osim-collapsible-label button {
   border: none;
   padding: 0;
   background: transparent;
 }
 
-.osim-collapsable-label button * {
+.osim-collapsible-label button * {
   cursor: pointer;
 }
 
-.osim-collapsable-label :deep(div.osim-static-label),
-.osim-collapsable-label :deep(.osim-input) {
+.osim-collapsible-label :deep(div.osim-static-label),
+.osim-collapsible-label :deep(.osim-input) {
   padding-left: 0 !important;
   border-left: none !important;
   margin-left: 0 !important;

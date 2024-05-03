@@ -7,7 +7,8 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
@@ -335,7 +336,7 @@ const onReset = () => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsable
+        <LabelCollapsible
           v-if="mode === 'edit'"
           :label="`Trackers: ${trackerUuids.length}`" 
           :isExpandable="trackerUuids.length !== 0"
@@ -347,7 +348,7 @@ const onReset = () => {
               </RouterLink>
             </li>
           </ul>
-        </LabelCollapsable>
+        </LabelCollapsible>
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"

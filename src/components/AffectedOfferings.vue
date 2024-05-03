@@ -4,7 +4,7 @@ import { computed, toRefs, ref, watch } from 'vue';
 import { type ZodAffectType } from '@/types/zodFlaw';
 import { uniques } from '@/utils/helpers';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
 
 
@@ -117,7 +117,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
       </button>
     </h4>
     <div v-for="(moduleName) in affectedModules" :key="moduleName">
-      <LabelCollapsable
+      <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
         class="mb-3"
         @setExpanded="togglePsModuleExpansion(moduleName)"
@@ -164,7 +164,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
             @file-tracker="emit('file-tracker', $event)"
           />
         </div>
-      </LabelCollapsable>
+      </LabelCollapsible>
     </div>
     <button type="button" class="btn btn-secondary mt-3" @click.prevent="emit('add-blank-affect')">
       Add New Affect
