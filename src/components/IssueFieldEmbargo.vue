@@ -123,8 +123,6 @@ watch(() => showModal.value, () => {
             </Modal>
           </div>
         </div>
-        
-
       </div>
     </template>
   </LabelDiv>
