@@ -14,7 +14,6 @@ import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
 import LabelCollapsible from '../widgets/LabelCollapsible.vue';
-import LabelStatic from '../widgets/LabelStatic.vue';
 import LabelTextarea from '../widgets/LabelTextarea.vue';
 import CvssCalculator from '../CvssCalculator.vue';
 import FlawFormAssignee from '../FlawFormAssignee.vue';

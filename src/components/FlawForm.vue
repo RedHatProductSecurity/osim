@@ -7,7 +7,6 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
