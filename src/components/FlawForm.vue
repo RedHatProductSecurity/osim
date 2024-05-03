@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { ref, watch, onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
