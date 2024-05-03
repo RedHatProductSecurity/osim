@@ -15,8 +15,6 @@ const props = defineProps<{
 const modelValue = defineModel<boolean | undefined>();
 const showModal = defineModel<boolean | undefined>('showModal');
 
-// const isFlawNew = computed(() => modelValue.value === undefined);
-
 const emit = defineEmits<{
   (e: 'update:modelValue', embargoed: boolean): void;
   (e: 'update:showModal', value: boolean): void;
