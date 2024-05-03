@@ -62,4 +62,15 @@ describe('IssueSearchAdvanced', () => {
     const uniqueValues = [...new Set(allValues)];
     expect(allValues).toStrictEqual(uniqueValues);
   });
+
+  it('should render save filter button', async () => {
+    let filterSaveEvents = wrapper.emitted('filter:save');
+    expect(filterSaveEvents).toBeFalsy();
+    const saveButton = wrapper.find('button[type="button"].btn-primary.me-3');
+    expect(saveButton.exists()).toBeTruthy();
+    expect(saveButton.text()).toBe('Save as Default');
+    await saveButton.trigger('click');
+    filterSaveEvents = wrapper.emitted('filter:save');
+    expect(filterSaveEvents.length).toBe(1);
+  });
 });

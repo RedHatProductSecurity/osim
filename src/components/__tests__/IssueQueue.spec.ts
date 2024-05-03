@@ -258,4 +258,44 @@ describe('IssueQueue', () => {
     expect(countEL.exists()).toBeTruthy();
     expect(countEL.text()).toBe('Loaded 25 of 100');
   });
+
+  it('shouldn\'t render useDefault filter button', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: mockData,
+        isLoading: false,
+        isFinalPageFetched: false,
+        showFilter: false
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];
+    expect(defaultFilterCheckbox).toBeFalsy();
+  });
+
+  it('should render useDefault filter button', async () => {
+    const pinia = createTestingPinia({
+      createSpy: vitest.fn,
+      stubActions: false,
+    });
+    const wrapper = mount(IssueQueue, {
+      props: {
+        issues: mockData,
+        isLoading: false,
+        isFinalPageFetched: false,
+        showFilter: true
+      },
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+    const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];
+    expect(defaultFilterCheckbox.exists()).toBeTruthy();
+  });
 });
