@@ -57,6 +57,29 @@ const isAffectNew =  computed (() => !modelValue.value.uuid);
 const trackersCount =  computed(
   () => `${modelValue.value.trackers?.length || 0} trackers`
 );
+
+const affectednessLabel = computed(() => {
+  const affectedness :string= props.affectedComponent.affectedness || '';
+  const affectednessValue = {
+    [affectedness]: '',
+    'NEW': 'New',
+    'AFFECTED': 'Affected',
+    'NOTAFFECTED': 'Not Affected'
+  }[affectedness];
+  return affectednessValue && `Affectedness: ${affectednessValue}` || '';
+});
+
+const resolutionLabel = computed(() => {
+  const resolution: string = props.affectedComponent.resolution || '';
+  const resolutionValue = {
+    [resolution]: '',
+    'DELEGATED': 'Delegated',
+    'WONTFIX': 'Won\'t Fix',
+    'OOSS': 'OOSS'
+  }[resolution];
+  return resolutionValue && `Resolution: ${resolutionValue}` || '';
+});
+
 </script>
 
 <template>
@@ -70,6 +93,12 @@ const trackersCount =  computed(
       </span>
       <span v-else class="badge bg-light-info text-dark border border-info">
         {{ `${trackersCount}` }}
+      </span>
+      <span v-if="affectednessLabel" class="badge bg-light-info text-dark mx-1 affectedness-label border border-info">
+        {{ affectednessLabel }}
+      </span>
+      <span v-if="resolutionLabel" class="badge bg-light-info text-dark mx-1 resolution-label border border-info">
+        {{ resolutionLabel }}
       </span>
     </template>
     <template #buttons>
@@ -101,10 +130,6 @@ const trackersCount =  computed(
             >{{ stream }}</a>
           </div>
         </div>
-        <button type="button" class="btn btn-white btn-outline-black btn-sm">
-          <!-- TODO: Advance status through workflow with this button -->
-          🚧 Status
-        </button>
         <button
           type="button"
           class="btn btn-white btn-outline-black btn-sm"
