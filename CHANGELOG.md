@@ -35,6 +35,8 @@
   * Removed modified/unsaved affects section
   * Added UI indications for unsaved affects
   * Improved recovery/deletion UI
+  * Show affectedness, resolution text
+  * Update affectedness, resolution selection options
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
