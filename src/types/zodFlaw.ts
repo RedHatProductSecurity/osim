@@ -368,8 +368,8 @@ const {
 } = ZodAffectSchema.shape;
 
 const limitAffectResolutions = (options: string[]) => {
-  const avilableOptions = ['DELEGATED', 'WONTFIX', 'OOSS'];
-  return options.filter(option => !option || avilableOptions.includes(option));
+  const avilableOptions = ['','DELEGATED', 'WONTFIX', 'OOSS'];
+  return options.filter(option => avilableOptions.includes(option));
 };
 
 export const affectImpacts = extractEnum(zodAffectImpact);
