@@ -7,15 +7,16 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import IssueFieldStatus from '@/components/IssueFieldStatus.vue';
+import IssueFieldState from '@/components/IssueFieldState.vue';
 import FlawForm from '../FlawForm.vue';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import LabelDiv from '../widgets/LabelDiv.vue';
 import LabelSelect from '../widgets/LabelSelect.vue';
-import LabelCollapsable from '../widgets/LabelCollapsable.vue';
-import LabelStatic from '../widgets/LabelStatic.vue';
+import LabelCollapsible from '../widgets/LabelCollapsible.vue';
 import LabelTextarea from '../widgets/LabelTextarea.vue';
+import CvssCalculator from '../CvssCalculator.vue';
+import FlawFormAssignee from '../FlawFormAssignee.vue';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -132,12 +133,12 @@ describe('FlawForm', () => {
 
     const cvssV3Field = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.text().includes('CVSSv3') && component.text().includes('Calculator'));
+      .find((component) => component.text().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const cvssV3ScoreField = subject
-      .findAllComponents(LabelStatic)
-      .find((component) => component.props().label === 'CVSSv3 Score');
+      .findAllComponents(CvssCalculator)
+      .find((component) => component.html().includes('CVSSv3 Score'));
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
@@ -155,10 +156,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
 
-    const statusField = subject
+    const workflowStateField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'Status');
-    expect(statusField?.exists()).toBe(true);
+      .find((component) => component.props().label === 'State');
+    expect(workflowStateField?.exists()).toBe(true);
 
     const incidentStateField = subject
       .findAllComponents(LabelSelect)
@@ -185,13 +186,11 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
+    const assigneeField = subject.findComponent(FlawFormAssignee);
     expect(assigneeField?.exists()).toBe(true);
 
     const trackers = subject
-      .findAllComponents(LabelCollapsable)
+      .findAllComponents(LabelCollapsible)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers?.exists()).toBe(true);
 
@@ -226,13 +225,13 @@ describe('FlawForm', () => {
     expect(impactField?.exists()).toBe(true);
 
     const cvssV3Field = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(CvssCalculator)
       .find((component) => component.html().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const cvssV3ScoreField = subject
-      .findAllComponents(LabelStatic)
-      .find((component) => component.props().label === 'CVSSv3 Score');
+      .findAllComponents(CvssCalculator)
+      .find((component) => component.html().includes('CVSSv3 Score'));
     expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
@@ -275,13 +274,8 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
-    expect(assigneeField?.exists()).toBe(true);
-
     const trackers = subject
-      .findAllComponents(LabelCollapsable)
+      .findAllComponents(LabelCollapsible)
       .find((component) => component.props().label.startsWith('Trackers'));
     expect(trackers).toBe(undefined);
 
@@ -296,33 +290,30 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
     mountWithProps({ flaw, mode: 'edit' });
-    const assigneeField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Assignee');
+    const assigneeField = subject.findComponent(FlawFormAssignee);
     expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
     expect(assigneeField?.props().modelValue).toBe('test owner');
     expect(assigneeField?.html()).toContain('test owner');
   });
 
-  it('displays correct Status field value from props', async () => {
-    const statusField = subject.findComponent(IssueFieldStatus);
-
-    expect(statusField?.findComponent(LabelDiv).props().label).toBe('Status');
-    expect(statusField?.props().classification.state).toBe('NEW');
+  it('displays correct State field value from props', async () => {
+    const workflowStateField = subject.findComponent(IssueFieldState);
+    expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
+    expect(workflowStateField?.props().classification.state).toBe('NEW');
   });
 
-  it('displays promote and reject buttons for status', async () => {
-    const statusField = subject
-      .findAllComponents(IssueFieldStatus)
-      .find((component) => component.text().includes('Status'));
+  it('displays promote and reject buttons for state', async () => {
+    const workflowStateField = subject
+      .findAllComponents(IssueFieldState)
+      .find((component) => component.text().includes('State'));
     expect(
-      statusField
+      workflowStateField
         ?.findAll('button')
         ?.find((el) => el.text() === 'Reject')
         ?.text(),
     ).toBe('Reject');
     expect(
-      statusField
+      workflowStateField
         ?.findAll('button')
         ?.find((el) => el.text().includes('Promote to'))
         ?.text(),
@@ -330,10 +321,10 @@ describe('FlawForm', () => {
   });
 
   it('shows a modal for reject button clicks', async () => {
-    const statusField = subject
-      .findAllComponents(IssueFieldStatus)
-      .find((component) => component.text().includes('Status'));
-    const rejectButton = statusField?.findAll('button')?.find((el) => el.text() === 'Reject');
+    const workflowStateField = subject
+      .findAllComponents(IssueFieldState)
+      .find((component) => component.text().includes('State'));
+    const rejectButton = workflowStateField?.findAll('button')?.find((el) => el.text() === 'Reject');
     await rejectButton?.trigger('click');
     expect(subject.find('.modal-dialog').exists()).toBe(true);
   });
@@ -394,13 +385,6 @@ describe('FlawForm', () => {
         },
       },
     });
-    const cvss3EditField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.text().includes('CVSSv3'));
-    expect(cvss3EditField?.exists()).toBeTruthy();
-    const linkElement = cvss3EditField?.find('a');
-    expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe('https://www.first.org/cvss/calculator/3.1#null');
   });
 
   it('displays correct CVSSv3 calculator link for CVSSv3 value', async () => {
@@ -421,15 +405,6 @@ describe('FlawForm', () => {
         },
       },
     });
-    const cvss3EditField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.text().includes('CVSSv3'));
-    expect(cvss3EditField?.exists()).toBeTruthy();
-    const linkElement = cvss3EditField?.find('a');
-    expect(linkElement?.exists()).toBeTruthy();
-    expect(linkElement?.attributes('href')).toBe(
-      'https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
-    );
   });
 
   it('shows a error message when nvd score and Rh score mismatch', async () => {

@@ -488,10 +488,6 @@ def step_impl(context):
         field = 'affects__' + item[0]
         if field in ['affects__ps_module', 'affects__ps_component', 'affects__cvss3_score']:
             flaw_detail_page.set_field_value(field, item[1])
-            # This is a background of bug OSIDB-2539
-            if field == 'affects__ps_module':
-                flaw_detail_page.click_button_with_js("affectDropdownBtn")
-                flaw_detail_page.click_button_with_js("affectDropdownBtn")
         else:
             flaw_detail_page.set_select_specific_value(field, item[1])
 
@@ -500,6 +496,7 @@ def step_impl(context):
     context.value_dict['impact'] = updated_value
     # Save all the updates
     flaw_detail_page.click_btn('saveBtn')
+    #flaw_detail_page.wait_msg('affectUpdateMsg')
     flaw_detail_page.wait_msg('affectSaveMsg')
  
 @then("All changes are saved")
@@ -510,10 +507,7 @@ def step_impl(context):
     component_value = context.value_dict['ps_component']
     field_value_dict = flaw_detail_page.get_affect_value_from_osidb(
                     context.value_dict.keys(), osidb_token, component_value)
-    # There is a bug OSIDB-2600
-    print("There is a bug OSIDB-2600")
-    print(f"The setted values: {context.value_dict}")
-    print(f"The updated values: {field_value_dict}")
+    # There is a bug OSIDB-2600, so the following step will be failed
     assert context.value_dict == field_value_dict
     context.browser.quit()
 

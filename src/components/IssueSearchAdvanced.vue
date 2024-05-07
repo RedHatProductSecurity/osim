@@ -13,6 +13,8 @@ const props = defineProps<{
 
 const route = useRoute();
 
+const emit = defineEmits(['filter:save']);
+
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
     uuid: 'UUID',
@@ -101,6 +103,14 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
       <button class="btn btn-primary me-3" type="submit" :disabled="props.isLoading">
         <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
         Search
+      </button>
+      <button
+        class="btn btn-primary me-3"
+        type="button"
+        :disabled="isLoading"
+        @click="emit('filter:save')"
+      >
+        Save as Default
       </button>
     </form>
   </details>

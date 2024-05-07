@@ -7,18 +7,18 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
-import IssueFieldStatus from './IssueFieldStatus.vue';
-
+import IssueFieldState from './IssueFieldState.vue';
+import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
+import CvssCalculator from '@/components/CvssCalculator.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
@@ -72,6 +72,7 @@ const {
   saveAcknowledgments,
   deleteAcknowledgment,
   isSaving,
+  isValid,
   errors,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
@@ -86,23 +87,25 @@ watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any 
   onReset();
 });
 
+const isPublic = computed(() => !initialFlaw.value?.embargoed);
+const showUnembargoingModal = ref(false);
+const unembargoing = computed(() => !isPublic.value && !flaw.value.embargoed);
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
-    updateFlaw();
-  }
-  if (props.mode === 'create') {
+    if(isValid() && unembargoing.value) {
+      showUnembargoingModal.value = true;
+    } else {
+      updateFlaw();
+    }
+  } else if (props.mode === 'create') {
     createFlaw();
   }
 };
 
-
 const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
-
-const flawCvss3CaculatorLink = computed(
-  () => `https://www.first.org/cvss/calculator/3.1#${flawRhCvss3.value?.vector}`,
-);
 
 const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
@@ -159,26 +162,16 @@ const onReset = () => {
               />
             </div>
           </div>
-
           <LabelSelect
             v-model="flaw.impact"
             label="Impact"
             :options="flawImpacts"
             :error="errors.impact"
           />
-          <LabelEditable v-model="flawRhCvss3.vector" type="text">
-            <template #label>
-              <span class="mb-0 pt-2 pb-2">CVSSv3
-                <br />
-                <a
-                  :href="flawCvss3CaculatorLink"
-                  target="_blank"
-                ><i class="bi-calculator me-1"></i>Calculator</a>
-              </span>
-            </template>
-          </LabelEditable>
-
-          <LabelStatic v-model="flawRhCvss3.score" label="CVSSv3 Score" type="text" />
+          <CvssCalculator
+            v-model:cvss-vector="flawRhCvss3.vector"
+            v-model:cvss-score="flawRhCvss3.score"
+          />
           <div class="row">
             <div class="col">
               <LabelDiv label="NVD CVSSv3">
@@ -226,7 +219,7 @@ const onReset = () => {
         </div>
 
         <div class="col-6">
-          <IssueFieldStatus
+          <IssueFieldState
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"
@@ -257,10 +250,13 @@ const onReset = () => {
           />
           <IssueFieldEmbargo
             v-model="flaw.embargoed"
+            v-model:showModal="showUnembargoingModal"
             :isFlawNew="!flaw.uuid"
+            :isPublic="isPublic"
             :flawId="flaw.cve_id || flaw.uuid"
+            @updateFlaw="updateFlaw"
           />
-          <LabelEditable v-model="flaw.owner" label="Assignee" type="text" />
+          <FlawFormAssignee v-model="flaw.owner" />
           <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
@@ -339,7 +335,7 @@ const onReset = () => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsable
+        <LabelCollapsible
           v-if="mode === 'edit'"
           :label="`Trackers: ${trackerUuids.length}`" 
           :isExpandable="trackerUuids.length !== 0"
@@ -351,12 +347,12 @@ const onReset = () => {
               </RouterLink>
             </li>
           </ul>
-        </LabelCollapsable>
+        </LabelCollapsible>
       </div>
       <AffectedOfferings
+        v-if="mode === 'edit'"
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
-        :mode="mode"
         class="osim-flaw-form-section"
         :error="errors.affects"
         @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"

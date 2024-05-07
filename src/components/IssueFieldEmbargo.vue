@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useModal } from '@/composables/useModal';
 import LabelInput from './widgets/LabelInput.vue';
 import Modal from '@/components/widgets/Modal.vue';
@@ -9,14 +9,16 @@ import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 const props = defineProps<{
   flawId: string | null | undefined;
   isFlawNew: boolean;
+  isPublic: boolean;
 }>();
 
 const modelValue = defineModel<boolean | undefined>();
-
-// const isFlawNew = computed(() => modelValue.value === undefined);
+const showModal = defineModel<boolean | undefined>('showModal');
 
 const emit = defineEmits<{
   (e: 'update:modelValue', embargoed: boolean): void;
+  (e: 'update:showModal', value: boolean): void;
+  (e: 'updateFlaw'): void;
 }>();
 
 const { isModalOpen, openModal, closeModal } = useModal();
@@ -24,9 +26,22 @@ const confirmationId = ref('');
 const isFlawIdConfirmed = computed(() => confirmationId.value === props.flawId);
 
 function handleConfirm() {
-  emit('update:modelValue', false);
-  closeModal();
+  emit('updateFlaw');
+  handleCloseModal();
 }
+
+function handleCloseModal() {
+  confirmationId.value = '';
+  emit('update:showModal', false);
+}
+
+watch(() => showModal.value, () => { 
+  if(showModal.value) { 
+    openModal();
+  } else {
+    closeModal();
+  }
+});
 </script>
 
 <template>
@@ -34,22 +49,40 @@ function handleConfirm() {
     <template #default>
       <div>
         <div class="d-flex ms-0 p-0 justify-content-between">
-          <LabelCheckbox v-if="isFlawNew" v-model="modelValue" :label="'Embargoed?'" />
+          <LabelCheckbox v-if="isFlawNew" v-model="modelValue" label="Embargoed?" />
           <div v-else class="osim-embargo-label osim-input d-flex align-items-center">
-            <span class="form-control">{{ modelValue ? 'Yes' : 'No' }}</span>
+            <span 
+              class="form-control"
+              :class="{
+                'has-warning': !isPublic && !modelValue,
+                'has-button': !isPublic
+              }"
+            >
+              {{ modelValue ? 'Yes' : 'No' }}
+              <i v-if="!isPublic && !modelValue" class="bi-exclamation-circle"></i>
+            </span>
+            <div
+              v-if="!isPublic && !modelValue"
+              class="warning-tooltip"
+            >The flaw will be unembargoed on save.</div>
           </div>
-          <div v-if="!isFlawNew && modelValue">
+          <div v-if="!isFlawNew && !isPublic">
             <button
               type="button"
-              class="btn ms-2 btn-danger osim-unembargo-button"
-              @click="openModal"
+              class="btn osim-field-button"
+              :class="{
+                'btn-danger osim-unembargo-button': modelValue,
+                'btn-secondary': !modelValue,
+              }"
+              @click="modelValue = !modelValue;"
             >
-              <i class="bi-radioactive ps-0"></i>
-              <i class="bi-eye-fill"></i>
-              <i class="bi-eye-slash-fill"></i>
-              Unembargo
+              <i v-if="modelValue" class="bi-radioactive ps-0"></i>
+              <i v-if="modelValue" class="bi-eye-fill"></i>
+              <i v-if="modelValue" class="bi-eye-slash-fill"></i>
+              <i v-if="!modelValue" class="bi-arrow-counterclockwise"></i>
+              {{ modelValue ? 'Unembargo' : 'Reset' }}
             </button>
-            <Modal :show="isModalOpen" @close="closeModal">
+            <Modal :show="isModalOpen" @close="handleCloseModal">
               <template #header> Set Flaw for Unembargo </template>
               <template #body>
                 <p class="text-danger">
@@ -71,13 +104,13 @@ function handleConfirm() {
                   {{ flawId }} if you wish to proceed.
                 </div>
                 <LabelInput v-model="confirmationId" label="Confirm" />
-                <p v-if="confirmationId" class="alert alert-warning mt-2">
+                <!-- <p v-if="confirmationId" class="alert alert-warning mt-2">
                   <i class="bi-exclamation-triangle-fill"></i> The embargo will only be removed when
                   the Flaw is saved.
-                </p>
+                </p> -->
               </template>
               <template #footer>
-                <button type="button" class="btn btn-info" @click="closeModal">Cancel</button>
+                <button type="button" class="btn btn-info" @click="handleCloseModal">Cancel</button>
                 <button
                   type="button"
                   class="btn btn-danger"
@@ -97,8 +130,49 @@ function handleConfirm() {
 
 <style lang="scss" scoped>
 .osim-embargo-label {
+  position: relative;
   flex-grow: 1;
   width: inherit !important;
+  
+  .has-button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .has-warning {
+    background-color: #fff5d1;
+    display: flex;
+    border-color: #F5C000;
+
+    .bi-exclamation-circle {
+      display: inline !important;
+      color: #F5C000;
+      margin-left: auto;
+    }
+  }
+
+  .warning-tooltip {
+    display: none;
+  }
+
+  &:hover .warning-tooltip {
+    position: absolute;
+    display: block;
+    top: 100%;
+    margin-top: 0.1rem;
+    padding: 0.25rem 0.5rem;
+    z-index: 5;
+    background-color: #F5C000;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+}
+
+button.osim-field-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 138px;
+  height: 38px;
 }
 
 button.osim-unembargo-button {

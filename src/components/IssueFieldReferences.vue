@@ -9,7 +9,7 @@ import { flawReferenceTypeValues } from '@/types/zodFlaw';
 const references = defineModel<ZodFlawReferenceType[]>({ default: null });
 
 defineProps<{
-  error: Record<string, any>;
+  error: Record<string, any>[] | null;
 }>();
 
 const excludedReferenceTypes = ['SOURCE'];
@@ -67,11 +67,11 @@ function handleDelete(uuid: string, closeModal: () => void) {
       <template #edit-form="{ items, itemIndex }">
         <div class="form-group">
           <div class="p-3 pt-4">
-            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error[itemIndex].url" />
+            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error?.[itemIndex].url" />
             <LabelTextarea
               v-model="items[itemIndex].description" 
               label="Description"
-              :error="error[itemIndex].description"
+              :error="error?.[itemIndex].description"
             />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>
@@ -97,11 +97,11 @@ function handleDelete(uuid: string, closeModal: () => void) {
             >
               <i class="bi bi-x" />
             </button>
-            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error[itemIndex].url" />
+            <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error?.[itemIndex].url" />
             <LabelTextarea
               v-model="items[itemIndex].description"
               label="Description"
-              :error="error[itemIndex].description"
+              :error="error?.[itemIndex].description"
             />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>

@@ -1,7 +1,8 @@
+
 <script setup lang="ts">
 import { computed, toRef } from 'vue';
 
-import LabelCollapsable from '@/components/widgets/LabelCollapsable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferingForm from './AffectedOfferingForm.vue';
 import { type ZodAffectType } from '@/types/zodFlaw';
 import { useAffectTracker } from '@/composables/useAffectTracker';
@@ -9,7 +10,7 @@ import { useAffectTracker } from '@/composables/useAffectTracker';
 import type { TrackersPost } from '@/services/TrackerService';
 
 const props = defineProps<{
-  error: Record<string, any>;
+  error: Record<string, any> | null;
   isExpanded: boolean;
   componentName: string;
   affectedComponent: ZodAffectType;
@@ -51,22 +52,28 @@ function handleTrackAffect(stream: string) {
   } as TrackersPost);
 }
 
-function componentLabel(affectedComponent: ZodAffectType) {
-  return affectedComponent.uuid
-    ? `(${affectedComponent.trackers?.length || 0} trackers)`
-    : '(unsaved in OSIDB)';
-}
+const isAffectNew =  computed (() => !modelValue.value.uuid);
+
+const trackersCount =  computed(
+  () => `${modelValue.value.trackers?.length || 0} trackers`
+);
 </script>
 
 <template>
-  <LabelCollapsable :is-expanded="isExpanded" class="mt-2">
+  <LabelCollapsible :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
     <template #label>
-      <label class="ms-2 form-label">
-        {{ `${componentName} ${componentLabel(affectedComponent)}` }}
+      <label class="mx-2 form-label">
+        {{ `${componentName}` }}
       </label>
+      <span v-if="isAffectNew" class="badge bg-warning text-black">
+        Not Saved in OSIDB
+      </span>
+      <span v-else class="badge bg-light-info text-dark border border-info">
+        {{ `${trackersCount}` }}
+      </span>
     </template>
     <template #buttons>
-      <div class="btn-group ms-2" role="group" aria-label="Tracker Actions">
+      <div class="btn-group" role="group" aria-label="Tracker Actions">
         <button
           v-if="updateStreamNames.length === 0"
           type="button"
@@ -108,7 +115,7 @@ function componentLabel(affectedComponent: ZodAffectType) {
       </div>
     </template>
     <AffectedOfferingForm v-model="modelValue" :error="error" />
-  </LabelCollapsable>
+  </LabelCollapsible>
 </template>
 
 <style scoped lang="scss">

@@ -23,8 +23,11 @@ const props = defineProps<{
   issues: any[];
   isLoading: boolean;
   isFinalPageFetched: boolean;
+  showFilter?: boolean
   total: number
 }>();
+
+const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
 const selectedSortField = ref<ColumnField>('created_dt');
@@ -152,6 +155,12 @@ watch(params, () => {
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
+      <LabelCheckbox
+        v-if="showFilter"
+        v-model="isDefaultFilterSelected"
+        label="Default Filter"
+        class="d-inline-block"
+      />
 
       <span
         v-if="isLoading"
@@ -310,23 +319,23 @@ watch(params, () => {
         width: 9.5%;
       }
       
-      &:nth-of-type(5) {
-        // min-width: 12ch;
-        // max-width: 12ch;
-        // min-width: 9.5%;
-        // max-width: 9.5%;
-        width: 9.5%;
-      }
+      //&:nth-of-type(5) {
+      //  // min-width: 12ch;
+      //  // max-width: 12ch;
+      //  // min-width: 9.5%;
+      //  // max-width: 9.5%;
+      //  width: 9.5%;
+      //}
 
-      &:nth-of-type(6) {
+      &:nth-of-type(5) {
         // min-width: 12ch;
         // max-width: 12ch;
         // min-width: 32%;
         // max-width: 32%;
-        width: 32%;
+        width: 42.5%;
       }
       
-      &:nth-of-type(7) {
+      &:nth-of-type(6) {
         // min-width: 10ch;
         // max-width: 10ch;
         // min-width: 8.5%;
@@ -334,12 +343,12 @@ watch(params, () => {
         width: 8.5%;
       }
       
-      &:nth-of-type(8) {
+      &:nth-of-type(7) {
         // min-width: 20ch;
         // max-width: 20ch;
         // min-width: 17%;
         // max-width: 17%;
-        width: 17%;
+        width: 17.5%;
       }
     }
 

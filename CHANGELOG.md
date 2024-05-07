@@ -1,11 +1,18 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Self-Assign button for Flaws
+
 ### Fixed
 * The session is now shared across tabs
 
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
+
+### Added
+* Embedded Cvss3 calculator in `Flaw` views
+
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
 * Changed layout for Descriptions, References and Acknowledgements
@@ -18,9 +25,16 @@
 * Disables form on save
 * Links on references are now displayed as urls
 * Implemented Advanced Search Query to URL
+* Unembargo confirmation now happens on saving flaw
 * `Source` column hidden on flaw lists
 * `Source` field renamed to `CVE Source` on flaw form and advanced search
 * Added Total count for IndexView and AdvancedSearch Page
+* Add Default Filter on IndexView Page
+* Cvss vector and score fields converted to static (only editable through calculator)
+* Changed affect form
+  * Removed modified/unsaved affects section
+  * Added UI indications for unsaved affects
+  * Improved recovery/deletion UI
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -45,6 +59,8 @@
 * Fixed redirect `Flaws` link on `Flaw` edit page when `Flaw` is not found.
 * Fixed Scroll bar on `Flaws` list
 * Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
+* The session is now shared across tabs
+
 
 
 ## [2024.1.0]

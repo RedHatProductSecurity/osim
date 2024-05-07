@@ -124,7 +124,8 @@ class FlawDetailPage(BasePage):
         "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[1]"),
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
-        "affectSaveMsg": ("XPATH", "//div[text()='Affect Updated.']")
+        "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
+        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -418,6 +419,11 @@ class FlawDetailPage(BasePage):
         field_element = getattr(self, field)
         select_element = self.driver.find_elements(
             locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
+        try:
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomBar)
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomFooter)
+        except ElementNotVisibleException:
+            pass
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(value)
 
@@ -448,7 +454,7 @@ class FlawDetailPage(BasePage):
         select_element = self.driver.find_elements(
             locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
         select_element.execute_script("arguments[0].scrollIntoView(true);")
-        if 'affect_impact' in field:
+        if 'affects' in field:
             hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
             self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_bar)
         select_list = select_element.get_all_list_item()
@@ -458,7 +464,7 @@ class FlawDetailPage(BasePage):
         updated_value = random.choice(select_list)
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(updated_value)
-        if 'affect_impact' in field:
+        if 'affects' in field:
             self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         return updated_value
 
@@ -479,21 +485,18 @@ class FlawDetailPage(BasePage):
 
     def set_field_value(self, field, value):
         field_element = getattr(self, field)
-        self.driver.execute_script("arguments[0].value = '';", field_element)
         # Get the pen element of the field and click it
         pen_element = self.driver.find_elements(
             locate_with(By.XPATH, "//button[@class='osim-editable-text-pen input-group-text']").to_right_of(field_element))[0]
-        pen_element.click()
+        self.driver.execute_script("arguments[0].click();", pen_element)
         # Get the input field and set the value
         input_element = self.driver.find_elements(
             locate_with(By.XPATH, "//input[@class='form-control']").near(field_element))[0]
         self.driver.execute_script("arguments[0].value = '';", input_element)
-        input_element.clear()
         input_element.send_keys(value)
         # In affects, if we won't click the CheckMark for module and go to
         # component, the affects will be hidden
         if "affects" in field:
-            self.driver.execute_script("arguments[0].value = '';", input_element)
             field_savebtn = self.driver.find_elements(
                 locate_with(By.XPATH, "//i[@class='bi bi-check']").near(input_element))[0]
             self.driver.execute_script("arguments[0].click();", field_savebtn)
