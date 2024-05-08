@@ -211,6 +211,7 @@ export function blankFlaw(): ZodFlawType {
     cve_description: '',
     statement: '',
     mitigation: '',
+    task_key: '',
     comments: [],
     references: [],
     acknowledgments: [],
