@@ -11,12 +11,12 @@ interface Comment {
 export function useInternalComments(taskKey: string) {
   const { addToast } = useToastStore();
   const available = ref(false);
-  const isLoading = ref(false);
-  const isSaving = ref(false);
+  const isLoadingInternalComments = ref(false);
+  const isSavingInternalComment = ref(false);
   const internalComments = ref<Comment[]>([]);
 
   function loadInternalComments() {
-    isLoading.value = true;
+    isLoadingInternalComments.value = true;
     internalComments.value = [];
 
     getJiraComments(taskKey)
@@ -37,13 +37,13 @@ export function useInternalComments(taskKey: string) {
         available.value = false;
       })
       .finally(() => {
-        isLoading.value = false;
+        isLoadingInternalComments.value = false;
       });
   }
 
   async function addInternalComment(comment: string) {
-    isSaving.value = true;
-    
+    isSavingInternalComment.value = true;
+
     postJiraComment(taskKey, comment)
       .then(() => {
         addToast({
@@ -60,10 +60,10 @@ export function useInternalComments(taskKey: string) {
           css: 'warning',
         });
       })
-      .finally(() => isSaving.value = false);
+      .finally(() => isSavingInternalComment.value = false);
   }
 
-  function isAvailable() {
+  function internalCommentsAvailable() {
     return available.value && taskKey;
   }
 
@@ -78,11 +78,12 @@ export function useInternalComments(taskKey: string) {
   }
 
   return {
-    isLoading,
-    isAvailable,
     internalComments,
     addInternalComment,
-    loadInternalComments
+    loadInternalComments,
+    isSavingInternalComment,
+    isLoadingInternalComments,
+    internalCommentsAvailable,
   };
 }
 
