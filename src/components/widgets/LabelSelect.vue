@@ -6,13 +6,13 @@ withDefaults(
   defineProps<{
     modelValue: string | null;
     options: string[];
-    optionsHidden?: string[];
+    optionsHidden?: string[] | null;
     label: string;
     error: string | null;
   }>(),
   {
     modelValue: '',
-    optionsHidden:[]
+    optionsHidden: null
   },
 );
 </script>
@@ -43,7 +43,7 @@ withDefaults(
             :key="option"
             :value="option"
             :selected="option === modelValue"
-            :hidden="optionsHidden.includes(option)"
+            :hidden="optionsHidden?.includes(option)"
           >
             {{ option }}
           </option>
