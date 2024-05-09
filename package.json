@@ -18,7 +18,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "vibe-check": "npx vite-bundle-visualizer",
-    "generate-openapi-client": "openapi-generator-cli generate -i osidb-3.4.0.oas3.json --output src/generated-client -g typescript-axios",
+    "generate-openapi-client": "openapi-generator-cli generate -i openapi.yml --output src/generated-client -g typescript-axios",
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json",
     "lint": "yarn lint-style && yarn lint-ts-vue",
     "lint-ts-vue": "eslint . --ext .js,.ts,.vue --ignore-pattern 'public/'",

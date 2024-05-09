@@ -37,6 +37,7 @@
   * Improved recovery/deletion UI
   * Show affectedness, resolution text
   * Update affectedness, resolution selection options
+* Add OSV Source for Flaw
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items

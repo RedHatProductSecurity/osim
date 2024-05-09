@@ -1,16 +1,18 @@
 import time
+import random
 from datetime import date, datetime
-
 from behave import when, then
 from selenium.webdriver.common.by import By
 from seleniumpagefactory.Pagefactory import ElementNotFoundException
+from features.utils import get_osidb_token
 
 from features.utils import (
     wait_for_visibility_by_locator,
     generate_cve,
     generate_cwe,
     generate_random_text,
-    go_to_specific_flaw_detail_page
+    go_to_specific_flaw_detail_page,
+    get_osidb_token
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 
@@ -450,6 +452,64 @@ def step_impl(context):
 def step_impl(context):
     context.browser.quit()
 
+
+@when("I update the affects of the flaw and click 'Save Changes' button")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
+    # Click the first affect dropdown button
+    flaw_detail_page.click_button_with_js("affectDropdownBtn")
+    # Click the second affect component dropdown button
+    flaw_detail_page.click_button_with_js("affectDropdownBtn")
+    # Get the current value of the affect ps_module and affectedness
+    current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
+    current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
+    # Get the valid/available values to update
+    # 1. Get an available ps_module to be updated
+    ps_module = flaw_detail_page.get_an_available_ps_module(current_module)
+    # 2. Generate the random component name to be updated
+    ps_component = generate_random_text()
+    # 3. Get the available (key, value) for affectedness and resolution
+    if current_affectedness == 'NEW':
+        affectedness = 'AFFECTED'
+        resolution = 'DELEGATED'
+    else:
+        affectedness = 'NEW'
+        resolution = ''
+    # 4. Generate the random cvss3_score
+    cvss3_score = float("{0:.1f}".format(random.uniform(1, 6)))
+    # Update the fields with the available values
+    context.value_dict = {'ps_module': f'{ps_module}',
+                          'ps_component': f'{ps_component}',
+                          'affectedness': f'{affectedness}',
+                          'resolution': f'{resolution}',
+                          'cvss3_score': f'{cvss3_score}'}
+    for item in context.value_dict.items():
+        field = 'affects__' + item[0]
+        if field in ['affects__ps_module', 'affects__ps_component', 'affects__cvss3_score']:
+            flaw_detail_page.set_field_value(field, item[1])
+        else:
+            flaw_detail_page.set_select_specific_value(field, item[1])
+
+    # Update afffect impact
+    updated_value = flaw_detail_page.set_select_value_for_affect('affects__impact')
+    context.value_dict['impact'] = updated_value
+    # Save all the updates
+    flaw_detail_page.click_btn('saveBtn')
+    #flaw_detail_page.wait_msg('affectUpdateMsg')
+    flaw_detail_page.wait_msg('affectSaveMsg')
+ 
+@then("All changes are saved")
+def step_impl(context):
+    # Check the affect updates have been saved
+    osidb_token = get_osidb_token()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    component_value = context.value_dict['ps_component']
+    field_value_dict = flaw_detail_page.get_affect_value_from_osidb(
+                    context.value_dict.keys(), osidb_token, component_value)
+    # There is a bug OSIDB-2600, so the following step will be failed
+    assert context.value_dict == field_value_dict
+    context.browser.quit()
 
 @when("I add a new affect with valid data")
 def step_impl(context):
