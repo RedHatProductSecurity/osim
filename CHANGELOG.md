@@ -35,6 +35,7 @@
   * Removed modified/unsaved affects section
   * Added UI indications for unsaved affects
   * Improved recovery/deletion UI
+* Add OSV Source for Flaw
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items

@@ -3,6 +3,9 @@ import axios from 'axios';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
+import {
+  Source8d8Enum
+} from '../../generated-client';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
@@ -155,6 +158,9 @@ describe('FlawForm', () => {
       .findAllComponents(LabelSelect)
       .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
+    const sourceOptionEls = sourceField.findAll('option');
+    const sourceOptionCount = Object.keys(Source8d8Enum).length + 1;
+    expect(sourceOptionEls.length).toBe(sourceOptionCount);
 
     const workflowStateField = subject
       .findAllComponents(LabelDiv)

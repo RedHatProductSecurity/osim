@@ -5693,6 +5693,7 @@ export const Source8d8Enum = {
     Oracle: 'ORACLE',
     Oss: 'OSS',
     Osssecurity: 'OSSSECURITY',
+    Osv: "OSV",
     Php: 'PHP',
     Pidgin: 'PIDGIN',
     Postgresql: 'POSTGRESQL',
