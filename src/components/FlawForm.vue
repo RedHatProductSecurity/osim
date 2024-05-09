@@ -257,7 +257,6 @@ const onReset = () => {
             @updateFlaw="updateFlaw"
           />
           <FlawFormAssignee v-model="flaw.owner" />
-          <LabelEditable v-model="flaw.team_id" type="text" label="Team ID" />
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">

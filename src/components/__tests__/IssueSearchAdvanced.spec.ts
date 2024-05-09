@@ -2,6 +2,7 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { useRoute, useRouter } from 'vue-router';
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
+import { flawFields } from '@/constants/flawFields';
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
@@ -57,7 +58,7 @@ describe('IssueSearchAdvanced', () => {
   it('shouldn\'t render duplicate options on dropdown', () => {
     const selectDropdown = wrapper.find('select.form-select.search-facet-field');
     const allOptionsEL = selectDropdown.findAll('option');
-    expect(allOptionsEL.length).toBe(21);
+    expect(allOptionsEL.length).toBe(flawFields.length + 1);
     const allValues = allOptionsEL.map(item => item.element.value);
     const uniqueValues = [...new Set(allValues)];
     expect(allValues).toStrictEqual(uniqueValues);

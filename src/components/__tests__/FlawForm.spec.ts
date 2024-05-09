@@ -176,11 +176,6 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Public Date');
     expect(publicDateField?.exists()).toBe(true);
 
-    const teamIdField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Team ID');
-    expect(teamIdField?.exists()).toBe(true);
-
     const embargoedField = subject
       .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'Embargoed');
@@ -264,11 +259,6 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Public Date');
     expect(publicDateField?.exists()).toBe(true);
 
-    const teamIdField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Team ID');
-    expect(teamIdField?.exists()).toBe(true);
-
     const embargoedField = subject
       .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'Embargoed');
@@ -334,17 +324,6 @@ describe('FlawForm', () => {
     flaw.owner = 'networking test owner';
     const result = await mockedPutFlaw(flaw.uuid, flaw);
     expect(result.owner).toBe('networking test owner');
-  });
-
-  it('shows a Team Id field', async () => {
-    mountWithProps({ flaw: { ...sampleFlaw(), team_id: '12345' }, mode: 'edit' });
-
-    const teamIdField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.text().includes('Team ID'));
-
-    expect(teamIdField?.find('span.form-label').text()).toBe('Team ID');
-    expect(teamIdField?.props().modelValue).toBe('12345');
   });
 
   it('displays correct Cvss3 calculator link for cvss3 value', async () => {
