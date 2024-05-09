@@ -368,7 +368,7 @@ const {
 } = ZodAffectSchema.shape;
 
 const limitAffectResolutions = (options: string[]) => {
-  const avilableOptions = ['','DELEGATED', 'WONTFIX', 'OOSS'];
+  const avilableOptions = ['', 'DELEGATED', 'WONTFIX', 'OOSS'];
   return options.filter(option => avilableOptions.includes(option));
 };
 

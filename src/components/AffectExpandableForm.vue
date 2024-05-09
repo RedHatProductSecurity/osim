@@ -59,12 +59,12 @@ const trackersCount =  computed(
 );
 
 const affectednessLabel = computed(() => {
-  const affectedness :string= props.affectedComponent.affectedness || '';
+  const affectedness: string = props.affectedComponent.affectedness || '';
   const affectednessValue = {
     [affectedness]: '',
     'NEW': 'New',
     'AFFECTED': 'Affected',
-    'NOTAFFECTED': 'Not Affected'
+    'NOTAFFECTED': 'Not Affected',
   }[affectedness];
   return affectednessValue && `Affectedness: ${affectednessValue}` || '';
 });
@@ -75,7 +75,7 @@ const resolutionLabel = computed(() => {
     [resolution]: '',
     'DELEGATED': 'Delegated',
     'WONTFIX': 'Won\'t Fix',
-    'OOSS': 'OOSS'
+    'OOSS': 'OOSS',
   }[resolution];
   return resolutionValue && `Resolution: ${resolutionValue}` || '';
 });
