@@ -16,6 +16,7 @@ const props = defineProps<{
   affectedComponent: ZodAffectType;
 }>();
 
+
 const isExpanded = toRef(props, 'isExpanded');
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
@@ -61,7 +62,7 @@ const trackersCount =  computed(
 const affectednessLabel = computed(() => {
   const affectedness: string = props.affectedComponent.affectedness || '';
   const affectednessValue = {
-    [affectedness]: '',
+    [affectedness]: affectedness,
     'NEW': 'New',
     'AFFECTED': 'Affected',
     'NOTAFFECTED': 'Not Affected',
@@ -72,7 +73,7 @@ const affectednessLabel = computed(() => {
 const resolutionLabel = computed(() => {
   const resolution: string = props.affectedComponent.resolution || '';
   const resolutionValue = {
-    [resolution]: '',
+    [resolution]: resolution,
     'DELEGATED': 'Delegated',
     'WONTFIX': 'Won\'t Fix',
     'OOSS': 'OOSS',

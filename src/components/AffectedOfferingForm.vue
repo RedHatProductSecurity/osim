@@ -32,6 +32,12 @@ const hasTrackers = computed(() =>
   && modelValue.value?.trackers?.length > 0
   && modelValue.value?.trackers.every(({ ps_update_stream }) => ps_update_stream)
 );
+
+const hiddenResolutionOptions = computed(() => {
+  const availableOptions = ['', 'DELEGATED', 'WONTFIX', 'OOSS'];
+  return affectResolutions.filter(option => !availableOptions.includes(option));
+});
+
 </script>
 
 <template>
@@ -68,6 +74,7 @@ const hasTrackers = computed(() =>
         :error="error?.resolution"
         label="Resolution"
         :options="affectResolutions"
+        :optionsHidden="hiddenResolutionOptions"
       />
       <LabelSelect
         v-model="modelValue.impact"
