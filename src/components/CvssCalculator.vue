@@ -6,7 +6,6 @@ import {
   getFactors,
   formatFactor,
   calculateScore,
-  // getFactorColor,
   formatFactors,
   factorSeverities,
   validateCvssVector,
