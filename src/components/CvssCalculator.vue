@@ -68,7 +68,6 @@ const getFactorColor = computed(() => (weight: number, isHovered: boolean = fals
     : isHovered
       ? 1 
       : 0.75;
-  console.log(hue, alpha);
   const hslForText = `hsla(${hue}, 100%, 35%, ${alpha})`;
   const hslForBackground = `hsla(${hue}, 100%, 95%, ${alpha})`;
   return {
