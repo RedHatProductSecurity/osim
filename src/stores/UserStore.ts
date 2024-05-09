@@ -178,7 +178,6 @@ export const useUserStore = defineStore('UserStore', () => {
     if (refreshExp != null) {
       return now < refreshExp * 1000;
     }
-    $reset();
     return false;
   });
 
@@ -211,6 +210,7 @@ export const useUserStore = defineStore('UserStore', () => {
       }
     } else {
       console.log(router.currentRoute.value);
+      $reset();
       if (router.currentRoute.value.name !== 'login') {
         console.log('isAuthenticated became false while not on login page');
 

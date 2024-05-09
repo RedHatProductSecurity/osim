@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { getFlaws } from '@/services/FlawService';
 
-export function useFlaws() {
+export function useFlawsFetching() {
   const isFinalPageFetched = ref(false);
   const isLoading = ref(false);
   const issues = ref<any[]>([]);

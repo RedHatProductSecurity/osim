@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '../components/IssueQueue.vue';
-import { useFlaws }  from '../composables/useFlaws';
+import { useFlawsFetching }  from '../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 
 const searchStore = useSearchStore();
 
-const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
 
 const tableFilters = ref<Record<string, string>>({});
 

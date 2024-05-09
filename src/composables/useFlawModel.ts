@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 import { useRouter } from 'vue-router';
-import { useCvssScoresModel } from '@/composables/useCvssScoresModel';
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
@@ -24,7 +24,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
-  const cvssScoresModel = useCvssScoresModel(flaw);
+  const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
   const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;

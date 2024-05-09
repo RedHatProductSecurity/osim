@@ -2,12 +2,12 @@
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '@/components/IssueQueue.vue';
-import { useFlaws } from '@/composables/useFlaws';
+import { useFlawsFetching } from '@/composables/useFlawsFetching';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 
-const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlaws();
+const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
 const { getSearchParams, facets } = useSearchParams();
 
 const searchStore = useSearchStore();
