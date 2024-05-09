@@ -4,6 +4,11 @@ import { describe, it, expect } from 'vitest';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import {
+  affectResolutions,
+  affectAffectedness,
+} from '@/types/zodFlaw';
+
 
 describe('AffectExpandableForm', () => {
 
@@ -95,18 +100,10 @@ describe('AffectExpandableForm', () => {
     const affectednessSelectEl = selectComponents[1];
     const resolutionSelectEL = selectComponents[2];
     const affectednessOptions = affectednessSelectEl.props('options');
+    expect(affectednessOptions).toStrictEqual(affectAffectedness);
     const resolutionOptions = resolutionSelectEL.props('options');
-    expect(affectednessOptions).toStrictEqual([
-      '',
-      'NEW',
-      'AFFECTED',
-      'NOTAFFECTED',
-    ]);
-    expect(resolutionOptions).toStrictEqual([
-      '',
-      'WONTFIX',
-      'OOSS',
-      'DELEGATED',
-    ]);
+    expect(resolutionOptions).toStrictEqual(affectResolutions);
+    const resolutoinHiddenOptions = resolutionSelectEL.findAll('option[hidden]');
+    expect(resolutoinHiddenOptions.length).toBe(3);
   });
 });
