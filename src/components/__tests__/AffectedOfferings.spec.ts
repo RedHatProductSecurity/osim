@@ -3,7 +3,23 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import type { ZodAffectType } from '@/types/zodFlaw';
 
 function mockAffect ({ ps_module, ps_component }:{ps_module: string, ps_component: string}): ZodAffectType {
-  return { ps_module, ps_component, embargoed:false, trackers:[], cvss_scores: [] };
+  return { 
+    ps_module,
+    ps_component,
+    embargoed:false,
+    trackers:[],
+    cvss_scores: [{
+      comment: 'hardcoded comment',
+      created_dt: null,
+      cvss_version: 'V3',
+      embargoed: false,
+      issuer: 'RH',
+      score: null,
+      uuid: null,
+      vector: null,
+    },
+    ],
+  };
 }
 
 // const mockError = () => ({

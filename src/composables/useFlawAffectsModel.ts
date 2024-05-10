@@ -29,7 +29,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function affectCvssData(affect: ZodAffectType, issuer: string, version: string) {
-    return flaw.value.cvss_scores.find(
+    return affect.cvss_scores.find(
       (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
     );
   }
