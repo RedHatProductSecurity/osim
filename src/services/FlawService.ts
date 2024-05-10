@@ -140,8 +140,9 @@ export async function putFlawCvssScores(
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
     data: putObject,
   }, { beforeFetch })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
     .then((response) => response.data)
-    .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+    .catch(createCatchHandler('CVSS Scores Update Error'));
 }
 
 // {
@@ -159,8 +160,9 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
     data: postObject,
   }, { beforeFetch })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
     .then((response) => response.data)
-    .catch(createCatchHandler('Problem updating flaw CVSS scores:'));
+    .catch(createCatchHandler('CVSS scores Update Error'));
 }
 
 export async function postFlawPublicComment(uuid: string, comment: string, embargoed: boolean) {

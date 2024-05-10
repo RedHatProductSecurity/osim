@@ -1,10 +1,6 @@
 import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { computed, ref, watch, type Ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
-
-const onSucceed = createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' });
-const onError = createCatchHandler('Error updating Flaw CVSS data');
 
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
@@ -72,13 +68,7 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
 
   async function saveCvssScores() {
     if (flawRhCvss3.value.created_dt) {
-      return putFlawCvssScores(
-        flaw.value.uuid,
-        flawRhCvss3.value.uuid || '',
-        flawRhCvss3.value as unknown,
-      )
-        .then(onSucceed)
-        .catch(onError);
+      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value as unknown);
     }
 
     const requestBody = {
@@ -89,9 +79,7 @@ export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
       vector: flawRhCvss3.value.vector,
       embargoed: flaw.value.embargoed,
     };
-    return postFlawCvssScores(flaw.value.uuid, requestBody as unknown)
-      .then(onSucceed)
-      .catch(onError);
+    return postFlawCvssScores(flaw.value.uuid, requestBody as unknown);
   }
 
   return {
