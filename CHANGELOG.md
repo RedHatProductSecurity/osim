@@ -63,6 +63,7 @@
 * Fixed Scroll bar on `Flaws` list
 * Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 * The session is now shared across tabs
+* Fixed CVSS scores not being saved after flaw creation
 
 
 
