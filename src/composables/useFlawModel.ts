@@ -60,8 +60,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
 
-
-
     await postFlaw(flawForPost)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
@@ -69,6 +67,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
           name: 'flaw-details',
           params: { id: response?.cve_id || response?.uuid },
         });
+        flaw.value.uuid = response.uuid;
       })
       .catch(createCatchHandler('Error creating Flaw'))
       .finally(() => { isSaving.value = false; });
