@@ -5,7 +5,7 @@ import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
   RequiresSummaryEnum,
-  Source8d8Enum,
+  Source642Enum,
   AffectType,
   AffectednessEnum,
   ResolutionEnum,
@@ -20,7 +20,7 @@ import { cveRegex } from '@/utils/helpers';
 const FlawTypeWithBlank = { '': '', ...FlawType } as const;
 const ImpactEnumWithBlank = { '': '', ...ImpactEnum } as const;
 const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
-const Source8d8EnumWithBlank = { '': '', ...Source8d8Enum } as const;
+const Source642EnumWithBlank = { '': '', ...Source642Enum } as const;
 const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 const AffectednessEnumWithBlank = { '': '', ...AffectednessEnum } as const;
@@ -274,7 +274,7 @@ export const ZodFlawSchema = z.object({
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
-  source: z.nativeEnum(Source8d8EnumWithBlank).refine(
+  source: z.nativeEnum(Source642EnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' }
   ),
@@ -356,7 +356,7 @@ export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName 
 const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
 
 export const flawTypes = Object.values(FlawTypeWithBlank);
-export const flawSources = Object.values(Source8d8EnumWithBlank); // TODO: handle blank in the component
+export const flawSources = Object.values(Source642EnumWithBlank); // TODO: handle blank in the component
 export const flawImpacts = Object.values(ImpactEnumWithBlank); // TODO: handle blank in the component
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
 

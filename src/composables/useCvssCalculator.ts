@@ -88,21 +88,6 @@ function calculateBaseScore(factors: Record<string, string>) {
   return baseScore;
 }
 
-// Gets color for factor weight
-// export function getFactorColor(factor: string, value: string) {
-//   const severity = factorSeverities[factor][value];
-//   switch (severity) {
-//   case 'Good':
-//     return '#4CBD52'; // Green
-//   case 'Bad':
-//     return '#FBC94B'; // Yellow
-//   case 'Worse':
-//     return '#FF841F'; // Orange
-//   default:
-//     return '#FF5447'; // Red
-//   }
-// }
-
 // Factors Weights
 export const weights: { [factor: string]: { [value: string]: number } } = {
   AV: { N: 0.85, A: 0.62, L: 0.55, P: 0.2 },

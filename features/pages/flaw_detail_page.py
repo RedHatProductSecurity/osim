@@ -1,3 +1,7 @@
+import json
+import random
+import requests
+import urllib.parse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -7,9 +11,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 from selenium.webdriver.remote.webelement import WebElement
-
-from features.page_factory_utils import find_elements_in_page_factory
 from features.pages.base import BasePage
+from features.page_factory_utils import find_elements_in_page_factory
+from features.constants import (
+    OSIDB_URL,
+    EMBARGOED_FLAW_CVE_ID,
+    PUBLIC_FLAW_CVE_ID
+)
 
 
 class FlawDetailPage(BasePage):
@@ -79,7 +87,6 @@ class FlawDetailPage(BasePage):
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
-
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
@@ -100,18 +107,25 @@ class FlawDetailPage(BasePage):
         "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
         "firstReferenceLinkUrlInput": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[1]/div/div/input"),
         "firstReferenceDescriptionTextArea": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[2]/div/textarea"),
-
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
-
         "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
-
         "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "editpens": ("XPATH", "//button[@class='osim-editable-text-pen input-group-text']"),
         "peninputs": ("XPATH", "//input[@class='form-control']"),
         "selects": ("XPATH", "//select[@class='form-select']"),
         "affectCreatedMsg": ("XPATH", "//div[text()='Affect Created.']"),
+        # Affects locators
+        "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[4]"),
+        "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[1]"),
+        "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[1]"),
+        "affects__cvss3_score": ("XPATH", "(//span[text()='CVSSv3'])[1]"),
+        "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[1]"),
+        "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
+        "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
+        "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
+        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -221,7 +235,6 @@ class FlawDetailPage(BasePage):
             field_select = getattr(self, field + 'Select')
         else:
             field_select = field
-
         all_values = field_select.get_all_list_item()
         selected_item = field_select.get_list_selected_item()
         current_value = selected_item[0] if selected_item else None
@@ -229,6 +242,7 @@ class FlawDetailPage(BasePage):
 
     def set_select_value(self, field):
         field_select = getattr(self, field + 'Select')
+        self.driver.execute_script("arguments[0].value = '';", field_select)
         all_values, current_value = self.get_select_value(field)
         if field == 'source':
             all_values = self.allowed_sources
@@ -385,3 +399,104 @@ class FlawDetailPage(BasePage):
         impact_select.select_by_value('LOW')
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         return ps_component_value
+  
+    def get_an_available_ps_module(self, affect_module):
+        # Get the suitable ps_modules for update
+        # The modules which under data/community_projects, except fedora-all,
+        # have no limitation
+        # https://gitlab.cee.redhat.com/prodsec/product-definitions/
+        n = affect_module.split('-')[-1]
+        num = random.randint(11, 40)
+        while True:
+            if str(num) == n:
+                num = random.randint(11, 40)
+            else:
+                break
+        ps_module = "fedora-" + str(num)
+        return ps_module
+
+    def set_select_specific_value(self, field, value):
+        field_element = getattr(self, field)
+        select_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
+        try:
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomBar)
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomFooter)
+        except ElementNotVisibleException:
+            pass
+        select_element.execute_script("arguments[0].scrollIntoView(true);")
+        select_element.select_element_by_value(value)
+
+    def get_affect_value_from_osidb(self, fields, token, component_value,
+            embargoed=False):
+        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
+        headers = {"Authorization": f"Bearer {token}"}
+        cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
+        params = {"cve_id": cve_id}
+        r = requests.get(url, params = params, headers = headers)
+        flaw_info = json.loads(r.text).get('results')[0]
+        # Get the field value dict that related to the updated affect
+        field_value_dict = {}
+        for affect in flaw_info.get('affects'):
+            # One module and one module combination should be unique.
+            # One unique component is associated one affect in affect list
+            if affect.get('ps_component') == component_value:
+                for field in fields:
+                    if affect.get(field):
+                        field_value = affect.get(field)
+                        field_value_dict[field] = field_value
+                    else:
+                        field_value_dict[field] = ''
+        return field_value_dict
+
+    def set_select_value_for_affect(self, field):
+        field_element = getattr(self, field)
+        select_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
+        select_element.execute_script("arguments[0].scrollIntoView(true);")
+        if 'affects' in field:
+            hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
+            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_bar)
+        select_list = select_element.get_all_list_item()
+        selected_list = select_element.get_list_selected_item()
+        if selected_list[0] in select_list:
+            select_list.remove(selected_list[0])
+        updated_value = random.choice(select_list)
+        select_element.execute_script("arguments[0].scrollIntoView(true);")
+        select_element.select_element_by_value(updated_value)
+        if 'affects' in field:
+            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
+        return updated_value
+
+    def get_selected_value_for_affect(self, field):
+        field_element = getattr(self, field)
+        select_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
+        select = Select(select_element)
+        current_value = select.first_selected_option.text
+        return current_value
+
+    def get_current_value_of_field(self, field):
+        field_element = getattr(self, field)
+        input_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//span[@class='osim-editable-text-value form-control']").near(field_element))[0]
+        current_value = input_element.get_text()
+        return current_value
+
+    def set_field_value(self, field, value):
+        field_element = getattr(self, field)
+        # Get the pen element of the field and click it
+        pen_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='osim-editable-text-pen input-group-text']").to_right_of(field_element))[0]
+        self.driver.execute_script("arguments[0].click();", pen_element)
+        # Get the input field and set the value
+        input_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='form-control']").near(field_element))[0]
+        self.driver.execute_script("arguments[0].value = '';", input_element)
+        input_element.send_keys(value)
+        # In affects, if we won't click the CheckMark for module and go to
+        # component, the affects will be hidden
+        if "affects" in field:
+            field_savebtn = self.driver.find_elements(
+                locate_with(By.XPATH, "//i[@class='bi bi-check']").near(input_element))[0]
+            self.driver.execute_script("arguments[0].click();", field_savebtn)

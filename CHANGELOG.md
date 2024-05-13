@@ -35,6 +35,9 @@
   * Removed modified/unsaved affects section
   * Added UI indications for unsaved affects
   * Improved recovery/deletion UI
+  * Show affectedness, resolution text
+  * Update affectedness, resolution selection options
+* Add OSV Source for Flaw
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -60,6 +63,7 @@
 * Fixed Scroll bar on `Flaws` list
 * Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 * The session is now shared across tabs
+* Fixed CVSS scores not being saved after flaw creation
 
 
 

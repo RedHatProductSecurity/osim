@@ -49,6 +49,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   async function createFlaw() {
     isSaving.value = true;
+
     const validatedFlaw = validate();
     if (!validatedFlaw.success) {
       isSaving.value = false;
@@ -59,16 +60,21 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
 
-    postFlaw(flawForPost)
+    await postFlaw(flawForPost)
       .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
       .then((response: any) => {
         router.push({
           name: 'flaw-details',
           params: { id: response?.cve_id || response?.uuid },
         });
+        flaw.value.uuid = response.uuid;
       })
-      .catch(createCatchHandler('Error creating Flaw'))
-      .finally(() => { isSaving.value = false; });
+      .catch(createCatchHandler('Error creating Flaw'));
+
+    if (wasCvssModified.value) {
+      await saveCvssScores();
+    }
+    isSaving.value = false;
   }
 
   function validate(){
