@@ -22,7 +22,7 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     flaw_create_page.set_input_field('title', generate_random_text())
     flaw_create_page.set_input_field('component', 'autocomponent')
     flaw_create_page.set_input_field('cveid', context.cve_id)
-    flaw_create_page.set_input_field('reportedDate', reported_date)
+    # flaw_create_page.set_input_field('reportedDate', reported_date)
     flaw_create_page.set_select_value('impact')
     flaw_create_page.set_select_value('source')
     if embargoed:

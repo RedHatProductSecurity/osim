@@ -21,12 +21,18 @@ class BasePage(PageFactory):
         element.execute_script("arguments[0].click();")
 
     def click_btn(self, btn_element):
-        element = getattr(self, btn_element)
+        if not isinstance(btn_element, WebElement):
+            element = getattr(self, btn_element)
+        else:
+            element = btn_element
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         element.click_button()
 
     def clear_text_with_js(self, element_name):
-        element = getattr(self, element_name)
+        if not isinstance(element_name, WebElement):
+            element = getattr(self, element_name)
+        else:
+            element = element_name
         element.execute_script("arguments[0].scrollIntoView(true);")
         element.execute_script("arguments[0].value = '';")
 
