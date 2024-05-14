@@ -3,11 +3,14 @@
 ## [Unreleased]
 ### Added
 * Self-Assign button for Flaws
-* Time to Public Date field
+* Provide time to Public Date field
 
 ### Fixed
 * The session is now shared across tabs
 * CVSS scores on affects can be added
+* Disable form on references and acknowledgments save actions
+* References and acknowledgments disappear after save actions
+* References and acknowledgments are not refreshed after save actions
 
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
