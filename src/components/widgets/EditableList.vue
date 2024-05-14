@@ -18,10 +18,10 @@ const emit = defineEmits<{
   'item:delete': [value: string];
 }>();
 
-const modals = Object.fromEntries(items.value.map((item) => [item.uuid, useModal()]));
+const modals = computed(() => Object.fromEntries(items.value.map((item) => [item.uuid, useModal()])));
 
 function useModalForItem(uuid: string) {
-  return modals[uuid];
+  return modals.value[uuid];
 }
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
