@@ -31,8 +31,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
-  (e: 'add-blank-affect'): void;
-  (e: 'comment:addPublicComment', value: string): void;
 }>();
 
 function onSaveSuccess() {
@@ -316,7 +314,6 @@ const onReset = () => {
         <div class="d-flex gap-3">
           <IssueFieldReferences
             v-model="flawReferences"
-            :isEmbargoed="flaw.embargoed"
             class="w-100 my-3"
             :error="errors.references"
             @reference:update="saveReferences"
