@@ -52,6 +52,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
       :total="total"
       :isFinalPageFetched="isFinalPageFetched"
       :showFilter="showFilter"
+      :defaultFilters="searchStore.searchFilters"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />

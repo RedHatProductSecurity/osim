@@ -25,6 +25,7 @@ const props = defineProps<{
   isFinalPageFetched: boolean;
   showFilter?: boolean
   total: number
+  defaultFilters?: Record<string, string>
 }>();
 
 const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
@@ -148,6 +149,29 @@ function emitLoadMore() {
 watch(params, () => {
   emit('flaws:fetch', params);
 });
+
+const nameForOption = (fieldName: string) => {
+  const mappings: Record<string, string> = {
+    uuid: 'UUID',
+    cvss_scores__score: 'CVSS Score',
+    cvss_scores__vector: 'CVSS Vector',
+    affects__ps_module: 'Affected Module',
+    affects__ps_component: 'Affected Component',
+    affects__trackers__ps_update_stream: 'Affect Update Stream',
+    acknowledgments__name: 'Acknowledgment Author',
+    affects__trackers__errata__advisory_name: 'Errata Advisory Name',
+    affects__trackers__external_system_id: 'Tracker External System ID',
+    workflow_state: 'Flaw Status',
+    cwe_id: 'CWE ID',
+    cve_id: 'CVE ID',
+    source: 'CVE Source',
+  };
+  let name =
+    mappings[fieldName] ||
+    fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+  name = name.replace(/_/g, ' ');
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
 </script>
 
 <template>
@@ -176,6 +200,18 @@ watch(params, () => {
         :class="{'text-secondary': isLoading}"
       > Loaded {{ issues.length }} of {{ total }}</span>
     </div>
+    <details v-if="showFilter" class="osim-default-filter">
+      <summary class="mb-2">Default Filters</summary>
+      <div>
+        <span 
+          v-for="(value, key) in defaultFilters"
+          :key="key"
+          class="badge rounded-pill bg-primary text-light border me-2 mb-1 pe-auto"
+        >
+          {{ nameForOption(key) }} : {{ value }}
+        </span>
+      </div>
+    </details>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
         <thead class="sticky-top">
@@ -264,6 +300,10 @@ watch(params, () => {
 
   .osim-incident-filter {
     margin-left: -0.5rem;
+  }
+
+  .osim-default-filter{
+    padding-left: 0.75rem;
   }
 
   &:hover i {

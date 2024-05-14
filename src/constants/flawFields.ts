@@ -22,7 +22,6 @@ const includedFields = [
   'component',
   'title',
   'owner',
-  'team_id',
   'trackers',
   'classification',
   'cwe_id',
