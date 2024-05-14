@@ -306,8 +306,8 @@ export const ZodFlawSchema = z.object({
     });
   };
 
-  const duplicatedAffects = (affects = []) => {
-    const map = {};
+  const duplicatedAffects = (affects: ZodAffectType[]) => {
+    const map: Record<string, boolean> = {};
     for (let i = 0; i < affects.length; i ++){
       const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
       if(map[key]) {
