@@ -125,7 +125,10 @@ class FlawDetailPage(BasePage):
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
-        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]")
+        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
+        "affectStatusBtn": ("XPATH", "(//button[contains(text(), 'Status')])[1]"),
+        "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
+        "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -500,3 +503,10 @@ class FlawDetailPage(BasePage):
             field_savebtn = self.driver.find_elements(
                 locate_with(By.XPATH, "//i[@class='bi bi-check']").near(input_element))[0]
             self.driver.execute_script("arguments[0].click();", field_savebtn)
+
+    def delete_affect(self, field):
+        affect_status_element = getattr(self, field)
+        # Get the delete element via the status element and click it
+        delete_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_status_element))[0]
+        self.driver.execute_script("arguments[0].click();", delete_element)

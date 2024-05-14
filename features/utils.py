@@ -117,7 +117,7 @@ def set_bugzilla_api_key(browser):
 
 def go_to_home_page(browser):
     home_page = HomePage(browser)
-    home_page.click_btn('flawIndexBtn')
+    home_page.click_button_with_js('flawIndexBtn')
     home_page.flaw_list_exist()
 
 

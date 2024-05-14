@@ -120,3 +120,9 @@ Feature: Flaw detail testing
       When I add a new affect with valid data
       Then The affect is added
     
+    Scenario: Delete an affect from  a flaw
+      Given I go to a public flaw detail page
+      When I delete an affect of the flaw
+      Then The affect is deleted
+
+    
