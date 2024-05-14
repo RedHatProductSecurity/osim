@@ -11,12 +11,20 @@ import {
   putFlawAcknowledgment,
   deleteFlawAcknowledgment,
 } from '@/services/FlawService';
-import { ref, type Ref } from 'vue';
+import { toRef, watch, type Ref } from 'vue';
 
 export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, afterSaveSuccess: () => void) {
 
-  const flawReferences = ref<ZodFlawReferenceType[]>(flaw.value.references);
-  const flawAcknowledgments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
+  const flawReferences: Ref<ZodFlawReferenceType[]> = toRef(flaw.value, 'references');
+  const flawAcknowledgments: Ref<ZodFlawAcknowledgmentType[]> = toRef(flaw.value, 'acknowledgments');
+  
+  watch(() => flaw.value.references, () => {
+    flawReferences.value = flaw.value.references;
+  });
+
+  watch(() => flaw.value.acknowledgments, () => {
+    flawAcknowledgments.value = flaw.value.acknowledgments;
+  });
 
   async function updateReference(reference: ZodFlawReferenceType & { uuid: string }) {
     await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
