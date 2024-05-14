@@ -45,6 +45,11 @@ function addItem() {
   emit('item:new');
 }
 
+function saveItems() {
+  emit('item:save', itemsToSave.value);
+  modifiedItemIndexes.value = [];
+}
+
 function cancelEdit(index: number) {
   items.value[index] = deepCopyFromRaw(priorValues.value[index]);
   indexBeingEdited.value = null;
@@ -173,7 +178,7 @@ function commitEdit(index: number) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('item:save', itemsToSave)"
+        @click.prevent="saveItems()"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
