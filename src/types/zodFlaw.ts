@@ -306,6 +306,18 @@ export const ZodFlawSchema = z.object({
     });
   };
 
+  const duplicatedAffects = (affects = []) => {
+    const map = {};
+    for (let i = 0; i < affects.length; i ++){
+      const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
+      if(map[key]) {
+        return { index: i };
+      }
+      map[key] = true;
+    }
+    return null;
+  };
+
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
   const reported_dt = DateTime.fromISO(`${zodFlaw.reported_dt}`).toISODate();
 
@@ -333,6 +345,15 @@ export const ZodFlawSchema = z.object({
   if (reported_dt && reported_dt > DateTime.now().toISODate()) {
     raiseIssue('Reported date cannot be in the future.', ['reported_dt']);
   }
+
+  const affect = duplicatedAffects(zodFlaw.affects);
+  if(affect) {
+    raiseIssue(
+      'Affected component cannot be registered on the affected module twice',
+      [`Affects/${affect.index}/component`],
+    );
+  }
+
 });
 
 // const ZodFlawSchemaPartial = ZodFlawSchema.partial();
