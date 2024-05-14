@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Self-Assign button for Flaws
+* Time to Public Date field
 
 ### Fixed
 * The session is now shared across tabs

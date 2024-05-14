@@ -245,7 +245,7 @@ const onReset = () => {
                   ? ' [FUTURE]'
                   : '')
             "
-            type="date"
+            type="datetime"
             :error="errors.unembargo_dt"
           />
           <IssueFieldEmbargo

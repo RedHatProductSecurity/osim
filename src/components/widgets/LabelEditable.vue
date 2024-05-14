@@ -3,10 +3,10 @@
 import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   // modelValue: string,
   label?: string,
-  type: 'text' | 'date',
+  type: 'text' | 'date' | 'datetime',
   // error: string,
   // required: boolean,
 }>(), {
@@ -14,10 +14,6 @@ withDefaults(defineProps<{
   // required: false,
 });
 
-const components = {
-  text: EditableText,
-  date: EditableDate,
-};
 const modelValue = defineModel<string | undefined | null | number | Date>();
 </script>
 
@@ -29,14 +25,17 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
           {{ label }}
         </slot>
       </span>
-      <component
-        :is="components[type as keyof typeof components] as any"
-        v-model="modelValue"
-        v-bind="$attrs"
+      <EditableDate 
+        v-if="props.type.includes('date')"
+        v-model="modelValue as string"
+        :class="$attrs.class"
+        :includesTime="props.type === 'datetime'"
       />
-      <span v-if="!(type in components)" class="alert alert-danger d-block" role="alert">
-        OSIM BUG: Incorrect LabelEditable type
-      </span>
+      <EditableText 
+        v-else
+        v-model="modelValue as string"
+        :class="$attrs.class"
+      />
     </div>
   </label>
 
