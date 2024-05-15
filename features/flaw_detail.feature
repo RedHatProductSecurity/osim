@@ -71,6 +71,11 @@ Feature: Flaw detail testing
       When I update the Reported Date with a valid data
       Then The Reported Date is updated
 
+    Scenario: Assign flaw to self
+      Given I go to a public flaw detail page
+      When I click self assign button and save changes
+      Then The flaw is assigned to me
+
     Scenario: Add external reference
       Given I go to a public flaw detail page
       When I add two external references to the flaw
@@ -119,4 +124,3 @@ Feature: Flaw detail testing
       Given I go to a public flaw detail page
       When I add a new affect with valid data
       Then The affect is added
-    
