@@ -53,9 +53,9 @@ function handleTrackAffect(stream: string) {
   } as TrackersPost);
 }
 
-const isAffectNew =  computed (() => !modelValue.value.uuid);
+const isAffectNew = computed (() => !modelValue.value.uuid);
 
-const trackersCount =  computed(
+const trackersCount = computed(
   () => `${modelValue.value.trackers?.length || 0} trackers`
 );
 

@@ -19,7 +19,7 @@ const searchQuery = z.object({
 export function useSearchParams() {
 
   const route = useRoute();
-  
+
   const router = useRouter();
 
   const populateFacets = (): Facet[] => {
@@ -49,7 +49,7 @@ export function useSearchParams() {
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach(key => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
-          params[key] =  route.query[key]as string;
+          params[key] = route.query[key] as string;
         }
       });
     }
@@ -69,7 +69,7 @@ export function useSearchParams() {
 
   watch(() => route.query.query, () => {
     // repopulate facets after quick query changed
-    search.value = `${route.query.query ||''}`;
+    search.value = `${route.query.query || ''}`;
     facets.value = populateFacets();
   });
 

@@ -2,8 +2,8 @@ import { mount } from '@vue/test-utils';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import type { ZodAffectType } from '@/types/zodFlaw';
 
-function mockAffect ({ ps_module, ps_component }:{ps_module: string, ps_component: string}): ZodAffectType {
-  return { 
+function mockAffect ({ ps_module, ps_component }: { ps_module: string, ps_component: string }): ZodAffectType {
+  return {
     ps_module,
     ps_component,
     embargoed:false,
@@ -23,7 +23,7 @@ function mockAffect ({ ps_module, ps_component }:{ps_module: string, ps_componen
 }
 
 // const mockError = () => ({
-//   ps_module:null, 
+//   ps_module:null,
 //   ps_component:null,
 //   embargoed:null,
 //   trackers:[null],
@@ -70,11 +70,11 @@ describe('AffectedOfferings', () => {
 
     // Module 1 starts collapsed
     expect(subject.find('.visually-hidden > .osim-affected-offering').exists()).toBe(true);
-    
+
     // Expand Module 1
     await button.trigger('click');
     expect(subject.find('div:not(.visually-hidden) > .osim-affected-offering').exists()).toBe(true);
-    
+
     // Collapse Module 1
     await button.trigger('click');
     expect(subject.find('.visually-hidden > .osim-affected-offering').exists()).toBe(true);

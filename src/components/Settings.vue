@@ -32,7 +32,7 @@ watch(settings, () => {
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">
-      These values are saved in browser local storage, and should persist across tabs 
+      These values are saved in browser local storage, and should persist across tabs
       and browser sessions. Ensure that security best practices are followed.
     </div>
 
@@ -42,7 +42,7 @@ watch(settings, () => {
       @submit="onSubmit(settings)"
     >
 
-      <!-- <LabelInput 
+      <!-- <LabelInput
         v-model="bugzillaApiKey"
         label="Bugzilla API Key"
         :error="errors.bugzillaApiKey"
@@ -73,7 +73,7 @@ watch(settings, () => {
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">Bugzilla API Key</span>
-          <input 
+          <input
             v-model="settings.bugzillaApiKey"
             class="form-control"
             :type="revealSensitive"
@@ -108,7 +108,7 @@ watch(settings, () => {
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">JIRA API Key</span>
-          <input 
+          <input
             v-model="settings.jiraApiKey"
             class="form-control"
             :type="revealSensitive"

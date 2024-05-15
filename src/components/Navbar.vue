@@ -128,7 +128,7 @@ function onSearch(query: string) {
             </button>
             <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
               <li>
-                <RouterLink 
+                <RouterLink
                   class="dropdown-item"
                   :to="{ name: 'search', query: { 'mode': 'advanced' } }"
                 >

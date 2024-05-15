@@ -14,7 +14,7 @@ export function useNetworkQueue() {
     let lastResult;
     let remainingTasks = queue.length;
     pendingCalls.value += remainingTasks;
-    
+
     for (const action of queue) {
       ++activeCalls.value;
 

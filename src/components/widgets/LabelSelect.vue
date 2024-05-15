@@ -65,7 +65,7 @@ withDefaults(
   .invalid-tooltip {
     display: none;
   }
-  
+
   &:hover .invalid-tooltip {
     display: block;
   }

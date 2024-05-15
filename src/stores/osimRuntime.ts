@@ -113,8 +113,8 @@ function fetchRuntime() {
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
-      if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z' ||
-          runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
+      if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z'
+          || runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
         // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
         runtime.value.osimVersion.timestamp = new Date().toISOString();
       }

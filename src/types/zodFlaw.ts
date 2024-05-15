@@ -39,7 +39,7 @@ const zodOsimDateTime = () =>
         });
       }
     }));
-    
+
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
   name: z.string().default(''),
@@ -60,8 +60,8 @@ export const FlawReferenceSchema = z.object({
   url: z.string().default(''),
   embargoed: z.boolean().default(false),
   updated_dt: zodOsimDateTime().nullish().default(null),
-}).superRefine((reference, zodContext)=>{
-  if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//) ) {
+}).superRefine((reference, zodContext) => {
+  if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//)) {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Red Hat Security Bulletin URLs must be from https://access.redhat.com/',
@@ -69,14 +69,14 @@ export const FlawReferenceSchema = z.object({
     });
   }
 
-  if (!reference.url.match(/^(?:https?:\/\/)/) ) {
+  if (!reference.url.match(/^(?:https?:\/\/)/)) {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Reference URL must begin with either https:// or http://',
       path: ['url'],
     });
   }
-  
+
   if (!reference.url) {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
@@ -297,9 +297,9 @@ export const ZodFlawSchema = z.object({
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
-}).superRefine((zodFlaw, zodContext)=>{
+}).superRefine((zodFlaw, zodContext) => {
 
-  const raiseIssue = (message: string, path: string[]) =>{
+  const raiseIssue = (message: string, path: string[]) => {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
       message,
@@ -311,8 +311,8 @@ export const ZodFlawSchema = z.object({
     const map: Record<string, boolean> = {};
     for (let i = 0; i < affects.length; i++) {
       const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
-      if(map[key]) {
-        return { 
+      if (map[key]) {
+        return {
           index: i,
         };
       } else {
@@ -345,7 +345,7 @@ export const ZodFlawSchema = z.object({
   if (!zodFlaw.reported_dt) {
     raiseIssue('Reported date is required.', ['reported_dt']);
   }
-  
+
   if (reported_dt && reported_dt > DateTime.now().toISODate()) {
     raiseIssue('Reported date cannot be in the future.', ['reported_dt']);
   }
@@ -373,7 +373,7 @@ type SchemaType =
 
 type SchemaTypeWithEffect = SchemaType | typeof ZodFlawSchema;
 
-export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName === 'ZodEffects' 
+export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName === 'ZodEffects'
   ? Object.keys(schema._def.schema.shape)
   : Object.keys((schema as SchemaType).shape);
 

@@ -11,7 +11,7 @@ export function useFlawsFetching() {
 
   function loadFlaws(params: any = {}) {
     offset.value = 0;
-    isFinalPageFetched.value = false;  
+    isFinalPageFetched.value = false;
     isLoading.value = true;
     issues.value = [];
     total.value = 0;
@@ -26,7 +26,7 @@ export function useFlawsFetching() {
           offset.value = Number(params.get('offset') || 0);
         } else {
           isFinalPageFetched.value = true;
-          offset.value += response.data.results.length; 
+          offset.value += response.data.results.length;
         }
 
         total.value = response.data.count;
@@ -55,7 +55,7 @@ export function useFlawsFetching() {
           offset.value = Number(params.get('offset') || 0);
         } else {
           isFinalPageFetched.value = true;
-          offset.value += response.data.results.length; 
+          offset.value += response.data.results.length;
         }
       })
       .catch((err) => {

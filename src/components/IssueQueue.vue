@@ -16,7 +16,7 @@ type FilteredIssue = {
 
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
-// type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner'; 
+// type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
 type ColumnField = 'id' | 'impact' | 'created_dt' | 'title' | 'state' | 'owner';
 
 const props = defineProps<{
@@ -42,8 +42,8 @@ const filteredStates = computed(() => {
   return allStates
     .filter(
       (state) =>
-        state !== FlawClassificationStateEnum.Done &&
-        state !== FlawClassificationStateEnum.Rejected,
+        state !== FlawClassificationStateEnum.Done
+        && state !== FlawClassificationStateEnum.Rejected,
     )
     .join(',');
 });
@@ -136,8 +136,8 @@ function handleScroll() {
 
   const totalHeight = tableContainerEl.value.scrollHeight;
   const scrollPosition = tableContainerEl.value.scrollTop + tableContainerEl.value.clientHeight;
-  // Trigger loading more content when the user has scrolled to 99% of the container's height, 
-  if (scrollPosition >= totalHeight * 0.99) { 
+  // Trigger loading more content when the user has scrolled to 99% of the container's height,
+  if (scrollPosition >= totalHeight * 0.99) {
     emitLoadMore();
   }
 }
@@ -167,8 +167,8 @@ const nameForOption = (fieldName: string) => {
     source: 'CVE Source',
   };
   let name =
-    mappings[fieldName] ||
-    fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+    mappings[fieldName]
+    || fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
@@ -203,7 +203,7 @@ const nameForOption = (fieldName: string) => {
     <details v-if="showFilter" class="osim-default-filter">
       <summary class="mb-2">Default Filters</summary>
       <div>
-        <span 
+        <span
           v-for="(value, key) in defaultFilters"
           :key="key"
           class="badge rounded-pill bg-primary text-light border me-2 mb-1 pe-auto"
@@ -358,7 +358,7 @@ const nameForOption = (fieldName: string) => {
         // max-width: 9.5%;
         width: 9.5%;
       }
-      
+
       //&:nth-of-type(5) {
       //  // min-width: 12ch;
       //  // max-width: 12ch;
@@ -374,7 +374,7 @@ const nameForOption = (fieldName: string) => {
         // max-width: 32%;
         width: 42.5%;
       }
-      
+
       &:nth-of-type(6) {
         // min-width: 10ch;
         // max-width: 10ch;
@@ -382,7 +382,7 @@ const nameForOption = (fieldName: string) => {
         // max-width: 8.5%;
         width: 8.5%;
       }
-      
+
       &:nth-of-type(7) {
         // min-width: 20ch;
         // max-width: 20ch;

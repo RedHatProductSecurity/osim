@@ -35,8 +35,8 @@ function handleCloseModal() {
   emit('update:showModal', false);
 }
 
-watch(() => showModal.value, () => { 
-  if(showModal.value) { 
+watch(() => showModal.value, () => {
+  if (showModal.value) {
     openModal();
   } else {
     closeModal();
@@ -51,7 +51,7 @@ watch(() => showModal.value, () => {
         <div class="d-flex ms-0 p-0 justify-content-between">
           <LabelCheckbox v-if="isFlawNew" v-model="modelValue" label="Embargoed?" />
           <div v-else class="osim-embargo-label osim-input d-flex align-items-center">
-            <span 
+            <span
               class="form-control"
               :class="{
                 'has-warning': !isPublic && !modelValue,
@@ -133,7 +133,7 @@ watch(() => showModal.value, () => {
   position: relative;
   flex-grow: 1;
   width: inherit !important;
-  
+
   .has-button {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;

@@ -3,7 +3,7 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { 
+import {
   getDisplayedOsidbError,
   type OsidbFetchOptions
 } from '@/services/OsidbAuthService';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref  } from 'vue';
+import { computed, ref } from 'vue';
 import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
@@ -32,8 +32,8 @@ const nameForOption = (fieldName: string) => {
     source: 'CVE Source',
   };
   let name =
-    mappings[fieldName] ||
-    fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+    mappings[fieldName]
+    || fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };

@@ -25,13 +25,13 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
           {{ label }}
         </slot>
       </span>
-      <EditableDate 
+      <EditableDate
         v-if="props.type.includes('date')"
         v-model="modelValue as string"
         :class="$attrs.class"
         :includesTime="props.type === 'datetime'"
       />
-      <EditableText 
+      <EditableText
         v-else
         v-model="modelValue as string"
         :class="$attrs.class"

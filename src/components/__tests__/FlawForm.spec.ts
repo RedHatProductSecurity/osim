@@ -417,7 +417,7 @@ describe('FlawForm', () => {
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('An embargoed flaw must have a public date in the future.');
   });
-  
+
   it('if embargoed and public date is later today (in the future) it returns null', async () => {
     const flaw = sampleFlaw();
     flaw.embargoed = true;
@@ -435,7 +435,7 @@ describe('FlawForm', () => {
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
-  
+
   it('if NOT embargoed and public date is in the future, it returns an error ', async () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
@@ -444,7 +444,7 @@ describe('FlawForm', () => {
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('A public flaw cannot have a public date in the future.');
   });
-  
+
   it('if NOT embargoed and public date is today or in the past, it returns null', async () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
@@ -453,7 +453,7 @@ describe('FlawForm', () => {
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
-  
+
   it('if NOT embargoed and public date is null, it returns an error message', async () => {
     const flaw = sampleFlaw();
     flaw.embargoed = false;
@@ -462,7 +462,7 @@ describe('FlawForm', () => {
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('A public flaw must have a public date set.');
   });
-  
+
   it('if embargoed and public date is null, it returns null', async () => {
     const flaw = sampleFlaw();
     flaw.embargoed = true;

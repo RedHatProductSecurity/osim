@@ -84,7 +84,7 @@ function onBlur(e: FocusEvent | null) {
 
 <template>
   <!-- for invalid-tooltip positioning -->
-  <div class="position-relative col-9 osim-editable-field osim-text"> 
+  <div class="position-relative col-9 osim-editable-field osim-text">
     <!--<Transition name="flash-bg" :duration="2000">-->
     <Transition name="flash-bg">
       <div
@@ -168,43 +168,43 @@ function onBlur(e: FocusEvent | null) {
     Without this, the class is not automatically applied for the correct duration.
     Alternatively, :duration="ms" can be set on the Transition component. */
     transition-duration: 200ms;
-  
+
     .osim-editable-text-value {
       transition: background-color 200ms ease-out !important;
     }
   }
-  
+
   .flash-bg-enter-from .osim-editable-text-value {
     background-color: #f00;
   }
-  
+
   .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
     transition: none !important;
     display: none !important;
   }
-  
+
   .osim-editable-text {
     @extend .input-group; // Use pure CSS instead of JS for hover
     // Nest these for specificity
     white-space: nowrap;
-  
-  
+
+
     .osim-editable-text-value {
       @extend .form-control;
-  
+
       // border-color: transparent; // TODO decide to keep the hovering effect?
       color: var(--bs-secondary-color);
       text-overflow: ellipsis;
       overflow: hidden;
     }
-  
+
     .osim-editable-text-value::before {
       // Prevent field from collapsing when empty
       content: '\a0';
       display: inline-block;
       width: 0;
     }
-  
+
     .osim-editable-text-pen {
       display: flex;
     }

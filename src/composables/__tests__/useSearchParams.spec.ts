@@ -5,7 +5,7 @@ vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
   const replaceMock = vi.fn();
   const pushMock = vi.fn();
-  
+
   return {
     ...actual,
     useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
@@ -27,14 +27,14 @@ describe('useSearchParams', () => {
     vi.clearAllMocks();
   });
 
-  it('initialized correctly',() => {
-    const { facets,search } = useSearchParams();
+  it('initialized correctly', () => {
+    const { facets, search } = useSearchParams();
     expect(search.value).toBe('');
     expect(facets.value.length).toBe(0);
   });
 
-  it('update search value on submitQuickSearch',() => {
-    const { facets,search, submitQuickSearch } = useSearchParams();
+  it('update search value on submitQuickSearch', () => {
+    const { facets, search, submitQuickSearch } = useSearchParams();
     expect(search.value).toBe('');
     expect(facets.value.length).toBe(0);
     submitQuickSearch('search');
@@ -44,16 +44,16 @@ describe('useSearchParams', () => {
       .toStrictEqual({ name: 'search', query: { query: 'search' } });
   });
 
-  it('update facets on addFacet',() => {
+  it('update facets on addFacet', () => {
     const { facets, addFacet } = useSearchParams();
     expect(facets.value.length).toBe(0);
     addFacet();
     expect(facets.value.length).toBe(1);
   });
 
-  it('update facets on addFacet',() => {
+  it('update facets on addFacet', () => {
     const { facets, removeFacet } = useSearchParams();
-    facets.value=[
+    facets.value = [
       { field:'test', value:'test' },
       { field:'test', value:'test' }
     ];
@@ -62,14 +62,14 @@ describe('useSearchParams', () => {
     removeFacet();
     expect(facets.value.length).toBe(1);
     expect(facets.value[0]).toStrictEqual({
-      field:'', value:'' 
+      field:'', value:''
     });
   });
 
   it('getSearchParams', () => {
     (useRoute as Mock).mockReturnValue({
-      'query': { 
-        mode: 'advanced', 
+      'query': {
+        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },
@@ -84,8 +84,8 @@ describe('useSearchParams', () => {
 
   it('populatedFacets from route', () => {
     (useRoute as Mock).mockReturnValue({
-      'query': { 
-        mode: 'advanced', 
+      'query': {
+        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test',
         'acknowledgments__name': 'test'
