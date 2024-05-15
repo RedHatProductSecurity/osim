@@ -552,3 +552,27 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.ps_component)
     context.browser.quit()
+
+@when("I delete an affect of the flaw")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # Click the first affect component dropdown button
+    flaw_detail_page.click_button_with_js("affectDropdownBtn")
+    # Click the second affect component dropdown button
+    flaw_detail_page.click_button_with_js("affectDropdownBtn")
+    # Get the current value of the affect ps_component
+    context.ps_component = flaw_detail_page.get_current_value_of_field('affects__ps_component')
+    # Click the delete button of the affect
+    flaw_detail_page.delete_affect('affectStatusBtn')
+    warning = flaw_detail_page.affectDeleteTips.get_text()
+    assert warning == "Affected Offerings To Be Deleted"
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('affectDeleteMsg')
+
+@then("The affect is deleted")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_value_not_exist(context.ps_component)
+    context.browser.quit()
