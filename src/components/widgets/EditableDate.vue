@@ -6,17 +6,17 @@
 // Pressing escape or clicking the abort button aborts the change
 
 import { DateTime } from 'luxon';
-import { ref, nextTick, reactive } from 'vue';
+import { ref, nextTick, reactive, toValue } from 'vue';
 import { IMask } from 'vue-imask';
 
 const props = defineProps<{
   modelValue: string | undefined,
-  time?: boolean,
+  includesTime?: boolean,
   readOnly?: boolean,
   editing?: boolean,
   error?: string,
 }>();
-
+const initialValue = toValue(props.modelValue);
 const emit = defineEmits<{
   'update:modelValue': [value: string | undefined],
   'update:editing': [value: boolean],
@@ -27,71 +27,87 @@ const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-
-const mask = {
-  mask: Date, // enable date mask
-  pattern: 'Y-`m-`d',  // Pattern mask with defined blocks, default is 'd{.}`m{.}`Y'
-
+const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd';
+const maskLayer = {
+  mask: Date,
+  pattern,
   lazy: false, // shows template ____-__-__
   overwrite: true, // "insert" mode
-  min: new Date(0),
-  max: new Date(9999, 11, 31), // required to complete input
+  min: new Date(1970, 0, 1),
+  max: new Date(2999, 0, 1),
   blocks: {
-    Y: {
+    yyyy: {
       mask: IMask.MaskedRange,
       from: 1970,
       to: 9999,
       maxLength: 4,
     },
-    m: {
+    MM: {
       mask: IMask.MaskedRange,
       from: 1,
       to: 12,
       maxLength: 2,
     },
-    d: {
+    dd: {
       mask: IMask.MaskedRange,
       from: 1,
       to: 31,
       maxLength: 2,
     },
+    hh: {
+      mask: IMask.MaskedRange,
+      from: 0,
+      to: 23,
+      maxLength: 2,
+    },
+    mm: {
+      mask: IMask.MaskedRange,
+      from: 0,
+      to: 59,
+      maxLength: 2,
+    }
   },
-  // define date -> str conversion
-  format: function (date: Date | string) { // required to complete input
-    return formatDate(date);
-  },
-  // define str -> date conversion
-  parse: function (str: string) { // required to complete input
-    return parseDate(str);
-  },
-
+  // IMask's complete event depends on format and parse returning valid dates
+  format: formatDate,
+  parse: parseDate,
   autofix: true,
 };
 
-const boundObject = reactive({
+const formatString = props.includesTime ? 'yyyy-MM-dd T' :'yyyy-MM-dd';
+// The assumption is that the Date or String is in UTC
+function formatDate(date: Date | string): string {
+  const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
+  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(formatString);
+}
+// The assumption is that the Date or String is in UTC
+function parseDate(dateString: string): Date {
+  return DateTime.fromFormat(dateString, formatString, { zone: 'utc' }).toJSDate();
+}
+
+const maskState = reactive({
   completed: false,
   masked: '',
   unmasked: '',
 });
 
 if (props.modelValue != null) {
-  boundObject.masked = mask.format(props.modelValue);
+  maskState.masked = maskLayer.format(props.modelValue);
 }
 
 // vue-imask Event handler
 function onAccept(e: CustomEvent) {
   const maskRef = e.detail;
-  boundObject.completed = false;
-  boundObject.masked = maskRef.value;
-  boundObject.unmasked = maskRef.unmaskedValue;
+  maskState.completed = false;
+  maskState.masked = maskRef.value;
+  maskState.unmasked = maskRef.unmaskedValue;
 }
 
 // vue-imask Event handler
 function onComplete(e: CustomEvent) {
   const maskRef = e.detail;
-  boundObject.completed = true;
-  boundObject.masked = maskRef.value;
-  boundObject.unmasked = maskRef.unmaskedValue;
+  maskState.completed = true;
+  maskState.masked = maskRef.value;
+  maskState.unmasked = maskRef.unmaskedValue;
 }
 
 function beginEdit() {
@@ -104,21 +120,20 @@ function beginEdit() {
       elInput.value.focus();
       let maskRef = (elInput.value as any).maskRef;
       maskRef?.updateValue();
-      boundObject.masked = maskRef?.value;
-      boundObject.unmasked = maskRef?.unmaskedValue;
-      boundObject.completed = maskRef?.masked.isComplete;
+      maskState.masked = maskRef?.value;
+      maskState.unmasked = maskRef?.unmaskedValue;
+      maskState.completed = maskRef?.masked.isComplete;
     }
   });
 }
 
 function commit() {
-  console.log('commit');
   editing.value = false;
-  if (!boundObject.completed) {
+  if (!maskState.completed) {
     emit('update:modelValue', undefined);
     return;
   }
-  const date = parseDate(boundObject.masked); // Use parseDate to get the Date object
+  const date = parseDate(maskState.masked); // Use parseDate to get the Date object
   if (!isValidDate(date)) {
     emit('update:modelValue', undefined);
   } else {
@@ -128,9 +143,8 @@ function commit() {
 
 function abort() {
   editing.value = false;
-  boundObject.masked = props.modelValue || '';
-  boundObject.unmasked = props.modelValue || '';
-  console.log('abort');
+  maskState.masked = initialValue || '';
+  maskState.unmasked = initialValue || '';
 }
 
 function onBlur(e: FocusEvent | null) {
@@ -138,8 +152,6 @@ function onBlur(e: FocusEvent | null) {
     commit();
     return;
   }
-  // if (e.currentTarget.contains(e.relatedTarget)) {
-  // || elDiv.value?.contains(e.currentTarget)
 
   if (e.relatedTarget == null && editing.value) {
     commit();
@@ -149,39 +161,14 @@ function onBlur(e: FocusEvent | null) {
 
   if (e.relatedTarget instanceof Node) {
     if (elDiv.value?.contains(e.relatedTarget)) {
-      // abort();
-      // Do not commit or abort while navigating within this component (e.g. with tab or clicking)
-      return;
+      return; // Don't abort or commit if focus is still within the input editing parts of the component
     } else if (editing.value) {
       commit();
       return;
     }
   }
-
-
-  // if (e.currentTarget instanceof Node) {
-  //   if (elDiv.value?.contains(e.currentTarget)) {
-  //     abort();
-  //     return;
-  //   }
-  // }
 }
 
-// This function takes a Date or string and returns it in the 'YYYY-MM-DD' format.
-function formatDate(input: Date | string): string {
-  const dt = DateTime.fromJSDate(new Date(input)).toUTC();
-  const result = dt.toISODate(); // returns in 'YYYY-MM-DD' format
-  // if (result === null) {
-  //   throw new Error('Could not format date');
-  // }
-  return result || '';
-}
-
-
-// This function takes a string in 'YYYY-MM-DD' format and returns a Date object.
-function parseDate(input: string): Date {
-  return DateTime.fromISO(input, { zone: 'utc' }).toJSDate();
-}
 
 function isValidDate(d: Date | string): boolean {
   if (typeof d === 'string') {
@@ -190,12 +177,10 @@ function isValidDate(d: Date | string): boolean {
   return !isNaN(d.getTime());
 }
 
-
-function osimFormatDate(date: Date | string | undefined | null): string {
+function osimFormatDate(date?: string | null): string {
   if (date == null) {
     return '[No date selected]';
   }
-
   const formattedDate = formatDate(date); // Use the new formatDate function
   if (!formattedDate) {
     return 'Invalid Date';
@@ -204,73 +189,47 @@ function osimFormatDate(date: Date | string | undefined | null): string {
   return formattedDate;
 }
 
-// function validateDatePart(e: KeyboardEvent) {
-//   console.log(boundObject);
-//   if (e.repeat) {
-//     e.preventDefault();
-//     return false;
-//   }
-//   console.log(e);
-//   if (e.currentTarget instanceof HTMLInputElement) {
-//     if (!/\d\d\d\d-\d\d-\d\d/.test(e.currentTarget.value + e.key)) {
-//       e.preventDefault();
-//       return false;
-//     }
-//   }
-// }
+
 
 </script>
 
 <template>
   <!-- for invalid-tooltip positioning -->
   <div class="position-relative col-9 osim-editable-field osim-date">
-    <Transition name="flash-bg">
-      <div
-        v-if="!editing"
-        class="osim-editable-date"
-        :tabindex="readOnly ? -1 : 0"
-        @focus="beginEdit"
-      >
-        <span
-          class="osim-editable-date-value form-control text-start"
-          :class="{'form-control': !readOnly, 'is-invalid': error != null && !readOnly}"
-        >{{ osimFormatDate(modelValue) }}</span>
-        <button
-          v-if="!readOnly"
-          type="button"
-          class="osim-editable-date-pen input-group-text"
-          tabindex="-1"
-          @click="beginEdit"
-        ><i class="bi bi-pencil"></i></button>
-      </div>
-    </Transition>
+
+    <div
+      v-if="!editing"
+      class="osim-editable-date"
+      :tabindex="readOnly ? -1 : 0"
+      @focus="beginEdit"
+    >
+      <span
+        class="osim-editable-date-value form-control text-start"
+        :class="{'form-control': !readOnly, 'is-invalid': error != null && !readOnly}"
+      >{{ osimFormatDate(modelValue) }}</span>
+      <button
+        v-if="!readOnly"
+        type="button"
+        class="osim-editable-date-pen input-group-text"
+        tabindex="-1"
+        @click="beginEdit"
+      ><i class="bi bi-pencil"></i></button>
+    </div>
+
     <div
       v-if="editing"
       ref="elDiv"
       class="input-group osim-date-edit-field"
       @blur="onBlur($event)"
     >
-
-      <!--v-maska-->
-      <!--@keydown="validateDatePart($event)"-->
-      <!--<input class="form-control"-->
-      <!--       type="text"-->
-      <!--       ref="elInput"-->
-      <!--       @blur="blur($event)"-->
-      <!--       @keyup.esc="abort"-->
-
-      <!--       v-maska="boundObject"-->
-      <!--       data-maska="####-##-##"-->
-      <!--/>-->
-      <!--vue-imask-->
       <input
         ref="elInput"
-        v-imask="mask"
+        v-imask="maskLayer"
         class="form-control"
         :class="{'is-invalid': error != null}"
         :readonly="readOnly"
         type="text"
-        :value="boundObject.masked"
+        :value="maskState.masked"
         @blur="onBlur($event)"
         @keyup.esc="abort"
         @complete="onComplete"
@@ -295,12 +254,6 @@ function osimFormatDate(date: Date | string | undefined | null): string {
       v-if="!readOnly && error"
       class="invalid-tooltip"
     >{{ error }}</div>
-  <!--<br/>-->
-  <!--<pre>-->
-  <!--  Masked value: {{ boundObject.masked }}-->
-  <!--  Unmasked value: {{ boundObject.unmasked }}-->
-  <!--</pre>-->
-  <!--<span v-if="boundObject.completed">✅ Mask completed</span>-->
   </div>
 </template>
 
