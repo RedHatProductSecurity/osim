@@ -75,7 +75,6 @@ class FlawDetailPage(BasePage):
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
         "cveidInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
-
         "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
         "cweidInput": ("XPATH", "(//input[@class='form-control'])[6]"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
@@ -83,10 +82,12 @@ class FlawDetailPage(BasePage):
         "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
         "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
-
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
+        "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
+
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
@@ -125,7 +126,10 @@ class FlawDetailPage(BasePage):
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
-        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]")
+        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
+        "affectStatusBtn": ("XPATH", "(//button[contains(text(), 'Status')])[1]"),
+        "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
+        "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -492,11 +496,21 @@ class FlawDetailPage(BasePage):
         # Get the input field and set the value
         input_element = self.driver.find_elements(
             locate_with(By.XPATH, "//input[@class='form-control']").near(field_element))[0]
-        self.driver.execute_script("arguments[0].value = '';", input_element)
-        input_element.send_keys(value)
+        if value:
+            self.driver.execute_script("arguments[0].value = '';", input_element)
+            input_element.send_keys(value)
+        else:
+            input_element.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
         # In affects, if we won't click the CheckMark for module and go to
         # component, the affects will be hidden
         if "affects" in field:
             field_savebtn = self.driver.find_elements(
                 locate_with(By.XPATH, "//i[@class='bi bi-check']").near(input_element))[0]
             self.driver.execute_script("arguments[0].click();", field_savebtn)
+
+    def delete_affect(self, field):
+        affect_status_element = getattr(self, field)
+        # Get the delete element via the status element and click it
+        delete_element = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_status_element))[0]
+        self.driver.execute_script("arguments[0].click();", delete_element)
