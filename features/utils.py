@@ -17,6 +17,7 @@ from constants import (
     TIMEOUT,
     OSIDB_URL,
     OSIM_URL,
+    SELENIUM_URL,
     BUGZILLA_API_KEY,
     JIRA_API_KEY,
     EMBARGOED_FLAW_CVE_ID,
@@ -53,7 +54,7 @@ def init_remote_firefox_browser():
     profile.set_preference('network.negotiate-auth.trusted-uris', 'https://')
     op = Options()
     op.profile = profile
-    return webdriver.Remote(options=op)
+    return webdriver.Remote(command_executor=SELENIUM_URL, options=op)
 
 
 def wait_for_visibility_by_locator(browser, locator_type, element_locator):
