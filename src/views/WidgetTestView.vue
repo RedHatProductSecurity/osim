@@ -6,7 +6,6 @@ import Toast from '@/components/widgets/Toast.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import ProgressRing from '@/components/widgets/ProgressRing.vue';
 import { useToastStore } from '@/stores/ToastStore';
-import ExampleValidatedForm from '@/components/ExampleValidatedForm.vue';
 
 const { addToast } = useToastStore();
 
@@ -83,10 +82,5 @@ const progress = ref(60);
       title="mytitle"
       css="dark"
     ></Toast>
-
-    <!--<ExampleForm/>-->
-    <ExampleValidatedForm />
-
-
   </main>
 </template>
