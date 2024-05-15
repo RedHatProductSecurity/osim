@@ -39,6 +39,7 @@
   * Improved recovery/deletion UI
   * Show affectedness, resolution text
   * Update affectedness, resolution selection options
+  * Add validation for duplicated component name
 * Add OSV Source for Flaw
 * Show Default Filter on IndexView Page
 * Remove Team ID from Flaw detail page and advanced search page
