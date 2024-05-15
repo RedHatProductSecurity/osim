@@ -308,12 +308,15 @@ export const ZodFlawSchema = z.object({
 
   const duplicatedAffects = (affects: ZodAffectType[]) => {
     const map: Record<string, boolean> = {};
-    for (let i = 0; i < affects.length; i ++){
+    for (let i = 0; i < affects.length; i++) {
       const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
       if(map[key]) {
-        return { index: i };
+        return { 
+          index: i,
+        };
+      } else {
+        map[key] = true;
       }
-      map[key] = true;
     }
     return null;
   };
@@ -347,7 +350,7 @@ export const ZodFlawSchema = z.object({
   }
 
   const affect = duplicatedAffects(zodFlaw.affects);
-  if(affect) {
+  if (affect) {
     raiseIssue(
       'Affected component cannot be registered on the affected module twice',
       [`Affects/${affect.index}/component`],
