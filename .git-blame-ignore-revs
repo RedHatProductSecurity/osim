@@ -1,6 +1,6 @@
-# In order to use this file to ignore formatting commits, you need to set the following configuration:
-# git config blame.ignoreRevsFile .git-blame-ignore-revs
-
+448d8a4400e86a70075bd6fc0ae7e0306390228c # 🎨 Format code
+229d42d58b8ff74c4e16edd11b177d3cf264fff0 # 🎨 Margin class refactor
+1d0073dbfaf5175af02597848ed161e511c8890b # 🎨 Add EOF newline
 1b57232cf2489674230dbcd1f3b0b483c5f0443d # 🎨 Format stylesheets
 7027a5a5209a05cffdd5bfb591c1a65571a64251 # 🎨 Format .ts, .js, .vue files with updated linting config
 5f517b249d10320f9b49bc8e89d0b9989df1e578 # 🎨 Rename DOM ref reference
