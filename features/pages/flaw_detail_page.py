@@ -75,7 +75,6 @@ class FlawDetailPage(BasePage):
         "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
         "cveidInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
-
         "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
         "cweidInput": ("XPATH", "(//input[@class='form-control'])[6]"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
@@ -83,10 +82,12 @@ class FlawDetailPage(BasePage):
         "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
         "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
-
         "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
         "publicDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
+        "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
+
         "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
@@ -495,8 +496,11 @@ class FlawDetailPage(BasePage):
         # Get the input field and set the value
         input_element = self.driver.find_elements(
             locate_with(By.XPATH, "//input[@class='form-control']").near(field_element))[0]
-        self.driver.execute_script("arguments[0].value = '';", input_element)
-        input_element.send_keys(value)
+        if value:
+            self.driver.execute_script("arguments[0].value = '';", input_element)
+            input_element.send_keys(value)
+        else:
+            input_element.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
         # In affects, if we won't click the CheckMark for module and go to
         # component, the affects will be hidden
         if "affects" in field:

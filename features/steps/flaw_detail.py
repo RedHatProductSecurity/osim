@@ -15,6 +15,7 @@ from features.utils import (
     get_osidb_token
 )
 from features.pages.flaw_detail_page import FlawDetailPage
+from features.pages.home_page import HomePage
 
 
 MAX_RETRY = 10
@@ -251,6 +252,30 @@ def step_impl(context):
     expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
     get_value = flaw_detail_page.get_input_value("reportedDate")
     assert get_value == expected, f"get {get_value}, expected {expected}"
+    context.browser.quit()
+
+
+@when('I click self assign button and save changes')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    cur_value = flaw_detail_page.get_current_value_of_field("assignee")
+    if cur_value:
+        flaw_detail_page.set_field_value('assignee', '')
+        flaw_detail_page.click_btn('saveBtn')
+        flaw_detail_page.wait_msg('flawSavedMsg')
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page.click_btn('selfAssignBtn')
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
+
+
+@then("The flaw is assigned to me")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    assignee = flaw_detail_page.get_current_value_of_field("assignee")
+    home_page = HomePage(context.browser)
+    login_user = home_page.userBtn.get_text()
+    assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
     context.browser.quit()
 
 
