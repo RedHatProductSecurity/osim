@@ -35,3 +35,49 @@ export async function deleteAffect(uuid: string) {
     .then(createSuccessHandler({ title: 'Success!', body: 'Affect Deleted.' }))
     .catch(createCatchHandler('Error deleting Affect:'));
 }
+
+
+
+// {
+// "comment": "string",
+// "cvss_version": "V2",
+// "issuer": "RH",
+// "vector": "string",
+// "embargoed": true
+//   "updated_dt": "2024-02-06T16:02:54.708Z"
+// }
+export async function putAffectCvssScore(
+  affectId: string,
+  cvssScoresId: string,
+  cvssScoreObject: unknown,
+) {
+  const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
+  delete putObject['uuid'];
+  delete putObject['affect'];
+  delete putObject['created_dt'];
+  return osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
+    data: putObject,
+  }, { beforeFetch })
+    .then((response) => response.data)
+    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+}
+
+// {
+// "comment": "string",
+// "cvss_version": "V2",
+// "issuer": "RH",
+// "vector": "string",
+// "embargoed": true
+// }
+export async function postAffectCvssScore(affectId: string, cvssScoreObject: unknown) {
+  const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
+  return osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/affects/${affectId}/cvss_scores`,
+    data: postObject,
+  }, { beforeFetch })
+    .then((response) => response.data)
+    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+}

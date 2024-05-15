@@ -2,7 +2,7 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import IndexView from '@/views/IndexView.vue';
-import { useFlaws }  from '../../composables/useFlaws';
+import { useFlawsFetching }  from '../../composables/useFlawsFetching';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
@@ -47,8 +47,8 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-vi.mock('../../composables/useFlaws',  () => ({
-  useFlaws: vi.fn(() => ({
+vi.mock('../../composables/useFlawsFetching',  () => ({
+  useFlawsFetching: vi.fn(() => ({
     issues: [],
     isLoading: false,
     isFinalPageFetched: false,
@@ -62,7 +62,7 @@ describe('IndexView', () => {
   const props: typeof IndexView.props = {};
 
   beforeEach(() => {
-    vi.mocked(useFlaws).mockReturnValue({
+    vi.mocked(useFlawsFetching).mockReturnValue({
       issues: [],
       isLoading: false,
       isFinalPageFetched: false,
@@ -91,16 +91,16 @@ describe('IndexView', () => {
 
   it('should call Load on mounted with default filter', async () => {
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
       'order': '-created_dt',
       'affects__ps_component': 'test'
     });
   });
 
   it('shoud call without default filter when checkbox off', async () => {
-    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
       'order': '-created_dt',
       'affects__ps_component': 'test'
     });
@@ -110,7 +110,7 @@ describe('IndexView', () => {
     expect(defaultFilterCheckbox.exists()).toBeTruthy();
     await defaultFilterCheckbox.setValue(false);
     await wrapper.vm.$nextTick();
-    expect(useFlaws().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
+    expect(useFlawsFetching().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
       'order': '-created_dt',
     });
   });

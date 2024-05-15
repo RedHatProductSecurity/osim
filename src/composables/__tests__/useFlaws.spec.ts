@@ -1,12 +1,12 @@
 import { getFlaws } from '@/services/FlawService';
-import { useFlaws } from '../useFlaws';
+import { useFlawsFetching } from '../useFlawsFetching';
 import { flushPromises } from '@vue/test-utils';
 
 vi.mock('@/services/FlawService', () => ({
   getFlaws: vi.fn(),
 }));
 
-describe('useFlaws', () => {
+describe('useFlawsFetching', () => {
   const mockIusses = new Array(30).fill({ id: 1, name: 'Flaw 1' });
   beforeEach(() => {
     vi.resetAllMocks();
@@ -17,7 +17,7 @@ describe('useFlaws', () => {
       data: { results: mockIusses.slice(0,20), total: 30, next:null },
     });
 
-    const { loadFlaws, issues, isLoading, isFinalPageFetched } = useFlaws();
+    const { loadFlaws, issues, isLoading, isFinalPageFetched } = useFlawsFetching();
 
     expect(isLoading.value).toBe(false);
 
@@ -49,7 +49,7 @@ describe('useFlaws', () => {
       },
     });
 
-    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlaws();
+    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlawsFetching();
 
     loadFlaws();
     await flushPromises();
@@ -72,7 +72,7 @@ describe('useFlaws', () => {
       },
     });
 
-    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlaws();
+    const { loadFlaws, loadMoreFlaws, issues, isLoading, total } = useFlawsFetching();
 
     loadFlaws();
     await flushPromises();

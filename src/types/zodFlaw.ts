@@ -110,15 +110,16 @@ export const FlawCVSSSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
+export type ZodAffectCVSSType = z.infer<typeof AffectCVSSSchema>;
 export const AffectCVSSSchema = z.object({
   affect: z.string().uuid().nullish(),
-  // comment: z.string().nullable(),
-  // cvss_version: z.string(),
+  comment: z.string().nullish(),
+  cvss_version: z.string().nullish(),
   issuer: z.nativeEnum(IssuerEnum),
-  score: z.number(), // $float
+  score: z.number().nullish(),
   uuid: z.string().uuid().nullish(), // read-only
-  vector: z.string().nullable(),
-  embargoed: z.boolean().nullable(),
+  vector: z.string().nullish(),
+  embargoed: z.boolean().nullish(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });

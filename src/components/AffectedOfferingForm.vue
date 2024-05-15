@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import type { ZodAffectCVSSType } from '@/types/zodFlaw';
 
 import {
   affectImpacts,
@@ -23,9 +24,30 @@ const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>({ default: null });
 
-const affectCvssScore = ref(
-  modelValue.value?.cvss_scores?.find(({ issuer }) => issuer === 'RH')?.vector || '',
-);
+function getCvssData(issuer: string, version: string) {
+  return modelValue.value.cvss_scores.find(
+    (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
+  );
+}
+
+if (!getCvssData('RH', 'V3')) {
+  modelValue.value?.cvss_scores?.push(
+    {
+      vector: null,
+      uuid: null,
+      issuer: 'RH',
+      cvss_version: 'V3',
+      comment: 'hardcoded comment', // TODO: remove this line when the comment field is added to the UI
+      created_dt: null,
+      score: null,
+      embargoed: modelValue.value.embargoed,
+    } as ZodAffectCVSSType
+  );
+}
+
+// Type assertion to prevent TS error in template
+const affectCvssScore = modelValue.value.cvss_scores.find(({ issuer }) => issuer === 'RH') as ZodAffectCVSSType;
+
 
 const hasTrackers = computed(() => 
   Boolean(modelValue.value.trackers)
@@ -83,7 +105,7 @@ const hiddenResolutionOptions = computed(() => {
         :options="affectImpacts"
       />
       <LabelEditable
-        v-model="affectCvssScore"
+        v-model="affectCvssScore.vector"
         :error="error?.cvss_scores?.vector || null"
         type="text"
         label="CVSSv3"

@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useRoute, useRouter } from 'vue-router';
 import { createTestingPinia } from '@pinia/testing';
 import FlawSearchView from '@/views/FlawSearchView.vue';
-import { useFlaws }  from '../../composables/useFlaws';
+import { useFlawsFetching }  from '../../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 
@@ -62,8 +62,8 @@ vi.mock('vue-router', async () => {
   };
 });
 
-vi.mock('../../composables/useFlaws',  () => ({
-  useFlaws: vi.fn(() => ({
+vi.mock('../../composables/useFlawsFetching',  () => ({
+  useFlawsFetching: vi.fn(() => ({
     issues: [],
     isLoading: false,
     isFinalPageFetched: false,
@@ -78,7 +78,7 @@ describe('FlawSearchView', () => {
   const props: typeof FlawSearchView.props = {};
 
   beforeEach(() => {
-    vi.mocked(useFlaws).mockReturnValue({
+    vi.mocked(useFlawsFetching).mockReturnValue({
       issues: [],
       isLoading: false,
       isFinalPageFetched: false,
@@ -109,8 +109,8 @@ describe('FlawSearchView', () => {
 
   it('should call Load on mounted', async () => {
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
       'order': '-created_dt',
       'search': 'search',
     });
@@ -118,7 +118,7 @@ describe('FlawSearchView', () => {
 
   it('should call loadFlaws on search', async () => {
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     const selectDropdown = wrapper.find('select.form-select.search-facet-field');
     await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
     await selectDropdown.trigger('change');
@@ -173,8 +173,8 @@ describe('FlawSearchView', () => {
       },
     });
     await flushPromises();
-    expect(useFlaws().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlaws().loadFlaws.mock.calls[0][0]._value).toStrictEqual({ 'affects__ps_component': 'test',
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
+    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({ 'affects__ps_component': 'test',
       'order': '-created_dt',
       'search': 'search',
     });

@@ -4,7 +4,7 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
-export function useCvssScoresModel(flaw: Ref<ZodFlawType>) {
+export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   function getCvssData(issuer: string, version: string) {
     return flaw.value.cvss_scores.find(

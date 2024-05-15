@@ -169,16 +169,12 @@ export const useUserStore = defineStore('UserStore', () => {
     return router.push({ name: 'login' });
   }
 
-  /**
-   * Side effect: wipes tokens if tokens are expired
-   */
   const isAuthenticated = computed<boolean>(() => {
     const now = Date.now();
     const refreshExp = jwtRefresh.value?.exp;
     if (refreshExp != null) {
       return now < refreshExp * 1000;
     }
-    $reset();
     return false;
   });
 
@@ -211,6 +207,7 @@ export const useUserStore = defineStore('UserStore', () => {
       }
     } else {
       console.log(router.currentRoute.value);
+      $reset();   // wipes tokens if tokens are expired
       if (router.currentRoute.value.name !== 'login') {
         console.log('isAuthenticated became false while not on login page');
 
