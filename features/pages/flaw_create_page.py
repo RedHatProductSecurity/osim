@@ -27,13 +27,12 @@ class FlawCreatePage(FlawDetailPage):
         "statementText": ("XPATH", "//span[text()='Statement']"),
 
         "impactText": ("XPATH", "//span[text()='Impact']"),
-        "sourceText": ("XPATH", "//span[text()='Source']"),
+        "sourceText": ("XPATH", "//span[text()='CVE Source']"),
         "titleText": ("XPATH", "//span[text()='Title']"),
         "componentText": ("XPATH", "//span[text()='Component']"),
         "cveidText": ("XPATH", "//span[text()='CVE ID']"),
-        "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
-        "publicDateText": ("XPATH", "//span[text()='Public Date']"),
-        "cweidText": ("XPATH", "//span[text()='CWE ID']")
+        "cweidText": ("XPATH", "//span[text()='CWE ID']"),
+        "publicDateText": ("XPATH", "//span[text()='Public Date']")
     }
 
     def set_input_field(self, field, value):

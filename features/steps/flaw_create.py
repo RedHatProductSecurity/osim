@@ -18,17 +18,16 @@ MAX_RETRY = 10
 def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     flaw_create_page = FlawCreatePage(context.browser)
     context.cve_id = generate_cve()
-    reported_date = datetime.today().strftime("%Y%m%d")
     flaw_create_page.set_input_field('title', generate_random_text())
     flaw_create_page.set_input_field('component', 'autocomponent')
     flaw_create_page.set_input_field('cveid', context.cve_id)
-    # flaw_create_page.set_input_field('reportedDate', reported_date)
     flaw_create_page.set_select_value('impact')
     flaw_create_page.set_select_value('source')
+    public_date = datetime.today().strftime("%Y%m%d")
     if embargoed:
         flaw_create_page.click_btn("embargeodCheckBox")
     else:
-        flaw_create_page.set_input_field('publicDate', reported_date)
+        flaw_create_page.set_input_field('publicDate', public_date)
     flaw_create_page.set_document_text_field('comment#0', generate_random_text())
     if with_optional:
         flaw_create_page.set_input_field('cweid', generate_cwe())
