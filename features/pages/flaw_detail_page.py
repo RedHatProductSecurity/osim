@@ -9,7 +9,7 @@ from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from seleniumpagefactory.Pagefactory import ElementNotVisibleException
+from seleniumpagefactory.Pagefactory import ElementNotVisibleException, ElementNotFoundException
 from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
@@ -42,21 +42,18 @@ class FlawDetailPage(BasePage):
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
 
-        "acknowledgmentsDropDownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
-        "addAcknowledgmentInputLeft": ("XPATH", "(//div[@class='osim-list-create']/div/div/label/div/div/input)[1]"),
-        "addAcknowledgmentInputRight": ("XPATH", "(//div[@class='osim-list-create']/div/div/label/div/div/input)[2]"),
+        "acknowledgmentCountLabel": ("XPATH", "//label[contains(text(), 'Acknowledgments:')]"),
+        "addAcknowledgementNameSpan": ("XPATH", "//span[text()='Name']"),
+        "addAcknowledgementAffiliationSpan": ("XPATH", "//span[text()='Affiliation']"),
+        "firstAcknowledgementValueText": ("XPATH", '(//div[contains(text(), "from")])[1]'),
+        "firstAcknowledgmentEditBtnUnclick": ("XPATH", "//div[@class='osim-list-edit'][1]/div[3]/button[1]"),
+        "firstAcknowledgmentEditBtnClicked": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div[2]/button[1]"),
         "saveAcknowledgmentBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
         "acknowledgmentSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
-        "firstAcknowledgmentEditBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[1]"),
-        "firstAcknowledgmentDeleteBtn": ("XPATH", "(//div[@class='osim-list-edit']/div[2]/button)[2]"),
-        "firstAcknowledgmentValue": ("XPATH", "(//div[@class='osim-list-edit']/div/div)[1]"),
-        "firstAcknowledgmentEditInputLeft": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[1]/div/div/input"),
-        "firstAcknowledgmentEditInputRight": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[2]/div/div/input"),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
         "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
-        "acknowledgmentCountLabel": ("XPATH", "(//label[@class='ms-2 form-label'])[2]"),
 
         "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
         "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
@@ -88,7 +85,6 @@ class FlawDetailPage(BasePage):
         "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
-        "referenceDropdownBtn": ("XPATH", "(//button[@class='me-2'])[1]"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
@@ -96,18 +92,12 @@ class FlawDetailPage(BasePage):
         "referenceCreatedMsg": ("XPATH", "//div[text()='Reference created.']"),
         "referenceDelConfirmBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "referenceDeletedMsg": ("XPATH", "//div[text()='Reference deleted.']"),
-        "addReferenceSelect": ("XPATH", "//select[@class='form-select mb-3 osim-reference-types']"),
-        'addReferenceLinkUrlInput': ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
-        "addReferenceDescriptionInput": ("XPATH", "(//textarea[@class='form-control col-9 d-inline-block is-invalid'])[1]"),
+        "addReferenceLinkUrlSpan": ("XPATH", "//span[text()='Link URL']"),
         "addMultipleRHSBReferenceErrorMsg": ("XPATH", "//div[contains(text(),'A flaw has 2 article links, but only 1 is allowed.')]"),
-        "addReferenceDescriptionText": ("XPATH", "(//span[text()='Description'])[1]"),
-        "firstReferenceDeleteBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[2]"),
-        "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
-        "firstReferenceEditBtn": ("XPATH", "((//div[@class='osim-list-edit'])[1]/div[2]/button)[1]"),
         "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
         "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
-        "firstReferenceLinkUrlInput": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[1]/div/div/input"),
-        "firstReferenceDescriptionTextArea": ("XPATH", "//div[@class='osim-list-edit']/div/div/label[2]/div/textarea"),
+        "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
+
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
@@ -215,10 +205,17 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_element)
         return field_input.getAttribute("value")
 
-    def set_acknowledgement(self, left_value, right_value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgmentInputLeft)
-        self.addAcknowledgmentInputLeft.set_text(left_value)
-        self.addAcknowledgmentInputRight.set_text(right_value)
+    def set_acknowledgement(self, name, affiliation):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addAcknowledgementNameSpan)
+        name_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "input").
+            near(self.addAcknowledgementNameSpan))[0]
+        affiliation_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "input").
+            near(self.addAcknowledgementAffiliationSpan))[0]
+
+        name_input.send_keys(name)
+        affiliation_input.send_keys(affiliation)
 
     def click_save_acknowledgment_btn(self):
         self.driver.execute_script("arguments[0].click();", self.saveAcknowledgmentBtn)
@@ -260,19 +257,41 @@ class FlawDetailPage(BasePage):
         return updated_value
 
     def click_first_ack_edit_btn(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentEditBtn)
-        self.firstAcknowledgmentEditBtn.click_button()
+        first_ack_edit_btn = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='btn pe-0 pt-0']").
+            to_right_of(self.acknowledgmentCountLabel))
 
-    def edit_first_ack(self, left_v, right_v):
-        self.driver.execute_script("arguments[0].value = '';", self.firstAcknowledgmentEditInputLeft)
-        self.firstAcknowledgmentEditInputLeft.set_text(left_v)
+        if not first_ack_edit_btn:
+            first_ack_edit_btn = self.driver.find_elements(
+                locate_with(By.TAG_NAME, "button").
+                to_right_of(self.acknowledgmentCountLabel))
 
-        self.driver.execute_script("arguments[0].value = '';", self.firstAcknowledgmentEditInputRight)
-        self.firstAcknowledgmentEditInputRight.set_text(right_v)
+        self.click_button_with_js(first_ack_edit_btn[0])
 
-    def get_first_ack_value(self):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstAcknowledgmentValue)
-        return self.firstAcknowledgmentValue.get_text()
+    def click_first_ack_delete_btn(self):
+        first_ack_edit_btn = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "button").
+            to_right_of(self.acknowledgmentCountLabel))[0]
+
+        first_ack_delete_btn = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='btn ps-1']").
+            near(first_ack_edit_btn))[0]
+        self.click_button_with_js(first_ack_delete_btn)
+
+    def edit_first_ack(self, name, affiliation):
+        first_ack_edit_name_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "input").
+            near(self.addAcknowledgementNameSpan))[0]
+
+        self.driver.execute_script("arguments[0].value = '';", first_ack_edit_name_input)
+        first_ack_edit_name_input.send_keys(name)
+
+        first_ack_edit_affiliation_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "input").
+            near(self.addAcknowledgementAffiliationSpan))[0]
+
+        self.driver.execute_script("arguments[0].value = '';", first_ack_edit_affiliation_input)
+        first_ack_edit_affiliation_input.send_keys(affiliation)
 
     def set_input_field(self, field, value):
         field_btn = field + 'EditBtn'
@@ -320,7 +339,7 @@ class FlawDetailPage(BasePage):
             # delete all reference
             reference_count = len(reference_list)
             for i in range(1, reference_count+1):
-                del_btn_xpath = f"((//div[@class='osim-list-edit'])[{i}]/div[2]/button)[2]"
+                del_btn_xpath = f"//div[@class='ps-3 border-start']/div/div[{i}]/div/div/div[3]/button[2]"
                 del_btn = self.driver.find_element(By.XPATH, del_btn_xpath)
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", del_btn)
                 self.driver.execute_script("arguments[0].click();", del_btn)
@@ -338,39 +357,57 @@ class FlawDetailPage(BasePage):
         except ElementNotVisibleException:
             pass
 
-        self.addReferenceSelect.select_element_by_text("External")
+        add_reference_select = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "select").
+            below(self.referenceCountLabel))[0]
+
+        select = Select(add_reference_select)
+        select.select_by_visible_text("External")
 
     def add_reference_set_link_url(self, value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceLinkUrlInput)
-        self.addReferenceLinkUrlInput.set_text(value)
+        add_reference_link_url_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "input").
+            near(self.addReferenceLinkUrlSpan))[0]
+
+        self.clear_text_with_js(add_reference_link_url_input)
+
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", add_reference_link_url_input)
+        add_reference_link_url_input.send_keys(value)
 
     def add_reference_set_description(self, value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
-        self.addReferenceDescriptionInput.set_text(value)
+        add_reference_description_input = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").
+            below(self.referenceCountLabel))[0]
 
-    def edit_reference_set_link_url(self, value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.firstReferenceLinkUrlInput)
-        self.firstReferenceLinkUrlInput.set_text(value)
+        self.clear_text_with_js(add_reference_description_input)
 
-    def edit_reference_set_description(self, value):
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.addReferenceDescriptionText)
-        self.firstReferenceDescriptionTextArea.set_text(value)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", add_reference_description_input)
+        add_reference_description_input.send_keys(value)
 
     def click_reference_dropdown_button(self):
         v = self.referenceCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
         if reference_count > 0:
-            self.click_button_with_js("referenceDropdownBtn")
+            reference_dropdown_btn = self.driver.find_elements(
+                locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
+                near(self.referenceCountLabel))[0]
+            self.click_button_with_js(reference_dropdown_btn)
+
+    def click_first_reference_delete_btn(self):
+        first_ack_delete_btn = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='btn ps-1']").
+            below(self.referenceCountLabel))[0]
+
+        self.click_button_with_js(first_ack_delete_btn)
 
     def click_acknowledgments_dropdown_btn(self):
         v = self.acknowledgmentCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
         if reference_count > 0:
-            reference_count = int(self.referenceCountLabel.get_text().split(": ")[1])
-            if reference_count > 0:
-                self.click_button_with_js("acknowledgmentsDropDownBtn")
-            else:
-                self.click_button_with_js("referenceDropdownBtn")
+            reference_dropdown_btn = self.driver.find_elements(
+                locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
+                near(self.acknowledgmentCountLabel))[0]
+            self.click_button_with_js(reference_dropdown_btn)
 
     def set_new_affect_inputs(self):
         from features.utils import generate_random_text

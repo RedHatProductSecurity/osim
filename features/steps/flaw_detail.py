@@ -150,8 +150,8 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
-    context.ack_value = flaw_detail_page.get_first_ack_value()
-    flaw_detail_page.click_btn('firstAcknowledgmentDeleteBtn')
+    context.ack_value = flaw_detail_page.get_text_value("firstAcknowledgementValue")
+    flaw_detail_page.click_first_ack_delete_btn()
     flaw_detail_page.click_btn('confirmAcknowledgmentDeleteBtn')
     flaw_detail_page.wait_msg('acknowledgmentDeletedMsg')
 
@@ -378,7 +378,7 @@ def step_impl(context):
         go_to_specific_flaw_detail_page(context.browser)
         flaw_detail_page.click_reference_dropdown_button()
 
-    flaw_detail_page.click_button_with_js("firstReferenceDeleteBtn")
+    flaw_detail_page.click_first_reference_delete_btn()
     flaw_detail_page.click_btn('referenceDelConfirmBtn')
     flaw_detail_page.wait_msg("referenceDeletedMsg")
 
@@ -406,12 +406,10 @@ def step_impl(context):
         flaw_detail_page.click_reference_dropdown_button()
 
     context.expected = f"https://access.redhat.com/{generate_random_text()}"
-    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
-    flaw_detail_page.clear_text_with_js("firstReferenceLinkUrlInput")
-    flaw_detail_page.edit_reference_set_link_url(context.expected)
-    flaw_detail_page.clear_text_with_js('firstReferenceDescriptionTextArea')
-    flaw_detail_page.edit_reference_set_description(context.expected)
-    flaw_detail_page.click_button_with_js("firstReferenceEditBtn")
+    flaw_detail_page.click_button_with_js("firstAcknowledgmentEditBtnUnclick")
+    flaw_detail_page.add_reference_set_link_url(context.expected)
+    flaw_detail_page.add_reference_set_description(context.expected)
+    flaw_detail_page.click_button_with_js("firstAcknowledgmentEditBtnClicked")
     flaw_detail_page.click_button_with_js("saveReferenceBtn")
     flaw_detail_page.wait_msg("referenceUpdatedMsg")
 
