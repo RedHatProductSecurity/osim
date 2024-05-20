@@ -112,8 +112,8 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       flaw: '',
       uuid: '',
       embargoed: isEmbargoed,
-      created_dt: '',
-      updated_dt: '',
+      created_dt: null,
+      updated_dt: null,
     });
   }
 
