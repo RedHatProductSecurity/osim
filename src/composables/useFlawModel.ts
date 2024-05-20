@@ -168,7 +168,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     afterSaveSuccess,
     ...cvssScoresModel,
     ...flawAffectsModel,
-    ...useFlawAttributionsModel(flaw, afterSaveSuccess),
+    ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };
 }
 

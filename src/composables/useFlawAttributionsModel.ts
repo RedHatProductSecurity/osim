@@ -11,24 +11,35 @@ import {
   putFlawAcknowledgment,
   deleteFlawAcknowledgment,
 } from '@/services/FlawService';
-import { ref, type Ref } from 'vue';
+import { toRef, watch, type Ref } from 'vue';
 
-export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, afterSaveSuccess: () => void) {
+export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boolean>, afterSaveSuccess: () => void) {
 
-  const flawReferences = ref<ZodFlawReferenceType[]>(flaw.value.references);
-  const flawAcknowledgments = ref<ZodFlawAcknowledgmentType[]>(flaw.value.acknowledgments);
+  const flawReferences: Ref<ZodFlawReferenceType[]> = toRef(flaw.value, 'references');
+  const flawAcknowledgments: Ref<ZodFlawAcknowledgmentType[]> = toRef(flaw.value, 'acknowledgments');
+  
+  watch(() => flaw.value.references, () => {
+    flawReferences.value = flaw.value.references;
+  });
+
+  watch(() => flaw.value.acknowledgments, () => {
+    flawAcknowledgments.value = flaw.value.acknowledgments;
+  });
 
   async function updateReference(reference: ZodFlawReferenceType & { uuid: string }) {
+    isSaving.value = true;
     await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
     afterSaveSuccess();
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
+    isSaving.value = true;
     await postFlawReference(flaw.value.uuid, reference);
     afterSaveSuccess();
   }
 
   async function deleteReference(referenceId: string) {
+    isSaving.value = true;
     await deleteFlawReference(flaw.value.uuid, referenceId);
     afterSaveSuccess();
   }
@@ -38,6 +49,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, afterSaveSucces
   }
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
+    isSaving.value = true;
     for (const reference of references) {
       if (reference.uuid) {
         await updateReference(reference);
@@ -59,16 +71,19 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, afterSaveSucces
   }
 
   async function createAcknowledgment(acknowlegdment: any) {
+    isSaving.value = true;
     await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
     afterSaveSuccess();
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
+    isSaving.value = true;
     await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId);
     afterSaveSuccess();
   }
 
   async function updateAcknowledgment(acknowlegdment: any) {
+    isSaving.value = true;
     await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
     afterSaveSuccess();
   }

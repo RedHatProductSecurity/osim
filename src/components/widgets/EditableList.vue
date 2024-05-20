@@ -18,10 +18,10 @@ const emit = defineEmits<{
   'item:delete': [value: string];
 }>();
 
-const modals = Object.fromEntries(items.value.map((item) => [item.uuid, useModal()]));
+const modals = computed(() => Object.fromEntries(items.value.map((item) => [item.uuid, useModal()])));
 
 function useModalForItem(uuid: string) {
-  return modals[uuid];
+  return modals.value[uuid];
 }
 
 const entityNamePlural = computed(() => props.entitiesName || `${props.entityName}s`);
@@ -43,6 +43,11 @@ const itemsToSave = computed((): any[] => [
 function addItem() {
   isExpanded.value = true;
   emit('item:new');
+}
+
+function saveItems() {
+  emit('item:save', itemsToSave.value);
+  modifiedItemIndexes.value = [];
 }
 
 function cancelEdit(index: number) {
@@ -173,7 +178,7 @@ function commitEdit(index: number) {
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"
-        @click.prevent="emit('item:save', itemsToSave)"
+        @click.prevent="saveItems()"
       >
         Save Changes to {{ entityNamePlural }}
       </button>
