@@ -9,6 +9,37 @@ import {
   affectAffectedness,
 } from '@/types/zodFlaw';
 
+vi.mock('@/stores/osimRuntime', async () => {
+  const osimRuntimeValue = {
+    env: 'unittest',
+    backends: {
+      osidb: 'osidb-backend',
+      bugzilla: 'bugzilla-backend',
+      jira: 'jira-backend',
+      errata: 'errata'
+    },
+    osimVersion: {
+      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
+    },
+    error: '',
+  };
+  return {
+    setup: vi.fn(() => { }),
+    osimRuntimeStatus: 1,
+    osidbHealth: {
+      revision: '',
+    },
+    osimRuntime: {
+      value: osimRuntimeValue,
+      ...osimRuntimeValue, 
+    },
+    OsimRuntimeStatus: {
+      INIT: 0,
+      READY: 1,
+      ERROR: 2,
+    },
+  };
+});
 
 describe('AffectExpandableForm', () => {
 
@@ -48,7 +79,32 @@ describe('AffectExpandableForm', () => {
     'cvss2_score':null,
     'cvss3':'',
     'cvss3_score':null,
-    'trackers':[],
+    'trackers':[
+      {
+        'affects': [
+          'test'
+        ],
+        'errata': [
+          {
+            'et_id': 'et_id',
+            'advisory_name': 'advisory_name',
+            'shipped_dt': null,
+            'created_dt': '2024-03-07T16:56:24Z',
+            'updated_dt': '2024-05-09T14:41:20Z'
+          }
+        ],
+        'external_system_id': 'external_system_id',
+        'ps_update_stream': 'ps_update_stream',
+        'status': 'Release Pending',
+        'resolution': '',
+        'type': 'JIRA',
+        'uuid': 'uuid',
+        'embargoed': false,
+        'alerts': [],
+        'created_dt': '2024-03-12T16:09:44Z',
+        'updated_dt': '2024-04-05T18:21:05Z'
+      }
+    ],
     'delegated_resolution':null,
     'cvss_scores':[],
     'embargoed':false,
@@ -105,5 +161,20 @@ describe('AffectExpandableForm', () => {
     expect(resolutionOptions).toStrictEqual(affectResolutions);
     const resolutoinHiddenOptions = resolutionSelectEL.findAll('option[hidden]');
     expect(resolutoinHiddenOptions.length).toBe(3);
+  });
+
+  it('should render trackers with errata link', async () => {
+    const trackerEls = subject.findAll('.osim-tracker-card');
+    expect(trackerEls.length).toBe(1);
+    const trakcerEL = trackerEls[0];
+    await trakcerEL.find('summary.text-info')?.trigger('click');
+    expect(trakcerEL.find('th.text-warning').exists()).toBeTruthy();
+    const errataEl = trakcerEL.find('tr.table-warning');
+    expect(errataEl.exists()).toBeTruthy();
+    expect(errataEl.find('th')?.element?.textContent).toBe('Advisory');
+    const linkEl = errataEl.find('td a');
+    expect(linkEl.exists()).toBeTruthy();
+    expect(linkEl.element?.textContent).toBe('advisory_name');
+    expect(linkEl.attributes('href')).toBe('errata/advisory/et_id');
   });
 });
