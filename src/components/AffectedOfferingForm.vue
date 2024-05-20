@@ -43,6 +43,7 @@ if (!getCvssData('RH', 'V3')) {
       created_dt: null,
       score: null,
       embargoed: modelValue.value.embargoed,
+      alerts: [],
     } as ZodAffectCVSSType
   );
 }

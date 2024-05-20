@@ -5,7 +5,7 @@ import {
   IssuerEnum,
 } from '../generated-client';
 
-import { zodOsimDateTime, extractEnum, ImpactEnumWithBlank, ZodFlawClassification } from './zodShared';
+import { zodOsimDateTime, extractEnum, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 
 
 const AffectednessEnumWithBlank = { '': '', ...AffectednessEnum } as const;
@@ -46,6 +46,7 @@ export const TrackerSchema = z.object({
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodAffectCVSSType = z.infer<typeof AffectCVSSSchema>;
@@ -61,6 +62,7 @@ export const AffectCVSSSchema = z.object({
   embargoed: z.boolean().nullish(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
@@ -92,6 +94,7 @@ const affectBlueprint = {
   embargoed: z.boolean(), // read-only
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 };
 export type AffectSchemaType = typeof ZodAffectSchema;
 export const ZodAffectSchema = z.object(affectBlueprint);

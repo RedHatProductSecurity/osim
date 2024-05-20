@@ -48,6 +48,17 @@ type SchemaType =
 
 type SchemaTypeWithEffect = SchemaType | FlawSchemaType;
 
+export type ZodAlertType = z.infer<typeof ZodAlertSchema>;
+export const ZodAlertSchema = z.object({
+  uuid: z.string().uuid(),
+  name: z.string(),
+  description: z.string(),
+  alert_type: z.enum(['ERROR', 'WARNING']),
+  resolution_steps: z.string().nullish(),
+  parent_uuid: z.string().uuid(),
+  parent_model: z.string(),
+});
+
 export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName === 'ZodEffects'
   ? Object.keys(schema._def.schema.shape)
   : Object.keys((schema as SchemaType).shape);

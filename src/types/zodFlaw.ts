@@ -9,7 +9,7 @@ import {
 } from '../generated-client';
 import { DateTime } from 'luxon';
 import { cveRegex } from '@/utils/helpers';
-import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification } from './zodShared';
+import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
@@ -42,6 +42,7 @@ export const FlawAcknowledgmentSchema = z.object({
   embargoed: z.boolean().default(false),
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodFlawReferenceType = z.infer<typeof FlawReferenceSchema>;
@@ -52,6 +53,7 @@ export const FlawReferenceSchema = z.object({
   url: z.string().default(''),
   embargoed: z.boolean().default(false),
   updated_dt: zodOsimDateTime().nullish().default(null),
+  alerts: z.array(ZodAlertSchema).default([]),
 }).superRefine((reference, zodContext) => {
   if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//)) {
     zodContext.addIssue({
@@ -101,6 +103,7 @@ export const FlawCVSSSchema = z.object({
   embargoed: z.boolean().nullable(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 
@@ -117,6 +120,7 @@ export const ZodFlawCommentSchema = z.object({
     .nullish(),
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
@@ -169,6 +173,7 @@ export const ZodFlawSchema = z.object({
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {
