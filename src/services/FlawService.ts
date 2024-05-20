@@ -42,10 +42,9 @@ export async function beforeFetch(options: OsidbFetchOptions) {
       return;
     }
     try {
-      const flaw = await getFlawUpdatedDt(flawId);
-      options.data.updated_dt = flaw.updated_dt;
-      if (!flaw.updated_dt) {
-        console.error('During multi-stage operation, an updated_dt could not be fetched', flaw, flawId);
+      const updated_dt = await getUpdatedDt(options.url);
+      if (!updated_dt) {
+        console.error('During multi-stage operation, an updated_dt could not be fetched');
         throw new Error('During multi-stage operation, an updated_dt could not be fetched');
       }
     } catch (error) {
@@ -96,10 +95,10 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   }).then((response) => response.data);
 }
 
-export async function getFlawUpdatedDt(uuid: string): Promise<ZodFlawType> {
+export async function getUpdatedDt(url: string): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: url,
     params: {
       include_fields: 'updated_dt',
     },
