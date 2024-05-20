@@ -18,6 +18,7 @@ import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
+import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
@@ -178,7 +179,7 @@ const toggleMitigation = () => {
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
-          <!-- Alerts might go here -->
+          <FlawAlertsList :flaw="flaw" />
         </div>
         <div class="col-6">
           <LabelEditable
