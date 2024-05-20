@@ -20,6 +20,7 @@ export const ErratumSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
+export type ZodTrackerType = z.infer<typeof TrackerSchema>;
 export type TrackerSchemaType = typeof TrackerSchema;
 export const TrackerSchema = z.object({
   affects: z.array(z.string().uuid()),
