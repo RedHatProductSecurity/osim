@@ -8,39 +8,9 @@ import {
   type OsidbFetchOptions
 } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
-import { isFlawIdentifierValid } from '@/utils/helpers';
-
-import { ZodFlawSchema } from '@/types/zodFlaw';
-
-
-function isFlaw(data: any) {
-  return !!ZodFlawSchema.safeParse(data).success;
-}
-
-function parseFlawId(options: any) {
-  if (isFlaw(options.data) && options.data.uuid) {
-    return options.data.uuid;
-  }
-
-  // Look for the presence of a flaw id on Affects, CVSS Scores, and other entities 'belonging to' flaws
-  if (options.data?.flaw && isFlawIdentifierValid(options.data.flaw?.toString())) {
-    return options.data.flaw;
-  }
-
-  const flawOsidbIdRegex = /flaws\/(.+?)\/.*/;
-  const maybeFlawId = options.url.match(flawOsidbIdRegex)?.[1];
-  if (maybeFlawId) {
-    return maybeFlawId;
-  }
-  return null;
-}
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
-    const flawId = parseFlawId(options);
-    if (flawId === null) {
-      return;
-    }
     try {
       const updated_dt = await getUpdatedDt(options.url);
       if (!updated_dt) {
