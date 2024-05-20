@@ -26,6 +26,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flaw = ref<ZodFlawType>(forFlaw);
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
+  const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
   const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffectChanges } = flawAffectsModel;
 
@@ -63,12 +64,18 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
       await postFlaw(flawForPost)
         .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-        .then((response: any) => {
+        .then(async (response: any) => {
           router.push({
             name: 'flaw-details',
             params: { id: response?.cve_id || response?.uuid },
           });
           flaw.value.uuid = response.uuid;
+          if (flaw.value.acknowledgments.length > 0) {
+            await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+          }
+          if (flaw.value.references.length > 0) {
+            await flawAttributionsModel.saveReferences(flaw.value.references);
+          }
         })
         .catch(createCatchHandler('Error creating Flaw'));
 

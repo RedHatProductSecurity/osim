@@ -383,6 +383,7 @@ const toggleMitigation = () => {
           <IssueFieldReferences
             v-model="flawReferences"
             class="w-100 my-3"
+            :mode="mode"
             :error="errors.references"
             @reference:update="saveReferences"
             @reference:new="addBlankReference(flaw.embargoed)"
@@ -392,6 +393,7 @@ const toggleMitigation = () => {
           <IssueFieldAcknowledgments
             v-model="flawAcknowledgments"
             class="w-100 my-3"
+            :mode="mode"
             :error="errors.acknowledgments"
             @acknowledgment:update="saveAcknowledgments"
             @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
