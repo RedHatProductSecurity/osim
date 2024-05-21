@@ -1,9 +1,10 @@
+import os
 from datetime import datetime
-
 from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_create_page import FlawCreatePage
+from features.pages.flaw_detail_page import FlawDetailPage
 from features.utils import (
     generate_cve,
     generate_cwe,
@@ -12,15 +13,14 @@ from features.utils import (
 )
 
 
-MAX_RETRY = 10
+MAX_RETRY = 5
 
 
 def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     flaw_create_page = FlawCreatePage(context.browser)
-    context.cve_id = generate_cve()
-    flaw_create_page.set_input_field('title', generate_random_text())
-    flaw_create_page.set_input_field('component', 'autocomponent')
-    flaw_create_page.set_input_field('cveid', context.cve_id)
+    context.title = generate_random_text()
+    flaw_create_page.set_input_field('title', context.title)
+    flaw_create_page.set_input_field('component', generate_random_text())
     flaw_create_page.set_select_value('impact')
     flaw_create_page.set_select_value('source')
     public_date = datetime.today().strftime("%Y%m%d")
@@ -29,31 +29,41 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     else:
         flaw_create_page.set_input_field('publicDate', public_date)
     flaw_create_page.set_document_text_field('comment#0', generate_random_text())
+
     if with_optional:
+        context.cve_id = generate_cve()
+        flaw_create_page.set_input_field('cveid', context.cve_id)
         flaw_create_page.set_input_field('cweid', generate_cwe())
         flaw_create_page.set_document_text_field('description', generate_random_text())
         flaw_create_page.set_document_text_field('statement', generate_random_text())
-    count = 0
-    while count < MAX_RETRY:
+        count = 0
+        while count < MAX_RETRY:
+            flaw_create_page.click_btn('createNewFlawBtn')
+            try:
+                flaw_create_page.wait_msg('flawCreatedMsg')
+            except Exception:
+                context.cve_id = generate_cve()
+                flaw_create_page.set_input_field('cveid', context.cve_id)
+                count += 1
+            else:
+                break
+    else:
         flaw_create_page.click_btn('createNewFlawBtn')
-        try:
-            flaw_create_page.wait_msg('flawCreatedMsg')
-        except Exception:
-            context.cve_id = generate_cve()
-            flaw_create_page.set_input_field('cveid', context.cve_id)
-            count += 1
-        else:
-            break
+        flaw_create_page.wait_msg('flawCreatedMsg')
 
 
 def check_created_flaw_exist(context, embargoed=False):
     go_to_advanced_search_page(context.browser)
     advanced_search_page = AdvancedSearchPage(context.browser)
-    advanced_search_page.select_field_and_value_to_search("cve_id", context.cve_id)
+    if hasattr(context, 'cve_id'):
+        advanced_search_page.select_field_and_value_to_search("cve_id", context.cve_id)
+    else:
+        advanced_search_page.select_field_and_value_to_search("title", context.title)
     advanced_search_page.click_search_btn()
     advanced_search_page.first_flaw_exist()
     if embargoed:
         advanced_search_page.first_flaw_embargoed_flag_exist()
+    return advanced_search_page.get_first_flaw_id()
 
 
 @given('I open the flaw create page')
@@ -69,7 +79,7 @@ def step_impl(context):
 
 @then('A new flaw is created')
 def step_impl(context):
-    check_created_flaw_exist(context)
+    os.environ["PUBLIC_FLAW_CVE_ID"] = check_created_flaw_exist(context)
     context.browser.quit()
 
 
