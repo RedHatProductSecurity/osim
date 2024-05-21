@@ -12,7 +12,7 @@ const props = defineProps<{
   readOnly?: boolean,
   editing?: boolean,
   placeholder?: string,
-  error?: string,
+  error?: string | null,
 }>();
 
 const emit = defineEmits<{

@@ -322,6 +322,22 @@ export const ZodFlawSchema = z.object({
     return null;
   };
 
+  if (
+    zodFlaw.requires_summary
+    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_summary)
+    && zodFlaw.summary === ''
+  ) {
+    raiseIssue('Description cannot be blank if requested or approved.', ['summary']);
+  }
+
+  if (
+    zodFlaw.requires_summary !== 'APPROVED'
+    && zodFlaw.major_incident_state
+    && ['APPROVED', 'CISA_APPROVED'].includes(zodFlaw.major_incident_state)
+  ) {
+    raiseIssue('Description must be approved for Major Incidents.', ['summary']);
+  }
+
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
   const reported_dt = DateTime.fromISO(`${zodFlaw.reported_dt}`).toISODate();
 
@@ -360,8 +376,6 @@ export const ZodFlawSchema = z.object({
 
 });
 
-// const ZodFlawSchemaPartial = ZodFlawSchema.partial();
-
 type SchemaType =
   | typeof FlawCVSSSchema
   | typeof AffectCVSSSchema
@@ -384,6 +398,7 @@ export const flawTypes = Object.values(FlawTypeWithBlank);
 export const flawSources = Object.values(Source642EnumWithBlank); // TODO: handle blank in the component
 export const flawImpacts = Object.values(ImpactEnumWithBlank); // TODO: handle blank in the component
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
+export const summaryRequiredStates = Object.values(RequiresSummaryEnumWithBlank);
 
 const {
   impact: zodAffectImpact,
