@@ -64,14 +64,14 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   }).then((response) => response.data);
 }
 
-export async function getUpdatedDt(url: string): Promise<ZodFlawType> {
+export async function getUpdatedDt(url: string): Promise<string> {
   return osidbFetch({
     method: 'get',
     url: url,
     params: {
       include_fields: 'updated_dt',
     },
-  }).then((response) => response.data);
+  }).then((response) => response.data.updated_dt);
 }
 
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
