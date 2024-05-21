@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import type { ZodAffectCVSSType } from '@/types/zodFlaw';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import {
   affectImpacts,
@@ -167,7 +168,13 @@ const hiddenResolutionOptions = computed(() => {
               >
                 <th>Advisory</th>
                 <td colspan="3">
-                  {{ trackerErrata.advisory_name }} &mdash; {{ trackerErrata.shipped_dt }}
+                  <a
+                    :href="osimRuntime.backends.errata + '/advisory/' + trackerErrata.et_id"
+                    target="_blank"
+                  >
+                    {{ trackerErrata.advisory_name }}
+                  </a>
+                  &mdash; {{ trackerErrata.shipped_dt }}
                 </td>
               </tr>
             </tbody>

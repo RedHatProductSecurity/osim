@@ -46,6 +46,7 @@
 * Add OSV Source for Flaw
 * Show Default Filter on IndexView Page
 * Remove Team ID from Flaw detail page and advanced search page
+* Add Errata Link for Tracker
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
