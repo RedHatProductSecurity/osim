@@ -116,7 +116,13 @@ Feature: Flaw detail testing
       When I update the embargoed flaw with a future public date
       Then The embargoed flaw is updated
 
-    Scenario: Update affects
+    Scenario: Update affects for public flaw
+      Given I go to a public flaw detail page
+      When I update the affects of the flaw and click 'Save Changes' button
+      Then All changes are saved
+
+    Scenario: Update affects for embargoed flaw
+      Given I go to an embargoed flaw detail page
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved
 

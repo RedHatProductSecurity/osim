@@ -479,7 +479,6 @@ def step_impl(context):
 @when("I update the affects of the flaw and click 'Save Changes' button")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    go_to_specific_flaw_detail_page(context.browser)
     # Click the first affect dropdown button
     flaw_detail_page.click_button_with_js("affectDropdownBtn")
     # Click the second affect component dropdown button
