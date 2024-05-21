@@ -14,12 +14,11 @@ export async function beforeFetch(options: OsidbFetchOptions) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
       if (!updated_dt) {
-        console.error('During multi-stage operation, an updated_dt could not be fetched');
-        throw new Error('During multi-stage operation, an updated_dt could not be fetched');
+        throw new Error('An updated_dt could not be fetched');
       }
     } catch (error) {
-      console.error('Problem fetching flaw for sequential update:', error);
-      throw new Error('Problem fetching flaw for sequential update');
+      console.error('Problem on fetch preparation. ', (error as Error).message);
+      throw new Error('Problem on fetch preparation. ' + (error as Error).message);
     }
   }
 }
