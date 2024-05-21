@@ -69,7 +69,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
           <div class="p-3 pt-4">
             <LabelInput v-model="items[itemIndex].url" label="Link URL" :error="error?.[itemIndex].url" />
             <LabelTextarea
-              v-model="items[itemIndex].description" 
+              v-model="items[itemIndex].description"
               label="Description"
               :error="error?.[itemIndex].description"
             />

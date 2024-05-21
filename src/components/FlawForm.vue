@@ -91,7 +91,7 @@ const unembargoing = computed(() => !isPublic.value && !flaw.value.embargoed);
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
-    if(isValid() && unembargoing.value) {
+    if (isValid() && unembargoing.value) {
       showUnembargoingModal.value = true;
     } else {
       updateFlaw();
@@ -195,8 +195,8 @@ const onReset = () => {
                 :nistcvss="nvdCvss3String"
               />
             </div>
-            <span 
-              v-if="shouldDisplayEmailNistForm" 
+            <span
+              v-if="shouldDisplayEmailNistForm"
               class="text-info bg-white px-3 py-2 cvss-score-error"
             >
               Explain non-obvious CVSSv3 score metrics
@@ -333,7 +333,7 @@ const onReset = () => {
         </div>
         <LabelCollapsible
           v-if="mode === 'edit'"
-          :label="`Trackers: ${trackerUuids.length}`" 
+          :label="`Trackers: ${trackerUuids.length}`"
           :isExpandable="trackerUuids.length !== 0"
         >
           <ul>
@@ -369,14 +369,14 @@ const onReset = () => {
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
       <!-- <button type="button" class="btn btn-primary col">Customer Pending</button>-->
       <!-- <button type="button" class="btn btn-primary col">
-        Close this issue without actions 
+        Close this issue without actions
       </button>-->
       <!-- <button type="button" class="btn btn-primary col">
         Move this issue to another source queue
       </button>-->
       <!-- <button type="button" class="btn btn-primary col">Create a flaw</button>-->
       <!-- <button type="button" class="btn btn-primary col">
-        Create hardening bug/weakness 
+        Create hardening bug/weakness
       </button>-->
       <div v-if="mode === 'edit'">
         <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>

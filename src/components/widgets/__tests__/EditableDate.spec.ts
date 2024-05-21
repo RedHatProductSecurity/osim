@@ -23,7 +23,7 @@ describe('EditableDate', () => {
 
     expect(subject.exists()).toBeTruthy();
   });
-  
+
   it('displays the right date', () => {
     const dateDisplay = subject.find('.osim-editable-date-value');
     expect(dateDisplay.element?.textContent).toBe(testDateString.split('T')[0]);

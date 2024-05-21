@@ -30,7 +30,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 
   const formatScore = (score: any) => score?.toFixed(1);
-  
+
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
     return values.join('/') || '-';
@@ -42,7 +42,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   });
 
   const shouldDisplayEmailNistForm = computed(() => {
-    if(rhCvss3String.value === '' || nvdCvss3String.value === '-') {
+    if (rhCvss3String.value === '' || nvdCvss3String.value === '-') {
       return false;
     }
     return `${rhCvss3String.value}` !== `${nvdCvss3String.value}`;

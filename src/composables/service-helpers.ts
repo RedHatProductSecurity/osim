@@ -27,7 +27,7 @@ export function createSuccessHandler({
   title = 'Operation Successful',
   body,
 }: Record<string, string>) {
-  return (response: {data: any}) => {
+  return (response: { data: any }) => {
     const { addToast } = useToastStore();
     addToast({
       title,

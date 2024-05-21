@@ -47,7 +47,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       return true; // affect is has just been added
     }
 
-    return affect.cvss_scores.some((cvssScore, index) => 
+    return affect.cvss_scores.some((cvssScore, index) =>
       Object.entries(cvssScore).some(
         ([key, value]) => originalAffect.cvss_scores[index]?.[key] !== value
       )
@@ -67,7 +67,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       return affect.cvss_scores.filter(isCvssNew);
     }
 
-    return affect.cvss_scores.filter((cvssScore, index) => 
+    return affect.cvss_scores.filter((cvssScore, index) =>
       Object.entries(cvssScore).some(
         ([key, value]) => originalAffect.cvss_scores[index]?.[key] !== value
       )

@@ -81,7 +81,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
 
-      const temporaryFieldRenaming = (fieldName: string | number) => 
+      const temporaryFieldRenaming = (fieldName: string | number) =>
         fieldName === 'description' ? 'Comment#0' : fieldName;
 
       const errorMessage = ({ message, path }: ZodIssue) => `${path.map(temporaryFieldRenaming).join('/')}: ${message}`;
@@ -111,7 +111,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     if (affectsToSave.value.length) {
       queue.push(saveAffects);
     }
-    
+
     if (affectsToDelete.value.length) {
       queue.push(deleteAffects);
     }
@@ -137,7 +137,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     onSaveSuccess();
     isSaving.value = false;
   }
-  
+
   function addPublicComment(comment: string) {
     isSaving.value = true;
     postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)

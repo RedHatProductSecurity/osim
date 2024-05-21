@@ -38,7 +38,7 @@ describe('SettingsStore', () => {
       settingsStore.settings.jiraApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
     );
     expect(
-      settingsStore.settings.showNotifications 
+      settingsStore.settings.showNotifications
     ).toBe(true);
   });
   it('reset', () => {

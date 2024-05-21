@@ -20,8 +20,8 @@ const emptyModel = computed(() => {
         {{ label }}
       </span>
       <div class="top-left-corner">
-        <span 
-          class="form-control top-left-corner" 
+        <span
+          class="form-control top-left-corner"
           :class="{ 'alert alert-warning': emptyModel }"
         >
           {{ modelValue }}

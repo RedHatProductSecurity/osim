@@ -148,10 +148,10 @@ describe('IssueQueue', () => {
     await wrapper.vm.$nextTick();
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({ 
+    expect(fetchEvents[1][0]._value).toEqual({
       order: '-created_dt',
       workflow_state: 'NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT',
-     
+
     });
     const issues = wrapper.findAllComponents(IssueQueueItem);
     expect(issues.length).toBe(0);
@@ -176,17 +176,17 @@ describe('IssueQueue', () => {
     const idColumn = wrapper.findAll('th').at(1);
     await idColumn.trigger('click');
     const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({ 
+    expect(fetchEvents[1][0]._value).toEqual({
       order: '-cve_id,-uuid',
     });
     // change sort order
     await idColumn.trigger('click');
-    expect(fetchEvents[1][0]._value).toEqual({ 
+    expect(fetchEvents[1][0]._value).toEqual({
       order: 'cve_id,uuid',
     });
     const impactColumn = wrapper.findAll('th').at(2);
     await impactColumn.trigger('click');
-    expect(fetchEvents[1][0]._value).toEqual({ 
+    expect(fetchEvents[1][0]._value).toEqual({
       order: '-impact',
     });
   });

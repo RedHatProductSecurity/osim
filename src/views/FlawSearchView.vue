@@ -53,7 +53,7 @@ function saveFilter() {
     },
       {} as Record<string, string>,
   );
-  searchStore.saveFilter(filters); 
+  searchStore.saveFilter(filters);
   addToast({
     title: 'Default Filter',
     body: 'User\'s default filter saved',
@@ -65,7 +65,7 @@ function saveFilter() {
 <template>
   <main class="mt-3">
     <div class="container">
-      <IssueSearchAdvanced 
+      <IssueSearchAdvanced
         :isLoading="isLoading"
         @filter:save="saveFilter"
       />

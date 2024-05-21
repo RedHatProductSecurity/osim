@@ -50,7 +50,7 @@ if (!getCvssData('RH', 'V3')) {
 const affectCvssScore = modelValue.value.cvss_scores.find(({ issuer }) => issuer === 'RH') as ZodAffectCVSSType;
 
 
-const hasTrackers = computed(() => 
+const hasTrackers = computed(() =>
   Boolean(modelValue.value.trackers)
   && modelValue.value?.trackers?.length > 0
   && modelValue.value?.trackers.every(({ ps_update_stream }) => ps_update_stream)

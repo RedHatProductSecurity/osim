@@ -7,7 +7,7 @@ import { flawFields } from '@/constants/flawFields';
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
   const replaceMock = vi.fn();
-  
+
   return {
     ...actual,
     useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
@@ -45,7 +45,7 @@ describe('IssueSearchAdvanced', () => {
     await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
     await selectDropdown.trigger('change');
     const inputField = wrapper.find('input.form-control');
-    await inputField.setValue('test'); 
+    await inputField.setValue('test');
     const searchButton = wrapper.find('button[type="submit"]');
     expect(searchButton.exists()).toBeTruthy();
     await searchButton.trigger('submit');

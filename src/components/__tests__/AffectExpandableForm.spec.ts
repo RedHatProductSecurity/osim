@@ -31,7 +31,7 @@ vi.mock('@/stores/osimRuntime', async () => {
     },
     osimRuntime: {
       value: osimRuntimeValue,
-      ...osimRuntimeValue, 
+      ...osimRuntimeValue,
     },
     OsimRuntimeStatus: {
       INIT: 0,
@@ -45,7 +45,7 @@ describe('AffectExpandableForm', () => {
 
   let subject: VueWrapper<InstanceType<typeof AffectExpandableForm>>;
   const MockData = {
-    value: { 
+    value: {
       'uuid':'08cbd626-5ac3-4c82-84bf-57837936a167',
       'flaw':'7e8b8f90-8916-4f59-8fe4-ac3ea684df38',
       'type':'DEFAULT',
@@ -54,8 +54,8 @@ describe('AffectExpandableForm', () => {
       'ps_module':'rhel-6',
       'ps_product':'Red Hat Enterprise Linux',
       'ps_component':'c-ares',
-      'impact':''
-      ,'cvss2':'',
+      'impact':'',
+      'cvss2':'',
       'cvss2_score':null,
       'cvss3':'',
       'cvss3_score':null,
@@ -65,7 +65,7 @@ describe('AffectExpandableForm', () => {
       'embargoed':false,
       'alerts':{},
       'created_dt':'2021-07-30T14:46:50Z',
-      'updated_dt':'2024-03-18T08:01:09Z', 
+      'updated_dt':'2024-03-18T08:01:09Z',
     },
     'uuid':'08cbd626-5ac3-4c82-84bf-57837936a167',
     'flaw':'7e8b8f90-8916-4f59-8fe4-ac3ea684df38',
@@ -75,7 +75,8 @@ describe('AffectExpandableForm', () => {
     'ps_module':'rhel-6',
     'ps_product':'Red Hat Enterprise Linux',
     'ps_component':'c-ares',
-    'impact':'','cvss2':'',
+    'impact':'',
+    'cvss2':'',
     'cvss2_score':null,
     'cvss3':'',
     'cvss3_score':null,
@@ -110,10 +111,10 @@ describe('AffectExpandableForm', () => {
     'embargoed':false,
     'alerts':{},
     'created_dt':'2021-07-30T14:46:50Z',
-    'updated_dt':'2024-03-18T08:01:09Z', 
+    'updated_dt':'2024-03-18T08:01:09Z',
   };
 
-  beforeAll(() =>{
+  beforeAll(() => {
     const props: typeof AffectExpandableForm.props = {
       error: {},
       isExpanded: true,

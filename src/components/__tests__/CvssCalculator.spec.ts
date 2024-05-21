@@ -19,7 +19,7 @@ function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, 
 }
 
 describe('CvssCalculator', () => {
-  
+
   let subject: any;
 
   beforeEach(() => {

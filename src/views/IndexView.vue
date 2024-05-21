@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '../components/IssueQueue.vue';
-import { useFlawsFetching }  from '../composables/useFlawsFetching';
+import { useFlawsFetching } from '../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 
 const searchStore = useSearchStore();
@@ -10,8 +10,8 @@ const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws }
 
 const tableFilters = ref<Record<string, string>>({});
 
-const showFilter = computed(() => 
-  Object.keys(searchStore.searchFilters).length > 0 
+const showFilter = computed(() =>
+  Object.keys(searchStore.searchFilters).length > 0
 );
 
 const isDefaultFilterSelected = ref<boolean>(showFilter.value);

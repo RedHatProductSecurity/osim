@@ -40,7 +40,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   }
 
   function $reset() {
-    settings.value = { 
+    settings.value = {
       showNotifications: false,
       bugzillaApiKey: '',
       jiraApiKey: '',

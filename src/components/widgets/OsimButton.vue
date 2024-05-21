@@ -10,7 +10,7 @@
 import { computed, onMounted, ref } from 'vue';
 
 const osimButton = ref<HTMLElement | null>(null);
-const backgroundColor = computed(() => 
+const backgroundColor = computed(() =>
   foregroundColor.value.replace(/\d+/g, (rbgValue: string) => {
     const adjustedValue = Number(rbgValue) - 50;
     const darkenedValue = adjustedValue < 0 ? 0 : adjustedValue;
@@ -42,7 +42,7 @@ onMounted(() => {
     padding: 0;
     outline-offset: 4px;
   }
-  
+
   .osim-button-face {
     cursor: pointer;
     padding: .75rem 1rem;

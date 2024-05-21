@@ -73,7 +73,7 @@ const maskLayer = {
   autofix: true,
 };
 
-const formatString = props.includesTime ? 'yyyy-MM-dd T' :'yyyy-MM-dd';
+const formatString = props.includesTime ? 'yyyy-MM-dd T' : 'yyyy-MM-dd';
 // The assumption is that the Date or String is in UTC
 function formatDate(date: Date | string): string {
   const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
@@ -157,7 +157,7 @@ function onBlur(e: FocusEvent | null) {
     commit();
     return;
   }
-  
+
 
   if (e.relatedTarget instanceof Node) {
     if (elDiv.value?.contains(e.relatedTarget)) {

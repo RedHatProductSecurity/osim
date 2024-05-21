@@ -7,7 +7,7 @@ import { useSettingsStore } from '../SettingsStore';
 
 describe('ToastStore', () => {
 
-  let toastStore:ReturnType<typeof useToastStore>;
+  let toastStore: ReturnType<typeof useToastStore>;
   let settingsStore: ReturnType<typeof useSettingsStore>;
 
 

@@ -28,7 +28,7 @@ const affectedModules = computed(() => uniques(theAffects.value.map((affect) => 
 const expandedModules = ref<Record<string, boolean>>({});
 
 const componentAffectsInModule = (moduleName: string) =>
-  theAffects.value.filter((affect) => affect.ps_module === moduleName); 
+  theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
 const expandedAffects = ref(new Map());
 
@@ -51,7 +51,7 @@ const areAnyComponentsExpanded = computed(
 );
 
 const isAnythingExpanded = computed(() => (
-  areAnyComponentsExpanded.value 
+  areAnyComponentsExpanded.value
   || Object.values(expandedModules.value).some(Boolean)
 ));
 
@@ -173,8 +173,8 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
       <div class="col-auto alert alert-danger rounded-3 p-3">
         <h5>Affected Offerings To Be Deleted</h5>
         <div>
-          <p 
-            v-for="(affect, affectIndex) in affectsToDelete" 
+          <p
+            v-for="(affect, affectIndex) in affectsToDelete"
             :key="affectIndex"
             class="p-0 "
           >
@@ -183,7 +183,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
               title="Recover"
               @click.prevent="emit('affect:recover', affect)"
             >
-              <i class="bi bi-prescription2"></i>  
+              <i class="bi bi-prescription2"></i>
               Recover
             </OsimButton>
             <span class="m-0 py-0 alert alert-warning">

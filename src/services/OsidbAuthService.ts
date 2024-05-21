@@ -75,7 +75,7 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
       data = await response.json();
     }
 
-    return Promise.reject({ 
+    return Promise.reject({
       response: {
         headers: Object.fromEntries(response.headers.entries()),
         ok: response.ok,
@@ -87,7 +87,7 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
         data,
       },
       data,
-    }, 
+    },
     );
   }
 
@@ -159,9 +159,9 @@ export async function getNextAccessToken() {
   }
 }
 
-function parseOsidbErrorsJson(data: Record<string, any>) { 
+function parseOsidbErrorsJson(data: Record<string, any>) {
   return Object.entries(data)
-    .filter(([key]) => !['dt','env','revision','version'].includes(key))
+    .filter(([key]) => !['dt', 'env', 'revision', 'version'].includes(key))
     .map(([key, value]) => `${key}: ${value}`);
 }
 
@@ -181,10 +181,10 @@ export function getDisplayedOsidbError(error: any) {
       const { status, statusText } = error.response;
       return `OSIDB responded with error ${status} (${statusText}). \n` +
       `${
-        error.response.data instanceof Object ?
+        error.response.data instanceof Object
           // JSON.stringify(error.response.data, null, 2) :
-          parseOsidbErrorsJson(error.response.data):
-          error.response.data
+          ? parseOsidbErrorsJson(error.response.data)
+          : error.response.data
       }`;
     }
   } else if (error.request) {

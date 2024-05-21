@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
-import { 
+import {
   calculatorButtons,
   getFactors,
   formatFactor,
@@ -25,7 +25,7 @@ const cvssDiv = ref();
 const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: string | undefined | null) {
-  if(cvssVector.value !== newCvssVector) {
+  if (cvssVector.value !== newCvssVector) {
     cvssVector.value = newCvssVector;
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
@@ -34,7 +34,7 @@ function updateFactors(newCvssVector: string | undefined | null) {
 updateFactors(cvssVector.value);
 
 function factorButton(id: string, key: string) {
-  if(!cvssFactors.value['CVSS']) {
+  if (!cvssFactors.value['CVSS']) {
     cvssFactors.value = getFactors('CVSS:3.1');
   }
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
@@ -50,8 +50,8 @@ function onInputFocus(event: FocusEvent) {
 }
 
 function onInputBlur(event: FocusEvent) {
-  if(event.relatedTarget !== cvssDiv.value) {
-    isFocused.value=false;
+  if (event.relatedTarget !== cvssDiv.value) {
+    isFocused.value = false;
   }
 }
 
@@ -63,10 +63,10 @@ function reset() {
 
 const getFactorColor = computed(() => (weight: number, isHovered: boolean = false) => {
   const hue = isHovered ? 200 : (1 - weight) * 80; // red being 0, 80 being green
-  const alpha = highlightedFactor.value === null 
-    ? 1 
+  const alpha = highlightedFactor.value === null
+    ? 1
     : isHovered
-      ? 1 
+      ? 1
       : 0.75;
   const hslForText = `hsla(${hue}, 100%, 35%, ${alpha})`;
   const hslForBackground = `hsla(${hue}, 100%, 95%, ${alpha})`;
@@ -83,7 +83,7 @@ function highlightFactor(factor: string | null) {
 function handlePaste(e: ClipboardEvent) {
   let maybeCvss = e.clipboardData?.getData('text');
   if (!maybeCvss) {
-    return; 
+    return;
   }
 
   updateFactors(maybeCvss);
@@ -115,8 +115,8 @@ function handlePaste(e: ClipboardEvent) {
             ref="cvssVectorInput"
             tabindex="0"
             class="vector-input form-control"
-            :class="{ 
-              'is-invalid': error != null, 
+            :class="{
+              'is-invalid': error != null,
               'dark-background': isFocused,
               'text-cursor': isFocused,
               'alert alert-warning': !cvssVector
@@ -167,14 +167,14 @@ function handlePaste(e: ClipboardEvent) {
         mx-0nd="$attrs"
       >
         <div class="px-3 py-2">
-          <div 
-            v-for="(row, rowIndex) in calculatorButtons.rows" 
-            :key="rowIndex" 
+          <div
+            v-for="(row, rowIndex) in calculatorButtons.rows"
+            :key="rowIndex"
             class="row-group"
           >
             <div
               v-for="(col, colIndex) in row.cols"
-              :key="colIndex" 
+              :key="colIndex"
               class="col-group"
             >
               <div
@@ -183,7 +183,7 @@ function handlePaste(e: ClipboardEvent) {
                 @mouseleave="highlightFactor(null)"
               >
                 <button
-                  class="btn-group-header btn lh-sm" 
+                  class="btn-group-header btn lh-sm"
                   :class="{ 'osim-factor-highlight': col.id === highlightedFactor}"
                   disabled
                 >{{ col.label }}</button>
@@ -198,7 +198,7 @@ function handlePaste(e: ClipboardEvent) {
                     :style="
                       cvssFactors[col.id] === button.key ?
                         getFactorColor(weights[col.id][button.key]) : {
-                          backgroundColor:'#E0E0E0',
+                          backgroundColor: '#E0E0E0',
                           color: (cvssFactors[col.id] === button.key
                             && factorSeverities[col.id][button.key] !== 'Bad')
                             ? 'white'
@@ -239,7 +239,7 @@ function handlePaste(e: ClipboardEvent) {
     margin-inline: 0;
     padding-left: 0.25rem;
     height: 100%;
-  
+
     .input-wrapper {
       z-index: 1;
       padding-inline: 0;
@@ -255,7 +255,7 @@ function handlePaste(e: ClipboardEvent) {
     .vector-input.alert {
       padding-block: 10px;
     }
-    
+
   }
 
   .erase-button {
@@ -284,7 +284,7 @@ function handlePaste(e: ClipboardEvent) {
       flex-direction: column;
       margin-inline: 5px;
       width: 100%;
-      
+
       .btn-group-header {
         background-color: #1F1F1F !important;
         color: white;

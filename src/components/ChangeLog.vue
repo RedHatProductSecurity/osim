@@ -17,7 +17,7 @@ function fetchChangeLog() {
       const htmlAsDom = new DOMParser().parseFromString(parsedCleanHtml, 'text/html');
       const domHeader = htmlAsDom.querySelector('h1');
       html.value.header = domHeader?.outerHTML || '';
-      if(domHeader) {
+      if (domHeader) {
         domHeader.outerHTML = '';
       }
       htmlAsDom.querySelectorAll('a').forEach((a) => {
@@ -47,8 +47,8 @@ fetchChangeLog();
               @click="closeModal"
             ></button>
           </div>
-        </div> 
-  
+        </div>
+
       </template>
       <template #body>
         <div class="px-2" v-html="html.body" />

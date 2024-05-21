@@ -112,7 +112,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
   </div>
 </template>
 
-<style scoped>  
+<style scoped>
 .form-group {
   width: 90%;
   margin-bottom: 10px;

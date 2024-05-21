@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { useRoute, useRouter } from 'vue-router';
 import { createTestingPinia } from '@pinia/testing';
 import FlawSearchView from '@/views/FlawSearchView.vue';
-import { useFlawsFetching }  from '../../composables/useFlawsFetching';
+import { useFlawsFetching } from '../../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 
@@ -52,7 +52,7 @@ vi.mock('jwt-decode', () => ({
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
   const replaceMock = vi.fn();
-  
+
   return {
     ...actual,
     useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
@@ -62,7 +62,7 @@ vi.mock('vue-router', async () => {
   };
 });
 
-vi.mock('../../composables/useFlawsFetching',  () => ({
+vi.mock('../../composables/useFlawsFetching', () => ({
   useFlawsFetching: vi.fn(() => ({
     issues: [],
     isLoading: false,
@@ -123,7 +123,7 @@ describe('FlawSearchView', () => {
     await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
     await selectDropdown.trigger('change');
     const inputField = wrapper.find('input.form-control');
-    await inputField.setValue('test'); 
+    await inputField.setValue('test');
     const searchButton = wrapper.find('button[type="submit"]');
     expect(searchButton.exists()).toBeTruthy();
     await searchButton.trigger('submit');
@@ -132,11 +132,11 @@ describe('FlawSearchView', () => {
     expect(useRouter().replace.mock.calls[0][0])
       .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
   });
-  
+
   it('should call saveFilter on save filter button click', async () => {
     (useRoute as Mock).mockReturnValue({
-      'query': { 
-        mode: 'advanced', 
+      'query': {
+        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },
@@ -166,8 +166,8 @@ describe('FlawSearchView', () => {
 
   it('should call with correct filters from route on mounted', async () => {
     (useRoute as Mock).mockReturnValue({
-      'query': { 
-        mode: 'advanced', 
+      'query': {
+        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },

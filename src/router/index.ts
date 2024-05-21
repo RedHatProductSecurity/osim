@@ -117,7 +117,7 @@ const router = createRouter({
         title: 'Sample',
       },
       beforeEnter() {
-        if(osimRuntime.value.env !== 'dev'){
+        if (osimRuntime.value.env !== 'dev'){
           return { name: 'not-found' };
         }
       }
@@ -180,7 +180,7 @@ function apiKeysGuard(shouldRedirectToSettings = false) {
     if (noKeysAreSet) {
       notifyApiKeyUnset();
     }
-    
+
     if (noKeysAreSet && shouldRedirectToSettings) {
       next('/settings');
       return;

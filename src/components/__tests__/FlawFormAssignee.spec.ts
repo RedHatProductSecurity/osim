@@ -51,7 +51,7 @@ describe('Assignee field renders', () => {
   it('should render the assignee field', () => {
     expect(subject.exists()).toBe(true);
   });
-  
+
   it('assigns the test user when button is clicked', async () => {
     await subject.find('button.osim-self-assign').trigger('click');
     expect(subject.text()).toContain('test@example.com');

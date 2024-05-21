@@ -17,7 +17,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   const flawReferences: Ref<ZodFlawReferenceType[]> = toRef(flaw.value, 'references');
   const flawAcknowledgments: Ref<ZodFlawAcknowledgmentType[]> = toRef(flaw.value, 'acknowledgments');
-  
+
   watch(() => flaw.value.references, () => {
     flawReferences.value = flaw.value.references;
   });
@@ -45,7 +45,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   }
 
   function cancelAddReference(reference: ZodFlawReferenceType) {
-    flawReferences.value.splice(flawReferences.value.indexOf(reference),1);
+    flawReferences.value.splice(flawReferences.value.indexOf(reference), 1);
   }
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
@@ -112,7 +112,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   }
 
   function cancelAddAcknowledgment(acknowledgment: ZodFlawAcknowledgmentType) {
-    flawAcknowledgments.value.splice(flawAcknowledgments.value.indexOf(acknowledgment),1);
+    flawAcknowledgments.value.splice(flawAcknowledgments.value.indexOf(acknowledgment), 1);
   }
 
   return {

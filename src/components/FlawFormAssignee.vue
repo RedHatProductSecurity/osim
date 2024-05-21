@@ -2,7 +2,7 @@
 import EditableText from '@/components/widgets/EditableText.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { nextTick, computed } from 'vue';
-const owner = defineModel<string | null>({  default: null });
+const owner = defineModel<string | null>({ default: null });
 const userStore = useUserStore();
 
 function selfAssign() {
@@ -43,7 +43,7 @@ const isAssignedToMe = computed(() => owner.value === userStore.userName);
             @click.prevent.stop="handleClick(onBlur)"
           >Self Assign</button>
         </template>
-      </EditableText>  
+      </EditableText>
     </div>
   </label>
 </template>
