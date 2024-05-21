@@ -8,49 +8,18 @@ import {
   type OsidbFetchOptions
 } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
-import { isFlawIdentifierValid } from '@/utils/helpers';
-
-import { ZodFlawSchema } from '@/types/zodFlaw';
-
-
-function isFlaw(data: any) {
-  return !!ZodFlawSchema.safeParse(data).success;
-}
-
-function parseFlawId(options: any) {
-  if (isFlaw(options.data) && options.data.uuid) {
-    return options.data.uuid;
-  }
-
-  // Look for the presence of a flaw id on Affects, CVSS Scores, and other entities 'belonging to' flaws
-  if (options.data?.flaw && isFlawIdentifierValid(options.data.flaw?.toString())) {
-    return options.data.flaw;
-  }
-
-  const flawOsidbIdRegex = /flaws\/(.+?)\/.*/;
-  const maybeFlawId = options.url.match(flawOsidbIdRegex)?.[1];
-  if (maybeFlawId) {
-    return maybeFlawId;
-  }
-  return null;
-}
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
-    const flawId = parseFlawId(options);
-    if (flawId === null) {
-      return;
-    }
     try {
-      const flaw = await getFlawUpdatedDt(flawId);
-      options.data.updated_dt = flaw.updated_dt;
-      if (!flaw.updated_dt) {
-        console.error('During multi-stage operation, an updated_dt could not be fetched', flaw, flawId);
-        throw new Error('During multi-stage operation, an updated_dt could not be fetched');
+      const updated_dt = await getUpdatedDt(options.url);
+      options.data.updated_dt = updated_dt;
+      if (!updated_dt) {
+        throw new Error('An updated_dt could not be fetched');
       }
     } catch (error) {
-      console.error('Problem fetching flaw for sequential update:', error);
-      throw new Error('Problem fetching flaw for sequential update');
+      console.error('Problem on fetch preparation. ', (error as Error).message);
+      throw new Error('Problem on fetch preparation. ' + (error as Error).message);
     }
   }
 }
@@ -96,14 +65,14 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
   }).then((response) => response.data);
 }
 
-export async function getFlawUpdatedDt(uuid: string): Promise<ZodFlawType> {
+export async function getUpdatedDt(url: string): Promise<string> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: url,
     params: {
       include_fields: 'updated_dt',
     },
-  }).then((response) => response.data);
+  }).then((response) => response.data.updated_dt);
 }
 
 export async function putFlaw(uuid: string, flawObject: ZodFlawType) {

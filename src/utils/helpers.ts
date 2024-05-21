@@ -80,7 +80,4 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
   );
 
 export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
-export const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-export const isFlawIdentifierValid = (identifier: string) => cveRegex.test(identifier) || uuidRegex.test(identifier);
-
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
