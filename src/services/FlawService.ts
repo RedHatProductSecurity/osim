@@ -13,6 +13,7 @@ export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
+      options.data.updated_dt = updated_dt;
       if (!updated_dt) {
         throw new Error('An updated_dt could not be fetched');
       }
