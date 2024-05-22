@@ -479,13 +479,13 @@ describe('FlawForm', () => {
     flaw.statement = 'statement';
     flaw.mitigation = 'mitigation';
     mountWithProps({ flaw, mode: 'edit' });
-    const buttonGroups = subject.find('div.d-flex.gap-3.mb-3').findAll("button.btn.btn-secondary");
+    const buttonGroups = subject.find('div.d-flex.gap-3.mb-3').findAll('button.btn.btn-secondary');
     const removeSummaryButton = buttonGroups[0];
-    expect(removeSummaryButton.element?.textContent).toBe("Remove Description");
+    expect(removeSummaryButton.element?.textContent).toBe('Remove Description');
     const removeStatementButton = buttonGroups[1];
-    expect(removeStatementButton.element?.textContent).toBe("Remove Statement");
+    expect(removeStatementButton.element?.textContent).toBe('Remove Statement');
     const removeMitigationButton = buttonGroups[2];
-    expect(removeMitigationButton.element?.textContent).toBe("Remove Mitigation");
+    expect(removeMitigationButton.element?.textContent).toBe('Remove Mitigation');
     await removeSummaryButton.trigger('click');
     await removeStatementButton.trigger('click');
     await removeMitigationButton.trigger('click');
