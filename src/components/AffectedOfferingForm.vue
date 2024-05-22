@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useWindowSize } from '@vueuse/core';
+
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import type { ZodAffectCVSSType } from '@/types/zodFlaw';
 import { osimRuntime } from '@/stores/osimRuntime';
-
 import {
+  affectAffectedness,
   affectImpacts,
   affectResolutions,
-  affectAffectedness,
   affectTypes,
+  type ZodAffectCVSSType,
   type ZodAffectType,
-} from '@/types/zodFlaw';
-
-import { useWindowSize } from '@vueuse/core';
+} from '@/types/zodAffect';
 
 const { width: screenWidth } = useWindowSize();
 

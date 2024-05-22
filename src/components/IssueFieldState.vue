@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import Modal from '@/components/widgets/Modal.vue';
-import { ZodFlawClassification } from '@/types/zodFlaw';
+import { ZodFlawClassification } from '@/types/zodShared';
 
 const props = defineProps<{
   flawId: string;
