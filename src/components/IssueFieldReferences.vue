@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -35,11 +37,17 @@ function handleDelete(uuid: string, closeModal: () => void) {
   emit('reference:delete', uuid);
   closeModal();
 }
+
+const editableListComp = ref<InstanceType<typeof EditableList> | null>(null);
+
+defineExpose({ editableListComp });
+
 </script>
 
 <template>
   <div>
     <EditableList
+      ref="editableListComp"
       v-model="references"
       :mode="mode"
       entityName="Reference"

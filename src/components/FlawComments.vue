@@ -104,7 +104,7 @@ function linkify(text: string) {
           :key="commentIndex"
           class="bg-light p-2 mt-3 rounded-2"
         >
-          <p class="border-bottom pb-2">
+          <p :id="comment.uuid" class="border-bottom pb-2">
             <span v-if="comment.is_private" class="badge bg-warning rounded-pill">
               Bugzilla Internal
             </span>

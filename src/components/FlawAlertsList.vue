@@ -9,6 +9,14 @@ const props = defineProps<{
   flaw: any;
 }>();
 
+const emit = defineEmits<{
+  'expandFocusedComponent': [value: string];
+}>();
+
+const emitExpandFocusedComponent = (parent_uuid: string) => {
+  emit('expandFocusedComponent', parent_uuid);
+};
+
 const flaw: Ref<ZodFlawType> = toRef(props, 'flaw');
 
 const {
@@ -47,12 +55,36 @@ const alertsExpanded = ref(false);
         </div>
       </span>
     </template>
-    <FlawAlertsSection :alertSet="flawAlerts" :sectionName="'Flaw'" />
-    <FlawAlertsSection :alertSet="flawAcknowledgmentsAlerts" :sectionName="'Flaw Acknowledgments'" />
-    <FlawAlertsSection :alertSet="flawReferenceAlerts" :sectionName="'Flaw References'" />
-    <FlawAlertsSection :alertSet="flawCommentsAlerts" :sectionName="'Flaw Comments'" />
-    <FlawAlertsSection :alertSet="affectsAlerts" :sectionName="'Affects'" />
-    <FlawAlertsSection :alertSet="trackersAlerts" :sectionName="'Trackers'" />
+    <FlawAlertsSection
+      :alertSet="flawAlerts"
+      :sectionName="'Flaw'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
+    <FlawAlertsSection
+      :alertSet="flawAcknowledgmentsAlerts"
+      :sectionName="'Flaw Acknowledgments'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
+    <FlawAlertsSection
+      :alertSet="flawReferenceAlerts"
+      :sectionName="'Flaw References'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
+    <FlawAlertsSection
+      :alertSet="flawCommentsAlerts"
+      :sectionName="'Flaw Comments'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
+    <FlawAlertsSection
+      :alertSet="affectsAlerts"
+      :sectionName="'Affects'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
+    <FlawAlertsSection
+      :alertSet="trackersAlerts"
+      :sectionName="'Trackers'"
+      @expandFocusedComponent="emitExpandFocusedComponent"
+    />
 
   </LabelCollapsible>
 </template>

@@ -10,7 +10,15 @@ const props = defineProps<{
   sectionName: string;
 }>();
 
+const emit = defineEmits<{
+  'expandFocusedComponent': [value: string];
+}>();
+
 const isExpanded = ref(false);
+
+const emitExpandFocusedComponent = (parent_uuid: string) => {
+  emit('expandFocusedComponent', parent_uuid);
+};
 
 </script>
 
@@ -41,7 +49,7 @@ const isExpanded = ref(false);
     <div v-for="alerts,alertType in alertSet" :key="alertType">
       <div v-if="alerts.length">
         <span v-for="alert in alerts" :key="alert.uuid">
-          <FlawAlert :alert="alert" />
+          <FlawAlert :alert="alert" @expandFocusedComponent="emitExpandFocusedComponent" />
         </span>
       </div>
     </div>

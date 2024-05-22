@@ -23,6 +23,7 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
+import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
 const props = defineProps<{
@@ -172,6 +173,53 @@ const toggleMitigation = () => {
   }
 };
 
+const affectedOfferingsComp = ref<InstanceType<typeof AffectedOfferings> | null>(null);
+const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
+const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
+
+const expandFocusedComponent = (parent_uuid: string) => {
+
+  // Expand Affect (affect, affect CVSS, tracker)
+  const trackers: ZodTrackerType[] = ([] as ZodTrackerType[]).concat(
+    ...flaw.value.affects.map(aff => aff.trackers)
+  );
+  const trackerAffectUuid = trackers.find(tracker => tracker.uuid === parent_uuid)?.affects?.[0];
+
+  const affectCvss: ZodAffectCVSSType[] = ([] as ZodAffectCVSSType[]).concat(
+    ...flaw.value.affects.map(aff => aff.cvss_scores)
+  );
+  const affectCvssUuid = affectCvss.find(affCvss => affCvss.uuid === parent_uuid)?.affect;
+
+  const affect = flaw.value.affects.find(aff => [parent_uuid, trackerAffectUuid, affectCvssUuid].includes(aff.uuid));
+  if (affect !== undefined) {
+    if (affectedOfferingsComp.value) {
+      if (!affectedOfferingsComp.value.isExpanded(affect)) {
+        affectedOfferingsComp.value.togglePsModuleExpansion(affect?.ps_module);
+        affectedOfferingsComp.value.togglePsComponentExpansion(affect);
+      }
+    }
+    return;
+  }
+
+  // Expand Flaw References section
+  const reference = flawReferences.value.find(refer => refer.uuid === parent_uuid);
+  if (reference !== undefined) {
+    if (referencesComp.value?.editableListComp) {
+      referencesComp.value.editableListComp.isExpanded = true;
+    }
+    return;
+  }
+
+  // Expand Flaw Acknowledgments section
+  const acknowledgment = flawAcknowledgments.value.find(ack => ack.uuid === parent_uuid);
+  if (acknowledgment !== undefined) {
+    if (acknowledgmentsComp.value?.editableListComp) {
+      acknowledgmentsComp.value.editableListComp.isExpanded = true;
+    }
+    return;
+  }
+};
+
 </script>
 
 <template>
@@ -179,9 +227,9 @@ const toggleMitigation = () => {
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
-          <FlawAlertsList :flaw="flaw" />
+          <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
-        <div class="col-6">
+        <div :id="flaw.uuid" class="col-6">
           <LabelEditable
             v-model="flaw.title"
             label="Title"
@@ -223,6 +271,7 @@ const toggleMitigation = () => {
             :error="errors.impact"
           />
           <CvssCalculator
+            :id="flawRhCvss3.uuid"
             v-model:cvss-vector="flawRhCvss3.vector"
             v-model:cvss-score="flawRhCvss3.score"
           />
@@ -384,6 +433,7 @@ const toggleMitigation = () => {
       <div class="osim-flaw-form-section border-top border-bottom">
         <div class="d-flex gap-3">
           <IssueFieldReferences
+            ref="referencesComp"
             v-model="flawReferences"
             class="w-100 my-3"
             :mode="mode"
@@ -394,6 +444,7 @@ const toggleMitigation = () => {
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
+            ref="acknowledgmentsComp"
             v-model="flawAcknowledgments"
             class="w-100 my-3"
             :mode="mode"
@@ -423,6 +474,7 @@ const toggleMitigation = () => {
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"
+        ref="affectedOfferingsComp"
         :theAffects="flaw.affects"
         :affectsToDelete="affectsToDelete"
         class="osim-flaw-form-section"

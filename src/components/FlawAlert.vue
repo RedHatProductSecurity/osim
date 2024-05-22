@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { type ZodAlertType } from '@/types/zodShared';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
-import { computed } from 'vue';
+import { computed, nextTick } from 'vue';
 
 const props = defineProps<{
   alert: ZodAlertType;
+}>();
+
+const emit = defineEmits<{
+  'expandFocusedComponent': [value: string];
 }>();
 
 const isWarning = computed(() => {
@@ -14,6 +18,17 @@ const isWarning = computed(() => {
 const isError = computed(() => {
   return props.alert.alert_type === 'ERROR';
 });
+
+function scrollToComponent(parent_uuid: string) {
+  emit('expandFocusedComponent', parent_uuid);
+  nextTick(() => {
+    const element = document.getElementById(parent_uuid);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+}
+
 
 </script>
 
@@ -38,6 +53,18 @@ const isError = computed(() => {
         </div>
         <div class="row mx-auto mt-1">
           {{ alert.resolution_steps || "No resolution steps are defined." }}
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click.prevent="scrollToComponent(alert.parent_uuid)"
+            >
+              Scroll To Origin
+              <i class="bi bi-arrow-down-circle"></i>
+            </button>
+          </div>
         </div>
       </div>
     </LabelCollapsible>
