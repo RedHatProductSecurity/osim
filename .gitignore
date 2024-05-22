@@ -32,3 +32,5 @@ coverage
 
 *.py[co]
 __pycache__
+.python-version
+
