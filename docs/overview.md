@@ -82,6 +82,7 @@ OSIM_BACKENDS_OSIDB="http://osidb-service:8000"
 OSIM_BACKENDS_OSIDB_AUTH="kerberos"
 OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
 OSIM_BACKENDS_JIRA="http://jira-service:8002"
+OSIM_BACKENDS_ERRATA="http://errata-service:8003"
 ```
 
 ## Local Configuration
@@ -94,7 +95,8 @@ OSIM_BACKENDS_JIRA="http://jira-service:8002"
         "osidb": "http://localhost:8000",
         "osidbAuth": "<kerberos|credentials>",
         "bugzilla": "http://localhost:8001",
-        "jira": "http://localhost:8002"
+        "jira": "http://localhost:8002",
+        "errata": "http://localhost:8003"
       },
       "osimVersion": {
         "rev":"dev",
