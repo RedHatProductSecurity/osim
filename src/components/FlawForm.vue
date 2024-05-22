@@ -290,21 +290,21 @@ const onReset = () => {
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showSummary = !showSummary"
+            @click="showSummary = !showSummary; flaw.summary = '';"
           >
             {{ showSummary ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showStatement = !showStatement"
+            @click="showStatement = !showStatement; flaw.statement = '';"
           >
             {{ showStatement ? 'Remove Statement' : 'Add Statement' }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showMitigation = !showMitigation"
+            @click="showMitigation = !showMitigation; flaw.mitigation = '';"
           >
             {{ showMitigation ? 'Remove Mitigation' : 'Add Mitigation' }}
           </button>
