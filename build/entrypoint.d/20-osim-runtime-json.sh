@@ -12,6 +12,7 @@ OSIM_BACKENDS_OSIDB="${OSIM_BACKENDS_OSIDB:-http://osidb-service:8000}"
 OSIM_BACKENDS_OSIDB_AUTH="${OSIM_BACKENDS_OSIDB_AUTH:-kerberos}"
 OSIM_BACKENDS_BUGZILLA="${OSIM_BACKENDS_BUGZILLA:-http://bugzilla-service:8001}"
 OSIM_BACKENDS_JIRA="${OSIM_BACKENDS_JIRA:-http://jira-service:8002}"
+OSIM_BACKENDS_ERRATA="${OSIM_BACKENDS_ERRATA:-http://errata-service:8003}"
 OSIM_VERSION='{"rev":"dev","tag":"dev","timestamp":"1970-01-01T00:00:00Z","dirty":true}'
 OSIM_READONLY_MODE=${OSIM_READONLY_MODE:-false}
 
@@ -29,7 +30,8 @@ IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
     "osidb": "${OSIM_BACKENDS_OSIDB}",
     "osidbAuth": "${OSIM_BACKENDS_OSIDB_AUTH}",
     "bugzilla": "${OSIM_BACKENDS_BUGZILLA}",
-    "jira": "${OSIM_BACKENDS_JIRA}"
+    "jira": "${OSIM_BACKENDS_JIRA}",
+    "errata": "${OSIM_BACKENDS_ERRATA}"
   },
   "osimVersion": ${OSIM_VERSION},
   "readOnly": ${OSIM_READONLY_MODE}
