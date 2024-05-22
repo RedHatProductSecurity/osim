@@ -11,6 +11,7 @@
 * Disable form on references and acknowledgments save actions
 * References and acknowledgments disappear after save actions
 * References and acknowledgments are not refreshed after save actions
+* Fixed FlawForm Remove Summary, Statement, Mitigation Button
 
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)

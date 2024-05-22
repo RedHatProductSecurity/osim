@@ -109,6 +109,27 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
+const toggleSummary = () => {
+  showSummary.value = !showSummary.value;
+  if (!showSummary.value) {
+    flaw.value.summary = '';
+  }
+};
+
+const toggleStatement = () => {
+  showStatement.value = !showStatement.value;
+  if (!showStatement.value) {
+    flaw.value.statement = '';
+  }
+};
+
+const toggleMitigation = () => {
+  showMitigation.value = !showMitigation.value;
+  if (!showMitigation.value) {
+    flaw.value.mitigation = '';
+  }
+};
+
 </script>
 
 <template>
@@ -290,21 +311,21 @@ const onReset = () => {
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showSummary = !showSummary"
+            @click="toggleSummary"
           >
             {{ showSummary ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showStatement = !showStatement"
+            @click="toggleStatement"
           >
             {{ showStatement ? 'Remove Statement' : 'Add Statement' }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            @click="showMitigation = !showMitigation"
+            @click="toggleMitigation"
           >
             {{ showMitigation ? 'Remove Mitigation' : 'Add Mitigation' }}
           </button>

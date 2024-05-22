@@ -351,6 +351,7 @@ describe('FlawForm', () => {
       },
     ];
   });
+
   it('displays correct CVSSv3 calculator link for empty value', async () => {
     const flaw = sampleFlaw();
     flaw.cvss_scores = [];
@@ -470,6 +471,27 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
+  });
+
+  it('show set summary, statement, mitigation values correctly after clicking remove buttons', async () => {
+    const flaw = sampleFlaw();
+    flaw.summary = 'summary';
+    flaw.statement = 'statement';
+    flaw.mitigation = 'mitigation';
+    mountWithProps({ flaw, mode: 'edit' });
+    const buttonGroups = subject.find('div.d-flex.gap-3.mb-3').findAll('button.btn.btn-secondary');
+    const removeSummaryButton = buttonGroups[0];
+    expect(removeSummaryButton.element?.textContent).toBe('Remove Description');
+    const removeStatementButton = buttonGroups[1];
+    expect(removeStatementButton.element?.textContent).toBe('Remove Statement');
+    const removeMitigationButton = buttonGroups[2];
+    expect(removeMitigationButton.element?.textContent).toBe('Remove Mitigation');
+    await removeSummaryButton.trigger('click');
+    await removeStatementButton.trigger('click');
+    await removeMitigationButton.trigger('click');
+    expect((subject.vm as any).flaw.summary).toBe('');
+    expect((subject.vm as any).flaw.statement).toBe('');
+    expect((subject.vm as any).flaw.mitigation).toBe('');
   });
 });
 
