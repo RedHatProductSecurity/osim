@@ -17,6 +17,12 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectsToDelete = ref<ZodAffectType[]>([]);
   const theAffects: Ref<ZodAffectType[]> = toRef(flaw.value, 'affects');
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
+  const wereAffectsDeleteted = ref(false);
+
+  watch(affectsToDelete.value, () => {
+    // check affectsToDelete to update delete affects text
+    wereAffectsDeleteted.value = !(affectsToDelete.value.length > 0);
+  });
 
   function isCvssNew(cvssScore: ZodAffectCVSSType) {
     if (
@@ -204,5 +210,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
+    wereAffectsDeleteted
   };
 }

@@ -110,4 +110,58 @@ describe('AffectedOfferings', () => {
       mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' })
     );
   });
+
+  it('renders the deleted affected offerings', () => {
+    const subject = mount(AffectedOfferings, {
+      global: {
+        stubs: {
+          RouterLink: true,
+        },
+      },
+      props: {
+        theAffects: [
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
+        ],
+        affectsToDelete: [
+          mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
+        ],
+        wereAffectsDeleteted: false,
+        error: null,
+      },
+    });
+
+    const deleteEL = subject.find('div.col-auto.alert.alert-danger');
+    expect(deleteEL.exists()).toBeTruthy();
+    const deleteMessageEL = deleteEL.find('h5');
+    expect(deleteMessageEL.exists()).toBeTruthy();
+    expect(deleteMessageEL.text()).toBe('Affected Offerings To Be Deleted');
+  });
+
+  it('renders the deleted affected offerings after save', () => {
+    const subject = mount(AffectedOfferings, {
+      global: {
+        stubs: {
+          RouterLink: true,
+        },
+      },
+      props: {
+        theAffects: [
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
+        ],
+        affectsToDelete: [
+          mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
+        ],
+        wereAffectsDeleteted: true,
+        error: null,
+      },
+    });
+
+    const deleteEL = subject.find('div.col-auto.alert.alert-danger');
+    expect(deleteEL.exists()).toBeTruthy();
+    const deleteMessageEL = deleteEL.find('h5');
+    expect(deleteMessageEL.exists()).toBeTruthy();
+    expect(deleteMessageEL.text()).toBe('Deleted Affected Offerings');
+  });
 });

@@ -12,6 +12,7 @@ const props = defineProps<{
   theAffects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: Record<string, any>[] | null;
+  wereAffectsDeleteted: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -171,7 +172,8 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
     </button>
     <div v-if="affectsToDelete.length" class="mt-3 row">
       <div class="col-auto alert alert-danger rounded-3 p-3">
-        <h5>Affected Offerings To Be Deleted</h5>
+        <h5 v-if="wereAffectsDeleteted">Deleted Affected Offerings</h5>
+        <h5 v-else>Affected Offerings To Be Deleted</h5>
         <div>
           <p
             v-for="(affect, affectIndex) in affectsToDelete"
