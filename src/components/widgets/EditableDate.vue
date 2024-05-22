@@ -14,7 +14,7 @@ const props = defineProps<{
   includesTime?: boolean,
   readOnly?: boolean,
   editing?: boolean,
-  error?: string,
+  error?: string | null,
 }>();
 const initialValue = toValue(props.modelValue);
 const emit = defineEmits<{

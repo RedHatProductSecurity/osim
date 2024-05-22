@@ -1,25 +1,28 @@
 import { type ZodFlawType } from '@/types/zodFlaw';
-import axios from 'axios';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import {
   Source642Enum
-} from '../../generated-client';
+} from '@/generated-client';
+import { useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
+
+import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import IssueFieldState from '@/components/IssueFieldState.vue';
-import FlawForm from '../FlawForm.vue';
-import { useRouter } from 'vue-router';
-import { DateTime } from 'luxon';
-import LabelDiv from '../widgets/LabelDiv.vue';
-import LabelSelect from '../widgets/LabelSelect.vue';
-import LabelCollapsible from '../widgets/LabelCollapsible.vue';
-import LabelTextarea from '../widgets/LabelTextarea.vue';
-import CvssCalculator from '../CvssCalculator.vue';
-import FlawFormAssignee from '../FlawFormAssignee.vue';
+import FlawForm from '@/components/FlawForm.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
+import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+import CvssCalculator from '@/components/CvssCalculator.vue';
+import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import { blankFlaw } from '@/composables/useFlawModel';
+
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 // const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
@@ -56,10 +59,13 @@ describe('FlawForm', () => {
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props,
+      directives: {
+        'osim-loading': LoadingAnimationDirective,
+      },
       global: {
         stubs: {
           // osimFormatDate not defined on test run, so we need to stub it
-          EditableDate: true,
+          // EditableDate: true,
           RouterLink: true,
         },
       },
@@ -82,6 +88,9 @@ describe('FlawForm', () => {
 
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
+      directives: {
+        'osim-loading': LoadingAnimationDirective,
+      },
       // shallow: true,
       props: {
         flaw: sampleFlaw(),
@@ -282,6 +291,88 @@ describe('FlawForm', () => {
     expect(comment0Field?.props().disabled).toBe(false);
   });
 
+  it('renders the description field', async () => {
+    const flaw = sampleFlaw();
+    flaw.major_incident_state = '';
+    mountWithProps({ flaw, mode: 'edit' });
+    const descriptionField = subject
+      .findAllComponents(LabelTextarea)
+      .find((component) => component.props().label === 'Description');
+    expect(descriptionField?.exists()).toBe(true);
+  });
+
+  it('triggers validations for blank flaw', async () => {
+    const flaw = blankFlaw();
+    mountWithProps({ flaw, mode: 'create' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+    expect(vm.errors.title).not.toBe(null);
+    expect(vm.errors.component).not.toBe(null);
+    expect(vm.errors.impact).not.toBe(null);
+    expect(vm.errors.source).not.toBe(null);
+    expect(vm.errors.description).not.toBe(null);
+
+    const titleField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.props().label === 'Title')
+      ?.find('.is-invalid');
+    expect(titleField?.exists()).toBe(true);
+
+    const componentField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.props().label === 'Component')
+      ?.find('.is-invalid');
+    expect(componentField?.exists()).toBe(true);
+
+    const invalidImpactField = subject
+      .findAllComponents(LabelSelect)
+      .find((component) => component.props().label === 'Impact')
+      ?.find('.is-invalid');
+    expect(invalidImpactField?.exists()).toBe(true);
+
+    const invalidSourceField = subject
+      .findAllComponents(LabelSelect)
+      .find((component) => component.props().label === 'CVE Source')
+      ?.find('.is-invalid');
+    expect(invalidSourceField?.exists()).toBe(true);
+
+    vm.reported_dt = '';
+    const invalidReportedDateField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.props().label === 'Reported Date')
+      ?.find('.is-invalid');
+    expect(invalidReportedDateField?.exists()).toBe(false);
+
+    const invalidPublicDateField = subject
+      .findAllComponents(LabelEditable)
+      .find((component) => component.props().label === 'Public Date')
+      ?.find('.is-invalid');
+    expect(invalidPublicDateField?.exists()).toBe(true);
+
+    const invalidComment0Field = subject
+      .findAllComponents(LabelTextarea)
+      .find((component) => component.props().label === 'Comment#0')
+      ?.find('.is-invalid');
+    expect(invalidComment0Field?.exists()).toBe(true);
+  });
+
+  it('triggers validations for the description field', async () => {
+    const flaw = sampleFlaw();
+    flaw.major_incident_state = '';
+    mountWithProps({ flaw, mode: 'edit' });
+    const descriptionField = subject
+      .findAllComponents(LabelTextarea)
+      .find((component) => component.props().label === 'Description');
+    expect(descriptionField?.exists()).toBe(true);
+    const vm = subject.findComponent(FlawForm).vm as any;
+    vm.flaw.requires_summary = 'REQUESTED';
+    vm.flaw.summary = 'I am a spooky CVE';
+    expect(vm.errors.summary).toBe(null);
+    vm.flaw.summary = '';
+    expect(vm.errors.summary).toBe('Description cannot be blank if requested or approved.');
+    vm.flaw.major_incident_state = 'APPROVED';
+    expect(vm.errors.summary).toBe('Description must be approved for Major Incidents.');
+  });
+
   it('displays correct Assignee field value from props', async () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
@@ -361,6 +452,9 @@ describe('FlawForm', () => {
         flaw,
         mode: 'edit',
       },
+      directives: {
+        'osim-loading': LoadingAnimationDirective,
+      },
       global: {
         mocks: {
           $beforeEach: (a: any) => a,
@@ -380,6 +474,9 @@ describe('FlawForm', () => {
       props: {
         flaw,
         mode: 'edit',
+      },
+      directives: {
+        'osim-loading': LoadingAnimationDirective,
       },
       global: {
         mocks: {
@@ -498,13 +595,18 @@ describe('FlawForm', () => {
 
 
 function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
-  return axios({
-    method: 'put',
-    url: `${FLAW_BASE_URI}/${uuid}`,
-    data: flawObject,
+  return fetch(`${FLAW_BASE_URI}/${uuid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(flawObject),
   })
     .then((response) => {
-      return response.data;
+      if (!response.ok) {
+        throw new Error('🚨 Mocked PUT failed');
+      }
+      return response.json();
     })
     .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
 }

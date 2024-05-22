@@ -4,14 +4,12 @@ import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
 
 const props = withDefaults(defineProps<{
-  // modelValue: string,
-  label?: string,
-  type: 'text' | 'date' | 'datetime',
-  // error: string,
-  // required: boolean,
+  label?: string;
+  type: 'text' | 'date' | 'datetime';
+  error?: null | string;
 }>(), {
   label: '',
-  // required: false,
+  error: undefined,
 });
 
 const modelValue = defineModel<string | undefined | null | number | Date>();
@@ -29,12 +27,14 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
         v-if="props.type.includes('date')"
         v-model="modelValue as string"
         :class="$attrs.class"
+        :error="error"
         :includesTime="props.type === 'datetime'"
       />
       <EditableText
         v-else
         v-model="modelValue as string"
         :class="$attrs.class"
+        :error="error"
       />
     </div>
   </label>
