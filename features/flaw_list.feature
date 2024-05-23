@@ -37,3 +37,7 @@ Feature: Flaw list testing
     Scenario: List all open issues
       When I check 'Open Issues' checkbox of flaw list
       Then Only open issues are listed in flaw list
+
+    Scenario: List flaws by default filter
+      When I set a default filter and back to flaw list
+      Then The flaw list is filtered by the default filter

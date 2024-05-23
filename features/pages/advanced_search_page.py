@@ -16,6 +16,7 @@ class AdvancedSearchPage(BasePage):
 
     locators = {
         "searchBtn": ('XPATH', '//button[contains(text(), "Search")]'),
+        "saveAsDefaultBtn": ('XPATH', '//button[contains(text(), "Save as Default")]'),
         "firstFlaw": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[1]"),
         "selectKeyList": ("XPATH", "//select[@class='form-select search-facet-field']"),
         "selectValueList": ("XPATH", "//select[@class='form-select']"),
@@ -30,11 +31,9 @@ class AdvancedSearchPage(BasePage):
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "closeKeysetBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
         "closeSelBtn": ("XPATH", "//i[@class='bi-x']"),
-        "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]")
+        "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]"),
+        "defaultFilterSavedMsg": ("XPATH", "//div[contains(text(), 'default filter saved')]"),
     }
-
-    def click_search_btn(self):
-        self.searchBtn.click_button()
 
     def first_flaw_exist(self):
         self.firstFlaw.visibility_of_element_located()

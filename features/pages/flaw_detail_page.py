@@ -312,12 +312,6 @@ class FlawDetailPage(BasePage):
         field_input = getattr(self, field + 'Input')
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def check_value_exist(self, value):
-        try:
-            self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
-        except NoSuchElementException:
-            raise
-
     def check_value_not_exist(self, value):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, f'//span[contains(text(), "{value}")]'))

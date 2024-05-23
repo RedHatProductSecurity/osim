@@ -1,5 +1,8 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from seleniumpagefactory.Pagefactory import PageFactory
+
+from features.page_factory_utils import find_elements_in_page_factory
 
 
 class BasePage(PageFactory):
@@ -39,3 +42,13 @@ class BasePage(PageFactory):
     def wait_msg(self, msg_element):
         element = getattr(self, msg_element)
         element.visibility_of_element_located()
+
+    def check_value_exist(self, value):
+        try:
+            self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
+        except NoSuchElementException:
+            raise
+
+    def is_checkbox_selected(self, checkbox):
+        element = find_elements_in_page_factory(self, checkbox)
+        return element[0].is_selected()
