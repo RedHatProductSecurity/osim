@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
 
-import { type ZodAffectType } from '@/types/zodFlaw';
+import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
-
 
 const props = defineProps<{
   theAffects: ZodAffectType[];

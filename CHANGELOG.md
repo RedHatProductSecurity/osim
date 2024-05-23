@@ -4,6 +4,7 @@
 ### Added
 * Self-Assign button for Flaws
 * Provide time to Public Date field
+* Add neighboring dropdown menu to Flaw Description for its review workflow
 
 ### Fixed
 * The session is now shared across tabs
@@ -11,7 +12,8 @@
 * Disable form on references and acknowledgments save actions
 * References and acknowledgments disappear after save actions
 * References and acknowledgments are not refreshed after save actions
-
+* Fixed FlawForm Remove Summary, Statement, Mitigation Button
+* Restored required field validations to Flaw fields
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 

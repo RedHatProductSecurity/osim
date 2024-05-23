@@ -29,7 +29,7 @@ const OsimRuntime = z.object({
     osidbAuth: z.string().default('kerberos'),
     bugzilla: z.string(),
     jira: z.string(),
-    errata: z.string()
+    errata: z.string(),
   }),
   osimVersion: z.object({
     rev: z.string(),

@@ -4,7 +4,6 @@ from datetime import date, datetime
 from behave import when, then
 from selenium.webdriver.common.by import By
 from seleniumpagefactory.Pagefactory import ElementNotFoundException
-from features.utils import get_osidb_token
 
 from features.utils import (
     wait_for_visibility_by_locator,
@@ -523,12 +522,12 @@ def step_impl(context):
  
 @then("All changes are saved")
 def step_impl(context):
+    token = get_osidb_token()
     # Check the affect updates have been saved
-    osidb_token = get_osidb_token()
     flaw_detail_page = FlawDetailPage(context.browser)
     component_value = context.value_dict['ps_component']
-    field_value_dict = flaw_detail_page.get_affect_value_from_osidb(
-                    context.value_dict.keys(), osidb_token, component_value)
+    field_value_dict = flaw_detail_page.get_affect_values(
+                    context.value_dict.keys(), token, component_value)
     # There is a bug OSIDB-2600, so the following step will be failed
     assert context.value_dict == field_value_dict
     context.browser.quit()
@@ -550,8 +549,10 @@ def step_impl(context):
     flaw_detail_page.check_value_exist(context.ps_component)
     context.browser.quit()
 
-@when("I delete an affect of the flaw")
-def step_impl(context):
+def click_affect_delete_btn(context):
+    """
+    Go to a affect detail, delete the affect and return the current component.
+    """
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     # Click the first affect component dropdown button
@@ -562,6 +563,14 @@ def step_impl(context):
     context.ps_component = flaw_detail_page.get_current_value_of_field('affects__ps_component')
     # Click the delete button of the affect
     flaw_detail_page.delete_affect('affectStatusBtn')
+    return context.ps_component
+
+@when("I delete an affect of the flaw")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.module, context.component = \
+        flaw_detail_page.click_affect_delete_btn()
     warning = flaw_detail_page.affectDeleteTips.get_text()
     assert warning == "Affected Offerings To Be Deleted"
     flaw_detail_page.click_btn('saveBtn')
@@ -569,7 +578,27 @@ def step_impl(context):
 
 @then("The affect is deleted")
 def step_impl(context):
+    token = get_osidb_token()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    module_component_list = flaw_detail_page.get_affect_module_component_values(
+                    token, context.component)
+    assert (context.module, context.component) not in module_component_list
+    context.browser.quit()
+
+@when("I click 'delete' button of an affect")
+def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_not_exist(context.ps_component)
+    context.module, context.component = \
+        flaw_detail_page.click_affect_delete_btn()
+    # Click the delete button of the affect
+    flaw_detail_page.click_button_with_js('affectRecoverBtn')
+
+@then("I could 'recover' the affect that I tried to delete above")
+def step_impl(context):
+    token = get_osidb_token()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    module_component_list = flaw_detail_page.get_affect_module_component_values(
+                    token, context.component)
+    assert (context.module, context.component) in module_component_list
     context.browser.quit()

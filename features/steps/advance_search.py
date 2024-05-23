@@ -31,7 +31,7 @@ FIELD_IN_DATABASE = [
 @when('I am searching for all flaws')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
-    advanced_search_page.click_search_btn()
+    advanced_search_page.click_btn("searchBtn")
 
 
 @then('I get a list of all flaws')
@@ -50,7 +50,7 @@ def step_impl(context):
         value = row["value"]
         advanced_search_page.clear_search_select()
         advanced_search_page.select_field_and_value_to_search(field, value)
-        advanced_search_page.click_search_btn()
+        advanced_search_page.click_btn("searchBtn")
         advanced_search_page.first_flaw_exist()
         # 1. Check if the first flaw matches the search condition
         if advanced_search_page.get_first_flaw_id():
@@ -83,7 +83,7 @@ def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.select_field_and_value_to_search("source", "CUSTOMER")
     advanced_search_page.select_second_field_and_value_to_search("impact", "LOW")
-    advanced_search_page.click_search_btn()
+    advanced_search_page.click_btn("searchBtn")
 
 
 @then('I am able to view flaws matching the search with two selected fileds')

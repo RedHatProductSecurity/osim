@@ -2,10 +2,15 @@ import time
 from behave import given, when, then
 from selenium.common.exceptions import NoSuchElementException
 
-from features.utils import is_sorted
-from features.utils import skip_step_when_needed
+from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
+from features.utils import (
+        is_sorted,
+        skip_step_when_needed,
+        go_to_advanced_search_page,
+        go_to_home_page
+)
 
 
 @when('I click the link of a flaw')
@@ -142,4 +147,33 @@ def step_impl(context):
 def step_impl(context):
     # Check the first state value in the asce sorted flaw list
     assert context.state != 'DONE', 'Closed issue(s) in open issues filter result'
+    context.browser.quit()
+
+
+@when("I set a default filter and back to flaw list")
+def step_impl(context):
+    go_to_advanced_search_page(context.browser)
+    # Set a default search
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.select_field_and_value_to_search("impact", "LOW")
+    context.default_filter = "Impact : LOW"
+    advanced_search_page.click_btn("saveAsDefaultBtn")
+    advanced_search_page.wait_msg("defaultFilterSavedMsg")
+
+@then("The flaw list is filtered by the default filter")
+def step_impl(context):
+    go_to_home_page(context.browser)
+    # Check the default search checkbox is checked
+    home_page = HomePage(context.browser)
+    assert home_page.is_checkbox_selected("defaultFilterCheckbox") is True
+    home_page.check_value_exist(context.default_filter)
+    # The flaw list is filtered by the default search
+    home_page.first_flaw_exist()
+    home_page.click_btn('stateBtn')
+    home_page.first_flaw_exist()
+    desc_state = home_page.get_specified_cell_value(1, 3)
+    home_page.click_btn('stateBtn')
+    home_page.first_flaw_exist()
+    asce_state = home_page.get_specified_cell_value(1, 3)
+    assert desc_state == asce_state, "Default search not work."
     context.browser.quit()

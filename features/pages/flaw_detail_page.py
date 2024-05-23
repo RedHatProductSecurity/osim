@@ -117,9 +117,10 @@ class FlawDetailPage(BasePage):
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
-        "affectStatusBtn": ("XPATH", "(//button[contains(text(), 'Status')])[1]"),
+        "affectFileTrackerBtn": ("XPATH", "(//button[contains(text(), 'File Tracker')])[1]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
-        "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']")
+        "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']"),
+        "affectRecoverBtn": ("XPATH", "//button[@title='Recover']")
     }
 
     # Data is from OSIDB allowed sources:
@@ -311,12 +312,6 @@ class FlawDetailPage(BasePage):
         field_input = getattr(self, field + 'Input')
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def check_value_exist(self, value):
-        try:
-            self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
-        except NoSuchElementException:
-            raise
-
     def check_value_not_exist(self, value):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, f'//span[contains(text(), "{value}")]'))
@@ -468,14 +463,17 @@ class FlawDetailPage(BasePage):
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(value)
 
-    def get_affect_value_from_osidb(self, fields, token, component_value,
-            embargoed=False):
+    def load_affects_results_from_osidb(self, token, embargoed=False):
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
         headers = {"Authorization": f"Bearer {token}"}
         cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
         params = {"cve_id": cve_id}
         r = requests.get(url, params = params, headers = headers)
-        flaw_info = json.loads(r.text).get('results')[0]
+        return json.loads(r.text).get('results')[0]
+
+    def get_affect_values(self, fields, token, component_value):
+        osidb_token = token
+        flaw_info = self.load_affects_results_from_osidb(osidb_token, embargoed=False)
         # Get the field value dict that related to the updated affect
         field_value_dict = {}
         for affect in flaw_info.get('affects'):
@@ -546,8 +544,35 @@ class FlawDetailPage(BasePage):
             self.driver.execute_script("arguments[0].click();", field_savebtn)
 
     def delete_affect(self, field):
-        affect_status_element = getattr(self, field)
-        # Get the delete element via the status element and click it
+        affect_FileTracker_element = getattr(self, field)
+        # Get the delete element via the affectFileTrackerBtn element and click it
         delete_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_status_element))[0]
+            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_FileTracker_element))[0]
         self.driver.execute_script("arguments[0].click();", delete_element)
+
+    def click_affect_delete_btn(self):
+        """
+        Go to a affect detail, delete the affect and return the current module
+        and component value.
+        """
+        # Click the first affect component dropdown button
+        self.click_button_with_js("affectDropdownBtn")
+        # Click the second affect component dropdown button
+        self.click_button_with_js("affectDropdownBtn")
+        # Get the current value of the affect ps_component
+        ps_component = self.get_current_value_of_field('affects__ps_component')
+        ps_module = self.get_current_value_of_field('affects__ps_module')
+        # Click the delete button of the affect
+        self.delete_affect('affectFileTrackerBtn')
+        return ps_module, ps_component
+
+    def get_affect_module_component_values(self, token, component_value):
+        osidb_token = token
+        flaw_info = self.load_affects_results_from_osidb(osidb_token, embargoed=False)
+        # Get the module values according to the component_value
+        module_component = []
+        for affect in flaw_info.get('affects'):
+            if affect.get('ps_component') == component_value:
+                module_value = affect.get('ps_module')
+                module_component.append((module_value, component_value))
+        return  module_component

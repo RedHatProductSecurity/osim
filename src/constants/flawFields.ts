@@ -1,4 +1,5 @@
-import { fieldsFor, ZodFlawSchema } from '@/types/zodFlaw';
+import { ZodFlawSchema } from '@/types/zodFlaw';
+import { fieldsFor } from '@/types/zodShared';
 
 const fieldsMapping: Record<string, string | string[]> = {
   classification: 'workflow_state',
