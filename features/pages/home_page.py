@@ -22,7 +22,7 @@ class HomePage(BasePage):
         "flawCheckAllCheckBox": ("XPATH", "//div[@class='osim-incident-list']/table/thead/tr/th/input[@type='checkbox']"),
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
-        "firstFlaw": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]'),
+        "firstFlaw": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[1]"),
         "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
@@ -34,6 +34,7 @@ class HomePage(BasePage):
         "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
         "myIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[1]"),
         "openIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[2]"),
+        "defaultFilterCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[3]"),
         "ownerText":  ("XPATH", "//tr[1]/td[8]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
@@ -53,6 +54,9 @@ class HomePage(BasePage):
 
     def flaw_list_exist(self):
         self.flawList.visibility_of_element_located()
+
+    def first_flaw_exist(self):
+        self.firstFlaw.visibility_of_element_located()
 
     def click_flaw_check_all_checkbox(self):
         self.firstFlaw.visibility_of_element_located()
@@ -156,5 +160,5 @@ class HomePage(BasePage):
         return value
 
     def get_specified_cell_value(self, row, column):
-        locator = f"//tr[@class='osim-issue-queue-item'][{row}]/td[{column}]"
+        locator = f"//div[@class='osim-incident-list']/table/tbody/tr[{row}]/td[{column}]"
         return self.driver.find_element(By.XPATH, locator).text
