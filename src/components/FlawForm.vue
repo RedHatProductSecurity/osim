@@ -23,6 +23,7 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
+import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
 const props = defineProps<{
   flaw: any;
@@ -74,13 +75,19 @@ const {
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
+const { draftFlaw } = useDraftFlawStore();
 
 onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  if(draftFlaw) {
+    flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
+    useDraftFlawStore().$reset();
+  }
 });
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  console.log(1,useDraftFlawStore().draftFlaw);
   onReset();
 });
 
