@@ -287,7 +287,7 @@ export function postFlawReference(flawId: string, requestBody: FlawReferencePost
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/references`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
     .catch(createCatchHandler('Error creating Reference:'));
 }
@@ -335,7 +335,7 @@ export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAc
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment created.' }))
     .catch(createCatchHandler('Error creating Acknowledgment:'));
 }
