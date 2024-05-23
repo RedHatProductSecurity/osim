@@ -59,22 +59,29 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     const flawForPost: any = Object.fromEntries(
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
+    try {
 
-    await postFlaw(flawForPost)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-      .then((response: any) => {
-        router.push({
-          name: 'flaw-details',
-          params: { id: response?.cve_id || response?.uuid },
-        });
-        flaw.value.uuid = response.uuid;
-      })
-      .catch(createCatchHandler('Error creating Flaw'));
+      await postFlaw(flawForPost)
+        .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
+        .then((response: any) => {
+          router.push({
+            name: 'flaw-details',
+            params: { id: response?.cve_id || response?.uuid },
+          });
+          flaw.value.uuid = response.uuid;
+        })
+        .catch(createCatchHandler('Error creating Flaw'));
 
-    if (wasCvssModified.value) {
-      await saveCvssScores();
+      // Catch above will throw another error if the flaw is not created
+      if (wasCvssModified.value) {
+        await saveCvssScores()
+          .catch(createCatchHandler('Error saving CVSS scores after creating Flaw'));
+      }
+    } catch (error) {
+      console.error('Error when saving flaw:', error);
+    } finally {
+      isSaving.value = false;
     }
-    isSaving.value = false;
   }
 
   function validate(){

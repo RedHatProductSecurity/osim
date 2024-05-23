@@ -18,6 +18,7 @@
 * Save affects all at once (`OSIDB-2206`)
 * Show only allowed sources for Flaw Edit (`OSIDB-2395`)
 * Fixed deleted affects message after flaw save (`OSIDB-2693`)
+* Recover from save errors during flaw creation, show saving animation (`OSIDB-2765`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
