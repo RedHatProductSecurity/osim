@@ -33,10 +33,12 @@ const elTextArea = ref();
 <template>
   <label class="osim-input mb-3 ps-3">
     <div class="row">
-      <span class="form-label col-3">
-        {{ label }}
-        <!--attrs: {{ $attrs }}-->
-      </span>
+      <slot name="label">
+        <span class="form-label col-3">
+          {{ label }}
+          <!--attrs: {{ $attrs }}-->
+        </span>
+      </slot>
       <!--    @focus="resizeTextarea"-->
       <!--    @keyup="resizeTextarea"-->
       <textarea

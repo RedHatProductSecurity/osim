@@ -22,7 +22,7 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
-import type { ZodFlawType } from '@/types/zodFlaw';
+import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
 
 const props = defineProps<{
   flaw: any;
@@ -292,7 +292,21 @@ const toggleMitigation = () => {
           label="Description"
           placeholder="Description Text ..."
           :error="errors.summary"
-        />
+          class="osim-flaw-description-component"
+        >
+          <template #label>
+            <span class="form-label col-3 osim-folder-tab-label">
+              Description
+            </span>
+            <span class="col-3 ps-2">
+              <select v-model="flaw.requires_summary" class="form-select col-3 osim-summary-required">
+                <option disabled :selected="!flaw.requires_summary" value="">Review Status</option>
+                <option v-for="state in summaryRequiredStates" :key="state" :value="state">{{ state }}</option>
+              </select>
+            </span>
+
+          </template>
+        </LabelTextarea>
         <LabelTextarea
           v-if="showStatement"
           v-model="flaw.statement"
@@ -310,7 +324,7 @@ const toggleMitigation = () => {
         <div class="d-flex gap-3 mb-3">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-secondary osim-show-summary"
             @click="toggleSummary"
           >
             {{ showSummary ? 'Remove Description' : 'Add Description' }}
@@ -471,7 +485,7 @@ form.osim-flaw-form :deep(*) {
     justify-content: end;
 
     &:has(+ textarea),
-    &:has(+ .osim-static-label-value.osim-top-label-style) {
+    &.osim-folder-tab-label {
       border-top-right-radius: 0.5rem;
       border-bottom-left-radius: 0;
       text-align: left;
@@ -481,9 +495,18 @@ form.osim-flaw-form :deep(*) {
   }
 
   textarea {
+    border-top-right-radius: 0.5rem;
     border-top-left-radius: 0;
   }
+
+  select.osim-summary-required.form-select {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+  }
 }
+
 
 .span-editable-text {
   cursor: text;

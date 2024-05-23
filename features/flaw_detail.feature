@@ -131,6 +131,11 @@ Feature: Flaw detail testing
       When I add a new affect with valid data
       Then The affect is added
     
+    Scenario: Recover an affect for the deleting
+      Given I go to a public flaw detail page
+      When I click 'delete' button of an affect
+      Then I could 'recover' the affect that I tried to delete above
+
     Scenario: Delete an affect from  a flaw
       Given I go to a public flaw detail page
       When I delete an affect of the flaw
