@@ -56,6 +56,14 @@ vi.mock('vue-router', async () => {
   };
 });
 
+vi.mock('@/services/TrackerService', () => {
+  return {
+    getAvailableUpdateStreams: vi.fn(() => Promise.resolve([])),
+  };
+});
+
+
+
 describe('FlawForm', () => {
   function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw(), mode: 'edit' }) {
     subject = mount(FlawForm, {

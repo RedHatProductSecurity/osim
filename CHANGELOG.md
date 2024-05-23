@@ -14,6 +14,7 @@
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
 * Add Incident State for AdvancedSearch (`OSIDB-2892`)
+* Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)

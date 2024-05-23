@@ -1,75 +1,12 @@
-import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
-export async function getTrackers() {
-  if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
-    return axios.get('/mock/new-trackers-stage.json');
-  }
-  if (import.meta.env.VITE_RUNTIME_LEVEL === 'DEV') {
-    // return osidbFetch({
-    //   method: 'get',
-    //   url: '/osidb/api/v1/trackers',
-    // });
-    return osidbFetch({
-      method: 'get',
-      url: '/osidb/api/v1/trackers',
-      params: {
-        include_fields: [
-          'cve_id',
-          'uuid',
-          'impact',
-          'source',
-          'created_dt',
-          'updated_dt',
-          'classification',
-          'title',
-          'state',
-          'unembargo_dt'
-        ].join(',')
-      },
-    });
-  }
-  return osidbFetch({
-    method: 'get',
-    url: '/osidb/api/v1/trackers',
-    params: {
-      include_fields: [
-        'cve_id',
-        'uuid',
-        'impact',
-        'source',
-        'created_dt',
-        'updated_dt',
-        'classification',
-        'title',
-        'state',
-        'unembargo_dt'
-      ].join(',')
-    },
-  });
-  // if (import.meta.env.VITE_RUNTIME_LEVEL === 'PROD') {
-  //
-  // }
-}
-
 export async function getTracker(uuid: string) {
-  if (import.meta.env.VITE_RUNTIME_LEVEL === 'MOCK') {
-    return axios.get('/mock/new-trackers-stage.json').then((response) => {
-      const tracker = response.data.results.find(
-        (tracker: { uuid: string }) => tracker.uuid === uuid,
-      );
-      return tracker;
-    });
-  }
-
   return osidbFetch({
     method: 'get',
     url: `/osidb/api/v1/trackers/${uuid}`,
-  }).then((response) => {
-    return response.data;
-  });
+  }).then((response) => response.data);
 }
 
 export type TrackersPost = {
@@ -78,35 +15,64 @@ export type TrackersPost = {
   resolution: string;
   embargoed: boolean;
   updated_dt: string;
+  sync_to_bz?: boolean;
 };
 
-export async function postTracker(requestBody: TrackersPost) {
+export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost) {
+
+  if (!Array.isArray(trackerData) || trackerData.length === 1) {
+    const tracker = !Array.isArray(trackerData) ? trackerData : trackerData[0];
+    return postTracker(tracker)
+      .catch(createCatchHandler(`Failed to create tracker for ${tracker.ps_update_stream}`));
+  }
+
+  const errors = [];
+
+  for (const tracker of trackerData) {
+    try {
+      await postTracker(tracker, trackerData.at(-1) === tracker);
+    } catch (error: any) {
+      error.response.data.stream = tracker.ps_update_stream;
+      errors.push(error);
+    }
+  }
+
+  if (errors.length) {
+    createCatchHandler(`${errors.length} trackers failed to file`)(errors);
+  } else {
+    createSuccessHandler({ title: 'Success!', body: `${trackerData.length} trackers filed.` })({ data: null });
+  }
+}
+
+export async function postTracker(requestBody: TrackersPost, shouldSyncToBz: boolean = true) {
+
+  if (!shouldSyncToBz) {
+    requestBody.sync_to_bz = false;
+    // Setting this flag to false is used when a series of trackers are being created to avoid the
+    // overhead of syncing to Bugzilla for each tracker, speeding up the process considerably
+  }
+
   return osidbFetch({
     method: 'post',
     url: '/osidb/api/v1/trackers',
     data: requestBody,
   })
-    .then(({ data }) => data)
-    .then(
-      createSuccessHandler({
-        body: `Affect tracked on new ${requestBody.ps_update_stream} stream`,
-      }),
-    )
-    .catch(createCatchHandler('Failed to create tracker'));
+    .then(({ data }) => data);
 }
 
 export type TrackersFilePost = {
   flaw_uuids: string[];
 };
 
-export async function fileTracker(requestBody: TrackersFilePost) {
+export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
+
   return osidbFetch({
     method: 'post',
     url: '/trackers/api/v1/file',
     data: requestBody,
   })
     .then(({ data }) => data)
-    .catch(createCatchHandler('Failed to file tracker'));
+    .catch(createCatchHandler('Failed to get trackers for Flaw'));
 }
 
 export function trackerUrl(type: string, id: string): string {

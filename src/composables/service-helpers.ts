@@ -1,10 +1,12 @@
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import { getDisplayedOsidbError, parseOsidbErrorsForDisplay } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 
 
 export function createCatchHandler(title: string = 'Error', shouldThrow: boolean = true) {
   return (error: any) => {
-    const displayedError = getDisplayedOsidbError(error);
+    const displayedError = Array.isArray(error)
+      ? parseOsidbErrorsForDisplay(error)
+      : getDisplayedOsidbError(error);
     const { addToast } = useToastStore();
     addToast({
       title,

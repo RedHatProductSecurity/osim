@@ -165,18 +165,22 @@ function parseOsidbErrorsJson(data: Record<string, any>) {
     .map(([key, value]) => `${key}: ${value}`);
 }
 
+function parseOsidbError(error: any){
+  // server in debug mode?
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(
+    error.response.data, error.response.headers['content-type']
+  );
+  const exception_value = doc.querySelector('.exception_value');
+  const text = (exception_value as HTMLElement)?.innerText;
+
+  return 'Likely error between OSIDB and database:\n' + text;
+}
+
 export function getDisplayedOsidbError(error: any) {
   if (error.response) {
     if (error.response.headers?.['content-type']?.startsWith('text/html')) {
-      // server in debug mode?
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(
-        error.response.data, error.response.headers['content-type']
-      );
-      const exception_value = doc.querySelector('.exception_value');
-      const text = (exception_value as HTMLElement)?.innerText;
-
-      return 'Likely error between OSIDB and database:\n' + text;
+      parseOsidbError(error);
     } else {
       const { status, statusText } = error.response;
       return `OSIDB responded with error ${status} (${statusText}). \n` +
@@ -191,4 +195,8 @@ export function getDisplayedOsidbError(error: any) {
     return error.request.toString(); // XMLHttpRequest object
   }
   return error.toString();
+}
+
+export function parseOsidbErrorsForDisplay(errors: any[]) {
+  return errors.map(getDisplayedOsidbError).join('\n\n');
 }
