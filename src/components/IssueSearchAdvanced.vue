@@ -30,6 +30,7 @@ const nameForOption = (fieldName: string) => {
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
+    requires_summary: 'CVE Description Review'
   };
   let name =
     mappings[fieldName]
@@ -57,6 +58,11 @@ const optionsFor = (field: string) =>
       'REJECTED',
       'SECONDARY_ASSESSMENT',
       'TRIAGE',
+    ],
+    requires_summary: [
+      'REQUESTED',
+      'APPROVED',
+      'REJECTED'
     ],
   })[field] || null;
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');

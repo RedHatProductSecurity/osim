@@ -32,6 +32,7 @@ const includedFields = [
   'references',
   'acknowledgments',
   'embargoed',
+  'requires_summary'
 ];
 
 export const flawFields = fieldsFor(ZodFlawSchema)
