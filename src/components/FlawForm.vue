@@ -79,7 +79,7 @@ const { draftFlaw } = useDraftFlawStore();
 
 onMounted(() => {
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
-  if(draftFlaw) {
+  if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
   }
@@ -87,7 +87,6 @@ onMounted(() => {
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
-  console.log(1,useDraftFlawStore().draftFlaw);
   onReset();
 });
 

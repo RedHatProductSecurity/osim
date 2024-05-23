@@ -12,24 +12,24 @@ export const useDraftFlawStore = defineStore('DraftFlawStore', () => {
   }
 
   function addDraftFields(fetchedFlaw: ZodFlawType) {
-    if(draftFlaw.value?.acknowledgments) {
+    if (draftFlaw.value?.acknowledgments) {
       fetchedFlaw.acknowledgments = mergeAcks(fetchedFlaw.acknowledgments, draftFlaw.value.acknowledgments);
     }
-    if(draftFlaw.value?.references) {
+    if (draftFlaw.value?.references) {
       fetchedFlaw.references = mergeRefs(fetchedFlaw.references, draftFlaw.value.references);
     }
-  
+
     return fetchedFlaw;
   }
 
-  const mergeRefs = 
+  const mergeRefs =
     (a: ZodFlawReferenceType[], b: ZodFlawReferenceType[]) => unionWith(refsComparator, a, b);
 
   const refsComparator = (a: ZodFlawReferenceType, b: ZodFlawReferenceType): boolean => {
     return a.url === b.url && a.description === b.description;
   };
 
-  const mergeAcks = 
+  const mergeAcks =
     (a: ZodFlawAcknowledgmentType[], b: ZodFlawAcknowledgmentType[]) => unionWith(ackComparator, a, b);
 
   const ackComparator = (a: ZodFlawAcknowledgmentType, b: ZodFlawAcknowledgmentType): boolean => {
@@ -44,7 +44,7 @@ export const useDraftFlawStore = defineStore('DraftFlawStore', () => {
     $reset,
     draftFlaw,
     saveDraftFlaw,
-    addDraftFields
+    addDraftFields,
   };
 });
 

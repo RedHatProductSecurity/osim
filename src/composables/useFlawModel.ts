@@ -63,7 +63,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
     try {
-
       await postFlaw(flawForPost)
         .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
         .then(async (response: any) => {
@@ -73,15 +72,11 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
           });
           flaw.value.uuid = response.uuid;
           saveDraftFlaw(flaw.value);
-          try {
-            if (flaw.value.acknowledgments.length > 0) {
-              await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
-            }
-            if (flaw.value.references.length > 0) {
-              await flawAttributionsModel.saveReferences(flaw.value.references);
-            }
-          } catch(error: any) {
-            createCatchHandler('Error creating Flaw attributions');
+          if (flaw.value.acknowledgments.length > 0) {
+            await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+          }
+          if (flaw.value.references.length > 0) {
+            await flawAttributionsModel.saveReferences(flaw.value.references);
           }
         })
         .catch(createCatchHandler('Error creating Flaw'));
