@@ -72,7 +72,6 @@ const {
   isSaving,
   isValid,
   errors,
-  wereAffectsDeleteted
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 const initialFlaw = ref<ZodFlawType>();
@@ -385,7 +384,6 @@ const toggleMitigation = () => {
         v-if="mode === 'edit'"
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
-        :wereAffectsDeleteted="wereAffectsDeleteted"
         class="osim-flaw-form-section"
         :error="errors.affects"
         @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
