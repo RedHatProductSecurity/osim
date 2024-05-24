@@ -5,6 +5,7 @@
 * Self-Assign button for Flaws
 * Provide time to Public Date field
 * Add neighboring dropdown menu to Flaw Description for its review workflow
+* Add CVE Require Description for AdvancedSearch
 
 ### Fixed
 * The session is now shared across tabs

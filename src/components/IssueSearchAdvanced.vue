@@ -4,6 +4,7 @@ import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
+import { summaryRequiredStates } from '@/types/zodFlaw';
 
 const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
@@ -50,6 +51,7 @@ const optionsFor = (field: string) =>
     type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
+    requires_summary: summaryRequiredStates,
     embargoed: ['true', 'false'],
     workflow_state: [
       'DONE',
@@ -58,11 +60,6 @@ const optionsFor = (field: string) =>
       'REJECTED',
       'SECONDARY_ASSESSMENT',
       'TRIAGE',
-    ],
-    requires_summary: [
-      'REQUESTED',
-      'APPROVED',
-      'REJECTED'
     ],
   })[field] || null;
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
