@@ -1,6 +1,7 @@
 import time
 import random
 from datetime import date, datetime
+
 from behave import when, then
 from selenium.webdriver.common.by import By
 from seleniumpagefactory.Pagefactory import ElementNotFoundException
@@ -11,10 +12,12 @@ from features.utils import (
     generate_cwe,
     generate_random_text,
     go_to_specific_flaw_detail_page,
-    get_osidb_token
+    get_osidb_token,
+    go_to_advanced_search_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
+from features.pages.advanced_search_page import AdvancedSearchPage
 
 
 MAX_RETRY = 10
@@ -346,7 +349,7 @@ def step_impl(context):
     flaw_page.set_select_value('source')
     context.reported_date = flaw_page.get_input_value('reportedDate')
     flaw_page.set_input_field(
-        'reportedDate', datetime.today().strftime("%Y%m%d"))
+        'reportedDate', datetime.today().strftime("%Y%m%d")+'0000')
     context.description = flaw_page.get_document_text_field('description')
     flaw_page.set_document_text_field(
         'description', generate_random_text())
@@ -594,6 +597,7 @@ def step_impl(context):
     # Click the delete button of the affect
     flaw_detail_page.click_button_with_js('affectRecoverBtn')
 
+
 @then("I could 'recover' the affect that I tried to delete above")
 def step_impl(context):
     token = get_osidb_token()
@@ -601,4 +605,37 @@ def step_impl(context):
     module_component_list = flaw_detail_page.get_affect_module_component_values(
                     token, context.component)
     assert (context.module, context.component) in module_component_list
+    context.browser.quit()
+
+
+@when("I unembargo this flaw and add public date")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("toastMsgCloseBtn")
+    flaw_detail_page.add_comment_btn_exist()
+    # unembargo and set public date
+    flaw_detail_page.click_button_with_js("unembargoBtn")
+    context.public_date = datetime.today().strftime("%Y%m%d")+'0000'
+    flaw_detail_page.set_input_field("publicDate", context.public_date)
+    flaw_detail_page.click_btn("saveBtn")
+    flaw_id = flaw_detail_page.get_flaw_id_from_unembargo_warning()
+    flaw_detail_page.fill_flaw_id_for_unembargo_confirm(flaw_id)
+    flaw_detail_page.click_button_with_js("removeEmbargoBtn")
+    flaw_detail_page.wait_msg("flawSavedMsg")
+
+
+@then("Flaw is unembargoed and have public date")
+def step_impl(context):
+    go_to_advanced_search_page(context.browser)
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.select_field_and_value_to_search("title", context.title)
+    advanced_search_page.click_btn("searchBtn")
+    advanced_search_page.first_flaw_exist()
+    advanced_search_page.go_to_first_flaw_detail()
+
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.check_unembargo_btn_not_exist()
+    v = flaw_detail_page.get_input_value("publicDate")
+    public_date = datetime.strptime(context.public_date, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
+    assert public_date in v, f"Public date should be {public_date}, got {v}"
     context.browser.quit()
