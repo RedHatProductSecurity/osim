@@ -33,10 +33,6 @@ const expandedAffects = ref(new Map());
 
 updateAffectsExpandedState(theAffects.value);
 
-watch(expandedAffects, (nextValue) => {
-  console.log('ofVisibleComponentsIs', nextValue);
-}, { deep: true });
-
 watch(theAffects, (nextValue) => {
   expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, moduleName: string) => {
     modules[moduleName] = areAnyComponentsExpandedIn(moduleName) ?? false;

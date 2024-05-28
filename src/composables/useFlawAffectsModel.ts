@@ -12,6 +12,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { equals } from 'ramda';
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
@@ -128,9 +129,14 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     theAffects.value.push(recoveredAffect);
   }
 
+  function hasAffectChanged(affect: ZodAffectType) {
+    const originalAffect = initialAffects.find((maybeMatch) => maybeMatch.uuid === affect.uuid);
+    return !equals(originalAffect, affect);
+  }
+
   theAffects.value.forEach((affect) => {
     watch(affect, () => {
-      if (affect.uuid) {
+      if (affect.uuid && hasAffectChanged(affect)) {
         reportAffectAsModified(affect.uuid);
       }
     }, { deep: true });
