@@ -153,9 +153,9 @@ describe('AffectExpandableForm', () => {
     const formComponent = subject.findAllComponents(AffectedOfferingForm);
     expect(formComponent.length).toBe(1);
     const selectComponents = formComponent[0].findAllComponents(LabelSelect);
-    expect(selectComponents.length).toBe(4);
-    const affectednessSelectEl = selectComponents[1];
-    const resolutionSelectEL = selectComponents[2];
+    expect(selectComponents.length).toBe(3);
+    const affectednessSelectEl = selectComponents[0];
+    const resolutionSelectEL = selectComponents[1];
     const affectednessOptions = affectednessSelectEl.props('options');
     expect(affectednessOptions).toStrictEqual(affectAffectedness);
     const resolutionOptions = resolutionSelectEL.props('options');
