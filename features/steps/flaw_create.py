@@ -27,6 +27,8 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     public_date = datetime.today().strftime("%Y%m%d0000")
     if embargoed:
         flaw_create_page.click_btn("embargeodCheckBox")
+        # click public date input to avoid osim bug
+        flaw_create_page.click_empty_public_date_input()
     else:
         flaw_create_page.set_input_field('publicDate', public_date)
     flaw_create_page.set_document_text_field('comment#0', generate_random_text())
@@ -132,6 +134,7 @@ def step_impl(context):
 def step_impl(context):
     check_created_flaw_exist(context, embargoed=True)
     context.browser.quit()
+
 
 @when('I create flaw with valid data including optional fields')
 def step_impl(context):

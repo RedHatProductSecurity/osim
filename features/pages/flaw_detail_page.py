@@ -57,31 +57,25 @@ class FlawDetailPage(BasePage):
 
         "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
         "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
-        "assigneeEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[6]"),
-        "assigneeInput": ("XPATH", "(//input[@class='form-control'])[7]"),
-        "titleEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[1]"),
-        "titleInput": ("XPATH", "(//input[@class='form-control'])[2]"),
-        "titleValue": ("XPATH", "//span[@class='osim-editable-text-value form-control']"),
-        "componentEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[2]"),
-        "componentInput": ("XPATH", "(//input[@class='form-control'])[3]"),
-        "teamidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[7]"),
-        "teamidInput": ("XPATH", "(//input[@class='form-control'])[8]"),
-        "embargoedText": ("XPATH", "(//span[@class='form-control'])[3]"),
-        "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
 
-        "cveidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[3]"),
-        "cveidInput": ("XPATH", "(//input[@class='form-control is-invalid'])[1]"),
+        "titleText": ("XPATH", "//span[text()='Title']"),
+        "titleValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[1]"),
+
+        "componentText": ("XPATH", "//span[text()='Component']"),
+
+        "cveidText": ("XPATH", "//span[text()='CVE ID']"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
-        "cweidEditBtn": ("XPATH", "(//button[@class='osim-editable-text-pen input-group-text'])[5]"),
-        "cweidInput": ("XPATH", "(//input[@class='form-control'])[6]"),
+
+        "cweidText": ("XPATH", "//span[text()='CWE ID']"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
 
-        "reportedDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[1]"),
-        "reportedDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
+        "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
-        "publicDateEditBtn": ("XPATH", "(//button[@class='osim-editable-date-pen input-group-text'])[2]"),
-        "publicDateInput": ("XPATH", "(//input[@class='form-control'])[7]"),
+
+        "publicDateText": ("XPATH", "//span[text()='Public Date']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
+
+        "assigneeText": ("XPATH", "//span[contains(text(), 'Assignee')]"),
         "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
@@ -120,7 +114,12 @@ class FlawDetailPage(BasePage):
         "affectFileTrackerBtn": ("XPATH", "(//button[contains(text(), 'File Tracker')])[1]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']"),
-        "affectRecoverBtn": ("XPATH", "//button[@title='Recover']")
+        "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
+
+        "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
+        "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
+        "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
+        "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -295,11 +294,30 @@ class FlawDetailPage(BasePage):
         first_ack_edit_affiliation_input.send_keys(affiliation)
 
     def set_input_field(self, field, value):
-        field_btn = field + 'EditBtn'
-        self.click_button_with_js(field_btn)
-        field_input = getattr(self, field + 'Input')
+        text_element = getattr(self, field + "Text")
+        # find edit button and input using relative locators
+        if "Date" not in field:
+            edit_btn = self.driver.find_elements(
+                locate_with(By.XPATH, "//button[@class='osim-editable-text-pen input-group-text']").
+                to_right_of(text_element))[0]
+        else:
+            edit_btn = self.driver.find_elements(
+                locate_with(By.XPATH, "//button[@class='osim-editable-date-pen input-group-text']").
+                to_right_of(text_element))[0]
+
+        self.click_button_with_js(edit_btn)
+
+        if ("cveid" in field) or ("cweid" in field):
+            field_input = self.driver.find_elements(
+                locate_with(By.XPATH, "//input[@class='form-control']").
+                near(text_element))[0]
+        else:
+            field_input = self.driver.find_elements(
+                locate_with(By.XPATH, "//input[@class='form-control is-invalid']").
+                near(text_element))[0]
+
         self.driver.execute_script("arguments[0].value = '';", field_input)
-        field_input.set_text(value)
+        field_input.send_keys(value)
 
     def get_input_value(self, field):
         field_value = getattr(self, field + 'Value')
@@ -575,4 +593,20 @@ class FlawDetailPage(BasePage):
             if affect.get('ps_component') == component_value:
                 module_value = affect.get('ps_module')
                 module_component.append((module_value, component_value))
-        return  module_component
+        return module_component
+
+    def get_flaw_id_from_unembargo_warning(self):
+        text = self.unembargoWarningText.get_text()
+        return text.split("typing ")[1].split()[0]
+
+    def fill_flaw_id_for_unembargo_confirm(self, flaw_id):
+        field_input = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='form-control']").
+            near(self.unembargoConfirmText))[0]
+
+        field_input.send_keys(flaw_id)
+
+    def check_unembargo_btn_not_exist(self):
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.invisibility_of_element_located((By.XPATH, "//button[contains(text(), 'Unembargo')]"))
+        )

@@ -124,7 +124,7 @@ def go_to_home_page(browser):
 
 def go_to_specific_flaw_detail_page(browser, cve_id):
     """
-    Enter first flaw detail page which displayed in index page.
+    Go to a specific flaw detail page
     """
     go_to_home_page(browser)
     home_page = HomePage(browser)
