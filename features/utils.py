@@ -122,11 +122,10 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_specific_flaw_detail_page(browser, embargoed=False):
+def go_to_specific_flaw_detail_page(browser, cve_id):
     """
     Enter first flaw detail page which displayed in index page.
     """
-    cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
     go_to_home_page(browser)
     home_page = HomePage(browser)
     home_page.quickSearchBox.clear_text()
