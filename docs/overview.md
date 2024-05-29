@@ -82,6 +82,7 @@ OSIM_BACKENDS_OSIDB="http://osidb-service:8000"
 OSIM_BACKENDS_OSIDB_AUTH="kerberos"
 OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
 OSIM_BACKENDS_JIRA="http://jira-service:8002"
+OSIM_BACKENDS_JIRA_DISPLAY="http://jira-service:8002"
 OSIM_NGINX_PROXY_JIRA=
 OSIM_NGINX_PROXY_CA=
 ```
@@ -100,7 +101,8 @@ OSIM_NGINX_PROXY_CA=
         "osidb": "http://localhost:8000",
         "osidbAuth": "<kerberos|credentials>",
         "bugzilla": "http://localhost:8001",
-        "jira": "http://localhost:8002"
+        "jira": "http://localhost:8002",
+        "jiraDisplay": "http://localhost:8002"
       },
       "osimVersion": {
         "rev":"dev",
