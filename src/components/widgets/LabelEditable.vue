@@ -31,7 +31,7 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
         :includesTime="props.type === 'datetime'"
       />
       <EditableText
-        v-else
+        v-if="props.type === 'text'"
         v-model="modelValue as string"
         :class="$attrs.class"
         :error="error"

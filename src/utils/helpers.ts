@@ -1,4 +1,4 @@
-import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch } from 'vue';
+import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue';
 import * as R from 'ramda';
 
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
@@ -8,15 +8,26 @@ export function watchedPropRef(prop: Record<string, any>, property: string, defa
   return flexRef;
 }
 
-export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
+export function unwrap (value: any): any {
+  const unwrapped = toRaw(unref(value));
+  return isUnwrappable(unwrapped) ? unwrap(unwrapped) : unwrapped;
+}
+
+function isUnwrappable (value: any) {
+  return isRef(value) || isReactive(value) || isProxy(value);
+}
+
+export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T {
   const objectIterator = (input: any): any => {
+    if (isUnwrappable(input)) {
+      return objectIterator(unwrap(input));
+    }
+
     if (Array.isArray(input)) {
       return input.map((item) => objectIterator(item));
     }
-    if (isRef(input) || isReactive(input) || isProxy(input)) {
-      return objectIterator(toRaw(input));
-    }
-    if (input && typeof input === 'object') {
+
+    if (input !== null && typeof input === 'object') {
       return Object.keys(input).reduce((acc, key) => {
         acc[key as keyof typeof acc] = objectIterator(input[key]);
         return acc;
@@ -28,9 +39,9 @@ export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
   return objectIterator(sourceObj);
 }
 
-export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T {
-  return JSON.parse(JSON.stringify(deepToRaw(sourceObj)));
-}
+// export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T {
+//   return JSON.parse(JSON.stringify(deepToRaw(sourceObj)));
+// }
 
 // eslint-disable-next-line max-len
 // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
