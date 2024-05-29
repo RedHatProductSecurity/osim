@@ -614,7 +614,6 @@ function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
 function sampleFlaw(): ZodFlawType {
   return {
     uuid: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
-    type: 'VULNERABILITY',
     cve_id: 'CVE-2007-97239',
     // resolution: '',
     impact: 'LOW',

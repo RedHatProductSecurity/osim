@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
+import { flawImpacts, flawSources } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
@@ -46,7 +46,6 @@ const unchosenFields = (chosenField: string) =>
 
 const optionsFor = (field: string) =>
   ({
-    type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
     embargoed: ['true', 'false'],

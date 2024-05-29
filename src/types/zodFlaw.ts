@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import {
-  FlawType,
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
   RequiresSummaryEnum,
@@ -14,13 +13,11 @@ import { cveRegex } from '@/utils/helpers';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
-export const FlawTypeWithBlank = { '': '', ...FlawType } as const;
 export const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
 export const Source642EnumWithBlank = { '': '', ...Source642Enum } as const;
 export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
-export const flawTypes = Object.values(FlawTypeWithBlank);
 export const flawSources = Object.values(Source642EnumWithBlank);
 export const flawImpacts = Object.values(ImpactEnumWithBlank);
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
@@ -140,13 +137,10 @@ export const ZodFlawMetaSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
 });
 
-// const flawTypes: string[] = Object.values(FlawType);
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
 export type FlawSchemaType = typeof ZodFlawSchema;
 
 export const ZodFlawSchema = z.object({
-  // type: z.nativeEnum(FlawType).optional(),
-  type: z.nativeEnum(FlawTypeWithBlank).nullish(),
   uuid: z.string().default(''),
   cve_id: z.string().nullable().refine(
     (cve) => !cve || cveRegex.test(cve),

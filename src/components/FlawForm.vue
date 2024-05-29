@@ -40,7 +40,6 @@ function onSaveSuccess() {
 const {
   flaw,
   trackerUuids,
-  flawTypes, // Visually hidden field
   flawSources,
   flawImpacts,
   flawIncidentStates,
@@ -151,13 +150,6 @@ const toggleMitigation = () => {
             label="Component"
             type="text"
             :error="errors.component"
-          />
-          <LabelSelect
-            v-model="flaw.type"
-            label="Type"
-            :options="flawTypes"
-            :error="errors.type"
-            class="visually-hidden"
           />
           <div class="row">
             <div class="col">

@@ -26,7 +26,6 @@ Feature: Flaw advance search testing
         |                                   source |                                     CUSTOMER |
         |                                  team_id |                                       teamid |
         |                                    title |                                 sample title |
-        |                                     type |                                VULNERABILITY |
         |                                     uuid |         3025ba93-b962-4553-b785-c9da27c9dec7 |
         |                           workflow_state |                                          NEW |
         |                                embargoed |                                         true |
