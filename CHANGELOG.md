@@ -14,6 +14,7 @@
 * References and acknowledgments are not refreshed after save actions
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button
 * Restored required field validations to Flaw fields
+* Show only allowed sources for Flaw Edit
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
