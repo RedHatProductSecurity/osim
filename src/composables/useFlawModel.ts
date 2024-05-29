@@ -14,13 +14,13 @@ import {
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
+import { flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 import { modifyPath } from 'ramda';
 import { deepMap } from '@/utils/helpers';
 import type { ZodIssue } from 'zod';
 import { useNetworkQueue } from './useNetworkQueue';
 
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void) {
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
@@ -84,7 +84,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     }
   }
 
-  function validate(){
+  function validate() {
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
 
@@ -164,7 +164,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     errors,
     committedFlaw,
     trackerUuids,
-    flawTypes,
     flawSources,
     flawImpacts,
     flawIncidentStates,
@@ -203,7 +202,6 @@ export function blankFlaw(): ZodFlawType {
     nvd_cvss3: '',
     source: '',
     title: '',
-    type: 'VULNERABILITY', // OSIDB only supports Vulnerabilities at present
     owner: '',
     team_id: '',
     summary: '',
