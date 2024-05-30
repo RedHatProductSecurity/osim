@@ -6,6 +6,9 @@
 * Provide time to Public Date field (`OSIDB-1848`)
 * Add neighboring dropdown menu to Flaw Description for its review workflow (`OSIDB-2623`)
 * Add CVE Require Description for AdvancedSearch (`OSIDB-2624`)
+* Sort affects by product family, alphabetical (`OSIDB-2533`)
+* Update impact sorting to be logical (`OSIDB-2791`)
+* Implement advanced searching on emptiness for CVE ID (`OSIDB-2806`)
 
 ### Fixed
 * The session is now shared across tabs
