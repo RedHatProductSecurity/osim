@@ -109,6 +109,46 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
+const allowedSources = [
+  '',
+  'ADOBE',
+  'APPLE',
+  'BUGTRAQ',
+  'CERT',
+  'CUSTOMER',
+  'CVE',
+  'DEBIAN',
+  'DISTROS',
+  'GENTOO',
+  'GIT',
+  'GOOGLE',
+  'HW_VENDOR',
+  'INTERNET',
+  'LKML',
+  'MAGEIA',
+  'MOZILLA',
+  'NVD',
+  'OPENSSL',
+  'ORACLE',
+  'OSSSECURITY',
+  'OSV',
+  'REDHAT',
+  'RESEARCHER',
+  'SECUNIA',
+  'SKO',
+  'SUSE',
+  'TWITTER',
+  'UBUNTU',
+  'UPSTREAM',
+];
+
+const hiddenSources = computed(() => {
+  if (props.mode === 'edit') {
+    return flawSources.filter(source => !allowedSources.includes(source));
+  }
+  return [];
+});
+
 const toggleSummary = () => {
   showSummary.value = !showSummary.value;
   if (!showSummary.value) {
@@ -234,6 +274,7 @@ const toggleMitigation = () => {
             label="CVE Source"
             :options="flawSources"
             :error="errors.source"
+            :options-hidden="hiddenSources"
           />
         </div>
 

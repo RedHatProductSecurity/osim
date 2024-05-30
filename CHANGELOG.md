@@ -15,6 +15,7 @@
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
 * Restored required field validations to Flaw fields (`OSIDB-2725`)
 * Save affects all at once (`OSIDB-2206`)
+* Show only allowed sources for Flaw Edit (`OSIDB-2395`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
