@@ -92,7 +92,7 @@ export function useSearchParams() {
   function submitAdvancedSearch() {
     const params = facets.value.reduce(
       (fields, { field, value }) => {
-        if (field && value) {
+        if (field && value || (field === 'cve_id')) {
           fields[field] = value;
         }
         return fields;

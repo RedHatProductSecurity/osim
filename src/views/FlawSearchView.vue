@@ -46,7 +46,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
 function saveFilter() {
   const filters = facets.value.reduce(
     (fields, { field, value }) => {
-      if (field && value) {
+      if (field && value || (field === 'cve_id')) {
         fields[field] = value;
       }
       return fields;
