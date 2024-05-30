@@ -2,27 +2,29 @@
 
 ## [Unreleased]
 ### Added
-* Self-Assign button for Flaws
-* Provide time to Public Date field
-* Add neighboring dropdown menu to Flaw Description for its review workflow
+* Self-Assign button for Flaws (`OSIDB-2593`)
+* Provide time to Public Date field (`OSIDB-1848`)
+* Add neighboring dropdown menu to Flaw Description for its review workflow (`OSIDB-2623`)
 * Add CVE Require Description for AdvancedSearch (`OSIDB-2624`)
 
 ### Fixed
 * The session is now shared across tabs
-* CVSS scores on affects can be added
-* Disable form on references and acknowledgments save actions
-* References and acknowledgments disappear after save actions
-* References and acknowledgments are not refreshed after save actions
-* Fixed FlawForm Remove Summary, Statement, Mitigation Button
-* Restored required field validations to Flaw fields
+* CVSS scores on affects can be added (`OSIDB-2573`)
+* Disable form on references and acknowledgments save actions (`OSIDB-2645`)
+* References and acknowledgments disappear after save actions (`OSIDB-2645`)
+* References and acknowledgments are not refreshed after save actions (`OSIDB-2645`)
+* Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
+* Restored required field validations to Flaw fields (`OSIDB-2725`)
+* Save affects all at once (`OSIDB-2206`)
+* Show only allowed sources for Flaw Edit (`OSIDB-2395`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
 ### Added
-* Embedded Cvss3 calculator in `Flaw` views
+* Embedded Cvss3 calculator in `Flaw` views (`OSIDB-1204`)
 
 ### Changed
-* Flaw URLs consists preferably of CVE ID if possible (OSIDB-2018)
+* Flaw URLs consists preferably of CVE ID if possible (`OSIDB-2018`)
 * Changed layout for Descriptions, References and Acknowledgements
 * Renamed `Description` (to Comment#0) and `Summary` (to Description)
 * Made text area fields visible with empty content
@@ -57,9 +59,9 @@
 * Fixed `References` and `Acknowledgements` don't open when new item is added
 * Fixed editing bugs on `References` and `Acknowledgements` lists
 * Fixed `Affiliation` text overflow on `Acknowledgements` labels
-* Fixed possible incorrect CVSS2 instead of CVSS3 display (OSIDB-2308)
-* Flaw CVSS3 score is now readonly (OSIDB-2308)
-* Flaw Comment#0 (former description) field is now writable only upon Flaw creation (OSIDB-2308)
+* Fixed possible incorrect CVSS2 instead of CVSS3 display (`OSIDB-2308`)
+* Flaw CVSS3 score is now readonly (`OSIDB-2308`)
+* Flaw Comment#0 (former description) field is now writable only upon Flaw creation (`OSIDB-2308`)
 * Fixed ability to create comments on public flaws
 * Provide unembargo confirmation ID for Embargoed Flaws without a CVE
 * Saving indication for saving Flaw edits

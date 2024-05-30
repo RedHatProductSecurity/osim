@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import PageFactory
 
 from features.page_factory_utils import find_elements_in_page_factory

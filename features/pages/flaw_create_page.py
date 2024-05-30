@@ -35,32 +35,6 @@ class FlawCreatePage(FlawDetailPage):
         "publicDateText": ("XPATH", "//span[text()='Public Date']")
     }
 
-    def set_input_field(self, field, value):
-        text_element = getattr(self, field + "Text")
-        # find edit button and input using relative locators
-        if "Date" not in field:
-            edit_btn = self.driver.find_elements(
-                locate_with(By.XPATH, "//button[@class='osim-editable-text-pen input-group-text']").
-                to_right_of(text_element))[0]
-        else:
-            edit_btn = self.driver.find_elements(
-                locate_with(By.XPATH, "//button[@class='osim-editable-date-pen input-group-text']").
-                to_right_of(text_element))[0]
-
-        self.click_button_with_js(edit_btn)
-
-        if ("cveid" in field) or ("cweid" in field):
-            field_input = self.driver.find_elements(
-                locate_with(By.XPATH, "//input[@class='form-control']").
-                near(text_element))[0]
-        else:
-            field_input = self.driver.find_elements(
-                locate_with(By.XPATH, "//input[@class='form-control is-invalid']").
-                near(text_element))[0]
-
-        self.driver.execute_script("arguments[0].value = '';", field_input)
-        field_input.send_keys(value)
-
     def set_select_value(self, field):
         text_element = getattr(self, field + "Text")
         field_select = self.driver.find_elements(
@@ -77,3 +51,11 @@ class FlawCreatePage(FlawDetailPage):
         else:
             updated_value = current_value
         return updated_value
+
+    def click_empty_public_date_input(self):
+        edit_btn = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='osim-editable-date-pen input-group-text']").
+            to_right_of(self.publicDateText))[0]
+
+        self.click_button_with_js(edit_btn)
+
