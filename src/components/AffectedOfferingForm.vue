@@ -9,7 +9,6 @@ import {
   affectAffectedness,
   affectImpacts,
   affectResolutions,
-  affectTypes,
   type ZodAffectCVSSType,
   type ZodAffectType,
 } from '@/types/zodAffect';
@@ -76,14 +75,6 @@ const hiddenResolutionOptions = computed(() => {
         :error="error?.ps_component"
         type="text"
         label="Affected Component"
-      />
-      <!--Hiding the Type field until we have more options to choose from-->
-      <LabelSelect
-        v-model="modelValue.type"
-        :error="error?.type"
-        class="col-6 visually-hidden"
-        label="Type"
-        :options="affectTypes"
       />
       <LabelSelect
         v-model="modelValue.affectedness"

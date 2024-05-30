@@ -160,7 +160,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       const requestBody = affectsToUpdate.value.map((affect) => ({
         flaw: flaw.value?.uuid,
         uuid: affect.uuid,
-        type: affect.type,
         affectedness: affect.affectedness,
         resolution: affect.resolution,
         ps_module: affect.ps_module,
@@ -177,7 +176,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       const affect = affectsToCreate.value[index];
       const requestBody = {
         flaw: flaw.value?.uuid,
-        type: affect.type,
         affectedness: affect.affectedness,
         resolution: affect.resolution,
         delegated_resolution: affect.delegated_resolution,

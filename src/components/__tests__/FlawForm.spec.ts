@@ -667,7 +667,6 @@ function sampleFlaw(): ZodFlawType {
       {
         uuid: 'bff95399-ef12-43fe-878d-4629297c2aa8',
         flaw: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
-        type: 'DEFAULT',
         affectedness: 'AFFECTED',
         resolution: 'FIX',
         ps_module: 'openshift-4',
