@@ -5,7 +5,7 @@
 * Self-Assign button for Flaws
 * Provide time to Public Date field
 * Add neighboring dropdown menu to Flaw Description for its review workflow
-* Add CVE Require Description for AdvancedSearch
+* Add CVE Require Description for AdvancedSearch (`OSIDB-2624`)
 
 ### Fixed
 * The session is now shared across tabs
