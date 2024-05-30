@@ -230,7 +230,6 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
 
 export async function postFlaw(requestBody: any) {
   // {
-  //   "type": "VULNERABILITY",
   //   "cve_id": "string",
   //   "impact": "LOW",
   //   "component": "string",

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import {
-  AffectType,
   AffectednessEnum,
   ResolutionEnum,
   IssuerEnum,
@@ -68,7 +67,6 @@ export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
 const affectBlueprint = {
   uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
-  type: z.nativeEnum(AffectType).nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
   resolution: z.nativeEnum(ResolutionEnumWithBlank).nullish(),
   ps_module: z.string().max(100),
@@ -104,10 +102,8 @@ const {
   impact: zodAffectImpact,
   resolution: zodAffectResolution,
   affectedness: zodAffectAffectedness,
-  type: zodAffectType,
 } = ZodAffectSchema.shape;
 
 export const affectImpacts = extractEnum(zodAffectImpact);
 export const affectResolutions = extractEnum(zodAffectResolution);
 export const affectAffectedness = extractEnum(zodAffectAffectedness);
-export const affectTypes = extractEnum(zodAffectType);

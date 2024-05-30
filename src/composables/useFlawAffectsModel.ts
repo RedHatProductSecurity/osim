@@ -12,7 +12,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
-import { sortWith, ascend, prop } from 'ramda';
+import { sortWith, ascend, prop, equals } from 'ramda';
 
 const sortAffects = (affects = []) => {
   return sortWith([ascend(prop('ps_module')), ascend(prop('ps_component'))], affects);
@@ -95,6 +95,11 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   const { addToast } = useToastStore();
 
+  const resetAffectChanges = () => {
+    affectsToDelete.value = [];
+    modifiedAffectIds.value = [];
+  };
+
   function addBlankAffect() {
     const embargoed = flaw.value.embargoed;
     theAffects.value.push({
@@ -129,9 +134,14 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     theAffects.value = sortAffects(theAffects.value);
   }
 
+  function hasAffectChanged(affect: ZodAffectType) {
+    const originalAffect = initialAffects.find((maybeMatch) => maybeMatch.uuid === affect.uuid);
+    return !equals(originalAffect, affect);
+  }
+  x;
   theAffects.value.forEach((affect) => {
     watch(affect, () => {
-      if (affect.uuid) {
+      if (affect.uuid && hasAffectChanged(affect)) {
         reportAffectAsModified(affect.uuid);
       }
     }, { deep: true });
@@ -155,7 +165,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       const requestBody = affectsToUpdate.value.map((affect) => ({
         flaw: flaw.value?.uuid,
         uuid: affect.uuid,
-        type: affect.type,
         affectedness: affect.affectedness,
         resolution: affect.resolution,
         ps_module: affect.ps_module,
@@ -172,7 +181,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       const affect = affectsToCreate.value[index];
       const requestBody = {
         flaw: flaw.value?.uuid,
-        type: affect.type,
         affectedness: affect.affectedness,
         resolution: affect.resolution,
         delegated_resolution: affect.delegated_resolution,
@@ -230,5 +238,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
+    resetAffectChanges,
   };
 }

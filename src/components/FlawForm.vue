@@ -40,7 +40,6 @@ function onSaveSuccess() {
 const {
   flaw,
   trackerUuids,
-  flawTypes, // Visually hidden field
   flawSources,
   flawImpacts,
   flawIncidentStates,
@@ -109,6 +108,46 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
 };
 
+const allowedSources = [
+  '',
+  'ADOBE',
+  'APPLE',
+  'BUGTRAQ',
+  'CERT',
+  'CUSTOMER',
+  'CVE',
+  'DEBIAN',
+  'DISTROS',
+  'GENTOO',
+  'GIT',
+  'GOOGLE',
+  'HW_VENDOR',
+  'INTERNET',
+  'LKML',
+  'MAGEIA',
+  'MOZILLA',
+  'NVD',
+  'OPENSSL',
+  'ORACLE',
+  'OSSSECURITY',
+  'OSV',
+  'REDHAT',
+  'RESEARCHER',
+  'SECUNIA',
+  'SKO',
+  'SUSE',
+  'TWITTER',
+  'UBUNTU',
+  'UPSTREAM',
+];
+
+const hiddenSources = computed(() => {
+  if (props.mode === 'edit') {
+    return flawSources.filter(source => !allowedSources.includes(source));
+  }
+  return [];
+});
+
 const toggleSummary = () => {
   showSummary.value = !showSummary.value;
   if (!showSummary.value) {
@@ -151,13 +190,6 @@ const toggleMitigation = () => {
             label="Component"
             type="text"
             :error="errors.component"
-          />
-          <LabelSelect
-            v-model="flaw.type"
-            label="Type"
-            :options="flawTypes"
-            :error="errors.type"
-            class="visually-hidden"
           />
           <div class="row">
             <div class="col">
@@ -234,6 +266,7 @@ const toggleMitigation = () => {
             label="CVE Source"
             :options="flawSources"
             :error="errors.source"
+            :options-hidden="hiddenSources"
           />
         </div>
 
@@ -424,8 +457,15 @@ const toggleMitigation = () => {
           Save Changes
         </button>
       </div>
-      <div v-else>
-        <button type="submit" class="btn btn-primary col">Create New Flaw</button>
+      <div v-if="mode === 'create'">
+        <button
+          v-osim-loading.grow="isSaving"
+          type="submit"
+          class="btn btn-primary ms-3"
+          :disabled="isSaving"
+        >
+          Create New Flaw
+        </button>
       </div>
     </div>
   </form>

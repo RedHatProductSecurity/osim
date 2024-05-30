@@ -14,20 +14,20 @@ import {
 } from '@/services/FlawService';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { flawTypes, flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
+import { flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 import { modifyPath } from 'ramda';
 import { deepMap } from '@/utils/helpers';
 import type { ZodIssue } from 'zod';
 import { useNetworkQueue } from './useNetworkQueue';
 
-export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void){
+export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void) {
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffectChanges } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -59,25 +59,32 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     const flawForPost: any = Object.fromEntries(
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
+    try {
 
-    await postFlaw(flawForPost)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-      .then((response: any) => {
-        router.push({
-          name: 'flaw-details',
-          params: { id: response?.cve_id || response?.uuid },
-        });
-        flaw.value.uuid = response.uuid;
-      })
-      .catch(createCatchHandler('Error creating Flaw'));
+      await postFlaw(flawForPost)
+        .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
+        .then((response: any) => {
+          router.push({
+            name: 'flaw-details',
+            params: { id: response?.cve_id || response?.uuid },
+          });
+          flaw.value.uuid = response.uuid;
+        })
+        .catch(createCatchHandler('Error creating Flaw'));
 
-    if (wasCvssModified.value) {
-      await saveCvssScores();
+      // Catch above will throw another error if the flaw is not created
+      if (wasCvssModified.value) {
+        await saveCvssScores()
+          .catch(createCatchHandler('Error saving CVSS scores after creating Flaw'));
+      }
+    } catch (error) {
+      console.error('Error when saving flaw:', error);
+    } finally {
+      isSaving.value = false;
     }
-    isSaving.value = false;
   }
 
-  function validate(){
+  function validate() {
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
 
@@ -124,6 +131,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
     try {
       await execute(...queue);
+      resetAffectChanges();
     } catch (error) {
       console.error('Error updating flaw:', error);
       isSaving.value = false;
@@ -157,7 +165,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     errors,
     committedFlaw,
     trackerUuids,
-    flawTypes,
     flawSources,
     flawImpacts,
     flawIncidentStates,
@@ -196,7 +203,6 @@ export function blankFlaw(): ZodFlawType {
     nvd_cvss3: '',
     source: '',
     title: '',
-    type: 'VULNERABILITY', // OSIDB only supports Vulnerabilities at present
     owner: '',
     team_id: '',
     summary: '',
