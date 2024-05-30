@@ -12,12 +12,17 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { sortWith, ascend, prop } from 'ramda';
+
+const sortAffects = (affects = []) => {
+  return sortWith([ascend(prop('ps_module')), ascend(prop('ps_component'))], affects);
+};
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
-  const theAffects: Ref<ZodAffectType[]> = toRef(flaw.value, 'affects');
+  const theAffects: Ref<ZodAffectType[]> = toRef(sortAffects(flaw.value.affects));
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
 
   function isCvssNew(cvssScore: ZodAffectCVSSType) {
@@ -121,6 +126,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   function recoverAffect(affectIdx: number) {
     const recoveredAffect = affectsToDelete.value.splice(affectIdx, 1)[0];
     theAffects.value.push(recoveredAffect);
+    theAffects.value = sortAffects(theAffects.value);
   }
 
   theAffects.value.forEach((affect) => {
