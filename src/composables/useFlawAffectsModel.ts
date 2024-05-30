@@ -138,7 +138,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     const originalAffect = initialAffects.find((maybeMatch) => maybeMatch.uuid === affect.uuid);
     return !equals(originalAffect, affect);
   }
-  x;
+
   theAffects.value.forEach((affect) => {
     watch(affect, () => {
       if (affect.uuid && hasAffectChanged(affect)) {
