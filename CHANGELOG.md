@@ -14,7 +14,7 @@
 * References and acknowledgments are not refreshed after save actions
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button
 * Restored required field validations to Flaw fields
-* Fixed deleted affects message after flaw save
+* Fixed deleted affects message after flaw save (`OSIDB-2693`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
