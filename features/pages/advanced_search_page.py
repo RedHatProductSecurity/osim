@@ -58,7 +58,7 @@ class AdvancedSearchPage(BasePage):
         self.selectValueList2.select_element_by_value(item_value)
 
     def go_to_first_flaw_detail(self):
-        self.cve_idText.click_button()
+        self.click_button_with_js(self.cve_idText)
  
     def get_first_flaw_id(self):
         return self.cve_idText.get_text()

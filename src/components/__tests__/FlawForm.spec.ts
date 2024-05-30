@@ -1,4 +1,4 @@
-import { type ZodFlawType } from '@/types/zodFlaw';
+import { type ZodFlawType, flawSources } from '@/types/zodFlaw';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
@@ -589,6 +589,30 @@ describe('FlawForm', () => {
     expect((subject.vm as any).flaw.summary).toBe('');
     expect((subject.vm as any).flaw.statement).toBe('');
     expect((subject.vm as any).flaw.mitigation).toBe('');
+  });
+
+  it('should show only allowed sources in edit mode', async () => {
+    const flaw = sampleFlaw();
+    mountWithProps({ flaw, mode: 'edit' });
+    const sourceField = subject
+      .findAllComponents(LabelSelect)
+      .find((component) => component.props().label === 'CVE Source');
+    const options = sourceField.findAll('option');
+    expect(options.length).toBe(flawSources.length);
+    const disabledOptions = sourceField.findAll('option[hidden]');
+    expect(disabledOptions.length).not.toBe(0);
+  });
+
+  it('should show all sources in create mode', async () => {
+    const flaw = sampleFlaw();
+    mountWithProps({ flaw, mode: 'create' });
+    const sourceField = subject
+      .findAllComponents(LabelSelect)
+      .find((component) => component.props().label === 'CVE Source');
+    const options = sourceField.findAll('option');
+    expect(options.length).toBe(flawSources.length);
+    const disabledOptions = sourceField.findAll('option[hidden]');
+    expect(disabledOptions.length).toBe(0);
   });
 });
 

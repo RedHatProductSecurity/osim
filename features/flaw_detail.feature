@@ -52,7 +52,6 @@ Feature: Flaw detail testing
         |         title |
         |     component |
         |      assignee |
-        |        teamid |
       Then The random input fields are updated
 
     Scenario Outline: Update CWE ID
@@ -140,3 +139,9 @@ Feature: Flaw detail testing
       Given I go to a public flaw detail page
       When I delete an affect of the flaw
       Then The affect is deleted
+
+    Scenario: Make flaw public and add public data
+      When I open the flaw create page
+      And I create new embargoed flaw with valid data
+      And I unembargo this flaw and add public date
+      Then Flaw is unembargoed and have public date
