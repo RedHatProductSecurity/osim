@@ -4,6 +4,7 @@ import { flawImpacts, flawTypes, flawSources } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
+import { summaryRequiredStates } from '@/types/zodFlaw';
 
 const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
@@ -30,6 +31,7 @@ const nameForOption = (fieldName: string) => {
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
+    requires_summary: 'CVE Description Review',
   };
   let name =
     mappings[fieldName]
@@ -49,6 +51,7 @@ const optionsFor = (field: string) =>
     type: flawTypes,
     source: flawSources,
     impact: flawImpacts,
+    requires_summary: summaryRequiredStates,
     embargoed: ['true', 'false'],
     workflow_state: [
       'DONE',
