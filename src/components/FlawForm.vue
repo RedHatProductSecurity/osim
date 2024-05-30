@@ -465,8 +465,15 @@ const toggleMitigation = () => {
           Save Changes
         </button>
       </div>
-      <div v-else>
-        <button type="submit" class="btn btn-primary col">Create New Flaw</button>
+      <div v-if="mode === 'create'">
+        <button
+          v-osim-loading.grow="isSaving"
+          type="submit"
+          class="btn btn-primary ms-3"
+          :disabled="isSaving"
+        >
+          Create New Flaw
+        </button>
       </div>
     </div>
   </form>

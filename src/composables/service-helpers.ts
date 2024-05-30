@@ -2,7 +2,7 @@ import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 
 
-export function createCatchHandler(title: string = 'Error', callback?: () => void, shouldThrow: boolean = true) {
+export function createCatchHandler(title: string = 'Error', shouldThrow: boolean = true) {
   return (error: any) => {
     const displayedError = getDisplayedOsidbError(error);
     const { addToast } = useToastStore();
@@ -12,10 +12,6 @@ export function createCatchHandler(title: string = 'Error', callback?: () => voi
       css: 'warning',
     });
     console.error('❌ ', error);
-
-    if (callback) {
-      callback();
-    }
 
     if (shouldThrow) {
       throw error;
