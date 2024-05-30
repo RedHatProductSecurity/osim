@@ -10,7 +10,7 @@ import {
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
-  if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
+  if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
       options.data.updated_dt = updated_dt;
