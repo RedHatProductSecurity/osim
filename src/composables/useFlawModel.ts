@@ -27,7 +27,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffects } = flawAffectsModel;
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffectChanges } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -124,7 +124,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
     try {
       await execute(...queue);
-      resetAffects();
+      resetAffectChanges();
     } catch (error) {
       console.error('Error updating flaw:', error);
       isSaving.value = false;
