@@ -90,6 +90,11 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   const { addToast } = useToastStore();
 
+  const resetAffectChanges = () => {
+    affectsToDelete.value = [];
+    modifiedAffectIds.value = [];
+  };
+
   function addBlankAffect() {
     const embargoed = flaw.value.embargoed;
     theAffects.value.push({
@@ -224,5 +229,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
+    resetAffectChanges,
   };
 }
