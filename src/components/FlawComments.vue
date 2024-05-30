@@ -37,17 +37,6 @@ function parseIsPrivate(isPrivate: string) {
     : Boolean(isPrivate);
 }
 
-const transformedComments = computed(() =>
-  props.comments.map((comment) => ({
-    ...comment,
-    meta_attr: {
-      ...comment.meta_attr,
-      is_private: parseIsPrivate(comment.meta_attr?.is_private),
-      private_groups: parseGroups(comment.meta_attr?.private_groups),
-    },
-  })),
-);
-
 type CommentFilter = 'public' | 'private' | 'system';
 type CommentActiveFilters = Record<CommentFilter, boolean>;
 type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
@@ -59,9 +48,9 @@ const selectedFilters = ref<CommentActiveFilters>({
 });
 
 const filterFunctions: CommentFilterFunctions = {
-  public: (comment: any) => !comment.meta_attr.is_private,
-  private: (comment: any) => comment.meta_attr.is_private,
-  system: (comment: any) => comment.meta_attr.creator === SYSTEM_EMAIL,
+  public: (comment: any) => !comment.is_private,
+  private: (comment: any) => comment.is_private,
+  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
 const activeFilters = computed(() => {
@@ -79,8 +68,8 @@ const activeFilters = computed(() => {
       false,
     );
 });
-
-const filteredComments = computed(() => transformedComments.value.filter(activeFilters.value));
+console.log(props.comments)
+const filteredComments = computed(() => props.comments.filter(activeFilters.value));
 
 
 const filters: CommentFilter[] = ['public', 'private', 'system'];
@@ -127,18 +116,21 @@ function linkify(text: string) {
           class="bg-light p-2 mt-3 rounded-2"
         >
           <p class="border-bottom pb-2">
-            <span v-if="comment.meta_attr.is_private" class="badge bg-warning rounded-pill">
+            <span v-if="comment.is_private" class="badge bg-warning rounded-pill">
               Bugzilla Internal
             </span>
             <span
-              v-if="comment.meta_attr.creator === SYSTEM_EMAIL"
+              v-if="comment.creator === SYSTEM_EMAIL"
               class="badge bg-info rounded-pill"
             >
               System
             </span>
-            {{ comment.meta_attr?.creator }} / {{ comment.meta_attr?.time }}
+            {{ comment.creator }} /
+            <a :href="'#' + comment.type + '/' + comment.external_system_id">
+              {{ comment.time }}
+            </a>
           </p>
-          <p class="osim-flaw-comment" v-html="linkify(comment.meta_attr?.text)" />
+          <p class="osim-flaw-comment" v-html="linkify(comment.text)" />
         </li>
       </ul>
       <div v-if="!isAddingNewComment">
