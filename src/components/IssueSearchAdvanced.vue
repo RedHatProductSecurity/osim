@@ -31,7 +31,7 @@ const nameForOption = (fieldName: string) => {
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
-    requires_summary: 'CVE Description Review'
+    requires_summary: 'CVE Description Review',
   };
   let name =
     mappings[fieldName]
