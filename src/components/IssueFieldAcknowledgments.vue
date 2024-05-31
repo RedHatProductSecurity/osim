@@ -4,6 +4,7 @@ import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
 
 defineProps<{
+  mode: 'create' | 'edit';
   error: Record<string, any>[] | null;
 }>();
 
@@ -27,6 +28,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
   <div>
     <EditableList
       v-model="acknowledgments"
+      :mode="mode"
       entityName="Acknowledgment"
       @item:save="emit('acknowledgment:update', $event)"
       @item:delete="emit('acknowledgment:delete', $event)"

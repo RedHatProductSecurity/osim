@@ -13,6 +13,7 @@ import {
   putFlaw,
 } from '@/services/FlawService';
 
+import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
 import { modifyPath } from 'ramda';
@@ -26,11 +27,13 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flaw = ref<ZodFlawType>(forFlaw);
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
+  const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
   const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffectChanges } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
+  const { saveDraftFlaw } = useDraftFlawStore();
 
   const trackerUuids = computed(() => {
     return (flaw.value.affects ?? [])
@@ -60,15 +63,21 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
     );
     try {
-
       await postFlaw(flawForPost)
         .then(createSuccessHandler({ title: 'Success!', body: 'Flaw created' }))
-        .then((response: any) => {
+        .then(async (response: any) => {
           router.push({
             name: 'flaw-details',
             params: { id: response?.cve_id || response?.uuid },
           });
           flaw.value.uuid = response.uuid;
+          saveDraftFlaw(flaw.value);
+          if (flaw.value.acknowledgments.length > 0) {
+            await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+          }
+          if (flaw.value.references.length > 0) {
+            await flawAttributionsModel.saveReferences(flaw.value.references);
+          }
         })
         .catch(createCatchHandler('Error creating Flaw'));
 
