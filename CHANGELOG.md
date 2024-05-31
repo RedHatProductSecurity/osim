@@ -14,9 +14,6 @@
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
 
-### Changed
-* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
-
 ### Fixed
 * The session is now shared across tabs
 * CVSS scores on affects can be added (`OSIDB-2573`)
