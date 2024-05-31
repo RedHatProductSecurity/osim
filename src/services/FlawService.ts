@@ -33,7 +33,6 @@ const FLAW_LIST_FIELDS = [
   'updated_dt',
   'classification',
   'title',
-  'state', // not to be confused with classification.state
   'unembargo_dt',
   'embargoed',
   'owner',

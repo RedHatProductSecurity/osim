@@ -15,12 +15,10 @@ from features.utils import (
 
 FLAW_TITLE_TEXT_XPATH = "//tr[1]/td[6]"
 FLAW_CVE_ID_TEXT_XPATH = "//tr[1]/td[2]/a"
-FLAW_STATE_TEXT_XPATH = '//tr[1]/td[7]'
 FLAW_SOURCE_TEXT_XPATH = '//tr[1]/td[4]'
 
 # The following constants are related to flaw filter that should be updated
 # according to the imported test database in the future
-COUNT_FLAWS_SAME_STATE = 20
 COUNT_FLAWS_SAME_SOURCE = 10
 
 
@@ -35,8 +33,6 @@ def catch_one_existing_flaw_text_and_locator(context, text_type):
         context.element_locator = FLAW_TITLE_TEXT_XPATH
     elif text_type == "cve_id":
         context.element_locator = FLAW_CVE_ID_TEXT_XPATH
-    elif text_type == "state":
-        context.element_locator = FLAW_STATE_TEXT_XPATH
     elif text_type == "source":
         context.element_locator = FLAW_SOURCE_TEXT_XPATH
     else:
@@ -89,15 +85,6 @@ def step_impl(context):
 @then('I am able to view flaws matching "cve_id" and the flaws "count" is correct')
 def step_impl(context):
     then_step_mathcher(context, 1)
-
-@when('I input a filter keyword "state" in the "Filter Issues/Flaws" input box')
-def step_impl(context):
-    when_step_mathcher(context, "state")
-
-@then('I am able to view flaws matching "state" and the flaws "count" is correct')
-def step_impl(context):
-    flaws_count = COUNT_FLAWS_SAME_STATE
-    then_step_mathcher(context, flaws_count)
 
 @when('I input a filter keyword "source" in the "Filter Issues/Flaws" input box')
 def step_impl(context):
