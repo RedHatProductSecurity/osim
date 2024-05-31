@@ -10,7 +10,7 @@ import {
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
-  if (options.data && ['PUT', 'POST'].includes(options.method.toUpperCase())) {
+  if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
       options.data.updated_dt = updated_dt;
@@ -126,7 +126,7 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
     data: postObject,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
     .then((response) => response.data)
     .catch(createCatchHandler('CVSS scores Update Error'));
@@ -284,7 +284,7 @@ export function postFlawReference(flawId: string, requestBody: FlawReferencePost
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/references`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Reference created.' }))
     .catch(createCatchHandler('Error creating Reference:'));
 }
@@ -332,7 +332,7 @@ export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAc
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment created.' }))
     .catch(createCatchHandler('Error creating Acknowledgment:'));
 }

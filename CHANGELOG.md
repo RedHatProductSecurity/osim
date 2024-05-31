@@ -19,8 +19,9 @@
 * Show only allowed sources for Flaw Edit (`OSIDB-2395`)
 * Fixed deleted affects message after flaw save (`OSIDB-2693`)
 * Recover from save errors during flaw creation, show saving animation (`OSIDB-2765`)
-* * Prevent saving of unmodified affects
-(`OSIDB-2754`)
+* Prevent saving of unmodified affects (`OSIDB-2754`)
+* Unable to save first cvss score on flaws (`OSIDB-2769`)
+* Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 
 ###
 * Removed is_major_incident usage (`OSIDB-2778`)
