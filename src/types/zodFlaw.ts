@@ -107,14 +107,14 @@ export const FlawCVSSSchema = z.object({
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
-  order: z.number(),  
+  order: z.number(),
   text: z.string().nullish(),
   creator: z.string().nullish(),
   is_private: z
     .string()
     .transform((booleanString) => booleanString === 'True')
     .or(z.boolean())
-    .nullish(),  
+    .nullish(),
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
 });

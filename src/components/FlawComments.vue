@@ -26,20 +26,6 @@ function handleClick() {
   isAddingNewComment.value = false;
 }
 
-function parseGroups(serializedJson: string) {
-  try {
-    return JSON.parse(serializedJson.replace(/'/g, '\\"'));
-  } catch (e) {
-    return [];
-  }
-}
-
-function parseIsPrivate(isPrivate: string) {
-  return isPrivate?.constructor === String
-    ? isPrivate.toLowerCase() === 'true'
-    : Boolean(isPrivate);
-}
-
 type CommentFilter = 'public' | 'private' | 'system';
 type CommentActiveFilters = Record<CommentFilter, boolean>;
 type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
@@ -71,7 +57,6 @@ const activeFilters = computed(() => {
       false,
     );
 });
-console.log(props.comments)
 const filteredComments = computed(() => props.comments.filter(activeFilters.value));
 
 
