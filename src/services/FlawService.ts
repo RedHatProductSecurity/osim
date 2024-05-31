@@ -234,7 +234,7 @@ export async function postFlaw(requestBody: any) {
   //   "component": "string",
   //   "title": "string",
   //   "comment_zero": "string",
-  //   "summary": "string",
+  //   "cve_description": "string",
   //   "statement": "string",
   //   "cwe_id": "string",
   //   "unembargo_dt": "2023-06-26T06:19:23.982Z",

@@ -208,7 +208,7 @@ export function blankFlaw(): ZodFlawType {
     title: '',
     owner: '',
     team_id: '',
-    summary: '',
+    cve_description: '',
     statement: '',
     mitigation: '',
     comments: [],

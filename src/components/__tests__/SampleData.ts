@@ -10,7 +10,7 @@ export function sampleFlaw(): ZodFlawType {
     title: 'sample title',
     trackers: [],
     comment_zero: 'Comment Zero == Patient Zero',
-    summary: 'I am a spooky CVE',
+    cve_description: 'I am a spooky CVE',
     requires_summary: 'APPROVED',
     statement: 'Statement for None',
     cwe_id: 'CWE-1',

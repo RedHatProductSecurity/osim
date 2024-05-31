@@ -152,7 +152,7 @@ export const ZodFlawSchema = z.object({
     comment_zero => comment_zero.trim().length > 0,
     { message: 'Comment#0 cannot be empty.' }
   ),
-  summary: z.string().nullish(),
+  cve_description: z.string().nullish(),
   requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
@@ -202,9 +202,9 @@ export const ZodFlawSchema = z.object({
   if (
     zodFlaw.requires_summary
     && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_summary)
-    && zodFlaw.summary === ''
+    && zodFlaw.cve_description === ''
   ) {
-    raiseIssue('Description cannot be blank if requested or approved.', ['summary']);
+    raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
   }
 
   if (
@@ -212,7 +212,7 @@ export const ZodFlawSchema = z.object({
     && zodFlaw.major_incident_state
     && ['APPROVED', 'CISA_APPROVED'].includes(zodFlaw.major_incident_state)
   ) {
-    raiseIssue('Description must be approved for Major Incidents.', ['summary']);
+    raiseIssue('Description must be approved for Major Incidents.', ['cve_description']);
   }
 
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();

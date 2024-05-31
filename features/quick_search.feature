@@ -9,8 +9,8 @@ Feature: Flaw quick search testing
     
     Scenario: Quick search flaw with text
       Then I search the flaw with text and I am able to view flaws list matching the search
-        |       field |             text  |
-        |       title |    title-test-sw  |
-        |   comment#0 | comment_zero-test |
-        |   statement |   statement-test  |
-        | description |     summary-test  |
+        |       field |                 text |
+        |       title |        title-test-sw |
+        |   comment#0 |    comment_zero-test |
+        |   statement |       statement-test |
+        | description | cve-description-test |

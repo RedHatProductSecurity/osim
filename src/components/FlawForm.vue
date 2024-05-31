@@ -107,7 +107,7 @@ const onSubmit = async () => {
   }
 };
 
-const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const showDescription = ref(flaw.value.cve_description && flaw.value.cve_description.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
@@ -152,10 +152,10 @@ const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
 
-const toggleSummary = () => {
-  showSummary.value = !showSummary.value;
-  if (!showSummary.value) {
-    flaw.value.summary = '';
+const toggleDescription = () => {
+  showDescription.value = !showDescription.value;
+  if (!showDescription.value) {
+    flaw.value.cve_description = '';
   }
 };
 
@@ -260,7 +260,7 @@ const expandFocusedComponent = (parent_uuid: string) => {
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
-                :description="flaw.summary ?? ''"
+                :description="flaw.cve_description ?? ''"
               />
             </div>
           </div>
@@ -372,11 +372,11 @@ const expandFocusedComponent = (parent_uuid: string) => {
           :disabled="mode === 'edit'"
         />
         <LabelTextarea
-          v-if="showSummary"
-          v-model="flaw.summary"
+          v-if="showDescription"
+          v-model="flaw.cve_description"
           label="Description"
           placeholder="Description Text ..."
-          :error="errors.summary"
+          :error="errors.cve_description"
           class="osim-flaw-description-component"
         >
           <template #label>
@@ -409,10 +409,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
         <div class="d-flex gap-3 mb-3">
           <button
             type="button"
-            class="btn btn-secondary osim-show-summary"
-            @click="toggleSummary"
+            class="btn btn-secondary osim-show-description"
+            @click="toggleDescription"
           >
-            {{ showSummary ? 'Remove Description' : 'Add Description' }}
+            {{ showDescription ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
             type="button"
