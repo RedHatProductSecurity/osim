@@ -29,6 +29,7 @@
 * Unable to save first cvss score on flaws (`OSIDB-2769`)
 * Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 * Reset affects when flaw is reset (`OSIDB-2793`)
+* New public comments are not displayed (`OSIDB-2700`)
 
 ### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
