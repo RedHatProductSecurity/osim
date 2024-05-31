@@ -15,7 +15,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import { equals } from 'ramda';
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
-  const wereAffectsModified = ref(false);
+  const wereAffectsModified = computed(() => modifiedAffectIds.value.length > 0);
   const modifiedAffectIds = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
@@ -90,10 +90,12 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   const { addToast } = useToastStore();
 
-  const resetAffectChanges = () => {
-    affectsToDelete.value = [];
+  function resetModifiedAffects() {
     modifiedAffectIds.value = [];
-  };
+  }
+  function resetAffectsForDeletion() {
+    affectsToDelete.value = [];
+  }
 
   function addBlankAffect() {
     const embargoed = flaw.value.embargoed;
@@ -128,18 +130,24 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     flaw.value.affects.push(recoveredAffect);
   }
 
-  function hasAffectChanged(affect: ZodAffectType) {
+  function doesAffectHaveChangedValues(affect: ZodAffectType) {
     const originalAffect = initialAffects.find((maybeMatch) => maybeMatch.uuid === affect.uuid);
     return !equals(originalAffect, affect);
   }
 
-  flaw.value.affects.forEach((affect) => {
-    watch(affect, () => {
-      if (affect.uuid && hasAffectChanged(affect)) {
-        reportAffectAsModified(affect.uuid);
-      }
-    }, { deep: true });
-  });
+  function trackAffectChange(affect: ZodAffectType) {
+    if (!affect.uuid) {
+      return;
+    }
+    if (doesAffectHaveChangedValues(affect)) {
+      modifiedAffectIds.value.push(affect.uuid);
+    } else {
+      // remove affect if it has reverted to original state
+      modifiedAffectIds.value = modifiedAffectIds.value.filter((id) => id !== affect.uuid);
+    }
+  }
+
+  flaw.value.affects.forEach((affect) => watch(affect, trackAffectChange, { deep: true }));
 
   async function deleteAffects() {
     for (const affect of affectsToDelete.value) {
@@ -147,15 +155,11 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         await deleteAffect(affect.uuid);
       }
     }
-  }
-
-  function reportAffectAsModified(affectId: string) {
-    wereAffectsModified.value = true;
-    modifiedAffectIds.value.push(affectId);
+    resetAffectsForDeletion();
   }
 
   async function saveAffects() {
-    if (wereAffectsModified.value) {
+    if (wereAffectsModified.value && modifiedAffectIds.value.length) {
       const requestBody = affectsToUpdate.value.map((affect) => ({
         flaw: flaw.value?.uuid,
         uuid: affect.uuid,
@@ -168,7 +172,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         updated_dt: affect.updated_dt,
       }));
       await putAffects(requestBody);
-      wereAffectsModified.value = false;
+      resetModifiedAffects();
     }
     const affectsToCreateQuantity = affectsToCreate.value.length;
     for (let index = 0; index < affectsToCreateQuantity; index++) {
@@ -211,13 +215,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           }
         }
       }
-
-      // addToast({
-      //   title: 'Info',
-      //   body: `Affect ${index + 1} of ${affectsToCreateQuantity} Saved: ${
-      //     requestBody.ps_component
-      //   }`,
-      // });
     }
   }
 
@@ -227,10 +224,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     recoverAffect,
     saveAffects,
     deleteAffects,
-    reportAffectAsModified,
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
-    resetAffectChanges,
   };
 }

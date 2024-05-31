@@ -14,15 +14,14 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   const wasCvssModified = ref(false);
   const flawRhCvss3 = ref(
-    getCvssData('RH', 'V3') || {
-      vector: null,
-      uuid: null,
-      issuer: null,
-      // comment: null,
-      comment: 'hardcoded comment', // TODO: remove this line when the comment field is added to the UI
-      created_dt: null,
+    getCvssData('RH', 'V3')
+    || {
       score: null,
-    }, // empty for creating a flaw, or if no CVSS data exists
+      vector: null,
+      comment: null,
+      created_dt: null,
+      uuid: null,
+    }
   );
 
   watch(flawRhCvss3, () => { wasCvssModified.value = true; }, { deep: true });
@@ -30,7 +29,6 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 
   const formatScore = (score: any) => score?.toFixed(1);
-
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
     return values.join('/') || '-';
@@ -67,16 +65,16 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   });
 
   async function saveCvssScores() {
-    if (flawRhCvss3.value.created_dt) {
+    if (flawRhCvss3.value?.created_dt) {
       return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value as unknown);
     }
 
     const requestBody = {
       // "score":  is recalculated based on the vector by OSIDB and does not need to be included
-      comment: flawRhCvss3.value.comment,
+      comment: flawRhCvss3.value?.comment,
       cvss_version: 'V3',
       issuer: 'RH',
-      vector: flawRhCvss3.value.vector,
+      vector: flawRhCvss3.value?.vector,
       embargoed: flaw.value.embargoed,
     };
     return postFlawCvssScores(flaw.value.uuid, requestBody as unknown);
@@ -84,8 +82,8 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   return {
     wasCvssModified,
-    flawRhCvss3,
     rhCvss3String,
+    flawRhCvss3,
     nvdCvss3String,
     highlightedNvdCvss3String,
     shouldDisplayEmailNistForm,
