@@ -22,6 +22,9 @@
 * * Prevent saving of unmodified affects
 (`OSIDB-2754`)
 
+###
+* Removed is_major_incident usage (`OSIDB-2778`)
+
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
 ### Added

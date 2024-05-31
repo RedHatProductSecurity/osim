@@ -32,7 +32,6 @@ const FLAW_LIST_FIELDS = [
   'created_dt',
   'updated_dt',
   'classification',
-  // 'is_major_incident', TODO: replace with major_incident_state?
   'title',
   'state', // not to be confused with classification.state
   'unembargo_dt',
@@ -248,7 +247,6 @@ export async function postFlaw(requestBody: any) {
   //   "cvss3": "string",
   //   "cvss3_score": 0,
   //   "nvd_cvss3": "string",
-  //   "is_major_incident": true,
   //   "embargoed": true
   // }
   return osidbFetch({

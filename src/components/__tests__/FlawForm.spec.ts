@@ -659,7 +659,6 @@ function sampleFlaw(): ZodFlawType {
     cvss3: '',
     cvss3_score: null,
     nvd_cvss3: '',
-    // is_major_incident: true,
     major_incident_state: 'APPROVED',
     nist_cvss_validation: '',
     affects: [
