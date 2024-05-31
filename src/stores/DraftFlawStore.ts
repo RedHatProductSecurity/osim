@@ -28,7 +28,7 @@ export const useDraftFlawStore = defineStore('DraftFlawStore', () => {
   const refsComparator = (a: ZodFlawReferenceType, b: ZodFlawReferenceType): boolean => {
     return a.url === b.url && a.description === b.description;
   };
-
+  // If an element exists in both lists, the first element from the first list will be used.
   const mergeAcks =
     (a: ZodFlawAcknowledgmentType[], b: ZodFlawAcknowledgmentType[]) => unionWith(ackComparator, a, b);
 
