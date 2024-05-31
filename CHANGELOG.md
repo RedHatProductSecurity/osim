@@ -24,8 +24,9 @@
 * Unable to save first cvss score on flaws (`OSIDB-2769`)
 * Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 
-###
+### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
+* Removed comment.type usage (`OSIDB-2781`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
