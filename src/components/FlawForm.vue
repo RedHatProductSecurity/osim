@@ -294,7 +294,7 @@ const expandFocusedComponent = (parent_uuid: string) => {
             <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
-                :flawSummary="flaw.comment_zero"
+                :summary="flaw.comment_zero"
                 :bugzilla="bugzillaLink"
                 :cvss="rhCvss3String"
                 :nistcvss="nvdCvss3String"

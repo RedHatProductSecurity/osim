@@ -15,7 +15,7 @@ describe('CvssNISTForm', () => {
       props: {
         flaw: 'any',
         cveid: 'string',
-        flawSummary: 'string',
+        summary: 'string',
         bugzilla: 'string',
         nvdpage: 'string',
         cvss: 'string',
@@ -42,7 +42,7 @@ describe('CvssNISTForm', () => {
       props: {
         flaw: 'any',
         cveid: 'string',
-        flawSummary: 'string',
+        summary: 'string',
         bugzilla: 'string',
         nvdpage: 'string',
         cvss: 'string',
@@ -69,7 +69,7 @@ describe('CvssNISTForm', () => {
       props: {
         flaw: 'any',
         cveid: 'string',
-        flawSummary: 'string',
+        summary: 'string',
         bugzilla: 'string',
         nvdpage: 'string',
         cvss: 'string',
@@ -106,7 +106,7 @@ describe('CvssNISTForm', () => {
       props: {
         flaw: 'any',
         cveid: 'string',
-        flawSummary: 'string',
+        summary: 'string',
         bugzilla: 'string',
         nvdpage: 'string',
         cvss: 'string',
@@ -141,7 +141,7 @@ describe('CvssNISTForm', () => {
       props: {
         flaw: 'any',
         cveid: 'string',
-        flawSummary: 'string',
+        summary: 'string',
         bugzilla: 'string',
         nvdpage: 'string',
         cvss: 'string',
