@@ -24,7 +24,7 @@ MAX_RETRY = 10
 DOCUMENT_TEXT_FIELDS = {
     # Exclude 'comment#0' because it's mandatory in creation
     'add': ['description', 'statement', 'mitigation'],
-    # requires_summary can not be REQUESTED if summary is missing
+    # requires_cve_description can not be REQUESTED if description is missing
     'delete': ['statement', 'mitigation'],
     # Exclude 'description' because of OSIDB-2308
     'update': ['description', 'statement', 'mitigation']

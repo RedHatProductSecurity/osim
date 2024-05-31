@@ -180,14 +180,14 @@ describe('FlawSearchView', () => {
     });
   });
 
-  it('should call loadFlaws with requires_summary on search', async () => {
+  it('should call loadFlaws with requires_cve_description on search', async () => {
     await flushPromises();
     expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const requiresSummaryOption = selectDropdown
+    const requiresDescriptionOption = selectDropdown
       .findAll('option')
-      .filter(option => option.element.value === 'requires_summary')[0];
-    await selectDropdown.setValue(requiresSummaryOption.element.value);
+      .filter(option => option.element.value === 'requires_cve_description')[0];
+    await selectDropdown.setValue(requiresDescriptionOption.element.value);
     await selectDropdown.trigger('change');
     const valueDropdown = wrapper.findAll('select.form-select')[1];
     await valueDropdown.setValue(valueDropdown.findAll('option')[1].element.value);
@@ -197,6 +197,6 @@ describe('FlawSearchView', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[1][0])
-      .toStrictEqual({ query: { query: 'search', requires_summary: 'REQUESTED' } });
+      .toStrictEqual({ query: { query: 'search', requires_cve_description: 'REQUESTED' } });
   });
 });

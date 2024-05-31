@@ -373,7 +373,7 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Description');
     expect(descriptionField?.exists()).toBe(true);
     const vm = subject.findComponent(FlawForm).vm as any;
-    vm.flaw.requires_summary = 'REQUESTED';
+    vm.flaw.requires_cve_description = 'REQUESTED';
     vm.flaw.cve_description = 'I am a spooky CVE';
     expect(vm.errors.cve_description).toBe(null);
     vm.flaw.cve_description = '';

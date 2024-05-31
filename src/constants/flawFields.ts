@@ -33,7 +33,7 @@ const includedFields = [
   'references',
   'acknowledgments',
   'embargoed',
-  'requires_summary',
+  'requires_cve_description',
 ];
 
 export const flawFields = fieldsFor(ZodFlawSchema)

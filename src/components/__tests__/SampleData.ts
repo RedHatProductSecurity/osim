@@ -11,7 +11,7 @@ export function sampleFlaw(): ZodFlawType {
     trackers: [],
     comment_zero: 'Comment Zero == Patient Zero',
     cve_description: 'I am a spooky CVE',
-    requires_summary: 'APPROVED',
+    requires_cve_description: 'APPROVED',
     statement: 'Statement for None',
     cwe_id: 'CWE-1',
     unembargo_dt: '[native Date Thu Nov 30 2023 21:52:48 GMT-0500 (Eastern Standard Time)]',
