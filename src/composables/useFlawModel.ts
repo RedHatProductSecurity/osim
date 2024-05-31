@@ -157,7 +157,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   const errors = computed(() => flawErrors(flaw.value));
 
-
   return {
     flaw,
     isSaving,

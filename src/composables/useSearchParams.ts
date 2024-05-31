@@ -16,6 +16,10 @@ const searchQuery = z.object({
   }),
 });
 
+export const allowedEmptyFields = [
+  'cve_id',
+];
+
 export function useSearchParams() {
 
   const route = useRoute();
@@ -92,7 +96,7 @@ export function useSearchParams() {
   function submitAdvancedSearch() {
     const params = facets.value.reduce(
       (fields, { field, value }) => {
-        if (field && value || (field === 'cve_id')) {
+        if (field && value || allowedEmptyFields.includes(field)) {
           fields[field] = value;
         }
         return fields;

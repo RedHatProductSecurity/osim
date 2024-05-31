@@ -3,7 +3,7 @@ import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
-import { useSearchParams } from '@/composables/useSearchParams';
+import { useSearchParams, allowedEmptyFields } from '@/composables/useSearchParams';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 
@@ -46,7 +46,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
 function saveFilter() {
   const filters = facets.value.reduce(
     (fields, { field, value }) => {
-      if (field && value || (field === 'cve_id')) {
+      if (field && value || allowedEmptyFields.includes(field)) {
         fields[field] = value;
       }
       return fields;

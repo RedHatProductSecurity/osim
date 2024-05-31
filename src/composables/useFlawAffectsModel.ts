@@ -14,8 +14,17 @@ import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { sortWith, ascend, prop, equals } from 'ramda';
 
+
 const sortAffects = (affects: ZodAffectType[] = []) => {
-  return sortWith([ascend(prop('ps_module')), ascend(prop('ps_component'))], affects);
+  return sortWith(
+    [
+      // get product value for Ramda ascend function
+      ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
+      ascend(prop('ps_module')),
+      ascend(prop('ps_module'))
+    ],
+    affects
+  );
 };
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {

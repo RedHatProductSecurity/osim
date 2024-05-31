@@ -22,6 +22,7 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
+import AffectedOfferings from '@/components/AffectedOfferings.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
@@ -142,6 +143,14 @@ describe('FlawForm', () => {
       .findAllComponents(LabelSelect)
       .find((component) => component.props().label === 'Impact');
     expect(impactField?.exists()).toBe(true);
+    const impactOptions = impactField.findAll('option').map(item => item.text());
+    expect(impactOptions).toEqual([
+      'CRITICAL',
+      'IMPORTANT',
+      'MODERATE',
+      'LOW',
+      '',
+    ]);
 
     const cvssV3Field = subject
       .findAllComponents(LabelEditable)
@@ -613,6 +622,83 @@ describe('FlawForm', () => {
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
     expect(disabledOptions.length).toBe(0);
+  });
+
+  it('should show all affects in sorting order', async () => {
+    const flaw = sampleFlaw();
+    flaw.affects = [
+      {
+        uuid: 'bff95399-ef12-43fe-878d-4629297c2aa8',
+        flaw: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
+        affectedness: 'AFFECTED',
+        resolution: 'FIX',
+        ps_module: 'shell-4',
+        ps_component: 'openshift',
+        ps_product:'Red Hat Enterprise Linux',
+        impact: 'LOW',
+        // cvss2: '',
+        // cvss2_score: null,
+        // cvss3: '',
+        // cvss3_score: null,
+        trackers: [],
+        delegated_resolution: null,
+        cvss_scores: [],
+        embargoed: false,
+        created_dt: '2021-09-13T09:09:38Z',
+        updated_dt: '2023-12-06T17:12:21Z',
+      },
+      {
+        uuid: 'bff95399-ef12-43fe-878d-4629297c2aa8',
+        flaw: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
+        affectedness: 'AFFECTED',
+        resolution: 'FIX',
+        ps_module: 'test',
+        ps_component: 'openshift',
+        ps_product:'Custom',
+        impact: 'LOW',
+        // cvss2: '',
+        // cvss2_score: null,
+        // cvss3: '',
+        // cvss3_score: null,
+        trackers: [],
+        delegated_resolution: null,
+        cvss_scores: [],
+        embargoed: false,
+        created_dt: '2021-09-13T09:09:38Z',
+        updated_dt: '2023-12-06T17:12:21Z',
+      },
+      {
+        uuid: 'bff95399-ef12-43fe-878d-4629297c2aa8',
+        flaw: '3ede0314-a6c5-4462-bcf3-b034a15cf106',
+        affectedness: 'AFFECTED',
+        resolution: 'FIX',
+        ps_module: 'openshift-4',
+        ps_component: 'openshift',
+        ps_product:'Linux',
+        impact: 'LOW',
+        // cvss2: '',
+        // cvss2_score: null,
+        // cvss3: '',
+        // cvss3_score: null,
+        trackers: [],
+        delegated_resolution: null,
+        cvss_scores: [],
+        embargoed: false,
+        created_dt: '2021-09-13T09:09:38Z',
+        updated_dt: '2023-12-06T17:12:21Z',
+      },
+    ];
+    mountWithProps({ flaw, mode: 'edit' });
+    const affectOfferingsEL = subject.findComponent(AffectedOfferings);
+    expect(affectOfferingsEL.exists()).toBeTruthy();
+    const affects = (affectOfferingsEL.vm as any).theAffects;
+    expect(affects.length).toBe(3);
+    expect(affects[0].ps_product).toBe('Custom');
+    expect(affects[0].ps_module).toBe('test');
+    expect(affects[1].ps_product).toBe('Linux');
+    expect(affects[1].ps_module).toBe('openshift-4');
+    expect(affects[2].ps_product).toBe('Red Hat Enterprise Linux');
+    expect(affects[2].ps_module).toBe('shell-4');
   });
 });
 
