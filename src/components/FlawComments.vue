@@ -3,6 +3,9 @@ import { computed, ref } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '@/stores/UserStore';
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   comments: any[];
@@ -12,14 +15,14 @@ const newPublicComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addPublicComment': [value: any];
+  'comment:addPublicComment': [value: any, value: any];
 }>();
 
 const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 
 function handleClick() {
-  emit('comment:addPublicComment', newPublicComment.value);
+  emit('comment:addPublicComment', newPublicComment.value, userStore.userName);
   isAddingNewComment.value = false;
 }
 
