@@ -9,6 +9,7 @@
 * Support for references and acknowledgements on flaw creation (`OSIDB-2319`)
 * Sort Advanced Search Options alphabetically (`OSIDB-2805`)
 * Add tracker links on affects and flaw form (`OSIDB-2630`)
+* Add button to expand all affects (`OSIDB-2817`)
 
 ### Fixed
 * The session is now shared across tabs
