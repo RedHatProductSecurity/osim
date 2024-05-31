@@ -34,7 +34,6 @@ const FLAW_LIST_FIELDS = [
   'classification',
   // 'is_major_incident', TODO: replace with major_incident_state?
   'title',
-  'state', // not to be confused with classification.state
   'unembargo_dt',
   'embargoed',
   'owner',
