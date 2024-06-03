@@ -40,6 +40,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       .flatMap((affect: any) => affect.trackers ?? [])
       .flatMap((tracker: any) => ({
         uuid: tracker.uuid,
+        type: tracker.type,
+        external_system_id: tracker.external_system_id,
         display: tracker.type + ' ' + tracker.external_system_id,
       }));
   });
