@@ -9,6 +9,7 @@ import { flawReferenceTypeValues } from '@/types/zodFlaw';
 const references = defineModel<ZodFlawReferenceType[]>({ default: null });
 
 defineProps<{
+  mode: 'create' | 'edit';
   error: Record<string, any>[] | null;
 }>();
 
@@ -40,6 +41,7 @@ function handleDelete(uuid: string, closeModal: () => void) {
   <div>
     <EditableList
       v-model="references"
+      :mode="mode"
       entityName="Reference"
       @item:save="emit('reference:update', $event)"
       @item:delete="emit('reference:delete', $event)"

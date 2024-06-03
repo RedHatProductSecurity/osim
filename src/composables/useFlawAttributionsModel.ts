@@ -28,19 +28,22 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function updateReference(reference: ZodFlawReferenceType & { uuid: string }) {
     isSaving.value = true;
-    await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
+    await putFlawReference(flaw.value.uuid, reference.uuid, reference as any)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
     isSaving.value = true;
-    await postFlawReference(flaw.value.uuid, reference);
+    await postFlawReference(flaw.value.uuid, reference)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
   async function deleteReference(referenceId: string) {
     isSaving.value = true;
-    await deleteFlawReference(flaw.value.uuid, referenceId);
+    await deleteFlawReference(flaw.value.uuid, referenceId)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
@@ -72,19 +75,22 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function createAcknowledgment(acknowlegdment: any) {
     isSaving.value = true;
-    await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment);
+    await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
     isSaving.value = true;
-    await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId);
+    await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
   async function updateAcknowledgment(acknowlegdment: any) {
     isSaving.value = true;
-    await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
+    await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any)
+      .finally(() => isSaving.value = false);
     afterSaveSuccess();
   }
 
@@ -106,8 +112,8 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       flaw: '',
       uuid: '',
       embargoed: isEmbargoed,
-      created_dt: '',
-      updated_dt: '',
+      created_dt: null,
+      updated_dt: null,
     });
   }
 

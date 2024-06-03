@@ -8,6 +8,7 @@ import LabelCollapsible from './LabelCollapsible.vue';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
+  mode: 'create' | 'edit';
   entityName: string;
   entitiesName?: string;
 }>();
@@ -175,6 +176,7 @@ function commitEdit(index: number) {
     </LabelCollapsible>
     <form>
       <button
+        v-if="props.mode !== 'create'"
         type="button"
         class="btn btn-primary me-2"
         :class="{ disabled: itemsToSave.length === 0 }"

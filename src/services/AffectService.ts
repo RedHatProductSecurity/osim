@@ -87,7 +87,7 @@ export async function postAffectCvssScore(affectId: string, cvssScoreObject: unk
     method: 'post',
     url: `/osidb/api/v1/affects/${affectId}/cvss_scores`,
     data: postObject,
-  }, { beforeFetch })
+  })
     .then((response) => response.data)
     .catch(createCatchHandler('Problem updating affect CVSS scores:'));
 }
