@@ -8,6 +8,7 @@
 * Add CVE Require Description for AdvancedSearch (`OSIDB-2624`)
 * Support for references and acknowledgements on flaw creation (`OSIDB-2319`)
 * Sort Advanced Search Options alphabetically (`OSIDB-2805`)
+* Add tracker links on affects and flaw form (`OSIDB-2630`)
 
 ### Fixed
 * The session is now shared across tabs
