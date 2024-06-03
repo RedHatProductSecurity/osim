@@ -35,7 +35,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const committedFlaw = ref<ZodFlawType | null>(null);
   const { saveDraftFlaw } = useDraftFlawStore();
 
-  const trackerUuids = computed(() => {
+  const trackersDisplay = computed(() => {
     return (flaw.value.affects ?? [])
       .flatMap((affect: any) => affect.trackers ?? [])
       .flatMap((tracker: any) => ({
@@ -174,7 +174,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isValid,
     errors,
     committedFlaw,
-    trackerUuids,
+    trackersDisplay,
     flawSources,
     flawImpacts,
     flawIncidentStates,

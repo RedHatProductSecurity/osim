@@ -40,7 +40,7 @@ function onSaveSuccess() {
 
 const {
   flaw,
-  trackerUuids,
+  trackersDisplay,
   flawSources,
   flawImpacts,
   flawIncidentStates,
