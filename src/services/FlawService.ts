@@ -138,7 +138,6 @@ export async function postFlawPublicComment(uuid: string, comment: string, embar
     url: `/osidb/api/v1/flaws/${uuid}/comments`,
     data: {
       text: comment,
-      type: 'BUGZILLA',
       embargoed,
     },
   }).then((response) => response.data);

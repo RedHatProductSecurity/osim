@@ -97,7 +97,6 @@ export const FlawCVSSSchema = z.object({
 
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
-  type: z.string(),
   external_system_id: z.string(),
   order: z.number(),
   // meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
