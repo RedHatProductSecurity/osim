@@ -50,7 +50,7 @@ const isAnythingExpanded = computed(() => (
   || Object.values(expandedModules.value).some(Boolean)
 ));
 
-const areAllModulesCollapsed = computed(() => (
+const isAnythingCollapsed = computed(() => (
   !Object.values(expandedModules.value).every(Boolean)
 ));
 
@@ -113,7 +113,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
     <h4 class="mb-4">
       Affected Offerings
       <button
-        v-if="areAllModulesCollapsed"
+        v-if="isAnythingCollapsed"
         type="button"
         class="btn btn-sm btn-secondary me-2"
         @click="expandAll()"
