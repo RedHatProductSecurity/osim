@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { osidbFetch } from '@/services/OsidbAuthService';
+import { osimRuntime } from '@/stores/osimRuntime';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 export async function getTrackers() {
@@ -106,4 +107,15 @@ export async function fileTracker(requestBody: TrackersFilePost) {
   })
     .then(({ data }) => data)
     .catch(createCatchHandler('Failed to file tracker'));
+}
+
+export function trackerUrl(type: string, id: string): string {
+  switch (type) {
+  case 'JIRA':
+    return osimRuntime.value.backends.jira + '/browse/' + id;
+  case 'BUGZILLA':
+    return osimRuntime.value.backends.bugzilla + '/' + id;
+  default:
+    return '#';
+  }
 }
