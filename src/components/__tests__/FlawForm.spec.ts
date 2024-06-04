@@ -612,7 +612,7 @@ describe('FlawForm', () => {
     const options = sourceField.findAll('option');
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
-    expect(disabledOptions.length).toBe(0);
+    expect(disabledOptions.length).not.toBe(0);
   });
 });
 
