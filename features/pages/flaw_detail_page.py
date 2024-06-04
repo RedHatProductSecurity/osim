@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import requests
 import urllib.parse
@@ -14,9 +15,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
 from features.constants import (
-    OSIDB_URL,
-    EMBARGOED_FLAW_CVE_ID,
-    PUBLIC_FLAW_CVE_ID
+    OSIDB_URL
 )
 
 
@@ -29,7 +28,7 @@ class FlawDetailPage(BasePage):
     locators = {
         "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
-        "descriptionText": ("XPATH", "//span[text()='Description']"),
+        "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
         "statementText": ("XPATH", "//span[text()='Statement']"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
@@ -38,7 +37,6 @@ class FlawDetailPage(BasePage):
         "newCommentText": ("XPATH", "//span[text()='New Public Comment']"),
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
-        "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
 
@@ -481,17 +479,20 @@ class FlawDetailPage(BasePage):
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(value)
 
-    def load_affects_results_from_osidb(self, token, embargoed=False):
+    def load_affects_results_from_osidb(self, token):
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
         headers = {"Authorization": f"Bearer {token}"}
-        cve_id = EMBARGOED_FLAW_CVE_ID if embargoed else PUBLIC_FLAW_CVE_ID
-        params = {"cve_id": cve_id}
-        r = requests.get(url, params = params, headers = headers)
+        cve_id = os.getenv("FLAW_ID")
+        if cve_id.startswith("CVE-"):
+            params = {"cve_id": cve_id}
+        else:
+            params = {"uuid": cve_id}
+        r = requests.get(url, params=params, headers=headers)
         return json.loads(r.text).get('results')[0]
 
     def get_affect_values(self, fields, token, component_value):
         osidb_token = token
-        flaw_info = self.load_affects_results_from_osidb(osidb_token, embargoed=False)
+        flaw_info = self.load_affects_results_from_osidb(osidb_token)
         # Get the field value dict that related to the updated affect
         field_value_dict = {}
         for affect in flaw_info.get('affects'):
@@ -586,7 +587,7 @@ class FlawDetailPage(BasePage):
 
     def get_affect_module_component_values(self, token, component_value):
         osidb_token = token
-        flaw_info = self.load_affects_results_from_osidb(osidb_token, embargoed=False)
+        flaw_info = self.load_affects_results_from_osidb(osidb_token)
         # Get the module values according to the component_value
         module_component = []
         for affect in flaw_info.get('affects'):
