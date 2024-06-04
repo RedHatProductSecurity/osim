@@ -3,7 +3,6 @@ import { DateTime } from 'luxon';
 import type {
   FlawCVSSSchemaType,
   FlawSchemaType,
-  FlawMetaSchemaType,
 } from './zodFlaw';
 import type {
   AffectSchemaType,
@@ -45,7 +44,6 @@ type SchemaType =
   | ErratumSchemaType
   | TrackerSchemaType
   | AffectSchemaType
-  | FlawMetaSchemaType
   | typeof ZodFlawClassification;
 
 type SchemaTypeWithEffect = SchemaType | FlawSchemaType;

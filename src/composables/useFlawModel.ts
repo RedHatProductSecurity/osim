@@ -207,7 +207,6 @@ export function blankFlaw(): ZodFlawType {
     embargoed: false,
     impact: '',
     major_incident_state: '',
-    meta: [],
     nvd_cvss3: '',
     source: '',
     title: '',
