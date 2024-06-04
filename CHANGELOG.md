@@ -31,6 +31,7 @@
 * Removed is_major_incident usage (`OSIDB-2778`)
 * Removed comment.type usage (`OSIDB-2781`)
 * Removed Flaw.meta usage (`OSIDB-2801`)
+* Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
