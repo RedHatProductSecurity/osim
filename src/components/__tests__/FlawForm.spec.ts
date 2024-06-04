@@ -423,73 +423,6 @@ describe('FlawForm', () => {
     expect(result.owner).toBe('networking test owner');
   });
 
-  it('displays correct Cvss3 calculator link for cvss3 value', async () => {
-    const flaw = sampleFlaw();
-    flaw.cvss3 = '2.2/CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N';
-
-    flaw.cvss_scores = [
-      {
-        comment: 'The CVSS is as it is and that is it.',
-        cvss_version: 'V3',
-        flaw: '3dcaf61a-48a7-4483-b1c8-92f56f829abe',
-        issuer: 'RH',
-        score: 2.2,
-        uuid: '23ea1399-219a-4183-ad74-37edd869b2f0',
-        vector: 'CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N',
-        embargoed: false,
-        created_dt: '2021-08-02T10:49:35Z',
-        updated_dt: '2024-02-28T14:51:02Z',
-      },
-    ];
-  });
-
-  it('displays correct CVSSv3 calculator link for empty value', async () => {
-    const flaw = sampleFlaw();
-    flaw.cvss_scores = [];
-    subject = mount(FlawForm, {
-      plugins: [useToastStore()],
-      props: {
-        flaw,
-        mode: 'edit',
-      },
-      directives: {
-        'osim-loading': LoadingAnimationDirective,
-      },
-      global: {
-        mocks: {
-          $beforeEach: (a: any) => a,
-        },
-        stubs: {
-          EditableDate: true,
-          RouterLink: true,
-        },
-      },
-    });
-  });
-
-  it('displays correct CVSSv3 calculator link for CVSSv3 value', async () => {
-    const flaw = sampleFlaw();
-    subject = mount(FlawForm, {
-      plugins: [useToastStore()],
-      props: {
-        flaw,
-        mode: 'edit',
-      },
-      directives: {
-        'osim-loading': LoadingAnimationDirective,
-      },
-      global: {
-        mocks: {
-          $beforeEach: (a: any) => a,
-        },
-        stubs: {
-          EditableDate: true,
-          RouterLink: true,
-        },
-      },
-    });
-  });
-
   it('shows a error message when nvd score and Rh score mismatch', async () => {
     const cvssScoreError = subject.find('span.cvss-score-error');
     expect(cvssScoreError?.exists()).toBe(true);
@@ -653,12 +586,6 @@ function sampleFlaw(): ZodFlawType {
     source: 'GIT',
     reported_dt: '[native Date Sun Oct 05 1975 03:45:17 GMT-0400 (Eastern Daylight Time)]',
     mitigation: 'CVE mitigation',
-    cvss2: '',
-    cvss2_score: null,
-    nvd_cvss2: '',
-    cvss3: '',
-    cvss3_score: null,
-    nvd_cvss3: '',
     major_incident_state: 'APPROVED',
     nist_cvss_validation: '',
     affects: [
@@ -670,10 +597,6 @@ function sampleFlaw(): ZodFlawType {
         ps_module: 'openshift-4',
         ps_component: 'openshift',
         impact: 'LOW',
-        // cvss2: '',
-        // cvss2_score: null,
-        // cvss3: '',
-        // cvss3_score: null,
         trackers: [],
         delegated_resolution: null,
         cvss_scores: [],

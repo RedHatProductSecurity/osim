@@ -239,12 +239,6 @@ export async function postFlaw(requestBody: any) {
   //   "source": "ADOBE",
   //   "reported_dt": "2023-06-26T06:19:23.982Z",
   //   "mitigation": "string",
-  //   "cvss2": "string",
-  //   "cvss2_score": 0,
-  //   "nvd_cvss2": "string",
-  //   "cvss3": "string",
-  //   "cvss3_score": 0,
-  //   "nvd_cvss3": "string",
   //   "embargoed": true
   // }
   return osidbFetch({

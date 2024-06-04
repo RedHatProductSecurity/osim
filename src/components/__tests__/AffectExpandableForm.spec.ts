@@ -55,10 +55,6 @@ describe('AffectExpandableForm', () => {
       'ps_product':'Red Hat Enterprise Linux',
       'ps_component':'c-ares',
       'impact':'',
-      'cvss2':'',
-      'cvss2_score':null,
-      'cvss3':'',
-      'cvss3_score':null,
       'trackers':[],
       'delegated_resolution':null,
       'cvss_scores':[],
@@ -76,10 +72,6 @@ describe('AffectExpandableForm', () => {
     'ps_product':'Red Hat Enterprise Linux',
     'ps_component':'c-ares',
     'impact':'',
-    'cvss2':'',
-    'cvss2_score':null,
-    'cvss3':'',
-    'cvss3_score':null,
     'trackers':[
       {
         'affects': [
