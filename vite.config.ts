@@ -22,6 +22,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+
+      // supresses externalized Module warnings
+      // I think this does something other than intended
+      // 'source-map-js': 'source-map',
+      // path: 'path-browserify',
+
     },
   },
 });

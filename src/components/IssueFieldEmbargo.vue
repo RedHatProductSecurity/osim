@@ -9,7 +9,7 @@ import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 const props = defineProps<{
   flawId: string | null | undefined;
   isFlawNew: boolean;
-  isPublic: boolean;
+  isEmbargoed: boolean;
 }>();
 
 const modelValue = defineModel<boolean | undefined>();
@@ -54,19 +54,19 @@ watch(() => showModal.value, () => {
             <span
               class="form-control"
               :class="{
-                'has-warning': !isPublic && !modelValue,
-                'has-button': !isPublic
+                'has-warning': isEmbargoed && !modelValue,
+                'has-button': isEmbargoed
               }"
             >
               {{ modelValue ? 'Yes' : 'No' }}
-              <i v-if="!isPublic && !modelValue" class="bi-exclamation-circle"></i>
+              <i v-if="isEmbargoed && !modelValue" class="bi-exclamation-circle"></i>
             </span>
             <div
-              v-if="!isPublic && !modelValue"
+              v-if="isEmbargoed && !modelValue"
               class="warning-tooltip"
             >The flaw will be unembargoed on save.</div>
           </div>
-          <div v-if="!isFlawNew && !isPublic">
+          <div v-if="!isFlawNew && isEmbargoed">
             <button
               type="button"
               class="btn osim-field-button"

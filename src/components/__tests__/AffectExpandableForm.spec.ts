@@ -118,9 +118,8 @@ describe('AffectExpandableForm', () => {
     const props: typeof AffectExpandableForm.props = {
       error: {},
       isExpanded: true,
-      componentName :'test',
       modelValue: MockData,
-      affectedComponent: MockData,
+      affect: MockData,
     };
     subject = mount(AffectExpandableForm, {
       props,
