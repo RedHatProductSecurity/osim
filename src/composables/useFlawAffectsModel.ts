@@ -31,7 +31,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
-  const theAffects: Ref<ZodAffectType[]> = toRef(sortAffects(flaw.value.affects));
+  const theAffects = ref<ZodAffectType[]>(sortAffects(flaw.value.affects));
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
 
   function isCvssNew(cvssScore: ZodAffectCVSSType) {
