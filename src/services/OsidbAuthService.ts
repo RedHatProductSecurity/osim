@@ -87,8 +87,7 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
         data,
       },
       data,
-    },
-    );
+    });
   }
 
   return { data: await response.json(), response };
@@ -165,13 +164,12 @@ function parseOsidbErrorsJson(data: Record<string, any>) {
     .map(([key, value]) => `${key}: ${value}`);
 }
 
-function parseOsidbError(error: any){
-  // server in debug mode?
+function parseOsidbHtmlError(error: any){
   const parser = new DOMParser();
   const doc = parser.parseFromString(
     error.response.data, error.response.headers['content-type']
   );
-  const exception_value = doc.querySelector('.exception_value');
+  const exception_value = doc.querySelector('.exception_value'); // May depend on OSIDB being in debug mode?
   const text = (exception_value as HTMLElement)?.innerText;
 
   return 'Likely error between OSIDB and database:\n' + text;
@@ -179,8 +177,8 @@ function parseOsidbError(error: any){
 
 export function getDisplayedOsidbError(error: any) {
   if (error.response) {
-    if (error.response.headers?.['content-type']?.startsWith('text/html')) {
-      parseOsidbError(error);
+    if (error.response.headers?.['content-type']?.startsWith('text/html')) { // OSIDB Server might be in debug mode?
+      parseOsidbHtmlError(error);
     } else {
       const { status, statusText } = error.response;
       return `OSIDB responded with error ${status} (${statusText}). \n` +
@@ -197,6 +195,6 @@ export function getDisplayedOsidbError(error: any) {
   return error.toString();
 }
 
-export function parseOsidbErrorsForDisplay(errors: any[]) {
+export function parseOsidbErrors(errors: any[]) {
   return errors.map(getDisplayedOsidbError).join('\n\n');
 }

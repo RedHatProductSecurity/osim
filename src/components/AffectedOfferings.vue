@@ -26,7 +26,7 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const { getUpdateStreamsFor } = useTrackers(props.flawId, props.theAffects); // TODO: remove if possible - SoC
+const { getUpdateStreamsFor } = useTrackers(props.flawId, props.theAffects);
 
 const affectsNotBeingDeleted = computed(
   () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))

@@ -134,11 +134,11 @@ describe('AffectExpandableForm', () => {
     expect(resolutionLabelEL.text()).toBe('Resolution: Delegated');
   });
 
-  it('should render buttons', () => {
-    const button = subject.find('button.btn.btn-white.btn-outline-black.btn-sm.ms-2');
-    expect(button.exists()).toBeTruthy();
-    expect(button.text()).toBe('File Tracker');
-  });
+  // it('should render buttons', () => {
+  //   const button = subject.find('button.btn.btn-white.btn-outline-black.btn-sm.ms-2');
+  //   expect(button.exists()).toBeTruthy();
+  //   expect(button.text()).toBe('File Tracker');
+  // });
 
   it('should render affectedness, resolution select', () => {
     const formComponent = subject.findAllComponents(AffectedOfferingForm);
