@@ -13,10 +13,10 @@ vi.mock('@/stores/osimRuntime', async () => {
   const osimRuntimeValue = {
     env: 'unittest',
     backends: {
-      osidb: 'osidb-backend',
-      bugzilla: 'bugzilla-backend',
-      jira: 'jira-backend',
-      errata: 'errata'
+      osidb: 'http://osidb-backend',
+      bugzilla: 'http://bugzilla-backend',
+      jira: 'http://jira-backend',
+      errata: 'http://errata'
     },
     osimVersion: {
       rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
@@ -176,6 +176,6 @@ describe('AffectExpandableForm', () => {
     const linkEl = errataEl.find('td a');
     expect(linkEl.exists()).toBeTruthy();
     expect(linkEl.element?.textContent).toBe('advisory_name');
-    expect(linkEl.attributes('href')).toBe('errata/advisory/et_id');
+    expect(linkEl.attributes('href')).toBe('http://errata/advisory/et_id');
   });
 });
