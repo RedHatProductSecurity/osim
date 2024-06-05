@@ -4,6 +4,7 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
+import { DateTime } from 'luxon';
 
 const userStore = useUserStore();
 
@@ -113,10 +114,7 @@ function linkify(text: string) {
             >
               System
             </span>
-            {{ comment.creator }} /
-            <a :href="'#' + comment.type + '/' + comment.external_system_id">
-              {{ comment.time }}
-            </a>
+            {{ comment.creator }} - {{ DateTime.fromISO(comment.created_dt).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
           </p>
           <p class="osim-flaw-comment" v-html="linkify(comment.text)" />
         </li>
