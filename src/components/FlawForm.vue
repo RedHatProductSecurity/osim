@@ -23,6 +23,8 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
+import { ascend, prop, sortWith } from 'ramda';
+import type { ZodAffectType } from '@/types/zodAffect';
 
 const props = defineProps<{
   flaw: any;
@@ -92,6 +94,16 @@ watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any 
 const isEmbargoed = computed(() => initialFlaw?.embargoed);
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
+
+const theAffects = computed(() => sortWith(
+  [
+    // get product value using Ramda ascend function as comparator
+    ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
+    ascend(prop('ps_module')),
+    ascend(prop('ps_component'))
+  ],
+  flaw.value.affects
+));
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
@@ -422,7 +434,7 @@ const toggleMitigation = () => {
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"
-        :theAffects="flaw.affects"
+        :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
         class="osim-flaw-form-section"
         :error="errors.affects"
