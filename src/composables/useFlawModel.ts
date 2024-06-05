@@ -35,11 +35,13 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const committedFlaw = ref<ZodFlawType | null>(null);
   const { saveDraftFlaw } = useDraftFlawStore();
 
-  const trackerUuids = computed(() => {
+  const trackersDisplay = computed(() => {
     return (flaw.value.affects ?? [])
       .flatMap((affect: any) => affect.trackers ?? [])
       .flatMap((tracker: any) => ({
         uuid: tracker.uuid,
+        type: tracker.type,
+        external_system_id: tracker.external_system_id,
         display: tracker.type + ' ' + tracker.external_system_id,
       }));
   });
@@ -172,7 +174,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isValid,
     errors,
     committedFlaw,
-    trackerUuids,
+    trackersDisplay,
     flawSources,
     flawImpacts,
     flawIncidentStates,

@@ -5,6 +5,7 @@ import { useWindowSize } from '@vueuse/core';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { trackerUrl } from '@/services/TrackerService';
 import {
   affectAffectedness,
   affectImpacts,
@@ -122,9 +123,12 @@ const hiddenResolutionOptions = computed(() => {
               <tr>
                 <th>Type</th>
                 <td>
-                  <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }">
-                    <i class="bi bi-link"></i>{{ tracker.type }}
-                  </RouterLink>
+                  <a
+                    :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                    target="_blank"
+                  >
+                    <i class="bi bi-link" />{{ tracker.type }}
+                  </a>
                 </td>
                 <th>Product Stream</th>
                 <td>

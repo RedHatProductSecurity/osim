@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -21,7 +20,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { fileTracker, type TrackersFilePost } from '@/services/TrackerService';
+import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
@@ -40,7 +39,7 @@ function onSaveSuccess() {
 
 const {
   flaw,
-  trackerUuids,
+  trackersDisplay,
   flawSources,
   flawImpacts,
   flawIncidentStates,
@@ -406,14 +405,17 @@ const toggleMitigation = () => {
         </div>
         <LabelCollapsible
           v-if="mode === 'edit'"
-          :label="`Trackers: ${trackerUuids.length}`"
-          :isExpandable="trackerUuids.length !== 0"
+          :label="`Trackers: ${trackersDisplay.length}`"
+          :isExpandable="trackersDisplay.length !== 0"
         >
           <ul>
-            <li v-for="(tracker, trackerIndex) in trackerUuids" :key="trackerIndex">
-              <RouterLink :to="{ name: 'tracker-details', params: { id: tracker.uuid } }">
-                {{ tracker.display }}
-              </RouterLink>
+            <li v-for="(tracker, trackerIndex) in trackersDisplay" :key="trackerIndex">
+              <a
+                :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                target="_blank"
+              >
+                <i class="bi bi-link" />{{ tracker.display }}
+              </a>
             </li>
           </ul>
         </LabelCollapsible>
