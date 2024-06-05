@@ -112,9 +112,9 @@ export async function fileTracker(requestBody: TrackersFilePost) {
 export function trackerUrl(type: string, id: string): string {
   switch (type) {
   case 'JIRA':
-    return osimRuntime.value.backends.jira + '/browse/' + id;
+    return (new URL(`/browse/${id}`, osimRuntime.value.backends.jira)).href;
   case 'BUGZILLA':
-    return osimRuntime.value.backends.bugzilla + '/' + id;
+    return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla)).href;
   default:
     return '#';
   }
