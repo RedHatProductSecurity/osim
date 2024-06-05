@@ -7,8 +7,9 @@
 * Add neighboring dropdown menu to Flaw Description for its review workflow (`OSIDB-2623`)
 * Add CVE Require Description for AdvancedSearch (`OSIDB-2624`)
 * Support for references and acknowledgements on flaw creation (`OSIDB-2319`)
-* Sort affects by product family, alphabetical (`OSIDB-2533`)
-* Update impact sorting to be logical (`OSIDB-2791`)
+* Sort Advanced Search Options alphabetically (`OSIDB-2805`)
+* Sort affects by product family, alphabetically (`OSIDB-2533`)
+* Sort impact options logically (`OSIDB-2791`)
 * Implement advanced searching on emptiness for CVE ID (`OSIDB-2806`)
 
 ### Fixed
@@ -20,15 +21,16 @@
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
 * Restored required field validations to Flaw fields (`OSIDB-2725`)
 * Save affects all at once (`OSIDB-2206`)
-* Show only allowed sources for Flaw Edit (`OSIDB-2395`)
+* Show only allowed sources for Flaw Create/Edit (`OSIDB-2395`)
 * Fixed deleted affects message after flaw save (`OSIDB-2693`)
 * Recover from save errors during flaw creation, show saving animation (`OSIDB-2765`)
 * Prevent saving of unmodified affects (`OSIDB-2754`)
 * Unable to save first cvss score on flaws (`OSIDB-2769`)
 * Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 
-###
+### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
+* Removed comment.type usage (`OSIDB-2781`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 

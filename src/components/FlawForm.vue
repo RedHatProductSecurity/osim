@@ -148,10 +148,7 @@ const allowedSources = [
 ];
 
 const hiddenSources = computed(() => {
-  if (props.mode === 'edit') {
-    return flawSources.filter(source => !allowedSources.includes(source));
-  }
-  return [];
+  return flawSources.filter(source => !allowedSources.includes(source));
 });
 
 const toggleSummary = () => {

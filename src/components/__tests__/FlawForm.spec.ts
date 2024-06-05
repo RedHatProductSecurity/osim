@@ -621,7 +621,7 @@ describe('FlawForm', () => {
     const options = sourceField.findAll('option');
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
-    expect(disabledOptions.length).toBe(0);
+    expect(disabledOptions.length).not.toBe(0);
   });
 
   it('should show all affects in sorting order', async () => {
@@ -812,7 +812,6 @@ function sampleFlaw(): ZodFlawType {
     comments: [
       {
         uuid: '0d90cb33-cbdc-4bd8-bef0-7b5c7f33ece2',
-        type: 'BUGZILLA',
         external_system_id: '15302346',
         order: 0,
         meta_attr: {
@@ -834,7 +833,6 @@ function sampleFlaw(): ZodFlawType {
       },
       {
         uuid: 'b6e8870e-5f7a-46d7-bb2f-40910b75b6a4',
-        type: 'BUGZILLA',
         external_system_id: '15302351',
         order: 1,
         meta_attr: {
@@ -856,7 +854,6 @@ function sampleFlaw(): ZodFlawType {
       },
       {
         uuid: 'dffc4966-3442-46a4-98b8-2fd542addba0',
-        type: 'BUGZILLA',
         external_system_id: '15392392',
         order: 2,
         meta_attr: {
@@ -878,7 +875,6 @@ function sampleFlaw(): ZodFlawType {
       },
       {
         uuid: '7edd4365-d12e-4873-a1ea-1cf2f7110391',
-        type: 'BUGZILLA',
         external_system_id: '15596524',
         order: 3,
         meta_attr: {
@@ -900,7 +896,6 @@ function sampleFlaw(): ZodFlawType {
       },
       {
         uuid: '8f5b04e2-d62e-4330-b42f-634d41457033',
-        type: 'BUGZILLA',
         external_system_id: '15607332',
         order: 4,
         meta_attr: {
@@ -922,7 +917,6 @@ function sampleFlaw(): ZodFlawType {
       },
       {
         uuid: 'cfc38ae1-7afe-41fe-b66a-5b46acbaba3a',
-        type: 'BUGZILLA',
         external_system_id: '15614647',
         order: 5,
         meta_attr: {

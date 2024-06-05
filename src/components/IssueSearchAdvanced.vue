@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { summaryRequiredStates } from '@/types/zodFlaw';
+import { sort } from 'ramda';
 
 const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
@@ -40,10 +41,14 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
+const sortFieldNames = sort((fieldA: string, fieldB: string) =>
+  nameForOption(fieldA).localeCompare(nameForOption(fieldB))
+);
+
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
-  flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField);
+  sortFieldNames(flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField));
 
 
 const optionsFor = (field: string) =>

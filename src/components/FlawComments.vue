@@ -136,10 +136,7 @@ function linkify(text: string) {
             >
               System
             </span>
-            {{ comment.meta_attr?.creator }} /
-            <a :href="'#' + comment.type + '/' + comment.external_system_id">
-              {{ comment.meta_attr?.time }}
-            </a>
+            {{ comment.meta_attr?.creator }} / {{ comment.meta_attr?.time }}
           </p>
           <p class="osim-flaw-comment" v-html="linkify(comment.meta_attr?.text)" />
         </li>
