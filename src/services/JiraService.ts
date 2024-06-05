@@ -1,5 +1,6 @@
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { getNextAccessToken } from '@/services/OsidbAuthService';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
@@ -46,9 +47,9 @@ async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCal
   try {
     response = await fetch(`${baseUrl}${config.url}${queryString}`, {
       method: config?.method ?? 'GET',
-      headers: osimRequestHeaders(),
-      // mode: 'cors',
-      // credentials: 'include',
+      headers: await osimRequestHeaders(),
+      mode: 'cors',
+      credentials: 'include',
       body,
     });
   } catch (e) {
@@ -101,7 +102,7 @@ export async function postJiraComment(taskId: string, comment: string) {
 }
 
 
-function osimRequestHeaders() {
+async function osimRequestHeaders() {
   const settingsStore = useSettingsStore();
   const osidbToken = await getNextAccessToken();
   if (osimRuntime.value.env === 'prod') {
