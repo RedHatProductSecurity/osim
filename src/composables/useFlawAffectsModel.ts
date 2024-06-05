@@ -12,26 +12,12 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
-import { sortWith, ascend, prop, equals } from 'ramda';
-
-
-const sortAffects = (affects: ZodAffectType[] = []) => {
-  return sortWith(
-    [
-      // get product value using Ramda ascend function as comparator
-      ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
-      ascend(prop('ps_module')),
-      ascend(prop('ps_component'))
-    ],
-    affects
-  );
-};
+import { equals } from 'ramda';
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const wereAffectsModified = ref(false);
   const modifiedAffectIds = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
-  const theAffects = ref<ZodAffectType[]>(sortAffects(flaw.value.affects));
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
 
   function isCvssNew(cvssScore: ZodAffectCVSSType) {
@@ -51,7 +37,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function shouldSaveCvss(affectUuid: string) {
-    const affect = theAffects.value.find((affect) => affect.uuid === affectUuid);
+    const affect = flaw.value.affects.find((affect) => affect.uuid === affectUuid);
 
     if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector) {
       return null;
@@ -71,7 +57,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function cvssScoresToSave(affectUuid: string) {
-    const affect = theAffects.value.find((affect) => affect.uuid === affectUuid);
+    const affect = flaw.value.affects.find((affect) => affect.uuid === affectUuid);
 
     if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector) {
       return [];
@@ -91,10 +77,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   const affectsToUpdate = computed(() =>
-    theAffects.value.filter((affect) => affect.uuid && modifiedAffectIds.value.includes(affect.uuid)),
+    flaw.value.affects.filter((affect) => affect.uuid && modifiedAffectIds.value.includes(affect.uuid)),
   );
 
-  const affectsToCreate = computed(() => theAffects.value.filter((affect) => !affect.uuid));
+  const affectsToCreate = computed(() => flaw.value.affects.filter((affect) => !affect.uuid));
 
   const affectsToSave = computed(() =>
     [...affectsToUpdate.value, ...affectsToCreate.value].filter(
@@ -111,7 +97,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function addBlankAffect() {
     const embargoed = flaw.value.embargoed;
-    theAffects.value.push({
+    flaw.value.affects.push({
       embargoed,
       affectedness: '',
       resolution: '',
@@ -133,14 +119,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function removeAffect(affectIdx: number) {
-    const deletedAffect = theAffects.value.splice(affectIdx, 1)[0];
+    const deletedAffect = flaw.value.affects.splice(affectIdx, 1)[0];
     affectsToDelete.value.push(deletedAffect);
   }
 
   function recoverAffect(affectIdx: number) {
     const recoveredAffect = affectsToDelete.value.splice(affectIdx, 1)[0];
-    theAffects.value.push(recoveredAffect);
-    theAffects.value = sortAffects(theAffects.value);
+    flaw.value.affects.push(recoveredAffect);
   }
 
   function hasAffectChanged(affect: ZodAffectType) {
@@ -148,7 +133,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     return !equals(originalAffect, affect);
   }
 
-  theAffects.value.forEach((affect) => {
+  flaw.value.affects.forEach((affect) => {
     watch(affect, () => {
       if (affect.uuid && hasAffectChanged(affect)) {
         reportAffectAsModified(affect.uuid);
@@ -243,7 +228,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     saveAffects,
     deleteAffects,
     reportAffectAsModified,
-    theAffects,
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,

@@ -26,7 +26,7 @@ const affectedModules = computed(() => uniques(theAffects.value.map((affect) => 
 
 const expandedModules = ref<Record<string, boolean>>({});
 
-const componentAffectsInModule = (moduleName: string) =>
+const affectsWithModuleName = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
 const expandedAffects = ref(new Map());
@@ -42,7 +42,7 @@ watch(theAffects, (nextValue) => {
 }, { deep: true });
 
 const areAnyComponentsExpanded = computed(
-  () => affectedModules.value.some((moduleName) => componentAffectsInModule(moduleName).some(isExpanded))
+  () => affectedModules.value.some((moduleName) => affectsWithModuleName(moduleName).some(isExpanded))
 );
 
 const isAnythingExpanded = computed(() => (
@@ -51,7 +51,7 @@ const isAnythingExpanded = computed(() => (
 ));
 
 function areAnyComponentsExpandedIn (moduleName: string) {
-  return componentAffectsInModule(moduleName).some(isExpanded);
+  return affectsWithModuleName(moduleName).some(isExpanded);
 }
 
 function updateAffectsExpandedState (affects: any[]) {
@@ -66,7 +66,7 @@ function isExpanded(affect: ZodAffectType) {
 }
 
 function collapsePsModuleComponents(moduleName: string) {
-  const affects = componentAffectsInModule(moduleName);
+  const affects = affectsWithModuleName(moduleName);
   for (const affect of affects) {
     expandedAffects.value.set(affect, ref(false));
   }
@@ -122,7 +122,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
             {{ moduleName }}
           </label>
           <span class="badge bg-light-yellow text-dark border border-warning">
-            {{ `${Object.keys(componentAffectsInModule(moduleName)).length} affected` }}
+            {{ `${Object.keys(affectsWithModuleName(moduleName)).length} affected` }}
           </span>
         </template>
         <template #buttons>
@@ -144,18 +144,17 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           </div>
         </template>
         <div
-          v-for="(affectedComponent, index) in componentAffectsInModule(moduleName)"
-          :key="`moduleName-${affectedComponent.ps_component}-${index}`"
+          v-for="(affect, index) in affectsWithModuleName(moduleName)"
+          :key="`moduleName-${affect.ps_component}-${index}`"
           class="osim-affected-offering"
         >
           <AffectExpandableForm
-            v-model="componentAffectsInModule(moduleName)[index]"
-            :componentName="affectedComponent.ps_component"
-            :affectedComponent="affectedComponent"
-            :isExpanded="isExpanded(affectedComponent) ?? false"
-            :error="error?.[theAffects.indexOf(affectedComponent)] ?? null"
-            @setExpanded="togglePsComponentExpansion(affectedComponent)"
-            @affect:remove="emit('affect:remove', affectedComponent)"
+            v-model="affectsWithModuleName(moduleName)[index]"
+            :affect="affect"
+            :isExpanded="isExpanded(affect) ?? false"
+            :error="error?.[theAffects.indexOf(affect)] ?? null"
+            @setExpanded="togglePsComponentExpansion(affect)"
+            @affect:remove="emit('affect:remove', affect)"
             @file-tracker="emit('file-tracker', $event)"
           />
         </div>

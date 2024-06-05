@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, watch, onMounted, reactive } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -49,7 +49,6 @@ const {
   nvdCvss3String,
   flawReferences,
   flawAcknowledgments,
-  theAffects,
   affectsToDelete,
   rhCvss3String,
   highlightedNvdCvss3String,
@@ -73,11 +72,12 @@ const {
   errors,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
-const initialFlaw = ref<ZodFlawType>();
+
 const { draftFlaw } = useDraftFlawStore();
+let initialFlaw: ZodFlawType;
 
 onMounted(() => {
-  initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
   if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
@@ -85,13 +85,13 @@ onMounted(() => {
 });
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
-  initialFlaw.value = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
   onReset();
 });
 
-const isPublic = computed(() => !initialFlaw.value?.embargoed);
+const isEmbargoed = computed(() => initialFlaw?.embargoed);
 const showUnembargoingModal = ref(false);
-const unembargoing = computed(() => !isPublic.value && !flaw.value.embargoed);
+const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
@@ -110,7 +110,7 @@ const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !=
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const onReset = () => {
-  flaw.value = deepCopyFromRaw(initialFlaw.value as Record<string, any>) as ZodFlawType;
+  flaw.value = reactive(deepCopyFromRaw(initialFlaw));
 };
 
 const allowedSources = [
@@ -306,7 +306,7 @@ const toggleMitigation = () => {
             v-model="flaw.embargoed"
             v-model:showModal="showUnembargoingModal"
             :isFlawNew="!flaw.uuid"
-            :isPublic="isPublic"
+            :isEmbargoed="isEmbargoed"
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
           />
@@ -422,12 +422,12 @@ const toggleMitigation = () => {
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"
-        :theAffects="theAffects"
+        :theAffects="flaw.affects"
         :affectsToDelete="affectsToDelete"
         class="osim-flaw-form-section"
         :error="errors.affects"
-        @affect:recover="(affect) => recoverAffect(theAffects.indexOf(affect))"
-        @affect:remove="(affect) => removeAffect(theAffects.indexOf(affect))"
+        @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
+        @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />

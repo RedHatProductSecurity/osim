@@ -12,14 +12,13 @@ import type { TrackersPost } from '@/services/TrackerService';
 const props = defineProps<{
   error: Record<string, any> | null;
   isExpanded: boolean;
-  componentName: string;
-  affectedComponent: ZodAffectType;
+  affect: ZodAffectType;
 }>();
 
 
 const isExpanded = toRef(props, 'isExpanded');
 
-const modelValue = defineModel<ZodAffectType>({ default: null });
+const modelValue = defineModel<ZodAffectType>();
 
 const emit = defineEmits<{
   'file-tracker': [value: object];
@@ -29,12 +28,12 @@ const emit = defineEmits<{
   'add-blank-affect': [];
 }>();
 
-const flawId = computed(() => modelValue.value.flaw);
+const flawId = computed(() => modelValue.value?.flaw);
 
 const { getTrackers, moduleComponentStreams, isNotApplicable, postTracker } = useAffectTracker(
   flawId.value as string,
-  modelValue.value.ps_module,
-  modelValue.value.ps_component,
+  modelValue.value?.ps_module as string,
+  modelValue.value?.ps_component as string,
 );
 
 const updateStreamNames = computed(() =>
@@ -46,21 +45,21 @@ const updateStreamNames = computed(() =>
 function handleTrackAffect(stream: string) {
   postTracker({
     ps_update_stream: stream,
-    // resolution: modelValue.value.resolution || '',
-    updated_dt: modelValue.value.updated_dt || '',
-    affects: [modelValue.value.uuid],
-    embargoed: modelValue.value.embargoed,
+    // resolution: modelValue.value?.resolution || '',
+    updated_dt: modelValue.value?.updated_dt || '',
+    affects: [modelValue.value?.uuid],
+    embargoed: modelValue.value?.embargoed,
   } as TrackersPost);
 }
 
-const isAffectNew = computed (() => !modelValue.value.uuid);
+const isAffectNew = computed (() => !modelValue.value?.uuid);
 
 const trackersCount = computed(
-  () => `${modelValue.value.trackers?.length || 0} trackers`
+  () => `${modelValue.value?.trackers?.length || 0} trackers`
 );
 
 const affectednessLabel = computed(() => {
-  const affectedness: string = props.affectedComponent.affectedness || '';
+  const affectedness: string = props.affect.affectedness || '';
   const affectednessValue = {
     [affectedness]: affectedness,
     'NEW': 'New',
@@ -71,7 +70,7 @@ const affectednessLabel = computed(() => {
 });
 
 const resolutionLabel = computed(() => {
-  const resolution: string = props.affectedComponent.resolution || '';
+  const resolution: string = props.affect.resolution || '';
   const resolutionValue = {
     [resolution]: resolution,
     'DELEGATED': 'Delegated',
@@ -87,7 +86,7 @@ const resolutionLabel = computed(() => {
   <LabelCollapsible :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
     <template #label>
       <label class="mx-2 form-label">
-        {{ `${componentName}` }}
+        {{ `${affect.ps_component}` }}
       </label>
       <span v-if="isAffectNew" class="badge bg-warning text-black">
         Not Saved in OSIDB
@@ -134,7 +133,7 @@ const resolutionLabel = computed(() => {
         <button
           type="button"
           class="btn btn-white btn-outline-black btn-sm"
-          @click="emit('affect:remove', modelValue)"
+          @click="emit('affect:remove', modelValue as ZodAffectType)"
         >
           <i class="bi bi-trash" />
         </button>

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useWindowSize } from '@vueuse/core';
 
+
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -16,16 +17,19 @@ import {
 
 const { width: screenWidth } = useWindowSize();
 
+type NotUndefined<T> = Exclude<T, undefined>;
+
 defineProps<{
-  error: Record<string, any> | null;
+  error: Record<string, NotUndefined<any>> | null;
 }>();
 
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
-const modelValue = defineModel<ZodAffectType>({ default: null });
+const modelValue = defineModel<ZodAffectType>();
+
 
 function getCvssData(issuer: string, version: string) {
-  return modelValue.value.cvss_scores.find(
+  return modelValue.value?.cvss_scores.find(
     (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
   );
 }
@@ -46,11 +50,10 @@ if (!getCvssData('RH', 'V3')) {
 }
 
 // Type assertion to prevent TS error in template
-const affectCvssScore = modelValue.value.cvss_scores.find(({ issuer }) => issuer === 'RH') as ZodAffectCVSSType;
-
+const affectCvssScore = modelValue.value?.cvss_scores.find(({ issuer }) => issuer === 'RH') as ZodAffectCVSSType;
 
 const hasTrackers = computed(() =>
-  Boolean(modelValue.value.trackers)
+  modelValue.value?.trackers
   && modelValue.value?.trackers?.length > 0
   && modelValue.value?.trackers.every(({ ps_update_stream }) => ps_update_stream)
 );
@@ -63,7 +66,7 @@ const hiddenResolutionOptions = computed(() => {
 </script>
 
 <template>
-  <div class="row osim-affected-offerings pt-2">
+  <div v-if="modelValue" class="row osim-affected-offerings pt-2">
     <div class="col-6">
       <LabelEditable
         v-model="modelValue.ps_module"
@@ -98,7 +101,7 @@ const hiddenResolutionOptions = computed(() => {
       />
       <LabelEditable
         v-model="affectCvssScore.vector"
-        :error="error?.cvss_scores?.vector || null"
+        :error="error?.cvss_scores?.vector"
         type="text"
         label="CVSSv3"
       />
