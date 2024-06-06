@@ -22,7 +22,6 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
-import AffectedOfferings from '@/components/AffectedOfferings.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
