@@ -81,7 +81,7 @@ function highlightFactor(factor: string | null) {
 }
 
 function handlePaste(e: ClipboardEvent) {
-  let maybeCvss = e.clipboardData?.getData('text');
+  const maybeCvss = e.clipboardData?.getData('text');
   if (!maybeCvss) {
     return;
   }
