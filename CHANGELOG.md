@@ -10,7 +10,6 @@
 * Sort Advanced Search Options alphabetically (`OSIDB-2805`)
 * Add tracker links on affects and flaw form (`OSIDB-2630`)
 * Add button to expand all affects (`OSIDB-2817`)
-* Sort affects by product family, alphabetically (`OSIDB-2533`)
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 
