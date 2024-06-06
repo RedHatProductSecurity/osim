@@ -16,7 +16,7 @@ class FlawCreatePage(FlawDetailPage):
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
 
-        "createNewFlawBtn": ("XPATH", '//button[text()="Create New Flaw"]'),
+        "createNewFlawBtn": ("XPATH",  "//button[contains(text(), 'Create New Flaw')]"),
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
 
