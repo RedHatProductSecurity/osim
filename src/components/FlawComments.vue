@@ -194,15 +194,6 @@ function sanitize(text: string) {
               class="bg-light p-4 mt-3 rounded-2"
             >
               <p class="border-bottom pb-3">
-                <!-- <span v-if="comment.is_private" class="badge bg-warning rounded-pill">
-                  Bugzilla Internal
-                </span> -->
-                <span
-                  v-if="comment.author === SYSTEM_EMAIL"
-                  class="badge bg-info rounded-pill"
-                >
-                  System
-                </span>
                 <i class="bi bi-caret-right-fill"></i>
                 {{ comment.author }} - {{ DateTime.fromISO(comment.timestamp).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
