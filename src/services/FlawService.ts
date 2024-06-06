@@ -132,12 +132,14 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     .catch(createCatchHandler('CVSS scores Update Error'));
 }
 
-export async function postFlawPublicComment(uuid: string, comment: string, embargoed: boolean) {
+export async function postFlawPublicComment(uuid: string, comment: string, creator: string, embargoed: boolean) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/comments`,
     data: {
       text: comment,
+      creator: creator,
+      type: 'BUGZILLA',
       embargoed,
     },
   }).then((response) => response.data);

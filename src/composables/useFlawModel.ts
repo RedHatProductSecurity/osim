@@ -157,9 +157,9 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = false;
   }
 
-  function addPublicComment(comment: string) {
+  function addPublicComment(comment: string, creator: string) {
     isSaving.value = true;
-    postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)
+    postFlawPublicComment(flaw.value.uuid, comment, creator, flaw.value.embargoed)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
       .then(afterSaveSuccess)
       .catch(createCatchHandler('Error saving comment'))

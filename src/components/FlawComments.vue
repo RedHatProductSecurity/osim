@@ -3,6 +3,10 @@ import { computed, ref } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '@/stores/UserStore';
+import { DateTime } from 'luxon';
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   comments: any[];
@@ -12,41 +16,16 @@ const newPublicComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addPublicComment': [value: any];
+  'comment:addPublicComment': [value: any, value: any];
 }>();
 
 const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 
 function handleClick() {
-  emit('comment:addPublicComment', newPublicComment.value);
+  emit('comment:addPublicComment', newPublicComment.value, userStore.userName);
   isAddingNewComment.value = false;
 }
-
-function parseGroups(serializedJson: string) {
-  try {
-    return JSON.parse(serializedJson.replace(/'/g, '\\"'));
-  } catch (e) {
-    return [];
-  }
-}
-
-function parseIsPrivate(isPrivate: string) {
-  return isPrivate?.constructor === String
-    ? isPrivate.toLowerCase() === 'true'
-    : Boolean(isPrivate);
-}
-
-const transformedComments = computed(() =>
-  props.comments.map((comment) => ({
-    ...comment,
-    meta_attr: {
-      ...comment.meta_attr,
-      is_private: parseIsPrivate(comment.meta_attr?.is_private),
-      private_groups: parseGroups(comment.meta_attr?.private_groups),
-    },
-  })),
-);
 
 type CommentFilter = 'public' | 'private' | 'system';
 type CommentActiveFilters = Record<CommentFilter, boolean>;
@@ -59,9 +38,9 @@ const selectedFilters = ref<CommentActiveFilters>({
 });
 
 const filterFunctions: CommentFilterFunctions = {
-  public: (comment: any) => !comment.meta_attr.is_private,
-  private: (comment: any) => comment.meta_attr.is_private,
-  system: (comment: any) => comment.meta_attr.creator === SYSTEM_EMAIL,
+  public: (comment: any) => !comment.is_private,
+  private: (comment: any) => comment.is_private,
+  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
 const activeFilters = computed(() => {
@@ -79,8 +58,7 @@ const activeFilters = computed(() => {
       false,
     );
 });
-
-const filteredComments = computed(() => transformedComments.value.filter(activeFilters.value));
+const filteredComments = computed(() => props.comments.filter(activeFilters.value));
 
 
 const filters: CommentFilter[] = ['public', 'private', 'system'];
@@ -127,18 +105,18 @@ function linkify(text: string) {
           class="bg-light p-2 mt-3 rounded-2"
         >
           <p class="border-bottom pb-2">
-            <span v-if="comment.meta_attr.is_private" class="badge bg-warning rounded-pill">
+            <span v-if="comment.is_private" class="badge bg-warning rounded-pill">
               Bugzilla Internal
             </span>
             <span
-              v-if="comment.meta_attr.creator === SYSTEM_EMAIL"
+              v-if="comment.creator === SYSTEM_EMAIL"
               class="badge bg-info rounded-pill"
             >
               System
             </span>
-            {{ comment.meta_attr?.creator }} / {{ comment.meta_attr?.time }}
+            {{ comment.creator }} - {{ DateTime.fromISO(comment.created_dt).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
           </p>
-          <p class="osim-flaw-comment" v-html="linkify(comment.meta_attr?.text)" />
+          <p class="osim-flaw-comment" v-html="linkify(comment.text)" />
         </li>
       </ul>
       <div v-if="!isAddingNewComment">
