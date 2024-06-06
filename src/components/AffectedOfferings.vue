@@ -50,6 +50,10 @@ const isAnythingExpanded = computed(() => (
   || Object.values(expandedModules.value).some(Boolean)
 ));
 
+const isAnythingCollapsed = computed(() => (
+  !Object.values(expandedModules.value).every(Boolean)
+));
+
 function areAnyComponentsExpandedIn (moduleName: string) {
   return affectsWithModuleName(moduleName).some(isExpanded);
 }
@@ -79,6 +83,12 @@ function collapseAll() {
   }
 }
 
+function expandAll() {
+  for (const moduleName in expandedModules.value) {
+    expandedModules.value[moduleName] = true;
+  }
+}
+
 function togglePsComponentExpansion(affect: ZodAffectType) {
   const isExpanded = expandedAffects.value.get(affect);
   isExpanded.value = !isExpanded.value;
@@ -102,6 +112,14 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
   <div v-if="theAffects" class="osim-affects">
     <h4 class="mb-4">
       Affected Offerings
+      <button
+        v-if="isAnythingCollapsed"
+        type="button"
+        class="btn btn-sm btn-secondary me-2"
+        @click="expandAll()"
+      >
+        Expand All
+      </button>
       <button
         v-if="isAnythingExpanded"
         type="button"

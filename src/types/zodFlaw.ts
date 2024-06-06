@@ -5,7 +5,6 @@ import {
   RequiresSummaryEnum,
   Source642Enum,
   IssuerEnum,
-  FlawMetaType,
   FlawReferenceType,
 } from '../generated-client';
 import { DateTime } from 'luxon';
@@ -136,16 +135,6 @@ export const ZodFlawCommentSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(),
 });
 
-export type FlawMetaSchemaType = typeof ZodFlawMetaSchema;
-export const ZodFlawMetaSchema = z.object({
-  uuid: z.string().uuid(),
-  type: z.nativeEnum(FlawMetaType).nullish(),
-  meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
-  embargoed: z.boolean(), // read-only
-  created_dt: zodOsimDateTime().nullish(), // $date-time,
-  updated_dt: zodOsimDateTime().nullish(), // $date-time,
-});
-
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
 export type FlawSchemaType = typeof ZodFlawSchema;
 
@@ -196,7 +185,6 @@ export const ZodFlawSchema = z.object({
   major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
   affects: z.array(ZodAffectSchema), // read-only
-  meta: z.array(ZodFlawMetaSchema),
   comments: z.array(ZodFlawCommentSchema),
   cvss_scores: z.array(FlawCVSSSchema),
   references: z.array(FlawReferenceSchema),
