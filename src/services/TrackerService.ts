@@ -78,7 +78,7 @@ export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
 export function trackerUrl(type: string, id: string): string {
   switch (type) {
   case 'JIRA':
-    return (new URL(`/browse/${id}`, osimRuntime.value.backends.jira)).href;
+    return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
   case 'BUGZILLA':
     return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla)).href;
   default:

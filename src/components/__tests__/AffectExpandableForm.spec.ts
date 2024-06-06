@@ -16,7 +16,8 @@ vi.mock('@/stores/osimRuntime', async () => {
       osidb: 'http://osidb-backend',
       bugzilla: 'http://bugzilla-backend',
       jira: 'http://jira-backend',
-      errata: 'http://errata'
+      errata: 'http://errata',
+      jiraDisplay: 'http://jira-backend',
     },
     osimVersion: {
       rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
