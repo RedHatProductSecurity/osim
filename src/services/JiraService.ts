@@ -134,3 +134,7 @@ function queryStringFromParams(params: Record<string, any>) {
   const queryString = urlParams.toString();
   return queryString ? `?${queryString}` : '';
 }
+
+export function taskUrl(id: string): string {
+  return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
+}

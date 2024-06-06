@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
+import { taskUrl } from '@/services/JiraService';
 
 const userStore = useUserStore();
 
