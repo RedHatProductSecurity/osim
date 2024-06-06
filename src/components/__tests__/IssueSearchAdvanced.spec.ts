@@ -31,6 +31,10 @@ describe('IssueSearchAdvanced', () => {
     });
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should render', () => {
     expect(wrapper.exists()).toBe(true);
   });
@@ -73,5 +77,23 @@ describe('IssueSearchAdvanced', () => {
     await saveButton.trigger('click');
     filterSaveEvents = wrapper.emitted('filter:save');
     expect(filterSaveEvents.length).toBe(1);
+  });
+
+  it('should update router when passing empty for CVE ID', async () => {
+    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
+    const cveIdOption = selectDropdown
+      .findAll('option')
+      .filter(option => option.element.value === 'cve_id')[0];
+    await selectDropdown.setValue(cveIdOption.element.value);
+    await selectDropdown.trigger('change');
+    const inputField = wrapper.find('input.form-control');
+    await inputField.setValue('');
+    const searchButton = wrapper.find('button[type="submit"]');
+    expect(searchButton.exists()).toBeTruthy();
+    await searchButton.trigger('submit');
+    await flushPromises();
+    expect(useRouter().replace).toHaveBeenCalled();
+    expect(useRouter().replace.mock.calls[0][0])
+      .toStrictEqual({ query: { query: 'search', cve_id: '' } });
   });
 });

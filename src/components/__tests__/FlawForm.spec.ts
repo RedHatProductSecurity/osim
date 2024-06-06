@@ -142,6 +142,14 @@ describe('FlawForm', () => {
       .findAllComponents(LabelSelect)
       .find((component) => component.props().label === 'Impact');
     expect(impactField?.exists()).toBe(true);
+    const impactOptions = impactField.findAll('option').map(item => item.text());
+    expect(impactOptions).toEqual([
+      'CRITICAL',
+      'IMPORTANT',
+      'MODERATE',
+      'LOW',
+      '',
+    ]);
 
     const cvssV3Field = subject
       .findAllComponents(LabelEditable)

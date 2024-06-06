@@ -71,6 +71,7 @@ const affectBlueprint = {
   resolution: z.nativeEnum(ResolutionEnumWithBlank).nullish(),
   ps_module: z.string().max(100),
   ps_component: z.string().max(255),
+  ps_product: z.string().nullish(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
   trackers: z.array(TrackerSchema).or(z.array(z.any())),
   meta_attr: z

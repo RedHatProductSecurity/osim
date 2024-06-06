@@ -18,7 +18,17 @@ export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEn
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
 export const flawSources = Object.values(Source642EnumWithBlank);
-export const flawImpacts = Object.values(ImpactEnumWithBlank);
+
+const flawImpactsWeight = {
+  '': 0,
+  'LOW': 1,
+  'MODERATE': 2,
+  'IMPORTANT': 3,
+  'CRITICAL': 4,
+};
+
+export const flawImpacts = Object.values(ImpactEnumWithBlank)
+  .sort((a, b) => flawImpactsWeight[b] - flawImpactsWeight[a]);
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
 export const summaryRequiredStates = Object.values(RequiresSummaryEnumWithBlank);
 
