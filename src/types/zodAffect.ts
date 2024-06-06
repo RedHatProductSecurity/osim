@@ -77,8 +77,6 @@ const affectBlueprint = {
     .object({
       affectedness: z.string(),
       component: z.string(),
-      cvss2: z.string(),
-      cvss3: z.string(),
       impact: z.string(),
       module_name: z.string(),
       module_stream: z.string(),
