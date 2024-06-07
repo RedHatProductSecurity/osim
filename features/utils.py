@@ -19,14 +19,13 @@ from constants import (
     OSIM_URL,
     SELENIUM_URL,
     BUGZILLA_API_KEY,
-    JIRA_API_KEY,
-    EMBARGOED_FLAW_CVE_ID,
-    PUBLIC_FLAW_CVE_ID
+    JIRA_API_KEY
 )
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
 from pages.flaw_detail_page import FlawDetailPage
+from pages.advanced_search_page import AdvancedSearchPage
 
 
 def server_is_ready(url):
@@ -122,15 +121,25 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_specific_flaw_detail_page(browser, cve_id):
+def go_to_specific_flaw_detail_page(browser):
     """
     Go to a specific flaw detail page
     """
-    go_to_home_page(browser)
-    home_page = HomePage(browser)
-    home_page.quickSearchBox.clear_text()
-    home_page.quickSearchBox.set_text(cve_id)
-    home_page.click_btn('quickSearchBtn')
+    cve_id = os.getenv("FLAW_ID")
+
+    if cve_id.startswith("CVE-"):
+        go_to_home_page(browser)
+        home_page = HomePage(browser)
+        home_page.quickSearchBox.clear_text()
+        home_page.quickSearchBox.set_text(cve_id)
+        home_page.click_btn('quickSearchBtn')
+    else:
+        go_to_advanced_search_page(browser)
+        advanced_search_page = AdvancedSearchPage(browser)
+        advanced_search_page.select_field_and_value_to_search("uuid", cve_id)
+        advanced_search_page.click_btn("searchBtn")
+        advanced_search_page.first_flaw_exist()
+        advanced_search_page.go_to_first_flaw_detail()
 
     flaw_detail_page = FlawDetailPage(browser)
     flaw_detail_page.save_button_exist()
