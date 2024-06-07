@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { getFlaws } from '@/services/FlawService';
+import { allowedEmptyFieldMapping } from '@/constants/flawFields';
 
 export function useFlawsFetching() {
   const isFinalPageFetched = ref(false);
@@ -9,6 +10,18 @@ export function useFlawsFetching() {
   const pagesize = 20;
   const total = ref(0);
 
+  function finializeRequestParams(params: any = {}){
+    const requestParams = {};
+    for (const key in params) {
+      if (params[key] === '' && allowedEmptyFieldMapping[key]) {
+        requestParams[allowedEmptyFieldMapping[key]] = 1;
+      } else {
+        requestParams[key] = params[key];
+      }
+    }
+    return requestParams;
+  }
+
   function loadFlaws(params: any = {}) {
     offset.value = 0;
     isFinalPageFetched.value = false;
@@ -16,7 +29,7 @@ export function useFlawsFetching() {
     issues.value = [];
     total.value = 0;
 
-    getFlaws(offset.value, 100, params.value)
+    getFlaws(offset.value, 100, finializeRequestParams(params.value))
       .then((response) => {
         issues.value = response.data.results;
         // response will have next property for next api call
@@ -45,7 +58,7 @@ export function useFlawsFetching() {
     }
     isLoading.value = true;
 
-    getFlaws(offset.value, pagesize, params.value)
+    getFlaws(offset.value, pagesize, finializeRequestParams(params.value))
       .then((response) => {
         issues.value = [...issues.value, ...response.data.results];
         // response will have next property for next api call

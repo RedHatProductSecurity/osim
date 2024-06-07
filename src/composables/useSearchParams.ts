@@ -1,6 +1,6 @@
 import { ref, onMounted, watch, watchEffect } from 'vue';import { z } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
-import { flawFields } from '@/constants/flawFields';
+import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
 
 type Facet = {
   field: string;
@@ -15,10 +15,6 @@ const searchQuery = z.object({
     query: z.string().nullish(),
   }),
 });
-
-export const allowedEmptyFields = [
-  'cve_id',
-];
 
 export function useSearchParams() {
 
@@ -96,7 +92,7 @@ export function useSearchParams() {
   function submitAdvancedSearch() {
     const params = facets.value.reduce(
       (fields, { field, value }) => {
-        if (field && value || allowedEmptyFields.includes(field)) {
+        if (field && value || allowedEmptyFieldMapping[field]) {
           fields[field] = value;
         }
         return fields;
