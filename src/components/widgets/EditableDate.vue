@@ -118,7 +118,7 @@ function beginEdit() {
   nextTick(() => {
     if (elInput.value != null) {
       elInput.value.focus();
-      let maskRef = (elInput.value as any).maskRef;
+      const maskRef = (elInput.value as any).maskRef;
       maskRef?.updateValue();
       maskState.masked = maskRef?.value;
       maskState.unmasked = maskRef?.unmaskedValue;
