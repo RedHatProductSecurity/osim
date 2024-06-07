@@ -294,7 +294,7 @@ const expandFocusedComponent = (parent_uuid: string) => {
             <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
-                :flaw-summary="flaw.description"
+                :summary="flaw.comment_zero"
                 :bugzilla="bugzillaLink"
                 :cvss="rhCvss3String"
                 :nistcvss="nvdCvss3String"
@@ -365,10 +365,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
       </div>
       <div class="osim-flaw-form-section border-top">
         <LabelTextarea
-          v-model="flaw.description"
+          v-model="flaw.comment_zero"
           label="Comment#0"
           placeholder="Comment#0 ..."
-          :error="errors.description"
+          :error="errors.comment_zero"
           :disabled="mode === 'edit'"
         />
         <LabelTextarea

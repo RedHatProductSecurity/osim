@@ -233,7 +233,7 @@ export async function postFlaw(requestBody: any) {
   //   "impact": "LOW",
   //   "component": "string",
   //   "title": "string",
-  //   "description": "string",
+  //   "comment_zero": "string",
   //   "summary": "string",
   //   "statement": "string",
   //   "cwe_id": "string",

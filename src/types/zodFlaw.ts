@@ -148,8 +148,8 @@ export const ZodFlawSchema = z.object({
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
-  description: z.string().refine(
-    description => description.trim().length > 0,
+  comment_zero: z.string().refine(
+    comment_zero => comment_zero.trim().length > 0,
     { message: 'Comment#0 cannot be empty.' }
   ),
   summary: z.string().nullish(),

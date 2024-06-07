@@ -9,7 +9,7 @@ export function sampleFlaw(): ZodFlawType {
     component: 'reality.',
     title: 'sample title',
     trackers: [],
-    description: 'comment',
+    comment_zero: 'Comment Zero == Patient Zero',
     summary: 'I am a spooky CVE',
     requires_summary: 'APPROVED',
     statement: 'Statement for None',

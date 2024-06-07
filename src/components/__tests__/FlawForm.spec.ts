@@ -318,7 +318,7 @@ describe('FlawForm', () => {
     expect(vm.errors.component).not.toBe(null);
     expect(vm.errors.impact).not.toBe(null);
     expect(vm.errors.source).not.toBe(null);
-    expect(vm.errors.description).not.toBe(null);
+    expect(vm.errors.comment_zero).not.toBe(null);
 
     const titleField = subject
       .findAllComponents(LabelEditable)
