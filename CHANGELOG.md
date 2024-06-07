@@ -17,6 +17,9 @@
 ### Changed
 * Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
 
+### Changed
+* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+
 ### Fixed
 * The session is now shared across tabs
 * CVSS scores on affects can be added (`OSIDB-2573`)
