@@ -43,6 +43,7 @@ if (!getCvssData('RH', 'V3')) {
       created_dt: null,
       score: null,
       embargoed: modelValue.value.embargoed,
+      alerts: [],
     } as ZodAffectCVSSType
   );
 }
@@ -117,11 +118,11 @@ const hiddenResolutionOptions = computed(() => {
       </p>
 
       <div
-        v-for="(tracker, trackerIndex) in modelValue.trackers.filter(({ ps_update_stream }) => ps_update_stream)"
-        :key="trackerIndex"
+        v-for="tracker in modelValue.trackers.filter(({ ps_update_stream }) => ps_update_stream)"
+        :key="tracker.uuid"
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <details>
+        <details :id="modelValue.uuid + tracker.uuid">
           <summary class="text-info">{{ tracker.ps_update_stream }}</summary>
           <table class="table table-striped table-info mb-0">
             <tbody v-if="!isScreenSortaSmall">

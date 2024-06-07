@@ -106,6 +106,8 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
   return `${moduleName}/${componentName}`;
 }
 
+defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
+
 </script>
 
 <template>
@@ -167,6 +169,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           class="osim-affected-offering"
         >
           <AffectExpandableForm
+            :id="affect.uuid"
             v-model="affectsWithModuleName(moduleName)[index]"
             :affect="affect"
             :isExpanded="isExpanded(affect) ?? false"

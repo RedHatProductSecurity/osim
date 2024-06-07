@@ -65,6 +65,8 @@ function commitEdit(index: number) {
   indexBeingEdited.value = null;
   priorValues.value = deepCopyFromRaw(items.value);
 }
+
+defineExpose({ isExpanded });
 </script>
 
 <template>
@@ -77,6 +79,7 @@ function commitEdit(index: number) {
     >
       <div
         v-for="(item, itemIndex) in items"
+        :id="item.uuid"
         :key="itemIndex"
         class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card"
         :class="{

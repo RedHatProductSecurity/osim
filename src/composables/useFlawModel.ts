@@ -217,6 +217,7 @@ export function blankFlaw(): ZodFlawType {
     comments: [],
     references: [],
     acknowledgments: [],
+    alerts: [],
   };
 }
 

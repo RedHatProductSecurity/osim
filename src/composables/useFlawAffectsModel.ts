@@ -115,8 +115,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         score: null,
         vector: '',
         embargoed,
+        alerts: [],
       }],
       trackers: [{ errata: [] }],
+      alerts: [],
     } as ZodAffectType);
   }
 
