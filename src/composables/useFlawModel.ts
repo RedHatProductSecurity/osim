@@ -193,7 +193,7 @@ export function blankFlaw(): ZodFlawType {
       state: 'NEW',
       workflow: '',
     },
-    component: '',
+    components: [''],
     unembargo_dt: '',
     reported_dt: new Date().toISOString(),
     uuid: '',

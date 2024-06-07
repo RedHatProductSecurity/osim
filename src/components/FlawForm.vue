@@ -4,6 +4,7 @@ import { computed, ref, watch, onMounted, reactive } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
@@ -236,11 +237,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
             type="text"
             :error="errors.title"
           />
-          <LabelEditable
-            v-model="flaw.component"
-            label="Component"
-            type="text"
-            :error="errors.component"
+          <LabelTagsInput
+            v-model="flaw.components"
+            label="Components"
+            :error="errors.components"
           />
           <div class="row">
             <div class="col">
@@ -552,7 +552,7 @@ form.osim-flaw-form :deep(*) {
     padding-left: 0;
 
     input,
-    span,
+    span:not(.osim-pill-list-item),
     select,
     div.form-control {
       border-top-left-radius: 0;

@@ -142,7 +142,7 @@ export const ZodFlawSchema = z.object({
       Boolean,
       { message: 'You must select an impact before saving the Flaw.' }
     ),
-  component: z.string().max(100).min(1),
+  components: z.array(z.string().min(1).max(100)).nonempty(),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
