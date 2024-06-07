@@ -11,7 +11,7 @@ export function useFlawsFetching() {
   const total = ref(0);
 
   function finializeRequestParams(params: any = {}){
-    const requestParams = {};
+    const requestParams: Record<string, any> = {};
     for (const key in params) {
       if (params[key] === '' && allowedEmptyFieldMapping[key]) {
         requestParams[allowedEmptyFieldMapping[key]] = 1;
