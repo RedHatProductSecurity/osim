@@ -22,7 +22,7 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
-import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
+import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
@@ -107,7 +107,7 @@ const onSubmit = async () => {
   }
 };
 
-const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const showDescription = ref(flaw.value.cve_description && flaw.value.cve_description.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
@@ -152,10 +152,10 @@ const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
 
-const toggleSummary = () => {
-  showSummary.value = !showSummary.value;
-  if (!showSummary.value) {
-    flaw.value.summary = '';
+const toggleDescription = () => {
+  showDescription.value = !showDescription.value;
+  if (!showDescription.value) {
+    flaw.value.cve_description = '';
   }
 };
 
@@ -260,7 +260,7 @@ const expandFocusedComponent = (parent_uuid: string) => {
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
-                :description="flaw.summary ?? ''"
+                :description="flaw.cve_description ?? ''"
               />
             </div>
           </div>
@@ -372,11 +372,11 @@ const expandFocusedComponent = (parent_uuid: string) => {
           :disabled="mode === 'edit'"
         />
         <LabelTextarea
-          v-if="showSummary"
-          v-model="flaw.summary"
+          v-if="showDescription"
+          v-model="flaw.cve_description"
           label="Description"
           placeholder="Description Text ..."
-          :error="errors.summary"
+          :error="errors.cve_description"
           class="osim-flaw-description-component"
         >
           <template #label>
@@ -384,9 +384,9 @@ const expandFocusedComponent = (parent_uuid: string) => {
               Description
             </span>
             <span class="col-3 ps-2">
-              <select v-model="flaw.requires_summary" class="form-select col-3 osim-summary-required">
-                <option disabled :selected="!flaw.requires_summary" value="">Review Status</option>
-                <option v-for="state in summaryRequiredStates" :key="state" :value="state">{{ state }}</option>
+              <select v-model="flaw.requires_cve_description" class="form-select col-3 osim-description-required">
+                <option disabled :selected="!flaw.requires_cve_description" value="">Review Status</option>
+                <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
               </select>
             </span>
 
@@ -409,10 +409,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
         <div class="d-flex gap-3 mb-3">
           <button
             type="button"
-            class="btn btn-secondary osim-show-summary"
-            @click="toggleSummary"
+            class="btn btn-secondary osim-show-description"
+            @click="toggleDescription"
           >
-            {{ showSummary ? 'Remove Description' : 'Add Description' }}
+            {{ showDescription ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
             type="button"
@@ -599,7 +599,7 @@ form.osim-flaw-form :deep(*) {
     border-top-left-radius: 0;
   }
 
-  select.osim-summary-required.form-select {
+  select.osim-description-required.form-select {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     margin-bottom: 0;

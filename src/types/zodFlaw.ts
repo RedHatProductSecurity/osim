@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
-  RequiresSummaryEnum,
+  RequiresCveDescriptionEnum,
   Source642Enum,
   IssuerEnum,
   FlawReferenceType,
@@ -12,7 +12,7 @@ import { cveRegex } from '@/utils/helpers';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
-export const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
+export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const Source642EnumWithBlank = { '': '', ...Source642Enum } as const;
 export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
@@ -30,7 +30,7 @@ const flawImpactsWeight = {
 export const flawImpacts = Object.values(ImpactEnumWithBlank)
   .sort((a, b) => flawImpactsWeight[b] - flawImpactsWeight[a]);
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
-export const summaryRequiredStates = Object.values(RequiresSummaryEnumWithBlank);
+export const descriptionRequiredStates = Object.values(RequiresDescriptionEnumWithBlank);
 
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
@@ -152,8 +152,8 @@ export const ZodFlawSchema = z.object({
     comment_zero => comment_zero.trim().length > 0,
     { message: 'Comment#0 cannot be empty.' }
   ),
-  summary: z.string().nullish(),
-  requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
+  cve_description: z.string().nullish(),
+  requires_cve_description: z.nativeEnum(RequiresDescriptionEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
@@ -200,19 +200,19 @@ export const ZodFlawSchema = z.object({
   };
 
   if (
-    zodFlaw.requires_summary
-    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_summary)
-    && zodFlaw.summary === ''
+    zodFlaw.requires_cve_description
+    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_cve_description)
+    && zodFlaw.cve_description === ''
   ) {
-    raiseIssue('Description cannot be blank if requested or approved.', ['summary']);
+    raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
   }
 
   if (
-    zodFlaw.requires_summary !== 'APPROVED'
+    zodFlaw.requires_cve_description !== 'APPROVED'
     && zodFlaw.major_incident_state
     && ['APPROVED', 'CISA_APPROVED'].includes(zodFlaw.major_incident_state)
   ) {
-    raiseIssue('Description must be approved for Major Incidents.', ['summary']);
+    raiseIssue('Description must be approved for Major Incidents.', ['cve_description']);
   }
 
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
