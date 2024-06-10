@@ -28,10 +28,8 @@ const affectedModules = toRef(uniques(theAffects.value.map((affect) => affect.ps
 
 const expandedModules = ref<Record<string, boolean>>({});
 
-/* Show New component at the top*/
 const affectsWithModuleName = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName);
-  // theAffects.value.filter((affect) => affect.ps_module === moduleName).reverse();
 
 const expandedAffects = ref(new Map());
 
