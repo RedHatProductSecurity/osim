@@ -95,18 +95,17 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     modifiedAffectIds.value = [];
   };
 
-  function addBlankAffect() {
+  function addBlankAffect(moduleName: string) {
     const embargoed = flaw.value.embargoed;
-    flaw.value.affects.push({
+    const newAffect: ZodAffectType = {
       embargoed,
       affectedness: '',
       resolution: '',
       delegated_resolution: '', // should this be null
-      ps_module: '',
+      ps_module: moduleName,
       ps_component: '',
       impact: '',
       cvss_scores: [{
-        // affect: z.string().uuid(),
         cvss_version: 'V3',
         issuer: 'RH',
         comment: '',
@@ -115,7 +114,15 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         embargoed,
       }],
       trackers: [{ errata: [] }],
-    } as ZodAffectType);
+    };
+
+    const index = flaw.value.affects.findIndex(affect => affect.ps_module === moduleName);
+
+    if (index !== -1) {
+      flaw.value.affects.splice(index, 0, newAffect);
+    } else {
+      flaw.value.affects.push(newAffect);
+    }
   }
 
   function removeAffect(affectIdx: number) {

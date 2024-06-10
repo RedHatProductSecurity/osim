@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch } from 'vue';
+import { computed, toRefs, ref, watch, toRef } from 'vue';
 
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
+import LabelEditable from './widgets/LabelEditable.vue';
 
 const props = defineProps<{
   theAffects: ZodAffectType[];
@@ -17,17 +18,20 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-blank-affect': [];
+  'add-affect': [value: string];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const affectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
+const initialAffectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
+const affectedModules = toRef(uniques(theAffects.value.map((affect) => affect.ps_module)));
 
 const expandedModules = ref<Record<string, boolean>>({});
 
+/* Show New component at the top*/
 const affectsWithModuleName = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName);
+  // theAffects.value.filter((affect) => affect.ps_module === moduleName).reverse();
 
 const expandedAffects = ref(new Map());
 
@@ -106,6 +110,15 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
   return `${moduleName}/${componentName}`;
 }
 
+function isNewModule(moduleName: string) {
+  return !initialAffectedModules.value.includes(moduleName)
+  || affectsWithModuleName(moduleName).every(affect => !affect.uuid);
+}
+
+function addNewModule() {
+  affectedModules.value.push('');
+}
+
 </script>
 
 <template>
@@ -129,7 +142,14 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
         Collapse All
       </button>
     </h4>
-    <div v-for="(moduleName) in affectedModules" :key="moduleName">
+    <div v-for="(moduleName, moduleNameIndex) in affectedModules" :key="moduleName">
+      <div v-if="isNewModule(moduleName)" class="col-6">
+        <LabelEditable
+          v-model="affectedModules[moduleNameIndex]"
+          label="Module Name"
+          type="text"
+        />
+      </div>
       <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
         class="mb-3"
@@ -144,7 +164,7 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
           </span>
         </template>
         <template #buttons>
-          <div v-if="expandedModules[moduleName]" class="btn-group">
+          <div v-if="expandedModules[moduleName]" class="d-inline-flex">
             <div class="dropdown">
               <button
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
@@ -159,6 +179,9 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
                 <a class="dropdown-item" href="#"> 🚧 Auto-file for all components</a>
               </div>
             </div>
+            <button type="button" class="btn btn-secondary ms-2" @click.prevent="emit('add-affect', moduleName)">
+              Add New Component
+            </button>
           </div>
         </template>
         <div
@@ -178,8 +201,12 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
         </div>
       </LabelCollapsible>
     </div>
-    <button type="button" class="btn btn-secondary mt-3" @click.prevent="emit('add-blank-affect')">
-      Add New Affect
+    <button
+      type="button"
+      class="btn btn-secondary me-3"
+      @click.prevent="addNewModule()"
+    >
+      Add New Module
     </button>
     <div v-if="affectsToDelete.length" class="mt-3 row">
       <div class="col-auto alert alert-danger rounded-3 p-3">
