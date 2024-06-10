@@ -129,14 +129,12 @@ describe('FlawComments', () => {
     // First public comment checks
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toContain('noonerelevant - 2021-07-29 04:50 PM');
-    expect(firstHeader.text()).toContain('Public');
+    expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 02:50 PM UTC Public');
     expect(firstBody.text()).toBe('First comment');
     // Seccond public comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toContain('onelessrelevant - 2023-09-20 04:50 PM');
-    expect(secondHeader.text()).toContain('Public');
+    expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 02:50 PM UTC Public');
     expect(secondBody.text()).toBe('Second comment');
   });
 
@@ -157,14 +155,12 @@ describe('FlawComments', () => {
     // First public comment checks
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toContain('noonerelevant - 2021-07-29 04:50 PM');
-    expect(firstHeader.text()).toContain('Internal');
+    expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 02:50 PM UTC Internal');
     expect(firstBody.text()).toBe('First comment');
     // Seccond public comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toContain('onelessrelevant - 2023-09-20 04:50 PM');
-    expect(secondHeader.text()).toContain('Internal');
+    expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 02:50 PM UTC Internal');
     expect(secondBody.text()).toBe('Second comment');
   });
 
@@ -203,14 +199,12 @@ describe('FlawComments', () => {
     // First system comment checks
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toContain(`${SYSTEM_EMAIL} - 2021-07-29 04:50 PM`);
-    expect(firstHeader.text()).toContain('System');
+    expect(firstHeader.text()).toBe(`${SYSTEM_EMAIL} - 2021-07-29 02:50 PM UTC System`);
     expect(firstBody.text()).toBe('First comment');
     // Seccond system comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toContain(`${SYSTEM_EMAIL} - 2023-09-20 04:50 PM`);
-    expect(secondHeader.text()).toContain('System');
+    expect(secondHeader.text()).toBe(`${SYSTEM_EMAIL} - 2023-09-20 02:50 PM UTC System`);
     expect(secondBody.text()).toBe('Second comment');
   });
 });

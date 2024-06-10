@@ -196,7 +196,8 @@ function sanitize(text: string) {
             >
               <p class="border-bottom pb-3">
                 <i class="bi bi-caret-right-fill"></i>
-                {{ comment.author }} - {{ DateTime.fromISO(comment.timestamp).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
+                {{ comment.author }}
+                - {{ DateTime.fromISO(comment.timestamp, { setZone: true }).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
                   class="badge rounded-pill float-end"
                   :class="{
