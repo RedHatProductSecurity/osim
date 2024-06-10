@@ -21,15 +21,15 @@ export function useInternalComments(taskKey: string) {
 
     getJiraComments(taskKey)
       .then((res) => {
-        if(res.response.ok) {
+        if (res.response.ok) {
           available.value = true;
         }
-        if(res.data.comments.length >= 0) {
+        if (res.data.comments.length >= 0) {
           internalComments.value = parseJiraComments(res.data.comments);
         }
       })
-      .catch((res) => { 
-        if(res?.response?.status === 404) {
+      .catch((res) => {
+        if (res?.response?.status === 404) {
           console.error('Internal Comments Error: Task not found.', res?.response);
         } else {
           console.error('Internal Comments Error: getJiraComments error: ', res?.response);

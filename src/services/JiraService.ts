@@ -42,7 +42,6 @@ async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCal
     return Promise.reject('OSIM is in read-only mode.');
   }
 
-
   let response: Response;
   try {
     response = await fetch(`${baseUrl}${config.url}${queryString}`, {
@@ -64,7 +63,7 @@ async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCal
       data = await response.json();
     }
 
-    return Promise.reject({ 
+    return Promise.reject({
       response: {
         headers: Object.fromEntries(response.headers.entries()),
         ok: response.ok,
@@ -76,13 +75,12 @@ async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCal
         data,
       },
       data,
-    }, 
+    },
     );
   }
 
   return { data: await response.json(), response };
 }
-
 
 export async function getJiraComments(taskId: string) {
   return jiraFetch({
@@ -100,7 +98,6 @@ export async function postJiraComment(taskId: string, comment: string) {
     },
   }).then((response) => response.data);
 }
-
 
 async function osimRequestHeaders() {
   const settingsStore = useSettingsStore();

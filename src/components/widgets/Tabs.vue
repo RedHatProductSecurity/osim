@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-
 const props = defineProps<{
   labels: string[],
   default?: number
@@ -9,7 +8,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['tab-change']);
-
 const activeTabIndex = ref(props.default ?? 0);
 
 const selectTab = (index: number) => {
@@ -22,9 +20,9 @@ const selectTab = (index: number) => {
   <div>
     <ul class="nav nav-tabs">
       <li v-for="(label,index) in labels" :key="index" class="nav-item">
-        <button 
-          type="button" 
-          class="nav-link" 
+        <button
+          type="button"
+          class="nav-link"
           :class="{ 'active': activeTabIndex === index }"
           :disabled="disabled?.includes(index)"
           @click="selectTab(index)"

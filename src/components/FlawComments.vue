@@ -5,10 +5,10 @@ import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
-
-const userStore = useUserStore();
 import Tabs from '@/components/widgets/Tabs.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   comments: any[];
@@ -111,8 +111,6 @@ function sanitize(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
 
   const urlRegex = /\b(https?:\/\/[\S]+)\b/g;
-  // Outputs: ["[jboss:INTLY-10833]"]
-  // const jiraRegex = /\[jboss:\w+-\d+\]/g;
   const jiraTagRegex = /\[~([^[\]]+)\]/g;
   const bugzillaRegex = /\[bug (\d+)\]/g;
   return (
@@ -127,7 +125,6 @@ function sanitize(text: string) {
 <template>
   <section class="osim-comments">
     <h4 class="mb-4">Comments</h4>
-    <!--<button type="button" @click="aux">jiraTest</button> -->
     <Tabs
       :labels="tabLabels"
       :default="0"
