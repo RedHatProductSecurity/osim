@@ -12,6 +12,8 @@
 * Add button to expand all affects (`OSIDB-2817`)
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
+* Add Affect Module Button on Flaw Form (`OSIDB-2876`)
+* Sort affects by product family, alphabetical (`OSIDB-2533`)
 
 ### Fixed
 * The session is now shared across tabs
