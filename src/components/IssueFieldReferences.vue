@@ -81,7 +81,6 @@ defineExpose({ editableListComp });
             <LabelTextarea
               v-model="items[itemIndex].description"
               label="Description"
-              :error="error?.[itemIndex].description"
             />
             <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>

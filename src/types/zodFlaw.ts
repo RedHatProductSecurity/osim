@@ -78,14 +78,6 @@ export const FlawReferenceSchema = z.object({
       path: ['url'],
     });
   }
-
-  if (!reference.description) {
-    zodContext.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Reference description cannot be empty',
-      path: ['description'],
-    });
-  }
 });
 
 export const flawReferenceTypeValues = Object.values(FlawReferenceType);
