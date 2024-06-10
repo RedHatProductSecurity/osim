@@ -33,7 +33,7 @@ def step_impl(context):
 
 @given('I go to an embargoed flaw detail page')
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser, True)
+    go_to_specific_flaw_detail_page(context.browser)
 
 
 @given('I go to the advanced search page')

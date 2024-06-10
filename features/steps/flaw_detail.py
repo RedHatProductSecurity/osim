@@ -24,7 +24,7 @@ MAX_RETRY = 10
 DOCUMENT_TEXT_FIELDS = {
     # Exclude 'comment#0' because it's mandatory in creation
     'add': ['description', 'statement', 'mitigation'],
-    # requires_summary can not be REQUESTED if summary is missing
+    # requires_cve_description can not be REQUESTED if description is missing
     'delete': ['statement', 'mitigation'],
     # Exclude 'description' because of OSIDB-2308
     'update': ['description', 'statement', 'mitigation']
@@ -446,9 +446,9 @@ def step_impl(context):
 
 @when("I update the embargoed flaw with a past public date")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.v = date(2024, 1, 1).strftime("%Y%m%d")
+    context.v = date(2024, 1, 1).strftime("%Y%m%d")+"0000"
     flaw_detail_page.set_input_field("publicDate", context.v)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('embargoedPublicDateErrorMsg')
@@ -456,7 +456,7 @@ def step_impl(context):
 
 @then("The embargoed flaw update is failed")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value("publicDate")
     assert v != context.v, f"Public date is updated to a past date {v}"
@@ -465,9 +465,9 @@ def step_impl(context):
 
 @when("I update the embargoed flaw with a future public date")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser, embargoed=True)
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.v = date(2040, 1, 1).strftime("%Y%m%d")
+    context.v = date(2040, 1, 1).strftime("%Y%m%d")+"0000"
     flaw_detail_page.set_input_field("publicDate", context.v)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
@@ -611,8 +611,6 @@ def step_impl(context):
 @when("I unembargo this flaw and add public date")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js("toastMsgCloseBtn")
-    flaw_detail_page.add_comment_btn_exist()
     # unembargo and set public date
     flaw_detail_page.click_button_with_js("unembargoBtn")
     context.public_date = datetime.today().strftime("%Y%m%d")+'0000'
@@ -626,13 +624,6 @@ def step_impl(context):
 
 @then("Flaw is unembargoed and have public date")
 def step_impl(context):
-    go_to_advanced_search_page(context.browser)
-    advanced_search_page = AdvancedSearchPage(context.browser)
-    advanced_search_page.select_field_and_value_to_search("title", context.title)
-    advanced_search_page.click_btn("searchBtn")
-    advanced_search_page.first_flaw_exist()
-    advanced_search_page.go_to_first_flaw_detail()
-
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_unembargo_btn_not_exist()
     v = flaw_detail_page.get_input_value("publicDate")

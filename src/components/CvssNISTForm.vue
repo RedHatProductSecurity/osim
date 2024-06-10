@@ -8,7 +8,7 @@ import { useModal } from '@/composables/useModal';
 
 const props = defineProps<{
   cveid?: string | null;
-  flawSummary?: string | null;
+  summary?: string | null;
   bugzilla?: string;
   cvss?: string;
   nistcvss?: string;
@@ -35,7 +35,7 @@ Red Hat CVSS: ${props.cvss}
 NIST CVSS: ${props.nistcvss}
 
 Flaw Summary: 
-${props.flawSummary}
+${props.summary}
 
 Red Hat's CVSS Justification:
 ____

@@ -12,6 +12,7 @@
 * Add button to expand all affects (`OSIDB-2817`)
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
+* Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
 * Add Affect Module Button on Flaw Form (`OSIDB-2876`)
 * Sort affects by product family, alphabetical (`OSIDB-2533`)
 
@@ -31,6 +32,7 @@
 * Unable to save first cvss score on flaws (`OSIDB-2769`)
 * Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 * Reset affects when flaw is reset (`OSIDB-2793`)
+* New public comments are not displayed (`OSIDB-2700`)
 
 ### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)

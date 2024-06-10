@@ -18,10 +18,12 @@ import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
+import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
-import { type ZodFlawType, summaryRequiredStates } from '@/types/zodFlaw';
+import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
+import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { sortWith, ascend, prop } from 'ramda';
 import { type ZodAffectType } from '@/types/zodAffect';
@@ -121,7 +123,7 @@ const onSubmit = async () => {
   }
 };
 
-const showSummary = ref(flaw.value.summary && flaw.value.summary.trim() !== '');
+const showDescription = ref(flaw.value.cve_description && flaw.value.cve_description.trim() !== '');
 const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
@@ -166,10 +168,10 @@ const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
 
-const toggleSummary = () => {
-  showSummary.value = !showSummary.value;
-  if (!showSummary.value) {
-    flaw.value.summary = '';
+const toggleDescription = () => {
+  showDescription.value = !showDescription.value;
+  if (!showDescription.value) {
+    flaw.value.cve_description = '';
   }
 };
 
@@ -187,6 +189,53 @@ const toggleMitigation = () => {
   }
 };
 
+const affectedOfferingsComp = ref<InstanceType<typeof AffectedOfferings> | null>(null);
+const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
+const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
+
+const expandFocusedComponent = (parent_uuid: string) => {
+
+  // Expand Affect (affect, affect CVSS, tracker)
+  const trackers: ZodTrackerType[] = ([] as ZodTrackerType[]).concat(
+    ...flaw.value.affects.map(aff => aff.trackers)
+  );
+  const trackerAffectUuid = trackers.find(tracker => tracker.uuid === parent_uuid)?.affects?.[0];
+
+  const affectCvss: ZodAffectCVSSType[] = ([] as ZodAffectCVSSType[]).concat(
+    ...flaw.value.affects.map(aff => aff.cvss_scores)
+  );
+  const affectCvssUuid = affectCvss.find(affCvss => affCvss.uuid === parent_uuid)?.affect;
+
+  const affect = flaw.value.affects.find(aff => [parent_uuid, trackerAffectUuid, affectCvssUuid].includes(aff.uuid));
+  if (affect !== undefined) {
+    if (affectedOfferingsComp.value) {
+      if (!affectedOfferingsComp.value.isExpanded(affect)) {
+        affectedOfferingsComp.value.togglePsModuleExpansion(affect?.ps_module);
+        affectedOfferingsComp.value.togglePsComponentExpansion(affect);
+      }
+    }
+    return;
+  }
+
+  // Expand Flaw References section
+  const reference = flawReferences.value.find(refer => refer.uuid === parent_uuid);
+  if (reference !== undefined) {
+    if (referencesComp.value?.editableListComp) {
+      referencesComp.value.editableListComp.isExpanded = true;
+    }
+    return;
+  }
+
+  // Expand Flaw Acknowledgments section
+  const acknowledgment = flawAcknowledgments.value.find(ack => ack.uuid === parent_uuid);
+  if (acknowledgment !== undefined) {
+    if (acknowledgmentsComp.value?.editableListComp) {
+      acknowledgmentsComp.value.editableListComp.isExpanded = true;
+    }
+    return;
+  }
+};
+
 </script>
 
 <template>
@@ -194,9 +243,9 @@ const toggleMitigation = () => {
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
-          <!-- Alerts might go here -->
+          <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
-        <div class="col-6">
+        <div :id="flaw.uuid" class="col-6">
           <LabelEditable
             v-model="flaw.title"
             label="Title"
@@ -227,7 +276,7 @@ const toggleMitigation = () => {
                 :bugzilla-link="bugzillaLink"
                 :osim-link="osimLink"
                 :subject="flaw.title"
-                :description="flaw.summary ?? ''"
+                :description="flaw.cve_description ?? ''"
               />
             </div>
           </div>
@@ -238,6 +287,7 @@ const toggleMitigation = () => {
             :error="errors.impact"
           />
           <CvssCalculator
+            :id="flawRhCvss3.uuid"
             v-model:cvss-vector="flawRhCvss3.vector"
             v-model:cvss-score="flawRhCvss3.score"
           />
@@ -260,7 +310,7 @@ const toggleMitigation = () => {
             <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
               <CvssNISTForm
                 :cveid="flaw.cve_id"
-                :flaw-summary="flaw.description"
+                :summary="flaw.comment_zero"
                 :bugzilla="bugzillaLink"
                 :cvss="rhCvss3String"
                 :nistcvss="nvdCvss3String"
@@ -331,18 +381,18 @@ const toggleMitigation = () => {
       </div>
       <div class="osim-flaw-form-section border-top">
         <LabelTextarea
-          v-model="flaw.description"
+          v-model="flaw.comment_zero"
           label="Comment#0"
           placeholder="Comment#0 ..."
-          :error="errors.description"
+          :error="errors.comment_zero"
           :disabled="mode === 'edit'"
         />
         <LabelTextarea
-          v-if="showSummary"
-          v-model="flaw.summary"
+          v-if="showDescription"
+          v-model="flaw.cve_description"
           label="Description"
           placeholder="Description Text ..."
-          :error="errors.summary"
+          :error="errors.cve_description"
           class="osim-flaw-description-component"
         >
           <template #label>
@@ -350,9 +400,9 @@ const toggleMitigation = () => {
               Description
             </span>
             <span class="col-3 ps-2">
-              <select v-model="flaw.requires_summary" class="form-select col-3 osim-summary-required">
-                <option disabled :selected="!flaw.requires_summary" value="">Review Status</option>
-                <option v-for="state in summaryRequiredStates" :key="state" :value="state">{{ state }}</option>
+              <select v-model="flaw.requires_cve_description" class="form-select col-3 osim-description-required">
+                <option disabled :selected="!flaw.requires_cve_description" value="">Review Status</option>
+                <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
               </select>
             </span>
 
@@ -375,10 +425,10 @@ const toggleMitigation = () => {
         <div class="d-flex gap-3 mb-3">
           <button
             type="button"
-            class="btn btn-secondary osim-show-summary"
-            @click="toggleSummary"
+            class="btn btn-secondary osim-show-description"
+            @click="toggleDescription"
           >
-            {{ showSummary ? 'Remove Description' : 'Add Description' }}
+            {{ showDescription ? 'Remove Description' : 'Add Description' }}
           </button>
           <button
             type="button"
@@ -399,6 +449,7 @@ const toggleMitigation = () => {
       <div class="osim-flaw-form-section border-top border-bottom">
         <div class="d-flex gap-3">
           <IssueFieldReferences
+            ref="referencesComp"
             v-model="flawReferences"
             class="w-100 my-3"
             :mode="mode"
@@ -409,6 +460,7 @@ const toggleMitigation = () => {
             @reference:delete="deleteReference"
           />
           <IssueFieldAcknowledgments
+            ref="acknowledgmentsComp"
             v-model="flawAcknowledgments"
             class="w-100 my-3"
             :mode="mode"
@@ -438,6 +490,7 @@ const toggleMitigation = () => {
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"
+        ref="affectedOfferingsComp"
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
         class="osim-flaw-form-section"
@@ -562,7 +615,7 @@ form.osim-flaw-form :deep(*) {
     border-top-left-radius: 0;
   }
 
-  select.osim-summary-required.form-select {
+  select.osim-description-required.form-select {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     margin-bottom: 0;

@@ -29,7 +29,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete, resetAffectChanges } = flawAffectsModel;
+  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -99,10 +99,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
 
-      const temporaryFieldRenaming = (fieldName: string | number) =>
-        fieldName === 'description' ? 'Comment#0' : fieldName;
-
-      const errorMessage = ({ message, path }: ZodIssue) => `${path.map(temporaryFieldRenaming).join('/')}: ${message}`;
+      const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
 
       addToast({
         title: 'Flaw validation failed before submission',
@@ -142,7 +139,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
     try {
       await execute(...queue);
-      resetAffectChanges();
     } catch (error) {
       console.error('Error updating flaw:', error);
       isSaving.value = false;
@@ -157,9 +153,9 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = false;
   }
 
-  function addPublicComment(comment: string) {
+  function addPublicComment(comment: string, creator: string) {
     isSaving.value = true;
-    postFlawPublicComment(flaw.value.uuid, comment, flaw.value.embargoed)
+    postFlawPublicComment(flaw.value.uuid, comment, creator, flaw.value.embargoed)
       .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
       .then(afterSaveSuccess)
       .catch(createCatchHandler('Error saving comment'))
@@ -204,7 +200,7 @@ export function blankFlaw(): ZodFlawType {
     cve_id: '',
     cvss_scores: [],
     cwe_id: '',
-    description: '',
+    comment_zero: '',
     embargoed: false,
     impact: '',
     major_incident_state: '',
@@ -212,12 +208,13 @@ export function blankFlaw(): ZodFlawType {
     title: '',
     owner: '',
     team_id: '',
-    summary: '',
+    cve_description: '',
     statement: '',
     mitigation: '',
     comments: [],
     references: [],
     acknowledgments: [],
+    alerts: [],
   };
 }
 

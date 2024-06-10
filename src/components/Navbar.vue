@@ -33,14 +33,14 @@ function quickMatchCVE(query: string) {
   // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
   // with optional surrounding whitespace.
   // match[1] will be the CVE ID if it exists
-  let trimmedQuery = query.trim();
+  const trimmedQuery = query.trim();
   return trimmedQuery.match(cveRegex)?.[0];
 }
 
 const searchIssue = ref('');
 
 function onSearch(query: string) {
-  let trimmedQuery = query.trim();
+  const trimmedQuery = query.trim();
   if (trimmedQuery === '') {
     return;
   }

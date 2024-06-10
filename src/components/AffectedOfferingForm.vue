@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useWindowSize } from '@vueuse/core';
-
-
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -11,8 +9,8 @@ import {
   affectAffectedness,
   affectImpacts,
   affectResolutions,
-  type ZodAffectCVSSType,
   type ZodAffectType,
+  type ZodAffectCVSSType,
 } from '@/types/zodAffect';
 
 const { width: screenWidth } = useWindowSize();
@@ -45,12 +43,17 @@ if (!getCvssData('RH', 'V3')) {
       created_dt: null,
       score: null,
       embargoed: modelValue.value.embargoed,
+      alerts: [],
     } as ZodAffectCVSSType
   );
 }
 
-// Type assertion to prevent TS error in template
-const affectCvssScore = modelValue.value?.cvss_scores.find(({ issuer }) => issuer === 'RH') as ZodAffectCVSSType;
+const affectCvss3Vector = computed(
+  () => modelValue.value?.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
+    ?.vector
+    || null
+);
+
 
 const hasTrackers = computed(() =>
   modelValue.value?.trackers
@@ -100,7 +103,7 @@ const hiddenResolutionOptions = computed(() => {
         :options="affectImpacts"
       />
       <LabelEditable
-        v-model="affectCvssScore.vector"
+        v-model="affectCvss3Vector"
         :error="error?.cvss_scores?.vector"
         type="text"
         label="CVSSv3"
@@ -115,11 +118,11 @@ const hiddenResolutionOptions = computed(() => {
       </p>
 
       <div
-        v-for="(tracker, trackerIndex) in modelValue.trackers.filter(({ ps_update_stream }) => ps_update_stream)"
-        :key="trackerIndex"
+        v-for="tracker in modelValue.trackers.filter(({ ps_update_stream }) => ps_update_stream)"
+        :key="tracker.uuid"
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <details>
+        <details :id="modelValue.uuid + tracker.uuid">
           <summary class="text-info">{{ tracker.ps_update_stream }}</summary>
           <table class="table table-striped table-info mb-0">
             <tbody v-if="!isScreenSortaSmall">

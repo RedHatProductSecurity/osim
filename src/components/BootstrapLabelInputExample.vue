@@ -7,9 +7,9 @@ const settingsStore = useSettingsStore();
 
 const inputLabels = ref<{ [name: string]: string }>({});
 
-let revealSensitive = ref('hide');
+const revealSensitive = ref('hide');
 
-let settings = reactive<SettingsType>(settingsStore.settings);
+const settings = reactive<SettingsType>(settingsStore.settings);
 
 </script>
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import EditableList from '@/components/widgets/EditableList.vue';
 import LabelInput from './widgets/LabelInput.vue';
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
@@ -22,11 +24,16 @@ function handleDelete(uuid: string, closeModal: () => void) {
 
   closeModal();
 }
+
+const editableListComp = ref<InstanceType<typeof EditableList> | null>(null);
+
+defineExpose({ editableListComp });
 </script>
 
 <template>
   <div>
     <EditableList
+      ref="editableListComp"
       v-model="acknowledgments"
       :mode="mode"
       entityName="Acknowledgment"

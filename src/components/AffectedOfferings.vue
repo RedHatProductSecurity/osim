@@ -110,6 +110,8 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
   return `${moduleName}/${componentName}`;
 }
 
+defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
+
 function isNewModule(moduleName: string) {
   return !initialAffectedModules.value.includes(moduleName)
   || affectsWithModuleName(moduleName).every(affect => !affect.uuid);
@@ -190,6 +192,7 @@ function addNewModule() {
           class="osim-affected-offering"
         >
           <AffectExpandableForm
+            :id="affect.uuid"
             v-model="affectsWithModuleName(moduleName)[index]"
             :affect="affect"
             :isExpanded="isExpanded(affect) ?? false"

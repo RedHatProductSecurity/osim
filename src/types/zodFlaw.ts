@@ -2,17 +2,17 @@ import { z } from 'zod';
 import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
-  RequiresSummaryEnum,
+  RequiresCveDescriptionEnum,
   Source642Enum,
   IssuerEnum,
   FlawReferenceType,
 } from '../generated-client';
 import { DateTime } from 'luxon';
 import { cveRegex } from '@/utils/helpers';
-import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification } from './zodShared';
+import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
-export const RequiresSummaryEnumWithBlank = { '': '', ...RequiresSummaryEnum } as const;
+export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const Source642EnumWithBlank = { '': '', ...Source642Enum } as const;
 export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
@@ -30,7 +30,7 @@ const flawImpactsWeight = {
 export const flawImpacts = Object.values(ImpactEnumWithBlank)
   .sort((a, b) => flawImpactsWeight[b] - flawImpactsWeight[a]);
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
-export const summaryRequiredStates = Object.values(RequiresSummaryEnumWithBlank);
+export const descriptionRequiredStates = Object.values(RequiresDescriptionEnumWithBlank);
 
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
@@ -42,6 +42,7 @@ export const FlawAcknowledgmentSchema = z.object({
   embargoed: z.boolean().default(false),
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodFlawReferenceType = z.infer<typeof FlawReferenceSchema>;
@@ -52,6 +53,7 @@ export const FlawReferenceSchema = z.object({
   url: z.string().default(''),
   embargoed: z.boolean().default(false),
   updated_dt: zodOsimDateTime().nullish().default(null),
+  alerts: z.array(ZodAlertSchema).default([]),
 }).superRefine((reference, zodContext) => {
   if (reference.type === 'ARTICLE' && !reference.url.match(/^https:\/\/access\.redhat\.com\//)) {
     zodContext.addIssue({
@@ -101,6 +103,7 @@ export const FlawCVSSSchema = z.object({
   embargoed: z.boolean().nullable(),
   created_dt: zodOsimDateTime().nullish(), // $date-time, // read-only
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 
@@ -108,31 +111,16 @@ export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
   order: z.number(),
-  // meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
-  meta_attr: z.object({
-    id: z.string().nullish(),
-    tags: z.string().nullish(),
-    text: z.string().nullish(),
-    time: z.string().nullish(),
-    count: z.string().nullish(),
-    bug_id: z.string().nullish(),
-    creator: z.string().nullish(),
-    creator_id: z.string().nullish(),
-    is_private: z
-      .string()
-      .transform((booleanString) => booleanString === 'True')
-      .or(z.boolean())
-      .nullish(),
-    attachment_id: z.string().nullish(),
-    creation_time: z.string().nullish(),
-    private_groups: z
-      .string()
-      // .transform((jsonString: string) => JSON.parse(jsonString.replace(/'/g, '"')))
-      .or(z.array(z.string()))
-      .nullish(),
-  }).nullish(),
+  text: z.string().nullish(),
+  creator: z.string().nullish(),
+  is_private: z
+    .string()
+    .transform((booleanString) => booleanString === 'True')
+    .or(z.boolean())
+    .nullish(),
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
+  alerts: z.array(ZodAlertSchema).default([]),
 });
 
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
@@ -160,12 +148,12 @@ export const ZodFlawSchema = z.object({
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
-  description: z.string().refine(
-    description => description.trim().length > 0,
+  comment_zero: z.string().refine(
+    comment_zero => comment_zero.trim().length > 0,
     { message: 'Comment#0 cannot be empty.' }
   ),
-  summary: z.string().nullish(),
-  requires_summary: z.nativeEnum(RequiresSummaryEnumWithBlank).nullish(),
+  cve_description: z.string().nullish(),
+  requires_cve_description: z.nativeEnum(RequiresDescriptionEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
@@ -185,6 +173,7 @@ export const ZodFlawSchema = z.object({
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  alerts: z.array(ZodAlertSchema).default([]),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {
@@ -211,19 +200,19 @@ export const ZodFlawSchema = z.object({
   };
 
   if (
-    zodFlaw.requires_summary
-    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_summary)
-    && zodFlaw.summary === ''
+    zodFlaw.requires_cve_description
+    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_cve_description)
+    && zodFlaw.cve_description === ''
   ) {
-    raiseIssue('Description cannot be blank if requested or approved.', ['summary']);
+    raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
   }
 
   if (
-    zodFlaw.requires_summary !== 'APPROVED'
+    zodFlaw.requires_cve_description !== 'APPROVED'
     && zodFlaw.major_incident_state
     && ['APPROVED', 'CISA_APPROVED'].includes(zodFlaw.major_incident_state)
   ) {
-    raiseIssue('Description must be approved for Major Incidents.', ['summary']);
+    raiseIssue('Description must be approved for Major Incidents.', ['cve_description']);
   }
 
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();

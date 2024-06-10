@@ -3,9 +3,10 @@ import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { computed, ref, watch, type Ref } from 'vue';
 import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
-import { useSearchParams, allowedEmptyFields } from '@/composables/useSearchParams';
+import { useSearchParams } from '@/composables/useSearchParams';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { allowedEmptyFieldMapping } from '@/constants/flawFields';
 
 const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
 const { getSearchParams, facets } = useSearchParams();
@@ -46,7 +47,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
 function saveFilter() {
   const filters = facets.value.reduce(
     (fields, { field, value }) => {
-      if (field && value || allowedEmptyFields.includes(field)) {
+      if (field && value || allowedEmptyFieldMapping[field]) {
         fields[field] = value;
       }
       return fields;

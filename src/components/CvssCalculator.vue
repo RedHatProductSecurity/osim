@@ -13,7 +13,7 @@ import {
 } from '@/composables/useCvssCalculator';
 
 const cvssVector = defineModel<string | undefined | null>('cvssVector');
-const cvssScore = defineModel<number | null>('cvssScore');
+const cvssScore = defineModel<number | undefined | null>('cvssScore');
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 
@@ -81,7 +81,7 @@ function highlightFactor(factor: string | null) {
 }
 
 function handlePaste(e: ClipboardEvent) {
-  let maybeCvss = e.clipboardData?.getData('text');
+  const maybeCvss = e.clipboardData?.getData('text');
   if (!maybeCvss) {
     return;
   }

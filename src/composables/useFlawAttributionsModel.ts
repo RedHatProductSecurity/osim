@@ -70,6 +70,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       embargoed: isEmbargoed,
       updated_dt: null,
       uuid: '',
+      alerts: [],
     });
   }
 
@@ -114,6 +115,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       embargoed: isEmbargoed,
       created_dt: null,
       updated_dt: null,
+      alerts: [],
     });
   }
 

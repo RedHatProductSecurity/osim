@@ -132,12 +132,14 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     .catch(createCatchHandler('CVSS scores Update Error'));
 }
 
-export async function postFlawPublicComment(uuid: string, comment: string, embargoed: boolean) {
+export async function postFlawPublicComment(uuid: string, comment: string, creator: string, embargoed: boolean) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/comments`,
     data: {
       text: comment,
+      creator: creator,
+      type: 'BUGZILLA',
       embargoed,
     },
   }).then((response) => response.data);
@@ -231,8 +233,8 @@ export async function postFlaw(requestBody: any) {
   //   "impact": "LOW",
   //   "component": "string",
   //   "title": "string",
-  //   "description": "string",
-  //   "summary": "string",
+  //   "comment_zero": "string",
+  //   "cve_description": "string",
   //   "statement": "string",
   //   "cwe_id": "string",
   //   "unembargo_dt": "2023-06-26T06:19:23.982Z",

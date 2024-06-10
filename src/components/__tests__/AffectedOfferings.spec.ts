@@ -11,6 +11,7 @@ function mockAffect ({ ps_module, ps_component }: { ps_module: string, ps_compon
     ps_component,
     embargoed:false,
     trackers:[],
+    alerts: [],
     cvss_scores: [{
       comment: 'hardcoded comment',
       created_dt: null,
@@ -20,6 +21,7 @@ function mockAffect ({ ps_module, ps_component }: { ps_module: string, ps_compon
       score: null,
       uuid: null,
       vector: null,
+      alerts: [],
     },
     ],
   };

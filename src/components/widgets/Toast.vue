@@ -36,7 +36,7 @@ const inactiveDate = ref(Date.now());
 const percentTimeRemaining = ref<number>(100);
 
 const percentFreshTimeRemaining = ref<number>(100);
-let freshAndBecomingStaleStart = ref(true);
+const freshAndBecomingStaleStart = ref(true);
 
 // Use NaN to check if the id has been assigned before clearInterval
 let freshCountdownId: number = NaN;
@@ -55,7 +55,7 @@ onMounted(() => {
     }
     // inactive
     freshAndBecomingStaleStart.value = percentFreshTimeRemaining.value === 100;
-    let msNotHovered = Date.now() - inactiveDate.value;
+    const msNotHovered = Date.now() - inactiveDate.value;
     percentFreshTimeRemaining.value = 100 - 100 * msNotHovered / freshMs;
     if (percentFreshTimeRemaining.value <= 0) {
       clearInterval(freshCountdownId);
@@ -71,14 +71,14 @@ onBeforeUnmount(() => {
 });
 
 if (props.timeoutMs) {
-  let countdownId: number = NaN;
+  const countdownId: number = NaN;
   onMounted(() => {
     const countdownId: number = setInterval(() => {
       if (active.value || props.timeoutMs == null) {
         percentTimeRemaining.value = 100;
         return;
       }
-      let msNotHovered = Date.now() - inactiveDate.value;
+      const msNotHovered = Date.now() - inactiveDate.value;
       percentTimeRemaining.value = 100 - 100 * msNotHovered / props.timeoutMs;
       if (percentTimeRemaining.value <= 0) {
         clearInterval(countdownId);
@@ -137,7 +137,7 @@ const toastClasses = computed(() => {
   const textBgKey: string = 'text-bg-' + css.value;
   classes[textBgKey] = true;
 
-  let freshAndBecomingStale = !settings.showNotifications && !active.value && !isStale.value;
+  const freshAndBecomingStale = !settings.showNotifications && !active.value && !isStale.value;
   classes['fresh-leave-active'] = freshAndBecomingStale;
 
   return classes;

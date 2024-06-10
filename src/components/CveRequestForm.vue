@@ -64,7 +64,7 @@ function addPublicCveRequestComment() {
     // new Promise((resolve, reject) => {
     //   setTimeout(resolve, 5000);
     // })
-    postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested', props.embargoed)
+    postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested', userStore.userName, props.embargoed)
       .then(() => {
         commentSaved.value = true;
         savingComment.value = false;
