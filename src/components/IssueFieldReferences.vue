@@ -67,9 +67,9 @@ defineExpose({ editableListComp });
           >
             {{ referenceTypeLabel(type) }}
           </span>
-          <a class="m-1" :href="url" target="_blank">{{ url }}</a>
+          <a class="m-1 mb-3" :href="url" target="_blank">{{ url }}</a>
         </div>
-        <div class="form-group mt-2">
+        <div v-if="item.description" class="form-group">
           <LabelStatic v-model="item.description" label="Description" hasTopLabelStyle />
         </div>
       </template>
