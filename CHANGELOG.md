@@ -13,6 +13,7 @@
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
+* Hide references description when it is not set (`OSIDB-2846`)
 
 ### Fixed
 * The session is now shared across tabs
@@ -37,6 +38,7 @@
 * Removed comment.type usage (`OSIDB-2781`)
 * Removed Flaw.meta usage (`OSIDB-2801`)
 * Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
+* Removed validation on empty references description (`OSIDB-2846`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
