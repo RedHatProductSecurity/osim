@@ -21,6 +21,7 @@ import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
 
@@ -129,10 +130,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -228,10 +229,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -326,11 +327,11 @@ describe('FlawForm', () => {
       ?.find('.is-invalid');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component')
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components')
       ?.find('.is-invalid');
-    expect(componentField?.exists()).toBe(true);
+    expect(componentsField?.exists()).toBe(true);
 
     const invalidImpactField = subject
       .findAllComponents(LabelSelect)

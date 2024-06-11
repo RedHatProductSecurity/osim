@@ -15,6 +15,9 @@
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
 * Add Incident State for AdvancedSearch (`OSIDB-2892`)
 
+### Changed
+* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+
 ### Fixed
 * The session is now shared across tabs
 * CVSS scores on affects can be added (`OSIDB-2573`)
