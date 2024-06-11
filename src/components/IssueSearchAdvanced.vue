@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { flawImpacts, flawSources } from '@/types/zodFlaw';
+import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
@@ -33,6 +33,7 @@ const nameForOption = (fieldName: string) => {
     cve_id: 'CVE ID',
     source: 'CVE Source',
     requires_cve_description: 'CVE Description Review',
+    major_incident_state: 'Incident State',
   };
   let name =
     mappings[fieldName]
@@ -65,6 +66,7 @@ const optionsFor = (field: string) =>
       'SECONDARY_ASSESSMENT',
       'TRIAGE',
     ],
+    major_incident_state: flawIncidentStates,
   })[field] || null;
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
