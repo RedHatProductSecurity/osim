@@ -6,7 +6,7 @@ if [ -z "$OSIM_NGINX_PROXY_JIRA" ]; then
 fi
 
 # Get proxy certificate
-curl --xattr $OSIM_NGINX_PROXY_CA -o /tmp/Proxy-CA.crt
+curl --xattr "$OSIM_NGINX_PROXY_CA" -o /tmp/Proxy-CA.crt
 
 # Ensure no trailing slash in variable, so no duplicate trailing slash is added in proxy_pass
 OSIM_NGINX_PROXY_JIRA="${OSIM_NGINX_PROXY_JIRA%/}"
