@@ -22,7 +22,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-blank-affect': [value: string, callback: any];
+  'add-blank-affect': [value: string, callback: (affect: ZodAffectType) => void];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);

@@ -1,5 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
+import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
 import { mockAffect } from './test-suite-helpers';
 

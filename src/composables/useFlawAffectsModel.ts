@@ -97,7 +97,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     affectsToDelete.value = [];
   }
 
-  function addBlankAffect(moduleName: string, callback: () => void) {
+  function addBlankAffect(moduleName: string, callback: (affect: ZodAffectType) => void) {
     const embargoed = flaw.value.embargoed;
     const newAffect: ZodAffectType = {
       embargoed,
