@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import { useToastStore } from '@/stores/ToastStore';
 
@@ -14,6 +14,7 @@ export function useInternalComments(taskKey: string) {
   const isLoadingInternalComments = ref(false);
   const isSavingInternalComment = ref(false);
   const internalComments = ref<Comment[]>([]);
+  const internalCommentsAvailable = computed(() => available.value && taskKey);
 
   function loadInternalComments() {
     isLoadingInternalComments.value = true;
@@ -61,10 +62,6 @@ export function useInternalComments(taskKey: string) {
         });
       })
       .finally(() => isSavingInternalComment.value = false);
-  }
-
-  function internalCommentsAvailable() {
-    return available.value && taskKey;
   }
 
   function parseJiraComments(comments: any) {

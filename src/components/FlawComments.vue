@@ -137,7 +137,7 @@ function sanitize(text: string) {
             v-if="(
               !isAddingNewComment
               && selectedTab !== CommentTab.System)
-              && (internalCommentsAvailable() || selectedTab !== CommentTab.Internal
+              && (internalCommentsAvailable || selectedTab !== CommentTab.Internal
               )"
             type="button"
             class="btn btn-secondary tab-btn"
@@ -147,7 +147,7 @@ function sanitize(text: string) {
             Add {{ tabLabels[selectedTab].slice(0, -1) }}
           </button>
           <a
-            v-if="(selectedTab === CommentTab.Internal && internalCommentsAvailable())"
+            v-if="(selectedTab === CommentTab.Internal && internalCommentsAvailable)"
             :href="taskUrl(taskKey ?? '#')"
             target="_blank"
             class="btn btn-secondary tab-btn"
@@ -163,7 +163,7 @@ function sanitize(text: string) {
             v-if="(
               isAddingNewComment
               && selectedTab !== CommentTab.System)
-              && (internalCommentsAvailable()
+              && (internalCommentsAvailable
                 || selectedTab !== CommentTab.Internal
               )"
           >
@@ -183,7 +183,7 @@ function sanitize(text: string) {
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <div v-else-if="!internalCommentsAvailable() && selectedTab === CommentTab.Internal" class="ms-3">
+            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentTab.Internal" class="ms-3">
               Internal comments not available
             </div>
             <div v-else-if="displayedComments.length === 0" class="ms-3">
