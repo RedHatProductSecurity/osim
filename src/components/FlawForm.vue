@@ -221,10 +221,11 @@ const expandFocusedComponent = (parent_uuid: string) => {
   }
 };
 
+const formDisabled = ref(false);
 </script>
 
 <template>
-  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving }" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
@@ -486,10 +487,11 @@ const expandFocusedComponent = (parent_uuid: string) => {
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments
           :comments="flaw.comments"
+          :taskKey="flaw.task_key"
           :error="errors.comments"
           :isSaving="isSaving"
           @comment:addPublicComment="addPublicComment"
-          @refresh:flaw="emit('refresh:flaw')"
+          @disableForm="(value) => formDisabled = value"
         />
       </div>
     </div>

@@ -18,6 +18,9 @@
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
+* Support internal flaw comments using Jira (`OSIDB-828`)
+* Redesign flaw comments section (`OSIDB-2536`)
 
 ### Fixed
 * The session is now shared across tabs

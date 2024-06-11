@@ -106,7 +106,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-
+export type ZodFlawCommentSchemaType = z.infer<typeof ZodFlawCommentSchema>
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
@@ -174,6 +174,7 @@ export const ZodFlawSchema = z.object({
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
+  task_key: z.string().max(60).nullish(),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {
