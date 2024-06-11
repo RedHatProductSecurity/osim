@@ -8,11 +8,12 @@ import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
 import { taskUrl } from '@/services/JiraService';
+import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 
 const userStore = useUserStore();
 
 const props = defineProps<{
-  comments: any[];
+  comments: ZodFlawCommentSchemaType[];
   taskKey: string | null | undefined;
   isSaving: boolean;
 }>();
@@ -62,7 +63,7 @@ const filterFunctions: CommentFilterFunctions = {
   system: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
-function parseOsidbComments(comments: any) {
+function parseOsidbComments(comments: ZodFlawCommentSchemaType[]) {
   return comments.map((comment: any) => {
     return {
       author: comment.creator,
