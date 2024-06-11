@@ -498,7 +498,7 @@ const expandFocusedComponent = (parent_uuid: string) => {
         @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
         @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
         @file-tracker="fileTracker($event as TrackersFilePost)"
-        @add-affect="(moduleName) => addBlankAffect(moduleName)"
+        @add-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments

@@ -18,7 +18,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-affect': [value: string];
+  'add-affect': [value: string, callback: any];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
@@ -93,8 +93,12 @@ function expandAll() {
 
 function togglePsComponentExpansion(affect: ZodAffectType) {
   const isExpanded = expandedAffects.value.get(affect);
-  isExpanded.value = !isExpanded.value;
-  expandedAffects.value.set(affect, isExpanded);
+  if (isExpanded) {
+    isExpanded.value = !isExpanded.value;
+    expandedAffects.value.set(affect, isExpanded);
+  } else {
+    expandedAffects.value.set(affect, ref(true));
+  }
 }
 
 function togglePsModuleExpansion(moduleName: string) {
@@ -117,6 +121,8 @@ function isNewModule(moduleName: string) {
 
 function addNewModule() {
   affectedModules.value.push('');
+  collapseAll();
+  expandedModules.value[''] = true;
 }
 
 </script>
@@ -179,7 +185,11 @@ function addNewModule() {
                 <a class="dropdown-item" href="#"> 🚧 Auto-file for all components</a>
               </div>
             </div>
-            <button type="button" class="btn btn-secondary ms-2" @click.prevent="emit('add-affect', moduleName)">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary ms-2"
+              @click.prevent="emit('add-affect', moduleName, togglePsComponentExpansion)"
+            >
               Add New Component
             </button>
           </div>
