@@ -9,7 +9,7 @@ import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectsTrackers from '@/components/AffectsTrackers.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
-import LabelEditable from './widgets/LabelEditable.vue';
+import LabelEditable from '@/components/widgets//LabelEditable.vue';
 
 const props = defineProps<{
   flawId: string;
@@ -17,6 +17,8 @@ const props = defineProps<{
   affectsToDelete: ZodAffectType[];
   error: Record<string, any>[] | null;
 }>();
+
+const uniqueModuleId = ref(0);
 
 const emit = defineEmits<{
   'file-tracker': [value: object];
@@ -124,15 +126,18 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 
 defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
 
-function isNewModule(moduleName: string) {
-  return !initialAffectedModules.value.includes(moduleName)
-  || affectsWithModuleName(moduleName).every(affect => !affect.uuid);
+function shouldShowModuleNameEdit(moduleName: string) {
+  const expandedState = expandedModules.value[moduleName];
+  return expandedState && (!initialAffectedModules.value.includes(moduleName)
+  || affectsWithModuleName(moduleName).every(affect => !affect.uuid));
 }
 
 function addNewModule() {
-  affectedModules.value.push('');
   collapseAll();
-  expandedModules.value[''] = true;
+  uniqueModuleId.value += 1;
+  const newModuleName = `New Module ${uniqueModuleId.value}`;
+  affectedModules.value.push(newModuleName);
+  expandedModules.value[newModuleName] = true;
 }
 
 </script>
@@ -175,7 +180,7 @@ function addNewModule() {
       </button>
     </h4>
     <div v-for="(moduleName, moduleNameIndex) in affectedModules" :key="moduleName">
-      <div v-if="isNewModule(moduleName)" class="col-6">
+      <div v-if="shouldShowModuleNameEdit(moduleName)" class="col-6">
         <LabelEditable
           v-model="affectedModules[moduleNameIndex]"
           label="Module Name"

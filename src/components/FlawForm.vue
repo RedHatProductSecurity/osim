@@ -489,17 +489,19 @@ const formDisabled = ref(false);
           </ul>
         </LabelCollapsible>
       </div>
-      <AffectedOfferings
-        v-if="mode === 'edit'"
-        ref="affectedOfferingsComp"
-        :theAffects="theAffects"
-        :affectsToDelete="affectsToDelete"
-        :error="errors.affects"
-        :flawId="flaw.uuid"
-        @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
-        @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-        @add-blank-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
-      />
+      <div class="border-top osim-flaw-form-section">
+        <AffectedOfferings
+          v-if="mode === 'edit'"
+          ref="affectedOfferingsComp"
+          :theAffects="theAffects"
+          :affectsToDelete="affectsToDelete"
+          :error="errors.affects"
+          :flawId="flaw.uuid"
+          @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
+          @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
+          @add-blank-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
+        />
+      </div>
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments
           :comments="flaw.comments"
