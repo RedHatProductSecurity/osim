@@ -106,7 +106,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-
+export type ZodFlawCommentSchemaType = z.infer<typeof ZodFlawCommentSchema>
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
@@ -142,7 +142,7 @@ export const ZodFlawSchema = z.object({
       Boolean,
       { message: 'You must select an impact before saving the Flaw.' }
     ),
-  component: z.string().max(100).min(1),
+  components: z.array(z.string().min(1).max(100)).nonempty(),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
@@ -174,6 +174,7 @@ export const ZodFlawSchema = z.object({
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
+  task_key: z.string().max(60).nullish(),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {

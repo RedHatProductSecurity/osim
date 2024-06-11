@@ -21,12 +21,12 @@ import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
-// const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
   const reader = request.body?.getReader();
 
@@ -55,6 +55,20 @@ vi.mock('vue-router', async () => {
   };
 });
 
+vi.mock('@/services/TrackerService', () => {
+  return {
+    getSuggestedTrackers: vi.fn(() => Promise.resolve([])),
+  };
+});
+
+vi.mock('@/composables/useTrackers', () => {
+  return {
+    suggestedTrackers: { value: [] },
+    getUpdateStreamsFor: vi.fn(() => []),
+    useTrackers: vi.fn(() => []),
+  };
+});
+
 describe('FlawForm', () => {
   function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw(), mode: 'edit' }) {
     subject = mount(FlawForm, {
@@ -68,6 +82,8 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           // EditableDate: true,
           RouterLink: true,
+          AffectedOfferings: true,
+          AffectExpandableForm: true,
         },
       },
     });
@@ -108,6 +124,9 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
           RouterLink: true,
+          AffectedOfferings: true,
+          AffectExpandableForm: true,
+
         },
       },
     });
@@ -129,10 +148,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -153,7 +172,7 @@ describe('FlawForm', () => {
     ]);
 
     const cvssV3Field = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(CvssCalculator)
       .find((component) => component.text().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
@@ -228,10 +247,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -326,11 +345,11 @@ describe('FlawForm', () => {
       ?.find('.is-invalid');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component')
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components')
       ?.find('.is-invalid');
-    expect(componentField?.exists()).toBe(true);
+    expect(componentsField?.exists()).toBe(true);
 
     const invalidImpactField = subject
       .findAllComponents(LabelSelect)

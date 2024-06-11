@@ -13,8 +13,16 @@
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
+* Add Incident State for AdvancedSearch (`OSIDB-2892`)
+* Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
 * Add Affect Module Button on Flaw Form (`OSIDB-2876`)
 * Sort affects by product family, alphabetical (`OSIDB-2533`)
+
+### Changed
+* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
+* Support internal flaw comments using Jira (`OSIDB-828`)
+* Redesign flaw comments section (`OSIDB-2536`)
 
 ### Fixed
 * The session is now shared across tabs

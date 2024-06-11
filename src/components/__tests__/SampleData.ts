@@ -6,7 +6,7 @@ export function sampleFlaw(): ZodFlawType {
     cve_id: 'CVE-2007-97239',
     // resolution: '',
     impact: 'LOW',
-    component: 'reality.',
+    components: ['reality.'],
     title: 'sample title',
     trackers: [],
     comment_zero: 'Comment Zero == Patient Zero',

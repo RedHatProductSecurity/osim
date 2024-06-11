@@ -4,6 +4,7 @@ import { computed, ref, watch, onMounted, reactive } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
@@ -21,9 +22,9 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
+import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { sortWith, ascend, prop } from 'ramda';
 import { type ZodAffectType } from '@/types/zodAffect';
@@ -236,10 +237,11 @@ const expandFocusedComponent = (parent_uuid: string) => {
   }
 };
 
+const formDisabled = ref(false);
 </script>
 
 <template>
-  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving }" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
         <div class="col-12 osim-alerts-banner">
@@ -252,11 +254,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
             type="text"
             :error="errors.title"
           />
-          <LabelEditable
-            v-model="flaw.component"
-            label="Component"
-            type="text"
-            :error="errors.component"
+          <LabelTagsInput
+            v-model="flaw.components"
+            label="Components"
+            :error="errors.components"
           />
           <div class="row">
             <div class="col">
@@ -493,20 +494,20 @@ const expandFocusedComponent = (parent_uuid: string) => {
         ref="affectedOfferingsComp"
         :theAffects="theAffects"
         :affectsToDelete="affectsToDelete"
-        class="osim-flaw-form-section"
         :error="errors.affects"
+        :flawId="flaw.uuid"
         @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
         @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-        @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments
           :comments="flaw.comments"
+          :taskKey="flaw.task_key"
           :error="errors.comments"
           :isSaving="isSaving"
           @comment:addPublicComment="addPublicComment"
-          @refresh:flaw="emit('refresh:flaw')"
+          @disableForm="(value) => formDisabled = value"
         />
       </div>
     </div>
@@ -568,7 +569,7 @@ form.osim-flaw-form :deep(*) {
     padding-left: 0;
 
     input,
-    span,
+    span:not(.osim-pill-list-item),
     select,
     div.form-control {
       border-top-left-radius: 0;

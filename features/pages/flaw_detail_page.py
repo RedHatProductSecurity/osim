@@ -109,7 +109,7 @@ class FlawDetailPage(BasePage):
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
-        "affectFileTrackerBtn": ("XPATH", "(//button[contains(text(), 'File Tracker')])[1]"),
+        "affectFileTrackerBtn": ("XPATH", "(//button[contains(text(), 'File Tracker')])[1]"), # TODO: update feature to use new tracker filing interface
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']"),
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
