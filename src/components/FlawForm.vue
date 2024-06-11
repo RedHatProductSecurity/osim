@@ -22,9 +22,9 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
+import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
 const props = defineProps<{
@@ -477,11 +477,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
         ref="affectedOfferingsComp"
         :theAffects="flaw.affects"
         :affectsToDelete="affectsToDelete"
-        class="osim-flaw-form-section"
         :error="errors.affects"
+        :flawId="flaw.uuid"
         @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
         @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-        @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

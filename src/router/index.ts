@@ -14,7 +14,6 @@ import { notifyApiKeyUnset } from '@/services/ApiKeyService';
 import FlawCreateView from '@/views/FlawCreateView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
-import TrackerDetailView from '@/views/TrackerDetailView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
 import WidgetTestView from '@/views/WidgetTestView.vue';
@@ -122,17 +121,6 @@ const router = createRouter({
         }
       }
     },
-
-    {
-      path: '/tracker/:id',
-      name: 'tracker-details',
-      props: true,
-      component: TrackerDetailView,
-      meta: {
-        title: 'Tracker Details',
-      },
-    },
-
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
@@ -142,18 +130,6 @@ const router = createRouter({
         title: 'Page Not Found',
       },
     },
-
-    // {
-    //   path: '/about/:id',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue')
-    //   meta: {
-    //     title: 'About',
-    //   },
-    // },
   ],
 });
 
