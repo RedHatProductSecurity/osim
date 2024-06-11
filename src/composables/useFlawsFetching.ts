@@ -14,7 +14,15 @@ export function useFlawsFetching() {
     const requestParams: Record<string, any> = {};
     for (const key in params) {
       if (params[key] === '' && allowedEmptyFieldMapping[key]) {
-        requestParams[allowedEmptyFieldMapping[key]] = 1;
+        const fields = allowedEmptyFieldMapping[key];
+        // CVSS3 score field purpose now
+        if (Array.isArray(fields)) {
+          fields.forEach((field) => {
+            requestParams[field] = 1;
+          });
+        } else {
+          requestParams[fields] = 1;
+        }
       } else {
         requestParams[key] = params[key];
       }

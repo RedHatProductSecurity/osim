@@ -45,9 +45,9 @@ export const flawFields = fieldsFor(ZodFlawSchema)
   .flatMap((field) => fieldsMapping[field] || field)
   .sort();
 
-export const allowedEmptyFieldMapping: Record<string, string> = {
+export const allowedEmptyFieldMapping: Record<string, any> = {
   'cve_id': 'cve_id__isempty',
-  'cvss_scores__score': 'cvss_scores__score__isempty',
+  'cvss_scores__score': ['cvss2_rh__isempty', 'cvss3_nist__isempty'],
   'cwe_id': 'cwe_id__isempty',
   'owner': 'owner__isempty',
   'cve_description': 'cve_description__isempty',
