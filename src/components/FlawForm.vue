@@ -498,7 +498,7 @@ const formDisabled = ref(false);
         :flawId="flaw.uuid"
         @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
         @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-        @add-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
+        @add-blank-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments

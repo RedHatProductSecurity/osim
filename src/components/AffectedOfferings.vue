@@ -22,7 +22,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-affect': [value: string, callback: any];
+  'add-blank-affect': [value: string, callback: any];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
@@ -214,7 +214,7 @@ function addNewModule() {
             <button
               type="button"
               class="btn btn-sm btn-secondary ms-2"
-              @click.prevent="emit('add-affect', moduleName, togglePsComponentExpansion)"
+              @click.prevent="emit('add-blank-affect', moduleName, togglePsComponentExpansion)"
             >
               Add New Component
             </button>
