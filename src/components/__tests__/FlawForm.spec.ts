@@ -20,7 +20,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
-import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
@@ -224,7 +224,7 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject.findComponent(FlawFormAssignee);
+    const assigneeField = subject.findComponent(FlawFormOwner);
     expect(assigneeField?.exists()).toBe(true);
 
     const trackers = subject
@@ -401,12 +401,12 @@ describe('FlawForm', () => {
     expect(vm.errors.cve_description).toBe('Description must be approved for Major Incidents.');
   });
 
-  it('displays correct Assignee field value from props', async () => {
+  it('displays correct Owner field value from props', async () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
     mountWithProps({ flaw, mode: 'edit' });
-    const assigneeField = subject.findComponent(FlawFormAssignee);
-    expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
+    const assigneeField = subject.findComponent(FlawFormOwner);
+    expect(assigneeField?.find('span.form-label').text()).toBe('Owner');
     expect(assigneeField?.props().modelValue).toBe('test owner');
     expect(assigneeField?.html()).toContain('test owner');
   });

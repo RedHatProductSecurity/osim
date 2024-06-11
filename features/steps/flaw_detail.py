@@ -260,9 +260,9 @@ def step_impl(context):
 @when('I click self assign button and save changes')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    cur_value = flaw_detail_page.get_current_value_of_field("assignee")
+    cur_value = flaw_detail_page.get_current_value_of_field("owner")
     if cur_value:
-        flaw_detail_page.set_field_value('assignee', '')
+        flaw_detail_page.set_field_value('owner', '')
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
     go_to_specific_flaw_detail_page(context.browser)
@@ -274,7 +274,7 @@ def step_impl(context):
 @then("The flaw is assigned to me")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    assignee = flaw_detail_page.get_current_value_of_field("assignee")
+    assignee = flaw_detail_page.get_current_value_of_field("owner")
     home_page = HomePage(context.browser)
     login_user = home_page.userBtn.get_text()
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
