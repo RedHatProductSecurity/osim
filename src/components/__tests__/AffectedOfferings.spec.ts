@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
-
 import { mockAffect } from './test-suite-helpers';
 
 // const mockError = () => ({
