@@ -14,6 +14,7 @@
 * Support private Bugzilla comments (`OSIDB-2912`)
 * Add Created At on Flaw Edit (`OSIDB-2945`)
 * Add Affect affectedness on Advanced Search (`OSIDB-2951`)
+* Limit Affect resolution options based on affectedness value (`OSIDB-2787`)
 
 ### Fixed
 * Refresh flaw after cvss scores on create (`OSIDB-2981`)
