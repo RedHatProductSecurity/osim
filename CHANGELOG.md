@@ -13,6 +13,7 @@
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
+* Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
 
 ### Fixed
 * The session is now shared across tabs

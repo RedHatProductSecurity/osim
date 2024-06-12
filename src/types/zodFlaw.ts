@@ -137,12 +137,8 @@ export const ZodFlawSchema = z.object({
         'unexpected characters like spaces.'
     }
   ),
-  impact: z.nativeEnum(ImpactEnumWithBlank)
-    .refine(
-      Boolean,
-      { message: 'You must select an impact before saving the Flaw.' }
-    ),
-  component: z.string().max(100).min(1),
+  impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
+  component: z.string().max(100).min(0).nullable(),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
@@ -207,6 +203,16 @@ export const ZodFlawSchema = z.object({
     raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
   }
 
+  if (zodFlaw.classification?.state !== 'REJECTED') {
+    if (!zodFlaw.impact) {
+      raiseIssue('You must select an impact before saving the Flaw.', ['impact']);
+    }
+
+    if (!zodFlaw.component) {
+      raiseIssue('Component cannot be empty.', ['component']);
+    }
+  }
+
   if (
     zodFlaw.requires_cve_description !== 'APPROVED'
     && zodFlaw.major_incident_state
@@ -222,7 +228,7 @@ export const ZodFlawSchema = z.object({
     raiseIssue('An embargoed flaw must have a public date in the future.', ['unembargo_dt']);
   }
 
-  if (!zodFlaw.embargoed && !unembargo_dt) {
+  if (!zodFlaw.embargoed && !unembargo_dt && zodFlaw.classification?.state !== 'REJECTED') {
     // if embargoed and dt is not set, shows up the error
     // This behaviour is not acceptable because if a flaw is unembargoed,
     // it means the flaw is public already which requires the date when this was made public.
@@ -250,4 +256,5 @@ export const ZodFlawSchema = z.object({
       [`Affects/${affect.index}/component`],
     );
   }
+
 });
