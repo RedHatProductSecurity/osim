@@ -26,7 +26,7 @@ const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd';
+const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm ZZZZ' : 'yyyy-MM-dd';
 const maskLayer = {
   mask: Date,
   pattern,
@@ -64,7 +64,10 @@ const maskLayer = {
       from: 0,
       to: 59,
       maxLength: 2,
-    }
+    },
+    ZZZZ: {
+      mask: 'UTC',
+    },
   },
   // IMask's complete event depends on format and parse returning valid dates
   format: formatDate,
@@ -72,7 +75,7 @@ const maskLayer = {
   autofix: true,
 };
 
-const formatString = props.includesTime ? 'yyyy-MM-dd T' : 'yyyy-MM-dd';
+const formatString = props.includesTime ? 'yyyy-MM-dd T\' UTC\'' : 'yyyy-MM-dd';
 // The assumption is that the Date or String is in UTC
 function formatDate(date: Date | string): string {
   const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
@@ -80,7 +83,9 @@ function formatDate(date: Date | string): string {
 }
 // The assumption is that the Date or String is in UTC
 function parseDate(dateString: string): Date {
-  return DateTime.fromFormat(dateString, formatString, { zone: 'utc' }).toJSDate();
+  // Remove the static part ' UTC' before parsing
+  const cleanedDateString = dateString.replace(' UTC', '').trim();
+  return DateTime.fromFormat(cleanedDateString, formatString.replace('\' UTC\'', ''), { zone: 'utc' }).toJSDate();
 }
 const maskState = reactive({
   completed: false,
@@ -157,7 +162,6 @@ function onBlur(e: FocusEvent | null) {
     return;
   }
 
-
   if (e.relatedTarget instanceof Node) {
     if (elDiv.value?.contains(e.relatedTarget)) {
       return; // Don't abort or commit if focus is still within the input editing parts of the component
@@ -167,7 +171,6 @@ function onBlur(e: FocusEvent | null) {
     }
   }
 }
-
 
 function isValidDate(d: Date | string): boolean {
   if (typeof d === 'string') {
