@@ -32,6 +32,7 @@
   * Filter trackers by stream or component name
   * Shows recommended tracker icon
 * Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
+* Renamed Flaw Status to Flaw State (`OSIDB-2899`)
 
 ### Fixed
 * The session is now shared across tabs
