@@ -156,9 +156,9 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function addPublicComment(comment: string, creator: string) {
     isSaving.value = true;
     postFlawPublicComment(flaw.value.uuid, comment, creator, flaw.value.embargoed)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
+      .then(createSuccessHandler({ title: 'Success!', body: 'Public comment saved.' }))
       .then(afterSaveSuccess)
-      .catch(createCatchHandler('Error saving comment'))
+      .catch(createCatchHandler('Error saving public comment'))
       .finally(() => isSaving.value = false);
   }
 
@@ -193,7 +193,7 @@ export function blankFlaw(): ZodFlawType {
       state: 'NEW',
       workflow: '',
     },
-    component: '',
+    components: [],
     unembargo_dt: '',
     reported_dt: new Date().toISOString(),
     uuid: '',
@@ -211,6 +211,7 @@ export function blankFlaw(): ZodFlawType {
     cve_description: '',
     statement: '',
     mitigation: '',
+    task_key: '',
     comments: [],
     references: [],
     acknowledgments: [],

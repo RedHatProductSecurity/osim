@@ -76,7 +76,7 @@
     "vue/multi-word-component-names": [
       "error",
       {
-        "ignores": ["Modal", "Toast", "Login", "Navbar", "Settings"]
+        "ignores": ["Modal", "Tabs", "Toast", "Login", "Navbar", "Settings"]
       }
     ]
   }
