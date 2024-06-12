@@ -15,6 +15,7 @@
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
 * Add Incident State for AdvancedSearch (`OSIDB-2892`)
 * Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
+* Hide references description when it is not set (`OSIDB-2846`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
@@ -45,6 +46,7 @@
 * Removed comment.type usage (`OSIDB-2781`)
 * Removed Flaw.meta usage (`OSIDB-2801`)
 * Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
+* Removed validation on empty references description (`OSIDB-2846`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
