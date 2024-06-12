@@ -140,6 +140,18 @@ function addNewModule() {
   expandedModules.value[newModuleName] = true;
 }
 
+function renameModule(newName: string, index: number) {
+  expandedModules.value[newName] = true;
+  affectedModules.value[index] = newName;
+
+  // Clean up expandedModules to remove unnecessary keys
+  for (const key in expandedModules.value) {
+    if (!affectedModules.value.includes(key)) {
+      delete expandedModules.value[key];
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -185,6 +197,7 @@ function addNewModule() {
           v-model="affectedModules[moduleNameIndex]"
           label="Module Name"
           type="text"
+          @update:modelValue="value => renameModule(value as string, moduleNameIndex)"
         />
       </div>
       <LabelCollapsible
