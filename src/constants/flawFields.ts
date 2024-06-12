@@ -47,7 +47,14 @@ export const flawFields = fieldsFor(ZodFlawSchema)
 
 export const allowedEmptyFieldMapping: Record<string, any> = {
   'cve_id': 'cve_id__isempty',
-  'cvss_scores__score': ['cvss2_rh__isempty', 'cvss3_nist__isempty'],
+  'cvss_scores__score': [
+    'cvss2_rh__isempty',
+    'cvss3_rh__isempty',
+    'cvss4_rh__isempty',
+    'cvss2_nist__isempty',
+    'cvss3_nist__isempty',
+    'cvss4_nist__isempty',
+  ],
   'cwe_id': 'cwe_id__isempty',
   'owner': 'owner__isempty',
   'cve_description': 'cve_description__isempty',
