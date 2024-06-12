@@ -119,6 +119,12 @@ const onReset = () => {
   flaw.value = deepCopyFromRaw(initialFlaw);
 };
 
+const onUnembargoed = (isEmbargoed: boolean) => {
+  if (!isEmbargoed && !flaw.value.unembargo_dt) {
+    flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
+  }
+};
+
 const allowedSources = [
   '',
   'ADOBE',
@@ -373,6 +379,7 @@ const formDisabled = ref(false);
             :isEmbargoed="isEmbargoed"
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
+            @update:model-value="onUnembargoed"
           />
           <FlawFormOwner v-model="flaw.owner" />
         </div>

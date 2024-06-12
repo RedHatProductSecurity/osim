@@ -6,7 +6,7 @@
 // Pressing escape or clicking the abort button aborts the change
 
 import { DateTime } from 'luxon';
-import { ref, nextTick, reactive, toValue } from 'vue';
+import { ref, nextTick, reactive, watch } from 'vue';
 import { IMask } from 'vue-imask';
 
 const props = defineProps<{
@@ -16,12 +16,11 @@ const props = defineProps<{
   editing?: boolean,
   error?: string | null,
 }>();
-const initialValue = toValue(props.modelValue);
+
 const emit = defineEmits<{
   'update:modelValue': [value: string | undefined],
   'update:editing': [value: boolean],
 }>();
-
 
 const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
@@ -83,10 +82,10 @@ function formatDate(date: Date | string): string {
 function parseDate(dateString: string): Date {
   return DateTime.fromFormat(dateString, formatString, { zone: 'utc' }).toJSDate();
 }
-
 const maskState = reactive({
   completed: false,
-  masked: '',
+  // Force caret to start of input
+  masked: ' ',
   unmasked: '',
 });
 
@@ -143,8 +142,8 @@ function commit() {
 
 function abort() {
   editing.value = false;
-  maskState.masked = initialValue || '';
-  maskState.unmasked = initialValue || '';
+  maskState.masked = props.modelValue || '';
+  maskState.unmasked = props.modelValue || '';
 }
 
 function onBlur(e: FocusEvent | null) {
@@ -189,7 +188,9 @@ function osimFormatDate(date?: string | null): string {
   return formattedDate;
 }
 
-
+watch(() => props.modelValue, () => {
+  maskState.masked = props.modelValue || '';
+});
 
 </script>
 
@@ -217,7 +218,7 @@ function osimFormatDate(date?: string | null): string {
     </div>
 
     <div
-      v-if="editing"
+      v-show="editing"
       ref="elDiv"
       class="input-group osim-date-edit-field"
       @blur="onBlur($event)"
