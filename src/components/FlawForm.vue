@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, watch, onMounted, reactive } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -115,7 +115,8 @@ const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !=
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const onReset = () => {
-  flaw.value = reactive(deepCopyFromRaw(initialFlaw));
+  // is deepCopyFromRaw needed?
+  flaw.value = deepCopyFromRaw(initialFlaw);
 };
 
 const allowedSources = [
