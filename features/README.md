@@ -19,3 +19,6 @@ Before run the testing, please run kinit.
 1. Run all tests using `yarn run test:e2e` or `behave`
 2. Run a feature only: `behave features/$featurefile`
 3. Run a scenario only: `behave -n 'scenario name'`
+Note: To run scenarios with a specific tag, --tags could be used, e.g.,
+- Run all scenarios tagged with tag 'skip', behave --tags @skip
+- Run all scenarios except those tagged with 'skip', behave --tags ~@skip
