@@ -31,9 +31,20 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
   const trackerSelections = ref<Map<UpdateStream, boolean>>(new Map());
   const moduleComponents = ref<ModuleComponent[]>([]);
 
-  const alreadyFiledTrackers = computed(() => affects.flatMap(
+  const trackedAffectUuids = computed(() => affects.flatMap(
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
   ));
+  const alreadyFiledTrackers = computed(() => affects.map(
+    (affect) => {
+      const maybeTracker = affect.trackers.find(
+        tracker => tracker.affects.some((affectUuid: string) => trackedAffectUuids.value.includes(affectUuid))
+      );
+      return maybeTracker && {
+        ...maybeTracker,
+        ...affect,
+      };
+    }
+  ).filter(Boolean));
 
   const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap(
     (moduleComponent: any) =>
@@ -45,22 +56,44 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
         }
       ))
   )
-    .filter((stream: any) => !alreadyFiledTrackers.value.includes(stream.affectUuid))
+    .filter((stream: any) => !trackedAffectUuids.value.includes(stream.affectUuid))
   );
+
+  const sortedStreams = computed(
+    (): UpdateStream[] => availableUpdateStreams.value
+      .slice()
+      .sort((a, b) => a.ps_update_stream.localeCompare(b.ps_update_stream))
+      .filter((tracker) =>
+        filterString.value === ''
+          ? tracker
+          : tracker.ps_update_stream.toLowerCase().includes(filterString.value.toLowerCase())
+            || tracker.ps_component?.toLowerCase().includes(filterString.value.toLowerCase())
+      )
+  );
+
+
+  const unselectedStreams = computed(
+    (): UpdateStream[] => sortedStreams.value.filter((tracker) => !trackerSelections.value.get(tracker))
+  );
+
+  const selectedStreams = computed(
+    (): UpdateStream[] => sortedStreams.value.filter((tracker) => trackerSelections.value.get(tracker))
+  );
+
+  const filterString = ref('');
 
   watch(moduleComponents, () => {
     moduleComponents.value.forEach((moduleComponent) => {
       const affect = affects.find((matchingAffect) => matchingAffect.uuid === moduleComponent.affect.uuid);
-      const tracker = availableUpdateStreams.value.find((stream) => affect && stream.affectUuid === affect.uuid);
-      if (tracker) {
-        trackerSelections.value.set(tracker as UpdateStream, Boolean(tracker?.selected));
+      const trackers = availableUpdateStreams.value.filter((stream) => affect && stream.affectUuid === affect.uuid);
+      for (const tracker of trackers) {
+        trackerSelections.value.set(tracker as UpdateStream, Boolean(tracker.selected));
       }
     });
   });
 
   function setAll(isSelected: boolean) {
-    for (const [stream] of trackerSelections.value) {
-      console.log(stream);
+    for (const stream of sortedStreams.value) {
       trackerSelections.value.set(stream, isSelected);
     }
   }
@@ -100,9 +133,14 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
   return {
     fileTrackers,
     getUpdateStreamsFor,
+    alreadyFiledTrackers,
     availableUpdateStreams,
     trackerSelections,
     trackersToFile,
     setAll,
+    sortedStreams,
+    unselectedStreams,
+    selectedStreams,
+    filterString,
   };
 }

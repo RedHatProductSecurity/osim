@@ -23,6 +23,11 @@
 * Support internal flaw comments using Jira (`OSIDB-828`)
 * Redesign flaw comments section (`OSIDB-2536`)
 * Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
+* Dramatically enhanced Manage Trackers UI (`OSIDB-????`)
+  * Organize by selected, unselected, and already filed
+  * Limit UI space of element
+  * Filter trackers by stream or component name
+  * Shows recommended tracker icon
 
 ### Fixed
 * The session is now shared across tabs
@@ -32,6 +37,7 @@
 * References and acknowledgments are not refreshed after save actions (`OSIDB-2645`)
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
 * Restored required field validations to Flaw fields (`OSIDB-2725`)
+* De/Select all button in Trackers Manager (`OSIDB-2908`)
 * Save affects all at once (`OSIDB-2206`)
 * Show only allowed sources for Flaw Create/Edit (`OSIDB-2395`)
 * Fixed deleted affects message after flaw save (`OSIDB-2693`)
