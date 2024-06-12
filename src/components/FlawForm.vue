@@ -81,6 +81,7 @@ let initialFlaw: ZodFlawType;
 
 onMounted(() => {
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
@@ -89,10 +90,11 @@ onMounted(() => {
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   onReset();
 });
 
-const isEmbargoed = computed(() => initialFlaw?.embargoed);
+const isEmbargoed = ref();
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
