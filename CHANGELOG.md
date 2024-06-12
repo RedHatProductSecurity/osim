@@ -22,6 +22,7 @@
 * Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
 * Support internal flaw comments using Jira (`OSIDB-828`)
 * Redesign flaw comments section (`OSIDB-2536`)
+* Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
 
 ### Fixed
 * The session is now shared across tabs

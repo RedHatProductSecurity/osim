@@ -104,7 +104,7 @@ def step_impl(context):
     # Go to a specific flaw detail page
     go_to_specific_flaw_detail_page(context.browser)
     # Assign this flaw to the current user
-    detail_page.set_input_field("assignee", context.user_name)
+    detail_page.set_input_field("owner", context.user_name)
     detail_page.click_btn('saveBtn')
     detail_page.wait_msg('flawSavedMsg')
 

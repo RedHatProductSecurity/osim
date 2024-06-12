@@ -73,8 +73,8 @@ class FlawDetailPage(BasePage):
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "assigneeText": ("XPATH", "//span[contains(text(), 'Assignee')]"),
-        "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
+        "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
