@@ -231,6 +231,16 @@ const formDisabled = ref(false);
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
+        <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
+          <a
+            :href="bugzillaLink"
+            class="osim-bugzilla-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+          </a>
+        </div>
         <div class="col-12 osim-alerts-banner">
           <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
