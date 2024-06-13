@@ -72,7 +72,7 @@ type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
 
 const filterFunctions: CommentFilterFunctions = {
   public: (comment: any) => !comment.is_private,
-  private: (comment: any) => comment.is_private,
+  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
   system: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
@@ -87,6 +87,7 @@ function parseOsidbComments(comments: ZodFlawCommentSchemaType[]) {
 }
 
 const publicComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.public)));
+const privateComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.private)));
 const systemComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.system)));
 
 const displayedComments = computed(() => {
