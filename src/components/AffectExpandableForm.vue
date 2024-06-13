@@ -3,18 +3,16 @@
 import { computed, toRef } from 'vue';
 
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
-import AffectedOfferingForm from './AffectedOfferingForm.vue';
+import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import { type ZodAffectType } from '@/types/zodAffect';
-import { useAffectTracker } from '@/composables/useAffectTracker';
-
-import type { TrackersPost } from '@/services/TrackerService';
+import { type UpdateStream } from '@/composables/useTrackers';
 
 const props = defineProps<{
+  updateStreams: UpdateStream[];
   error: Record<string, any> | null;
   isExpanded: boolean;
   affect: ZodAffectType;
 }>();
-
 
 const isExpanded = toRef(props, 'isExpanded');
 
@@ -28,35 +26,8 @@ const emit = defineEmits<{
   'add-blank-affect': [];
 }>();
 
-const flawId = computed(() => modelValue.value?.flaw);
-
-const { getTrackers, moduleComponentStreams, isNotApplicable, postTracker } = useAffectTracker(
-  flawId.value as string,
-  modelValue.value?.ps_module as string,
-  modelValue.value?.ps_component as string,
-);
-
-const updateStreamNames = computed(() =>
-  moduleComponentStreams.value.map(({ ps_update_stream }: any) => ps_update_stream),
-);
-
-// const chosenUpdateStream = ref('');
-
-function handleTrackAffect(stream: string) {
-  postTracker({
-    ps_update_stream: stream,
-    // resolution: modelValue.value?.resolution || '',
-    updated_dt: modelValue.value?.updated_dt || '',
-    affects: [modelValue.value?.uuid],
-    embargoed: modelValue.value?.embargoed,
-  } as TrackersPost);
-}
-
 const isAffectNew = computed (() => !modelValue.value?.uuid);
-
-const trackersCount = computed(
-  () => `${modelValue.value?.trackers?.length || 0} trackers`
-);
+const trackersCount = computed(() => `${modelValue.value?.trackers?.length || 0} trackers`);
 
 const affectednessLabel = computed(() => {
   const affectedness: string = props.affect.affectedness || '';
@@ -79,7 +50,6 @@ const resolutionLabel = computed(() => {
   }[resolution];
   return resolutionValue && `Resolution: ${resolutionValue}` || '';
 });
-
 </script>
 
 <template>
@@ -102,42 +72,14 @@ const resolutionLabel = computed(() => {
       </span>
     </template>
     <template #buttons>
-      <div class="btn-group" role="group" aria-label="Tracker Actions">
-        <button
-          v-if="updateStreamNames.length === 0"
-          type="button"
-          class="btn btn-white btn-outline-black btn-sm ms-2"
-          :disabled="!flawId || isNotApplicable"
-          @click.prevent="getTrackers"
-        >
-          {{ isNotApplicable ? 'No Product Streams Apply' : 'File Tracker' }}
-        </button>
-        <div v-else class="dropdown">
-          <button
-            class="btn btn-white btn-outline-black btn-sm dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-          >
-            Trackers
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a
-              v-for="stream in updateStreamNames"
-              :key="stream"
-              class="dropdown-item"
-              href="#"
-              @click.prevent="handleTrackAffect(stream)"
-            >{{ stream }}</a>
-          </div>
-        </div>
-        <button
-          type="button"
-          class="btn btn-white btn-outline-black btn-sm"
-          @click="emit('affect:remove', modelValue as ZodAffectType)"
-        >
-          <i class="bi bi-trash" />
-        </button>
-      </div>
+      <!-- TODO: consider readding inidividual tracker filing? -->
+      <button
+        type="button"
+        class="btn btn-white btn-outline-black btn-sm"
+        @click="emit('affect:remove', modelValue as ZodAffectType)"
+      >
+        <i class="bi bi-trash" />
+      </button>
     </template>
     <AffectedOfferingForm v-model="modelValue" :error="error" />
   </LabelCollapsible>

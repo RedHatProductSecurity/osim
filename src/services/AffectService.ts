@@ -19,7 +19,7 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
 export async function putAffects(affectObjects: any[]) {
   return osidbFetch({
     method: 'put',
-    url: '/osidb/api/v1/affects',
+    url: '/osidb/api/v1/affects/bulk',
     data: affectObjects,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Affects Updated.' }))

@@ -78,14 +78,6 @@ export const FlawReferenceSchema = z.object({
       path: ['url'],
     });
   }
-
-  if (!reference.description) {
-    zodContext.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Reference description cannot be empty',
-      path: ['description'],
-    });
-  }
 });
 
 export const flawReferenceTypeValues = Object.values(FlawReferenceType);
@@ -106,7 +98,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-
+export type ZodFlawCommentSchemaType = z.infer<typeof ZodFlawCommentSchema>
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
@@ -137,8 +129,8 @@ export const ZodFlawSchema = z.object({
         'unexpected characters like spaces.'
     }
   ),
-  impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
-  component: z.string().max(100).min(0).nullable(),
+  impact: z.nativeEnum(ImpactEnumWithBlank).nullable,
+  components: z.array(z.string().min(0).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
@@ -170,6 +162,7 @@ export const ZodFlawSchema = z.object({
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
+  task_key: z.string().max(60).nullish(),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {
@@ -208,8 +201,8 @@ export const ZodFlawSchema = z.object({
       raiseIssue('You must select an impact before saving the Flaw.', ['impact']);
     }
 
-    if (!zodFlaw.component) {
-      raiseIssue('Component cannot be empty.', ['component']);
+    if (zodFlaw.components.length === 0) {
+      raiseIssue('Components cannot be empty.', ['components']);
     }
   }
 
@@ -256,5 +249,4 @@ export const ZodFlawSchema = z.object({
       [`Affects/${affect.index}/component`],
     );
   }
-
 });

@@ -13,6 +13,16 @@
 * Sort impact options logically (`OSIDB-2791`)
 * Advanced search on emptiness for CVE ID (`OSIDB-2806`)
 * Embedded Alerts on top of the Flaw form (`OSIDB-1211`)
+* Add Incident State for AdvancedSearch (`OSIDB-2892`)
+* Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
+* Hide references description when it is not set (`OSIDB-2846`)
+
+### Changed
+* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
+* Support internal flaw comments using Jira (`OSIDB-828`)
+* Redesign flaw comments section (`OSIDB-2536`)
+* Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
 * Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
 
 ### Fixed
@@ -38,6 +48,7 @@
 * Removed comment.type usage (`OSIDB-2781`)
 * Removed Flaw.meta usage (`OSIDB-2801`)
 * Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
+* Removed validation on empty references description (`OSIDB-2846`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 

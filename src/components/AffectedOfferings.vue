@@ -3,11 +3,15 @@ import { computed, toRefs, ref, watch } from 'vue';
 
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
+import { useTrackers } from '@/composables/useTrackers';
+
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
+import AffectsTrackers from '@/components/AffectsTrackers.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
 
 const props = defineProps<{
+  flawId: string;
   theAffects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: Record<string, any>[] | null;
@@ -22,6 +26,12 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
+const { getUpdateStreamsFor } = useTrackers(props.flawId, props.theAffects);
+
+const affectsNotBeingDeleted = computed(
+  () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))
+);
+
 const affectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
 
 const expandedModules = ref<Record<string, boolean>>({});
@@ -29,8 +39,8 @@ const expandedModules = ref<Record<string, boolean>>({});
 const affectsWithModuleName = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
+const shouldShowTrackers = ref(false);
 const expandedAffects = ref(new Map());
-
 updateAffectsExpandedState(theAffects.value);
 
 watch(theAffects, (nextValue) => {
@@ -112,6 +122,12 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
 
 <template>
   <div v-if="theAffects" class="osim-affects">
+    <AffectsTrackers
+      v-show="shouldShowTrackers"
+      :flawId="flawId"
+      :theAffects="affectsNotBeingDeleted"
+      @affects-trackers:hide="shouldShowTrackers = false"
+    />
     <h4 class="mb-4">
       Affected Offerings
       <button
@@ -130,7 +146,18 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       >
         Collapse All
       </button>
+      <button
+        v-show="!shouldShowTrackers"
+        type="button"
+        class="button ms-3 btn btn-sm btn-black text-white"
+        @click="shouldShowTrackers = !shouldShowTrackers"
+      >
+        <!-- <i class="bi bi-journal-plus"></i> -->
+        <i class="bi bi-binoculars"></i>
+        Manage Trackers
+      </button>
     </h4>
+
     <div v-for="(moduleName) in affectedModules" :key="moduleName">
       <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
@@ -174,6 +201,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
             :affect="affect"
             :isExpanded="isExpanded(affect) ?? false"
             :error="error?.[theAffects.indexOf(affect)] ?? null"
+            :updateStreams="getUpdateStreamsFor(moduleName, affect.ps_component)"
             @setExpanded="togglePsComponentExpansion(affect)"
             @affect:remove="emit('affect:remove', affect)"
             @file-tracker="emit('file-tracker', $event)"

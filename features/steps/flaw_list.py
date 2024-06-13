@@ -16,7 +16,7 @@ from features.utils import (
 @when('I click the link of a flaw')
 def step_impl(context):
     home_page = HomePage(context.browser)
-    home_page.click_btn("firstFlawLink")
+    home_page.click_button_with_js("firstFlawLink")
 
 
 @then('I am able to view the flaw detail')
@@ -59,32 +59,6 @@ def step_impl(context):
     context.browser.quit()
 
 
-@given('Not all flaws are loaded')
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    try:
-        home_page.check_is_all_flaw_loaded()
-    except NoSuchElementException:
-        context.skip = True
-        context.browser.quit()
-
-
-@when("I click the button 'Load More Flaws'")
-@skip_step_when_needed
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    context.flaws_count = home_page.click_load_more_flaws_btn()
-
-
-@then("More flaws are loaded into the list")
-@skip_step_when_needed
-def step_impl(context):
-    # check if there is more flaws loaded
-    home_page = HomePage(context.browser)
-    home_page.is_more_flaw_loaded(context.flaws_count)
-    context.browser.quit()
-
-
 @when("I select some flaws from flaw list and click 'Assign to Me'")
 def step_impl(context):
     home_page = HomePage(context.browser)
@@ -108,7 +82,7 @@ def step_impl(context):
 @when("I click the field header of flaw list table")
 def step_impl(context):
     home_page = HomePage(context.browser)
-    sort_fields = ['id', 'impact', 'source', 'created', 'title', 'state', 'owner']
+    sort_fields = ['id', 'impact', 'created', 'title', 'state', 'owner']
     value_dict = {}
     for field in sort_fields:
         fieldbtn = field + "Btn"
