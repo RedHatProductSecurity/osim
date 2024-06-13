@@ -23,7 +23,7 @@
 * Support internal flaw comments using Jira (`OSIDB-828`)
 * Redesign flaw comments section (`OSIDB-2536`)
 * Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
-* Dramatically enhanced Manage Trackers UI (`OSIDB-????`)
+* Dramatically enhanced Manage Trackers UI (`OSIDB-2915`)
   * Organize by selected, unselected, and already filed
   * Limit UI space of element
   * Filter trackers by stream or component name
