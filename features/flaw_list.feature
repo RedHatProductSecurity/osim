@@ -27,6 +27,11 @@ Feature: Flaw list testing
       When I click the field header of flaw list table
       Then The flaw list is sorted by the field
 
+    Scenario: List all my issues
+     Given I assgin an issue to me
+      When I check 'My Issues' checkbox in index page
+      Then Only my issues are listed in flaw list
+
     Scenario: List all open issues
       When I check 'Open Issues' checkbox of flaw list
       Then Only open issues are listed in flaw list

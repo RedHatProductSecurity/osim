@@ -9,7 +9,8 @@ from features.utils import (
         is_sorted,
         skip_step_when_needed,
         go_to_advanced_search_page,
-        go_to_home_page
+        go_to_home_page,
+        go_to_specific_flaw_detail_page
 )
 
 
@@ -150,4 +151,38 @@ def step_impl(context):
     home_page.first_flaw_exist()
     asce_state = home_page.get_specified_cell_value(1, 3)
     assert desc_state == asce_state, "Default search not work."
+    context.browser.quit()
+
+
+@given("I assgin an issue to me")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    detail_page = FlawDetailPage(context.browser)
+    # Get the current username
+    context.user_name = home_page.userBtn.get_text()
+    # Go to a specific flaw detail page
+    go_to_specific_flaw_detail_page(context.browser)
+    # Assign this flaw to the current user
+    detail_page.set_input_field("owner", context.user_name)
+    detail_page.click_btn('saveBtn')
+    detail_page.wait_msg('flawSavedMsg')
+
+
+@when("I check 'My Issues' checkbox in index page")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    go_to_home_page(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    home_page.click_btn("myIssuesCheckbox")
+
+
+@then("Only my issues are listed in flaw list")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    # Only firstFlaw.visibility_of_element_located can't work
+    time.sleep(1)
+    owner = home_page.get_field_value("owner")
+    assert context.user_name == owner
+    # Need to check the count of my issues that depends on testdata
     context.browser.quit()

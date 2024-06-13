@@ -35,7 +35,7 @@ class HomePage(BasePage):
         "myIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[1]"),
         "openIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[2]"),
         "defaultFilterCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[3]"),
-        "ownerText":  ("XPATH", "//tr[1]/td[8]"),
+        "ownerText":  ("XPATH", "//tr[1]/td[7]"),
         "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
         "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
