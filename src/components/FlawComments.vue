@@ -42,7 +42,7 @@ const newComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addPublicComment': [value: any, value: any];
+  'comment:addFlawComment': [value: string, value: string, value: boolean];
   'disableForm': [value: boolean];
 }>();
 
@@ -110,13 +110,13 @@ onMounted(async () => {
 });
 
 async function handleCommentSave() {
-  if (selectedTab.value === CommentTab.Public) {
-    // Public comment save
-    emit('comment:addPublicComment', newComment.value, userStore.userName);
+  if (selectedTab.value === CommentType.Public || selectedTab.value === CommentType.Private) {
+    // Osidb Bugzilla comment save
+    emit('comment:addFlawComment', newComment.value, userStore.userName, CommentType[selectedTab.value] === 'Private');
     isAddingNewComment.value = false;
     newComment.value = '';
-  } else if (selectedTab.value === CommentTab.Internal && props.taskKey) {
-    // Internal comment save
+  } else if (selectedTab.value === CommentType.Internal && props.taskKey) {
+    // Internal Jira comment save
     await addInternalComment(newComment.value)
       .then(() => {
         isAddingNewComment.value = false;

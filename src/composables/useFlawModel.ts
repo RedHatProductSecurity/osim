@@ -8,7 +8,7 @@ import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
-  postFlawPublicComment,
+  postFlawComment,
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
@@ -152,10 +152,11 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = false;
   }
 
-  function addPublicComment(comment: string, creator: string) {
+  function addFlawComment(comment: string, creator: string, isPrivate: boolean) {
     isSaving.value = true;
-    postFlawPublicComment(flaw.value.uuid, comment, creator, flaw.value.embargoed)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Public comment saved.' }))
+    const type = isPrivate ? 'Private' : 'Public';
+    postFlawComment(flaw.value.uuid, comment, creator, isPrivate, flaw.value.embargoed)
+      .then(createSuccessHandler({ title: 'Success!', body: `${type} comment saved.` }))
       .then(afterSaveSuccess)
       .catch(createCatchHandler('Error saving public comment'))
       .finally(() => isSaving.value = false);
@@ -175,7 +176,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     flawIncidentStates,
     osimLink,
     bugzillaLink,
-    addPublicComment,
+    addFlawComment,
     createFlaw,
     updateFlaw,
     afterSaveSuccess,

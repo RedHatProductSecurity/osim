@@ -64,7 +64,7 @@ const {
   recoverAffect,
   updateFlaw,
   createFlaw,
-  addPublicComment,
+  addFlawComment,
   saveReferences,
   deleteReference,
   cancelAddReference,
@@ -507,7 +507,7 @@ const formDisabled = ref(false);
           :taskKey="flaw.task_key"
           :error="errors.comments"
           :isSaving="isSaving"
-          @comment:addPublicComment="addPublicComment"
+          @comment:addFlawComment="addFlawComment"
           @disableForm="(value) => formDisabled = value"
         />
       </div>
