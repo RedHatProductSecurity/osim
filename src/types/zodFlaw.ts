@@ -78,14 +78,6 @@ export const FlawReferenceSchema = z.object({
       path: ['url'],
     });
   }
-
-  if (!reference.description) {
-    zodContext.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Reference description cannot be empty',
-      path: ['description'],
-    });
-  }
 });
 
 export const flawReferenceTypeValues = Object.values(FlawReferenceType);
@@ -142,7 +134,7 @@ export const ZodFlawSchema = z.object({
       Boolean,
       { message: 'You must select an impact before saving the Flaw.' }
     ),
-  components: z.array(z.string().min(1).max(100)).nonempty(),
+  components: z.array(z.string().min(1).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
@@ -250,5 +242,9 @@ export const ZodFlawSchema = z.object({
       'Affected component cannot be registered on the affected module twice',
       [`Affects/${affect.index}/component`],
     );
+  }
+
+  if (zodFlaw.components.length === 0) {
+    raiseIssue('Components cannot be empty.', ['components']);
   }
 });

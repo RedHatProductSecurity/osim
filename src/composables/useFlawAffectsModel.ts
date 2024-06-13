@@ -1,13 +1,12 @@
 import { type Ref, ref, computed, watch } from 'vue';
 import {
-  postAffect,
-  putAffect,
+  postAffects,
   putAffects,
-  deleteAffect,
+  deleteAffects,
   putAffectCvssScore,
   postAffectCvssScore,
 } from '@/services/AffectService';
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+// import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
@@ -160,64 +159,48 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   flaw.value.affects.forEach((affect) => watch(affect, trackAffectChange, { deep: true }));
 
-  async function deleteAffects() {
-    for (const affect of affectsToDelete.value) {
-      if (affect.uuid) {
-        await deleteAffect(affect.uuid);
-      }
-    }
+  async function removeAffects() {
+    await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string).filter(Boolean));
     resetAffectsForDeletion();
   }
 
   async function saveAffects() {
-    if (wereAffectsModified.value && modifiedAffectIds.value.length) {
-      const requestBody = affectsToUpdate.value.map((affect) => ({
-        flaw: flaw.value?.uuid,
-        uuid: affect.uuid,
-        affectedness: affect.affectedness,
-        resolution: affect.resolution,
-        ps_module: affect.ps_module,
-        ps_component: affect.ps_component,
-        impact: affect.impact,
-        embargoed: affect.embargoed || false,
-        updated_dt: affect.updated_dt,
-      }));
+    const savedAffects: ZodAffectType[] = [];
+    const requestBodyFromAffect = (affect: ZodAffectType) => ({
+      flaw: flaw.value?.uuid,
+      uuid: affect.uuid,
+      affectedness: affect.affectedness,
+      resolution: affect.resolution,
+      delegated_resolution: affect.delegated_resolution,
+      ps_module: affect.ps_module,
+      ps_component: affect.ps_component,
+      impact: affect.impact,
+      embargoed: affect.embargoed || false,
+      updated_dt: affect.updated_dt,
+    });
+
+    if (wereAffectsModified.value) {
+      const requestBody = affectsToUpdate.value.map(requestBodyFromAffect);
       await putAffects(requestBody);
+      savedAffects.push(...affectsToUpdate.value);
       resetModifiedAffects();
     }
-    const affectsToCreateQuantity = affectsToCreate.value.length;
-    for (let index = 0; index < affectsToCreateQuantity; index++) {
-      const affect = affectsToCreate.value[index];
-      const requestBody = {
-        flaw: flaw.value?.uuid,
-        affectedness: affect.affectedness,
-        resolution: affect.resolution,
-        delegated_resolution: affect.delegated_resolution,
-        ps_module: affect.ps_module,
-        ps_component: affect.ps_component,
-        impact: affect.impact,
-        embargoed: affect.embargoed || false,
-        updated_dt: affect.updated_dt,
-      };
-      if (affect.uuid != null) {
-        try {
-          await putAffect(affect.uuid, requestBody);
-        } catch (error: unknown) {
-          const displayedError = getDisplayedOsidbError(error);
-          addToast({
-            title: 'Error updating Affect',
-            body: displayedError,
-            css: 'warning',
-          });
-          throw error;
+
+    if (affectsToCreate.value.length) {
+      await postAffects(affectsToCreate.value.map(requestBodyFromAffect));
+      savedAffects.push(...affectsToUpdate.value);
+    }
+
+    const affectCvssScoresToSave = savedAffects.filter((affect) => shouldSaveCvss(affect.uuid as string));
+    if (affectCvssScoresToSave.length) {
+      for (const affect of affectCvssScoresToSave) {
+        if (!affect.uuid) {
+          console.error('Error following affect save: Saved affect is missing uuid', affect);
+          console.error('Data from response of affect saved has unexpected content.');
+          continue;
         }
-      } else {
-        await postAffect(requestBody);
-      }
 
-      if (affect?.uuid && shouldSaveCvss(affect.uuid)) {
         const cvssScores = cvssScoresToSave(affect.uuid);
-
         for (const cvssScore of cvssScores) {
           if (isCvssNew(cvssScore)) {
             await postAffectCvssScore(affect.uuid, cvssScore);
@@ -227,6 +210,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         }
       }
     }
+    addToast({
+      title: 'Success!',
+      body: 'Affects CVSS scores saved.',
+    });
   }
 
   function updateAffectModuleName (oldModuleName: string, newModuleName: string) {
@@ -242,10 +229,11 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     removeAffect,
     recoverAffect,
     saveAffects,
-    deleteAffects,
+    removeAffects,
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
     updateAffectModuleName,
   };
 }
+

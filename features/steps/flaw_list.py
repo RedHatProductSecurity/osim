@@ -9,14 +9,15 @@ from features.utils import (
         is_sorted,
         skip_step_when_needed,
         go_to_advanced_search_page,
-        go_to_home_page
+        go_to_home_page,
+        go_to_specific_flaw_detail_page
 )
 
 
 @when('I click the link of a flaw')
 def step_impl(context):
     home_page = HomePage(context.browser)
-    home_page.click_btn("firstFlawLink")
+    home_page.click_button_with_js("firstFlawLink")
 
 
 @then('I am able to view the flaw detail')
@@ -59,32 +60,6 @@ def step_impl(context):
     context.browser.quit()
 
 
-@given('Not all flaws are loaded')
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    try:
-        home_page.check_is_all_flaw_loaded()
-    except NoSuchElementException:
-        context.skip = True
-        context.browser.quit()
-
-
-@when("I click the button 'Load More Flaws'")
-@skip_step_when_needed
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    context.flaws_count = home_page.click_load_more_flaws_btn()
-
-
-@then("More flaws are loaded into the list")
-@skip_step_when_needed
-def step_impl(context):
-    # check if there is more flaws loaded
-    home_page = HomePage(context.browser)
-    home_page.is_more_flaw_loaded(context.flaws_count)
-    context.browser.quit()
-
-
 @when("I select some flaws from flaw list and click 'Assign to Me'")
 def step_impl(context):
     home_page = HomePage(context.browser)
@@ -108,7 +83,7 @@ def step_impl(context):
 @when("I click the field header of flaw list table")
 def step_impl(context):
     home_page = HomePage(context.browser)
-    sort_fields = ['id', 'impact', 'source', 'created', 'title', 'state', 'owner']
+    sort_fields = ['id', 'impact', 'created', 'title', 'state', 'owner']
     value_dict = {}
     for field in sort_fields:
         fieldbtn = field + "Btn"
@@ -176,4 +151,38 @@ def step_impl(context):
     home_page.first_flaw_exist()
     asce_state = home_page.get_specified_cell_value(1, 3)
     assert desc_state == asce_state, "Default search not work."
+    context.browser.quit()
+
+
+@given("I assgin an issue to me")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    detail_page = FlawDetailPage(context.browser)
+    # Get the current username
+    context.user_name = home_page.userBtn.get_text()
+    # Go to a specific flaw detail page
+    go_to_specific_flaw_detail_page(context.browser)
+    # Assign this flaw to the current user
+    detail_page.set_input_field("owner", context.user_name)
+    detail_page.click_btn('saveBtn')
+    detail_page.wait_msg('flawSavedMsg')
+
+
+@when("I check 'My Issues' checkbox in index page")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    go_to_home_page(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    home_page.click_btn("myIssuesCheckbox")
+
+
+@then("Only my issues are listed in flaw list")
+def step_impl(context):
+    home_page = HomePage(context.browser)
+    home_page.firstFlaw.visibility_of_element_located()
+    # Only firstFlaw.visibility_of_element_located can't work
+    time.sleep(1)
+    owner = home_page.get_field_value("owner")
+    assert context.user_name == owner
+    # Need to check the count of my issues that depends on testdata
     context.browser.quit()

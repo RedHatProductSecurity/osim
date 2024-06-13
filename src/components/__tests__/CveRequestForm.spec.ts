@@ -53,9 +53,7 @@ describe('CveRequestForm', () => {
       },
     });
     const button = wrapper.get('button');
-    console.log(button);
     await button.trigger('click');
-    // const currentComponent = wrapper.getCurrentComponent();
     expect(wrapper.find('div.modal-content').exists()).toBe(true);
   });
 });

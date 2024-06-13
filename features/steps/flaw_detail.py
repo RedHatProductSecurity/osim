@@ -260,9 +260,9 @@ def step_impl(context):
 @when('I click self assign button and save changes')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    cur_value = flaw_detail_page.get_current_value_of_field("assignee")
+    cur_value = flaw_detail_page.get_current_value_of_field("owner")
     if cur_value:
-        flaw_detail_page.set_field_value('assignee', '')
+        flaw_detail_page.set_field_value('owner', '')
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
     go_to_specific_flaw_detail_page(context.browser)
@@ -274,7 +274,7 @@ def step_impl(context):
 @then("The flaw is assigned to me")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    assignee = flaw_detail_page.get_current_value_of_field("assignee")
+    assignee = flaw_detail_page.get_current_value_of_field("owner")
     home_page = HomePage(context.browser)
     login_user = home_page.userBtn.get_text()
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
@@ -481,11 +481,9 @@ def step_impl(context):
 @when("I update the affects of the flaw and click 'Save Changes' button")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    # Click the first affect dropdown button
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    # Click the second affect component dropdown button
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    # Get the current value of the affect ps_module and affectedness
+    # Display the affect detail
+    flaw_detail_page.click_button_with_js("affectExpandall")
+    flaw_detail_page.click_btn('affectDropdownBtn')
     current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
     current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
     # Get the valid/available values to update
@@ -520,8 +518,8 @@ def step_impl(context):
     context.value_dict['impact'] = updated_value
     # Save all the updates
     flaw_detail_page.click_btn('saveBtn')
-    #flaw_detail_page.wait_msg('affectUpdateMsg')
-    flaw_detail_page.wait_msg('affectSaveMsg')
+    flaw_detail_page.wait_msg('affectUpdateMsg')
+    #flaw_detail_page.wait_msg('affectSaveMsg')
  
 @then("All changes are saved")
 def step_impl(context):
@@ -539,10 +537,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js('addNewAffectBtn')
     context.ps_component = flaw_detail_page.set_new_affect_inputs()
-    flaw_detail_page.click_btn('saveBtn')
-    flaw_detail_page.wait_msg('affectCreatedMsg')
 
 
 @then("The affect is added")
@@ -551,22 +546,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.ps_component)
     context.browser.quit()
-
-def click_affect_delete_btn(context):
-    """
-    Go to a affect detail, delete the affect and return the current component.
-    """
-    go_to_specific_flaw_detail_page(context.browser)
-    flaw_detail_page = FlawDetailPage(context.browser)
-    # Click the first affect component dropdown button
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    # Click the second affect component dropdown button
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    # Get the current value of the affect ps_component
-    context.ps_component = flaw_detail_page.get_current_value_of_field('affects__ps_component')
-    # Click the delete button of the affect
-    flaw_detail_page.delete_affect('affectStatusBtn')
-    return context.ps_component
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
