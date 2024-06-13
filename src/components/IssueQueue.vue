@@ -161,7 +161,7 @@ const nameForOption = (fieldName: string) => {
     acknowledgments__name: 'Acknowledgment Author',
     affects__trackers__errata__advisory_name: 'Errata Advisory Name',
     affects__trackers__external_system_id: 'Tracker External System ID',
-    workflow_state: 'Flaw Status',
+    workflow_state: 'Flaw State',
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
