@@ -218,9 +218,10 @@ function sanitize(text: string) {
                 <span
                   class="badge rounded-pill float-end"
                   :class="{
-                    'bg-info': selectedTab === CommentTab.Public,
-                    'bg-danger': selectedTab === CommentTab.Internal,
-                    'bg-warning text-black': selectedTab === CommentTab.System,
+                    'bg-info': selectedTab === CommentType.Public,
+                    'bg-secondary': selectedTab === CommentType.Private,
+                    'bg-danger': selectedTab === CommentType.Internal,
+                    'bg-warning text-black': selectedTab === CommentType.System,
                   }"
                 >
                   {{ CommentType[selectedTab] }}
