@@ -20,3 +20,15 @@ Feature: Flaw detail testing on embargo flaw
     Scenario: Make flaw public and add public data
       When I unembargo this flaw and add public date
       Then Flaw is unembargoed and have public date
+
+     Scenario: Add new affect for an embargoed flaw
+      When I add a new affect with valid data
+      When The affect is added
+
+    Scenario: Update affects for an embargoed flaw
+      When I update the affects of the flaw and click 'Save Changes' button
+      Then All changes are saved
+
+    Scenario: Delete an affect from a flaw
+      When I delete an affect of the flaw
+      Then The affect is deleted
