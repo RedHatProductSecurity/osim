@@ -29,6 +29,7 @@ coverage
 
 # For local development only
 /public/runtime*.json
+.forbidden-data/
 
 *.py[co]
 __pycache__
