@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -24,6 +24,7 @@ import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
+import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
@@ -529,6 +530,17 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
+  });
+
+  it('sets public date if empty when unembargo button is clicked', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw, mode: 'edit' });
+    await flushPromises();
+    subject.findComponent(IssueFieldEmbargo).find('.osim-unembargo-button').trigger('click');
+
+    expect(flaw.unembargo_dt).not.toBe(null);
   });
 
   it('show set description, statement, mitigation values correctly after clicking remove buttons', async () => {
