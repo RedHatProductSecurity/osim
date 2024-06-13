@@ -12,11 +12,11 @@ const emit = defineEmits<{
 }>();
 
 const isWarning = computed(() => {
-  return props.alert.alert_type === 'WARNING';
+  return props.alert?.alert_type === 'WARNING';
 });
 
 const isError = computed(() => {
-  return props.alert.alert_type === 'ERROR';
+  return props.alert?.alert_type === 'ERROR';
 });
 
 function scrollToComponent(parent_uuid: string) {
@@ -33,12 +33,17 @@ function scrollToComponent(parent_uuid: string) {
 </script>
 
 <template>
-  <div class="alert my-1" :class="{'alert-warning': isWarning, 'alert-danger': isError}" role="alert">
+  <div
+    v-if="alert"
+    class="alert my-1"
+    :class="{'alert-warning': isWarning, 'alert-danger': isError}"
+    role="alert"
+  >
     <LabelCollapsible>
       <template #label>
         <span class="badge mx-2" :class="{'text-bg-warning': isWarning, 'text-bg-danger': isError}">
           <i class="bi" :class="{'bi-exclamation-triangle-fill': isWarning, 'bi-x-circle-fill': isError}" />
-          {{ alert.alert_type.charAt(0) + alert.alert_type.slice(1).toLowerCase() + " " + alert.name }}
+          {{ alert?.alert_type.charAt(0) + alert?.alert_type.slice(1).toLowerCase() + " " + alert?.name }}
         </span>
       </template>
       <div class="my-2 pt-1 px-2 container text-left">
@@ -52,14 +57,14 @@ function scrollToComponent(parent_uuid: string) {
           <strong>How To Resolve</strong>
         </div>
         <div class="row mx-auto mt-1">
-          {{ alert.resolution_steps || "No resolution steps are defined." }}
+          {{ alert?.resolution_steps || "No resolution steps are defined." }}
         </div>
         <div class="row mt-3">
           <div class="col">
             <button
               type="button"
               class="btn btn-sm btn-secondary"
-              @click.prevent="scrollToComponent(alert.parent_uuid)"
+              @click.prevent="scrollToComponent(alert?.parent_uuid)"
             >
               Scroll To Origin
               <i class="bi bi-arrow-down-circle"></i>

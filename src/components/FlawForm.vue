@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, watch, onMounted, reactive } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -81,6 +81,7 @@ let initialFlaw: ZodFlawType;
 
 onMounted(() => {
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
@@ -89,10 +90,11 @@ onMounted(() => {
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   onReset();
 });
 
-const isEmbargoed = computed(() => initialFlaw?.embargoed);
+const isEmbargoed = ref();
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
@@ -113,7 +115,8 @@ const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !=
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const onReset = () => {
-  flaw.value = reactive(deepCopyFromRaw(initialFlaw));
+  // is deepCopyFromRaw needed?
+  flaw.value = deepCopyFromRaw(initialFlaw);
 };
 
 const allowedSources = [

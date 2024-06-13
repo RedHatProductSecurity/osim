@@ -30,7 +30,7 @@ export type OsidbPutPostFetchOptions = {
 export type OsidbDeleteFetchOptions = {
   url: string;
   method: 'DELETE' | 'delete';
-  data?: never;
+  data?: Record<string, any> | string[] | Record<string, any>[];
   params?: never;
 };
 

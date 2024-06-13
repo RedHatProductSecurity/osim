@@ -27,7 +27,6 @@ const foregroundColor = ref<string>('');
 
 onMounted(() => {
   const computedStyle = osimButton.value ? window.getComputedStyle(osimButton.value) : null;
-  console.log(computedStyle?.backgroundColor);
   if (computedStyle?.backgroundColor){
     foregroundColor.value = computedStyle.backgroundColor;
   }

@@ -16,6 +16,7 @@
 * Add Incident State for AdvancedSearch (`OSIDB-2892`)
 * Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
 * Hide references description when it is not set (`OSIDB-2846`)
+* Create and delete Affects in single request (`OSIDB-2821`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
@@ -23,6 +24,11 @@
 * Support internal flaw comments using Jira (`OSIDB-828`)
 * Redesign flaw comments section (`OSIDB-2536`)
 * Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
+* Dramatically enhanced Manage Trackers UI (`OSIDB-2915`)
+  * Organize by selected, unselected, and already filed
+  * Limit UI space of element
+  * Filter trackers by stream or component name
+  * Shows recommended tracker icon
 * Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
 
 ### Fixed
@@ -33,6 +39,7 @@
 * References and acknowledgments are not refreshed after save actions (`OSIDB-2645`)
 * Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
 * Restored required field validations to Flaw fields (`OSIDB-2725`)
+* De/Select all button in Trackers Manager (`OSIDB-2908`)
 * Save affects all at once (`OSIDB-2206`)
 * Show only allowed sources for Flaw Create/Edit (`OSIDB-2395`)
 * Fixed deleted affects message after flaw save (`OSIDB-2693`)

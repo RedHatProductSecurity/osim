@@ -48,7 +48,7 @@ const emitExpandFocusedComponent = (parent_uuid: string) => {
 
     <div v-for="alerts,alertType in alertSet" :key="alertType">
       <div v-if="alerts.length">
-        <span v-for="alert in alerts" :key="alert.uuid">
+        <span v-for="(alert, index) in alerts" :key="alert?.uuid || `alert-${index}-${alertType}`">
           <FlawAlert :alert="alert" @expandFocusedComponent="emitExpandFocusedComponent" />
         </span>
       </div>
