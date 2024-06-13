@@ -32,7 +32,15 @@ export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost
     try {
       await postTracker(tracker, trackerData.at(-1) === tracker);
     } catch (error: any) {
-      error.response.data.stream = tracker.ps_update_stream;
+      if (error?.response?.data !== null && typeof error?.response?.data === 'object') {
+        error.response.data.stream = tracker.ps_update_stream;
+      } else if (error.response) {
+        // error.response.data is probably a string with the HTML of the OSIDB error page
+        error.response.data = {
+          stream: tracker.ps_update_stream,
+          error: error.response.data || error.response,
+        };
+      }
       errors.push(error);
     }
   }

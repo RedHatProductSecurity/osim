@@ -33,6 +33,7 @@
   * Shows recommended tracker icon
 * Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
 * Renamed Flaw Status to Flaw State (`OSIDB-2899`)
+* Improve reporting on tracker filing errors (`OSIDB-2909`)
 
 ### Fixed
 * The session is now shared across tabs
