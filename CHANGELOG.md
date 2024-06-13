@@ -19,6 +19,7 @@
 * Create and delete Affects in single request (`OSIDB-2821`)
 * Add link to bugzilla tracker on Flaw form (`OSIDB-2897`)
 * Set public date to current date on unembargo (`OSIDB-2829`)
+* Remove checkbox on IssueQueue (`OSIDB-2488`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
