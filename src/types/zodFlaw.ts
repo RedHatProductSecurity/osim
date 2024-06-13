@@ -129,7 +129,7 @@ export const ZodFlawSchema = z.object({
         'unexpected characters like spaces.'
     }
   ),
-  impact: z.nativeEnum(ImpactEnumWithBlank).nullable,
+  impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
   components: z.array(z.string().min(0).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
