@@ -305,14 +305,14 @@ class FlawDetailPage(BasePage):
 
         self.click_button_with_js(edit_btn)
 
-        if ("cveid" in field) or ("cweid" in field):
-            field_input = self.driver.find_elements(
-                locate_with(By.XPATH, "//input[@class='form-control']").
-                near(text_element))[0]
-        else:
-            field_input = self.driver.find_elements(
+        field_input_list = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='form-control']").near(text_element))
+        if not field_input_list:
+            field_input_list = self.driver.find_elements(
                 locate_with(By.XPATH, "//input[@class='form-control is-invalid']").
-                near(text_element))[0]
+                near(text_element))
+
+        field_input = field_input_list[0]
 
         self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.send_keys(value)
