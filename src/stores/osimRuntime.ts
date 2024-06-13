@@ -111,6 +111,10 @@ function fetchRuntime() {
         runtime.value = OsimRuntime.parse(json);
       } catch (e) {
         console.error('Unable to parse OsimRuntime', e);
+        console.log(OsimRuntime.safeParse(json).error?.issues.map(
+          // Provides additional helpful context for zod parsing errors
+          issue => issue.path.join('/') + ': ' + issue.message
+        ));
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }

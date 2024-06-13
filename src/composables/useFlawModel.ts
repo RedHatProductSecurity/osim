@@ -29,7 +29,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;
+  const { affectsToSave, saveAffects, removeAffects, affectsToDelete } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -106,7 +106,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
         body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
         css: 'warning',
       });
-      console.log(validatedFlaw.error);
     }
     return validatedFlaw;
   }
@@ -128,7 +127,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     }
 
     if (affectsToDelete.value.length) {
-      queue.push(deleteAffects);
+      queue.push(removeAffects);
     }
 
     if (wasCvssModified.value) {
