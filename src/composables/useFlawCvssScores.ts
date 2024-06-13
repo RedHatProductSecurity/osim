@@ -18,7 +18,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     || {
       score: null,
       vector: null,
-      comment: null,
+      comment: '',
       created_dt: null,
       uuid: null,
     }
