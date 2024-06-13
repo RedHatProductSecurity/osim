@@ -575,6 +575,22 @@ describe('FlawForm', () => {
     const disabledOptions = sourceField.findAll('option[hidden]');
     expect(disabledOptions.length).not.toBe(0);
   });
+
+  it('should show a link to bugzilla if ID exists', async () => {
+    mountWithProps();
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(true);
+  });
+
+  it('should not show a link to bugzilla if ID does not exists', async () => {
+    const flaw = sampleFlaw();
+    flaw.meta_attr = {};
+    mountWithProps({ flaw, mode:'edit' });
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(false);
+  });
 });
 
 

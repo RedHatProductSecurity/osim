@@ -17,6 +17,7 @@
 * Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
 * Hide references description when it is not set (`OSIDB-2846`)
 * Create and delete Affects in single request (`OSIDB-2821`)
+* Add link to bugzilla tracker on Flaw form (`OSIDB-2897`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
