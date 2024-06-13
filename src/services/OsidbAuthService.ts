@@ -190,7 +190,10 @@ export function getDisplayedOsidbError(error: any) {
       }`;
     }
   } else if (error.request) {
-    return error.request.toString(); // XMLHttpRequest object
+
+    return error.request.toString() === '[object Object]'
+      ? JSON.stringify(error.request, null, 2)
+      : error.request.toString();
   }
   return error.toString();
 }
