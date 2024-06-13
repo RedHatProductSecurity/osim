@@ -61,8 +61,7 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
 
   const sortedStreams = computed(
     (): UpdateStream[] => availableUpdateStreams.value
-      .slice()
-      .sort((a, b) => a.ps_update_stream.localeCompare(b.ps_update_stream))
+      .toSorted((a, b) => a.ps_update_stream.localeCompare(b.ps_update_stream))
       .filter((tracker) =>
         filterString.value === ''
           ? tracker
@@ -70,7 +69,6 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
             || tracker.ps_component?.toLowerCase().includes(filterString.value.toLowerCase())
       )
   );
-
 
   const unselectedStreams = computed(
     (): UpdateStream[] => sortedStreams.value.filter((tracker) => !trackerSelections.value.get(tracker))

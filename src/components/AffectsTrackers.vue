@@ -17,6 +17,7 @@ const {
   filterString,
   alreadyFiledTrackers,
 } = useTrackers(props.flawId, props.theAffects);
+
 const emit = defineEmits<{
   'affects-trackers:hide': [];
 }>();
@@ -41,6 +42,7 @@ const emit = defineEmits<{
       >
         <i class="bi bi-check-all"></i>
         Select All
+        {{ filterString ? 'Filtered' : '' }}
       </button>
       <button
         type="button"
@@ -49,6 +51,7 @@ const emit = defineEmits<{
       >
         <i class="bi bi-recycle"></i>
         Deselect All
+        {{ filterString ? 'Filtered' : '' }}
       </button>
       <button
         type="button"
@@ -139,7 +142,7 @@ const emit = defineEmits<{
         </div>
         <button
           type="button"
-          class="button btn btn-sm btn-black text-white osim-file-trackers mt-3"
+          class="btn btn-sm btn-black text-white osim-file-trackers mt-3"
           :disabled="!trackersToFile.length"
           @click="fileTrackers"
         >
