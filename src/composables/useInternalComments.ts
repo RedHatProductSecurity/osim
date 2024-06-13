@@ -20,6 +20,12 @@ export function useInternalComments(taskKey: string) {
     isLoadingInternalComments.value = true;
     internalComments.value = [];
 
+    if (!taskKey) {
+      available.value = false;
+      isLoadingInternalComments.value = false;
+      return;
+    }
+
     getJiraComments(taskKey)
       .then((res) => {
         if (res.response.ok) {
