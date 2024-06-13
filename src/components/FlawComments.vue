@@ -66,7 +66,6 @@ const handleTabChange = (index: number) => {
   selectedTab.value = index;
 };
 
-
 type CommentFilter = 'public' | 'private' | 'system';
 type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
 
@@ -146,6 +145,7 @@ function sanitize(text: string) {
     <Tabs
       :labels="commentLabels"
       :default="0"
+      :tooltips="Object.values(commentTooltips)"
       @tab-change="handleTabChange"
     >
       <template #header-actions>
@@ -216,10 +216,10 @@ function sanitize(text: string) {
                 {{ comment.author }}
                 - {{ DateTime.fromISO(comment.timestamp, { setZone: true }).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
-                  class="badge rounded-pill float-end"
+                  class="badge rounded-pill float-end cursor-pointer"
                   :class="{
-                    'bg-info': selectedTab === CommentType.Public,
-                    'bg-secondary': selectedTab === CommentType.Private,
+                    'bg-success': selectedTab === CommentType.Public,
+                    'bg-info': selectedTab === CommentType.Private,
                     'bg-danger': selectedTab === CommentType.Internal,
                     'bg-warning text-black': selectedTab === CommentType.System,
                   }"
