@@ -25,6 +25,7 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'add-blank-affect': [value: string, callback: (affect: ZodAffectType) => void];
+  'update-module-name': [value: string, value: string];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
@@ -140,16 +141,20 @@ function addNewModule() {
   expandedModules.value[newModuleName] = true;
 }
 
-function renameModule(newName: string, index: number) {
-  expandedModules.value[newName] = true;
-  affectedModules.value[index] = newName;
+function renameModule(newModuleName: string, index: number) {
+  expandedModules.value[newModuleName] = true;
+  affectedModules.value[index] = newModuleName;
+  let previousModuleName = '';
 
   // Clean up expandedModules to remove unnecessary keys
   for (const key in expandedModules.value) {
     if (!affectedModules.value.includes(key)) {
+      previousModuleName = key;
       delete expandedModules.value[key];
     }
   }
+
+  emit('update-module-name', previousModuleName, newModuleName);
 }
 
 </script>

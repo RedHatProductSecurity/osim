@@ -229,6 +229,14 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
   }
 
+  function updateAffectModuleName (oldModuleName: string, newModuleName: string) {
+    flaw.value.affects.forEach(affect => {
+      if (affect.ps_module === oldModuleName) {
+        affect.ps_module = newModuleName;
+      }
+    });
+  }
+
   return {
     addBlankAffect,
     removeAffect,
@@ -238,5 +246,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
+    updateAffectModuleName,
   };
 }
