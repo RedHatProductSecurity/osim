@@ -202,6 +202,6 @@ function queryStringFromParams(params: Record<string, any>) {
   return queryString ? `?${queryString}` : '';
 }
 
-export function taskUrl(id: string): string {
+export function jiraTaskUrl(id: string): string {
   return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
 }

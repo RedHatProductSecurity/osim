@@ -11,7 +11,7 @@ import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
 import { createCatchHandler } from '@/composables/service-helpers';
-import { searchJiraUsers, taskUrl } from '@/services/JiraService';
+import { searchJiraUsers, jiraTaskUrl } from '@/services/JiraService';
 import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 import JiraUser from './widgets/JiraUser.vue';
 
@@ -271,7 +271,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
           </button>
           <a
             v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
-            :href="taskUrl(taskKey ?? '#')"
+            :href="jiraTaskUrl(taskKey)"
             target="_blank"
             class="btn btn-secondary tab-btn"
             :disabled="isSaving"
