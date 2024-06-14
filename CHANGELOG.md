@@ -36,6 +36,7 @@
 * Renamed Flaw Status to Flaw State (`OSIDB-2899`)
 * Improve reporting on tracker filing errors (`OSIDB-2909`)
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
+* Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 
 ### Fixed
 * The session is now shared across tabs
