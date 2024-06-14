@@ -148,11 +148,11 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
 }
 
 export async function postFlawComment(
-  uuid: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
+  flawId: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
 ) {
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/flaws/${uuid}/comments`,
+    url: `/osidb/api/v1/flaws/${flawId}/comments`,
     data: {
       text: comment,
       creator: creator,
