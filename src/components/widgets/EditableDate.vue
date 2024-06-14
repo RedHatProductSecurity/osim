@@ -26,7 +26,7 @@ const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm ZZZZ' : 'yyyy-MM-dd';
+const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm Z' : 'yyyy-MM-dd';
 const maskLayer = {
   mask: Date,
   pattern,
@@ -65,7 +65,7 @@ const maskLayer = {
       to: 59,
       maxLength: 2,
     },
-    ZZZZ: {
+    Z: {
       mask: 'UTC',
     },
   },
