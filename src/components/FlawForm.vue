@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { computed, ref, watch, onMounted, reactive } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
@@ -11,7 +12,7 @@ import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldState from './IssueFieldState.vue';
-import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
@@ -21,9 +22,9 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { fileTracker, trackerUrl, type TrackersFilePost } from '@/services/TrackerService';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
+import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
 const props = defineProps<{
@@ -80,6 +81,7 @@ let initialFlaw: ZodFlawType;
 
 onMounted(() => {
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
@@ -88,10 +90,11 @@ onMounted(() => {
 
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
+  isEmbargoed.value = initialFlaw?.embargoed;
   onReset();
 });
 
-const isEmbargoed = computed(() => initialFlaw?.embargoed);
+const isEmbargoed = ref();
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
@@ -112,7 +115,14 @@ const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !=
 const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
 
 const onReset = () => {
-  flaw.value = reactive(deepCopyFromRaw(initialFlaw));
+  // is deepCopyFromRaw needed?
+  flaw.value = deepCopyFromRaw(initialFlaw);
+};
+
+const onUnembargoed = (isEmbargoed: boolean) => {
+  if (!isEmbargoed && !flaw.value.unembargo_dt) {
+    flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
+  }
 };
 
 const allowedSources = [
@@ -220,12 +230,23 @@ const expandFocusedComponent = (parent_uuid: string) => {
   }
 };
 
+const formDisabled = ref(false);
 </script>
 
 <template>
-  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving }" @submit.prevent="onSubmit">
+  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
+        <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
+          <a
+            :href="bugzillaLink"
+            class="osim-bugzilla-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+          </a>
+        </div>
         <div class="col-12 osim-alerts-banner">
           <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
@@ -236,11 +257,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
             type="text"
             :error="errors.title"
           />
-          <LabelEditable
-            v-model="flaw.component"
-            label="Component"
-            type="text"
-            :error="errors.component"
+          <LabelTagsInput
+            v-model="flaw.components"
+            label="Components"
+            :error="errors.components"
           />
           <div class="row">
             <div class="col">
@@ -359,8 +379,9 @@ const expandFocusedComponent = (parent_uuid: string) => {
             :isEmbargoed="isEmbargoed"
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
+            @update:model-value="onUnembargoed"
           />
-          <FlawFormAssignee v-model="flaw.owner" />
+          <FlawFormOwner v-model="flaw.owner" />
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
@@ -477,20 +498,20 @@ const expandFocusedComponent = (parent_uuid: string) => {
         ref="affectedOfferingsComp"
         :theAffects="flaw.affects"
         :affectsToDelete="affectsToDelete"
-        class="osim-flaw-form-section"
         :error="errors.affects"
+        :flawId="flaw.uuid"
         @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
         @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-        @file-tracker="fileTracker($event as TrackersFilePost)"
         @add-blank-affect="addBlankAffect"
       />
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
         <FlawComments
           :comments="flaw.comments"
+          :taskKey="flaw.task_key"
           :error="errors.comments"
           :isSaving="isSaving"
           @comment:addPublicComment="addPublicComment"
-          @refresh:flaw="emit('refresh:flaw')"
+          @disableForm="(value) => formDisabled = value"
         />
       </div>
     </div>
@@ -552,7 +573,7 @@ form.osim-flaw-form :deep(*) {
     padding-left: 0;
 
     input,
-    span,
+    span:not(.osim-pill-list-item),
     select,
     div.form-control {
       border-top-left-radius: 0;

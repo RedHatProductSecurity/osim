@@ -29,7 +29,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { affectsToSave, saveAffects, deleteAffects, affectsToDelete } = flawAffectsModel;
+  const { affectsToSave, saveAffects, removeAffects, affectsToDelete } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -106,7 +106,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
         body: validatedFlaw.error.issues.map(errorMessage).join('\n '),
         css: 'warning',
       });
-      console.log(validatedFlaw.error);
     }
     return validatedFlaw;
   }
@@ -128,7 +127,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     }
 
     if (affectsToDelete.value.length) {
-      queue.push(deleteAffects);
+      queue.push(removeAffects);
     }
 
     if (wasCvssModified.value) {
@@ -156,9 +155,9 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function addPublicComment(comment: string, creator: string) {
     isSaving.value = true;
     postFlawPublicComment(flaw.value.uuid, comment, creator, flaw.value.embargoed)
-      .then(createSuccessHandler({ title: 'Success!', body: 'Comment saved.' }))
+      .then(createSuccessHandler({ title: 'Success!', body: 'Public comment saved.' }))
       .then(afterSaveSuccess)
-      .catch(createCatchHandler('Error saving comment'))
+      .catch(createCatchHandler('Error saving public comment'))
       .finally(() => isSaving.value = false);
   }
 
@@ -193,8 +192,8 @@ export function blankFlaw(): ZodFlawType {
       state: 'NEW',
       workflow: '',
     },
-    component: '',
-    unembargo_dt: '',
+    components: [],
+    unembargo_dt: null,
     reported_dt: new Date().toISOString(),
     uuid: '',
     cve_id: '',
@@ -211,6 +210,7 @@ export function blankFlaw(): ZodFlawType {
     cve_description: '',
     statement: '',
     mitigation: '',
+    task_key: '',
     comments: [],
     references: [],
     acknowledgments: [],

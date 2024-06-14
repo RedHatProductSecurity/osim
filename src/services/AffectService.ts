@@ -19,7 +19,7 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
 export async function putAffects(affectObjects: any[]) {
   return osidbFetch({
     method: 'put',
-    url: '/osidb/api/v1/affects',
+    url: '/osidb/api/v1/affects/bulk',
     data: affectObjects,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Affects Updated.' }))
@@ -27,22 +27,23 @@ export async function putAffects(affectObjects: any[]) {
 }
 
 // export async function postAffect(affectObject: ZodAffectType) {
-export async function postAffect(affectObject: any) {
+export async function postAffects(affectObjects: any[]) {
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/affects',
-    data: affectObject,
+    url: '/osidb/api/v1/affects/bulk',
+    data: affectObjects,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Affect Created.' }))
-    .catch(createCatchHandler('Error creating Affect:'));
+    .then(createSuccessHandler({ title: 'Success!', body: 'Affects Created.' }))
+    .catch(createCatchHandler('Error creating Affects:'));
 }
 
-export async function deleteAffect(uuid: string) {
+export async function deleteAffects(affectUuids: string[]) {
   return osidbFetch({
     method: 'delete',
-    url: `/osidb/api/v1/affects/${uuid}`,
+    url: '/osidb/api/v1/affects/bulk',
+    data: affectUuids,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Affect Deleted.' }))
+    .then(createSuccessHandler({ title: 'Success!', body: `${affectUuids.length} Affect(s) Deleted.` }))
     .catch(createCatchHandler('Error deleting Affect:'));
 }
 

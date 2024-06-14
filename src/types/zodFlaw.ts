@@ -78,14 +78,6 @@ export const FlawReferenceSchema = z.object({
       path: ['url'],
     });
   }
-
-  if (!reference.description) {
-    zodContext.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Reference description cannot be empty',
-      path: ['description'],
-    });
-  }
 });
 
 export const flawReferenceTypeValues = Object.values(FlawReferenceType);
@@ -106,7 +98,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-
+export type ZodFlawCommentSchemaType = z.infer<typeof ZodFlawCommentSchema>
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
@@ -137,12 +129,8 @@ export const ZodFlawSchema = z.object({
         'unexpected characters like spaces.'
     }
   ),
-  impact: z.nativeEnum(ImpactEnumWithBlank)
-    .refine(
-      Boolean,
-      { message: 'You must select an impact before saving the Flaw.' }
-    ),
-  component: z.string().max(100).min(1),
+  impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
+  components: z.array(z.string().min(1).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
   team_id: z.string().nullish(),
@@ -174,6 +162,7 @@ export const ZodFlawSchema = z.object({
   embargoed: z.boolean(),
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
+  task_key: z.string().max(60).nullish(),
 }).superRefine((zodFlaw, zodContext) => {
 
   const raiseIssue = (message: string, path: string[]) => {
@@ -207,6 +196,16 @@ export const ZodFlawSchema = z.object({
     raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
   }
 
+  if (zodFlaw.classification?.state !== 'REJECTED') {
+    if (!zodFlaw.impact) {
+      raiseIssue('You must select an impact before saving the Flaw.', ['impact']);
+    }
+
+    if (zodFlaw.components.length === 0) {
+      raiseIssue('Components cannot be empty.', ['components']);
+    }
+  }
+
   if (
     zodFlaw.requires_cve_description !== 'APPROVED'
     && zodFlaw.major_incident_state
@@ -222,7 +221,7 @@ export const ZodFlawSchema = z.object({
     raiseIssue('An embargoed flaw must have a public date in the future.', ['unembargo_dt']);
   }
 
-  if (!zodFlaw.embargoed && !unembargo_dt) {
+  if (!zodFlaw.embargoed && !unembargo_dt && zodFlaw.classification?.state !== 'REJECTED') {
     // if embargoed and dt is not set, shows up the error
     // This behaviour is not acceptable because if a flaw is unembargoed,
     // it means the flaw is public already which requires the date when this was made public.

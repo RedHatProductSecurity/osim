@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -20,13 +20,14 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
-import FlawFormAssignee from '@/components/FlawFormAssignee.vue';
+import FlawFormOwner from '@/components/FlawFormOwner.vue';
+import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
+import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
-// const FLAW_BASE_URI = `http://localhost:5173/tests/3ede0314-a6c5-4462-bcf3-b034a15cf106`;
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
   const reader = request.body?.getReader();
 
@@ -55,6 +56,20 @@ vi.mock('vue-router', async () => {
   };
 });
 
+vi.mock('@/services/TrackerService', () => {
+  return {
+    getSuggestedTrackers: vi.fn(() => Promise.resolve([])),
+  };
+});
+
+vi.mock('@/composables/useTrackers', () => {
+  return {
+    suggestedTrackers: { value: [] },
+    getUpdateStreamsFor: vi.fn(() => []),
+    useTrackers: vi.fn(() => []),
+  };
+});
+
 describe('FlawForm', () => {
   function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw(), mode: 'edit' }) {
     subject = mount(FlawForm, {
@@ -68,6 +83,8 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           // EditableDate: true,
           RouterLink: true,
+          AffectedOfferings: true,
+          AffectExpandableForm: true,
         },
       },
     });
@@ -108,6 +125,9 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
           RouterLink: true,
+          AffectedOfferings: true,
+          AffectExpandableForm: true,
+
         },
       },
     });
@@ -129,10 +149,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -153,7 +173,7 @@ describe('FlawForm', () => {
     ]);
 
     const cvssV3Field = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(CvssCalculator)
       .find((component) => component.text().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
@@ -205,7 +225,7 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
-    const assigneeField = subject.findComponent(FlawFormAssignee);
+    const assigneeField = subject.findComponent(FlawFormOwner);
     expect(assigneeField?.exists()).toBe(true);
 
     const trackers = subject
@@ -228,10 +248,10 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component');
-    expect(componentField?.exists()).toBe(true);
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components');
+    expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
@@ -326,11 +346,11 @@ describe('FlawForm', () => {
       ?.find('.is-invalid');
     expect(titleField?.exists()).toBe(true);
 
-    const componentField = subject
-      .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Component')
+    const componentsField = subject
+      .findAllComponents(LabelTagsInput)
+      .find((component) => component.props().label === 'Components')
       ?.find('.is-invalid');
-    expect(componentField?.exists()).toBe(true);
+    expect(componentsField?.exists()).toBe(true);
 
     const invalidImpactField = subject
       .findAllComponents(LabelSelect)
@@ -382,12 +402,12 @@ describe('FlawForm', () => {
     expect(vm.errors.cve_description).toBe('Description must be approved for Major Incidents.');
   });
 
-  it('displays correct Assignee field value from props', async () => {
+  it('displays correct Owner field value from props', async () => {
     const flaw = sampleFlaw();
     flaw.owner = 'test owner';
     mountWithProps({ flaw, mode: 'edit' });
-    const assigneeField = subject.findComponent(FlawFormAssignee);
-    expect(assigneeField?.find('span.form-label').text()).toBe('Assignee');
+    const assigneeField = subject.findComponent(FlawFormOwner);
+    expect(assigneeField?.find('span.form-label').text()).toBe('Owner');
     expect(assigneeField?.props().modelValue).toBe('test owner');
     expect(assigneeField?.html()).toContain('test owner');
   });
@@ -512,6 +532,17 @@ describe('FlawForm', () => {
       .toBe(null);
   });
 
+  it('sets public date if empty when unembargo button is clicked', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw, mode: 'edit' });
+    await flushPromises();
+    subject.findComponent(IssueFieldEmbargo).find('.osim-unembargo-button').trigger('click');
+
+    expect(flaw.unembargo_dt).not.toBe(null);
+  });
+
   it('show set description, statement, mitigation values correctly after clicking remove buttons', async () => {
     const flaw = sampleFlaw();
     flaw.cve_description = 'description';
@@ -555,6 +586,22 @@ describe('FlawForm', () => {
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
     expect(disabledOptions.length).not.toBe(0);
+  });
+
+  it('should show a link to bugzilla if ID exists', async () => {
+    mountWithProps();
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(true);
+  });
+
+  it('should not show a link to bugzilla if ID does not exists', async () => {
+    const flaw = sampleFlaw();
+    flaw.meta_attr = {};
+    mountWithProps({ flaw, mode:'edit' });
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(false);
   });
 });
 

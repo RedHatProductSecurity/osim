@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
-import FlawFormAssignee from '../FlawFormAssignee.vue';
+import FlawFormOwner from '../FlawFormOwner.vue';
 import { mount, VueWrapper } from '@vue/test-utils';
 
 
@@ -40,15 +40,15 @@ vi.mock('jwt-decode', () => ({
 }));
 
 
-describe('Assignee field renders', () => {
-  let subject: VueWrapper<InstanceType<typeof FlawFormAssignee>>;
+describe('Owner field renders', () => {
+  let subject: VueWrapper<InstanceType<typeof FlawFormOwner>>;
   beforeAll(() => {
     createTestingPinia();
   });
   beforeEach(() => {
-    subject = mount(FlawFormAssignee, {});
+    subject = mount(FlawFormOwner, {});
   });
-  it('should render the assignee field', () => {
+  it('should render the owner field', () => {
     expect(subject.exists()).toBe(true);
   });
 

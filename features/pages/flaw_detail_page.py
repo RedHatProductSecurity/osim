@@ -73,8 +73,8 @@ class FlawDetailPage(BasePage):
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "assigneeText": ("XPATH", "//span[contains(text(), 'Assignee')]"),
-        "assignee": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "ownerText": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "owner": ("XPATH", "//span[contains(text(), 'Assignee')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
@@ -95,25 +95,25 @@ class FlawDetailPage(BasePage):
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
         "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
         "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
-        "editpens": ("XPATH", "//button[@class='osim-editable-text-pen input-group-text']"),
-        "peninputs": ("XPATH", "//input[@class='form-control']"),
         "selects": ("XPATH", "//select[@class='form-select']"),
         "affectCreatedMsg": ("XPATH", "//div[text()='Affect Created.']"),
         # Affects locators
-        "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[4]"),
+        "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[1]"),
         "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[1]"),
         "affects__cvss3_score": ("XPATH", "(//span[text()='CVSSv3'])[1]"),
         "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[1]"),
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
-        "affectUpdateMsg": ("XPATH", "//div[text()='Affect Updated.']"),
+        "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
-        "affectFileTrackerBtn": ("XPATH", "(//button[contains(text(), 'File Tracker')])[1]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']"),
+        "affectAffectednessText": ("XPATH", "//span[contains(text(), 'Affectedness:')]"),
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
-
+        "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
+        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All')]"),
+        "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -305,14 +305,14 @@ class FlawDetailPage(BasePage):
 
         self.click_button_with_js(edit_btn)
 
-        if ("cveid" in field) or ("cweid" in field):
-            field_input = self.driver.find_elements(
-                locate_with(By.XPATH, "//input[@class='form-control']").
-                near(text_element))[0]
-        else:
-            field_input = self.driver.find_elements(
+        field_input_list = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='form-control']").near(text_element))
+        if not field_input_list:
+            field_input_list = self.driver.find_elements(
                 locate_with(By.XPATH, "//input[@class='form-control is-invalid']").
-                near(text_element))[0]
+                near(text_element))
+
+        field_input = field_input_list[0]
 
         self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.send_keys(value)
@@ -420,29 +420,32 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_new_affect_inputs(self):
+    def set_new_affect_inputs(self, external_system = 'jira', affectedness = 'NEW'):
         from features.utils import generate_random_text
-        edit_pens = find_elements_in_page_factory(self, 'editpens')
-        (psmodule_pen, pscomponent_pen, cvssv3_pen) = edit_pens[-3:]
-        pen_inputs = find_elements_in_page_factory(self, 'peninputs')
-        (psmodule_input, pscomponent_input, cvssv3_input) = pen_inputs[-3:]
+        self.click_button_with_js('addNewAffectBtn')
+        self.click_plusdropdown_btn('affectNotSave')
 
         # Set new affect inputs: PS module, PS component, CVSSv3
-        psmodule_pen.execute_script("arguments[0].click();")
-        psmodule_input.send_keys('fedora-38')
-        pscomponent_pen.execute_script("arguments[0].click();")
+        if external_system == 'jira':
+            self.set_field_value('affects__ps_module', 'rhel-8')
+        else:
+            self.set_field_value('affects__ps_module', 'fedora-39')
         ps_component_value = generate_random_text()
-        pscomponent_input.send_keys(ps_component_value)
-        cvssv3_pen.execute_script("arguments[0].click();")
-        cvssv3_input.send_keys('4.3')
+        self.set_field_value('affects__ps_component', ps_component_value)
+        self.set_field_value('affects__cvss3_score', '4.3')
 
         # Set select value for Affectedness, Resolution and Impact
         selects = find_elements_in_page_factory(self, 'selects')
         (affectedness, resolution, impact) = selects[-3:]
         affectedness_select = Select(affectedness)
-        affectedness_select.select_by_value('NEW')
-        resolution_select = Select(resolution)
-        resolution_select.select_by_value('')
+        if affectedness == 'NEW':
+            affectedness_select.select_by_value('NEW')
+            resolution_select = Select(resolution)
+            resolution_select.select_by_value('')
+        else:
+            affectedness_select.select_by_value('AFFECTED')
+            resolution_select = Select(resolution)
+            resolution_select.select_by_value('DELEGATED')
         impact.execute_script("arguments[0].scrollIntoView(true);")
 
         hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
@@ -450,6 +453,8 @@ class FlawDetailPage(BasePage):
         impact_select = Select(impact)
         impact_select.select_by_value('LOW')
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
+        self.click_btn('saveBtn')
+        self.wait_msg('affectCreatedMsg')
         return ps_component_value
   
     def get_an_available_ps_module(self, affect_module):
@@ -563,10 +568,10 @@ class FlawDetailPage(BasePage):
             self.driver.execute_script("arguments[0].click();", field_savebtn)
 
     def delete_affect(self, field):
-        affect_FileTracker_element = getattr(self, field)
-        # Get the delete element via the affectFileTrackerBtn element and click it
+        affect_affectedness_element = getattr(self, field)
+        # Get the delete element via the affectedness element and click it
         delete_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_FileTracker_element))[0]
+            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_affectedness_element))[0]
         self.driver.execute_script("arguments[0].click();", delete_element)
 
     def click_affect_delete_btn(self):
@@ -575,14 +580,14 @@ class FlawDetailPage(BasePage):
         and component value.
         """
         # Click the first affect component dropdown button
-        self.click_button_with_js("affectDropdownBtn")
+        self.click_button_with_js("affectExpandall")
         # Click the second affect component dropdown button
         self.click_button_with_js("affectDropdownBtn")
         # Get the current value of the affect ps_component
         ps_component = self.get_current_value_of_field('affects__ps_component')
         ps_module = self.get_current_value_of_field('affects__ps_module')
         # Click the delete button of the affect
-        self.delete_affect('affectFileTrackerBtn')
+        self.delete_affect('affectAffectednessText')
         return ps_module, ps_component
 
     def get_affect_module_component_values(self, token, component_value):
@@ -611,3 +616,13 @@ class FlawDetailPage(BasePage):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, "//button[contains(text(), 'Unembargo')]"))
         )
+
+    def click_plusdropdown_btn(self, field):
+        element = getattr(self, field)
+        dropdown_btn = self.driver.find_elements(
+            locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").near(element))[0]
+        self.driver.execute_script("arguments[0].click();", dropdown_btn)
+
+    def display_affect_detail(self):
+        self.click_button_with_js("affectExpandall")
+        self.click_btn('affectDropdownBtn')

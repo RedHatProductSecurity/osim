@@ -67,7 +67,7 @@ export const AffectCVSSSchema = z.object({
 });
 
 export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
-const affectBlueprint = {
+export const ZodAffectSchema = z.object({
   uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
@@ -96,9 +96,9 @@ const affectBlueprint = {
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
-};
+});
 export type AffectSchemaType = typeof ZodAffectSchema;
-export const ZodAffectSchema = z.object(affectBlueprint);
+
 
 
 const {

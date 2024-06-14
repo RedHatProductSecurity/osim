@@ -30,6 +30,7 @@ const OsimRuntime = z.object({
     bugzilla: z.string(),
     jira: z.string(),
     errata: z.string(),
+    jiraDisplay: z.string(),
   }),
   osimVersion: z.object({
     rev: z.string(),
@@ -44,7 +45,7 @@ type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
   env: '',
-  backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '', errata: '' },
+  backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '', errata: '', jiraDisplay: '' },
   osimVersion: { rev: '', tag: '', timestamp: '', dirty: true },
   error: '',
   readOnly: false,
@@ -110,6 +111,10 @@ function fetchRuntime() {
         runtime.value = OsimRuntime.parse(json);
       } catch (e) {
         console.error('Unable to parse OsimRuntime', e);
+        console.log(OsimRuntime.safeParse(json).error?.issues.map(
+          // Provides additional helpful context for zod parsing errors
+          issue => issue.path.join('/') + ': ' + issue.message
+        ));
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
