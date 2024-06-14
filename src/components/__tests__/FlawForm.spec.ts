@@ -466,7 +466,7 @@ describe('FlawForm', () => {
     const spanWithClass = nvdCvssField?.find('span.text-primary');
     const allHighlightedSpan = nvdCvssField?.findAll('span.text-primary');
     expect(spanWithClass?.exists()).toBe(true);
-    expect(allHighlightedSpan.length).toBe(6);
+    expect(allHighlightedSpan.length).toBe(5);
   });
 
   it('if embargoed and public date is in the past, it returns an error', async () => {

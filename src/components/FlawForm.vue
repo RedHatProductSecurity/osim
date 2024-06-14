@@ -300,13 +300,12 @@ const formDisabled = ref(false);
               <LabelDiv label="NVD CVSSv3">
                 <div class="form-control text-break h-100">
                   <div class="p-0 h-100">
-                    <span
-                      v-for="char in highlightedNvdCvss3String"
-                      :key="char.char"
-                      :class="{'text-primary': char.isHighlighted}"
-                    >
-                      {{ char.char }}
-                    </span>
+                    <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+                      <span v-if="chars[0].isHighlighted" class="text-primary">
+                        {{ chars.map(c => c.char).join('') }}
+                      </span>
+                      <template v-else>{{ chars.map(c => c.char).join('') }}</template>
+                    </template>
                   </div>
                 </div>
               </LabelDiv>

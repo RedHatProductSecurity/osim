@@ -1,6 +1,7 @@
 import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import { computed, ref, watch, type Ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
+import { groupWith } from 'ramda';
 
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
@@ -68,7 +69,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       });
     }
 
-    return result;
+    return groupWith((a, b) => a.isHighlighted === b.isHighlighted, result);
   });
 
   async function saveCvssScores() {
