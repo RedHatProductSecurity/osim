@@ -56,7 +56,6 @@ def step_impl(context):
     # Check the comment saved successfully
     comment_xpath = f'//p["data-v-38eda711="][text()="{context.add_comment}"]'
     wait_for_visibility_by_locator(context.browser, By.XPATH, comment_xpath)
-    context.browser.quit()
 
 
 @when('I {action} the document text fields')
@@ -83,7 +82,6 @@ def step_impl(context):
     for field in fields:
         v = flaw_detail_page.get_document_text_field(field)
         assert v == context.texts.get(field), f"{field} text should be {context.texts.get(field)}, got {v}"
-    context.browser.quit()
 
 
 @when('I add an acknowledgment to the flaw')
@@ -104,7 +102,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
-    context.browser.quit()
 
 
 @when('I update the dropdown {field} value')
@@ -122,7 +119,6 @@ def step_impl(context, field):
     flaw_detail_page = FlawDetailPage(context.browser)
     _, v = flaw_detail_page.get_select_value(field)
     assert context.selected == v, f"{field} value should be {context.selected}, got {v}"
-    context.browser.quit()
 
 
 @when("I edit the first acknowledgement in correct format")
@@ -145,7 +141,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
-    context.browser.quit()
 
 
 @when("I delete an acknowledgement from acknowledgement list")
@@ -164,7 +159,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
-    context.browser.quit()
 
 
 @when("I update the random input fields")
@@ -186,7 +180,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     for value in context.field_values:
         flaw_detail_page.check_value_exist(value)
-    context.browser.quit()
 
 
 @when("I update the CVE ID with a valid data")
@@ -212,7 +205,6 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.value)
-    context.browser.quit()
 
 
 @when("I {action} the CWE ID")
@@ -235,7 +227,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value('cweid')
     assert v == context.field_value, f"CWE ID should be {context.field_value}, got {v}"
-    context.browser.quit()
 
 
 @when('I update the Reported Date with a valid data')
@@ -254,7 +245,6 @@ def step_impl(context):
     expected = datetime.strftime(datetime.strptime(context.v, "%Y%m%d"), "%Y-%m-%d")
     get_value = flaw_detail_page.get_input_value("reportedDate")
     assert get_value == expected, f"get {get_value}, expected {expected}"
-    context.browser.quit()
 
 
 @when('I click self assign button and save changes')
@@ -278,7 +268,6 @@ def step_impl(context):
     home_page = HomePage(context.browser)
     login_user = home_page.userBtn.get_text()
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
-    context.browser.quit()
 
 
 def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
@@ -314,7 +303,6 @@ def step_impl(context):
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.first_value)
     flaw_detail_page.check_value_exist(context.second_value)
-    context.browser.quit()
 
 
 @when("I add two RHSB references to the flaw")
@@ -335,7 +323,6 @@ def step_impl(context):
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.first_value)
     flaw_detail_page.check_value_not_exist(context.second_value)
-    context.browser.quit()
 
 
 @when("I update the flaw and click 'Reset Changes' button")
@@ -364,7 +351,6 @@ def step_impl(context):
     assert context.source == flaw_page.get_select_value('source')[1]
     assert context.reported_date == flaw_page.get_input_value('reportedDate')
     assert context.description == flaw_page.get_document_text_field('description')
-    context.browser.quit()
 
 
 @when("I delete a reference from a flaw")
@@ -391,7 +377,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_not_exist(context.expected)
-    context.browser.quit()
 
 
 @when("I edit a internal/external reference")
@@ -422,7 +407,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_exist(context.expected)
-    context.browser.quit()
 
 
 @when("I add a RHSB reference to the flaw with incorrect link")
@@ -441,7 +425,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_value_not_exist(context.v)
-    context.browser.quit()
 
 
 @when("I update the embargoed flaw with a past public date")
@@ -460,7 +443,6 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     v = flaw_detail_page.get_input_value("publicDate")
     assert v != context.v, f"Public date is updated to a past date {v}"
-    context.browser.quit()
 
 
 @when("I update the embargoed flaw with a future public date")
@@ -475,7 +457,7 @@ def step_impl(context):
 
 @then("The embargoed flaw is updated")
 def step_impl(context):
-    context.browser.quit()
+    pass
 
 
 @when("I update the affects of the flaw and click 'Save Changes' button")
@@ -531,7 +513,6 @@ def step_impl(context):
                     context.value_dict.keys(), token, component_value)
     # There is a bug OSIDB-2600, so the following step will be failed
     assert context.value_dict == field_value_dict
-    context.browser.quit()
 
 @when("I add a new affect with valid data")
 def step_impl(context):
@@ -545,7 +526,6 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.check_value_exist(context.ps_component)
-    context.browser.quit()
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
@@ -565,7 +545,6 @@ def step_impl(context):
     module_component_list = flaw_detail_page.get_affect_module_component_values(
                     token, context.component)
     assert (context.module, context.component) not in module_component_list
-    context.browser.quit()
 
 @when("I click 'delete' button of an affect")
 def step_impl(context):
@@ -584,7 +563,6 @@ def step_impl(context):
     module_component_list = flaw_detail_page.get_affect_module_component_values(
                     token, context.component)
     assert (context.module, context.component) in module_component_list
-    context.browser.quit()
 
 
 @when("I unembargo this flaw and add public date")
@@ -608,4 +586,3 @@ def step_impl(context):
     v = flaw_detail_page.get_input_value("publicDate")
     public_date = datetime.strptime(context.public_date, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
     assert public_date in v, f"Public date should be {public_date}, got {v}"
-    context.browser.quit()
