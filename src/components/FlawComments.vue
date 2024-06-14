@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
-import { taskUrl } from '@/services/JiraService';
+import { jiraTaskUrl } from '@/services/JiraService';
 import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 
 const userStore = useUserStore();
@@ -165,7 +165,7 @@ function sanitize(text: string) {
           </button>
           <a
             v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
-            :href="taskUrl(taskKey ?? '#')"
+            :href="jiraTaskUrl(taskKey)"
             target="_blank"
             class="btn btn-secondary tab-btn"
             :disabled="isSaving"
