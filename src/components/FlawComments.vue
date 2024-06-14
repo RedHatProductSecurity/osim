@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
-import { useInternalComments } from '@/composables/useInternalComments';
+import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { jiraTaskUrl } from '@/services/JiraService';
-import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 
 const userStore = useUserStore();
 
 const props = defineProps<{
-  comments: ZodFlawCommentSchemaType[];
-  taskKey: string | null | undefined;
+  publicComments: ZodFlawCommentType[];
+  privateComments: ZodFlawCommentType[];
+  internalComments: ZodFlawCommentType[];
+  internalCommentsAvailable: boolean;
+  isLoadingInternalComments: boolean;
+  systemComments: ZodFlawCommentType[];
+  taskKey: string;
+  bugzillaLink: string;
   isSaving: boolean;
 }>();
 
@@ -25,19 +30,6 @@ enum CommentType {
     System,
 }
 
-const {
-  internalComments,
-  addInternalComment,
-  loadInternalComments,
-  isSavingInternalComment,
-  isLoadingInternalComments,
-  internalCommentsAvailable,
-} = useInternalComments(props.taskKey ?? '');
-
-watch(isSavingInternalComment, () => {
-  emit('disableForm', isSavingInternalComment.value);
-});
-
 const newComment = ref('');
 const isAddingNewComment = ref(false);
 
@@ -45,8 +37,6 @@ const emit = defineEmits<{
   'comment:addFlawComment': [comment: string, creator: string, isPrivate: boolean];
   'disableForm': [value: boolean];
 }>();
-
-const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 const commentLabels = computed(() => {
   return Object.keys(CommentType)
@@ -66,62 +56,34 @@ const handleTabChange = (index: number) => {
   selectedTab.value = index;
 };
 
-type CommentFilter = 'public' | 'private' | 'system';
-type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
-
-const filterFunctions: CommentFilterFunctions = {
-  public: (comment: any) => !comment.is_private,
-  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
-  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
-};
-
-function parseOsidbComments(comments: ZodFlawCommentSchemaType[]) {
-  return comments.map((comment: any) => {
-    return {
-      author: comment.creator,
-      timestamp: comment.created_dt,
-      body: comment.text,
-    };
-  });
-}
-
-const publicComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.public)));
-const privateComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.private)));
-const systemComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.system)));
-
 const displayedComments = computed(() => {
   switch (selectedTab.value) {
   case CommentType.Public:
-    return publicComments.value;
+    return props.publicComments;
   case CommentType.Private:
-    return privateComments.value;
+    return props.privateComments;
   case CommentType.Internal:
-    return internalComments.value;
+    return props.internalComments;
   case CommentType.System:
-    return systemComments.value;
+    return props.systemComments;
   default:
     return [];
   }
 });
 
 onMounted(async () => {
-  loadInternalComments();
+  emit('loadInternalComments');
 });
 
 async function handleCommentSave() {
-  if (selectedTab.value === CommentType.Public || selectedTab.value === CommentType.Private) {
-    // Osidb Bugzilla comment save
-    emit('comment:addFlawComment', newComment.value, userStore.userName, CommentType[selectedTab.value] === 'Private');
-    isAddingNewComment.value = false;
-    newComment.value = '';
-  } else if (selectedTab.value === CommentType.Internal && props.taskKey) {
-    // Internal Jira comment save
-    await addInternalComment(newComment.value)
-      .then(() => {
-        isAddingNewComment.value = false;
-        newComment.value = '';
-      });
-  }
+  emit(
+    'comment:addFlawComment',
+    newComment.value,
+    userStore.userName,
+    CommentType[selectedTab.value],
+  );
+  newComment.value = '';
+  isAddingNewComment.value = false;
 }
 
 function sanitize(text: string) {
@@ -164,6 +126,15 @@ function sanitize(text: string) {
             Add {{ CommentType[selectedTab] }} Comment
           </button>
           <a
+            v-if="(selectedTab === CommentType.Public || selectedTab === CommentType.Private)"
+            :href="bugzillaLink"
+            target="_blank"
+            class="btn btn-secondary tab-btn"
+            :disabled="isSaving"
+          >
+            View on Bugzilla
+          </a>
+          <a
             v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
             :href="jiraTaskUrl(taskKey)"
             target="_blank"
@@ -203,7 +174,7 @@ function sanitize(text: string) {
             <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal" class="ms-3">
               Internal comments not available
             </div>
-            <div v-else-if="displayedComments.length === 0" class="ms-3">
+            <div v-else-if="displayedComments?.length === 0" class="ms-3">
               No {{ CommentType[selectedTab].toLowerCase() }} comments
             </div>
             <li
@@ -213,8 +184,9 @@ function sanitize(text: string) {
             >
               <p class="border-bottom pb-3">
                 <i class="bi bi-caret-right-fill"></i>
-                {{ comment.author }}
-                - {{ DateTime.fromISO(comment.timestamp, { setZone: true }).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
+                {{ comment.creator }}
+                - {{ DateTime.fromISO(comment.created_dt ?? '',{ setZone: true })
+                  .toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
                   class="badge rounded-pill float-end cursor-pointer"
                   :class="{
@@ -227,7 +199,7 @@ function sanitize(text: string) {
                   {{ CommentType[selectedTab] }}
                 </span>
               </p>
-              <p class="osim-flaw-comment" v-html="sanitize(comment.body)" />
+              <p class="osim-flaw-comment" v-html="sanitize(comment.text ?? '')" />
             </li>
           </ul>
         </div>
