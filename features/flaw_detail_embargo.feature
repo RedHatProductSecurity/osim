@@ -13,17 +13,9 @@ Feature: Flaw detail testing on embargo flaw
       When I update the embargoed flaw with a future public date
       Then The embargoed flaw is updated
 
-    Scenario: Update affects for embargoed flaw
-      When I update the affects of the flaw and click 'Save Changes' button
-      Then All changes are saved
-
-    Scenario: Make flaw public and add public data
-      When I unembargo this flaw and add public date
-      Then Flaw is unembargoed and have public date
-
-     Scenario: Add new affect for an embargoed flaw
+    Scenario: Add new affect for an embargoed flaw
       When I add a new affect with valid data
-      When The affect is added
+      Then The affect is added
 
     Scenario: Update affects for an embargoed flaw
       When I update the affects of the flaw and click 'Save Changes' button
@@ -32,3 +24,7 @@ Feature: Flaw detail testing on embargo flaw
     Scenario: Delete an affect from a flaw
       When I delete an affect of the flaw
       Then The affect is deleted
+
+    Scenario: Make flaw public and add public data
+      When I unembargo this flaw and add public date
+      Then Flaw is unembargoed and have public date
