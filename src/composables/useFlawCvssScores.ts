@@ -48,9 +48,16 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   const highlightedNvdCvss3String = computed(() => {
     const result = [];
-    const nvdCvssValue = nvdCvss3String.value;
-    const cvssValue = rhCvss3String.value;
+    const nvdCvssValue = flawNvdCvss3.value?.vector || '-';
+    const cvssValue = flawRhCvss3.value?.vector || '-';
     const maxLength = Math.max(nvdCvssValue.length, cvssValue.length);
+
+    if (formatScore(flawNvdCvss3.value?.score) !== formatScore(flawRhCvss3.value?.score)) {
+      result.push(
+        { char: formatScore(flawNvdCvss3.value?.score), isHighlighted: true },
+        { char: '/', isHighlighted: false }
+      );
+    }
 
     for (let i = 0; i < maxLength; i++) {
       const charFromFlaw = i < nvdCvssValue.length ? nvdCvssValue[i] : '';
