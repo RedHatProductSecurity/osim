@@ -24,7 +24,6 @@ def step_impl(context):
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.save_button_exist()
-    context.browser.quit()
 
 
 @when('I check the check-all checkbox of flaw table')
@@ -37,7 +36,6 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.check_is_all_flaw_selected()
-    context.browser.quit()
 
 
 @given('The check-all checkbox of flaw list is checked')
@@ -57,7 +55,6 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.check_is_all_flaw_unselected()
-    context.browser.quit()
 
 
 @when("I select some flaws from flaw list and click 'Assign to Me'")
@@ -77,7 +74,6 @@ def step_impl(context):
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.check_bulk_assign(context.links[0])
-    context.browser.quit()
 
 
 @when("I click the field header of flaw list table")
@@ -102,7 +98,6 @@ def step_impl(context):
     for k, v in context.value_dict.items():
         for order, values in v.items():
             assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."
-    context.browser.quit()
 
 
 @when("I check 'Open Issues' checkbox of flaw list")
@@ -122,7 +117,6 @@ def step_impl(context):
 def step_impl(context):
     # Check the first state value in the asce sorted flaw list
     assert context.state != 'DONE', 'Closed issue(s) in open issues filter result'
-    context.browser.quit()
 
 
 @when("I set a default filter and back to flaw list")
@@ -151,7 +145,6 @@ def step_impl(context):
     home_page.first_flaw_exist()
     asce_state = home_page.get_specified_cell_value(1, 3)
     assert desc_state == asce_state, "Default search not work."
-    context.browser.quit()
 
 
 @given("I assgin an issue to me")
@@ -184,5 +177,3 @@ def step_impl(context):
     time.sleep(1)
     owner = home_page.get_field_value("owner")
     assert context.user_name == owner
-    # Need to check the count of my issues that depends on testdata
-    context.browser.quit()
