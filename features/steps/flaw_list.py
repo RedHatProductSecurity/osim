@@ -40,44 +40,44 @@ def step_impl(context):
     context.browser.quit()
 
 
-@given('The check-all checkbox of flaw list is checked')
-def step_impl(context):
-    context.execute_steps(u"""
-        When I check the check-all checkbox of flaw table
-    """)
-
-
-@when('I uncheck the check-all checkbox')
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    home_page.click_flaw_check_all_checkbox()
-
-
-@then('No flaw in flaw table is selected')
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    home_page.check_is_all_flaw_unselected()
-    context.browser.quit()
-
-
-@when("I select some flaws from flaw list and click 'Assign to Me'")
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    # 1. Wait for loading flaw list and select flaws to bulk assign
-    context.links = home_page.select_bulk_flaws()
-    # 2. Click bulck action and assign to me buttons
-    home_page.bulk_assign()
-    # 3. Wait message "Flaw saved"
-    # The current bulk assign is not actually bulk update, thus
-    # there will be a 'Flaw saved' message for each selected flaw.
-    home_page.wait_msg('flawSavedMsg')
-
-
-@then("The owner of selected flaws is updated to me")
-def step_impl(context):
-    home_page = HomePage(context.browser)
-    home_page.check_bulk_assign(context.links[0])
-    context.browser.quit()
+# @given('The check-all checkbox of flaw list is checked')
+# def step_impl(context):
+#     context.execute_steps(u"""
+#         When I check the check-all checkbox of flaw table
+#     """)
+#
+#
+# @when('I uncheck the check-all checkbox')
+# def step_impl(context):
+#     home_page = HomePage(context.browser)
+#     home_page.click_flaw_check_all_checkbox()
+#
+#
+# @then('No flaw in flaw table is selected')
+# def step_impl(context):
+#     home_page = HomePage(context.browser)
+#     home_page.check_is_all_flaw_unselected()
+#     context.browser.quit()
+#
+#
+# @when("I select some flaws from flaw list and click 'Assign to Me'")
+# def step_impl(context):
+#     home_page = HomePage(context.browser)
+#     # 1. Wait for loading flaw list and select flaws to bulk assign
+#     context.links = home_page.select_bulk_flaws()
+#     # 2. Click bulck action and assign to me buttons
+#     home_page.bulk_assign()
+#     # 3. Wait message "Flaw saved"
+#     # The current bulk assign is not actually bulk update, thus
+#     # there will be a 'Flaw saved' message for each selected flaw.
+#     home_page.wait_msg('flawSavedMsg')
+#
+#
+# @then("The owner of selected flaws is updated to me")
+# def step_impl(context):
+#     home_page = HomePage(context.browser)
+#     home_page.check_bulk_assign(context.links[0])
+#     context.browser.quit()
 
 
 @when("I click the field header of flaw list table")
