@@ -11,7 +11,6 @@ def step_impl(context):
     """
     home_page = LoginPage(context.browser)
     home_page.check_login()
-    context.browser.quit()
 
 
 @when('I click the Logout button from the account dropdown')
@@ -24,4 +23,3 @@ def step_impl(context):
 def step_impl(context):
     home_page = LoginPage(context.browser)
     home_page.check_login()
-    context.browser.quit()

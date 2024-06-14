@@ -38,7 +38,6 @@ def step_impl(context):
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.first_flaw_exist()
-    context.browser.quit()
 
 
 @then('I select the field and value to search flaws and I am able to view flaws matching the search')
@@ -75,7 +74,6 @@ def step_impl(context):
         # 2. Check the flaws list count is correct. Since the data is sharing
         # currently, this check will be added when the test data is lockdown in
         # the future.
-    context.browser.quit()
 
 
 @when('I am searching flaws with two fields and two values')
@@ -94,4 +92,3 @@ def step_impl(context):
     assert "CUSTOMER" == field_value
     field_value = advanced_search_page.get_field_value_from_flawlist("impact")
     assert "LOW" == field_value
-    context.browser.quit()
