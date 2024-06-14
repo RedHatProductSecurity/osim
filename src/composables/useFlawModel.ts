@@ -3,12 +3,12 @@ import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 import { useRouter } from 'vue-router';
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
-  postFlawComment,
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
@@ -159,16 +159,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     isSaving.value = false;
   }
 
-  function addFlawComment(comment: string, creator: string, isPrivate: boolean) {
-    isSaving.value = true;
-    const type = isPrivate ? 'Private' : 'Public';
-    postFlawComment(flaw.value.uuid, comment, creator, isPrivate, flaw.value.embargoed)
-      .then(createSuccessHandler({ title: 'Success!', body: `${type} comment saved.` }))
-      .then(afterSaveSuccess)
-      .catch(createCatchHandler('Error saving public comment'))
-      .finally(() => isSaving.value = false);
-  }
-
   const errors = computed(() => flawErrors(flaw.value));
 
   const toggleShouldCreateJiraTask = () => {
@@ -188,12 +178,12 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     bugzillaLink,
     shouldCreateJiraTask,
     toggleShouldCreateJiraTask,
-    addFlawComment,
     createFlaw,
     updateFlaw,
     afterSaveSuccess,
     ...cvssScoresModel,
     ...flawAffectsModel,
+    ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };
 }
