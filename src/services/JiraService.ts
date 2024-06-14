@@ -5,6 +5,7 @@ import {
   osimRuntime,
 } from '@/stores/osimRuntime';
 import type { ZodJiraUserAssignableType, ZodJiraIssueType } from '@/types/zodJira';
+import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
@@ -140,7 +141,10 @@ export async function postJiraComment(taskId: string, comment: string) {
     data: {
       body: comment
     },
-  }).then((response) => response.data);
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Internal comment saved' }))
+    .then((response) => response.data)
+    .catch(createCatchHandler('Error saving internal Jira comment'));
 }
 
 export async function getJiraUsername() {
