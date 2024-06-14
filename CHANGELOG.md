@@ -37,6 +37,7 @@
 * Improve reporting on tracker filing errors (`OSIDB-2909`)
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
+* Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
 
 ### Fixed
 * The session is now shared across tabs
