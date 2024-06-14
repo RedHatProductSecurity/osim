@@ -26,6 +26,7 @@ import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
+import CvssExlplainForm from './CvssExlplainForm.vue';
 
 const props = defineProps<{
   flaw: any;
@@ -310,21 +311,18 @@ const formDisabled = ref(false);
                 </div>
               </LabelDiv>
             </div>
-            <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
-              <CvssNISTForm
-                :cveid="flaw.cve_id"
-                :summary="flaw.comment_zero"
-                :bugzilla="bugzillaLink"
-                :cvss="rhCvss3String"
-                :nistcvss="nvdCvss3String"
-              />
-            </div>
-            <span
-              v-if="shouldDisplayEmailNistForm"
-              class="text-info bg-white px-3 py-2 cvss-score-error"
-            >
-              Explain non-obvious CVSSv3 score metrics
-            </span>
+            <template v-if="shouldDisplayEmailNistForm">
+              <div class="col-auto align-self-center mb-3">
+                <CvssNISTForm
+                  :cveid="flaw.cve_id"
+                  :summary="flaw.comment_zero"
+                  :bugzilla="bugzillaLink"
+                  :cvss="rhCvss3String"
+                  :nistcvss="nvdCvss3String"
+                />
+              </div>
+              <CvssExlplainForm v-model="flaw" />
+            </template>
           </div>
           <LabelEditable
             v-model="flaw.cwe_id"
