@@ -173,7 +173,7 @@ describe('IssueQueue', () => {
         plugins: [pinia, router],
       },
     });
-    const idColumn = wrapper.findAll('th').at(1);
+    const idColumn = wrapper.findAll('th').at(0);
     await idColumn.trigger('click');
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[1][0]._value).toEqual({
@@ -184,7 +184,7 @@ describe('IssueQueue', () => {
     expect(fetchEvents[1][0]._value).toEqual({
       order: 'cve_id,uuid',
     });
-    const impactColumn = wrapper.findAll('th').at(2);
+    const impactColumn = wrapper.findAll('th').at(1);
     await impactColumn.trigger('click');
     expect(fetchEvents[1][0]._value).toEqual({
       order: '-impact',
