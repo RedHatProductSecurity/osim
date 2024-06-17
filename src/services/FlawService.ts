@@ -14,9 +14,8 @@ export async function beforeFetch(options: OsidbFetchOptions) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
 
-      if (Array.isArray(options.data)){
-        (options.data as Record<string, any>).updated_dt = updated_dt;
-      }
+      (options.data as Record<string, any>).updated_dt = updated_dt;
+
       if (!updated_dt) {
         throw new Error('An updated_dt could not be fetched');
       }
