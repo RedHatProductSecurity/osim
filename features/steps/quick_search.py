@@ -18,7 +18,6 @@ def step_impl(context):
     detail_page = FlawDetailPage(context.browser)
     value = detail_page.get_input_value("cveid")
     assert value == context.value
-    context.browser.quit()
 
 
 @then('I search the flaw with text and I am able to view flaws list matching the search')
@@ -38,4 +37,3 @@ def step_impl(context):
         else:
             value = detail_page.get_document_text_field(field)
         assert text in value
-    context.browser.quit()

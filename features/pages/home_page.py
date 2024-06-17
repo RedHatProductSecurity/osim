@@ -23,21 +23,21 @@ class HomePage(BasePage):
         "flawCheckBox": ("CSS", "input[class='form-check-input']"),
         "loadMoreFlawsBtn": ("XPATH", "//button[contains(text(), 'Load More Flaws')]"),
         "firstFlaw": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[1]"),
-        "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[2]/a'),
+        "firstFlawLink": ("XPATH", '//tbody[@class="table-group-divider"]/tr[1]/td[1]/a'),
         "settingsBtn": ("LINK_TEXT", "Settings"),
         "flawIndexBtn": ("CSS", "ul[class='navbar-nav me-auto align-items-center'] li:nth-child(1) a"),
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
         "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
-        "cve_idText": ("XPATH", "//tr[3]/td[2]/a"),
+        "cve_idText": ("XPATH", "//tr[3]/td[1]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
         "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
         "myIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[1]"),
         "openIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[2]"),
         "defaultFilterCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[3]"),
-        "ownerText":  ("XPATH", "//tr[1]/td[7]"),
-        "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),
-        "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),
+        "ownerText":  ("XPATH", "//tr[1]/td[6]"),
+        # "bulkActionBtn": ("XPATH", "//button[contains(text(), 'Bulk Action')]"),  # TODO remove unused
+        # "assignToMeBtn": ("XPATH", "//a[contains(text(), 'Assign to Me')]"),  # TODO remove unused
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "idBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'ID')]"),
         "impactBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Impact')]"),
@@ -58,21 +58,21 @@ class HomePage(BasePage):
     def first_flaw_exist(self):
         self.firstFlaw.visibility_of_element_located()
 
-    def click_flaw_check_all_checkbox(self):
-        self.firstFlaw.visibility_of_element_located()
-        self.flawCheckAllCheckBox.click_button()
-
-    def check_is_all_flaw_selected(self):
-        flaw_rows = find_elements_in_page_factory(self, "flawRow")
-        flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
-        assert len(flaw_rows) + 1 == len(flaw_checkboxes), 'Incorrect checkbox count'
-        flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
-        assert len(flaw_checked) == len(flaw_checkboxes), 'Incorrect check-all check result'
-
-    def check_is_all_flaw_unselected(self):
-        flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
-        flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
-        assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
+#     def click_flaw_check_all_checkbox(self):
+#         self.firstFlaw.visibility_of_element_located()
+#         self.flawCheckAllCheckBox.click_button()
+#
+#     def check_is_all_flaw_selected(self):
+#         flaw_rows = find_elements_in_page_factory(self, "flawRow")
+#         flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
+#         assert len(flaw_rows) + 1 == len(flaw_checkboxes), 'Incorrect checkbox count'
+#         flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
+#         assert len(flaw_checked) == len(flaw_checkboxes), 'Incorrect check-all check result'
+#
+#     def check_is_all_flaw_unselected(self):
+#         flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
+#         flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
+#         assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
 
     def check_is_all_flaw_loaded(self):
         self.firstFlaw.visibility_of_element_located()
@@ -112,34 +112,34 @@ class HomePage(BasePage):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_input)
         field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
-    def select_bulk_flaws(self, length=1):
-        self.firstFlaw.visibility_of_element_located()
-        flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
-        links = []
-        for i in range(1, length+1):
-            checkbox = flaw_checkboxes[i]
-            checkbox.click()
-            flaw_link = self.driver.find_element(
-                    By.XPATH, f"(//td[contains(@class, 'osim-issue-title')])[{i}]/a")
-            links.append(flaw_link)
-        return links
-
-    def bulk_assign(self):
-        self.click_btn('bulkActionBtn')
-        hide = self.driver.find_elements(
-            locate_with(By.XPATH, "//div[@class='osim-incident-list']/table/thead"))[0]
-        self.driver.execute_script("arguments[0].style.visibility='hidden'", hide)
-        self.click_btn('assignToMeBtn')
-        self.driver.execute_script("arguments[0].style.visibility='visible'", hide)
-
-    def check_bulk_assign(self, flaw_link):
-        from features.utils import wait_for_visibility_by_locator
-        flaw_link.click()
-        wait_for_visibility_by_locator(self.driver, By.XPATH, '//button[text()=" Save Changes "]')
-        assignee_value_element = self.driver.find_elements(
-             locate_with(By.XPATH, ("(//span[@class='osim-editable-text-value form-control'])[6]")))[0]
-        login_user = self.userBtn.get_text()
-        assert assignee_value_element.get_text() == login_user.strip(), 'Bulk assign failed'
+#     def select_bulk_flaws(self, length=1):
+#         self.firstFlaw.visibility_of_element_located()
+#         flaw_checkboxes = find_elements_in_page_factory(self, "flawCheckBox")
+#         links = []
+#         for i in range(1, length+1):
+#             checkbox = flaw_checkboxes[i]
+#             checkbox.click()
+#             flaw_link = self.driver.find_element(
+#                     By.XPATH, f"(//td[contains(@class, 'osim-issue-title')])[{i}]/a")
+#             links.append(flaw_link)
+#         return links
+#
+#     def bulk_assign(self):
+#         self.click_btn('bulkActionBtn')
+#         hide = self.driver.find_elements(
+#             locate_with(By.XPATH, "//div[@class='osim-incident-list']/table/thead"))[0]
+#         self.driver.execute_script("arguments[0].style.visibility='hidden'", hide)
+#         self.click_btn('assignToMeBtn')
+#         self.driver.execute_script("arguments[0].style.visibility='visible'", hide)
+#
+#     def check_bulk_assign(self, flaw_link):
+#         from features.utils import wait_for_visibility_by_locator
+#         flaw_link.click()
+#         wait_for_visibility_by_locator(self.driver, By.XPATH, '//button[text()=" Save Changes "]')
+#         assignee_value_element = self.driver.find_elements(
+#              locate_with(By.XPATH, ("(//span[@class='osim-editable-text-value form-control'])[6]")))[0]
+#         login_user = self.userBtn.get_text()
+#         assert assignee_value_element.get_text() == login_user.strip(), 'Bulk assign failed'
 
     def get_sort_flaws(self, field, sort_fields):
         sorted_numbers = sorted(random.sample(range(1, 50), 3))

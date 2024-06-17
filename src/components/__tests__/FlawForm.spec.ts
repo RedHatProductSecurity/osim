@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useToastStore } from '@/stores/ToastStore';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -24,6 +24,7 @@ import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
+import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
@@ -451,8 +452,8 @@ describe('FlawForm', () => {
     expect(result.owner).toBe('networking test owner');
   });
 
-  it('shows a error message when nvd score and Rh score mismatch', async () => {
-    const cvssScoreError = subject.find('span.cvss-score-error');
+  it('shows an explanation message when nvd score and Rh score mismatch', async () => {
+    const cvssScoreError = subject.find('.cvss-score-mismatch');
     expect(cvssScoreError?.exists()).toBe(true);
     expect(cvssScoreError?.text()).toBe('Explain non-obvious CVSSv3 score metrics');
   });
@@ -465,7 +466,7 @@ describe('FlawForm', () => {
     const spanWithClass = nvdCvssField?.find('span.text-primary');
     const allHighlightedSpan = nvdCvssField?.findAll('span.text-primary');
     expect(spanWithClass?.exists()).toBe(true);
-    expect(allHighlightedSpan.length).toBe(6);
+    expect(allHighlightedSpan?.length).toBe(5);
   });
 
   it('if embargoed and public date is in the past, it returns an error', async () => {
@@ -531,6 +532,17 @@ describe('FlawForm', () => {
       .toBe(null);
   });
 
+  it('sets public date if empty when unembargo button is clicked', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    flaw.unembargo_dt = null;
+    mountWithProps({ flaw, mode: 'edit' });
+    await flushPromises();
+    subject.findComponent(IssueFieldEmbargo).find('.osim-unembargo-button').trigger('click');
+
+    expect(flaw.unembargo_dt).not.toBe(null);
+  });
+
   it('show set description, statement, mitigation values correctly after clicking remove buttons', async () => {
     const flaw = sampleFlaw();
     flaw.cve_description = 'description';
@@ -574,6 +586,22 @@ describe('FlawForm', () => {
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
     expect(disabledOptions.length).not.toBe(0);
+  });
+
+  it('should show a link to bugzilla if ID exists', async () => {
+    mountWithProps();
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(true);
+  });
+
+  it('should not show a link to bugzilla if ID does not exists', async () => {
+    const flaw = sampleFlaw();
+    flaw.meta_attr = {};
+    mountWithProps({ flaw, mode:'edit' });
+
+    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    expect(bugzillaLink.exists()).toBe(false);
   });
 });
 

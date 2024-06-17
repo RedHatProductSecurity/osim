@@ -17,6 +17,10 @@
 * Manage adding mulitple trackers (`OSIDB-2673`, `OSIDB-2811`)
 * Hide references description when it is not set (`OSIDB-2846`)
 * Create and delete Affects in single request (`OSIDB-2821`)
+* Add link to bugzilla tracker on Flaw form (`OSIDB-2897`)
+* Set public date to current date on unembargo (`OSIDB-2829`)
+* Add CVSSv3 score explanation input field (`OSIDB-2913`)
+* Remove checkbox on IssueQueue (`OSIDB-2488`)
 * Add Affect Module Button on Flaw Form (`OSIDB-2876`)
 * Sort affects by product family, alphabetical (`OSIDB-2533`)
 
@@ -31,6 +35,12 @@
   * Limit UI space of element
   * Filter trackers by stream or component name
   * Shows recommended tracker icon
+* Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
+* Renamed Flaw Status to Flaw State (`OSIDB-2899`)
+* Improve reporting on tracker filing errors (`OSIDB-2909`)
+* Added timezone to Public Date field (UTC) (`OSIDB-2790`)
+* Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
+* Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
 
 ### Fixed
 * The session is now shared across tabs

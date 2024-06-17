@@ -83,7 +83,6 @@ def step_impl(context):
 @then('A new flaw is created')
 def step_impl(context):
     os.environ["FLAW_ID"] = check_created_flaw_exist(context)
-    context.browser.quit()
 
 
 @when("I add a CVE ID to a flaw without a CVE")
@@ -122,7 +121,6 @@ def step_impl(context):
 @then("The flaw CVE ID is saved")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
-    context.browser.quit()
 
 
 @when('I create new embargoed flaw with valid data')
@@ -133,7 +131,6 @@ def step_impl(context):
 @then('The flaw is created and marked as an embargoed flaw')
 def step_impl(context):
     os.environ["FLAW_ID"] = check_created_flaw_exist(context, embargoed=True)
-    context.browser.quit()
 
 
 @when('I create flaw with valid data including optional fields')

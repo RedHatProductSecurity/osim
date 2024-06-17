@@ -50,7 +50,7 @@ updateAffectsExpandedState(theAffects.value);
 
 watch(theAffects, (nextValue) => {
   expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, moduleName: string) => {
-    modules[moduleName] = areAnyComponentsExpandedIn(moduleName) ?? false;
+    modules[moduleName] = areAnyComponentsExpandedIn(moduleName) || expandedModules.value[moduleName] || false;
     return modules;
   }, {});
   updateAffectsExpandedState(nextValue);

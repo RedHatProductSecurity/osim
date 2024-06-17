@@ -26,6 +26,7 @@ import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
+import CvssExlplainForm from './CvssExlplainForm.vue';
 import { sortWith, ascend, prop } from 'ramda';
 import { type ZodAffectType } from '@/types/zodAffect';
 
@@ -133,6 +134,12 @@ const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim()
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw);
+};
+
+const onUnembargoed = (isEmbargoed: boolean) => {
+  if (!isEmbargoed && !flaw.value.unembargo_dt) {
+    flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
+  }
 };
 
 const allowedSources = [
@@ -247,6 +254,16 @@ const formDisabled = ref(false);
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
       <div class="row osim-flaw-form-section">
+        <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
+          <a
+            :href="bugzillaLink"
+            class="osim-bugzilla-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+          </a>
+        </div>
         <div class="col-12 osim-alerts-banner">
           <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
@@ -300,32 +317,28 @@ const formDisabled = ref(false);
               <LabelDiv label="NVD CVSSv3">
                 <div class="form-control text-break h-100">
                   <div class="p-0 h-100">
-                    <span
-                      v-for="char in highlightedNvdCvss3String"
-                      :key="char.char"
-                      :class="{'text-primary': char.isHighlighted}"
-                    >
-                      {{ char.char }}
-                    </span>
+                    <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+                      <span v-if="chars[0].isHighlighted" class="text-primary">
+                        {{ chars.map(c => c.char).join('') }}
+                      </span>
+                      <template v-else>{{ chars.map(c => c.char).join('') }}</template>
+                    </template>
                   </div>
                 </div>
               </LabelDiv>
             </div>
-            <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center mb-3">
-              <CvssNISTForm
-                :cveid="flaw.cve_id"
-                :summary="flaw.comment_zero"
-                :bugzilla="bugzillaLink"
-                :cvss="rhCvss3String"
-                :nistcvss="nvdCvss3String"
-              />
-            </div>
-            <span
-              v-if="shouldDisplayEmailNistForm"
-              class="text-info bg-white px-3 py-2 cvss-score-error"
-            >
-              Explain non-obvious CVSSv3 score metrics
-            </span>
+            <template v-if="shouldDisplayEmailNistForm">
+              <div class="col-auto align-self-center mb-3">
+                <CvssNISTForm
+                  :cveid="flaw.cve_id"
+                  :summary="flaw.comment_zero"
+                  :bugzilla="bugzillaLink"
+                  :cvss="rhCvss3String"
+                  :nistcvss="nvdCvss3String"
+                />
+              </div>
+              <CvssExlplainForm v-model="flaw" />
+            </template>
           </div>
           <LabelEditable
             v-model="flaw.cwe_id"
@@ -379,6 +392,7 @@ const formDisabled = ref(false);
             :isEmbargoed="isEmbargoed"
             :flawId="flaw.cve_id || flaw.uuid"
             @updateFlaw="updateFlaw"
+            @update:model-value="onUnembargoed"
           />
           <FlawFormOwner v-model="flaw.owner" />
         </div>

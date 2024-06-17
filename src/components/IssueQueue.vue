@@ -2,9 +2,9 @@
 import { computed, onMounted, reactive, ref, onUnmounted, watch } from 'vue';
 import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
-import LabelCheckbox from './widgets/LabelCheckbox.vue';
+import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
-import { FlawClassificationStateEnum } from '../generated-client';
+import { FlawClassificationStateEnum } from '@/generated-client';
 const userStore = useUserStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
@@ -83,28 +83,11 @@ const relevantIssues = computed<FilteredIssue[]>(() => {
     .map((issue) => reactive({ issue, selected: false }));
 });
 
-function updateSelectAll(selectedAll: boolean) {
-  for (const filteredIssue of relevantIssues.value) {
-    filteredIssue.selected = selectedAll;
-  }
-}
-
 function selectSortField(field: ColumnField) {
   isSortedByAscending.value =
     selectedSortField.value === field ? !isSortedByAscending.value : false;
   selectedSortField.value = field;
 }
-
-const isSelectAllIndeterminate = computed(() => {
-  if (relevantIssues.value.length === 0) {
-    return false;
-  }
-  return relevantIssues.value.some((it) => it.selected !== relevantIssues.value[0].selected);
-});
-
-const isSelectAllChecked = computed(() => {
-  return relevantIssues.value.every((it) => it.selected);
-});
 
 function relevantFields(issue: any) {
   return {
@@ -161,7 +144,7 @@ const nameForOption = (fieldName: string) => {
     acknowledgments__name: 'Acknowledgment Author',
     affects__trackers__errata__advisory_name: 'Errata Advisory Name',
     affects__trackers__external_system_id: 'Tracker External System ID',
-    workflow_state: 'Flaw Status',
+    workflow_state: 'Flaw State',
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
@@ -217,16 +200,6 @@ const nameForOption = (fieldName: string) => {
         <thead class="sticky-top">
           <!-- <thead class=""> -->
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                class="form-check-input"
-                :indeterminate="isSelectAllIndeterminate"
-                :checked="isSelectAllChecked"
-                aria-label="Select All Issues in Table"
-                @change="updateSelectAll(($event.target as HTMLInputElement).checked)"
-              />
-            </th>
             <th
               v-for="(field, columnName) in columnsFieldsMap"
               :key="columnName"
@@ -248,7 +221,6 @@ const nameForOption = (fieldName: string) => {
         <tbody class="table-group-divider">
           <template v-for="(relevantIssue, index) of relevantIssues" :key="relevantIssue.id">
             <IssueQueueItem
-              v-model:selected="relevantIssue.selected"
               :issue="relevantIssue.issue"
               :class="{
                 'osim-shaded': index % 2 === 0,
@@ -328,14 +300,6 @@ const nameForOption = (fieldName: string) => {
       padding: 1ch;
 
       &:nth-of-type(1) {
-        // min-width: 1ch;
-        // max-width: 1ch;
-        // min-width: 2.5%;
-        // max-width: 2.5%;
-        width: 2.5%;
-      }
-
-      &:nth-of-type(2) {
         // min-width: 15ch;
         // max-width: 15ch;
         // min-width: 12.5%;
@@ -343,7 +307,7 @@ const nameForOption = (fieldName: string) => {
         width: 12.5%;
       }
 
-      &:nth-of-type(3) {
+      &:nth-of-type(2) {
         // min-width: 11ch;
         // max-width: 11ch;
         // min-width: 8.5%;
@@ -351,7 +315,7 @@ const nameForOption = (fieldName: string) => {
         width: 8.5%;
       }
 
-      &:nth-of-type(4) {
+      &:nth-of-type(3) {
         // min-width: 12ch;
         // max-width: 12ch;
         // min-width: 9.5%;
@@ -359,15 +323,7 @@ const nameForOption = (fieldName: string) => {
         width: 9.5%;
       }
 
-      //&:nth-of-type(5) {
-      //  // min-width: 12ch;
-      //  // max-width: 12ch;
-      //  // min-width: 9.5%;
-      //  // max-width: 9.5%;
-      //  width: 9.5%;
-      //}
-
-      &:nth-of-type(5) {
+      &:nth-of-type(4) {
         // min-width: 12ch;
         // max-width: 12ch;
         // min-width: 32%;
@@ -375,7 +331,7 @@ const nameForOption = (fieldName: string) => {
         width: 42.5%;
       }
 
-      &:nth-of-type(6) {
+      &:nth-of-type(5) {
         // min-width: 10ch;
         // max-width: 10ch;
         // min-width: 8.5%;
@@ -383,12 +339,12 @@ const nameForOption = (fieldName: string) => {
         width: 8.5%;
       }
 
-      &:nth-of-type(7) {
+      &:nth-of-type(6) {
         // min-width: 20ch;
         // max-width: 20ch;
         // min-width: 17%;
         // max-width: 17%;
-        width: 17.5%;
+        width: 20%;
       }
     }
 
