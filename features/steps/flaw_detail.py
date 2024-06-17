@@ -586,3 +586,37 @@ def step_impl(context):
     v = flaw_detail_page.get_input_value("publicDate")
     public_date = datetime.strptime(context.public_date, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
     assert public_date in v, f"Public date should be {public_date}, got {v}"
+
+@when('I select the affect above and file a tracker')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    flaw_detail_page.click_button_with_js("affectUpstreamCheckbox")
+    flaw_detail_page.click_button_with_js("fileSelectedTrackers")
+    flaw_detail_page.wait_msg("trackersFiledMsg")
+
+
+@then('The tracker is created for {external_system}')
+def step_impl(context, external_system):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # Check the tracker jira/bugizlla link
+    flaw_detail_page.click_button_with_js('trackerCount')
+    if external_system == 'jira':
+        flaw_detail_page.trackerJiraherf.visibility_of_element_located()
+    else:
+        flaw_detail_page.trackerBugzillaherf.visibility_of_element_located()
+    # Check the tracker summary
+    flaw_detail_page.click_button_with_js("affectExpandall")
+    flaw_detail_page.click_button_with_js("affectDropdownBtn")
+    flaw_detail_page.trackerSummary.visibility_of_element_located()
+
+@when('I add a new affect to jira supported module and {affectedness} affectedness')
+def step_imp(context, affectedness):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    if affectedness == 'AFFECTED':
+        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'AFFECTED')
+    if affectedness == 'NEW':
+        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'NEW')

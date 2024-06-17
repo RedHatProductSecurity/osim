@@ -96,7 +96,7 @@ class FlawDetailPage(BasePage):
         "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
         "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "selects": ("XPATH", "//select[@class='form-select']"),
-        "affectCreatedMsg": ("XPATH", "//div[text()='Affect Created.']"),
+        "affectCreatedMsg": ("XPATH", "//div[text()='Affects Created.']"),
         # Affects locators
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[1]"),
@@ -108,12 +108,23 @@ class FlawDetailPage(BasePage):
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
-        "affectDeleteMsg": ("XPATH", "//div[text()='Affect Deleted.']"),
+        "affectDeleteMsg": ("XPATH", "//div[text()='1 Affect(s) Deleted.']"),
         "affectAffectednessText": ("XPATH", "//span[contains(text(), 'Affectedness:')]"),
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All')]"),
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
+        "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
+        "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
+        "trackersDropdownBtn": ("XPATH", "//button[contains(text(), 'Trackers')]"),
+        "ManageTrackers":("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
+        "affectUpstreamCheckbox": ("XPATH", "(//input[@class='osim-tracker form-check-input'])[1]"),
+        "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
+        "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
+        "trackerCount": ("XPATH", "//label[contains(text(), 'Trackers: ')]"),
+        "trackerJiraherf": ("XPATH", "(//a[contains(text(), 'JIRA')])[1]"),
+        "trackerBugzillaherf": ("XPATH", "(//a[contains(text(), 'BUGZILLA')])[1]"),
+        "trackerSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -571,7 +582,7 @@ class FlawDetailPage(BasePage):
         affect_affectedness_element = getattr(self, field)
         # Get the delete element via the affectedness element and click it
         delete_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").near(affect_affectedness_element))[0]
+            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").to_right_of(affect_affectedness_element))[0]
         self.driver.execute_script("arguments[0].click();", delete_element)
 
     def click_affect_delete_btn(self):
