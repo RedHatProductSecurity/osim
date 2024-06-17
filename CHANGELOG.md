@@ -9,6 +9,7 @@
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
 * Remove Trackers section on Flaw Edit (`OSIDB-2954`)
+* Owner - Status text overlap on flaw list (`OSIDB-2827`)
 
 ## [2024.6.1]
 ### Added
