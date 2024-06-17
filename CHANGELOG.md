@@ -58,6 +58,7 @@
 * Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
 * Reset affects when flaw is reset (`OSIDB-2793`)
 * New public comments are not displayed (`OSIDB-2700`)
+* Fix outdated model (409) errors on saving affects (`OSIDB-2933`)
 
 ### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
