@@ -103,3 +103,14 @@ Feature: Flaw detail testing on public flaw
     Scenario: Recover an affect for the deleting
       When I click 'delete' button of an affect
       Then I could 'recover' the affect that I tried to delete above
+
+    Scenario Outline: Create tracker to jira
+      When I delete an affect of the flaw
+      When I add a new affect to jira supported module and <affectedness> affectedness
+      When I select the affect above and file a tracker
+      Then The tracker is created for jira
+
+      Examples:
+          |  affectedness|
+          |      AFFECTED|
+          |           NEW|

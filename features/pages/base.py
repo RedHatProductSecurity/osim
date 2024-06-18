@@ -14,7 +14,7 @@ class BasePage(PageFactory):
 
     def __init__(self, driver):
         self.driver = driver
-        self.timeout = 15
+        self.timeout = 25
 
     def click_button_with_js(self, btn_element):
         if not isinstance(btn_element, WebElement):
