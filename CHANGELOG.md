@@ -21,6 +21,7 @@
 * Set public date to current date on unembargo (`OSIDB-2829`)
 * Add CVSSv3 score explanation input field (`OSIDB-2913`)
 * Remove checkbox on IssueQueue (`OSIDB-2488`)
+* Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
