@@ -248,7 +248,7 @@ const createdDate = computed(() => {
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-fluid">
       <div class="row osim-flaw-form-section" :class="{ 'pt-5': mode === 'create'}">
-        <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
+        <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
           <a
             :href="bugzillaLink"
             class="osim-bugzilla-link"
@@ -571,8 +571,9 @@ form.osim-flaw-form :deep(*) {
   line-height: 1.5;
   font-family: 'Red Hat Mono', monospace;
 
-  .osim-flaw-form-section{
-    padding-block: 3rem;
+  .osim-flaw-form-section {
+    position: relative;
+    padding-block: 2rem;
   }
 }
 
@@ -686,4 +687,10 @@ div.osim-content {
   margin-top: -15px;
 }
 
+.osim-flaw-header-link {
+  position: absolute;
+  right: 0rem;
+  top: 2rem;
+  width: auto;
+}
 </style>
