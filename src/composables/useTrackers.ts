@@ -30,6 +30,7 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
 
   const trackerSelections = ref<Map<UpdateStream, boolean>>(new Map());
   const moduleComponents = ref<ModuleComponent[]>([]);
+  const isFilingTrackers = ref(false);
 
   const trackedAffectUuids = computed(() => affects.flatMap(
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
@@ -112,7 +113,7 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
   );
 
   getTrackersForFlaws({ flaw_uuids: [flawUuid] })
-    .then((response) => {
+    .then((response: any) => {
       moduleComponents.value = response.modules_components;
     })
     .catch(console.error);
@@ -125,7 +126,8 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
   }
 
   function fileTrackers() {
-    fileTrackingFor(trackersToFile.value);
+    isFilingTrackers.value = true;
+    fileTrackingFor(trackersToFile.value).finally(() => isFilingTrackers.value = false);
   }
 
   return {
@@ -140,5 +142,6 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
     unselectedStreams,
     selectedStreams,
     filterString,
+    isFilingTrackers,
   };
 }

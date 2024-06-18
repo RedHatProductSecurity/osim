@@ -16,6 +16,7 @@ const {
   selectedStreams,
   filterString,
   alreadyFiledTrackers,
+  isFilingTrackers,
 } = useTrackers(props.flawId, props.theAffects);
 
 const emit = defineEmits<{
@@ -27,7 +28,6 @@ const emit = defineEmits<{
   <div class="mt-3 mb-5 osim-affect-trackers-container py-1 px-3">
     <h4 class="mb-2">
       Manage Trackers
-
       <button
         type="button"
         class="btn btn-white btn-outline-black btn-sm"
@@ -148,12 +148,13 @@ const emit = defineEmits<{
           </div>
         </div>
         <button
+          v-osim-loading.grow="isFilingTrackers"
           type="button"
           class="btn btn-sm btn-black text-white osim-file-trackers mt-3"
-          :disabled="!trackersToFile.length"
+          :disabled="!trackersToFile.length || isFilingTrackers"
           @click="fileTrackers"
         >
-          <i class="bi bi-archive"></i>
+          <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
           File Selected Trackers
         </button>
       </div>
