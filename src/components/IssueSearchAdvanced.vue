@@ -32,6 +32,7 @@ const nameForOption = (fieldName: string) => {
     cwe_id: 'CWE ID',
     cve_id: 'CVE ID',
     source: 'CVE Source',
+    cve_description: 'CVE Description',
     requires_cve_description: 'CVE Description Review',
     major_incident_state: 'Incident State',
   };

@@ -34,6 +34,9 @@ const includedFields = [
   'acknowledgments',
   'embargoed',
   'requires_cve_description',
+  'cve_description',
+  'mitigation',
+  'statement',
   'major_incident_state',
 ];
 
@@ -44,4 +47,10 @@ export const flawFields = fieldsFor(ZodFlawSchema)
 
 export const allowedEmptyFieldMapping: Record<string, string> = {
   'cve_id': 'cve_id__isempty',
+  'cvss_scores__score': 'cvss3_rh__isempty',
+  'cwe_id': 'cwe_id__isempty',
+  'owner': 'owner__isempty',
+  'cve_description': 'cve_description__isempty',
+  'mitigation': 'mitigation__isempty',
+  'statement': 'statement__isempty',
 };

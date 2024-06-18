@@ -4,7 +4,6 @@ import { computed } from 'vue';
 
 const props = defineProps<{
   issue: any;
-  selected: boolean;
 }>();
 
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
@@ -27,23 +26,10 @@ const isEmbargoed = computed(
 
 const hasBadges = computed(() => isEmbargoed.value);
 
-defineEmits<{
-  (e: 'update:selected', selected: boolean): void;
-}>();
-
 </script>
 
 <template>
   <tr class="osim-issue-queue-item" :class="$attrs.class">
-    <td :class="{ 'pb-0': hasBadges }">
-      <input
-        :checked="selected"
-        type="checkbox"
-        class="form-check-input"
-        aria-label="Select Issue"
-        @change="$emit('update:selected', ($event.target as HTMLInputElement).checked)"
-      />
-    </td>
     <td class="osim-issue-title" :class="{ 'pb-0': hasBadges }">
       <RouterLink :to="{ name: 'flaw-details', params: { id: issue.id } }">
         {{ issue.id }}

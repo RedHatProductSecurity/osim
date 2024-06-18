@@ -452,8 +452,8 @@ describe('FlawForm', () => {
     expect(result.owner).toBe('networking test owner');
   });
 
-  it('shows a error message when nvd score and Rh score mismatch', async () => {
-    const cvssScoreError = subject.find('span.cvss-score-error');
+  it('shows an explanation message when nvd score and Rh score mismatch', async () => {
+    const cvssScoreError = subject.find('.cvss-score-mismatch');
     expect(cvssScoreError?.exists()).toBe(true);
     expect(cvssScoreError?.text()).toBe('Explain non-obvious CVSSv3 score metrics');
   });
@@ -466,7 +466,7 @@ describe('FlawForm', () => {
     const spanWithClass = nvdCvssField?.find('span.text-primary');
     const allHighlightedSpan = nvdCvssField?.findAll('span.text-primary');
     expect(spanWithClass?.exists()).toBe(true);
-    expect(allHighlightedSpan.length).toBe(6);
+    expect(allHighlightedSpan?.length).toBe(5);
   });
 
   it('if embargoed and public date is in the past, it returns an error', async () => {
