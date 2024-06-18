@@ -1,7 +1,8 @@
 import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import { computed, ref, watch, type Ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
-import { groupWith } from 'ramda';
+import { groupWith, equals } from 'ramda';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
@@ -13,19 +14,29 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     );
   }
 
-  const wasCvssModified = ref(false);
-  const flawRhCvss3 = ref(
-    getCvssData('RH', 'V3')
+  function getRHCVssData () {
+    return getCvssData('RH', 'V3')
     || {
       score: null,
       vector: null,
       comment: '',
       created_dt: null,
       uuid: null,
-    }
-  );
+    };
+  }
 
-  watch(flawRhCvss3, () => { wasCvssModified.value = true; }, { deep: true });
+  const wasCvssModified = ref(false);
+
+  const flawRhCvss3 = ref(getRHCVssData());
+  const initialFlawRhCvss3 = deepCopyFromRaw(flawRhCvss3.value);
+
+  watch(flawRhCvss3, () => {
+    wasCvssModified.value = !equals(initialFlawRhCvss3, flawRhCvss3.value); }, { deep: true });
+
+  watch(() => flaw.value, () => {
+    flawRhCvss3.value = getRHCVssData();
+    wasCvssModified.value = false;
+  });
 
   const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 

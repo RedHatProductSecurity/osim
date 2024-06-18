@@ -130,6 +130,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       queue.push(removeAffects);
     }
 
+    console.log('hello - wasCvssModified', wasCvssModified.value);
+
     if (wasCvssModified.value) {
       queue.push(saveCvssScores);
     }
