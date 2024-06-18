@@ -8,25 +8,27 @@ from features.utils import get_osidb_token
 FIELD_FLAW_LIST = [
     "cve_id",
     "impact",
-    "source",
     "title",
     "workflow_state",
     "owner"
 ]
 FIELD_IN_DATABASE = [
     "uuid",
-    "type",
-    "affects__ps_component",
+#    "cvss_scores__score",
+#    "cvss_scores__vector",
     "affects__ps_module",
+    "affects__ps_component",
     "affects__trackers__ps_update_stream",
+    "acknowledgments__name",
+    #"affects__trackers__errata__advisory_name",
     "affects__trackers__external_system_id",
-    "affects__trackers__errata__advisory_name",
-    "component", "cwe_id",
-    "cvss_scores__vector",
-    "cvss_scores__score",
-    "team_id",
-    "acknowledgments__name"
+    "cwe_id",
+    "source",
+    #"requires_cve_description",
+    #"major_incident_state",
+    "embargoed",
 ]
+
 
 @when('I am searching for all flaws')
 def step_impl(context):
@@ -39,14 +41,19 @@ def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.first_flaw_exist()
 
-
-@then('I select the field and value to search flaws and I am able to view flaws matching the search')
+@when('I prepare the advance search keywords')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     osidb_token = get_osidb_token()
-    for row in context.table:
-        field = row["field"]
-        value = row["value"]
+    fields = FIELD_FLAW_LIST + FIELD_IN_DATABASE
+    context.fields_keywords = advanced_search_page.get_valid_search_keyworks_from_created_flaw(fields, osidb_token)
+
+@then('I select the field and keyword to search flaws and I am able to view flaws matching the search')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    osidb_token = get_osidb_token()
+    for field in context.fields_keywords:
+        value = context.fields_keywords[field]
         advanced_search_page.clear_search_select()
         advanced_search_page.select_field_and_value_to_search(field, value)
         advanced_search_page.click_btn("searchBtn")
@@ -58,19 +65,15 @@ def step_impl(context):
                 field_value = advanced_search_page.get_field_value_from_flawlist(field)
             elif field in FIELD_IN_DATABASE:
                 field_value = advanced_search_page.get_value_from_osidb(field, osidb_token)
-            #Check the result in the flaw detail page.
-            else:
-                advanced_search_page.go_to_first_flaw_detail()
-                advanced_search_page.close_setting_keys_window()
-                flaw_detail = FlawDetailPage(context.browser)
                 if field == "embargoed":
-                    field_value = flaw_detail.get_text_value(field)
-                    # Embargoed is true, the value is Yes
-                    if value == "true":
-                        value = "Yes"
-                    elif value == "false":
-                        value = "No"
-        assert value in field_value
+                        if value == "true":
+                            value = True
+                        else:
+                            value = False
+        if field == "embargoed":
+            assert value == field_value
+        else:
+            assert value in field_value
         # 2. Check the flaws list count is correct. Since the data is sharing
         # currently, this check will be added when the test data is lockdown in
         # the future.
