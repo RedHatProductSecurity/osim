@@ -313,14 +313,23 @@ const createdDate = computed(() => {
             <div class="row">
               <div class="col">
                 <LabelDiv label="NVD CVSSv3">
-                  <div class="form-control text-break h-100">
-                    <div class="p-0 h-100">
+                  <div class="d-flex flex-row">
+                    <div class="form-control text-break h-auto rounded-0">
                       <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
                         <span v-if="chars[0].isHighlighted" class="text-primary">
                           {{ chars.map(c => c.char).join('') }}
                         </span>
                         <template v-else>{{ chars.map(c => c.char).join('') }}</template>
                       </template>
+                    </div>
+                    <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
+                      <CvssNISTForm
+                        :cveid="flaw.cve_id"
+                        :summary="flaw.comment_zero"
+                        :bugzilla="bugzillaLink"
+                        :cvss="rhCvss3String"
+                        :nistcvss="nvdCvss3String"
+                      />
                     </div>
                   </div>
                 </LabelDiv>
