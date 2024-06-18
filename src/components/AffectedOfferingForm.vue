@@ -10,7 +10,6 @@ import {
   affectImpacts,
   affectResolutions,
   type ZodAffectType,
-  type ZodAffectCVSSType,
 } from '@/types/zodAffect';
 
 const { width: screenWidth } = useWindowSize();
@@ -24,29 +23,6 @@ defineProps<{
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>();
-
-
-function getCvssData(issuer: string, version: string) {
-  return modelValue.value?.cvss_scores.find(
-    (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
-  );
-}
-
-if (!getCvssData('RH', 'V3')) {
-  modelValue.value?.cvss_scores?.push(
-    {
-      vector: null,
-      uuid: null,
-      issuer: 'RH',
-      cvss_version: 'V3',
-      comment: 'hardcoded comment', // TODO: remove this line when the comment field is added to the UI
-      created_dt: null,
-      score: null,
-      embargoed: modelValue.value.embargoed,
-      alerts: [],
-    } as ZodAffectCVSSType
-  );
-}
 
 const affectCvss3Vector = computed(
   () => modelValue.value?.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
