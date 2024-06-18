@@ -24,47 +24,23 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="mt-3">
+  <div class="mt-3 mb-5 osim-affect-trackers-container py-1 px-3">
     <h4 class="mb-2">
-      Affected Offerings Trackers
-      <div>
-        <input
-          v-model="filterString"
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="Filter by stream or component name"
-        />
-      </div>
-      <button
-        type="button"
-        class="btn btn-white btn-outline-black btn-sm me-2"
-        @click="setAll(true)"
-      >
-        <i class="bi bi-check-all"></i>
-        Select All
-        {{ filterString ? 'Filtered' : '' }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-white btn-outline-black btn-sm me-2"
-        @click="setAll(false)"
-      >
-        <i class="bi bi-recycle"></i>
-        Deselect All
-        {{ filterString ? 'Filtered' : '' }}
-      </button>
+      Manage Trackers
+
       <button
         type="button"
         class="btn btn-white btn-outline-black btn-sm"
         @click="emit('affects-trackers:hide')"
       >
         <i class="bi bi-eye-slash-fill"></i>
-        Hide Manager
+        Hide
       </button>
     </h4>
+
     <div class="osim-trackers-filing mb-2">
       <div v-if="alreadyFiledTrackers.length" class="osim-tracker-selections mb-2">
-        <h5>Filed Trackers</h5>
+        <h5>Filed</h5>
         <label
           v-for="(tracker, index) in alreadyFiledTrackers"
           :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
@@ -78,14 +54,45 @@ const emit = defineEmits<{
           {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
         </label>
       </div>
-      <div class="row mb-2">
-        <h5>Unfiled Trackers</h5>
-
-      </div>
-      <div class="ms-3">
+      <h5>
+        Unfiled
+      </h5>
+      <div class="ms-3 mt-2">
+        <div class="row mb-2">
+          <div class="col">
+            <input
+              v-model="filterString"
+              type="text"
+              class="form-control form-control-sm d-inline-block w-50"
+              placeholder="Filter by stream or component name"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col mb-2">
+            <button
+              type="button"
+              class="btn btn-white btn-outline-black btn-sm me-2"
+              @click="setAll(true)"
+            >
+              <i class="bi bi-check-all"></i>
+              Select All
+              {{ filterString ? 'Filtered' : '' }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-white btn-outline-black btn-sm me-2"
+              @click="setAll(false)"
+            >
+              <i class="bi bi-eraser"></i>
+              Deselect All
+              {{ filterString ? 'Filtered' : '' }}
+            </button>
+          </div>
+        </div>
         <div class="row">
           <div class="col-6">
-            <h5 class="me-2 d-inline-block">Unselected</h5>
+            <h6 class="me-2 d-inline-block">Unselected</h6>
             <caption class="ms-4 mt-0">
               (<span class="fst-italic">
                 <i class="bi bi-box-arrow-in-right" /> indicates a Suggested Tracker
@@ -93,11 +100,11 @@ const emit = defineEmits<{
             </caption>
           </div>
           <div class="col-6">
-            <h5>Selected</h5>
+            <h6>Selected</h6>
           </div>
         </div>
         <div class="row">
-          <div class="col-6">
+          <div class="col-6 pt-1">
             <div class="osim-tracker-selections mb-2">
               <label
                 v-for="(tracker, index) in unselectedStreams"
@@ -123,7 +130,7 @@ const emit = defineEmits<{
             </div>
           </div>
 
-          <div class="col-6">
+          <div class="col-6 pt-1">
             <div class="osim-tracker-selections mb-2">
               <label
                 v-for="(tracker, index) in selectedStreams"
@@ -152,9 +159,12 @@ const emit = defineEmits<{
       </div>
     </div>
   </div>
+
 </template>
 
 <style lang="scss" scoped>
+@import '@/scss/bootstrap-overrides';
+
 .osim-tracker-selections {
   display: flex;
   flex-flow: column wrap;
@@ -164,10 +174,23 @@ const emit = defineEmits<{
   overflow: hidden;
 
   .col-6:has(.osim-tracker-selections) {
-    height: 50vh;
+    max-height: 30vh;
     overflow-y: auto;
+    background-color: #fff;
   }
 }
+
+.osim-affect-trackers-container {
+  border-left: 5px solid $blue;
+  background-color: #edf6ff;
+  border-radius: 5px;
+
+  .btn-white:not(:hover) {
+    background-color: white;
+    color: black;
+  }
+}
+
 
 .osim-tracker-selection-disabled {
   text-decoration: strike-through;
