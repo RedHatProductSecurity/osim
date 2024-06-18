@@ -114,7 +114,7 @@ function handlePaste(e: ClipboardEvent) {
   >
     <div class="osim-input vector-row">
       <label class="label-group row">
-        <span class="form-label col-2">
+        <span class="form-label col-3">
           CVSSv3
         </span>
         <div class="input-wrapper col">
@@ -180,7 +180,7 @@ function handlePaste(e: ClipboardEvent) {
         class="osim-input"
         mx-0nd="$attrs"
       >
-        <div class="px-3 py-2">
+        <div class="ps-4 mx-auto">
           <div
             v-for="(row, rowIndex) in calculatorButtons.rows"
             :key="rowIndex"
@@ -241,7 +241,6 @@ function handlePaste(e: ClipboardEvent) {
 .osim-input {
   display: inline-flex;
   width: 100%;
-  margin-bottom: 15px;
 
   .label-group {
     width: 100%;
@@ -250,6 +249,10 @@ function handlePaste(e: ClipboardEvent) {
     margin-inline: 0;
     padding-left: 0.25rem;
     height: 100%;
+
+    .form-label {
+      min-width: 14.375rem;
+    }
 
     .input-wrapper {
       z-index: 1;
@@ -264,7 +267,7 @@ function handlePaste(e: ClipboardEvent) {
     .vector-input {
       height: 100%;
       border-radius: 0;
-      padding-left: 30px;
+      padding-left: 0.75rem;
     }
 
     .vector-input.alert {
