@@ -579,7 +579,7 @@ form.osim-flaw-form :deep(*) {
 
   .osim-flaw-form-section {
     position: relative;
-    padding-block: 2rem;
+    padding-block: 1.5rem;
   }
 }
 
