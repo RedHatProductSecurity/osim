@@ -246,8 +246,8 @@ const createdDate = computed(() => {
 
 <template>
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
-    <div class="osim-content container-lg">
-      <div class="osim-flaw-form-section">
+    <div class="osim-content container-fluid">
+      <div class="row osim-flaw-form-section" :class="{ 'pt-5': mode === 'create'}">
         <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
           <a
             :href="bugzillaLink"
@@ -567,7 +567,9 @@ form.osim-flaw-form :deep(*) {
   }
 }
 
-
+div.osim-content {
+  width: 97.5%;
+}
 
 :deep(.osim-input) {
   .row {
