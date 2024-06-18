@@ -100,6 +100,7 @@
 * New public comments are not displayed (`OSIDB-2700`)
 * Fix outdated model (409) errors on saving affects (`OSIDB-2933`)
 * Fix Flaw Owner self assign button to assign correct Jira username (`OSIDB-2715`)
+* Fix My Issues filter on index page to filter by correct Jira usernamne (`OSIDB-2716`)
 
 ### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
