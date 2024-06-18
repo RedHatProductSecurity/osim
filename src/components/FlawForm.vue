@@ -490,7 +490,7 @@ const createdDate = computed(() => {
           <IssueFieldReferences
             ref="referencesComp"
             v-model="flawReferences"
-            class="w-100 my-3"
+            class="w-100 my-2"
             :mode="mode"
             :error="errors.references"
             @reference:update="saveReferences"
@@ -501,7 +501,7 @@ const createdDate = computed(() => {
           <IssueFieldAcknowledgments
             ref="acknowledgmentsComp"
             v-model="flawAcknowledgments"
-            class="w-100 my-3"
+            class="w-100 my-2"
             :mode="mode"
             :error="errors.acknowledgments"
             @acknowledgment:update="saveAcknowledgments"
