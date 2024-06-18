@@ -411,6 +411,7 @@ const createdDate = computed(() => {
               type="text"
             />
             <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
+            <CvssExlplainForm v-if="shouldDisplayEmailNistForm" v-model="flaw" />
           </div>
         </div>
       </div>
