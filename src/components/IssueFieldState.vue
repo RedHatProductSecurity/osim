@@ -61,7 +61,7 @@ function nextPhase(workflowState: WorkflowPhases) {
 </script>
 
 <template>
-  <div class="osim-workflow-state-container mb-3">
+  <div class="osim-workflow-state-container mb-2">
     <LabelDiv label="State" type="text" class="osim-workflow-state-display">
       <div class="d-flex">
         <span class="form-control rounded-0">{{ classification.state || 'Legacy Flaw without Jira task' }}</span>

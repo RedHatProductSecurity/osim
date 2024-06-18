@@ -16,7 +16,7 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
 </script>
 
 <template>
-  <label class="osim-input ps-3 mb-3 input-group">
+  <label class="osim-input ps-3 mb-2 input-group">
     <div class="row">
       <span class="form-label col-3">
         <slot name="label">

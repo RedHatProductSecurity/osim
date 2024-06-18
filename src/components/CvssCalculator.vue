@@ -112,7 +112,7 @@ function handlePaste(e: ClipboardEvent) {
     @focus="onInputFocus"
     @paste="handlePaste"
   >
-    <div class="osim-input vector-row">
+    <div class="osim-input vector-row mb-2">
       <label class="label-group row">
         <span class="form-label col-3">
           CVSSv3
