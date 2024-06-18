@@ -415,13 +415,14 @@ const createdDate = computed(() => {
           </div>
         </div>
       </div>
-      <div class="osim-flaw-form-section border-top">
+      <div class="osim-flaw-form-section border-top row mx-0">
         <LabelTextarea
           v-model="flaw.comment_zero"
           label="Comment#0"
           placeholder="Comment#0 ..."
           :error="errors.comment_zero"
           :disabled="mode === 'edit'"
+          class="col-6 px-4 py-2"
         />
         <LabelTextarea
           v-if="showDescription"
@@ -429,7 +430,7 @@ const createdDate = computed(() => {
           label="Description"
           placeholder="Description Text ..."
           :error="errors.cve_description"
-          class="osim-flaw-description-component"
+          class="col-6 px-4 py-2"
         >
           <template #label>
             <span class="form-label col-3 osim-folder-tab-label">
@@ -450,6 +451,7 @@ const createdDate = computed(() => {
           label="Statement"
           placeholder="Statement Text ..."
           :error="errors.statement"
+          class="col-6 px-4 py-2"
         />
         <LabelTextarea
           v-if="showMitigation"
@@ -457,8 +459,9 @@ const createdDate = computed(() => {
           label="Mitigation"
           placeholder="Mitigation Text ..."
           :error="errors.mitigation"
+          class="col-6 px-4 py-2"
         />
-        <div class="d-flex gap-3 mb-3">
+        <div class="d-flex gap-3 m-1 mb-3">
           <button
             type="button"
             class="btn btn-secondary osim-show-description"

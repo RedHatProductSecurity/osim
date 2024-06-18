@@ -31,7 +31,7 @@ const elTextArea = ref();
 </script>
 
 <template>
-  <label class="osim-input mb-3 ps-3">
+  <label class="osim-input mb-2 ps-3">
     <div class="row">
       <slot name="label">
         <span class="form-label col-3">
