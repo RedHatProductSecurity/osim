@@ -21,9 +21,10 @@ type WorkflowPhases = (typeof workflowStates)[keyof typeof workflowStates];
 
 const DONE_STATE = workflowStates.Done as string;
 const REJECTED_STATE = workflowStates.Rejected as string;
+const EMPTY_STATE = workflowStates.Empty as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATE, REJECTED_STATE].includes(props.classification.state),
+  () => ![DONE_STATE, REJECTED_STATE,EMPTY_STATE].includes(props.classification.state),
 );
 
 function openModal() {
@@ -108,6 +109,10 @@ function nextPhase(workflowState: WorkflowPhases) {
 
   .osim-workflow-state-display {
     margin-bottom: 0 !important;
+  }
+
+  span.form-control {
+    min-height: 38px;
   }
 }
 </style>
