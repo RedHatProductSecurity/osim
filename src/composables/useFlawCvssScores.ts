@@ -14,7 +14,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     );
   }
 
-  function getRHCVssData () {
+  function getRHCvssData () {
     return getCvssData('RH', 'V3')
     || {
       score: null,
@@ -27,14 +27,14 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   const wasCvssModified = ref(false);
 
-  const flawRhCvss3 = ref(getRHCVssData());
+  const flawRhCvss3 = ref(getRHCvssData());
   const initialFlawRhCvss3 = deepCopyFromRaw(flawRhCvss3.value);
 
   watch(flawRhCvss3, () => {
     wasCvssModified.value = !equals(initialFlawRhCvss3, flawRhCvss3.value); }, { deep: true });
 
   watch(() => flaw.value, () => {
-    flawRhCvss3.value = getRHCVssData();
+    flawRhCvss3.value = getRHCvssData();
     wasCvssModified.value = false;
   });
 
