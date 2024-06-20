@@ -29,6 +29,7 @@
 * Add CVSSv3 score explanation input field (`OSIDB-2913`)
 * Remove checkbox on IssueQueue (`OSIDB-2488`)
 * Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
+* Add Affect affectedness on Advanced Search (`OSIDB-2951`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
