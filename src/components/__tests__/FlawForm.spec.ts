@@ -17,7 +17,6 @@ import IssueFieldState from '@/components/IssueFieldState.vue';
 import FlawForm from '@/components/FlawForm.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
@@ -229,11 +228,6 @@ describe('FlawForm', () => {
     const assigneeField = subject.findComponent(FlawFormOwner);
     expect(assigneeField?.exists()).toBe(true);
 
-    const trackers = subject
-      .findAllComponents(LabelCollapsible)
-      .find((component) => component.props().label.startsWith('Trackers'));
-    expect(trackers?.exists()).toBe(true);
-
     const comment0Field = subject
       .findAllComponents(LabelTextarea)
       .find((component) => component.props().label === 'Comment#0');
@@ -308,11 +302,6 @@ describe('FlawForm', () => {
       .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
-
-    const trackers = subject
-      .findAllComponents(LabelCollapsible)
-      .find((component) => component.props().label.startsWith('Trackers'));
-    expect(trackers).toBe(undefined);
 
     const comment0Field = subject
       .findAllComponents(LabelTextarea)
