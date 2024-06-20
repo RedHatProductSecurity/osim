@@ -238,7 +238,7 @@ const createdDate = computed(() => {
   if (props.mode === 'create') {
     return '';
   }
-  return DateTime.fromISO(`${flaw.value.created_dt!}`).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
+  return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
 });
 
 </script>
