@@ -1,6 +1,13 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.6.1]
+### Added
+* Support private Bugzilla comments (`OSIDB-2912`)
+* Refresh flaw after cvss scores on create (`OSIDB-2981`)
+* Flaw form not beign responsive after save (`OSIDB-2948`)
+* Don't update unmodified affects (`OSIDB-2946`)
+
+## [2024.6.0]
 ### Added
 * Self-Assign button for Flaws (`OSIDB-2593`)
 * Provide time to Public Date field (`OSIDB-1848`)
@@ -21,6 +28,8 @@
 * Set public date to current date on unembargo (`OSIDB-2829`)
 * Add CVSSv3 score explanation input field (`OSIDB-2913`)
 * Remove checkbox on IssueQueue (`OSIDB-2488`)
+* Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
+* Add Affect affectedness on Advanced Search (`OSIDB-2951`)
 * Add Created At on Flaw Edit (`OSIDB-2945`)
 
 ### Changed
@@ -40,6 +49,7 @@
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 * Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
+* Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
 
 ### Fixed
 * The session is now shared across tabs
@@ -170,7 +180,9 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...HEAD
+[2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/2024.6.0...v2024.6.1
+[2024.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...v2024.6.0
 [2024.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.11.0...v2024.1.0
 [2023.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0
 [2023.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0

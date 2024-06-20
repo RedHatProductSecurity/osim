@@ -4,7 +4,11 @@ import { fieldsFor } from '@/types/zodShared';
 const fieldsMapping: Record<string, string | string[]> = {
   classification: 'workflow_state',
   cvss_scores: ['cvss_scores__score', 'cvss_scores__vector'],
-  affects: ['affects__ps_module', 'affects__ps_component'],
+  affects: [
+    'affects__ps_module',
+    'affects__ps_component',
+    'affects__affectedness',
+  ],
   acknowledgments: 'acknowledgments__name',
   trackers: [
     'affects__trackers__errata__advisory_name',

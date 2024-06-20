@@ -72,10 +72,11 @@ describe('FlawComments', () => {
 
   it('Shows 3 correct tabs on comments section', () => {
     const navLinks = subject.findAll('.nav-link');
-    expect(navLinks.length).toBe(3);
+    expect(navLinks.length).toBe(4);
     expect(navLinks[0].text()).toBe('Public Comments');
-    expect(navLinks[1].text()).toBe('Internal Comments');
-    expect(navLinks[2].text()).toBe('System Comments');
+    expect(navLinks[1].text()).toBe('Private Comments');
+    expect(navLinks[2].text()).toBe('Internal Comments');
+    expect(navLinks[3].text()).toBe('System Comments');
   });
 
   it('Tab navigation changes correctly', async () => {
@@ -83,12 +84,16 @@ describe('FlawComments', () => {
     // Public comments tab (default)
     let activeTab = subject.find('.nav-link.active');
     expect(activeTab.text()).toContain('Public');
-    // Internal comments tab
+    // Private comments tab
     await navLinks[1].trigger('click');
+    activeTab = subject.find('.nav-link.active');
+    expect(activeTab.text()).toContain('Private');
+    // Internal comments tab
+    await navLinks[2].trigger('click');
     activeTab = subject.find('.nav-link.active');
     expect(activeTab.text()).toContain('Internal');
     // System comments tab
-    await navLinks[2].trigger('click');
+    await navLinks[3].trigger('click');
     activeTab = subject.find('.nav-link.active');
     expect(activeTab.text()).toContain('System');
   });
@@ -109,7 +114,7 @@ describe('FlawComments', () => {
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
     const noCommentsMessage = subject.find('ul.comments div');
-    expect(noCommentsMessage.text()).toBe('No Public Comments');
+    expect(noCommentsMessage.text()).toBe('No public comments');
   });
 
   it('Correctly display public comments', () => {
@@ -140,7 +145,7 @@ describe('FlawComments', () => {
 
   it('Show Jira link button on internal comments', async () => {
     const navLinks = subject.findAll('.nav-link');
-    await navLinks[1].trigger('click');
+    await navLinks[2].trigger('click');
     const actionButtons = subject.findAll('.tab-actions > *');
     expect(actionButtons.length).toBe(2);
     expect(actionButtons[0].text()).toBe('Add Internal Comment');
@@ -149,7 +154,7 @@ describe('FlawComments', () => {
 
   it('Correctly display internal comments', async () => {
     const navLinks = subject.findAll('.nav-link');
-    await navLinks[1].trigger('click');
+    await navLinks[2].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
     // First public comment checks
@@ -166,18 +171,18 @@ describe('FlawComments', () => {
 
   it('Don\'Show any action button on system comments', async () => {
     const navLinks = subject.findAll('.nav-link');
-    await navLinks[2].trigger('click');
+    await navLinks[3].trigger('click');
     const actionButtons = subject.findAll('.tab-actions > *');
     expect(actionButtons.length).toBe(0);
   });
 
   it('Show message if no system comments', async () => {
     const navLinks = subject.findAll('.nav-link');
-    await navLinks[2].trigger('click');
+    await navLinks[3].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
     const noCommentsMessage = subject.find('ul.comments div');
-    expect(noCommentsMessage.text()).toBe('No System Comments');
+    expect(noCommentsMessage.text()).toBe('No system comments');
   });
 
   it('Correctly display system comments', async () => {
@@ -193,7 +198,7 @@ describe('FlawComments', () => {
     });
 
     const navLinks = subject.findAll('.nav-link');
-    await navLinks[2].trigger('click');
+    await navLinks[3].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
     // First system comment checks
