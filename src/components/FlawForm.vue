@@ -112,10 +112,6 @@ const onSubmit = async () => {
   }
 };
 
-const showDescription = ref(flaw.value.cve_description && flaw.value.cve_description.trim() !== '');
-const showStatement = ref(flaw.value.statement && flaw.value.statement.trim() !== '');
-const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim() !== '');
-
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw);
@@ -164,27 +160,6 @@ const allowedSources = [
 const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
-
-const toggleDescription = () => {
-  showDescription.value = !showDescription.value;
-  if (!showDescription.value) {
-    flaw.value.cve_description = '';
-  }
-};
-
-const toggleStatement = () => {
-  showStatement.value = !showStatement.value;
-  if (!showStatement.value) {
-    flaw.value.statement = '';
-  }
-};
-
-const toggleMitigation = () => {
-  showMitigation.value = !showMitigation.value;
-  if (!showMitigation.value) {
-    flaw.value.mitigation = '';
-  }
-};
 
 const affectedOfferingsComp = ref<InstanceType<typeof AffectedOfferings> | null>(null);
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
@@ -425,7 +400,6 @@ const createdDate = computed(() => {
           class="col-6 px-4 py-2"
         />
         <LabelTextarea
-          v-if="showDescription"
           v-model="flaw.cve_description"
           label="Description"
           placeholder="Description Text ..."
@@ -446,7 +420,6 @@ const createdDate = computed(() => {
           </template>
         </LabelTextarea>
         <LabelTextarea
-          v-if="showStatement"
           v-model="flaw.statement"
           label="Statement"
           placeholder="Statement Text ..."
@@ -454,36 +427,12 @@ const createdDate = computed(() => {
           class="col-6 px-4 py-2"
         />
         <LabelTextarea
-          v-if="showMitigation"
           v-model="flaw.mitigation"
           label="Mitigation"
           placeholder="Mitigation Text ..."
           :error="errors.mitigation"
           class="col-6 px-4 py-2"
         />
-        <div class="d-flex gap-3 m-1 mb-3">
-          <button
-            type="button"
-            class="btn btn-secondary osim-show-description"
-            @click="toggleDescription"
-          >
-            {{ showDescription ? 'Remove Description' : 'Add Description' }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            @click="toggleStatement"
-          >
-            {{ showStatement ? 'Remove Statement' : 'Add Statement' }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            @click="toggleMitigation"
-          >
-            {{ showMitigation ? 'Remove Mitigation' : 'Add Mitigation' }}
-          </button>
-        </div>
       </div>
       <div class="osim-flaw-form-section border-top border-bottom">
         <div class="d-flex gap-3">
