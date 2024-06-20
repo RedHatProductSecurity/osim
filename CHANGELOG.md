@@ -46,6 +46,7 @@
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 * Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
+* Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
 
 ### Fixed
 * The session is now shared across tabs
