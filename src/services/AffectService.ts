@@ -38,7 +38,9 @@ export async function postAffects(affectObjects: any[]) {
 }
 
 export async function deleteAffects(affectUuids: string[]) {
-  if (affectUuids.length === 0) return;
+  if (affectUuids.length === 0) {
+    return;
+  }
   return osidbFetch({
     method: 'delete',
     url: '/osidb/api/v1/affects/bulk',
