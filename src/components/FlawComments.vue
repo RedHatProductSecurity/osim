@@ -18,8 +18,9 @@ const props = defineProps<{
   isSaving: boolean;
 }>();
 
-enum CommentTab {
+enum CommentType {
     Public,
+    Private,
     Internal,
     System,
 }
@@ -41,25 +42,36 @@ const newComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addPublicComment': [value: any, value: any];
+  'comment:addFlawComment': [comment: string, creator: string, isPrivate: boolean];
   'disableForm': [value: boolean];
 }>();
 
 const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
-const tabLabels = ['Public Comments', 'Internal Comments', 'System Comments'];
-const selectedTab = ref(CommentTab.Public);
+const commentLabels = computed(() => {
+  return Object.keys(CommentType)
+    .filter((key) => isNaN(Number(key)))
+    .map((key) => `${key} Comments`);
+});
+
+const commentTooltips: Record<CommentType, string> = {
+  [CommentType.Public]: 'Bugzilla Public - This comments are visible to everyone.',
+  [CommentType.Private]: 'Bugzilla Private - This comments are visible to Red Hat associates.',
+  [CommentType.Internal]: 'Jira Internal - This comments are visible to team members with required permissions.',
+  [CommentType.System]: 'Bugzilla System - This are auto-generated private comments.',
+};
+
+const selectedTab = ref(CommentType.Public);
 const handleTabChange = (index: number) => {
   selectedTab.value = index;
 };
-
 
 type CommentFilter = 'public' | 'private' | 'system';
 type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
 
 const filterFunctions: CommentFilterFunctions = {
   public: (comment: any) => !comment.is_private,
-  private: (comment: any) => comment.is_private,
+  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
   system: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
@@ -74,15 +86,18 @@ function parseOsidbComments(comments: ZodFlawCommentSchemaType[]) {
 }
 
 const publicComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.public)));
+const privateComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.private)));
 const systemComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.system)));
 
 const displayedComments = computed(() => {
   switch (selectedTab.value) {
-  case CommentTab.Public:
+  case CommentType.Public:
     return publicComments.value;
-  case CommentTab.Internal:
+  case CommentType.Private:
+    return privateComments.value;
+  case CommentType.Internal:
     return internalComments.value;
-  case CommentTab.System:
+  case CommentType.System:
     return systemComments.value;
   default:
     return [];
@@ -94,13 +109,13 @@ onMounted(async () => {
 });
 
 async function handleCommentSave() {
-  if (selectedTab.value === CommentTab.Public) {
-    // Public comment save
-    emit('comment:addPublicComment', newComment.value, userStore.userName);
+  if (selectedTab.value === CommentType.Public || selectedTab.value === CommentType.Private) {
+    // Osidb Bugzilla comment save
+    emit('comment:addFlawComment', newComment.value, userStore.userName, CommentType[selectedTab.value] === 'Private');
     isAddingNewComment.value = false;
     newComment.value = '';
-  } else if (selectedTab.value === CommentTab.Internal && props.taskKey) {
-    // Internal comment save
+  } else if (selectedTab.value === CommentType.Internal && props.taskKey) {
+    // Internal Jira comment save
     await addInternalComment(newComment.value)
       .then(() => {
         isAddingNewComment.value = false;
@@ -128,8 +143,9 @@ function sanitize(text: string) {
   <section class="osim-comments">
     <h4 class="mb-4">Comments</h4>
     <Tabs
-      :labels="tabLabels"
+      :labels="commentLabels"
       :default="0"
+      :tooltips="Object.values(commentTooltips)"
       @tab-change="handleTabChange"
     >
       <template #header-actions>
@@ -137,18 +153,18 @@ function sanitize(text: string) {
           <button
             v-if="(
               !isAddingNewComment
-              && selectedTab !== CommentTab.System)
-              && (internalCommentsAvailable || selectedTab !== CommentTab.Internal
+              && selectedTab !== CommentType.System)
+              && (internalCommentsAvailable || selectedTab !== CommentType.Internal
               )"
             type="button"
             class="btn btn-secondary tab-btn"
             :disabled="isSaving"
             @click="isAddingNewComment = true"
           >
-            Add {{ tabLabels[selectedTab].slice(0, -1) }}
+            Add {{ CommentType[selectedTab] }} Comment
           </button>
           <a
-            v-if="(selectedTab === CommentTab.Internal && internalCommentsAvailable)"
+            v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
             :href="taskUrl(taskKey ?? '#')"
             target="_blank"
             class="btn btn-secondary tab-btn"
@@ -163,14 +179,14 @@ function sanitize(text: string) {
           <div
             v-if="(
               isAddingNewComment
-              && selectedTab !== CommentTab.System)
+              && selectedTab !== CommentType.System)
               && (internalCommentsAvailable
-                || selectedTab !== CommentTab.Internal
+                || selectedTab !== CommentType.Internal
               )"
           >
-            <LabelTextarea v-model="newComment" :label="`New ${tabLabels[selectedTab].slice(0, -1)}`" />
+            <LabelTextarea v-model="newComment" :label="`New ${CommentType[selectedTab]} Comment`" />
             <button type="button" class="btn btn-primary col" @click="handleCommentSave">
-              Save {{ tabLabels[selectedTab].slice(0, -1) }}
+              Save {{ CommentType[selectedTab] }} Comment
             </button>
             <button type="button" class="btn ms-3 btn-secondary col" @click="isAddingNewComment = false">
               Cancel
@@ -178,17 +194,17 @@ function sanitize(text: string) {
           </div>
           <ul class="comments list-unstyled">
             <span
-              v-if="isLoadingInternalComments && selectedTab === CommentTab.Internal"
+              v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
               class="spinner-border spinner-border-sm d-inline-block ms-3"
               role="status"
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentTab.Internal" class="ms-3">
+            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal" class="ms-3">
               Internal comments not available
             </div>
             <div v-else-if="displayedComments.length === 0" class="ms-3">
-              No {{ tabLabels[selectedTab] }}
+              No {{ CommentType[selectedTab].toLowerCase() }} comments
             </div>
             <li
               v-for="(comment, commentIndex) in displayedComments"
@@ -200,14 +216,15 @@ function sanitize(text: string) {
                 {{ comment.author }}
                 - {{ DateTime.fromISO(comment.timestamp, { setZone: true }).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
-                  class="badge rounded-pill float-end"
+                  class="badge rounded-pill float-end cursor-pointer"
                   :class="{
-                    'bg-info': selectedTab === CommentTab.Public,
-                    'bg-danger': selectedTab === CommentTab.Internal,
-                    'bg-warning text-black': selectedTab === CommentTab.System,
+                    'bg-success': selectedTab === CommentType.Public,
+                    'bg-info': selectedTab === CommentType.Private,
+                    'bg-danger': selectedTab === CommentType.Internal,
+                    'bg-warning text-black': selectedTab === CommentType.System,
                   }"
                 >
-                  {{ tabLabels[selectedTab].split(' ')[0] }}
+                  {{ CommentType[selectedTab] }}
                 </span>
               </p>
               <p class="osim-flaw-comment" v-html="sanitize(comment.body)" />

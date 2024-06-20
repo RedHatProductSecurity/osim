@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 
 import { useToastStore } from '@/stores/ToastStore';
-import { postFlawPublicComment } from '@/services/FlawService';
+import { postFlawComment } from '@/services/FlawService';
 import { useUserStore } from '@/stores/UserStore';
 
 import Modal from '@/components/widgets/Modal.vue';
@@ -64,7 +64,7 @@ function addPublicCveRequestComment() {
     // new Promise((resolve, reject) => {
     //   setTimeout(resolve, 5000);
     // })
-    postFlawPublicComment(flawUuidMatch[1], 'New CVE Requested', userStore.userName, props.embargoed)
+    postFlawComment(flawUuidMatch[1], 'New CVE Requested', userStore.userName, true, props.embargoed)
       .then(() => {
         commentSaved.value = true;
         savingComment.value = false;
