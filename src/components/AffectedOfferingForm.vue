@@ -11,7 +11,6 @@ import {
   affectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-import { formatDate } from '@/utils/helpers';
 
 const { width: screenWidth } = useWindowSize();
 
@@ -185,11 +184,11 @@ const hiddenResolutionOptions = computed(() => {
               </tr>
               <tr>
                 <th colspan="2">Created date</th>
-                <td colspan="2">{{ formatDate(tracker.created_dt) }}</td>
+                <td colspan="2">{{ tracker.created_dt }}</td>
               </tr>
               <tr>
                 <th colspan="2">Updated date</th>
-                <td colspan="2">{{ formatDate(tracker.updated_dt) }}</td>
+                <td colspan="2">{{ tracker.updated_dt }}</td>
               </tr>
               <tr v-if="tracker.errata.length">
                 <td colspan="4" class="text-center table-dark text-warning">Errata</td>
