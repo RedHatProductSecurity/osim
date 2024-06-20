@@ -3,6 +3,7 @@
 ## [2024.6.1]
 ### Added
 * Support private Bugzilla comments (`OSIDB-2912`)
+* Refresh flaw after cvss scores on create (`OSIDB-2981`)
 
 ## [2024.6.0]
 ### Added
