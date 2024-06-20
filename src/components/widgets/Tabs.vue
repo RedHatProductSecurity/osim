@@ -30,8 +30,6 @@ const selectTab = (index: number) => {
           class="nav-link"
           :class="{ 'active': activeTabIndex === index }"
           :disabled="disabled?.includes(index)"
-          data-bs-toggle="tooltip"
-          data-bs-placement="auto"
           :title="tooltips[index]"
           @click="selectTab(index)"
         >
