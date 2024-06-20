@@ -239,8 +239,7 @@ const createdDate = computed(() => {
   if (props.mode === 'create') {
     return '';
   }
-  const jsDate = new Date(flaw.value.created_dt!);
-  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(formatString);
+  return DateTime.fromISO(`${flaw.value.created_dt!}`).toUTC().toFormat(formatString);
 });
 
 </script>
@@ -392,7 +391,7 @@ const createdDate = computed(() => {
           <FlawFormOwner v-model="flaw.owner" />
           <LabelStatic
             v-if="mode === 'edit'"
-            v-model="createdDate"
+            :modelValue="createdDate"
             label="Created Date"
             type="text"
           />
