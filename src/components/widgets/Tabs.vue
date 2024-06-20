@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   labels: string[],
-  default?: number
-  disabled?: number[]
-}>();
+  default?: number,
+  disabled?: number[],
+  tooltips?: string[],
+}>(), {
+  default: 0,
+  disabled: () => [],
+  tooltips: () => [],
+});
 
 const emit = defineEmits(['tab-change']);
 const activeTabIndex = ref(props.default ?? 0);
@@ -25,6 +30,7 @@ const selectTab = (index: number) => {
           class="nav-link"
           :class="{ 'active': activeTabIndex === index }"
           :disabled="disabled?.includes(index)"
+          :title="tooltips[index]"
           @click="selectTab(index)"
         >
           {{ label }}

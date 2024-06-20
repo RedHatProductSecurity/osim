@@ -14,9 +14,8 @@ export async function beforeFetch(options: OsidbFetchOptions) {
     try {
       const updated_dt = await getUpdatedDt(options.url);
 
-      if (Array.isArray(options.data)){
-        (options.data as Record<string, any>).updated_dt = updated_dt;
-      }
+      (options.data as Record<string, any>).updated_dt = updated_dt;
+
       if (!updated_dt) {
         throw new Error('An updated_dt could not be fetched');
       }
@@ -135,14 +134,16 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     .catch(createCatchHandler('CVSS scores Update Error'));
 }
 
-export async function postFlawPublicComment(uuid: string, comment: string, creator: string, embargoed: boolean) {
+export async function postFlawComment(
+  uuid: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
+) {
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${uuid}/comments`,
     data: {
       text: comment,
       creator: creator,
-      type: 'BUGZILLA',
+      is_private: isPrivate,
       embargoed,
     },
   }).then((response) => response.data);

@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 import urllib.parse
 
@@ -25,7 +26,6 @@ class AdvancedSearchPage(BasePage):
         "selectValueList2": ("XPATH", "(//select[@class='form-select'])[2]"),
         "cve_idText": ("XPATH", "//tr[1]/td[1]/a"),
         "impactText": ("XPATH", "//tr[1]/td[2]"),
-        # "sourceText": ("XPATH", "//tr[1]/td[3]"),  # TODO remove unused
         "titleText": ("XPATH", "//tr[1]/td[4]"),
         "workflow_stateText": ("XPATH", "//tr[1]/td[5]"),
         "ownerText":  ("XPATH", "//tr[1]/td[6]"),
@@ -131,3 +131,40 @@ class AdvancedSearchPage(BasePage):
         # Get the other values
         else:
             return flaw_info.get(field)
+
+    def get_valid_search_keyworks_from_created_flaw(self, fields, token):
+        # return some valid search keywords
+        cve_id = os.getenv("FLAW_ID")
+        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
+        headers = {"Authorization": f"Bearer {token}"}
+        if "CVE" in cve_id:
+            params = {"cve_id": cve_id}
+        else:
+            params = {"uuid": cve_id}
+        r = requests.get(url, params = params, headers = headers)
+        flaw_info = json.loads(r.text).get('results')[0]
+        fields_values = {}
+        for field in fields:
+            if "ps_module" in field:
+                value = flaw_info.get('affects')[0].get('ps_module')
+            elif "ps_component" in field:
+                value = flaw_info.get('affects')[0].get('ps_component')
+            elif "external_system_id" in field:
+                value = flaw_info.get('affects')[0].get('trackers')[0].get('external_system_id')
+            elif 'ps_update_stream' in field:
+                value = flaw_info.get('affects')[0].get('trackers')[0].get('ps_update_stream')
+            elif "acknowledgments" in field:
+                value = flaw_info.get('acknowledgments')[0].get('name')
+            elif "workflow_state" in field:
+                value = 'NEW'
+            elif "embargoed" == field:
+                value = flaw_info.get('embargoed')
+                if value:
+                    value = "true"
+                else:
+                    value = "false"
+            else:
+                value = flaw_info.get(field)
+            fields_values[field] = value
+        return fields_values
+        
