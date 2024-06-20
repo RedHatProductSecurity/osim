@@ -96,5 +96,5 @@ export const uniques = <T>(array: T[]) => Array.from(new Set(array));
 
 export function formatDate(date: Date | string): string {
   const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
-  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat('yyyy-MM-dd T\' UTC\'');
+  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat('yyyy-MM-dd T ZZZZ');
 }
