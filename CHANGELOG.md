@@ -5,6 +5,7 @@
 * Support private Bugzilla comments (`OSIDB-2912`)
 * Refresh flaw after cvss scores on create (`OSIDB-2981`)
 * Flaw form not beign responsive after save (`OSIDB-2948`)
+* Don't update unmodified affects (`OSIDB-2946`)
 
 ## [2024.6.0]
 ### Added
