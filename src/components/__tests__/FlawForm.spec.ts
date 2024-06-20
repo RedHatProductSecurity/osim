@@ -25,6 +25,7 @@ import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 import { sampleFlaw } from './SampleData';
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
 
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
@@ -602,6 +603,27 @@ describe('FlawForm', () => {
 
     const bugzillaLink = subject.find('.osim-bugzilla-link');
     expect(bugzillaLink.exists()).toBe(false);
+  });
+
+  it('should show CreatedDate on Flaw Edit', async () => {
+    const flaw = sampleFlaw();
+    mountWithProps({ flaw, mode:'edit' });
+    const createdAtField = subject
+      .findAllComponents(LabelStatic)
+      .find((component) => component.props().label === 'Created Date');
+    expect(createdAtField?.exists()).toBeTruthy();
+    const formEL = createdAtField.find('span.form-control');
+    expect(formEL?.exists()).toBeTruthy();
+    expect(formEL.text()).toBe('2021-09-13 09:09 UTC');
+  });
+
+  it('should not show CreatedDate on Flaw Creation', async () => {
+    const flaw = sampleFlaw();
+    mountWithProps({ flaw, mode:'new' });
+    const createdAtField = subject
+      .findAllComponents(LabelStatic)
+      .find((component) => component.props().label === 'Created Date');
+    expect(createdAtField?.exists()).toBeFalsy();
   });
 });
 

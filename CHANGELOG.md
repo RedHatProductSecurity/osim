@@ -3,9 +3,15 @@
 ## [2024.6.1]
 ### Added
 * Support private Bugzilla comments (`OSIDB-2912`)
+* Add Created At on Flaw Edit (`OSIDB-2945`)
+* Add Affect affectedness on Advanced Search (`OSIDB-2951`)
+
+### Fixed
 * Refresh flaw after cvss scores on create (`OSIDB-2981`)
-* Flaw form not beign responsive after save (`OSIDB-2948`)
+* Flaw form not being responsive after save (`OSIDB-2948`)
 * Don't update unmodified affects (`OSIDB-2946`)
+* Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
+* Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
 
 ## [2024.6.0]
 ### Added
@@ -28,8 +34,6 @@
 * Set public date to current date on unembargo (`OSIDB-2829`)
 * Add CVSSv3 score explanation input field (`OSIDB-2913`)
 * Remove checkbox on IssueQueue (`OSIDB-2488`)
-* Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
-* Add Affect affectedness on Advanced Search (`OSIDB-2951`)
 
 ### Changed
 * Switch Flaw.component to Flaw.components (`OSIDB-2777`)
@@ -48,7 +52,6 @@
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 * Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
-* Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
 
 ### Fixed
 * The session is now shared across tabs

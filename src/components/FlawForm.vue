@@ -6,6 +6,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
@@ -232,6 +233,14 @@ const expandFocusedComponent = (parent_uuid: string) => {
 };
 
 const formDisabled = ref(false);
+
+const createdDate = computed(() => {
+  if (props.mode === 'create') {
+    return '';
+  }
+  return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
+});
+
 </script>
 
 <template>
@@ -379,6 +388,12 @@ const formDisabled = ref(false);
             @update:model-value="onUnembargoed"
           />
           <FlawFormOwner v-model="flaw.owner" />
+          <LabelStatic
+            v-if="mode === 'edit'"
+            :modelValue="createdDate"
+            label="Created Date"
+            type="text"
+          />
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
