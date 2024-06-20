@@ -42,7 +42,7 @@ const newComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addFlawComment': [value: string, value: string, value: boolean];
+  'comment:addFlawComment': [comment: string, creator: string, isPrivate: boolean];
   'disableForm': [value: boolean];
 }>();
 
