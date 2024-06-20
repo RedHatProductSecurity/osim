@@ -9,7 +9,7 @@ import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectsTrackers from '@/components/AffectsTrackers.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
-import LabelEditable from '@/components/widgets//LabelEditable.vue';
+import LabelEditable from '@/components/widgets/LabelEditable.vue';
 
 const props = defineProps<{
   flawId: string;
@@ -25,7 +25,7 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'add-blank-affect': [value: string, callback: (affect: ZodAffectType) => void];
-  'update-module-name': [value: string, value: string];
+  'update-module-name': [previousModuleName: string, newModuleName: string];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);

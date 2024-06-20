@@ -62,6 +62,7 @@ const {
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
+  updateAffectModuleName,
   removeAffect,
   recoverAffect,
   updateFlaw,
@@ -517,6 +518,8 @@ const formDisabled = ref(false);
           @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
           @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
           @add-blank-affect="(moduleName, callback) => addBlankAffect(moduleName, callback)"
+          @update-module-name="(previousModuleName, newModuleName) =>
+            updateAffectModuleName(previousModuleName, newModuleName)"
         />
       </div>
       <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
