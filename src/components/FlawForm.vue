@@ -235,11 +235,10 @@ const expandFocusedComponent = (parent_uuid: string) => {
 const formDisabled = ref(false);
 
 const createdDate = computed(() => {
-  const formatString = 'yyyy-MM-dd T\' UTC\'';
   if (props.mode === 'create') {
     return '';
   }
-  return DateTime.fromISO(`${flaw.value.created_dt!}`).toUTC().toFormat(formatString);
+  return DateTime.fromISO(`${flaw.value.created_dt!}`).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
 });
 
 </script>
