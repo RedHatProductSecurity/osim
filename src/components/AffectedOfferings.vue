@@ -105,13 +105,12 @@ function expandAll() {
 }
 
 function togglePsComponentExpansion(affect: ZodAffectType) {
-  const isExpanded = expandedAffects.value.get(affect);
-  if (isExpanded) {
-    isExpanded.value = !isExpanded.value;
-    expandedAffects.value.set(affect, isExpanded);
-  } else {
-    expandedAffects.value.set(affect, ref(true));
+  if (expandedAffects.value.get(affect) === undefined) {
+    expandedAffects.value.set(affect, ref(false));
   }
+  const isExpanded = expandedAffects.value.get(affect);
+  isExpanded.value = !isExpanded.value;
+  expandedAffects.value.set(affect, isExpanded);
 }
 
 function togglePsModuleExpansion(moduleName: string) {
