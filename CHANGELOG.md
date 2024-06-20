@@ -12,6 +12,7 @@
 * Don't update unmodified affects (`OSIDB-2946`)
 * Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
 * Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
+* Manage Trackers: Eliminate unnecessary space, improve layout organization (`OSIDB-2949`, `OSIDB-2987`)
 
 ## [2024.6.0]
 ### Added
