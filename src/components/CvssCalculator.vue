@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import {
   calculatorButtons,
@@ -32,6 +32,10 @@ function updateFactors(newCvssVector: string | undefined | null) {
 }
 
 updateFactors(cvssVector.value);
+
+watch(() => cvssVector.value, () => {
+  updateFactors(cvssVector.value);
+});
 
 function factorButton(id: string, key: string) {
   if (!cvssFactors.value['CVSS']) {
