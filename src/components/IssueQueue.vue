@@ -178,7 +178,15 @@ const nameForOption = (fieldName: string) => {
         <span> Loading Flaws&hellip; </span>
       </div>
       <span
-        v-else-if="issues.length"
+        v-if="isLoading"
+        class="spinner-border spinner-border-sm d-inline-block ms-3"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </span>
+      <span v-if="isLoading"> Loading Flaws&hellip; </span>
+      <span
+        v-if="issues.length"
         class="float-end"
         :class="{'text-secondary': isLoading}"
       > Loaded {{ issues.length }} of {{ total }}</span>
@@ -301,30 +309,26 @@ const nameForOption = (fieldName: string) => {
       padding: 1ch;
 
       &:nth-of-type(1) {
-        width: 2.5%;
+        width: 20%;
       }
 
       &:nth-of-type(2) {
-        width: 17.5%;
-      }
-
-      &:nth-of-type(3) {
         width: 8%;
       }
 
-      &:nth-of-type(4) {
+      &:nth-of-type(3) {
         width: 9.5%;
       }
 
-      &:nth-of-type(5) {
+      &:nth-of-type(4) {
         width: 27.5%;
       }
 
-      &:nth-of-type(6) {
+      &:nth-of-type(5) {
         width: 17.5%;
       }
 
-      &:nth-of-type(7) {
+      &:nth-of-type(6) {
         width: 17.5%;
       }
     }
