@@ -41,9 +41,9 @@ function refreshFlaw() {
   <main>
     <FlawForm
       v-if="flaw"
+      :key="`${flaw.uuid}-${flaw.updated_dt}`"
       v-model:flaw="flaw"
       mode="edit"
-      :key="`${flaw.uuid}-${flaw.updated_dt}`"
       @refresh:flaw="refreshFlaw"
     />
     <div v-if="errorLoadingFlaw">
