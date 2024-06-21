@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Temporary disable private comments creation (`OSIDB-3002`)
+
 ## [2024.6.1]
 ### Added
 * Support private Bugzilla comments (`OSIDB-2912`)
