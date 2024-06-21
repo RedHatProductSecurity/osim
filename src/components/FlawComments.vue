@@ -40,8 +40,8 @@ const newComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addFlawComment': [comment: string, creator: string, isPrivate: boolean];
-  'disableForm': [value: boolean];
+  'comment:addFlawComment': [comment: string, creator: string, type: string];
+  'loadInternalComments': [];
 }>();
 
 const commentLabels = computed(() => {
