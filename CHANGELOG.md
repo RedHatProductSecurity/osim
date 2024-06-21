@@ -4,6 +4,9 @@
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
 
+### Fixed
+* Flaws without a Jira task cannot be updated (`OSIDB-2960`)
+
 ## [2024.6.1]
 ### Added
 * Support private Bugzilla comments (`OSIDB-2912`)
