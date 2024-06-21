@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import {
   calculatorButtons,
   getFactors,
@@ -99,7 +98,6 @@ function handlePaste(e: ClipboardEvent) {
   cvssScore.value = calculateScore(cvssFactors.value);
 }
 
-
 </script>
 
 <template>
@@ -131,6 +129,12 @@ function handlePaste(e: ClipboardEvent) {
             @blur="onInputBlur"
             @change="updateFactors(cvssVector)"
           >
+            <span
+              class="osim-cvss-score"
+              :style="isFocused ? {color: 'white'} : {color: 'black'}"
+            >
+              {{ cvssScore != null ? `${cvssScore} ` : '' }}
+            </span>
             <template v-for="(value, key) in cvssFactors" :key="key">
               <span
                 v-if="value"
@@ -220,13 +224,6 @@ function handlePaste(e: ClipboardEvent) {
         </div>
       </div>
     </div>
-    <LabelStatic
-      v-model="cvssScore"
-      label="CVSSv3 Score"
-      type="text"
-      class="score-input"
-      :hasTopLabelStyle="false"
-    />
   </div>
 </template>
 
@@ -248,6 +245,10 @@ function handlePaste(e: ClipboardEvent) {
       z-index: 1;
       padding-inline: 0;
       margin-inline: 0;
+    }
+
+    .osim-cvss-score {
+      font-weight: 600;
     }
 
     .vector-input {
