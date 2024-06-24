@@ -205,3 +205,7 @@ function queryStringFromParams(params: Record<string, any>) {
 export function jiraTaskUrl(id: string): string {
   return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
 }
+
+export function jiraUserUrl(name: string): string {
+  return (new URL(`/ViewProfile.jspa?name=${name}`, osimRuntime.value.backends.jiraDisplay)).href;
+}
