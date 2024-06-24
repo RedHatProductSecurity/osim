@@ -157,6 +157,7 @@ function handlePaste(e: ClipboardEvent) {
         </div>
       </label>
       <button
+        tabindex="-1"
         type="button"
         :disabled="!cvssVector"
         class="erase-button input-group-text"
@@ -197,6 +198,7 @@ function handlePaste(e: ClipboardEvent) {
                 >{{ col.label }}</button>
                 <template v-for="(button, btnIndex) in col.buttons" :key="btnIndex">
                   <button
+                    tabindex="-1"
                     type="button"
                     class="btn lh-sm"
                     data-bs-toggle="tooltip"
