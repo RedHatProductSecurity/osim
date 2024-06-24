@@ -19,6 +19,7 @@ const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 const highlightedFactor = ref<string | null>(null);
+const highlightedFactorValue = ref<string | null>(null);
 
 const cvssDiv = ref();
 const cvssVectorInput = ref();
@@ -81,6 +82,10 @@ const getFactorColor = computed(() => (weight: number, isHovered: boolean = fals
 
 function highlightFactor(factor: string | null) {
   highlightedFactor.value = factor;
+}
+
+function highlightFactorValue(factor: string | null) {
+  highlightedFactorValue.value = factor;
 }
 
 function handlePaste(e: ClipboardEvent) {
@@ -201,13 +206,14 @@ function handlePaste(e: ClipboardEvent) {
                     tabindex="-1"
                     type="button"
                     class="btn lh-sm"
+                    :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
-
                     :style="
-                      cvssFactors[col.id] === button.key ?
-                        getFactorColor(weights[col.id][button.key]) : {
+                      cvssFactors[col.id] === button.key
+                        || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
+                          getFactorColor(weights[col.id][button.key]) : {
                           backgroundColor: '#E0E0E0',
                           color: (cvssFactors[col.id] === button.key
                             && factorSeverities[col.id][button.key] !== 'Bad')
@@ -216,6 +222,8 @@ function handlePaste(e: ClipboardEvent) {
                         }"
                     @click="factorButton(col.id, button.key)"
                     @mousedown="event => event.preventDefault()"
+                    @mouseover="highlightFactorValue(`${rowIndex}${colIndex}${btnIndex}`)"
+                    @mouseout="highlightFactorValue(null)"
                   >
                     {{ button.name }}
                   </button>
@@ -309,6 +317,11 @@ function handlePaste(e: ClipboardEvent) {
         border: 1px;
         margin: auto;
       }
+
+      &:hover .osim-factor-highlight {
+          background-color: hsl(200deg 100% 95%) !important;
+          color: hsl(200deg 100% 35%) !important;
+        }
     }
   }
 }
