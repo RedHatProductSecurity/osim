@@ -29,33 +29,8 @@ class FlawCreatePage(FlawDetailPage):
         "impactText": ("XPATH", "//span[text()='Impact']"),
         "sourceText": ("XPATH", "//span[text()='CVE Source']"),
         "titleText": ("XPATH", "//span[text()='Title']"),
-        "componentText": ("XPATH", "//span[text()='Component']"),
+        "componentsText": ("XPATH", "//span[text()='Components']"),
         "cveidText": ("XPATH", "//span[text()='CVE ID']"),
         "cweidText": ("XPATH", "//span[text()='CWE ID']"),
         "publicDateText": ("XPATH", "//span[text()='Public Date']")
     }
-
-    def set_select_value(self, field):
-        text_element = getattr(self, field + "Text")
-        field_select = self.driver.find_elements(
-                locate_with(By.XPATH, "//select[@class='form-select is-invalid']").
-                near(text_element))[0]
-        all_values, current_value = self.get_select_value(field_select)
-        if field == 'source':
-            all_values = self.allowed_sources
-        if current_value:
-            all_values.remove(current_value)
-        if all_values:
-            updated_value = all_values[-1]
-            field_select.select_element_by_value(updated_value)
-        else:
-            updated_value = current_value
-        return updated_value
-
-    def click_empty_public_date_input(self):
-        edit_btn = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='osim-editable-date-pen input-group-text']").
-            to_right_of(self.publicDateText))[0]
-
-        self.click_button_with_js(edit_btn)
-
