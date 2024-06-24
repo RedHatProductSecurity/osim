@@ -112,7 +112,7 @@ class FlawDetailPage(BasePage):
         "affectAffectednessText": ("XPATH", "//span[contains(text(), 'Affectedness:')]"),
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
-        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All')]"),
+        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All Affects')]"),
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
@@ -124,7 +124,6 @@ class FlawDetailPage(BasePage):
         "trackerCount": ("XPATH", "//label[contains(text(), 'Trackers: ')]"),
         "trackerJiraherf": ("XPATH", "(//a[contains(text(), 'JIRA')])[1]"),
         "trackerBugzillaherf": ("XPATH", "(//a[contains(text(), 'BUGZILLA')])[1]"),
-        "trackerSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -440,7 +439,7 @@ class FlawDetailPage(BasePage):
         if external_system == 'jira':
             self.set_field_value('affects__ps_module', 'rhel-8')
         else:
-            self.set_field_value('affects__ps_module', 'fedora-39')
+            self.set_field_value('affects__ps_module', 'rhcertification-8')
         ps_component_value = generate_random_text()
         self.set_field_value('affects__ps_component', ps_component_value)
         self.set_field_value('affects__cvss3_score', '4.3')
