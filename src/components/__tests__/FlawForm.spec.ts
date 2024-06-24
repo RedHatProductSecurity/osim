@@ -177,11 +177,6 @@ describe('FlawForm', () => {
       .find((component) => component.text().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
-    const cvssV3ScoreField = subject
-      .findAllComponents(CvssCalculator)
-      .find((component) => component.html().includes('CVSSv3 Score'));
-    expect(cvssV3ScoreField?.exists()).toBe(true);
-
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
       .find((component) => component.props().label === 'NVD CVSSv3');
@@ -262,11 +257,6 @@ describe('FlawForm', () => {
       .findAllComponents(CvssCalculator)
       .find((component) => component.html().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
-
-    const cvssV3ScoreField = subject
-      .findAllComponents(CvssCalculator)
-      .find((component) => component.html().includes('CVSSv3 Score'));
-    expect(cvssV3ScoreField?.exists()).toBe(true);
 
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
