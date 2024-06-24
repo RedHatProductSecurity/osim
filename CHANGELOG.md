@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
+* Highlight form style for embargoed flaw (`OSIDB-2984`)
 
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
