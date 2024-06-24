@@ -6,6 +6,7 @@
 
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
+* Remove Trackers section on Flaw Edit (`OSIDB-2954`)
 
 ## [2024.6.1]
 ### Added
