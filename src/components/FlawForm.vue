@@ -6,8 +6,8 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
+import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
@@ -24,7 +24,6 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
-import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExlplainForm from './CvssExlplainForm.vue';
 import { sortWith, ascend, prop } from 'ramda';
@@ -45,7 +44,6 @@ function onSaveSuccess() {
 
 const {
   flaw,
-  trackersDisplay,
   flawSources,
   flawImpacts,
   flawIncidentStates,
@@ -249,6 +247,14 @@ const expandFocusedComponent = (parent_uuid: string) => {
 };
 
 const formDisabled = ref(false);
+
+const createdDate = computed(() => {
+  if (props.mode === 'create') {
+    return '';
+  }
+  return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
+});
+
 </script>
 
 <template>
@@ -396,6 +402,12 @@ const formDisabled = ref(false);
             @update:model-value="onUnembargoed"
           />
           <FlawFormOwner v-model="flaw.owner" />
+          <LabelStatic
+            v-if="mode === 'edit'"
+            :modelValue="createdDate"
+            label="Created Date"
+            type="text"
+          />
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">
@@ -490,22 +502,6 @@ const formDisabled = ref(false);
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsible
-          v-if="mode === 'edit'"
-          :label="`Trackers: ${trackersDisplay.length}`"
-          :isExpandable="trackersDisplay.length !== 0"
-        >
-          <ul>
-            <li v-for="(tracker, trackerIndex) in trackersDisplay" :key="trackerIndex">
-              <a
-                :href="trackerUrl(tracker.type, tracker.external_system_id)"
-                target="_blank"
-              >
-                <i class="bi bi-link" />{{ tracker.display }}
-              </a>
-            </li>
-          </ul>
-        </LabelCollapsible>
       </div>
       <div class="border-top osim-flaw-form-section">
         <AffectedOfferings

@@ -14,6 +14,7 @@ export function sampleFlaw(): ZodFlawType {
     requires_cve_description: 'APPROVED',
     statement: 'Statement for None',
     cwe_id: 'CWE-1',
+    created_dt: '2021-09-13T09:09:38Z',
     unembargo_dt: '[native Date Thu Nov 30 2023 21:52:48 GMT-0500 (Eastern Standard Time)]',
     source: 'GIT',
     reported_dt: '[native Date Sun Oct 05 1975 03:45:17 GMT-0400 (Eastern Daylight Time)]',

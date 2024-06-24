@@ -5,8 +5,8 @@ import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
+import { affectAffectedness } from '@/types/zodAffect';
 import { sort } from 'ramda';
-
 const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
 const props = defineProps<{
@@ -24,6 +24,7 @@ const nameForOption = (fieldName: string) => {
     cvss_scores__vector: 'CVSS Vector',
     affects__ps_module: 'Affected Module',
     affects__ps_component: 'Affected Component',
+    affects__affectedness: 'Affected Affectedness',
     affects__trackers__ps_update_stream: 'Affect Update Stream',
     acknowledgments__name: 'Acknowledgment Author',
     affects__trackers__errata__advisory_name: 'Errata Advisory Name',
@@ -68,6 +69,7 @@ const optionsFor = (field: string) =>
       'TRIAGE',
     ],
     major_incident_state: flawIncidentStates,
+    affects__affectedness: affectAffectedness,
   })[field] || null;
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>

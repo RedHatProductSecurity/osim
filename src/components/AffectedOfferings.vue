@@ -160,21 +160,21 @@ function renameModule(newModuleName: string, index: number) {
 
 <template>
   <div v-if="theAffects" class="osim-affects">
+    <h4>Affected Offerings</h4>
     <AffectsTrackers
       v-show="shouldShowTrackers"
       :flawId="flawId"
       :theAffects="affectsNotBeingDeleted"
       @affects-trackers:hide="shouldShowTrackers = false"
     />
-    <h4 class="mb-4">
-      Affected Offerings
+    <div class="mb-4">
       <button
         v-if="isAnythingCollapsed"
         type="button"
         class="btn btn-sm btn-secondary me-2"
         @click="expandAll()"
       >
-        Expand All
+        Expand All Affects
       </button>
       <button
         v-if="isAnythingExpanded"
@@ -182,7 +182,7 @@ function renameModule(newModuleName: string, index: number) {
         class="btn btn-sm btn-secondary"
         @click="collapseAll()"
       >
-        Collapse All
+        Collapse All Affects
       </button>
       <button
         v-show="!shouldShowTrackers"
@@ -194,7 +194,7 @@ function renameModule(newModuleName: string, index: number) {
         <i class="bi bi-binoculars"></i>
         Manage Trackers
       </button>
-    </h4>
+    </div>
     <div v-for="(moduleName, moduleNameIndex) in affectedModules" :key="moduleName">
       <div v-if="shouldShowModuleNameEdit(moduleName)" class="col-6">
         <LabelEditable

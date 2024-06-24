@@ -82,7 +82,7 @@ def step_impl(context):
 @when('I am searching flaws with two fields and two values')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
-    advanced_search_page.select_field_and_value_to_search("source", "CUSTOMER")
+    advanced_search_page.select_field_and_value_to_search("workflow_state", "NEW")
     advanced_search_page.select_second_field_and_value_to_search("impact", "LOW")
     advanced_search_page.click_btn("searchBtn")
 
@@ -91,7 +91,7 @@ def step_impl(context):
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.first_flaw_exist()
-    field_value = advanced_search_page.get_field_value_from_flawlist("source")
-    assert "CUSTOMER" == field_value
+    field_value = advanced_search_page.get_field_value_from_flawlist("workflow_state")
+    assert field_value == "NEW"
     field_value = advanced_search_page.get_field_value_from_flawlist("impact")
-    assert "LOW" == field_value
+    assert field_value == "LOW"

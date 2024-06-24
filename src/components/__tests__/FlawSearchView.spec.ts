@@ -99,6 +99,10 @@ describe('FlawSearchView', () => {
     });
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   afterAll(() => {
     vi.clearAllMocks();
   });
@@ -196,7 +200,7 @@ describe('FlawSearchView', () => {
     await searchButton.trigger('submit');
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[1][0])
+    expect(useRouter().replace.mock.calls[0][0])
       .toStrictEqual({ query: { query: 'search', requires_cve_description: 'REQUESTED' } });
   });
 
@@ -216,7 +220,27 @@ describe('FlawSearchView', () => {
     await searchButton.trigger('submit');
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[2][0])
+    expect(useRouter().replace.mock.calls[0][0])
       .toStrictEqual({ query: { query: 'search', major_incident_state: 'REQUESTED' } });
+  });
+
+  it('should call loadFlaws with affectedness on search', async () => {
+    await flushPromises();
+    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
+    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
+    const dropdownOption = selectDropdown
+      .findAll('option')
+      .filter(option => option.element.value === 'affects__affectedness')[0];
+    await selectDropdown.setValue(dropdownOption.element.value);
+    await selectDropdown.trigger('change');
+    const valueDropdown = wrapper.findAll('select.form-select')[1];
+    await valueDropdown.setValue(valueDropdown.findAll('option')[1].element.value);
+    const searchButton = wrapper.find('button[type="submit"]');
+    expect(searchButton.exists()).toBeTruthy();
+    await searchButton.trigger('submit');
+    await flushPromises();
+    expect(useRouter().replace).toHaveBeenCalled();
+    expect(useRouter().replace.mock.calls[0][0])
+      .toStrictEqual({ query: { query: 'search', affects__affectedness: 'NEW' } });
   });
 });
