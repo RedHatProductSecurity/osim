@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
-import { jiraTaskUrl } from '@/services/JiraService';
+import { jiraTaskUrl, jiraUserUrl } from '@/services/JiraService';
 
 const userStore = useUserStore();
 
@@ -183,8 +183,15 @@ function sanitize(text: string) {
               class="bg-light p-4 mt-3 rounded-2"
             >
               <p class="border-bottom pb-3">
-                <i class="bi bi-caret-right-fill"></i>
-                {{ comment.creator }}
+                <i class="bi bi-caret-right-fill me-2"></i>
+                <a
+                  v-if="selectedTab === CommentType.Internal"
+                  :href="jiraUserUrl(comment.creator)"
+                  target="_blank"
+                >
+                  {{ comment.creator }}
+                </a>
+                <span v-else>{{ comment.creator }}</span>
                 - {{ DateTime.fromISO(comment.created_dt ?? '',{ setZone: true })
                   .toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
