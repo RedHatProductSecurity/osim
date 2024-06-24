@@ -7,6 +7,7 @@ import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
+import { compose } from 'ramda';
 import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
 import { createCatchHandler } from '@/composables/service-helpers';
@@ -92,18 +93,29 @@ async function handleCommentSave() {
   isAddingNewComment.value = false;
 }
 
-function sanitize(text: string) {
+const parseCommentDisplayText = compose(
+  sanitizeHtml,
+  linkify,
+  parseJiraTags
+);
+
+function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
 
-  const urlRegex = /\b(https?:\/\/[\S]+)\b/g;
-  const jiraTagRegex = /\[~([^[\]]+)\]/g;
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  return (
-    sanitizeHtml(text)
-      .replace(urlRegex, '<a target="_blank" href="$1">$1</a>')
-      .replace(jiraTagRegex, (match, p1) => `${p1}`)
-      .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
-  );
+  const jiraRegex = /\[([^|]+)\|([^\]]+)\]/g;
+
+  return text
+    .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
+    .replace(jiraRegex, '<a target="_blank" href="$2">$2</a>');
+}
+
+function parseJiraTags(text: string) {
+  const jiraUserLink = `${osimRuntime.value.backends.jiraDisplay}/ViewProfile.jspa?name=`;
+  const jiraTagRegex = /\[~([^[\]]+)\]/g;
+
+  return text
+    .replace(jiraTagRegex, (match, p1) => `<a target="_blank" href="${jiraUserLink}${p1}">${p1}</a>`);
 }
 
 const isInternalComment = computed(() => selectedTab.value === CommentType.Internal);
@@ -343,7 +355,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                 </span>
               </p>
               <!--eslint-disable-next-line vue/no-v-html -->
-              <p class="osim-flaw-comment" v-html="sanitize(comment.text ?? '')" />
+              <p class="osim-flaw-comment" v-html="parseCommentDisplayText(comment.text ?? '')" />
             </li>
           </ul>
         </div>
