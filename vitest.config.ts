@@ -14,6 +14,7 @@ export default mergeConfig(
           'json',
           // 'lcov',
         ],
+        exclude: ['src/generated-client/*'],
       },
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/*'],
