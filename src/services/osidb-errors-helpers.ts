@@ -40,7 +40,11 @@ function parseOsidbHtmlError(error: any){
     error.response.data, error.response.headers['content-type']
   );
   const exception_value = doc.querySelector('.exception_value'); // May depend on OSIDB being in debug mode?
-  const text = (exception_value as HTMLElement)?.innerText;
+
+  // JSDom (used by vitest) lacks an innerText implementation, so textContent is used as a fallback
+  // https://github.com/jsdom/jsdom/pull/3631/files
+  const text = (exception_value as HTMLElement)?.innerText
+    ?? (exception_value as HTMLElement)?.textContent;
 
   return 'Likely error between OSIDB and database:\n' + text;
 }
