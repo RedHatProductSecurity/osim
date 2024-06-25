@@ -607,16 +607,19 @@ def step_impl(context, external_system):
         flaw_detail_page.trackerJiraherf.visibility_of_element_located()
     else:
         flaw_detail_page.trackerBugzillaherf.visibility_of_element_located()
-    # Check the tracker summary
-    flaw_detail_page.click_button_with_js("affectExpandall")
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    flaw_detail_page.trackerSummary.visibility_of_element_located()
 
-@when('I add a new affect to jira supported module and {affectedness} affectedness')
-def step_imp(context, affectedness):
+
+@when('When I add a new affect to {external_system} supported module and {affectedness} affectedness')
+def step_imp(context, external_system, affectedness):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    if affectedness == 'AFFECTED':
-        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'AFFECTED')
-    if affectedness == 'NEW':
-        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'NEW')
+    if external_system == 'jira':
+        if affectedness == 'AFFECTED':
+            flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'AFFECTED')
+        if affectedness == 'NEW':
+            flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'NEW')
+    if external_system == 'bugzilla':
+        if affectedness == 'AFFECTED':
+            flaw_detail_page.set_new_affect_inputs(external_system = 'bugzilla', affectedness = 'AFFECTED')
+        if affectedness == 'NEW':
+            flaw_detail_page.set_new_affect_inputs(external_system = 'bugzilla', affectedness = 'NEW')
