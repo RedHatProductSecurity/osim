@@ -334,7 +334,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                 <i class="bi bi-caret-right-fill me-2"></i>
                 <a
                   v-if="selectedTab === CommentType.Internal"
-                  :href="jiraUserUrl(comment.creator)"
+                  :href="jiraUserUrl(comment.creator || '')"
                   target="_blank"
                 >
                   {{ comment.creator }}
