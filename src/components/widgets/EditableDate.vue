@@ -8,6 +8,7 @@
 import { DateTime } from 'luxon';
 import { ref, nextTick, reactive, watch } from 'vue';
 import { IMask } from 'vue-imask';
+import { formatDate } from '@/utils/helpers';
 
 const props = defineProps<{
   modelValue: string | undefined,
@@ -26,10 +27,9 @@ const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-const pattern = props.includesTime ? 'yyyy-MM-dd hh:mm Z' : 'yyyy-MM-dd';
 const maskLayer = {
   mask: Date,
-  pattern,
+  pattern: props.includesTime ? 'yyyy-MM-dd hh:mm Z' : 'yyyy-MM-dd',
   lazy: false, // shows template ____-__-__
   overwrite: true, // "insert" mode
   min: new Date(1970, 0, 1),
@@ -75,18 +75,14 @@ const maskLayer = {
   autofix: true,
 };
 
-const formatString = props.includesTime ? 'yyyy-MM-dd T\' UTC\'' : 'yyyy-MM-dd';
-// The assumption is that the Date or String is in UTC
-function formatDate(date: Date | string): string {
-  const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
-  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(formatString);
-}
 // The assumption is that the Date or String is in UTC
 function parseDate(dateString: string): Date {
+  const formatString = props.includesTime ? 'yyyy-MM-dd T' : 'yyyy-MM-dd';
   // Remove the static part ' UTC' before parsing
   const cleanedDateString = dateString.replace(' UTC', '').trim();
-  return DateTime.fromFormat(cleanedDateString, formatString.replace('\' UTC\'', ''), { zone: 'utc' }).toJSDate();
+  return DateTime.fromFormat(cleanedDateString, formatString, { zone: 'utc' }).toJSDate();
 }
+
 const maskState = reactive({
   completed: false,
   // Force caret to start of input
@@ -95,7 +91,7 @@ const maskState = reactive({
 });
 
 if (props.modelValue != null) {
-  maskState.masked = maskLayer.format(props.modelValue);
+  maskState.masked = maskLayer.format(props.modelValue, props.includesTime);
 }
 
 // vue-imask Event handler
@@ -183,7 +179,8 @@ function osimFormatDate(date?: string | null): string {
   if (date == null) {
     return '[No date selected]';
   }
-  const formattedDate = formatDate(date); // Use the new formatDate function
+
+  const formattedDate = formatDate(date, props.includesTime);
   if (!formattedDate) {
     return 'Invalid Date';
   }
