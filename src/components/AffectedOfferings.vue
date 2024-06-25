@@ -40,7 +40,7 @@ const affectsWithModuleName = (moduleName: string) =>
   theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
 const shouldShowTrackers = ref(false);
-const expandedAffects = ref(new Map());
+const expandedAffectsMap = ref(new Map());
 updateAffectsExpandedState(theAffects.value);
 
 watch(theAffects, (nextValue) => {
@@ -49,7 +49,7 @@ watch(theAffects, (nextValue) => {
     return modules;
   }, {});
   updateAffectsExpandedState(nextValue);
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 const areAnyComponentsExpanded = computed(
   () => affectedModules.value.some((moduleName) => affectsWithModuleName(moduleName).some(isExpanded))
@@ -70,19 +70,23 @@ function areAnyComponentsExpandedIn (moduleName: string) {
 
 function updateAffectsExpandedState (affects: any[]) {
   for (const affect of affects) {
-    const maybeValue = expandedAffects.value.get(affect);
-    expandedAffects.value.set(affect, maybeValue ?? ref(false));
+    const matchingAffect = Array.from(expandedAffectsMap.value.keys()).find(
+      matchingAffect => matchingAffect.ps_component === affect.ps_component
+      && matchingAffect.ps_module === affect.ps_module
+    );
+    const maybeValue = expandedAffectsMap.value.get(matchingAffect);
+    expandedAffectsMap.value.set(matchingAffect ?? affect, maybeValue ?? ref(false));
   }
 }
 
 function isExpanded(affect: ZodAffectType) {
-  return expandedAffects.value.get(affect)?.value ?? true; // new affect is expanded by default;
+  return expandedAffectsMap.value.get(affect)?.value ?? true; // new affect is expanded by default;
 }
 
 function collapsePsModuleComponents(moduleName: string) {
   const affects = affectsWithModuleName(moduleName);
   for (const affect of affects) {
-    expandedAffects.value.set(affect, ref(false));
+    expandedAffectsMap.value.set(affect, ref(false));
   }
 }
 
@@ -100,9 +104,9 @@ function expandAll() {
 }
 
 function togglePsComponentExpansion(affect: ZodAffectType) {
-  const isExpanded = expandedAffects.value.get(affect);
+  const isExpanded = expandedAffectsMap.value.get(affect);
   isExpanded.value = !isExpanded.value;
-  expandedAffects.value.set(affect, isExpanded);
+  expandedAffectsMap.value.set(affect, isExpanded);
 }
 
 function togglePsModuleExpansion(moduleName: string) {
