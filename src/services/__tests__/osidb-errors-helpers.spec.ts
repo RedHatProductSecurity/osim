@@ -3,8 +3,17 @@ import {
   parseOsidbErrors,
 } from '../osidb-errors-helpers';
 
-
 describe('OSIDB Error helpers', () => {
+  // JSDom lacks an innerText implementation since it does not use a layout engine, so we need to mock it
+  // Source: https://github.com/jsdom/jsdom/issues/1245
+  beforeAll(() => {
+    Object.defineProperty(global.Element.prototype, 'innerText', {
+      get() {
+        return this.textContent;
+      },
+    });
+  });
+
   describe('getDisplayedOsidbError', () => {
 
     it('should return a string with the error message', () => {
