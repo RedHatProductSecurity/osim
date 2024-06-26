@@ -56,7 +56,7 @@ function onSearch(query: string) {
 
 <template>
   <nav ref="elHeader" class="osim-navbar navbar navbar-expand navbar-dark">
-    <div class="container">
+    <div class="container-fluid">
       <RouterLink to="/" class="osim-home-link">
         <!--<RedHatLogo class="osim-logo"/>-->
         <img :src="RedHatIconSvg" alt="Red Hat Logo" class="osim-logo" />

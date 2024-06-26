@@ -42,7 +42,7 @@ const hasBadges = computed(() => isEmbargoed.value);
   </tr>
   <tr v-if="hasBadges" class="osim-badge-lane" :class="$attrs.class">
     <td colspan="100%" class="pt-0">
-      <div class="ps-4 ms-1">
+      <div class="ps-4 ms-4">
         <span v-if="isEmbargoed">
           <span class="badge rounded-pill text-bg-danger">Embargoed</span>
         </span>
