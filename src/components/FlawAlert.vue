@@ -35,7 +35,7 @@ function scrollToComponent(parent_uuid: string) {
 <template>
   <div
     v-if="alert"
-    class="alert my-1"
+    class="alert my-1 p-2"
     :class="{'alert-warning': isWarning, 'alert-danger': isError}"
     role="alert"
   >
@@ -46,20 +46,16 @@ function scrollToComponent(parent_uuid: string) {
           {{ alert?.alert_type.charAt(0) + alert?.alert_type.slice(1).toLowerCase() + " " + alert?.name }}
         </span>
       </template>
-      <div class="my-2 ms-1 pt-1 px-2 container text-left">
-        <div class="row">
-          <strong>Description</strong>
+      <div class="ms-1 py-2 container text-left">
+        <div class="osim-flaw-alert-info">
+          <strong>Description:</strong>
+          <span>{{ ` ${alert.description}` }}</span>
         </div>
-        <div class="row mx-auto mt-1">
-          {{ alert.description }}
+        <div class="osim-flaw-alert-info">
+          <strong>How To Resolve:</strong>
+          <span>{{ alert?.resolution_steps || " No resolution steps are defined." }}</span>
         </div>
-        <div class="row mt-3">
-          <strong>How To Resolve</strong>
-        </div>
-        <div class="row mx-auto mt-1">
-          {{ alert?.resolution_steps || "No resolution steps are defined." }}
-        </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <div class="col">
             <button
               type="button"
@@ -75,3 +71,11 @@ function scrollToComponent(parent_uuid: string) {
     </LabelCollapsible>
   </div>
 </template>
+
+<style scoped lang="scss">
+.osim-flaw-alert-info {
+  strong, span {
+    font-size: 14px;
+  }
+}
+</style>
