@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
@@ -21,14 +21,12 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
     flaw_create_page = FlawCreatePage(context.browser)
     context.title = generate_random_text()
     flaw_create_page.set_input_field('title', context.title)
-    flaw_create_page.set_input_field('component', generate_random_text())
+    flaw_create_page.set_components_field(generate_random_text())
     flaw_create_page.set_select_value('impact')
     flaw_create_page.set_select_value('source')
-    public_date = datetime.today().strftime("%Y%m%d0000")
+    public_date = datetime.today().replace(tzinfo=timezone.utc).strftime("%Y%m%d0000")
     if embargoed:
         flaw_create_page.click_btn("embargeodCheckBox")
-        # click public date input to avoid osim bug
-        flaw_create_page.click_empty_public_date_input()
     else:
         flaw_create_page.set_input_field('publicDate', public_date)
     flaw_create_page.set_document_text_field('comment#0', generate_random_text())

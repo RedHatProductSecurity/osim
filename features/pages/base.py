@@ -1,6 +1,8 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from seleniumpagefactory.Pagefactory import PageFactory
 
 from features.page_factory_utils import find_elements_in_page_factory
@@ -53,3 +55,9 @@ class BasePage(PageFactory):
     def is_checkbox_selected(self, checkbox):
         element = find_elements_in_page_factory(self, checkbox)
         return element[0].is_selected()
+
+    def check_element_exists(self, by, value):
+        e = self.driver.find_element(by, value)
+        return WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of(e)
+        )
