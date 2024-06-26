@@ -13,7 +13,13 @@ import {
 } from '@/types/zodAffect';
 
 const { width: screenWidth } = useWindowSize();
-
+const resolutionOptions = computed(() => {
+  return {
+    AFFECTED: affectResolutions,
+    NEW: [''],
+    NOTAFFECTED: [''],
+  }[modelValue.value?.affectedness as string] || [''];
+});
 type NotUndefined<T> = Exclude<T, undefined>;
 
 defineProps<{
@@ -69,7 +75,7 @@ const hiddenResolutionOptions = computed(() => {
         v-model="modelValue.resolution"
         :error="error?.resolution"
         label="Resolution"
-        :options="affectResolutions"
+        :options="resolutionOptions"
         :optionsHidden="hiddenResolutionOptions"
       />
       <LabelSelect
