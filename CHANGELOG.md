@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Create Jira task on demand for legacy flaws (`OSIDB-2883`)
+
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
 * Enable private comments creation again (`OSIDB-3012`)
