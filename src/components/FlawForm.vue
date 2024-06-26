@@ -259,7 +259,7 @@ const createdDate = computed(() => {
         </div>
         <div
           class="row pt-3"
-          :class="{'osim-flaw-form-embargoed border border-3 border-primary': flaw.embargoed && mode === 'edit'}"
+          :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed && mode === 'edit'}"
         >
           <div :id="flaw.uuid" class="col-6">
             <LabelEditable
