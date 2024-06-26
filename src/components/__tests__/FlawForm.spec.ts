@@ -619,8 +619,12 @@ describe('FlawForm', () => {
     const flaw = sampleFlaw();
     flaw.embargoed = true;
     mountWithProps({ flaw, mode:'edit' });
-    const flawForm = subject.find('div.osim-flaw-form-embargoed');
+    let flawForm = subject.find('div.osim-flaw-form-embargoed');
     expect(flawForm?.exists()).toBeTruthy();
+    flaw.embargoed = false;
+    mountWithProps({ flaw, mode:'edit' });
+    flawForm = subject.find('div.osim-flaw-form-embargoed');
+    expect(flawForm?.exists()).toBeFalsy();
   });
 });
 
