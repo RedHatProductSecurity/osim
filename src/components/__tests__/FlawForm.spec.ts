@@ -614,6 +614,18 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'Created Date');
     expect(createdAtField?.exists()).toBeFalsy();
   });
+
+  it('should show border when flaw is embargoed', async () => {
+    const flaw = sampleFlaw();
+    flaw.embargoed = true;
+    mountWithProps({ flaw, mode:'edit' });
+    let flawForm = subject.find('div.osim-flaw-form-embargoed');
+    expect(flawForm?.exists()).toBeTruthy();
+    flaw.embargoed = false;
+    mountWithProps({ flaw, mode:'edit' });
+    flawForm = subject.find('div.osim-flaw-form-embargoed');
+    expect(flawForm?.exists()).toBeFalsy();
+  });
 });
 
 
