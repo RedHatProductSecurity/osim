@@ -8,9 +8,10 @@ import { ZodFlawClassification } from '@/types/zodShared';
 const props = defineProps<{
   flawId: string;
   classification: any;
+  shouldCreateJiraTask: boolean;
 }>();
 
-const emit = defineEmits<{ 'refresh:flaw': [] }>();
+const emit = defineEmits<{ 'refresh:flaw': [], 'create:jiraTask': [] }>();
 
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
@@ -24,8 +25,16 @@ const REJECTED_STATE = workflowStates.Rejected as string;
 const EMPTY_STATE = workflowStates.Empty as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATE, REJECTED_STATE,EMPTY_STATE].includes(props.classification.state),
+  () => ![DONE_STATE, REJECTED_STATE, EMPTY_STATE].includes(props.classification.state),
 );
+
+const shouldShowCreateJiraTaskButton = computed(
+  () => props.classification.state === EMPTY_STATE,
+);
+
+function toggleCreateJiraTask() {
+  emit('create:jiraTask');
+}
 
 function openModal() {
   shouldShowRejectionModal.value = true;
@@ -54,7 +63,7 @@ function nextPhase(workflowState: WorkflowPhases) {
 <template>
   <div class="osim-workflow-state-container mb-3">
     <LabelDiv label="State" type="text" class="osim-workflow-state-display">
-      <span class="form-control">{{ classification.state }}</span>
+      <span class="form-control">{{ classification.state || 'Legacy Flaw without Jira task' }}</span>
       <Modal :show="shouldShowRejectionModal" @close="closeModal">
         <template #title> Reject Flaw </template>
         <template #body>
@@ -72,14 +81,9 @@ function nextPhase(workflowState: WorkflowPhases) {
       </Modal>
     </LabelDiv>
     <div class="row">
-      <div class="col-lg-3 col-md-1"></div>
-      <div class="col-lg-9 col-md-11">
+      <div class="col-lg-9 col-md-11 offset-lg-3 offset-md-1">
         <div v-if="shouldShowWorkflowButtons" class="osim-workflow-state-buttons mb-3">
-          <button
-            type="button"
-            class="btn btn-warning ms-2 osim-workflow-button"
-            @click="openModal"
-          >
+          <button type="button" class="btn btn-warning ms-2 osim-workflow-button" @click="openModal">
             Reject
           </button>
           <button
@@ -89,6 +93,14 @@ function nextPhase(workflowState: WorkflowPhases) {
             @click="onPromote(flawId)"
           >
             Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
+          </button>
+        </div>
+        <div v-if="shouldShowCreateJiraTaskButton" class="osim-workflow-state-buttons mb-3">
+          <button type="button" class="btn btn-warning ms-2 osim-workflow-button" @click="toggleCreateJiraTask">
+            <i
+              :class="{ 'bi-square': !shouldCreateJiraTask, 'bi-check-square': shouldCreateJiraTask }"
+            />
+            Create Jira task
           </button>
         </div>
       </div>
@@ -112,7 +124,7 @@ function nextPhase(workflowState: WorkflowPhases) {
   }
 
   span.form-control {
-    min-height: 38px;
+    min-height: 2.375px;
   }
 }
 </style>
