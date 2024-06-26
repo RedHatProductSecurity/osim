@@ -247,7 +247,7 @@ export const ZodFlawSchema = z.object({
   if (affect) {
     raiseIssue(
       'Affected component cannot be registered on the affected module twice',
-      ["affects", affect.index, "ps_component"],
+      ['affects', `${affect.index}`, 'ps_component'],
     );
   }
 });
