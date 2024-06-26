@@ -109,10 +109,7 @@ onMounted(async () => {
 });
 
 async function handleCommentSave() {
-  if (selectedTab.value === CommentType.Public
-  // TODO: Uncomment when osidb allows private comment creation
-  // || selectedTab.value === CommentType.Private
-  ) {
+  if (selectedTab.value === CommentType.Public || selectedTab.value === CommentType.Private) {
     // Osidb Bugzilla comment save
     emit('comment:addFlawComment', newComment.value, userStore.userName, CommentType[selectedTab.value] === 'Private');
     isAddingNewComment.value = false;
@@ -153,20 +150,8 @@ function sanitize(text: string) {
     >
       <template #header-actions>
         <div class="tab-actions">
-          <!-- TODO: Remove when osidb allows private comment creation -->
-          <span v-if="selectedTab === CommentType.Private" title="Private comment creation is temporary disabled">
-            <button
-              type="button"
-              class="btn btn-secondary tab-btn"
-              disabled
-              @click="isAddingNewComment = true"
-            >
-              Add {{ CommentType[selectedTab] }} Comment
-            </button>
-          </span>
-          <!-- End TODO -->
           <button
-            v-else-if="(
+            v-if="(
               !isAddingNewComment
               && selectedTab !== CommentType.System)
               && (internalCommentsAvailable || selectedTab !== CommentType.Internal
@@ -194,8 +179,7 @@ function sanitize(text: string) {
           <div
             v-if="(
               isAddingNewComment
-              && selectedTab !== CommentType.System
-              && selectedTab !== CommentType.Private) // TODO: Remove when osidb allows private comment creation
+              && selectedTab !== CommentType.System)
               && (internalCommentsAvailable
                 || selectedTab !== CommentType.Internal
               )"

@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
+* Enable private comments creation again (`OSIDB-3012`)
 
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
