@@ -46,8 +46,8 @@ Feature: Flaw detail testing on public flaw
       When I update the random input fields
         |         field |
         |         title |
-        |     component |
-        |      assignee |
+        |    components |
+        |         owner |
       Then The random input fields are updated
 
     Scenario Outline: Update CWE ID
@@ -76,13 +76,13 @@ Feature: Flaw detail testing on public flaw
       When I add two RHSB references to the flaw
       Then Only one RHSB reference can be added
 
+     Scenario: Modify reference
+      When I edit a internal/external reference
+      Then The reference information is changed
+
     Scenario: Delete reference
       When I delete a reference from a flaw
       Then The reference is deleted from this flaw
-
-    Scenario: Modify reference
-      When I edit a internal/external reference
-      Then The reference information is changed
 
     Scenario: Add RHSB reference with incorrect link
       When I add a RHSB reference to the flaw with incorrect link
@@ -104,13 +104,15 @@ Feature: Flaw detail testing on public flaw
       When I click 'delete' button of an affect
       Then I could 'recover' the affect that I tried to delete above
 
-    Scenario Outline: Create tracker to jira
+    Scenario Outline: Create tracker
       When I delete an affect of the flaw
-      When I add a new affect to jira supported module and <affectedness> affectedness
+      When When I add a new affect to <external_system> supported module and <affectedness> affectedness
       When I select the affect above and file a tracker
-      Then The tracker is created for jira
+      Then The tracker is created for <external_system>
 
       Examples:
-          |  affectedness|
-          |      AFFECTED|
-          |           NEW|
+          |external_system|  affectedness|
+          |           jira|      AFFECTED|
+          |           jira|           NEW|
+          |       bugzilla|      AFFECTED|
+          |       bugzilla|           NEW|

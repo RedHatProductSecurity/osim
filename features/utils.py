@@ -56,15 +56,6 @@ def init_remote_firefox_browser():
     return webdriver.Remote(command_executor=SELENIUM_URL, options=op)
 
 
-def wait_for_visibility_by_locator(browser, locator_type, element_locator):
-    """
-    Wait for loading the element.
-    """
-    wait = WebDriverWait(browser, int(TIMEOUT))
-    locator = (locator_type, element_locator)
-    wait.until(EC.visibility_of_element_located(locator))
-
-
 def login_with_valid_account():
     """
     This function defines the login.

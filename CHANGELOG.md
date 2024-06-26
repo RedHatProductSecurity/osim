@@ -3,10 +3,12 @@
 ## [Unreleased]
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
+* Enable private comments creation again (`OSIDB-3012`)
 * Highlight form style for embargoed flaw (`OSIDB-2984`)
 
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
+* Remove Trackers section on Flaw Edit (`OSIDB-2954`)
 
 ## [2024.6.1]
 ### Added
@@ -21,6 +23,7 @@
 * Fix CVSS score reset on Flaw reset (`OSIDB-2701`)
 * Fix Flaw save with removing unsaved affects (`OSIDB-2934`)
 * Manage Trackers: Eliminate unnecessary space, improve layout organization (`OSIDB-2949`, `OSIDB-2987`)
+* Prevent unhelpful error notifications (`OSIDB-2962`, `OSIDB-2998`)
 
 ## [2024.6.0]
 ### Added

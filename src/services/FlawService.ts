@@ -3,11 +3,9 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
-import {
-  getDisplayedOsidbError,
-  type OsidbFetchOptions
-} from '@/services/OsidbAuthService';
+import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT'].includes(options.method.toUpperCase())) {

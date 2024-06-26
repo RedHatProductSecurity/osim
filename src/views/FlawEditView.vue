@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import FlawForm from '../components/FlawForm.vue';
 import { getFlaw } from '../services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const flaw = ref<ZodFlawType | null>(null);

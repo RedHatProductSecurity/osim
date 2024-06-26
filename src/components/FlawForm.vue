@@ -8,7 +8,6 @@ import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
@@ -25,7 +24,6 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
-import { trackerUrl } from '@/services/TrackerService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExlplainForm from './CvssExlplainForm.vue';
 
@@ -44,7 +42,6 @@ function onSaveSuccess() {
 
 const {
   flaw,
-  trackersDisplay,
   flawSources,
   flawImpacts,
   flawIncidentStates,
@@ -493,22 +490,6 @@ const createdDate = computed(() => {
             @acknowledgment:delete="deleteAcknowledgment"
           />
         </div>
-        <LabelCollapsible
-          v-if="mode === 'edit'"
-          :label="`Trackers: ${trackersDisplay.length}`"
-          :isExpandable="trackersDisplay.length !== 0"
-        >
-          <ul>
-            <li v-for="(tracker, trackerIndex) in trackersDisplay" :key="trackerIndex">
-              <a
-                :href="trackerUrl(tracker.type, tracker.external_system_id)"
-                target="_blank"
-              >
-                <i class="bi bi-link" />{{ tracker.display }}
-              </a>
-            </li>
-          </ul>
-        </LabelCollapsible>
       </div>
       <AffectedOfferings
         v-if="mode === 'edit'"
