@@ -46,7 +46,7 @@ function scrollToComponent(parent_uuid: string) {
           {{ alert?.alert_type.charAt(0) + alert?.alert_type.slice(1).toLowerCase() + " " + alert?.name }}
         </span>
       </template>
-      <div class="my-2 pt-1 px-2 container text-left">
+      <div class="my-2 ms-1 pt-1 px-2 container text-left">
         <div class="row">
           <strong>Description</strong>
         </div>
