@@ -30,29 +30,29 @@ DOCUMENT_TEXT_FIELDS = {
 }
 
 
-@when("I add a public comment to the flaw")
-def step_impl(context):
-    # Click the "Add public comment" button
+@when("I add a {comment_type} comment to the flaw")
+def step_impl(context, comment_type):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.add_comment_btn_exist()
-    flaw_detail_page.click_button_with_js('addPublicCommentBtn')
+    if comment_type != 'Public':
+        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+    flaw_detail_page.add_comment_btn_exist(comment_type)
+    flaw_detail_page.click_button_with_js('add' + comment_type + 'CommentBtn')
 
-    # Add the random public comment
-    public_comment = generate_random_text()
-    flaw_detail_page.set_comment_value(public_comment)
-    # Save the comment
-    flaw_detail_page.click_button_with_js('savePublicCommentBtn')
-    flaw_detail_page.wait_msg("publicCommentSavedMsg")
+    new_comment = generate_random_text()
+    flaw_detail_page.set_comment_value(comment_type, new_comment)
+    flaw_detail_page.click_button_with_js('save' + comment_type + 'CommentBtn')
+    flaw_detail_page.wait_msg(comment_type.lower() + "CommentSavedMsg")
     time.sleep(2)
+    context.new_comment = new_comment
 
-    context.add_comment = public_comment
 
-
-@then('A comment is added to the flaw')
-def step_impl(context):
+@then('A {comment_type} comment is added to the flaw')
+def step_impl(context, comment_type):
     # Check the comment saved successfully
-    comment_xpath = f"//p[@class='osim-flaw-comment' and text()='{context.add_comment}']"
     flaw_detail_page = FlawDetailPage(context.browser)
+    if comment_type != 'Public':
+        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+    comment_xpath = f"//p[@class='osim-flaw-comment' and text()='{context.new_comment}']"
     flaw_detail_page.check_element_exists(By.XPATH, comment_xpath)
 
 
