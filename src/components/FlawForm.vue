@@ -25,7 +25,7 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
-import CvssExlplainForm from './CvssExlplainForm.vue';
+import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
 
 const props = defineProps<{
@@ -335,7 +335,7 @@ const createdDate = computed(() => {
                     :nistcvss="nvdCvss3String"
                   />
                 </div>
-                <CvssExlplainForm v-model="flaw" />
+                <CvssExplainForm v-model="flaw" />
               </template>
             </div>
             <LabelEditable
