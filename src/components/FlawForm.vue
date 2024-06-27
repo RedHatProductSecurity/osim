@@ -261,9 +261,9 @@ const createdDate = computed(() => {
                   :error="errors.cve_id"
                 />
               </div>
-              <div
+                <div
                 v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
-                class="col-auto align-self-end mb-3"
+                class="col-auto align-self-end mb-2"
               >
                 <CveRequestForm
                   :embargoed="flaw.embargoed"
@@ -275,29 +275,29 @@ const createdDate = computed(() => {
               </div>
             </div>
             <LabelSelect
-              v-model="flaw.impact"
-              label="Impact"
-              :options="flawImpacts"
-              :error="errors.impact"
-            />
+            v-model="flaw.impact"
+            label="Impact"
+            :options="flawImpacts"
+            :error="errors.impact"
+          />
             <CvssCalculator
               :id="flawRhCvss3.uuid"
               v-model:cvss-vector="flawRhCvss3.vector"
               v-model:cvss-score="flawRhCvss3.score"
             />
-            <div class="row">
+            <div>
               <div class="col">
                 <LabelDiv label="NVD CVSSv3">
-                  <div class="d-flex flex-row">
-                    <div class="form-control text-break h-auto rounded-0">
-                      <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
-                        <span v-if="chars[0].isHighlighted" class="text-primary">
-                          {{ chars.map(c => c.char).join('') }}
-                        </span>
-                        <template v-else>{{ chars.map(c => c.char).join('') }}</template>
-                      </template>
-                    </div>
-                    <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
+                <div class="d-flex flex-row">
+                  <div class="form-control text-break h-auto rounded-0">
+                    <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+                      <span v-if="chars[0].isHighlighted" class="text-primary">
+                        {{ chars.map(c => c.char).join('') }}
+                      </span>
+                      <template v-else>{{ chars.map(c => c.char).join('') }}</template>
+                    </template>
+                  </div>
+                  <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
                       <CvssNISTForm
                         :cveid="flaw.cve_id"
                         :summary="flaw.comment_zero"
@@ -309,18 +309,6 @@ const createdDate = computed(() => {
                   </div>
                 </LabelDiv>
               </div>
-              <template v-if="shouldDisplayEmailNistForm">
-                <div class="col-auto align-self-center mb-3">
-                  <CvssNISTForm
-                    :cveid="flaw.cve_id"
-                    :summary="flaw.comment_zero"
-                    :bugzilla="bugzillaLink"
-                    :cvss="rhCvss3String"
-                    :nistcvss="nvdCvss3String"
-                  />
-                </div>
-                <CvssExplainForm v-model="flaw" />
-              </template>
             </div>
             <LabelEditable
               v-model="flaw.cwe_id"
