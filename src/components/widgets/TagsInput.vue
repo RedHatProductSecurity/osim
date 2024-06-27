@@ -146,10 +146,12 @@ function edit(index: number, event: Event) {
 
 .osim-pill-list-item {
   font-size: .85rem;
+  padding-block: 0.1rem;
 }
 
 .osim-pill-list-input {
   display: inline-block;
+  height: 1.5rem;
   border: none;
   outline: none;
   box-shadow: none;
