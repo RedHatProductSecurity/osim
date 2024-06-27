@@ -46,7 +46,7 @@ def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     osidb_token = get_osidb_token()
     fields = FIELD_FLAW_LIST + FIELD_IN_DATABASE
-    context.fields_keywords = advanced_search_page.get_valid_search_keyworks_from_created_flaw(fields, osidb_token)
+    context.fields_keywords = advanced_search_page.get_valid_search_keywords_from_created_flaw(fields, osidb_token)
 
 @then('I select the field and keyword to search flaws and I am able to view flaws matching the search')
 def step_impl(context):
@@ -60,16 +60,13 @@ def step_impl(context):
         advanced_search_page.first_flaw_exist()
         # 1. Check if the first flaw matches the search condition
         if advanced_search_page.get_first_flaw_id():
-        #Check the result in the flaw list page, no need to go into detail page
+            # Check the result in the flaw list page, no need to go into detail page
             if field in FIELD_FLAW_LIST:
                 field_value = advanced_search_page.get_field_value_from_flawlist(field)
             elif field in FIELD_IN_DATABASE:
                 field_value = advanced_search_page.get_value_from_osidb(field, osidb_token)
                 if field == "embargoed":
-                        if value == "true":
-                            value = True
-                        else:
-                            value = False
+                    value = True if value == 'true' else False
         if field == "embargoed":
             assert value == field_value
         else:
