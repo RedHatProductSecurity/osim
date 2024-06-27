@@ -16,6 +16,7 @@
 * Owner - Status text overlap on flaw list (`OSIDB-2827`)
 * Fix Error for Duplicated Affects (`OSIDB-2894`)
 * Missing Expand All button on initial Flaw load (`OSIDB-3024`)
+* Formatting for Tracker table timestamps (`OSIDB-2983`)
 
 ## [2024.6.1]
 ### Added
