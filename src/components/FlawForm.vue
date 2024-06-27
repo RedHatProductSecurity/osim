@@ -26,6 +26,7 @@ import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExlplainForm from './CvssExlplainForm.vue';
+import FlawContributors from '@/components/FlawContributors.vue';
 
 const props = defineProps<{
   flaw: any;
@@ -400,6 +401,7 @@ const createdDate = computed(() => {
               label="Created Date"
               type="text"
             />
+            <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
           </div>
         </div>
       </div>

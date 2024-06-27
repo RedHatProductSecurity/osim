@@ -4,6 +4,7 @@ import { getNextAccessToken } from '@/services/OsidbAuthService';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
+import type { ZodJiraUserPickerType, ZodJiraIssueType } from '@/types/zodJira';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
@@ -20,14 +21,14 @@ type JiraPutPostFetchOptions = {
   url: string;
   method: 'POST' | 'PUT' | 'post' | 'put';
   data?: Record<string, any>;
-  params?: never;
+  params?: Record<string, any>;
 };
 
 type JiraFetchOptions =
   | JiraGetFetchOptions
   | JiraPutPostFetchOptions
 
-async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCallbacks) {
+async function jiraFetch<T = any>(config: JiraFetchOptions, factoryOptions?: JiraFetchCallbacks) {
 
   if (factoryOptions?.beforeFetch) {
     await factoryOptions.beforeFetch(config);
@@ -79,7 +80,10 @@ async function jiraFetch(config: JiraFetchOptions, factoryOptions?: JiraFetchCal
     );
   }
 
-  return { data: await response.json(), response };
+  if (response.status === 204) {
+    return { data: undefined, response };
+  }
+  return { data: await response.json() as T, response };
 }
 
 export async function getJiraComments(taskId: string) {
@@ -87,6 +91,46 @@ export async function getJiraComments(taskId: string) {
     method: 'get',
     url: `/rest/api/2/issue/${taskId}/comment`,
   });
+}
+
+export async function searchJiraUsers(query: string) {
+  return jiraFetch<{ users: ZodJiraUserPickerType[] }>({
+    method: 'get',
+    url: '/rest/api/2/user/picker',
+    params: { query },
+  });
+}
+
+export async function getJiraIssue(taskId: string) {
+  return jiraFetch<ZodJiraIssueType>({
+    method: 'get',
+    url: `/rest/api/2/issue/${taskId}`,
+  });
+}
+
+type putIssueOptions<T, U> = {
+  params?: {
+    notifyUsers?: boolean;
+    returnIssue?: boolean;
+  },
+  data: {
+    fields?: keyof T extends keyof U ? never : T;
+    update?: keyof U extends keyof T ? never : U;
+  }
+}
+
+type putIssueUpdate = Record<string, Array<{
+  [K in 'set' | 'add' | 'remove' | 'edit' | 'copy']?: any;
+}>>
+
+export async function putJiraIssue<T extends object | undefined,
+  U extends putIssueUpdate | undefined>(taskId: string, opts: putIssueOptions<T, U>) {
+  return jiraFetch({
+    method: 'put',
+    url: `/rest/api/2/issue/${taskId}`,
+    ...opts
+  });
+
 }
 
 export async function postJiraComment(taskId: string, comment: string) {

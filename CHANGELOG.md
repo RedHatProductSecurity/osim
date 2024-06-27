@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
+* Jira contributors field is now displayed on the Flaw form (`OSIDB-2916`)
 
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
