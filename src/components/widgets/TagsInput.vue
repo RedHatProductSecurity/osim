@@ -85,6 +85,7 @@ function edit(index: number, event: Event) {
         :data-index="index"
       >
         <span
+          style="cursor: text"
           @click="makeEditable"
           @keydown.enter.prevent="edit(index, $event)"
           @keydown.escape.prevent="edit(index, $event)"
@@ -94,6 +95,7 @@ function edit(index: number, event: Event) {
         </span>
         <i
           class="bi bi-x-square ms-1"
+          style="cursor: pointer"
           tabindex="0"
           @keydown.enter.prevent="remove(index)"
           @keydown.space.prevent="remove(index)"
