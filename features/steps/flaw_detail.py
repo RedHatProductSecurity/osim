@@ -446,8 +446,7 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     # Display the affect detail
-    flaw_detail_page.click_button_with_js("affectExpandall")
-    flaw_detail_page.click_btn('affectDropdownBtn')
+    flaw_detail_page.display_affect_detail()
     current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
     current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
     # Get the valid/available values to update
@@ -482,8 +481,10 @@ def step_impl(context):
     context.value_dict['impact'] = updated_value
     # Save all the updates
     flaw_detail_page.click_btn('saveBtn')
+    # Comment the line due to the Affect Saved message won't alert now
+    # flaw_detail_page.wait_msg('affectSaveMsg')
     flaw_detail_page.wait_msg('affectUpdateMsg')
-    #flaw_detail_page.wait_msg('affectSaveMsg')
+    flaw_detail_page.wait_msg('flawSavedMsg')
  
 @then("All changes are saved")
 def step_impl(context):
@@ -493,14 +494,14 @@ def step_impl(context):
     component_value = context.value_dict['ps_component']
     field_value_dict = flaw_detail_page.get_affect_values(
                     context.value_dict.keys(), token, component_value)
-    # There is a bug OSIDB-2600, so the following step will be failed
+    # There is a bug OSIDB-3042, so the following step will be failed
     assert context.value_dict == field_value_dict
 
 @when("I add a new affect with valid data")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.ps_component = flaw_detail_page.set_new_affect_inputs()
+    context.ps_component = flaw_detail_page.set_new_affect_inputs('bugzilla', 'NEW')
 
 
 @then("The affect is added")
@@ -519,6 +520,7 @@ def step_impl(context):
     assert warning == "Affected Offerings To Be Deleted"
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('affectDeleteMsg')
+    flaw_detail_page.wait_msg('flawSavedMsg')
 
 @then("The affect is deleted")
 def step_impl(context):
@@ -536,7 +538,6 @@ def step_impl(context):
         flaw_detail_page.click_affect_delete_btn()
     # Click the delete button of the affect
     flaw_detail_page.click_button_with_js('affectRecoverBtn')
-
 
 @then("I could 'recover' the affect that I tried to delete above")
 def step_impl(context):
@@ -583,25 +584,24 @@ def step_impl(context):
 def step_impl(context, external_system):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    # Check the tracker jira/bugizlla link
-    flaw_detail_page.click_button_with_js('trackerCount')
-    if external_system == 'jira':
-        flaw_detail_page.trackerJiraherf.visibility_of_element_located()
+    flaw_detail_page.display_affect_detail()
+     # Check the trackers count is not zero
+    flaw_detail_page.trackerCount.visibility_of_element_located()
+    if external_system == 'bugzilla':
+        flaw_detail_page.trackerBzSummary.visibility_of_element_located()
     else:
-        flaw_detail_page.trackerBugzillaherf.visibility_of_element_located()
+        flaw_detail_page.trackerJiraSummary.visibility_of_element_located()
 
 
-@when('When I add a new affect to {external_system} supported module and {affectedness} affectedness')
-def step_imp(context, external_system, affectedness):
+@when('I add a new affect to {external_system} supported module and selected {affectedness_value}')
+def step_imp(context, external_system, affectedness_value):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    if external_system == 'jira':
-        if affectedness == 'AFFECTED':
-            flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'AFFECTED')
-        if affectedness == 'NEW':
-            flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'NEW')
-    if external_system == 'bugzilla':
-        if affectedness == 'AFFECTED':
-            flaw_detail_page.set_new_affect_inputs(external_system = 'bugzilla', affectedness = 'AFFECTED')
-        if affectedness == 'NEW':
-            flaw_detail_page.set_new_affect_inputs(external_system = 'bugzilla', affectedness = 'NEW')
+    flaw_detail_page.set_new_affect_inputs(external_system, affectedness_value)
+
+@then("I can't file a tracker")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()

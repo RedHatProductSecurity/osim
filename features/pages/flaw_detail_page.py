@@ -108,6 +108,7 @@ class FlawDetailPage(BasePage):
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
+        "affectScoreSaveMsg": ("XPATH", "//div[text()='Affects CVSS scores saved.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='1 Affect(s) Deleted.']"),
@@ -117,14 +118,14 @@ class FlawDetailPage(BasePage):
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
-        "trackersDropdownBtn": ("XPATH", "//button[contains(text(), 'Trackers')]"),
         "ManageTrackers":("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "affectUpstreamCheckbox": ("XPATH", "(//input[@class='osim-tracker form-check-input'])[1]"),
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
-        "trackerCount": ("XPATH", "//label[contains(text(), 'Trackers: ')]"),
-        "trackerJiraherf": ("XPATH", "(//a[contains(text(), 'JIRA')])[1]"),
-        "trackerBugzillaherf": ("XPATH", "(//a[contains(text(), 'BUGZILLA')])[1]"),
+        "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
+        "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
+        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')][1]"),
+        "trackerBzSummary": ("XPATH", "//summary[contains(text(), 'rhcertification')][1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -465,7 +466,7 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_new_affect_inputs(self, external_system = 'jira', affectedness = 'NEW'):
+    def set_new_affect_inputs(self, external_system = 'jira', affectedness_value = 'NEW'):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
         self.click_plusdropdown_btn('affectNotSave')
@@ -483,8 +484,8 @@ class FlawDetailPage(BasePage):
         selects = find_elements_in_page_factory(self, 'selects')
         (affectedness, resolution, impact) = selects[-3:]
         affectedness_select = Select(affectedness)
-        if affectedness == 'NEW':
-            affectedness_select.select_by_value('NEW')
+        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
+            affectedness_select.select_by_value(affectedness_value)
             resolution_select = Select(resolution)
             resolution_select.select_by_value('')
         else:
@@ -500,6 +501,8 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         self.click_btn('saveBtn')
         self.wait_msg('affectCreatedMsg')
+        self.wait_msg('flawSavedMsg')
+        time.sleep(2)
         return ps_component_value
   
     def get_an_available_ps_module(self, affect_module):
