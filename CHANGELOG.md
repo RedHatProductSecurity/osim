@@ -15,6 +15,7 @@
 * Remove Trackers section on Flaw Edit (`OSIDB-2954`)
 * Owner - Status text overlap on flaw list (`OSIDB-2827`)
 * Fix Error for Duplicated Affects (`OSIDB-2894`)
+* Missing Expand All button on initial Flaw load (`OSIDB-3024`)
 
 ## [2024.6.1]
 ### Added
