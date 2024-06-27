@@ -222,24 +222,24 @@ const createdDate = computed(() => {
 <template>
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-fluid">
-      <div class="row osim-flaw-form-section" :class="{ 'pt-5': mode === 'create'}">
-        <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
-          <a
-            :href="bugzillaLink"
-            class="osim-bugzilla-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-          </a>
-        </div>
-        <div class="col-12 osim-alerts-banner">
-          <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
-        </div>
-        <div
-          class="row pt-3"
-          :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
-        >
+      <div
+        class="row px-4 my-3"
+        :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
+      >
+        <div class="row osim-flaw-form-section" :class="{ 'pt-5': mode === 'create'}">
+          <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
+            <a
+              :href="bugzillaLink"
+              class="osim-bugzilla-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+            </a>
+          </div>
+          <div class="col-12 osim-alerts-banner">
+            <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
+          </div>
           <div :id="flaw.uuid" class="col-6">
             <LabelEditable
               v-model="flaw.title"
@@ -377,133 +377,133 @@ const createdDate = computed(() => {
             <CvssExlplainForm v-if="shouldDisplayEmailNistForm" v-model="flaw" />
           </div>
         </div>
-      </div>
-      <div class="osim-flaw-form-section border-top row mx-0">
-        <LabelTextarea
-          v-model="flaw.comment_zero"
-          label="Comment#0"
-          placeholder="Comment#0 ..."
-          :error="errors.comment_zero"
-          :disabled="mode === 'edit'"
-          class="col-6 px-4 py-2"
-        />
-        <LabelTextarea
-          v-model="flaw.cve_description"
-          label="Description"
-          placeholder="Description Text ..."
-          :error="errors.cve_description"
-          class="col-6 px-4 py-2"
-        >
-          <template #label>
-            <span class="form-label col-3 osim-folder-tab-label">
-              Description
-            </span>
-            <span class="col-3 ps-2">
-              <select v-model="flaw.requires_cve_description" class="form-select col-3 osim-description-required">
-                <option disabled :selected="!flaw.requires_cve_description" value="">Review Status</option>
-                <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
-              </select>
-            </span>
-
-          </template>
-        </LabelTextarea>
-        <LabelTextarea
-          v-model="flaw.statement"
-          label="Statement"
-          placeholder="Statement Text ..."
-          :error="errors.statement"
-          class="col-6 px-4 py-2"
-        />
-        <LabelTextarea
-          v-model="flaw.mitigation"
-          label="Mitigation"
-          placeholder="Mitigation Text ..."
-          :error="errors.mitigation"
-          class="col-6 px-4 py-2"
-        />
-      </div>
-      <div class="osim-flaw-form-section border-top border-bottom">
-        <div class="d-flex gap-3">
-          <IssueFieldReferences
-            ref="referencesComp"
-            v-model="flawReferences"
-            class="w-100 my-2"
-            :mode="mode"
-            :error="errors.references"
-            @reference:update="saveReferences"
-            @reference:new="addBlankReference(flaw.embargoed)"
-            @reference:cancel-new="cancelAddReference"
-            @reference:delete="deleteReference"
+        <div class="osim-flaw-form-section border-top row mx-0">
+          <LabelTextarea
+            v-model="flaw.comment_zero"
+            label="Comment#0"
+            placeholder="Comment#0 ..."
+            :error="errors.comment_zero"
+            :disabled="mode === 'edit'"
+            class="col-6 px-4 py-2"
           />
-          <IssueFieldAcknowledgments
-            ref="acknowledgmentsComp"
-            v-model="flawAcknowledgments"
-            class="w-100 my-2"
-            :mode="mode"
-            :error="errors.acknowledgments"
-            @acknowledgment:update="saveAcknowledgments"
-            @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
-            @acknowledgment:cancel-new="cancelAddAcknowledgment"
-            @acknowledgment:delete="deleteAcknowledgment"
+          <LabelTextarea
+            v-model="flaw.cve_description"
+            label="Description"
+            placeholder="Description Text ..."
+            :error="errors.cve_description"
+            class="col-6 px-4 py-2"
+          >
+            <template #label>
+              <span class="form-label col-3 osim-folder-tab-label">
+                Description
+              </span>
+              <span class="col-3 ps-2">
+                <select v-model="flaw.requires_cve_description" class="form-select col-3 osim-description-required">
+                  <option disabled :selected="!flaw.requires_cve_description" value="">Review Status</option>
+                  <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
+                </select>
+              </span>
+
+            </template>
+          </LabelTextarea>
+          <LabelTextarea
+            v-model="flaw.statement"
+            label="Statement"
+            placeholder="Statement Text ..."
+            :error="errors.statement"
+            class="col-6 px-4 py-2"
+          />
+          <LabelTextarea
+            v-model="flaw.mitigation"
+            label="Mitigation"
+            placeholder="Mitigation Text ..."
+            :error="errors.mitigation"
+            class="col-6 px-4 py-2"
+          />
+        </div>
+        <div class="osim-flaw-form-section border-top border-bottom">
+          <div class="d-flex gap-3">
+            <IssueFieldReferences
+              ref="referencesComp"
+              v-model="flawReferences"
+              class="w-100 my-2"
+              :mode="mode"
+              :error="errors.references"
+              @reference:update="saveReferences"
+              @reference:new="addBlankReference(flaw.embargoed)"
+              @reference:cancel-new="cancelAddReference"
+              @reference:delete="deleteReference"
+            />
+            <IssueFieldAcknowledgments
+              ref="acknowledgmentsComp"
+              v-model="flawAcknowledgments"
+              class="w-100 my-2"
+              :mode="mode"
+              :error="errors.acknowledgments"
+              @acknowledgment:update="saveAcknowledgments"
+              @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+              @acknowledgment:cancel-new="cancelAddAcknowledgment"
+              @acknowledgment:delete="deleteAcknowledgment"
+            />
+          </div>
+        </div>
+        <div class="osim-flaw-form-section">
+          <AffectedOfferings
+            v-if="mode === 'edit'"
+            ref="affectedOfferingsComp"
+            :theAffects="flaw.affects"
+            :affectsToDelete="affectsToDelete"
+            :error="errors.affects"
+            :flawId="flaw.uuid"
+            @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
+            @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
+            @add-blank-affect="addBlankAffect"
+          />
+        </div>
+        <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
+          <FlawComments
+            :comments="flaw.comments"
+            :taskKey="flaw.task_key"
+            :error="errors.comments"
+            :isSaving="isSaving"
+            @comment:addFlawComment="addFlawComment"
+            @disableForm="(value) => formDisabled = value"
           />
         </div>
       </div>
-      <div class="osim-flaw-form-section">
-        <AffectedOfferings
-          v-if="mode === 'edit'"
-          ref="affectedOfferingsComp"
-          :theAffects="flaw.affects"
-          :affectsToDelete="affectsToDelete"
-          :error="errors.affects"
-          :flawId="flaw.uuid"
-          @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
-          @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-          @add-blank-affect="addBlankAffect"
-        />
-      </div>
-      <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
-        <FlawComments
-          :comments="flaw.comments"
-          :taskKey="flaw.task_key"
-          :error="errors.comments"
-          :isSaving="isSaving"
-          @comment:addFlawComment="addFlawComment"
-          @disableForm="(value) => formDisabled = value"
-        />
-      </div>
-    </div>
-    <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-      <!-- <button type="button" class="btn btn-primary col">Customer Pending</button>-->
-      <!-- <button type="button" class="btn btn-primary col">
+      <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
+        <!-- <button type="button" class="btn btn-primary col">Customer Pending</button>-->
+        <!-- <button type="button" class="btn btn-primary col">
         Close this issue without actions
       </button>-->
-      <!-- <button type="button" class="btn btn-primary col">
+        <!-- <button type="button" class="btn btn-primary col">
         Move this issue to another source queue
       </button>-->
-      <!-- <button type="button" class="btn btn-primary col">Create a flaw</button>-->
-      <!-- <button type="button" class="btn btn-primary col">
+        <!-- <button type="button" class="btn btn-primary col">Create a flaw</button>-->
+        <!-- <button type="button" class="btn btn-primary col">
         Create hardening bug/weakness
       </button>-->
-      <div v-if="mode === 'edit'">
-        <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
-        <button
-          v-osim-loading.grow="isSaving"
-          type="submit"
-          class="btn btn-primary ms-3"
-          :disabled="isSaving"
-        >
-          Save Changes
-        </button>
-      </div>
-      <div v-if="mode === 'create'">
-        <button
-          v-osim-loading.grow="isSaving"
-          type="submit"
-          class="btn btn-primary ms-3"
-          :disabled="isSaving"
-        >
-          Create New Flaw
-        </button>
+        <div v-if="mode === 'edit'">
+          <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
+          <button
+            v-osim-loading.grow="isSaving"
+            type="submit"
+            class="btn btn-primary ms-3"
+            :disabled="isSaving"
+          >
+            Save Changes
+          </button>
+        </div>
+        <div v-if="mode === 'create'">
+          <button
+            v-osim-loading.grow="isSaving"
+            type="submit"
+            class="btn btn-primary ms-3"
+            :disabled="isSaving"
+          >
+            Create New Flaw
+          </button>
+        </div>
       </div>
     </div>
   </form>
