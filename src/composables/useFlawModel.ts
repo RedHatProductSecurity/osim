@@ -25,6 +25,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const flaw = ref<ZodFlawType>(forFlaw);
+  const shouldCreateJiraTask = ref(false);
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
@@ -126,7 +127,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       queue.push(saveCvssScores);
     }
 
-    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data));
+    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
 
     try {
       await execute(...queue);
@@ -156,6 +157,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   const errors = computed(() => flawErrors(flaw.value));
 
+  const toggleShouldCreateJiraTask = () => {
+    shouldCreateJiraTask.value = !shouldCreateJiraTask.value;
+  };
+
   return {
     flaw,
     isSaving,
@@ -167,6 +172,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     flawIncidentStates,
     osimLink,
     bugzillaLink,
+    shouldCreateJiraTask,
+    toggleShouldCreateJiraTask,
     addFlawComment,
     createFlaw,
     updateFlaw,
