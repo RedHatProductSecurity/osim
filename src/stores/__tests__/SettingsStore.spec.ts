@@ -29,14 +29,14 @@ describe('SettingsStore', () => {
     settingsStore.save({
       bugzillaApiKey: 'beep-beep-who-got-the-keys-to-the-jeep',
       jiraApiKey: 'beep-beep-who-got-the-keys-to-the-jeep',
-      showNotifications: true
+      showNotifications: true,
     });
     expect(
       settingsStore.settings.bugzillaApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
-    );
+    ).toBe(true);
     expect(
       settingsStore.settings.jiraApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
-    );
+    ).toBe(true);
     expect(
       settingsStore.settings.showNotifications
     ).toBe(true);

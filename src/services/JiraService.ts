@@ -143,6 +143,26 @@ export async function postJiraComment(taskId: string, comment: string) {
   }).then((response) => response.data);
 }
 
+export async function getJiraUsername() {
+  return jiraFetch({
+    method: 'get',
+    url: '/rest/api/2/myself',
+  }).then((res) => {
+    if (res.response.ok) {
+      return res.data.name;
+    }
+  }).catch(() => {
+    useToastStore().addToast({
+      'title': 'Jira Error',
+      'body': `Error getting your username from <a href="${osimRuntime.value.backends.jiraDisplay}">Jira</a>. ` +
+      'Is your Jira Access Token valid?',
+      'bodyHtml': true,
+      'css': 'warning',
+    });
+    return '';
+  });
+}
+
 async function osimRequestHeaders() {
   const settingsStore = useSettingsStore();
   const osidbToken = await getNextAccessToken();

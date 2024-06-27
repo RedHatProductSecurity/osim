@@ -18,6 +18,7 @@ vi.mock('@vueuse/core', () => ({
             email: 'test@example.com',
             username: 'testuser',
           },
+          jiraUsername: 'skynet',
         },
       },
     }[key];
@@ -118,7 +119,7 @@ describe('IssueQueue', () => {
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[1][0]._value).toEqual({
       order: '-created_dt',
-      owner: 'test@example.com',
+      owner: 'skynet',
     });
 
     const issues = wrapper.findAllComponents(IssueQueueItem);

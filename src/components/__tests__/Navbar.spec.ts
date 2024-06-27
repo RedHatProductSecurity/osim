@@ -24,6 +24,7 @@ describe('Navbar', async () => {
                 email: 'test@example.com',
                 username: 'testuser',
               },
+              jiraUsername: 'skynet',
             },
           },
         }[key];
