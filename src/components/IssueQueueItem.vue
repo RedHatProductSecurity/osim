@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { DateTime } from 'luxon';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -12,41 +11,26 @@ const props = defineProps<{
 // const nonIdFields = ['impact', 'source', 'formattedDate', 'title', 'workflowState', 'owner'];
 const nonIdFields = ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
 
-const isUnembargoDateScheduledForLater = computed(
-  () => DateTime.fromISO(props.issue.unembargo_dt).diffNow().milliseconds > 0,
-);
-
-const isEmbargoedButNotScheduled = computed(
-  () => props.issue.embargoed && !props.issue.unembargo_dt,
-);
-
-const isEmbargoed = computed(
-  () => isUnembargoDateScheduledForLater.value || isEmbargoedButNotScheduled.value,
-);
-
-const hasBadges = computed(() => isEmbargoed.value);
-
+const isEmbargoed = computed(() => props.issue.embargoed);
 </script>
 
 <template>
   <tr class="osim-issue-queue-item" :class="$attrs.class">
-    <td class="osim-issue-title" :class="{ 'pb-0': hasBadges }">
+    <td class="osim-issue-title" :class="{ 'pb-0': isEmbargoed }">
       <RouterLink :to="{ name: 'flaw-details', params: { id: issue.id } }">
         {{ issue.id }}
       </RouterLink>
     </td>
-    <td v-for="field in nonIdFields" :key="field" :class="{ 'pb-0': hasBadges }">
+    <td v-for="field in nonIdFields" :key="field" :class="{ 'pb-0': isEmbargoed }">
       {{ issue[field] }}
     </td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
-  <tr v-if="hasBadges" class="osim-badge-lane" :class="$attrs.class">
+  <tr v-if="isEmbargoed" class="osim-badge-lane" :class="$attrs.class">
     <td colspan="100%" class="pt-0">
-      <div class="ps-4 ms-4">
-        <span v-if="isEmbargoed">
-          <span class="badge rounded-pill text-bg-danger">Embargoed</span>
-        </span>
-      </div>
+      <span v-if="isEmbargoed">
+        <span class="badge rounded-pill text-bg-danger">Embargoed</span>
+      </span>
     </td>
   </tr>
 </template>
