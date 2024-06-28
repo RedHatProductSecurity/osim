@@ -24,6 +24,7 @@
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
 * Jira contributors field is now displayed on the Flaw form (`OSIDB-2916`)
 * Hover style on Cvss Calculator buttons (`OSIDB-2511`)
+* Suggestions for Flaw Owner field (`OSIDB-3004`)
 
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)

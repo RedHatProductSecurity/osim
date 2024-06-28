@@ -2,6 +2,7 @@
 defineProps<{
   label: string,
   error?: string,
+  loading?: boolean,
 }>();
 
 </script>
@@ -9,7 +10,8 @@ defineProps<{
 <template>
   <div class="osim-input mb-2 ps-3" v-bind="$attrs">
     <div class="row">
-      <span class="form-label col-3">
+      <span class="form-label col-3 position-relative">
+        <span v-if="loading" v-osim-loading.grow="loading" class="throbber" />
         {{ label }}
         <!--attrs: {{ $attrs }}-->
       </span>
@@ -18,5 +20,11 @@ defineProps<{
       </div>
     </div>
   </div>
-
 </template>
+
+<style lang="scss" scoped>
+.throbber {
+  position: absolute;
+  left: 1rem;
+}
+</style>
