@@ -158,7 +158,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       </button>
     </div>
 
-    <div v-for="(moduleName) in affectedModules" :key="moduleName">
+    <div v-for="(moduleName, index) in affectedModules" :key="`ps_module-${index}`">
       <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
         class="mb-3"
@@ -192,7 +192,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
         </template>
         <div
           v-for="(affect, index) in affectsWithModuleName(moduleName)"
-          :key="`moduleName-${affect.ps_component}-${index}`"
+          :key="affect.uuid || `new-affect-${index}`"
           class="osim-affected-offering"
         >
           <AffectExpandableForm
