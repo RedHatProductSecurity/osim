@@ -158,7 +158,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       </button>
     </div>
 
-    <div v-for="(moduleName, index) in affectedModules" :key="`ps_module-${index}`">
+    <div v-for="(moduleName, moduleIndex) in affectedModules" :key="`ps_module-${moduleIndex}`">
       <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
         class="mb-3"
