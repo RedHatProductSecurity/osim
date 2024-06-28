@@ -16,7 +16,7 @@ defineProps<{
   top: 100%;
   right: 0;
   z-index: 1000;
-  display: block;
+  display: block !important;
   color: #212529;
   background-color: #fff;
   border: 1px solid rgb(0 0 0 / 15%);

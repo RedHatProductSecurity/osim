@@ -22,7 +22,7 @@ describe('FlawContributors', () => {
   const mountComponent = (props?: ExtractPublicPropTypes<typeof FlawContributors>) =>
     mount(FlawContributors, {
       props: {
-        task_key: 'TASK-123',
+        taskKey: 'TASK-123',
         ...props
       },
       global: {
@@ -88,7 +88,7 @@ describe('FlawContributors', () => {
     vi.runAllTimers();
     await flushPromises();
 
-    const user = wrapper.find('.item');
+    const user = wrapper.find('.menu > :first-child');
     await user.trigger('click');
 
     expect(useJiraContributors.contributors.value).toEqual([contributor]);
