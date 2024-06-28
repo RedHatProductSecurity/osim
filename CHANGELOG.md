@@ -212,8 +212,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 * Early repo layout & Flaw template
 
 [Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...HEAD
-[2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/2024.6.1...v2024.6.2
-[2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/2024.6.0...v2024.6.1
+[2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...v2024.6.2
+[2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.0...v2024.6.1
 [2024.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...v2024.6.0
 [2024.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.11.0...v2024.1.0
 [2023.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0
