@@ -2,7 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import FlawFormOwner from '../FlawFormOwner.vue';
 import { mount, VueWrapper } from '@vue/test-utils';
+import { useUserStore } from '@/stores/UserStore';
 
+const pinia = createTestingPinia();
+const userStore = useUserStore();
 
 vi.mock('@vueuse/core', () => ({
   useLocalStorage: vi.fn((key: string) => {
@@ -14,6 +17,7 @@ vi.mock('@vueuse/core', () => ({
           whoami: {
             email: 'test@example.com',
           },
+          jiraUsername: 'skynet',
         },
       },
     }[key];
@@ -42,11 +46,13 @@ vi.mock('jwt-decode', () => ({
 
 describe('Owner field renders', () => {
   let subject: VueWrapper<InstanceType<typeof FlawFormOwner>>;
-  beforeAll(() => {
-    createTestingPinia();
-  });
   beforeEach(() => {
-    subject = mount(FlawFormOwner, {});
+    userStore.updateJiraUsername = vi.fn(() => Promise.resolve());
+    subject = mount(FlawFormOwner, {
+      global: {
+        plugins: [pinia],
+      },
+    });
   });
   it('should render the owner field', () => {
     expect(subject.exists()).toBe(true);
@@ -54,6 +60,7 @@ describe('Owner field renders', () => {
 
   it('assigns the test user when button is clicked', async () => {
     await subject.find('button.osim-self-assign').trigger('click');
-    expect(subject.text()).toContain('test@example.com');
+    await subject.vm.$nextTick();
+    expect(subject.text()).toContain('skynet');
   });
 });

@@ -24,7 +24,7 @@ export type OsidbPutPostFetchOptions = {
   url: string;
   method: 'POST' | 'PUT' | 'post' | 'put';
   data?: Record<string, any>;
-  params?: never;
+  params?: Record<string, any>;
 };
 
 export type OsidbDeleteFetchOptions = {

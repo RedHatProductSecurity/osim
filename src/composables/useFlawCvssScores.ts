@@ -43,12 +43,12 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   const formatScore = (score: any) => score?.toFixed(1);
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
-    return values.join('/') || '-';
+    return values.join(' ') || '-';
   });
 
   const rhCvss3String = computed(() => {
     const values = [formatScore(flawRhCvss3.value?.score), flawRhCvss3.value?.vector].filter(Boolean);
-    return values.join('/');
+    return values.join(' ');
   });
 
   const shouldDisplayEmailNistForm = computed(() => {
@@ -59,6 +59,13 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   });
 
   const highlightedNvdCvss3String = computed(() => {
+
+    if (!flawNvdCvss3.value?.vector
+      || flawNvdCvss3.value?.vector === '-'
+      || !flawRhCvss3.value?.vector) {
+      return [[{ char: '-', isHighlighted: false }]];
+    }
+
     const result = [];
     const nvdCvssValue = flawNvdCvss3.value?.vector || '-';
     const cvssValue = flawRhCvss3.value?.vector || '-';
@@ -67,7 +74,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     if (formatScore(flawNvdCvss3.value?.score) !== formatScore(flawRhCvss3.value?.score)) {
       result.push(
         { char: formatScore(flawNvdCvss3.value?.score), isHighlighted: true },
-        { char: '/', isHighlighted: false }
+        { char: ' ', isHighlighted: false }
       );
     }
 

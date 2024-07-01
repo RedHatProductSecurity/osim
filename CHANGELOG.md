@@ -1,15 +1,28 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.6.2]
+### Added
+* Create Jira task on demand for legacy flaws (`OSIDB-2883`)
+* Jira contributors field is now displayed on the Flaw form (`OSIDB-2916`)
+* Hover style on Cvss Calculator buttons (`OSIDB-2511`)
+
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
 * Enable private comments creation again (`OSIDB-3012`)
 * Highlight form style for embargoed flaw (`OSIDB-2984`)
+* Added Cvss Score value to Cvss Vector field (`OSIDB-2511`)
 
 ### Fixed
 * Flaws without a Jira task cannot be updated (`OSIDB-2960`)
 * Remove Trackers section on Flaw Edit (`OSIDB-2954`)
 * Owner - Status text overlap on flaw list (`OSIDB-2827`)
+* Fix Error for Duplicated Affects (`OSIDB-2894`)
+* Missing Expand All button on initial Flaw load (`OSIDB-3024`)
+* Formatting for Tracker table timestamps (`OSIDB-2983`)
+* Inconsistent focusing on calculator fields (`OSIDB-2511`)
+
+### Removed
+* Removed Cvss Score field (`OSIDB-2511`)
 
 ## [2024.6.1]
 ### Added
@@ -86,6 +99,8 @@
 * Reset affects when flaw is reset (`OSIDB-2793`)
 * New public comments are not displayed (`OSIDB-2700`)
 * Fix outdated model (409) errors on saving affects (`OSIDB-2933`)
+* Fix Flaw Owner self assign button to assign correct Jira username (`OSIDB-2715`)
+* Fix My Issues filter on index page to filter by correct Jira usernamne (`OSIDB-2716`)
 
 ### Removed
 * Removed is_major_incident usage (`OSIDB-2778`)
@@ -196,8 +211,9 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...HEAD
-[2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/2024.6.0...v2024.6.1
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...HEAD
+[2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...v2024.6.2
+[2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.0...v2024.6.1
 [2024.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...v2024.6.0
 [2024.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.11.0...v2024.1.0
 [2023.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2023.7.0...v2023.11.0

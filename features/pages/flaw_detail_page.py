@@ -35,10 +35,22 @@ class FlawDetailPage(BasePage):
         "statementText": ("XPATH", "//span[text()='Statement']"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
+
         "addPublicCommentBtn": ("XPATH", "//button[contains(text(), 'Add Public Comment')]"),
         "savePublicCommentBtn": ("XPATH", "//button[contains(text(),'Save Public Comment')]"),
         "publicCommentSavedMsg": ("XPATH", "//div[text()='Public comment saved.']"),
-        "newCommentText": ("XPATH", "//span[text()='New Public Comment']"),
+        "newPublicCommentText": ("XPATH", "//span[text()='New Public Comment']"),
+        "tabPrivateComments": ("XPATH", "//button[contains(text(), 'Private Comments')]"),
+        "addPrivateCommentBtn": ("XPATH", "//button[contains(text(), 'Add Private Comment')]"),
+        "savePrivateCommentBtn": ("XPATH", "//button[contains(text(),'Save Private Comment')]"),
+        "privateCommentSavedMsg": ("XPATH", "//div[text()='Private comment saved.']"),
+        "newPrivateCommentText": ("XPATH", "//span[text()='New Private Comment']"),
+        "tabInternalComments": ("XPATH", "//button[contains(text(), 'Internal Comments')]"),
+        "addInternalCommentBtn": ("XPATH", "//button[contains(text(), 'Add Internal Comment')]"),
+        "saveInternalCommentBtn": ("XPATH", "//button[contains(text(),'Save Internal Comment')]"),
+        "internalCommentSavedMsg": ("XPATH", "//div[text()='Internal comment saved.']"),
+        "newInternalCommentText": ("XPATH", "//span[text()='New Internal Comment']"),
+
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
@@ -168,16 +180,18 @@ class FlawDetailPage(BasePage):
         'XEN',
     ]
 
-    def add_comment_btn_exist(self):
-        self.addPublicCommentBtn.visibility_of_element_located()
+    def add_comment_btn_exist(self, comment_type):
+        button_element = getattr(self, 'add' + comment_type + 'CommentBtn')
+        button_element.visibility_of_element_located()
 
     def save_button_exist(self):
         self.saveBtn.visibility_of_element_located()
 
-    def set_comment_value(self, value):
+    def set_comment_value(self, comment_type, value):
         self.componentsText.execute_script("arguments[0].scrollIntoView(true);")
+        comment_text_element = getattr(self, 'new' + comment_type + 'CommentText')
         div = self.driver.find_elements(
-            locate_with(By.TAG_NAME, "div").above(self.newCommentText))[0]
+            locate_with(By.TAG_NAME, "div").above(comment_text_element))[0]
         comment_text_area = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").below(div))[0]
         comment_text_area.send_keys(value)

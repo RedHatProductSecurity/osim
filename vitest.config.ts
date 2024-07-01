@@ -6,6 +6,16 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      coverage: {
+        provider: 'istanbul',
+        reporter: [
+          'text',
+          'html',
+          'json',
+          // 'lcov',
+        ],
+        exclude: ['src/generated-client/*'],
+      },
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/*'],
       root: fileURLToPath(new URL('./', import.meta.url)),

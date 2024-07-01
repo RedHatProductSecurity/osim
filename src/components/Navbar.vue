@@ -3,7 +3,7 @@ import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
 import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
-import { ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import router from '@/router';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
@@ -51,6 +51,14 @@ function onSearch(query: string) {
   }
   submitQuickSearch(trimmedQuery);
 }
+
+const usernameDisplay = computed(() => {
+  let username = userStore.userName;
+  if (userStore.jiraUsername !== '' && userStore.jiraUsername !== username) {
+    username += ` | ${userStore.jiraUsername}`;
+  }
+  return username;
+});
 
 </script>
 
@@ -146,7 +154,7 @@ function onSearch(query: string) {
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          {{ userStore.userName }}
+          {{ usernameDisplay }}
           <i class="bi-person-circle osim-user-profile-picture"></i>
         </button>
         <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">

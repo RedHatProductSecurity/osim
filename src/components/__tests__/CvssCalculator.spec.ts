@@ -89,9 +89,7 @@ describe('CvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.text()).toBe('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H');
-    const inputScoreValue = subject.find('.score-input');
-    expect(inputScoreValue.text()).toContain('10');
+    expect(inputVectorValue.text()).toBe('10 CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H');
   });
 
   // High score
@@ -108,9 +106,7 @@ describe('CvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.text()).toBe('CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:H/A:H');
-    const inputScoreValue = subject.find('.score-input');
-    expect(inputScoreValue.text()).toContain('7.5');
+    expect(inputVectorValue.text()).toBe('7.5 CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:H/A:H');
   });
 
   // Medium score
@@ -127,9 +123,7 @@ describe('CvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.text()).toBe('CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:L/I:L/A:L');
-    const inputScoreValue = subject.find('.score-input');
-    expect(inputScoreValue.text()).toContain('4.3');
+    expect(inputVectorValue.text()).toBe('4.3 CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:L/I:L/A:L');
   });
 
   // Low score
@@ -146,9 +140,7 @@ describe('CvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.text()).toBe('CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:N/I:L/A:L');
-    const inputScoreValue = subject.find('.score-input');
-    expect(inputScoreValue.text()).toContain('2.9');
+    expect(inputVectorValue.text()).toBe('2.9 CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:N/I:L/A:L');
   });
 
   // Zero score
@@ -165,9 +157,7 @@ describe('CvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.text()).toBe('CVSS:3.1/AV:P/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:N');
-    const inputScoreValue = subject.find('.score-input');
-    expect(inputScoreValue.text()).toContain('0');
+    expect(inputVectorValue.text()).toBe('0 CVSS:3.1/AV:P/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:N');
   });
 
   // Calculator Buttons Test Cases

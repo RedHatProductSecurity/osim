@@ -25,7 +25,8 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
-import CvssExlplainForm from './CvssExlplainForm.vue';
+import CvssExplainForm from './CvssExplainForm.vue';
+import FlawContributors from '@/components/FlawContributors.vue';
 
 const props = defineProps<{
   flaw: any;
@@ -55,6 +56,8 @@ const {
   rhCvss3String,
   highlightedNvdCvss3String,
   shouldDisplayEmailNistForm,
+  shouldCreateJiraTask,
+  toggleShouldCreateJiraTask,
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
@@ -116,6 +119,7 @@ const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim()
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw);
+  shouldCreateJiraTask.value = false;
 };
 
 const onUnembargoed = (isEmbargoed: boolean) => {
@@ -331,7 +335,7 @@ const createdDate = computed(() => {
                     :nistcvss="nvdCvss3String"
                   />
                 </div>
-                <CvssExlplainForm v-model="flaw" />
+                <CvssExplainForm v-model="flaw" />
               </template>
             </div>
             <LabelEditable
@@ -354,7 +358,9 @@ const createdDate = computed(() => {
               v-if="mode === 'edit'"
               :classification="flaw.classification"
               :flawId="flaw.uuid"
+              :shouldCreateJiraTask
               @refresh:flaw="emit('refresh:flaw')"
+              @create:jiraTask="toggleShouldCreateJiraTask()"
             />
             <LabelSelect
               v-model="flaw.major_incident_state"
@@ -395,6 +401,7 @@ const createdDate = computed(() => {
               label="Created Date"
               type="text"
             />
+            <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
           </div>
         </div>
       </div>

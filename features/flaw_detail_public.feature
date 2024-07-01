@@ -7,9 +7,15 @@ Feature: Flaw detail testing on public flaw
       And I set the bugzilla api key and jira api key
       And I go to a public flaw detail page
 
-    Scenario: Add public comment for a flaw
-      When I add a public comment to the flaw
-      Then A comment is added to the flaw
+    Scenario Outline: Add new comment to a flaw
+      When I add a <comment_type> comment to the flaw
+      Then A <comment_type> comment is added to the flaw
+
+      Examples:
+        |         comment_type |
+        |               Public |
+        |              Private |
+        |             Internal |
 
     Scenario Outline: Update Document Text Fields
       When I <action> the document text fields
@@ -115,7 +121,7 @@ Feature: Flaw detail testing on public flaw
       # The jira prod, e.g., rhel-8 can't added
       #    |           jira|           AFFECTED|
       #    |           jira|                NEW|
-      #    |       bugzilla|            AFFECTED|
+          |       bugzilla|            AFFECTED|
           |       bugzilla|                 NEW|
 
     Scenario Outline: Can't create tracker
