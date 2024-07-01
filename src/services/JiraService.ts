@@ -5,6 +5,7 @@ import {
   osimRuntime,
 } from '@/stores/osimRuntime';
 import type { ZodJiraUserPickerType, ZodJiraIssueType } from '@/types/zodJira';
+import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
@@ -140,7 +141,10 @@ export async function postJiraComment(taskId: string, comment: string) {
     data: {
       body: comment
     },
-  }).then((response) => response.data);
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'Internal comment saved' }))
+    .then((response) => response.data)
+    .catch(createCatchHandler('Error saving internal Jira comment'));
 }
 
 export async function getJiraUsername() {
@@ -199,6 +203,10 @@ function queryStringFromParams(params: Record<string, any>) {
   return queryString ? `?${queryString}` : '';
 }
 
-export function taskUrl(id: string): string {
+export function jiraTaskUrl(id: string): string {
   return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
+}
+
+export function jiraUserUrl(name: string): string {
+  return (new URL(`/ViewProfile.jspa?name=${name}`, osimRuntime.value.backends.jiraDisplay)).href;
 }

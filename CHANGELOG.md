@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Add button to Bugzilla on public and private comments
+
 ## [2024.6.2]
 ### Added
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
