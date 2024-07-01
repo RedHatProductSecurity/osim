@@ -93,11 +93,10 @@ defineExpose({ isExpanded });
         v-for="(item, itemIndex) in items"
         :id="item.uuid"
         :key="itemIndex"
-        class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card"
+        class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-light-light-gray"
         :class="{
-          'bg-light-light-orange': modifiedItemIndexes.includes(itemIndex),
-          'bg-light-light-gray': !modifiedItemIndexes.includes(itemIndex),
           'bg-light-green': !item.uuid,
+          'bg-light-yellow': modifiedItem(itemIndex),
         }"
       >
         <div>
