@@ -59,7 +59,7 @@ class AdvancedSearchPage(BasePage):
 
     def go_to_first_flaw_detail(self):
         self.click_button_with_js(self.cve_idText)
- 
+
     def get_first_flaw_id(self):
         return self.cve_idText.get_text()
 
@@ -132,7 +132,7 @@ class AdvancedSearchPage(BasePage):
         else:
             return flaw_info.get(field)
 
-    def get_valid_search_keyworks_from_created_flaw(self, fields, token):
+    def get_valid_search_keywords_from_created_flaw(self, fields, token):
         # return some valid search keywords
         cve_id = os.getenv("FLAW_ID")
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
@@ -143,28 +143,36 @@ class AdvancedSearchPage(BasePage):
             params = {"uuid": cve_id}
         r = requests.get(url, params = params, headers = headers)
         flaw_info = json.loads(r.text).get('results')[0]
-        fields_values = {}
+
+        affects = flaw_info.get('affects')
+        if not affects:
+            affect_fields = [
+                "affects__ps_module",
+                "affects__ps_component",
+                "affects__trackers__ps_update_stream",
+                "affects__trackers__external_system_id",
+            ]
+            fields = list(set(fields) - set(affect_fields))
+        acknowledgments = flaw_info.get('acknowledgments')
+        if not acknowledgments:
+            fields.remove("acknowledgments__name")
+
+        result = {}
         for field in fields:
             if "ps_module" in field:
-                value = flaw_info.get('affects')[0].get('ps_module')
+                result[field] = affects[0].get('ps_module')
             elif "ps_component" in field:
-                value = flaw_info.get('affects')[0].get('ps_component')
+                result[field] = affects[0].get('ps_component')
             elif "external_system_id" in field:
-                value = flaw_info.get('affects')[0].get('trackers')[0].get('external_system_id')
+                result[field] = affects[0].get('trackers')[0].get('external_system_id')
             elif 'ps_update_stream' in field:
-                value = flaw_info.get('affects')[0].get('trackers')[0].get('ps_update_stream')
+                result[field] = affects[0].get('trackers')[0].get('ps_update_stream')
             elif "acknowledgments" in field:
-                value = flaw_info.get('acknowledgments')[0].get('name')
+                result[field] = acknowledgments[0].get('name')
             elif "workflow_state" in field:
-                value = 'NEW'
+                result[field] = 'NEW'
             elif "embargoed" == field:
-                value = flaw_info.get('embargoed')
-                if value:
-                    value = "true"
-                else:
-                    value = "false"
+                result[field] = "true" if flaw_info.get('embargoed') else "false"
             else:
-                value = flaw_info.get(field)
-            fields_values[field] = value
-        return fields_values
-        
+                result[field] = flaw_info.get(field)
+        return result

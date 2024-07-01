@@ -40,6 +40,50 @@ describe('AffectedOfferings', () => {
     expect(subject.findAll('.osim-affected-offering')).toHaveLength(3);
   });
 
+  it('renders the Expand All button only when some affects are collapsed', async () => {
+    const subject = mount(AffectedOfferings, {
+      props: {
+        theAffects: [
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
+          mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
+        ],
+        affectsToDelete: [],
+        error: [],
+      },
+    });
+
+    let expandButton = subject.findAll('button').find((button) => button.text().includes('Expand All'));
+    expect(expandButton?.exists()).toBe(true);
+
+    await expandButton?.trigger('click');
+
+    expandButton = subject.findAll('button').find((button) => button.text().includes('Expand All'));
+    expect(expandButton).toBe(undefined);
+  });
+
+  it('renders the Collapse All button only when some affects are expanded', async () => {
+    const subject = mount(AffectedOfferings, {
+      props: {
+        theAffects: [
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
+          mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
+        ],
+        affectsToDelete: [],
+        error: [],
+      },
+    });
+
+    let collapseButton = subject.findAll('button').find((button) => button.text().includes('Collapse All'));
+    expect(collapseButton).toBe(undefined);
+
+    const expandButton = subject.findAll('button').find((button) => button.text().includes('Expand All'));
+    await expandButton?.trigger('click');
+    collapseButton = subject.findAll('button').find((button) => button.text().includes('Collapse All'));
+    expect(collapseButton?.exists()).toBe(true);
+  });
+
   it('expands and collapses modules', async () => {
     const subject = mount(AffectedOfferings, {
       props: {
@@ -148,7 +192,7 @@ describe('AffectedOfferings', () => {
     const editableEls = subject.findAllComponents(LabelEditable);
     expect(editableEls.length).toBe(1);
     editableEls[0].setValue('Module 3');
-    expect(subject.vm.affectedModules.includes('Module 3')).toBeTruthy();
+    expect(subject.vm.affectedModules[1].name).toBe('Module 3');
     expect(subject.findAllComponents(LabelCollapsible).length).toBe(2);
   });
 });

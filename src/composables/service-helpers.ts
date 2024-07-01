@@ -1,4 +1,4 @@
-import { getDisplayedOsidbError, parseOsidbErrors } from '@/services/OsidbAuthService';
+import { getDisplayedOsidbError, parseOsidbErrors } from '@/services/osidb-errors-helpers';
 import { useToastStore } from '@/stores/ToastStore';
 
 

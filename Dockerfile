@@ -41,7 +41,10 @@ RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx 
     && install -o999 -g999 /dev/null /var/log/nginx/access.log \
     && install -o999 -g999 /dev/null /var/log/nginx/error.log \
 # Create resolver stub file to be updated in entrypoint
-    && install -o999 -g999 /dev/null /etc/nginx/conf.d/resolvers.conf \
+    && install -o999 -g0 /dev/null /etc/nginx/conf.d/resolvers.conf \
+# OpenShift randomizes uid & gid=0; allow the OpenShift group
+# to write the config file in entrypoint
+    && chmod 664 /etc/nginx/conf.d/resolvers.conf \
 #
 # Replace port 80 with 8080 for unprivileged nginx.
 # osim-entrypoint.sh wants to delete the ipv6 line if ipv6 is not supported,

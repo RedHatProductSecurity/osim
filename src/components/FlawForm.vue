@@ -25,7 +25,8 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
-import CvssExlplainForm from './CvssExlplainForm.vue';
+import CvssExplainForm from './CvssExplainForm.vue';
+import FlawContributors from '@/components/FlawContributors.vue';
 import { sortWith, ascend, prop } from 'ramda';
 import { type ZodAffectType } from '@/types/zodAffect';
 
@@ -57,6 +58,8 @@ const {
   rhCvss3String,
   highlightedNvdCvss3String,
   shouldDisplayEmailNistForm,
+  shouldCreateJiraTask,
+  toggleShouldCreateJiraTask,
   addBlankReference,
   addBlankAcknowledgment,
   addBlankAffect,
@@ -133,6 +136,7 @@ const showMitigation = ref(flaw.value.mitigation && flaw.value.mitigation.trim()
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw);
+  shouldCreateJiraTask.value = false;
 };
 
 const onUnembargoed = (isEmbargoed: boolean) => {
@@ -260,7 +264,7 @@ const createdDate = computed(() => {
 <template>
   <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div class="osim-content container-lg">
-      <div class="row osim-flaw-form-section">
+      <div class="osim-flaw-form-section">
         <div v-if="flaw.meta_attr?.bz_id" class="col-12 mb-2 text-end">
           <a
             :href="bugzillaLink"
@@ -274,140 +278,148 @@ const createdDate = computed(() => {
         <div class="col-12 osim-alerts-banner">
           <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
         </div>
-        <div :id="flaw.uuid" class="col-6">
-          <LabelEditable
-            v-model="flaw.title"
-            label="Title"
-            type="text"
-            :error="errors.title"
-          />
-          <LabelTagsInput
-            v-model="flaw.components"
-            label="Components"
-            :error="errors.components"
-          />
-          <div class="row">
-            <div class="col">
-              <LabelEditable
-                v-model="flaw.cve_id"
-                type="text"
-                label="CVE ID"
-                :error="errors.cve_id"
-              />
-            </div>
-            <div
-              v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
-              class="col-auto align-self-end mb-3"
-            >
-              <CveRequestForm
-                :embargoed="flaw.embargoed"
-                :bugzilla-link="bugzillaLink"
-                :osim-link="osimLink"
-                :subject="flaw.title"
-                :description="flaw.cve_description ?? ''"
-              />
-            </div>
-          </div>
-          <LabelSelect
-            v-model="flaw.impact"
-            label="Impact"
-            :options="flawImpacts"
-            :error="errors.impact"
-          />
-          <CvssCalculator
-            :id="flawRhCvss3.uuid"
-            v-model:cvss-vector="flawRhCvss3.vector"
-            v-model:cvss-score="flawRhCvss3.score"
-          />
-          <div class="row">
-            <div class="col">
-              <LabelDiv label="NVD CVSSv3">
-                <div class="form-control text-break h-100">
-                  <div class="p-0 h-100">
-                    <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
-                      <span v-if="chars[0].isHighlighted" class="text-primary">
-                        {{ chars.map(c => c.char).join('') }}
-                      </span>
-                      <template v-else>{{ chars.map(c => c.char).join('') }}</template>
-                    </template>
-                  </div>
-                </div>
-              </LabelDiv>
-            </div>
-            <template v-if="shouldDisplayEmailNistForm">
-              <div class="col-auto align-self-center mb-3">
-                <CvssNISTForm
-                  :cveid="flaw.cve_id"
-                  :summary="flaw.comment_zero"
-                  :bugzilla="bugzillaLink"
-                  :cvss="rhCvss3String"
-                  :nistcvss="nvdCvss3String"
+        <div
+          class="row pt-3"
+          :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
+        >
+          <div :id="flaw.uuid" class="col-6">
+            <LabelEditable
+              v-model="flaw.title"
+              label="Title"
+              type="text"
+              :error="errors.title"
+            />
+            <LabelTagsInput
+              v-model="flaw.components"
+              label="Components"
+              :error="errors.components"
+            />
+            <div class="row">
+              <div class="col">
+                <LabelEditable
+                  v-model="flaw.cve_id"
+                  type="text"
+                  label="CVE ID"
+                  :error="errors.cve_id"
                 />
               </div>
-              <CvssExlplainForm v-model="flaw" />
-            </template>
+              <div
+                v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
+                class="col-auto align-self-end mb-3"
+              >
+                <CveRequestForm
+                  :embargoed="flaw.embargoed"
+                  :bugzilla-link="bugzillaLink"
+                  :osim-link="osimLink"
+                  :subject="flaw.title"
+                  :description="flaw.cve_description ?? ''"
+                />
+              </div>
+            </div>
+            <LabelSelect
+              v-model="flaw.impact"
+              label="Impact"
+              :options="flawImpacts"
+              :error="errors.impact"
+            />
+            <CvssCalculator
+              :id="flawRhCvss3.uuid"
+              v-model:cvss-vector="flawRhCvss3.vector"
+              v-model:cvss-score="flawRhCvss3.score"
+            />
+            <div class="row">
+              <div class="col">
+                <LabelDiv label="NVD CVSSv3">
+                  <div class="form-control text-break h-100">
+                    <div class="p-0 h-100">
+                      <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+                        <span v-if="chars[0].isHighlighted" class="text-primary">
+                          {{ chars.map(c => c.char).join('') }}
+                        </span>
+                        <template v-else>{{ chars.map(c => c.char).join('') }}</template>
+                      </template>
+                    </div>
+                  </div>
+                </LabelDiv>
+              </div>
+              <template v-if="shouldDisplayEmailNistForm">
+                <div class="col-auto align-self-center mb-3">
+                  <CvssNISTForm
+                    :cveid="flaw.cve_id"
+                    :summary="flaw.comment_zero"
+                    :bugzilla="bugzillaLink"
+                    :cvss="rhCvss3String"
+                    :nistcvss="nvdCvss3String"
+                  />
+                </div>
+                <CvssExplainForm v-model="flaw" />
+              </template>
+            </div>
+            <LabelEditable
+              v-model="flaw.cwe_id"
+              label="CWE ID"
+              type="text"
+              :error="errors.cwe_id"
+            />
+            <LabelSelect
+              v-model="flaw.source"
+              label="CVE Source"
+              :options="flawSources"
+              :error="errors.source"
+              :options-hidden="hiddenSources"
+            />
           </div>
-          <LabelEditable
-            v-model="flaw.cwe_id"
-            label="CWE ID"
-            type="text"
-            :error="errors.cwe_id"
-          />
-          <LabelSelect
-            v-model="flaw.source"
-            label="CVE Source"
-            :options="flawSources"
-            :error="errors.source"
-            :options-hidden="hiddenSources"
-          />
-        </div>
 
-        <div class="col-6">
-          <IssueFieldState
-            v-if="mode === 'edit'"
-            :classification="flaw.classification"
-            :flawId="flaw.uuid"
-            @refresh:flaw="emit('refresh:flaw')"
-          />
-          <LabelSelect
-            v-model="flaw.major_incident_state"
-            label="Incident State"
-            :options="flawIncidentStates"
-            :error="errors.major_incident_state"
-          />
-          <LabelEditable
-            v-model="flaw.reported_dt"
-            label="Reported Date"
-            type="date"
-            :error="errors.reported_dt"
-          />
-          <LabelEditable
-            v-model="flaw.unembargo_dt"
-            :label="
-              'Public Date' +
-                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
-                  ? ' [FUTURE]'
-                  : '')
-            "
-            type="datetime"
-            :error="errors.unembargo_dt"
-          />
-          <IssueFieldEmbargo
-            v-model="flaw.embargoed"
-            v-model:showModal="showUnembargoingModal"
-            :isFlawNew="!flaw.uuid"
-            :isEmbargoed="isEmbargoed"
-            :flawId="flaw.cve_id || flaw.uuid"
-            @updateFlaw="updateFlaw"
-            @update:model-value="onUnembargoed"
-          />
-          <FlawFormOwner v-model="flaw.owner" />
-          <LabelStatic
-            v-if="mode === 'edit'"
-            :modelValue="createdDate"
-            label="Created Date"
-            type="text"
-          />
+          <div class="col-6">
+            <IssueFieldState
+              v-if="mode === 'edit'"
+              :classification="flaw.classification"
+              :flawId="flaw.uuid"
+              :shouldCreateJiraTask
+              @refresh:flaw="emit('refresh:flaw')"
+              @create:jiraTask="toggleShouldCreateJiraTask()"
+            />
+            <LabelSelect
+              v-model="flaw.major_incident_state"
+              label="Incident State"
+              :options="flawIncidentStates"
+              :error="errors.major_incident_state"
+            />
+            <LabelEditable
+              v-model="flaw.reported_dt"
+              label="Reported Date"
+              type="date"
+              :error="errors.reported_dt"
+            />
+            <LabelEditable
+              v-model="flaw.unembargo_dt"
+              :label="
+                'Public Date' +
+                  (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
+                    ? ' [FUTURE]'
+                    : '')
+              "
+              type="datetime"
+              :error="errors.unembargo_dt"
+            />
+            <IssueFieldEmbargo
+              v-model="flaw.embargoed"
+              v-model:showModal="showUnembargoingModal"
+              :isFlawNew="!flaw.uuid"
+              :isEmbargoed="isEmbargoed"
+              :flawId="flaw.cve_id || flaw.uuid"
+              @updateFlaw="updateFlaw"
+              @update:model-value="onUnembargoed"
+            />
+            <FlawFormOwner v-model="flaw.owner" />
+            <LabelStatic
+              v-if="mode === 'edit'"
+              :modelValue="createdDate"
+              label="Created Date"
+              type="text"
+            />
+            <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
+          </div>
         </div>
       </div>
       <div class="osim-flaw-form-section border-top">

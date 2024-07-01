@@ -1,4 +1,5 @@
 import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue';
+import { DateTime } from 'luxon';
 import * as R from 'ramda';
 
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
@@ -92,3 +93,9 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
 
 export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
+
+export function formatDate(date: Date | string, includeTime: boolean): string {
+  const format = includeTime ? 'yyyy-MM-dd T ZZZZ' : 'yyyy-MM-dd';
+  const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
+  return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
+}

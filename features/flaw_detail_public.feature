@@ -7,9 +7,15 @@ Feature: Flaw detail testing on public flaw
       And I set the bugzilla api key and jira api key
       And I go to a public flaw detail page
 
-    Scenario: Add public comment for a flaw
-      When I add a public comment to the flaw
-      Then A comment is added to the flaw
+    Scenario Outline: Add new comment to a flaw
+      When I add a <comment_type> comment to the flaw
+      Then A <comment_type> comment is added to the flaw
+
+      Examples:
+        |         comment_type |
+        |               Public |
+        |              Private |
+        |             Internal |
 
     Scenario Outline: Update Document Text Fields
       When I <action> the document text fields
@@ -46,8 +52,8 @@ Feature: Flaw detail testing on public flaw
       When I update the random input fields
         |         field |
         |         title |
-        |     component |
-        |      assignee |
+        |    components |
+        |         owner |
       Then The random input fields are updated
 
     Scenario Outline: Update CWE ID
@@ -76,13 +82,13 @@ Feature: Flaw detail testing on public flaw
       When I add two RHSB references to the flaw
       Then Only one RHSB reference can be added
 
+     Scenario: Modify reference
+      When I edit a internal/external reference
+      Then The reference information is changed
+
     Scenario: Delete reference
       When I delete a reference from a flaw
       Then The reference is deleted from this flaw
-
-    Scenario: Modify reference
-      When I edit a internal/external reference
-      Then The reference information is changed
 
     Scenario: Add RHSB reference with incorrect link
       When I add a RHSB reference to the flaw with incorrect link
@@ -104,13 +110,26 @@ Feature: Flaw detail testing on public flaw
       When I click 'delete' button of an affect
       Then I could 'recover' the affect that I tried to delete above
 
-    Scenario Outline: Create tracker to jira
+    Scenario Outline: Create tracker
       When I delete an affect of the flaw
-      When I add a new affect to jira supported module and <affectedness> affectedness
+      When I add a new affect to <external_system> supported module and selected <affectedness_value>
       When I select the affect above and file a tracker
-      Then The tracker is created for jira
+      Then The tracker is created for <external_system>
 
       Examples:
-          |  affectedness|
-          |      AFFECTED|
-          |           NEW|
+          |external_system|  affectedness_value|
+      # The jira prod, e.g., rhel-8 can't added
+      #    |           jira|           AFFECTED|
+      #    |           jira|                NEW|
+          |       bugzilla|            AFFECTED|
+          |       bugzilla|                 NEW|
+
+    Scenario Outline: Can't create tracker
+      When I delete an affect of the flaw
+      When I add a new affect to <external_system> supported module and selected <affectedness_value>
+      Then I can't file a tracker
+
+      Examples:
+          |external_system|  affectedness_value|
+          |       bugzilla|         NOTAFFECTED|
+      #    |           jira|        NOTAFFECTED|

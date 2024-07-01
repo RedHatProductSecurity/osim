@@ -66,7 +66,7 @@ watch(theAffects, (nextValue) => {
     return modules;
   }, {});
   updateAffectsExpandedState(nextValue);
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 const areAnyComponentsExpanded = computed(
   () => affectedModules.value.some((module) => module.affects.some(isExpanded))

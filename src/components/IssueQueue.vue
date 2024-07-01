@@ -5,6 +5,7 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
+
 const userStore = useUserStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
@@ -52,7 +53,9 @@ const params = computed(() => {
   const paramsObj: Record<string, any> = {};
 
   if (isMyIssuesSelected.value) {
-    paramsObj.owner = userStore.userName;
+    if (userStore.jiraUsername !== '') {
+      paramsObj.owner = userStore.jiraUsername;
+    }
   }
 
   if (isOpenIssuesSelected.value) {
@@ -158,7 +161,7 @@ const nameForOption = (fieldName: string) => {
 </script>
 
 <template>
-  <div class="osim-content container osim-issue-queue">
+  <div class="osim-content container-fluid osim-issue-queue">
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
@@ -168,7 +171,15 @@ const nameForOption = (fieldName: string) => {
         label="Default Filter"
         class="d-inline-block"
       />
-
+      <div v-if="isLoading" class="d-inline-block float-end">
+        <span
+          class="spinner-border spinner-border-sm"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </span>
+        <span> Loading Flaws&hellip; </span>
+      </div>
       <span
         v-if="isLoading"
         class="spinner-border spinner-border-sm d-inline-block ms-3"
@@ -257,9 +268,10 @@ const nameForOption = (fieldName: string) => {
 
 .osim-issue-queue {
   font-family: 'Red Hat Mono', monospace;
+  width: 97.5%;
+  margin-top: 0.75rem;
 
   // tbody
-
   div.osim-incident-list {
     display: block;
     max-height: calc(100vh - 164px);
@@ -300,51 +312,27 @@ const nameForOption = (fieldName: string) => {
       padding: 1ch;
 
       &:nth-of-type(1) {
-        // min-width: 15ch;
-        // max-width: 15ch;
-        // min-width: 12.5%;
-        // max-width: 12.5%;
-        width: 12.5%;
+        width: 20%;
       }
 
       &:nth-of-type(2) {
-        // min-width: 11ch;
-        // max-width: 11ch;
-        // min-width: 8.5%;
-        // max-width: 8.5%;
-        width: 8.5%;
+        width: 8%;
       }
 
       &:nth-of-type(3) {
-        // min-width: 12ch;
-        // max-width: 12ch;
-        // min-width: 9.5%;
-        // max-width: 9.5%;
         width: 9.5%;
       }
 
       &:nth-of-type(4) {
-        // min-width: 12ch;
-        // max-width: 12ch;
-        // min-width: 32%;
-        // max-width: 32%;
-        width: 42.5%;
+        width: 27.5%;
       }
 
       &:nth-of-type(5) {
-        // min-width: 10ch;
-        // max-width: 10ch;
-        // min-width: 8.5%;
-        // max-width: 8.5%;
-        width: 8.5%;
+        width: 17.5%;
       }
 
       &:nth-of-type(6) {
-        // min-width: 20ch;
-        // max-width: 20ch;
-        // min-width: 17%;
-        // max-width: 17%;
-        width: 20%;
+        width: 17.5%;
       }
     }
 

@@ -1,6 +1,8 @@
 import json
 import os
 import random
+import time
+
 import requests
 import urllib.parse
 from selenium.webdriver.common.by import By
@@ -23,7 +25,7 @@ class FlawDetailPage(BasePage):
 
     def __init__(self, driver):
         self.driver = driver
-        self.timeout = 15
+        self.timeout = 60
 
     locators = {
         "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
@@ -33,8 +35,22 @@ class FlawDetailPage(BasePage):
         "statementText": ("XPATH", "//span[text()='Statement']"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
         "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
-        "addCommentBtn": ("XPATH", "//button[contains(text(), 'Comment')]"),
-        "newCommentText": ("XPATH", "//span[text()='New Public Comment']"),
+
+        "addPublicCommentBtn": ("XPATH", "//button[contains(text(), 'Add Public Comment')]"),
+        "savePublicCommentBtn": ("XPATH", "//button[contains(text(),'Save Public Comment')]"),
+        "publicCommentSavedMsg": ("XPATH", "//div[text()='Public comment saved.']"),
+        "newPublicCommentText": ("XPATH", "//span[text()='New Public Comment']"),
+        "tabPrivateComments": ("XPATH", "//button[contains(text(), 'Private Comments')]"),
+        "addPrivateCommentBtn": ("XPATH", "//button[contains(text(), 'Add Private Comment')]"),
+        "savePrivateCommentBtn": ("XPATH", "//button[contains(text(),'Save Private Comment')]"),
+        "privateCommentSavedMsg": ("XPATH", "//div[text()='Private comment saved.']"),
+        "newPrivateCommentText": ("XPATH", "//span[text()='New Private Comment']"),
+        "tabInternalComments": ("XPATH", "//button[contains(text(), 'Internal Comments')]"),
+        "addInternalCommentBtn": ("XPATH", "//button[contains(text(), 'Add Internal Comment')]"),
+        "saveInternalCommentBtn": ("XPATH", "//button[contains(text(),'Save Internal Comment')]"),
+        "internalCommentSavedMsg": ("XPATH", "//div[text()='Internal comment saved.']"),
+        "newInternalCommentText": ("XPATH", "//span[text()='New Internal Comment']"),
+
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
@@ -45,27 +61,25 @@ class FlawDetailPage(BasePage):
         "addAcknowledgementNameSpan": ("XPATH", "//span[text()='Name']"),
         "addAcknowledgementAffiliationSpan": ("XPATH", "//span[text()='Affiliation']"),
         "firstAcknowledgementValueText": ("XPATH", '(//div[contains(text(), "from")])[1]'),
-        "firstAcknowledgmentEditBtnUnclick": ("XPATH", "//div[@class='osim-list-edit'][1]/div[3]/button[1]"),
-        "firstAcknowledgmentEditBtnClicked": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div[2]/button[1]"),
         "saveAcknowledgmentBtn": ("XPATH", '//button[contains(text(), "Save Changes to Acknowledgments")]'),
         "acknowledgmentSavedMsg": ("XPATH", '//div[text()="Acknowledgment created."]'),
         "confirmAcknowledgmentDeleteBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
         "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
 
-        "impactSelect": ("XPATH", "(//select[@class='form-select'])[1]"),
-        "sourceSelect": ("XPATH", "(//select[@class='form-select'])[2]"),
+        "impactText": ("XPATH", "//span[text()='Impact']"),
+        "sourceText": ("XPATH", "//span[text()='CVE Source']"),
 
         "titleText": ("XPATH", "//span[text()='Title']"),
         "titleValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[1]"),
 
-        "componentText": ("XPATH", "//span[text()='Component']"),
+        "componentsText": ("XPATH", "//span[text()='Components']"),
 
         "cveidText": ("XPATH", "//span[text()='CVE ID']"),
-        "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
+        "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[2]"),
 
         "cweidText": ("XPATH", "//span[text()='CWE ID']"),
-        "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[5]"),
+        "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
 
         "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
@@ -73,14 +87,14 @@ class FlawDetailPage(BasePage):
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "ownerText": ("XPATH", "//span[contains(text(), 'Assignee')]"),
-        "owner": ("XPATH", "//span[contains(text(), 'Assignee')]"),
+        "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
+        "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
-        "referenceList": ("XPATH", "(//div[@class='ps-3 border-start'])[1]/div/div"),
+        "referenceList": ("XPATH", "(//div[@class='ps-3 border-start'])[6]/div/div"),
         "referenceCreatedMsg": ("XPATH", "//div[text()='Reference created.']"),
         "referenceDelConfirmBtn": ("XPATH", '//button[contains(text(), "Confirm")]'),
         "referenceDeletedMsg": ("XPATH", "//div[text()='Reference deleted.']"),
@@ -106,25 +120,24 @@ class FlawDetailPage(BasePage):
         "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
         "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
+        "affectScoreSaveMsg": ("XPATH", "//div[text()='Affects CVSS scores saved.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
         "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='1 Affect(s) Deleted.']"),
         "affectAffectednessText": ("XPATH", "//span[contains(text(), 'Affectedness:')]"),
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
-        "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
-        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All')]"),
+        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All Affects')]"),
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
-        "trackersDropdownBtn": ("XPATH", "//button[contains(text(), 'Trackers')]"),
         "ManageTrackers":("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "affectUpstreamCheckbox": ("XPATH", "(//input[@class='osim-tracker form-check-input'])[1]"),
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
-        "trackerCount": ("XPATH", "//label[contains(text(), 'Trackers: ')]"),
-        "trackerJiraherf": ("XPATH", "(//a[contains(text(), 'JIRA')])[1]"),
-        "trackerBugzillaherf": ("XPATH", "(//a[contains(text(), 'BUGZILLA')])[1]"),
-        "trackerSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')]"),
+        "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
+        "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
+        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')][1]"),
+        "trackerBzSummary": ("XPATH", "//summary[contains(text(), 'rhcertification')][1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -167,16 +180,18 @@ class FlawDetailPage(BasePage):
         'XEN',
     ]
 
-    def add_comment_btn_exist(self):
-        self.addCommentBtn.visibility_of_element_located()
+    def add_comment_btn_exist(self, comment_type):
+        button_element = getattr(self, 'add' + comment_type + 'CommentBtn')
+        button_element.visibility_of_element_located()
 
     def save_button_exist(self):
         self.saveBtn.visibility_of_element_located()
 
-    def set_comment_value(self, value):
-        self.addCommentBtn.execute_script("arguments[0].scrollIntoView(true);")
+    def set_comment_value(self, comment_type, value):
+        self.componentsText.execute_script("arguments[0].scrollIntoView(true);")
+        comment_text_element = getattr(self, 'new' + comment_type + 'CommentText')
         div = self.driver.find_elements(
-            locate_with(By.TAG_NAME, "div").above(self.newCommentText))[0]
+            locate_with(By.TAG_NAME, "div").above(comment_text_element))[0]
         comment_text_area = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").below(div))[0]
         comment_text_area.send_keys(value)
@@ -240,24 +255,40 @@ class FlawDetailPage(BasePage):
             EC.invisibility_of_element_located((By.XPATH, f'//div[text()="{value}"]'))
         )
 
+    def get_select_element(self, field):
+        text_element = getattr(self, field + "Text")
+        field_select_list = self.driver.find_elements(
+            locate_with(By.XPATH, "//select[@class='form-select is-invalid']").
+            near(text_element))
+        if not field_select_list:
+            field_select_list = self.driver.find_elements(
+                locate_with(By.XPATH, "//select[@class='form-select']").
+                near(text_element))
+
+        return field_select_list[0]
+
     def get_select_value(self, field):
         if not isinstance(field, WebElement):
-            field_select = getattr(self, field + 'Select')
+            field_select = self.get_select_element(field)
         else:
             field_select = field
         all_values = field_select.get_all_list_item()
         selected_item = field_select.get_list_selected_item()
         current_value = selected_item[0] if selected_item else None
-        return (all_values, current_value)
+        return all_values, current_value
 
     def set_select_value(self, field):
-        field_select = getattr(self, field + 'Select')
-        self.driver.execute_script("arguments[0].value = '';", field_select)
-        all_values, current_value = self.get_select_value(field)
+        field_select = self.get_select_element(field)
+
+        all_values, current_value = self.get_select_value(field_select)
         if field == 'source':
             all_values = self.allowed_sources
-        if current_value:
+        if current_value in all_values:
             all_values.remove(current_value)
+
+        if "" in all_values:
+            all_values.remove("")
+
         if all_values:
             updated_value = all_values[-1]
             field_select.select_element_by_value(updated_value)
@@ -265,26 +296,28 @@ class FlawDetailPage(BasePage):
             updated_value = current_value
         return updated_value
 
-    def click_first_ack_edit_btn(self):
+    def click_first_edit_btn(self, element):
         first_ack_edit_btn = self.driver.find_elements(
             locate_with(By.XPATH, "//button[@class='btn pe-0 pt-0']").
-            to_right_of(self.acknowledgmentCountLabel))
+            to_right_of(element))
 
         if not first_ack_edit_btn:
             first_ack_edit_btn = self.driver.find_elements(
-                locate_with(By.TAG_NAME, "button").
-                to_right_of(self.acknowledgmentCountLabel))
+                locate_with(By.XPATH, "//button[@class='btn pe-1']").
+                to_right_of(element))
 
         self.click_button_with_js(first_ack_edit_btn[0])
 
-    def click_first_ack_delete_btn(self):
-        first_ack_edit_btn = self.driver.find_elements(
-            locate_with(By.TAG_NAME, "button").
-            to_right_of(self.acknowledgmentCountLabel))[0]
+    def click_first_ack_edit_btn(self):
+        self.click_first_edit_btn(self.acknowledgmentCountLabel)
 
+    def click_first_reference_edit_btn(self):
+        self.click_first_edit_btn(self.referenceCountLabel)
+
+    def click_first_ack_delete_btn(self):
         first_ack_delete_btn = self.driver.find_elements(
             locate_with(By.XPATH, "//button[@class='btn ps-1']").
-            near(first_ack_edit_btn))[0]
+            to_right_of(self.acknowledgmentCountLabel))[0]
         self.click_button_with_js(first_ack_delete_btn)
 
     def edit_first_ack(self, name, affiliation):
@@ -301,6 +334,17 @@ class FlawDetailPage(BasePage):
 
         self.driver.execute_script("arguments[0].value = '';", first_ack_edit_affiliation_input)
         first_ack_edit_affiliation_input.send_keys(affiliation)
+
+    def set_components_field(self, value):
+        field_input = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='osim-pill-list-input no-drag']").
+            to_right_of(self.componentsText))[0]
+
+        component_element_list = self.driver.find_elements(By.XPATH, "//i[@class='bi bi-x-square ms-1']")
+        for component_element in component_element_list:
+            component_element.click()
+
+        field_input.send_keys(value)
 
     def set_input_field(self, field, value):
         text_element = getattr(self, field + "Text")
@@ -325,19 +369,16 @@ class FlawDetailPage(BasePage):
 
         field_input = field_input_list[0]
 
-        self.driver.execute_script("arguments[0].value = '';", field_input)
+        if value == '':
+            field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+        else:
+            self.driver.execute_script("arguments[0].value = '';", field_input)
         field_input.send_keys(value)
 
     def get_input_value(self, field):
         field_value = getattr(self, field + 'Value')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", field_value)
         return field_value.get_text()
-
-    def clear_input_field(self, field):
-        field_btn = field + 'EditBtn'
-        self.click_btn(field_btn)
-        field_input = getattr(self, field + 'Input')
-        field_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
     def check_value_not_exist(self, value):
         return WebDriverWait(self.driver, self.timeout).until(
@@ -350,8 +391,9 @@ class FlawDetailPage(BasePage):
         return field_value.get_text()
 
     def delete_all_reference(self):
-        # edit ((//div[@class='osim-list-edit'])[n]/div[2]/button)[1]
-        # delete ((//div[@class='osim-list-edit'])[n]/div[2]/button)[2]
+        """
+        delete all reference elements
+        """
         try:
             reference_list = find_elements_in_page_factory(self, "referenceList")
         except NoSuchElementException:
@@ -360,30 +402,37 @@ class FlawDetailPage(BasePage):
         else:
             # delete all reference
             reference_count = len(reference_list)
-            for i in range(1, reference_count+1):
-                del_btn_xpath = f"//div[@class='ps-3 border-start']/div/div[{i}]/div/div/div[3]/button[2]"
+            for _ in range(1, reference_count+1):
+                self.click_reference_dropdown_button()
+                del_btn_xpath = f"(//div[@class='ps-3 border-start'])[6]/div/div[1]/div/div/div[3]/button[2]"
                 del_btn = self.driver.find_element(By.XPATH, del_btn_xpath)
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", del_btn)
                 self.driver.execute_script("arguments[0].click();", del_btn)
                 self.referenceDelConfirmBtn.click_button()
                 self.wait_msg("referenceDeletedMsg")
                 self.toastMsgCloseBtn.click_button()
+                time.sleep(2)
 
     def add_reference_select_external_type(self):
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
-            self.saveReferenceBtn)
         try:
             self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomBar)
             self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomFooter)
         except ElementNotVisibleException:
             pass
 
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
+            self.saveReferenceBtn)
+
         add_reference_select = self.driver.find_elements(
             locate_with(By.TAG_NAME, "select").
             below(self.referenceCountLabel))[0]
 
         select = Select(add_reference_select)
+
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+            (By.XPATH, "//select[@class='form-select mb-3 osim-reference-types']//option[contains(.,'External')]")))
+
         select.select_by_visible_text("External")
 
     def add_reference_set_link_url(self, value):
@@ -431,7 +480,7 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_new_affect_inputs(self, external_system = 'jira', affectedness = 'NEW'):
+    def set_new_affect_inputs(self, external_system = 'jira', affectedness_value = 'NEW'):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
         self.click_plusdropdown_btn('affectNotSave')
@@ -440,7 +489,7 @@ class FlawDetailPage(BasePage):
         if external_system == 'jira':
             self.set_field_value('affects__ps_module', 'rhel-8')
         else:
-            self.set_field_value('affects__ps_module', 'fedora-39')
+            self.set_field_value('affects__ps_module', 'rhcertification-8')
         ps_component_value = generate_random_text()
         self.set_field_value('affects__ps_component', ps_component_value)
         self.set_field_value('affects__cvss3_score', '4.3')
@@ -449,8 +498,8 @@ class FlawDetailPage(BasePage):
         selects = find_elements_in_page_factory(self, 'selects')
         (affectedness, resolution, impact) = selects[-3:]
         affectedness_select = Select(affectedness)
-        if affectedness == 'NEW':
-            affectedness_select.select_by_value('NEW')
+        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
+            affectedness_select.select_by_value(affectedness_value)
             resolution_select = Select(resolution)
             resolution_select.select_by_value('')
         else:
@@ -466,6 +515,8 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         self.click_btn('saveBtn')
         self.wait_msg('affectCreatedMsg')
+        self.wait_msg('flawSavedMsg')
+        time.sleep(2)
         return ps_component_value
   
     def get_an_available_ps_module(self, affect_module):

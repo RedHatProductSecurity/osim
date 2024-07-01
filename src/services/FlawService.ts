@@ -3,11 +3,9 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
-import {
-  getDisplayedOsidbError,
-  type OsidbFetchOptions
-} from '@/services/OsidbAuthService';
+import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
@@ -75,11 +73,14 @@ export async function getUpdatedDt(url: string): Promise<string> {
   }).then((response) => response.data.updated_dt);
 }
 
-export async function putFlaw(uuid: string, flawObject: ZodFlawType) {
+export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false) {
   return osidbFetch({
     method: 'put',
     url: `/osidb/api/v1/flaws/${uuid}`,
     data: flawObject,
+    params: {
+      ...(createJiraTask && { create_jira_task: true }),
+    },
   }, { beforeFetch })
     .then((response) => response.data)
     .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))

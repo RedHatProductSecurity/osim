@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import {
   calculatorButtons,
   getFactors,
@@ -20,6 +19,7 @@ const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 const highlightedFactor = ref<string | null>(null);
+const highlightedFactorValue = ref<string | null>(null);
 
 const cvssDiv = ref();
 const cvssVectorInput = ref();
@@ -84,6 +84,10 @@ function highlightFactor(factor: string | null) {
   highlightedFactor.value = factor;
 }
 
+function highlightFactorValue(factor: string | null) {
+  highlightedFactorValue.value = factor;
+}
+
 function handlePaste(e: ClipboardEvent) {
   const maybeCvss = e.clipboardData?.getData('text');
   if (!maybeCvss) {
@@ -98,7 +102,6 @@ function handlePaste(e: ClipboardEvent) {
   updateFactors(formatFactors(cvssFactors.value));
   cvssScore.value = calculateScore(cvssFactors.value);
 }
-
 
 </script>
 
@@ -131,6 +134,12 @@ function handlePaste(e: ClipboardEvent) {
             @blur="onInputBlur"
             @change="updateFactors(cvssVector)"
           >
+            <span
+              class="osim-cvss-score"
+              :style="isFocused ? {color: 'white'} : {color: 'black'}"
+            >
+              {{ cvssScore != null ? `${cvssScore} ` : '' }}
+            </span>
             <template v-for="(value, key) in cvssFactors" :key="key">
               <span
                 v-if="value"
@@ -153,6 +162,7 @@ function handlePaste(e: ClipboardEvent) {
         </div>
       </label>
       <button
+        tabindex="-1"
         type="button"
         :disabled="!cvssVector"
         class="erase-button input-group-text"
@@ -193,15 +203,17 @@ function handlePaste(e: ClipboardEvent) {
                 >{{ col.label }}</button>
                 <template v-for="(button, btnIndex) in col.buttons" :key="btnIndex">
                   <button
+                    tabindex="-1"
                     type="button"
                     class="btn lh-sm"
+                    :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
-
                     :style="
-                      cvssFactors[col.id] === button.key ?
-                        getFactorColor(weights[col.id][button.key]) : {
+                      cvssFactors[col.id] === button.key
+                        || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
+                          getFactorColor(weights[col.id][button.key]) : {
                           backgroundColor: '#E0E0E0',
                           color: (cvssFactors[col.id] === button.key
                             && factorSeverities[col.id][button.key] !== 'Bad')
@@ -210,6 +222,8 @@ function handlePaste(e: ClipboardEvent) {
                         }"
                     @click="factorButton(col.id, button.key)"
                     @mousedown="event => event.preventDefault()"
+                    @mouseover="highlightFactorValue(`${rowIndex}${colIndex}${btnIndex}`)"
+                    @mouseout="highlightFactorValue(null)"
                   >
                     {{ button.name }}
                   </button>
@@ -220,13 +234,6 @@ function handlePaste(e: ClipboardEvent) {
         </div>
       </div>
     </div>
-    <LabelStatic
-      v-model="cvssScore"
-      label="CVSSv3 Score"
-      type="text"
-      class="score-input"
-      :hasTopLabelStyle="false"
-    />
   </div>
 </template>
 
@@ -248,6 +255,10 @@ function handlePaste(e: ClipboardEvent) {
       z-index: 1;
       padding-inline: 0;
       margin-inline: 0;
+    }
+
+    .osim-cvss-score {
+      font-weight: 600;
     }
 
     .vector-input {
@@ -306,6 +317,11 @@ function handlePaste(e: ClipboardEvent) {
         border: 1px;
         margin: auto;
       }
+
+      &:hover .osim-factor-highlight {
+          background-color: hsl(200deg 100% 95%) !important;
+          color: hsl(200deg 100% 35%) !important;
+        }
     }
   }
 }

@@ -18,6 +18,7 @@ vi.mock('@vueuse/core', () => ({
             email: 'test@example.com',
             username: 'testuser',
           },
+          jiraUsername: 'skynet',
         },
       },
     }[key];
@@ -118,7 +119,7 @@ describe('IssueQueue', () => {
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[1][0]._value).toEqual({
       order: '-created_dt',
-      owner: 'test@example.com',
+      owner: 'skynet',
     });
 
     const issues = wrapper.findAllComponents(IssueQueueItem);
@@ -236,7 +237,7 @@ describe('IssueQueue', () => {
     expect(countEL.text()).toBe('Loaded 50 of 100');
   });
 
-  it('should render total count when loading', async () => {
+  it('should render loader when loading flaws', async () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
       stubActions: false,
@@ -254,9 +255,8 @@ describe('IssueQueue', () => {
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
-    const countEL = filterEl.find('span.float-end.text-secondary');
-    expect(countEL.exists()).toBeTruthy();
-    expect(countEL.text()).toBe('Loaded 25 of 100');
+    const spinner = filterEl.find('div.float-end span.spinner-border');
+    expect(spinner.exists()).toBeTruthy();
   });
 
   it('shouldn\'t render useDefault filter button', async () => {

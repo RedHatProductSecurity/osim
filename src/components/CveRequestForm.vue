@@ -8,7 +8,7 @@ import { useUserStore } from '@/stores/UserStore';
 import Modal from '@/components/widgets/Modal.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
 const { addToast } = useToastStore();
 const userStore = useUserStore();

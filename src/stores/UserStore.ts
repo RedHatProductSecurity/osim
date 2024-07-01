@@ -9,6 +9,8 @@ import { useLocalStorage } from '@vueuse/core';
 import router from '@/router';
 
 import { osimRuntime } from '@/stores/osimRuntime';
+import { getJiraUsername } from '@/services/JiraService';
+import { useSettingsStore } from './SettingsStore';
 
 export const queryRedirect = z.object({
   query: z.object({
@@ -40,14 +42,17 @@ const userStoreLocalStorage = z.object({
   refresh: z.string(),
   env: z.string(),
   whoami: whoamiResponse.nullable(),
+  jiraUsername: z.string(),
 });
 type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 const _userStoreSession = useLocalStorage(
-  _userStoreKey, { refresh: '', env: '', whoami: null } as UserStoreLocalStorage
+  _userStoreKey, { refresh: '', env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage
 );
 
 export const useUserStore = defineStore('UserStore', () => {
+
+  const settingsStore = useSettingsStore();
 
   const refresh = computed<string>(() => {
     return _userStoreSession.value.refresh;
@@ -89,8 +94,25 @@ export const useUserStore = defineStore('UserStore', () => {
     return _userStoreSession.value.env ?? '';
   });
 
-  // let refreshInterval = 30000;
-  // let refreshId = 0;
+  const jiraUsername = computed(() => {
+    return _userStoreSession.value.jiraUsername ?? '';
+  });
+
+  async function updateJiraUsername() {
+    if (_userStoreSession.value.jiraUsername === '') {
+      const name = await getJiraUsername();
+      if (name) {
+        _userStoreSession.value.jiraUsername = name;
+      }
+    }
+  }
+
+  watch(
+    () => settingsStore.settings.jiraApiKey,
+    async () => {
+      await updateJiraUsername();
+    }
+  );
 
 
   function setTokens(refresh_: string, env_: string) {
@@ -146,6 +168,8 @@ export const useUserStore = defineStore('UserStore', () => {
       .then(json => {
         const parsedWhoamiResponse = whoamiResponse.parse(json);
         _userStoreSession.value.whoami = parsedWhoamiResponse;
+      }).then(async() => {
+        await updateJiraUsername();
       })
       .catch(e => {
         $reset();
@@ -233,6 +257,7 @@ export const useUserStore = defineStore('UserStore', () => {
   function $reset() {
     setTokens('', '');
     _userStoreSession.value.whoami = null;
+    _userStoreSession.value.jiraUsername = '';
   }
 
   return {
@@ -241,6 +266,8 @@ export const useUserStore = defineStore('UserStore', () => {
     whoami,
     userName,
     userEmail,
+    jiraUsername,
+    updateJiraUsername,
     env,
     login,
     logout,

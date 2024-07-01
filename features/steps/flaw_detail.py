@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 from seleniumpagefactory.Pagefactory import ElementNotFoundException
 
 from features.utils import (
-    wait_for_visibility_by_locator,
     generate_cve,
     generate_cwe,
     generate_random_text,
@@ -31,31 +30,30 @@ DOCUMENT_TEXT_FIELDS = {
 }
 
 
-@when("I add a public comment to the flaw")
-def step_impl(context):
-    # Click the "Add public comment" button
-    context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(2)
+@when("I add a {comment_type} comment to the flaw")
+def step_impl(context, comment_type):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.add_comment_btn_exist()
-    flaw_detail_page.click_btn('addCommentBtn')
+    if comment_type != 'Public':
+        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+    flaw_detail_page.add_comment_btn_exist(comment_type)
+    flaw_detail_page.click_button_with_js('add' + comment_type + 'CommentBtn')
 
-    # Add the random public comment
-    public_comment = generate_random_text()
-    flaw_detail_page.set_comment_value(public_comment)
-    # Save the comment
-    context.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    new_comment = generate_random_text()
+    flaw_detail_page.set_comment_value(comment_type, new_comment)
+    flaw_detail_page.click_button_with_js('save' + comment_type + 'CommentBtn')
+    flaw_detail_page.wait_msg(comment_type.lower() + "CommentSavedMsg")
     time.sleep(2)
-    flaw_detail_page.click_btn('addCommentBtn')
-
-    context.add_comment = public_comment
+    context.new_comment = new_comment
 
 
-@then('A comment is added to the flaw')
-def step_impl(context):
+@then('A {comment_type} comment is added to the flaw')
+def step_impl(context, comment_type):
     # Check the comment saved successfully
-    comment_xpath = f'//p["data-v-38eda711="][text()="{context.add_comment}"]'
-    wait_for_visibility_by_locator(context.browser, By.XPATH, comment_xpath)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    if comment_type != 'Public':
+        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+    comment_xpath = f"//p[@class='osim-flaw-comment' and text()='{context.new_comment}']"
+    flaw_detail_page.check_element_exists(By.XPATH, comment_xpath)
 
 
 @when('I {action} the document text fields')
@@ -168,7 +166,12 @@ def step_impl(context):
     for row in context.table:
         field = row["field"]
         value = generate_random_text()
-        flaw_detail_page.set_input_field(field, value)
+        if field == "owner":
+            value = "qduanmu@redhat.com"
+        if field == "components":
+            flaw_detail_page.set_components_field(value)
+        else:
+            flaw_detail_page.set_input_field(field, value)
         context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
@@ -211,11 +214,11 @@ def step_impl(context):
 def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
     if action == 'delete':
-        flaw_detail_page.clear_input_field('cweid')
         value = ''
     else:
         value = generate_cwe()
-        flaw_detail_page.set_input_field('cweid', value)
+
+    flaw_detail_page.set_input_field('cweid', value)
     context.field_value = value
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
@@ -285,9 +288,6 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
 
 @when("I add two external references to the flaw")
 def step_impl(context):
-    flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.delete_all_reference()
     # add first
     context.first_value = f"https://test.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg")
@@ -308,7 +308,6 @@ def step_impl(context):
 @when("I add two RHSB references to the flaw")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.delete_all_reference()
     context.first_value = f"https://access.redhat.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(context, context.first_value, "referenceCreatedMsg", external=False)
@@ -358,13 +357,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
 
-    try:
-        context.expected = flaw_detail_page.get_input_value("firstReferenceDescription")
-    except ElementNotFoundException:
-        context.expected = f"https://test.com/{generate_random_text()}"
-        add_a_reference_to_first_flaw(context, context.expected, "referenceCreatedMsg")
-        go_to_specific_flaw_detail_page(context.browser)
-        flaw_detail_page.click_reference_dropdown_button()
+    context.expected = flaw_detail_page.get_input_value("firstReferenceDescription")
 
     flaw_detail_page.click_first_reference_delete_btn()
     flaw_detail_page.click_btn('referenceDelConfirmBtn')
@@ -384,19 +377,11 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
 
-    try:
-        flaw_detail_page.get_input_value("firstReferenceDescription")
-    except ElementNotFoundException:
-        v = f"https://access.redhat.com/{generate_random_text()}"
-        add_a_reference_to_first_flaw(context, v, "referenceCreatedMsg")
-        go_to_specific_flaw_detail_page(context.browser)
-        flaw_detail_page.click_reference_dropdown_button()
-
     context.expected = f"https://access.redhat.com/{generate_random_text()}"
-    flaw_detail_page.click_button_with_js("firstAcknowledgmentEditBtnUnclick")
+    flaw_detail_page.click_first_reference_edit_btn()
     flaw_detail_page.add_reference_set_link_url(context.expected)
     flaw_detail_page.add_reference_set_description(context.expected)
-    flaw_detail_page.click_button_with_js("firstAcknowledgmentEditBtnClicked")
+    flaw_detail_page.click_first_reference_edit_btn()
     flaw_detail_page.click_button_with_js("saveReferenceBtn")
     flaw_detail_page.wait_msg("referenceUpdatedMsg")
 
@@ -411,9 +396,6 @@ def step_impl(context):
 
 @when("I add a RHSB reference to the flaw with incorrect link")
 def step_impl(context):
-    flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.delete_all_reference()
     context.v = f"https://test.com/{generate_random_text()}"
     add_a_reference_to_first_flaw(
         context, context.v, "rhsbReferenceLinkFormatErrorMsg", external=False)
@@ -464,8 +446,7 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     # Display the affect detail
-    flaw_detail_page.click_button_with_js("affectExpandall")
-    flaw_detail_page.click_btn('affectDropdownBtn')
+    flaw_detail_page.display_affect_detail()
     current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
     current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
     # Get the valid/available values to update
@@ -500,8 +481,10 @@ def step_impl(context):
     context.value_dict['impact'] = updated_value
     # Save all the updates
     flaw_detail_page.click_btn('saveBtn')
+    # Comment the line due to the Affect Saved message won't alert now
+    # flaw_detail_page.wait_msg('affectSaveMsg')
     flaw_detail_page.wait_msg('affectUpdateMsg')
-    #flaw_detail_page.wait_msg('affectSaveMsg')
+    flaw_detail_page.wait_msg('flawSavedMsg')
  
 @then("All changes are saved")
 def step_impl(context):
@@ -511,14 +494,14 @@ def step_impl(context):
     component_value = context.value_dict['ps_component']
     field_value_dict = flaw_detail_page.get_affect_values(
                     context.value_dict.keys(), token, component_value)
-    # There is a bug OSIDB-2600, so the following step will be failed
+    # There is a bug OSIDB-3042, so the following step will be failed
     assert context.value_dict == field_value_dict
 
 @when("I add a new affect with valid data")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.ps_component = flaw_detail_page.set_new_affect_inputs()
+    context.ps_component = flaw_detail_page.set_new_affect_inputs('bugzilla', 'NEW')
 
 
 @then("The affect is added")
@@ -537,6 +520,7 @@ def step_impl(context):
     assert warning == "Affected Offerings To Be Deleted"
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('affectDeleteMsg')
+    flaw_detail_page.wait_msg('flawSavedMsg')
 
 @then("The affect is deleted")
 def step_impl(context):
@@ -554,7 +538,6 @@ def step_impl(context):
         flaw_detail_page.click_affect_delete_btn()
     # Click the delete button of the affect
     flaw_detail_page.click_button_with_js('affectRecoverBtn')
-
 
 @then("I could 'recover' the affect that I tried to delete above")
 def step_impl(context):
@@ -601,22 +584,24 @@ def step_impl(context):
 def step_impl(context, external_system):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    # Check the tracker jira/bugizlla link
-    flaw_detail_page.click_button_with_js('trackerCount')
-    if external_system == 'jira':
-        flaw_detail_page.trackerJiraherf.visibility_of_element_located()
+    flaw_detail_page.display_affect_detail()
+     # Check the trackers count is not zero
+    flaw_detail_page.trackerCount.visibility_of_element_located()
+    if external_system == 'bugzilla':
+        flaw_detail_page.trackerBzSummary.visibility_of_element_located()
     else:
-        flaw_detail_page.trackerBugzillaherf.visibility_of_element_located()
-    # Check the tracker summary
-    flaw_detail_page.click_button_with_js("affectExpandall")
-    flaw_detail_page.click_button_with_js("affectDropdownBtn")
-    flaw_detail_page.trackerSummary.visibility_of_element_located()
+        flaw_detail_page.trackerJiraSummary.visibility_of_element_located()
 
-@when('I add a new affect to jira supported module and {affectedness} affectedness')
-def step_imp(context, affectedness):
+
+@when('I add a new affect to {external_system} supported module and selected {affectedness_value}')
+def step_imp(context, external_system, affectedness_value):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    if affectedness == 'AFFECTED':
-        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'AFFECTED')
-    if affectedness == 'NEW':
-        flaw_detail_page.set_new_affect_inputs(external_system = 'jira', affectedness = 'NEW')
+    flaw_detail_page.set_new_affect_inputs(external_system, affectedness_value)
+
+@then("I can't file a tracker")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()

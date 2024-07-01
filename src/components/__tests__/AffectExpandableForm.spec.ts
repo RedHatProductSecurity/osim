@@ -141,7 +141,7 @@ describe('AffectExpandableForm', () => {
   //   expect(button.text()).toBe('File Tracker');
   // });
 
-  it('should render affectedness, resolution select', () => {
+  it('should render affectedness, resolution select', async () => {
     const formComponent = subject.findAllComponents(AffectedOfferingForm);
     expect(formComponent.length).toBe(1);
     const selectComponents = formComponent[0].findAllComponents(LabelSelect);
@@ -150,6 +150,7 @@ describe('AffectExpandableForm', () => {
     const resolutionSelectEL = selectComponents[1];
     const affectednessOptions = affectednessSelectEl.props('options');
     expect(affectednessOptions).toStrictEqual(affectAffectedness);
+    await affectednessSelectEl.find('select').setValue('AFFECTED');
     const resolutionOptions = resolutionSelectEL.props('options');
     expect(resolutionOptions).toStrictEqual(affectResolutions);
     const resolutoinHiddenOptions = resolutionSelectEL.findAll('option[hidden]');
