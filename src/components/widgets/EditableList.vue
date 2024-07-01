@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
-
 import LabelCollapsible from './LabelCollapsible.vue';
+import { equals } from 'ramda';
 
 const items = defineModel<any[]>({ default: [] });
 const props = defineProps<{
@@ -29,17 +29,31 @@ const entityNamePlural = computed(() => props.entitiesName || `${props.entityNam
 
 const isExpanded = ref(false);
 
-onMounted(() => (priorValues.value = deepCopyFromRaw(items.value)));
+onMounted(() => {
+  savedValues.value = deepCopyFromRaw(items.value);
+  priorValues.value = deepCopyFromRaw(items.value);
+});
 
 const indexBeingEdited = ref<number | null>(null);
 const isBeingEdited = (index: number) => indexBeingEdited.value === index;
 const priorValues = ref<any[]>([]);
-const modifiedItemIndexes = ref<number[]>([]);
+const savedValues = ref<any[]>([]);
+
+function modifiedItem(index: number) {
+  return items.value[index].uuid && !equals(items.value[index], savedValues.value[index]);
+}
 
 const itemsToSave = computed((): any[] => [
-  ...items.value.filter((item, index) => modifiedItemIndexes.value.includes(index)),
+  ...items.value.filter((item, index) => modifiedItem(index)),
   ...items.value.filter(({ uuid }) => !uuid),
 ]);
+
+watch(indexBeingEdited, (nextIndex, prevIndex) => {
+  if (prevIndex != null && nextIndex != null) {
+    commitEdit();
+    setEdit(nextIndex);
+  }
+});
 
 function addItem() {
   isExpanded.value = true;
@@ -48,7 +62,6 @@ function addItem() {
 
 function saveItems() {
   emit('item:save', itemsToSave.value);
-  modifiedItemIndexes.value = [];
 }
 
 function cancelEdit(index: number) {
@@ -60,10 +73,9 @@ function setEdit(index: number) {
   indexBeingEdited.value = index;
 }
 
-function commitEdit(index: number) {
-  modifiedItemIndexes.value.push(index);
-  indexBeingEdited.value = null;
+function commitEdit() {
   priorValues.value = deepCopyFromRaw(items.value);
+  indexBeingEdited.value = null;
 }
 
 defineExpose({ isExpanded });
@@ -125,7 +137,7 @@ defineExpose({ isExpanded });
                 v-if="indexBeingEdited === itemIndex"
                 type="button"
                 class="btn pe-0 pt-0"
-                @click="commitEdit(itemIndex)"
+                @click="commitEdit()"
               >
                 <i class="bi bi-check fs-4">
                   <span class="visually-hidden">Confirm {{ entityName }} Edit </span>
