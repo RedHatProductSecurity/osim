@@ -4,6 +4,7 @@
 ### Fixed
 * Missing references and/or acknowledgements after multiple creation (`OSIDB-3066`)
 * Form is not disabled during multiple references and/or acknowledgements creation (`OSIDB-3066`)
+* Exclude empty state from open issues filter (`OSIDB-3067`)
 
 ## [2024.6.2]
 ### Added
