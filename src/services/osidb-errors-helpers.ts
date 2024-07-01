@@ -41,7 +41,10 @@ function parseOsidbHtmlError(error: any){
   );
   const exception_value = doc.querySelector('.exception_value'); // May depend on OSIDB being in debug mode?
 
-  const text = (exception_value as HTMLElement)?.innerText;
+  const text = (exception_value as HTMLElement)?.innerText
+    ?? (exception_value as HTMLElement)?.textContent
+    ?? (exception_value as HTMLElement)?.innerHTML
+    ?? 'No error message found in HTML response from OSIDB. Check developer tools for more info.';
 
   return 'Likely error between OSIDB and database:\n' + text;
 }
