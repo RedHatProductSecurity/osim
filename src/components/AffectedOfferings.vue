@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch, toRef } from 'vue';
+import { computed, toRefs, ref, watch } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
@@ -18,13 +19,11 @@ const props = defineProps<{
   error: Record<string, any>[] | null;
 }>();
 
-const uniqueModuleId = ref(0);
-
 const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-blank-affect': [value: string, callback: (affect: ZodAffectType) => void];
+  'add-blank-affect': [moduleId: string, callback: (affect: ZodAffectType) => void];
   'update-module-name': [previousModuleName: string, newModuleName: string];
 }>();
 
@@ -37,27 +36,40 @@ const affectsNotBeingDeleted = computed(
 );
 
 const initialAffectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
-const affectedModules = toRef(uniques(theAffects.value.map((affect) => affect.ps_module)));
+const affectedModules = ref(
+  uniques(theAffects.value.map((affect) => affect.ps_module)).map(moduleName => ({
+    id: uuidv4(),
+    name: moduleName,
+    affects: theAffects.value.filter((affect) => affect.ps_module === moduleName),
+  }))
+);
 
 const expandedModules = ref<Record<string, boolean>>({});
-
-const affectsWithModuleName = (moduleName: string) =>
-  theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
 const shouldShowTrackers = ref(false);
 const expandedAffects = ref(new Map());
 updateAffectsExpandedState(theAffects.value);
 
 watch(theAffects, (nextValue) => {
-  expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, moduleName: string) => {
-    modules[moduleName] = areAnyComponentsExpandedIn(moduleName) || expandedModules.value[moduleName] || false;
+  const affectTracker = new Set();
+  affectedModules.value.forEach(module => {
+    module.affects = nextValue.filter(affect => {
+      if (affect.ps_module === module.name && !affectTracker.has(affect)) {
+        affectTracker.add(affect);
+        return true;
+      }
+      return false;
+    });
+  });
+  expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, module) => {
+    modules[module.id] = areAnyComponentsExpandedIn(module.id) || expandedModules.value[module.id] || false;
     return modules;
   }, {});
   updateAffectsExpandedState(nextValue);
 }, { deep: true });
 
 const areAnyComponentsExpanded = computed(
-  () => affectedModules.value.some((moduleName) => affectsWithModuleName(moduleName).some(isExpanded))
+  () => affectedModules.value.some((module) => module.affects.some(isExpanded))
 );
 
 const isAnythingExpanded = computed(() => (
@@ -69,8 +81,9 @@ const isAnythingCollapsed = computed(() => (
   !Object.values(expandedModules.value).every(Boolean)
 ));
 
-function areAnyComponentsExpandedIn (moduleName: string) {
-  return affectsWithModuleName(moduleName).some(isExpanded);
+function areAnyComponentsExpandedIn (moduleId: string) {
+  const module = affectedModules.value.find(module => module.id === moduleId);
+  return module?.affects.some(isExpanded) || false;
 }
 
 function updateAffectsExpandedState (affects: any[]) {
@@ -81,26 +94,27 @@ function updateAffectsExpandedState (affects: any[]) {
 }
 
 function isExpanded(affect: ZodAffectType) {
-  return expandedAffects.value.get(affect)?.value ?? true; // new affect is expanded by default;
+  return expandedAffects.value.get(affect)?.value ?? true; // new affect is expanded by default
 }
 
-function collapsePsModuleComponents(moduleName: string) {
-  const affects = affectsWithModuleName(moduleName);
-  for (const affect of affects) {
-    expandedAffects.value.set(affect, ref(false));
+function collapsePsModuleComponents(moduleId: string) {
+  const module = affectedModules.value.find(module => module.id === moduleId);
+  if (module) {
+    for (const affect of module.affects) {
+      expandedAffects.value.set(affect, ref(false));
+    }
   }
 }
 
 function collapseAll() {
-  for (const moduleName in expandedModules.value) {
-    collapsePsModuleComponents(moduleName);
-    expandedModules.value[moduleName] = false;
+  for (const moduleId in expandedModules.value) {
+    expandedModules.value[moduleId] = false;
   }
 }
 
 function expandAll() {
-  for (const moduleName in expandedModules.value) {
-    expandedModules.value[moduleName] = true;
+  for (const moduleId in expandedModules.value) {
+    expandedModules.value[moduleId] = true;
   }
 }
 
@@ -113,10 +127,10 @@ function togglePsComponentExpansion(affect: ZodAffectType) {
   expandedAffects.value.set(affect, isExpanded);
 }
 
-function togglePsModuleExpansion(moduleName: string) {
-  expandedModules.value[moduleName] = !expandedModules.value[moduleName];
-  if (!expandedModules.value[moduleName]) {
-    collapsePsModuleComponents(moduleName);
+function togglePsModuleExpansion(moduleId: string) {
+  expandedModules.value[moduleId] = !expandedModules.value[moduleId];
+  if (!expandedModules.value[moduleId]) {
+    collapsePsModuleComponents(moduleId);
   }
 }
 
@@ -126,34 +140,52 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 
 defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
 
-function shouldShowModuleNameEdit(moduleName: string) {
-  const expandedState = expandedModules.value[moduleName];
-  return expandedState && (!initialAffectedModules.value.includes(moduleName)
-  || affectsWithModuleName(moduleName).every(affect => !affect.uuid));
+function editableModuleName(moduleId: string) {
+  const module = affectedModules.value.find(module => module.id === moduleId);
+  const expandedState = expandedModules.value[moduleId];
+  return expandedState && (!initialAffectedModules.value.includes(module?.name ?? '')
+  || module?.affects.every(affect => !affect.uuid));
 }
 
 function addNewModule() {
-  collapseAll();
-  uniqueModuleId.value += 1;
-  const newModuleName = `New Module ${uniqueModuleId.value}`;
-  affectedModules.value.push(newModuleName);
-  expandedModules.value[newModuleName] = true;
+  const newModuleName = '';
+  const newModuleId = uuidv4();
+  affectedModules.value.push({ id: newModuleId, name: newModuleName, affects: [] });
+  expandedModules.value[newModuleId] = true;
 }
 
 function renameModule(newModuleName: string, index: number) {
-  expandedModules.value[newModuleName] = true;
-  affectedModules.value[index] = newModuleName;
-  let previousModuleName = '';
+  const module = affectedModules.value[index];
+  const previousModuleName = module.name;
+
+  // If the new module name already exists, prevent duplicate names
+  if (affectedModules.value.some(module => module.name === newModuleName)) {
+    console.error('Module name already exists');
+    return;
+  }
+
+  // Update the module name
+  module.name = newModuleName;
 
   // Clean up expandedModules to remove unnecessary keys
   for (const key in expandedModules.value) {
-    if (!affectedModules.value.includes(key)) {
-      previousModuleName = key;
+    if (!affectedModules.value.map(m => m.id).includes(key)) {
       delete expandedModules.value[key];
     }
   }
 
   emit('update-module-name', previousModuleName, newModuleName);
+}
+
+function addNewComponent(moduleId: string) {
+  emit('add-blank-affect', moduleId, (newAffect) => {
+    const moduleIndex = affectedModules.value.findIndex(module => module.id === moduleId);
+    if (moduleIndex !== -1) {
+      newAffect.ps_module = affectedModules.value[moduleIndex].name;
+      affectedModules.value[moduleIndex].affects = [...affectedModules.value[moduleIndex].affects, newAffect];
+      expandedAffects.value.set(newAffect, ref(true));
+    }
+  });
 }
 
 </script>
@@ -190,35 +222,34 @@ function renameModule(newModuleName: string, index: number) {
         class="button ms-3 btn btn-sm btn-black text-white"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
-        <!-- <i class="bi bi-journal-plus"></i> -->
         <i class="bi bi-binoculars"></i>
         Manage Trackers
       </button>
     </div>
-    <div v-for="(moduleName, moduleNameIndex) in affectedModules" :key="moduleName">
-      <div v-if="shouldShowModuleNameEdit(moduleName)" class="col-6">
+    <div v-for="(module, moduleNameIndex) in affectedModules" :key="module.id">
+      <div v-if="editableModuleName(module.id)" class="col-6">
         <LabelEditable
-          v-model="affectedModules[moduleNameIndex]"
+          v-model="module.name"
           label="Module Name"
           type="text"
           @update:modelValue="value => renameModule(value as string, moduleNameIndex)"
         />
       </div>
       <LabelCollapsible
-        :isExpanded="expandedModules[moduleName] ?? false"
+        :isExpanded="expandedModules[module.id] ?? false"
         class="mb-3"
-        @setExpanded="togglePsModuleExpansion(moduleName)"
+        @setExpanded="togglePsModuleExpansion(module.id)"
       >
         <template #label>
           <label class="mx-2 form-label">
-            {{ moduleName }}
+            {{ module.name }}
           </label>
           <span class="badge bg-light-yellow text-dark border border-warning">
-            {{ `${Object.keys(affectsWithModuleName(moduleName)).length} affected` }}
+            {{ `${module.affects.length} affected` }}
           </span>
         </template>
         <template #buttons>
-          <div v-if="expandedModules[moduleName]" class="d-inline-flex">
+          <div v-if="expandedModules[module.id]" class="d-inline-flex">
             <div class="dropdown">
               <button
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
@@ -236,24 +267,24 @@ function renameModule(newModuleName: string, index: number) {
             <button
               type="button"
               class="btn btn-sm btn-secondary ms-2"
-              @click.prevent="emit('add-blank-affect', moduleName, togglePsComponentExpansion)"
+              @click.prevent="addNewComponent(module.id)"
             >
               Add New Component
             </button>
           </div>
         </template>
         <div
-          v-for="(affect, index) in affectsWithModuleName(moduleName)"
+          v-for="(affect, index) in module.affects"
           :key="`moduleName-${affect.ps_component}-${index}`"
           class="osim-affected-offering"
         >
           <AffectExpandableForm
             :id="affect.uuid"
-            v-model="affectsWithModuleName(moduleName)[index]"
+            v-model="module.affects[index]"
             :affect="affect"
             :isExpanded="isExpanded(affect) ?? false"
             :error="error?.[theAffects.indexOf(affect)] ?? null"
-            :updateStreams="getUpdateStreamsFor(moduleName, affect.ps_component)"
+            :updateStreams="getUpdateStreamsFor(module.name, affect.ps_component)"
             @setExpanded="togglePsComponentExpansion(affect)"
             @affect:remove="emit('affect:remove', affect)"
             @file-tracker="emit('file-tracker', $event)"
