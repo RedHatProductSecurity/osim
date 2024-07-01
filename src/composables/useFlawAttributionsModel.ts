@@ -30,14 +30,12 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     isSaving.value = true;
     await putFlawReference(flaw.value.uuid, reference.uuid, reference as any)
       .finally(() => isSaving.value = false);
-    afterSaveSuccess();
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
     isSaving.value = true;
     await postFlawReference(flaw.value.uuid, reference)
       .finally(() => isSaving.value = false);
-    afterSaveSuccess();
   }
 
   async function deleteReference(referenceId: string) {
@@ -60,6 +58,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         await createReference(reference);
       }
     }
+    afterSaveSuccess();
   }
 
   function addBlankReference(isEmbargoed: boolean) {
@@ -78,7 +77,6 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     isSaving.value = true;
     await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment)
       .finally(() => isSaving.value = false);
-    afterSaveSuccess();
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
@@ -92,7 +90,6 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     isSaving.value = true;
     await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any)
       .finally(() => isSaving.value = false);
-    afterSaveSuccess();
   }
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
@@ -103,6 +100,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         await createAcknowledgment(acknowledgment);
       }
     }
+    afterSaveSuccess();
   }
 
   function addBlankAcknowledgment(isEmbargoed: boolean) {
