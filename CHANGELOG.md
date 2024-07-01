@@ -1,5 +1,10 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Missing references and/or acknowledgements after multiple creation (`OSIDB-3066`)
+* Form is not disabled during multiple references and/or acknowledgements creation (`OSIDB-3066`)
+
 ## [2024.6.2]
 ### Added
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
