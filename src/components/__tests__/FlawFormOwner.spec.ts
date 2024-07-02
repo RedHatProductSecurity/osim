@@ -1,13 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import FlawFormOwner from '../FlawFormOwner.vue';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { useUserStore } from '@/stores/UserStore';
+import { searchJiraUsers } from '@/services/JiraService';
 
 const pinia = createTestingPinia();
 const userStore = useUserStore();
 
-vi.mock('@vueuse/core', () => ({
+vi.mock('@vueuse/core', async (originalImport) => ({
+  ... (await originalImport<typeof import('@vueuse/core')>()),
   useLocalStorage: vi.fn((key: string) => {
     return {
       UserStore: {
@@ -33,6 +35,11 @@ vi.mock('@vueuse/core', () => ({
       },
     }[key];
   }),
+
+}));
+
+vi.mock('@/services/JiraService', () => ({
+  searchJiraUsers: vi.fn(() => Promise.resolve([])),
 }));
 
 vi.mock('jwt-decode', () => ({
@@ -44,9 +51,10 @@ vi.mock('jwt-decode', () => ({
 }));
 
 
-describe('Owner field renders', () => {
+describe('Owner field', () => {
   let subject: VueWrapper<InstanceType<typeof FlawFormOwner>>;
   beforeEach(() => {
+    vi.useFakeTimers();
     userStore.updateJiraUsername = vi.fn(() => Promise.resolve());
     subject = mount(FlawFormOwner, {
       global: {
@@ -54,6 +62,12 @@ describe('Owner field renders', () => {
       },
     });
   });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.useRealTimers();
+  });
+
   it('should render the owner field', () => {
     expect(subject.exists()).toBe(true);
   });
@@ -62,5 +76,30 @@ describe('Owner field renders', () => {
     await subject.find('button.osim-self-assign').trigger('click');
     await subject.vm.$nextTick();
     expect(subject.text()).toContain('skynet');
+  });
+
+  it('should call "searchJiraUsers" when input changes', async () => {
+    const input = subject.find('input');
+    await input.setValue('test');
+
+    await vi.runAllTimers();
+
+    expect(searchJiraUsers).toHaveBeenCalled();
+  });
+
+  it('should show results when input changes', async () => {
+    vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
+      data: {
+        users:
+          [{ name: 'test', displayName: 'Test User', html: 'Test User' }]
+      }
+    });
+    const input = subject.find('input');
+    await input.setValue('test');
+
+    await vi.runAllTimers();
+    await flushPromises();
+
+    expect(subject.text()).toContain('Test User');
   });
 });
