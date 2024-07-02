@@ -35,6 +35,7 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
   const trackedAffectUuids = computed(() => affects.flatMap(
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
   ));
+
   const alreadyFiledTrackers = computed(() => affects.map(
     (affect) => {
       const maybeTracker = affect.trackers.find(
@@ -57,7 +58,10 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
         }
       ))
   )
-    .filter((stream: any) => !trackedAffectUuids.value.includes(stream.affectUuid))
+    .filter((stream: any) => !alreadyFiledTrackers.value.find(
+      (tracker: any) => tracker.ps_update_stream === stream.ps_update_stream
+        && tracker.ps_component === stream.ps_component
+    ))
   );
 
   const sortedStreams = computed(
