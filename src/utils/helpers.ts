@@ -99,3 +99,13 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
   const jsDate = new Date(date); // Handles strings in ISO/component format, and Date object
   return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
 }
+
+export function getSpecficCvssScore(scores: any[], issuer: string, version: string) {
+  return scores.find(
+    (score) => score.issuer === issuer && score.cvss_version === version
+  );
+}
+
+export function getRhCvss3 (scores: any[]) {
+  return getSpecficCvssScore(scores, 'RH', 'V3');
+}
