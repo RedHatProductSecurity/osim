@@ -14,7 +14,7 @@ const emptyModel = computed(() => {
 </script>
 
 <template>
-  <div class="osim-static-label osim-input mb-3 ps-3">
+  <div class="osim-static-label osim-input mb-2 ps-3">
     <div v-if="hasTopLabelStyle" class="osim-static-label-top-style">
       <span class="top-label">
         {{ label }}

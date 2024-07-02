@@ -140,7 +140,7 @@ function sanitize(text: string) {
 </script>
 
 <template>
-  <section class="osim-comments">
+  <section class="osim-comments my-2">
     <h4 class="mb-4">Comments</h4>
     <Tabs
       :labels="commentLabels"

@@ -18,7 +18,7 @@ withDefaults(
 </script>
 
 <template>
-  <label class="osim-input mb-3 ps-3">
+  <label class="osim-input mb-2 ps-3">
     <div class="row">
       <span v-if="label" class="form-label col-3">
         {{ label }}

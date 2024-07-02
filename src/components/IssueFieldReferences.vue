@@ -98,7 +98,7 @@ defineExpose({ editableListComp });
 
       <template #create-form="{ items, itemIndex }">
         <div class="form-group">
-          <div class="p-3 pt-4">
+          <div class="ms-3 me-4">
             <button
               type="button"
               class="btn osim-cancel-new-reference"
@@ -112,7 +112,7 @@ defineExpose({ editableListComp });
               label="Description"
               :error="error?.[itemIndex].description"
             />
-            <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
+            <select v-model="items[itemIndex].type" class="form-select mb-2 osim-reference-types">
               <option value="" disabled selected>Select a reference type</option>
               <option
                 v-for="referenceType in allowedReferenceTypes"

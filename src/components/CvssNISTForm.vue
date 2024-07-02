@@ -55,8 +55,8 @@ function openMailto() {
 </script>
 
 <template>
-  <div class="osim-cve-nist-button">
-    <button type="button" class="btn btn-secondary" @click="openModal">
+  <div class="osim-cve-nist-form">
+    <button type="button" class="osim-cve-email btn btn-secondary" @click="openModal">
       Email NIST
     </button>
 
@@ -101,7 +101,13 @@ function openMailto() {
 </template>
 
 <style scoped>
-.osim-cve-nist-button :deep(.modal-dialog) {
+.osim-cve-nist-form :deep(.modal-dialog) {
   max-width: 80ch;
 }
+
+.osim-cve-email {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
 </style>

@@ -30,7 +30,7 @@ const emitExpandFocusedComponent = (parent_uuid: string) => {
   >
     <template #label>
       <span>
-        <label class="mx-2 mb-2">
+        <label class="mx-2">
           {{ props.sectionName + ":" }}
         </label>
         <span v-if="!isExpanded">

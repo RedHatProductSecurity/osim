@@ -61,9 +61,39 @@ function nextPhase(workflowState: WorkflowPhases) {
 </script>
 
 <template>
-  <div class="osim-workflow-state-container mb-3">
+  <div class="osim-workflow-state-container mb-2">
     <LabelDiv label="State" type="text" class="osim-workflow-state-display">
-      <span class="form-control">{{ classification.state || 'Legacy Flaw without Jira task' }}</span>
+      <div class="d-flex">
+        <span class="form-control rounded-0">{{ classification.state || 'Legacy Flaw without Jira task' }}</span>
+        <div class="col-auto">
+          <div v-if="shouldShowWorkflowButtons" class="osim-workflow-state-buttons">
+            <button type="button" class="btn btn-secondary rounded-0" @click="openModal">
+              Reject
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning osim-last-field-button"
+              :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
+              @click="onPromote(flawId)"
+            >
+              Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
+            </button>
+          </div>
+          <div v-else-if="shouldShowCreateJiraTaskButton" class="osim-workflow-state-buttons">
+            <button
+              type="button"
+              class="btn btn-warning osim-last-field-button"
+              title="Creates Jira task when flaw is saved"
+              @click="toggleCreateJiraTask"
+            >
+              <i
+                :class="{ 'bi-square': !shouldCreateJiraTask, 'bi-check-square': shouldCreateJiraTask }"
+              />
+              Create Jira task
+            </button>
+          </div>
+        </div>
+      </div>
       <Modal :show="shouldShowRejectionModal" @close="closeModal">
         <template #title> Reject Flaw </template>
         <template #body>
@@ -80,39 +110,14 @@ function nextPhase(workflowState: WorkflowPhases) {
         </template>
       </Modal>
     </LabelDiv>
-    <div class="row">
-      <div class="col-lg-9 col-md-11 offset-lg-3 offset-md-1">
-        <div v-if="shouldShowWorkflowButtons" class="osim-workflow-state-buttons mb-3">
-          <button type="button" class="btn btn-warning ms-2 osim-workflow-button" @click="openModal">
-            Reject
-          </button>
-          <button
-            type="button"
-            class="btn btn-warning ms-2 osim-promote-button osim-workflow-button"
-            :title="`Promote to ${nextPhase(classification.state as WorkflowPhases)}`"
-            @click="onPromote(flawId)"
-          >
-            Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
-          </button>
-        </div>
-        <div v-if="shouldShowCreateJiraTaskButton" class="osim-workflow-state-buttons mb-3">
-          <button type="button" class="btn btn-warning ms-2 osim-workflow-button" @click="toggleCreateJiraTask">
-            <i
-              :class="{ 'bi-square': !shouldCreateJiraTask, 'bi-check-square': shouldCreateJiraTask }"
-            />
-            Create Jira task
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .osim-workflow-state-container {
-  button.osim-workflow-button {
+  .osim-last-field-button {
     border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 
   label.osim-modal-label {
@@ -121,10 +126,6 @@ function nextPhase(workflowState: WorkflowPhases) {
 
   .osim-workflow-state-display {
     margin-bottom: 0 !important;
-  }
-
-  span.form-control {
-    min-height: 2.375px;
   }
 }
 </style>
