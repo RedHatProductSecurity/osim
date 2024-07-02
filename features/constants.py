@@ -7,3 +7,6 @@ SELENIUM_URL = os.getenv("SELENIUM_URL", "http://127.0.0.1:4444")
 BUGZILLA_API_KEY = os.getenv("BUGZILLA_API_KEY")
 JIRA_API_KEY = os.getenv("JIRA_API_KEY")
 TIMEOUT = '10'
+# Sometimes the supported affect module could be changed due to product-definitions
+AFFECTED_MODULE_BZ = 'rhcertification-8'
+AFFECTED_MODULE_JR = 'rhel-8'
