@@ -1,9 +1,13 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
+
 ### Fixed
 * Missing references and/or acknowledgements after multiple creation (`OSIDB-3066`)
 * Form is not disabled during multiple references and/or acknowledgements creation (`OSIDB-3066`)
+* Auto commit edited references and ackowledgements when start editting a new one (`OSIDB-2905`)
 
 ## [2024.6.2]
 ### Added
