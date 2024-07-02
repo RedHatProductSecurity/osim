@@ -44,7 +44,7 @@ class BasePage(PageFactory):
 
     def wait_msg(self, msg_element):
         element = getattr(self, msg_element)
-        element.visibility_of_element_located()
+        element.visibility_of_element_located(self.timeout)
 
     def check_value_exist(self, value):
         try:
