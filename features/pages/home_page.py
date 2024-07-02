@@ -74,21 +74,6 @@ class HomePage(BasePage):
 #         flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
 #         assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
 
-    def check_is_all_flaw_loaded(self):
-        self.firstFlaw.visibility_of_element_located()
-        self.loadMoreFlawsBtn.visibility_of_element_located()
-
-    def click_load_more_flaws_btn(self):
-        old_flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
-        self.loadMoreFlawsBtn.execute_script("arguments[0].click();")
-        return old_flaw_count
-
-    def is_more_flaw_loaded(self, old_count):
-        self.loadMoreFlawsBtn.element_to_be_clickable()
-        flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
-        assert flaw_count > old_count, \
-            "No more flaws loaded after click the 'Load More Flaws' button"
-
     def input_filter_keyword_and_filter_flaw(self, keywd):
         self.flawFilterBox.visibility_of_element_located()
         self.flawFilterBox.set_text(keywd)
