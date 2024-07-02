@@ -1,0 +1,34 @@
+# This workflow checks for a Jira issue link in the PR description
+# and fails the workflow if the link is missing.
+# The workflow can be ignored by adding a specific label to the PR.
+
+name: Jira Link
+
+
+env:
+  # Label to ignore the Jira link check
+  LABEL: internal 
+  # Regex to match the jira link. Only supports Extended Regular Expressions (ERE)
+  REGEX: (Closes|Fixes) +(OSIDB-[0-9]+)
+
+on:
+  pull_request:
+    types: [opened, edited, labeled, unlabeled]
+
+jobs:
+  enforce-jira-link:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'internal') }} # Can't use env.LABEL here
+    runs-on: ubuntu-latest
+    env:
+      # Mitigate script injection
+      # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+      PULL_REQUEST: ${{ github.event.pull_request.body }}
+    steps:
+      - name: Check for Jira issue link in PR body
+        run: |
+          if [[ ! $PULL_REQUEST =~ (${{ env.REGEX }}) ]]; then
+            echo "No Jira issue link found in PR body.
+          Please include a Jira issue link in the PR body or add the '$LABEL' label.
+          Example: 'Closes OSIDB-1234'."
+            exit 1
+          fi
