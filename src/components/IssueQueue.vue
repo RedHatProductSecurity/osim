@@ -44,7 +44,8 @@ const filteredStates = computed(() => {
     .filter(
       (state) =>
         state !== FlawClassificationStateEnum.Done
-        && state !== FlawClassificationStateEnum.Rejected,
+        && state !== FlawClassificationStateEnum.Rejected
+        && state !== FlawClassificationStateEnum.Empty,
     )
     .join(',');
 });
