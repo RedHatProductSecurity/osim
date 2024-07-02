@@ -37,7 +37,6 @@ const affectCvss3Vector = computed(
     || null
 );
 
-
 const hasTrackers = computed(() =>
   modelValue.value?.trackers
   && modelValue.value?.trackers?.length > 0
@@ -48,7 +47,6 @@ const hiddenResolutionOptions = computed(() => {
   const availableOptions = ['', 'DELEGATED', 'WONTFIX', 'OOSS'];
   return affectResolutions.filter(option => !availableOptions.includes(option));
 });
-
 </script>
 
 <template>
@@ -136,10 +134,10 @@ const hiddenResolutionOptions = computed(() => {
               </tr>
               <tr>
                 <th>Created date</th>
-                <td>{{ tracker.created_dt }}</td>
+                <td>{{ formatDate(tracker.created_dt, true) }}</td>
                 <th>Updated date</th>
                 <!-- updated_dt will match the flaw and affect updated_dt -->
-                <td>{{ tracker.updated_dt }}</td>
+                <td>{{ formatDate(tracker.updated_dt, true) }}</td>
               </tr>
               <tr v-if="tracker.errata.length">
                 <th colspan="4" class="text-center table-dark text-warning">Errata</th>
