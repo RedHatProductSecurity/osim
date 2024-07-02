@@ -36,17 +36,15 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
   ));
 
-  const alreadyFiledTrackers = computed(() => affects.map(
-    (affect) => {
-      const maybeTracker = affect.trackers.find(
-        tracker => tracker.affects.some((affectUuid: string) => trackedAffectUuids.value.includes(affectUuid))
-      );
-      return maybeTracker && {
-        ...maybeTracker,
-        ...affect,
-      };
-    }
-  ).filter(Boolean));
+  const alreadyFiledTrackers = computed(() => affects.flatMap(
+    (affect) => affect.trackers.filter(
+      tracker => tracker.affects.some((affectUuid: string) => trackedAffectUuids.value.includes(affectUuid))
+    ).map(filedTracker => ({
+      ...filedTracker,
+      ...affect,
+    }))
+  ));
+    // .filter(Boolean));
 
   const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap(
     (moduleComponent: any) =>
