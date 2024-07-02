@@ -17,7 +17,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
 from features.constants import (
-    OSIDB_URL
+    OSIDB_URL,
+    AFFECTED_MODULE_BZ,
+    AFFECTED_MODULE_JR
 )
 
 
@@ -138,9 +140,10 @@ class FlawDetailPage(BasePage):
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
         "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
+        "filedTrackers": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']//input[@disabled='' and @checked=''])[1]"),
         "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
-        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')][1]"),
-        "trackerBzSummary": ("XPATH", "//summary[contains(text(), 'rhcertification')][1]"),
+        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
+        "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -490,9 +493,9 @@ class FlawDetailPage(BasePage):
 
         # Set new affect inputs: PS module, PS component, CVSSv3
         if external_system == 'jira':
-            self.set_field_value('affects__ps_module', 'rhel-8')
+            self.set_field_value('affects__ps_module', AFFECTED_MODULE_JR)
         else:
-            self.set_field_value('affects__ps_module', 'rhcertification-8')
+            self.set_field_value('affects__ps_module', AFFECTED_MODULE_BZ)
         ps_component_value = generate_random_text()
         self.set_field_value('affects__ps_component', ps_component_value)
         self.set_field_value('affects__cvss3_score', '4.3')

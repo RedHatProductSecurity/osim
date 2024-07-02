@@ -111,7 +111,7 @@ Feature: Flaw detail testing on public flaw
       Then I could 'recover' the affect that I tried to delete above
 
     Scenario Outline: Create tracker
-      When I delete an affect of the flaw
+      #When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
       When I select the affect above and file a tracker
       Then The tracker is created for <external_system>
@@ -133,3 +133,12 @@ Feature: Flaw detail testing on public flaw
           |external_system|  affectedness_value|
           |       bugzilla|         NOTAFFECTED|
       #    |           jira|        NOTAFFECTED|
+
+    Scenario Outline: List filed trackers
+      When I delete an affect of the flaw
+      When I add a new affect to <external_system> supported module and selected <affectedness_value>
+      When I select the affect above and file a tracker
+      Then The manager trackers list the filed trackers
+      Examples:
+          |external_system|  affectedness_value|
+          |       bugzilla|                 NEW|
