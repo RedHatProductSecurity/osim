@@ -1,5 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
+import LabelEditable from '@/components/widgets/LabelEditable.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+
 import { mockAffect } from './test-suite-helpers';
 
 // const mockError = () => ({
@@ -11,6 +14,10 @@ import { mockAffect } from './test-suite-helpers';
 // });
 
 describe('AffectedOfferings', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders the affected offerings', () => {
     const subject = mount(AffectedOfferings, {
       global: {
@@ -161,4 +168,31 @@ describe('AffectedOfferings', () => {
     expect(deleteMessageEL.text()).toBe('Affected Offerings To Be Deleted');
   });
 
+  it('renders add new module button', async () => {
+    const subject = shallowMount(AffectedOfferings, {
+      global: {
+        stubs: {
+          RouterLink: true,
+        },
+      },
+      props: {
+        theAffects: [
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
+          mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
+        ],
+        affectsToDelete: [
+        ],
+        error: null,
+      },
+    });
+    const addNewModuleBtn = subject.findAll('button.btn.btn-secondary').find(el => el.text() === 'Add New Module');
+    expect(addNewModuleBtn.exists()).toBeTruthy();
+    expect(subject.findAllComponents(LabelCollapsible).length).toBe(1);
+    await addNewModuleBtn.trigger('click');
+    const editableEls = subject.findAllComponents(LabelEditable);
+    expect(editableEls.length).toBe(1);
+    editableEls[0].setValue('Module 3');
+    expect(subject.vm.affectedModules[1].name).toBe('Module 3');
+    expect(subject.findAllComponents(LabelCollapsible).length).toBe(2);
+  });
 });

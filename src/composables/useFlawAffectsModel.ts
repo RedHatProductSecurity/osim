@@ -96,18 +96,17 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     affectsToDelete.value = [];
   }
 
-  function addBlankAffect() {
+  function addBlankAffect(moduleName: string, callback: (affect: ZodAffectType) => void) {
     const embargoed = flaw.value.embargoed;
-    flaw.value.affects.push({
+    const newAffect: ZodAffectType = {
       embargoed,
       affectedness: '',
       resolution: '',
       delegated_resolution: '', // should this be null
-      ps_module: '',
+      ps_module: moduleName,
       ps_component: '',
       impact: '',
       cvss_scores: [{
-        // affect: z.string().uuid(),
         cvss_version: 'V3',
         issuer: 'RH',
         comment: '',
@@ -118,7 +117,17 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       }],
       trackers: [{ errata: [] }],
       alerts: [],
-    } as ZodAffectType);
+    } as ZodAffectType;
+
+    const index = flaw.value.affects.findIndex(affect => affect.ps_module === moduleName);
+
+    if (index !== -1) {
+      flaw.value.affects.splice(index, 0, newAffect);
+    } else {
+      flaw.value.affects.push(newAffect);
+    }
+
+    callback(newAffect);
   }
 
   function removeAffect(affectIdx: number) {
@@ -207,6 +216,14 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     });
   }
 
+  function updateAffectModuleName (oldModuleName: string, newModuleName: string) {
+    flaw.value.affects.forEach(affect => {
+      if (affect.ps_module === oldModuleName) {
+        affect.ps_module = newModuleName;
+      }
+    });
+  }
+
   return {
     addBlankAffect,
     removeAffect,
@@ -216,6 +233,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     affectsToSave,
+    updateAffectModuleName,
   };
 }
 

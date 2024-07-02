@@ -2,6 +2,7 @@ import type { ZodAffectType } from '@/types/zodAffect';
 
 export function mockAffect ({ ps_module, ps_component }: { ps_module: string, ps_component: string }): ZodAffectType {
   return {
+    uuid: 'uuid',
     ps_module,
     ps_component,
     embargoed:false,
