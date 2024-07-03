@@ -27,6 +27,7 @@
 * Formatting for Tracker table timestamps (`OSIDB-2983`)
 * Inconsistent focusing on calculator fields (`OSIDB-2511`)
 * Some affects' trackers were not showing (`OSIDB-3065`, `OSIDB-3074`)
+* Affect CVSS scores could not be edited (`OSIDB-3042`)
 
 ### Removed
 * Removed Cvss Score field (`OSIDB-2511`)
