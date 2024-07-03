@@ -26,6 +26,7 @@
 * Missing Expand All button on initial Flaw load (`OSIDB-3024`)
 * Formatting for Tracker table timestamps (`OSIDB-2983`)
 * Inconsistent focusing on calculator fields (`OSIDB-2511`)
+* Some affects' trackers were not showing (`OSIDB-3065`, `OSIDB-3074`)
 
 ### Removed
 * Removed Cvss Score field (`OSIDB-2511`)
