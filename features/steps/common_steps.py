@@ -1,3 +1,5 @@
+import time
+
 from behave import given
 
 from features.utils import (
@@ -19,6 +21,8 @@ def step_impl(context):
 def step_impl(context):
     set_bugzilla_api_key(context.browser)
     set_jira_api_key(context.browser)
+    # wait osim getting username from jira
+    time.sleep(2)
 
 
 @given('I am on the flaw list')

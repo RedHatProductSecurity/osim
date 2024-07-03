@@ -17,7 +17,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
 from features.constants import (
-    OSIDB_URL
+    OSIDB_URL,
+    AFFECTED_MODULE_BZ,
+    AFFECTED_MODULE_JR
 )
 
 
@@ -108,6 +110,9 @@ class FlawDetailPage(BasePage):
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
         "toastMsgCloseBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
         "embargoedPublicDateErrorMsg": ("XPATH", '//div[contains(text(), "unembargo_dt: An embargoed flaw must have a public date in the future")]'),
+        "alertDropdownBtn": ("XPATH", "(//button[@class='me-2 osim-collapsible-toggle'])[1]"),
+        "alertFlawDropdownBtn": ("XPATH", "(//button[@class='me-2 osim-collapsible-toggle'])[2]"),
+        "flawWithoutAffectErrorText": ("XPATH", "//span[contains(text(),'Error _validate_flaw_without_affect')]"),
         "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "selects": ("XPATH", "//select[@class='form-select']"),
         "affectCreatedMsg": ("XPATH", "//div[text()='Affects Created.']"),
@@ -130,14 +135,15 @@ class FlawDetailPage(BasePage):
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
-        "ManageTrackers":("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
+        "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "affectUpstreamCheckbox": ("XPATH", "(//input[@class='osim-tracker form-check-input'])[1]"),
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
         "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
+        "filedTrackers": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']//input[@disabled='' and @checked=''])[1]"),
         "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
-        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), 'rhel-8')][1]"),
-        "trackerBzSummary": ("XPATH", "//summary[contains(text(), 'rhcertification')][1]"),
+        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
+        "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -487,9 +493,9 @@ class FlawDetailPage(BasePage):
 
         # Set new affect inputs: PS module, PS component, CVSSv3
         if external_system == 'jira':
-            self.set_field_value('affects__ps_module', 'rhel-8')
+            self.set_field_value('affects__ps_module', AFFECTED_MODULE_JR)
         else:
-            self.set_field_value('affects__ps_module', 'rhcertification-8')
+            self.set_field_value('affects__ps_module', AFFECTED_MODULE_BZ)
         ps_component_value = generate_random_text()
         self.set_field_value('affects__ps_component', ps_component_value)
         self.set_field_value('affects__cvss3_score', '4.3')

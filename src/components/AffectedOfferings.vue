@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
 
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
@@ -10,7 +9,6 @@ import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectsTrackers from '@/components/AffectsTrackers.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import OsimButton from '@/components/widgets/OsimButton.vue';
-import LabelEditable from '@/components/widgets/LabelEditable.vue';
 
 const props = defineProps<{
   flawId: string;
@@ -23,8 +21,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
-  'add-blank-affect': [moduleId: string, callback: (affect: ZodAffectType) => void];
-  'update-module-name': [previousModuleName: string, newModuleName: string];
+  'add-blank-affect': [];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
@@ -35,41 +32,27 @@ const affectsNotBeingDeleted = computed(
   () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))
 );
 
-const initialAffectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
-const affectedModules = ref(
-  uniques(theAffects.value.map((affect) => affect.ps_module)).map(moduleName => ({
-    id: uuidv4(),
-    name: moduleName,
-    affects: theAffects.value.filter((affect) => affect.ps_module === moduleName),
-  }))
-);
+const affectedModules = computed(() => uniques(theAffects.value.map((affect) => affect.ps_module)));
 
 const expandedModules = ref<Record<string, boolean>>({});
+
+const affectsWithModuleName = (moduleName: string) =>
+  theAffects.value.filter((affect) => affect.ps_module === moduleName);
 
 const shouldShowTrackers = ref(false);
 const expandedAffects = ref(new Map());
 updateAffectsExpandedState(theAffects.value);
 
 watch(theAffects, (nextValue) => {
-  const affectTracker = new Set();
-  affectedModules.value.forEach(module => {
-    module.affects = nextValue.filter(affect => {
-      if (affect.ps_module === module.name && !affectTracker.has(affect)) {
-        affectTracker.add(affect);
-        return true;
-      }
-      return false;
-    });
-  });
-  expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, module) => {
-    modules[module.id] = areAnyComponentsExpandedIn(module.id) || expandedModules.value[module.id] || false;
+  expandedModules.value = affectedModules.value.reduce((modules: Record<string, boolean>, moduleName: string) => {
+    modules[moduleName] = areAnyComponentsExpandedIn(moduleName) || expandedModules.value[moduleName] || false;
     return modules;
   }, {});
   updateAffectsExpandedState(nextValue);
 }, { deep: true, immediate: true });
 
 const areAnyComponentsExpanded = computed(
-  () => affectedModules.value.some((module) => module.affects.some(isExpanded))
+  () => affectedModules.value.some((moduleName) => affectsWithModuleName(moduleName).some(isExpanded))
 );
 
 const isAnythingExpanded = computed(() => (
@@ -81,9 +64,8 @@ const isAnythingCollapsed = computed(() => (
   !Object.values(expandedModules.value).every(Boolean)
 ));
 
-function areAnyComponentsExpandedIn (moduleId: string) {
-  const module = affectedModules.value.find(module => module.id === moduleId);
-  return module?.affects.some(isExpanded) || false;
+function areAnyComponentsExpandedIn (moduleName: string) {
+  return affectsWithModuleName(moduleName).some(isExpanded);
 }
 
 function updateAffectsExpandedState (affects: any[]) {
@@ -94,43 +76,39 @@ function updateAffectsExpandedState (affects: any[]) {
 }
 
 function isExpanded(affect: ZodAffectType) {
-  return expandedAffects.value.get(affect)?.value ?? true; // new affect is expanded by default
+  return expandedAffects.value.get(affect)?.value ?? true; // new affect is expanded by default;
 }
 
-function collapsePsModuleComponents(moduleId: string) {
-  const module = affectedModules.value.find(module => module.id === moduleId);
-  if (module) {
-    for (const affect of module.affects) {
-      expandedAffects.value.set(affect, ref(false));
-    }
+function collapsePsModuleComponents(moduleName: string) {
+  const affects = affectsWithModuleName(moduleName);
+  for (const affect of affects) {
+    expandedAffects.value.set(affect, ref(false));
   }
 }
 
 function collapseAll() {
-  for (const moduleId in expandedModules.value) {
-    expandedModules.value[moduleId] = false;
+  for (const moduleName in expandedModules.value) {
+    collapsePsModuleComponents(moduleName);
+    expandedModules.value[moduleName] = false;
   }
 }
 
 function expandAll() {
-  for (const moduleId in expandedModules.value) {
-    expandedModules.value[moduleId] = true;
+  for (const moduleName in expandedModules.value) {
+    expandedModules.value[moduleName] = true;
   }
 }
 
 function togglePsComponentExpansion(affect: ZodAffectType) {
-  if (expandedAffects.value.get(affect) === undefined) {
-    expandedAffects.value.set(affect, ref(false));
-  }
   const isExpanded = expandedAffects.value.get(affect);
   isExpanded.value = !isExpanded.value;
   expandedAffects.value.set(affect, isExpanded);
 }
 
-function togglePsModuleExpansion(moduleId: string) {
-  expandedModules.value[moduleId] = !expandedModules.value[moduleId];
-  if (!expandedModules.value[moduleId]) {
-    collapsePsModuleComponents(moduleId);
+function togglePsModuleExpansion(moduleName: string) {
+  expandedModules.value[moduleName] = !expandedModules.value[moduleName];
+  if (!expandedModules.value[moduleName]) {
+    collapsePsModuleComponents(moduleName);
   }
 }
 
@@ -140,58 +118,10 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 
 defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
 
-function editableModuleName(moduleId: string) {
-  const module = affectedModules.value.find(module => module.id === moduleId);
-  const expandedState = expandedModules.value[moduleId];
-  return expandedState && (!initialAffectedModules.value.includes(module?.name ?? '')
-  || module?.affects.every(affect => !affect.uuid));
-}
-
-function addNewModule() {
-  const newModuleName = '';
-  const newModuleId = uuidv4();
-  affectedModules.value.push({ id: newModuleId, name: newModuleName, affects: [] });
-  expandedModules.value[newModuleId] = true;
-}
-
-function renameModule(newModuleName: string, index: number) {
-  const module = affectedModules.value[index];
-  const previousModuleName = module.name;
-
-  // If the new module name already exists, prevent duplicate names
-  if (affectedModules.value.some(module => module.name === newModuleName)) {
-    console.error('Module name already exists');
-    return;
-  }
-
-  // Update the module name
-  module.name = newModuleName;
-
-  // Clean up expandedModules to remove unnecessary keys
-  for (const key in expandedModules.value) {
-    if (!affectedModules.value.map(m => m.id).includes(key)) {
-      delete expandedModules.value[key];
-    }
-  }
-
-  emit('update-module-name', previousModuleName, newModuleName);
-}
-
-function addNewComponent(moduleId: string) {
-  emit('add-blank-affect', moduleId, (newAffect) => {
-    const moduleIndex = affectedModules.value.findIndex(module => module.id === moduleId);
-    if (moduleIndex !== -1) {
-      newAffect.ps_module = affectedModules.value[moduleIndex].name;
-      affectedModules.value[moduleIndex].affects = [...affectedModules.value[moduleIndex].affects, newAffect];
-      expandedAffects.value.set(newAffect, ref(true));
-    }
-  });
-}
-
 </script>
 
 <template>
-  <div v-if="theAffects" class="osim-affects">
+  <div v-if="theAffects" class="osim-affects my-2">
     <h4>Affected Offerings</h4>
     <AffectsTrackers
       v-show="shouldShowTrackers"
@@ -199,7 +129,7 @@ function addNewComponent(moduleId: string) {
       :theAffects="affectsNotBeingDeleted"
       @affects-trackers:hide="shouldShowTrackers = false"
     />
-    <div class="mb-4">
+    <div class="my-2 py-2">
       <button
         v-if="isAnythingCollapsed"
         type="button"
@@ -219,37 +149,31 @@ function addNewComponent(moduleId: string) {
       <button
         v-show="!shouldShowTrackers"
         type="button"
-        class="button ms-3 btn btn-sm btn-black text-white"
+        class="button btn btn-sm btn-black text-white"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
+        <!-- <i class="bi bi-journal-plus"></i> -->
         <i class="bi bi-binoculars"></i>
         Manage Trackers
       </button>
     </div>
-    <div v-for="(module, moduleNameIndex) in affectedModules" :key="module.id">
-      <div v-if="editableModuleName(module.id)" class="col-6">
-        <LabelEditable
-          v-model="module.name"
-          label="Module Name"
-          type="text"
-          @update:modelValue="value => renameModule(value as string, moduleNameIndex)"
-        />
-      </div>
+
+    <div v-for="(moduleName, moduleIndex) in affectedModules" :key="`ps_module-${moduleIndex}`">
       <LabelCollapsible
-        :isExpanded="expandedModules[module.id] ?? false"
-        class="mb-3"
-        @setExpanded="togglePsModuleExpansion(module.id)"
+        :isExpanded="expandedModules[moduleName] ?? false"
+        class="mb-1"
+        @setExpanded="togglePsModuleExpansion(moduleName)"
       >
         <template #label>
           <label class="mx-2 form-label">
-            {{ module.name }}
+            {{ moduleName }}
           </label>
           <span class="badge bg-light-yellow text-dark border border-warning">
-            {{ `${module.affects.length} affected` }}
+            {{ `${Object.keys(affectsWithModuleName(moduleName)).length} affected` }}
           </span>
         </template>
         <template #buttons>
-          <div v-if="expandedModules[module.id]" class="d-inline-flex">
+          <div v-if="expandedModules[moduleName]" class="btn-group">
             <div class="dropdown">
               <button
                 class="btn btn-white btn-outline-black btn-sm dropdown-toggle ms-2"
@@ -264,27 +188,20 @@ function addNewComponent(moduleId: string) {
                 <a class="dropdown-item" href="#"> 🚧 Auto-file for all components</a>
               </div>
             </div>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary ms-2"
-              @click.prevent="addNewComponent(module.id)"
-            >
-              Add New Component
-            </button>
           </div>
         </template>
         <div
-          v-for="(affect, index) in module.affects"
-          :key="`moduleName-${affect.ps_component}-${index}`"
+          v-for="(affect, index) in affectsWithModuleName(moduleName)"
+          :key="affect.uuid || `new-affect-${index}`"
           class="osim-affected-offering"
         >
           <AffectExpandableForm
             :id="affect.uuid"
-            v-model="module.affects[index]"
+            v-model="affectsWithModuleName(moduleName)[index]"
             :affect="affect"
             :isExpanded="isExpanded(affect) ?? false"
             :error="error?.[theAffects.indexOf(affect)] ?? null"
-            :updateStreams="getUpdateStreamsFor(module.name, affect.ps_component)"
+            :updateStreams="getUpdateStreamsFor(moduleName, affect.ps_component)"
             @setExpanded="togglePsComponentExpansion(affect)"
             @affect:remove="emit('affect:remove', affect)"
             @file-tracker="emit('file-tracker', $event)"
@@ -292,12 +209,8 @@ function addNewComponent(moduleId: string) {
         </div>
       </LabelCollapsible>
     </div>
-    <button
-      type="button"
-      class="btn btn-secondary me-3"
-      @click.prevent="addNewModule()"
-    >
-      Add New Module
+    <button type="button" class="btn btn-secondary mt-2" @click.prevent="emit('add-blank-affect')">
+      Add New Affect
     </button>
     <div v-if="affectsToDelete.length" class="mt-3 row">
       <div class="col-auto alert alert-danger rounded-3 p-3">

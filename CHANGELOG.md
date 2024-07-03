@@ -1,5 +1,20 @@
 # OSIM Changelog
 
+## [2024.7.0]
+### Changed
+* Make text area descriptions layout static (always visible) (`OSIDB-2005`)
+
+### Fixed
+* Missing references and/or acknowledgements after multiple creation (`OSIDB-3066`)
+* Form is not disabled during multiple references and/or acknowledgements creation (`OSIDB-3066`)
+* Exclude empty state from open issues filter (`OSIDB-3067`)
+* Affect CVSS scores could not be edited (`OSIDB-3042`)
+* Some affects' trackers were not showing (`OSIDB-3065`, `OSIDB-3074`)
+
+### Removed
+* Remove extra whitespace and optimize UI spacing (`OSIDB-2005`)
+* Remove buttons to show/hide text area descriptions (they are always visible now) (`OSIDB-2005`)
+
 ## [2024.6.2]
 ### Added
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
@@ -211,7 +226,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.0...HEAD
+[2024.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...v2024.7.0
 [2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...v2024.6.2
 [2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.0...v2024.6.1
 [2024.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...v2024.6.0

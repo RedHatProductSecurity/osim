@@ -605,3 +605,10 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
     flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()
+
+@then('The manager trackers list the filed trackers')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    flaw_detail_page.filedTrackers.visibility_of_element_located()

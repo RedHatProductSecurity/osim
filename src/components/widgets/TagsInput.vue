@@ -85,6 +85,7 @@ function edit(index: number, event: Event) {
         :data-index="index"
       >
         <span
+          style="cursor: text"
           @click="makeEditable"
           @keydown.enter.prevent="edit(index, $event)"
           @keydown.escape.prevent="edit(index, $event)"
@@ -94,6 +95,7 @@ function edit(index: number, event: Event) {
         </span>
         <i
           class="bi bi-x-square ms-1"
+          style="cursor: pointer"
           tabindex="0"
           @keydown.enter.prevent="remove(index)"
           @keydown.space.prevent="remove(index)"
@@ -146,10 +148,12 @@ function edit(index: number, event: Event) {
 
 .osim-pill-list-item {
   font-size: .85rem;
+  padding-block: 0.1rem;
 }
 
 .osim-pill-list-input {
   display: inline-block;
+  height: 1.5rem;
   border: none;
   outline: none;
   box-shadow: none;

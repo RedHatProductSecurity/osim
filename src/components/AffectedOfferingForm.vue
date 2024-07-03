@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useWindowSize } from '@vueuse/core';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
@@ -11,7 +11,7 @@ import {
   affectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-import { formatDate } from '@/utils/helpers';
+import { formatDate, getRhCvss3 } from '@/utils/helpers';
 
 const { width: screenWidth } = useWindowSize();
 const resolutionOptions = computed(() => {
@@ -31,11 +31,28 @@ const isScreenSortaSmall = computed(() => screenWidth.value < 950);
 
 const modelValue = defineModel<ZodAffectType>();
 
-const affectCvss3Vector = computed(
-  () => modelValue.value?.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
-    ?.vector
-    || null
+const defaultRhCvss3 = {
+  cvss_version: 'V3',
+  issuer: 'RH',
+  comment: '',
+  score: null,
+  vector: '',
+  embargoed: modelValue.value?.embargoed,
+  alerts: [],
+};
+
+const rhCvss3 = ref(
+  getRhCvss3(modelValue.value?.cvss_scores ?? []) ?? defaultRhCvss3
 );
+
+watch(() => rhCvss3.value?.vector, () => {
+  const rhCvss3Data = getRhCvss3(modelValue.value?.cvss_scores ?? []);
+  if (rhCvss3Data) {
+    rhCvss3Data.vector = rhCvss3.value.vector;
+  } else if (modelValue.value) {
+    modelValue.value.cvss_scores.push(rhCvss3.value);
+  }
+});
 
 
 const hasTrackers = computed(() =>
@@ -48,7 +65,6 @@ const hiddenResolutionOptions = computed(() => {
   const availableOptions = ['', 'DELEGATED', 'WONTFIX', 'OOSS'];
   return affectResolutions.filter(option => !availableOptions.includes(option));
 });
-
 </script>
 
 <template>
@@ -86,7 +102,7 @@ const hiddenResolutionOptions = computed(() => {
         :options="affectImpacts"
       />
       <LabelEditable
-        v-model="affectCvss3Vector"
+        v-model="rhCvss3.vector"
         :error="error?.cvss_scores?.vector"
         type="text"
         label="CVSSv3"
@@ -136,10 +152,10 @@ const hiddenResolutionOptions = computed(() => {
               </tr>
               <tr>
                 <th>Created date</th>
-                <td>{{ tracker.created_dt }}</td>
+                <td>{{ formatDate(tracker.created_dt, true) }}</td>
                 <th>Updated date</th>
                 <!-- updated_dt will match the flaw and affect updated_dt -->
-                <td>{{ tracker.updated_dt }}</td>
+                <td>{{ formatDate(tracker.updated_dt, true) }}</td>
               </tr>
               <tr v-if="tracker.errata.length">
                 <th colspan="4" class="text-center table-dark text-warning">Errata</th>
