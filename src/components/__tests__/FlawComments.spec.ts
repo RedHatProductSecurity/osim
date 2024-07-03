@@ -1,8 +1,9 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import FlawComments from '@/components/FlawComments.vue';
 import { ref } from 'vue';
+import { searchJiraUsers } from '@/services/JiraService';
 
 createTestingPinia();
 
@@ -52,11 +53,17 @@ vi.mock('@/composables/useInternalComments', () => {
   };
 });
 
+vi.mock('@/services/JiraService', () => ({
+  searchJiraUsers: vi.fn(() => Promise.resolve([])),
+  taskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
+}));
+
 describe('FlawComments', () => {
   let subject: any;
   const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
   beforeEach(() => {
+    vi.useFakeTimers();
     subject = mount(FlawComments, {
       props: {
         comments: [],
@@ -68,6 +75,7 @@ describe('FlawComments', () => {
 
   afterEach(() => {
     vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   it('Shows 3 correct tabs on comments section', () => {
@@ -211,5 +219,26 @@ describe('FlawComments', () => {
     const secondBody = commentElements[1].findAll('p')[1];
     expect(secondHeader.text()).toBe(`${SYSTEM_EMAIL} - 2023-09-20 02:50 PM UTC System`);
     expect(secondBody.text()).toBe('Second comment');
+  });
+
+  it('Should call `searchJiraUsers` on internal comments', async () => {
+    vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
+      data: {
+        users: [{ name: 'test', displayName: 'Test User', html: 'Test User' }]
+      }
+    });
+
+    const navLinks = subject.findAll('.nav-link');
+    await navLinks[2].trigger('click');
+    const addCommentButton = subject.find('.tab-actions button');
+    await addCommentButton.trigger('click');
+
+    const newCommentInput = subject.find('.tab-content textarea ');
+    await newCommentInput.setValue('test @user');
+
+    vi.runAllTimers();
+    await flushPromises();
+
+    expect(searchJiraUsers).toHaveBeenCalledWith('user');
   });
 });
