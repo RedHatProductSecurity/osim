@@ -121,7 +121,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
 </script>
 
 <template>
-  <div v-if="theAffects" class="osim-affects">
+  <div v-if="theAffects" class="osim-affects my-2">
     <h4>Affected Offerings</h4>
     <AffectsTrackers
       v-show="shouldShowTrackers"
@@ -129,7 +129,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       :theAffects="affectsNotBeingDeleted"
       @affects-trackers:hide="shouldShowTrackers = false"
     />
-    <div class="mb-4">
+    <div class="my-2 py-2">
       <button
         v-if="isAnythingCollapsed"
         type="button"
@@ -149,7 +149,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       <button
         v-show="!shouldShowTrackers"
         type="button"
-        class="button ms-3 btn btn-sm btn-black text-white"
+        class="button btn btn-sm btn-black text-white"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
         <!-- <i class="bi bi-journal-plus"></i> -->
@@ -161,7 +161,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
     <div v-for="(moduleName, moduleIndex) in affectedModules" :key="`ps_module-${moduleIndex}`">
       <LabelCollapsible
         :isExpanded="expandedModules[moduleName] ?? false"
-        class="mb-3"
+        class="mb-1"
         @setExpanded="togglePsModuleExpansion(moduleName)"
       >
         <template #label>
@@ -209,7 +209,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
         </div>
       </LabelCollapsible>
     </div>
-    <button type="button" class="btn btn-secondary mt-3" @click.prevent="emit('add-blank-affect')">
+    <button type="button" class="btn btn-secondary mt-2" @click.prevent="emit('add-blank-affect')">
       Add New Affect
     </button>
     <div v-if="affectsToDelete.length" class="mt-3 row">

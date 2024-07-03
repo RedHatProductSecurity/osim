@@ -87,6 +87,7 @@
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 * Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
+* Make text area descriptions layout static (always visible) (`OSIDB-2005`)
 
 ### Fixed
 * The session is now shared across tabs
@@ -116,6 +117,8 @@
 * Removed Flaw.meta usage (`OSIDB-2801`)
 * Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
 * Removed validation on empty references description (`OSIDB-2846`)
+* Remove extra whitespace and optimize UI spacing (`OSIDB-2005`)
+* Remove buttons to show/hide text area descriptions (they are always visible now) (`OSIDB-2005`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 

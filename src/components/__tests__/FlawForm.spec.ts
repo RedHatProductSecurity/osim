@@ -523,27 +523,6 @@ describe('FlawForm', () => {
     expect(flaw.unembargo_dt).not.toBe(null);
   });
 
-  it('show set description, statement, mitigation values correctly after clicking remove buttons', async () => {
-    const flaw = sampleFlaw();
-    flaw.cve_description = 'description';
-    flaw.statement = 'statement';
-    flaw.mitigation = 'mitigation';
-    mountWithProps({ flaw, mode: 'edit' });
-    const buttonGroups = subject.find('div.d-flex.gap-3.mb-3').findAll('button.btn.btn-secondary');
-    const removeDescriptionButton = buttonGroups[0];
-    expect(removeDescriptionButton.element?.textContent).toBe('Remove Description');
-    const removeStatementButton = buttonGroups[1];
-    expect(removeStatementButton.element?.textContent).toBe('Remove Statement');
-    const removeMitigationButton = buttonGroups[2];
-    expect(removeMitigationButton.element?.textContent).toBe('Remove Mitigation');
-    await removeDescriptionButton.trigger('click');
-    await removeStatementButton.trigger('click');
-    await removeMitigationButton.trigger('click');
-    expect((subject.vm as any).flaw.cve_description).toBe('');
-    expect((subject.vm as any).flaw.statement).toBe('');
-    expect((subject.vm as any).flaw.mitigation).toBe('');
-  });
-
   it('should show only allowed sources in edit mode', async () => {
     const flaw = sampleFlaw();
     mountWithProps({ flaw, mode: 'edit' });
