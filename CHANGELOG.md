@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.7.0]
 ### Changed
 * Make text area descriptions layout static (always visible) (`OSIDB-2005`)
 
@@ -226,7 +226,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/2024.7.0...HEAD
+[2024.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...2024.7.0
 [2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...v2024.6.2
 [2024.6.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.0...v2024.6.1
 [2024.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.1.0...v2024.6.0
