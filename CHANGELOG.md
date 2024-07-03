@@ -33,6 +33,7 @@
 * Jira contributors field is now displayed on the Flaw form (`OSIDB-2916`)
 * Hover style on Cvss Calculator buttons (`OSIDB-2511`)
 * Suggestions for Flaw Owner field (`OSIDB-3004`)
+* Suggestions for Jira mentions in internal comments (`OSIDB-3005`)
 
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
