@@ -151,7 +151,7 @@ describe('IssueQueue', () => {
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[1][0]._value).toEqual({
       order: '-created_dt',
-      workflow_state: ',NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT',
+      workflow_state: 'NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT',
 
     });
     const issues = wrapper.findAllComponents(IssueQueueItem);
