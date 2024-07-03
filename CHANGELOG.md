@@ -1,10 +1,19 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Changed
+* Make text area descriptions layout static (always visible) (`OSIDB-2005`)
+
 ### Fixed
 * Missing references and/or acknowledgements after multiple creation (`OSIDB-3066`)
 * Form is not disabled during multiple references and/or acknowledgements creation (`OSIDB-3066`)
 * Exclude empty state from open issues filter (`OSIDB-3067`)
+* Affect CVSS scores could not be edited (`OSIDB-3042`)
+* Some affects' trackers were not showing (`OSIDB-3065`, `OSIDB-3074`)
+
+### Removed
+* Remove extra whitespace and optimize UI spacing (`OSIDB-2005`)
+* Remove buttons to show/hide text area descriptions (they are always visible now) (`OSIDB-2005`)
 
 ## [2024.6.2]
 ### Added
@@ -26,8 +35,6 @@
 * Missing Expand All button on initial Flaw load (`OSIDB-3024`)
 * Formatting for Tracker table timestamps (`OSIDB-2983`)
 * Inconsistent focusing on calculator fields (`OSIDB-2511`)
-* Some affects' trackers were not showing (`OSIDB-3065`, `OSIDB-3074`)
-* Affect CVSS scores could not be edited (`OSIDB-3042`)
 
 ### Removed
 * Removed Cvss Score field (`OSIDB-2511`)
@@ -87,7 +94,6 @@
 * Added timezone to Public Date field (UTC) (`OSIDB-2790`)
 * Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
 * Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
-* Make text area descriptions layout static (always visible) (`OSIDB-2005`)
 
 ### Fixed
 * The session is now shared across tabs
@@ -117,8 +123,6 @@
 * Removed Flaw.meta usage (`OSIDB-2801`)
 * Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
 * Removed validation on empty references description (`OSIDB-2846`)
-* Remove extra whitespace and optimize UI spacing (`OSIDB-2005`)
-* Remove buttons to show/hide text area descriptions (they are always visible now) (`OSIDB-2005`)
 
 ## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
 
