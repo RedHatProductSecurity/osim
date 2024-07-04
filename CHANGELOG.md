@@ -3,6 +3,7 @@
 # [Unreleased]
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
+* Duplicated loading spinner on flaw lists (`OSIDB-3092`)
 
 ## [2024.7.0]
 ### Changed
