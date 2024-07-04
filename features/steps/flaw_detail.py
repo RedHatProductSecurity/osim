@@ -612,3 +612,19 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
     flaw_detail_page.filedTrackers.visibility_of_element_located()
+
+@then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    context.trackersCount = flaw_detail_page.trackers_list_count("trackersList")
+    actions = ['Select', 'Deselect']
+    for action in actions:
+        if action == 'Select':
+            flaw_detail_page.click_button_with_js("SelectAllTrackers")
+            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
+            assert checked_count == context.trackersCount
+        if action == 'Deselect':
+            flaw_detail_page.click_button_with_js("DeselectAllTrackers")
+            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
+            assert checked_count == 0

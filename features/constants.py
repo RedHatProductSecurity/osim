@@ -8,5 +8,5 @@ BUGZILLA_API_KEY = os.getenv("BUGZILLA_API_KEY")
 JIRA_API_KEY = os.getenv("JIRA_API_KEY")
 TIMEOUT = '10'
 # Sometimes the supported affect module could be changed due to product-definitions
-AFFECTED_MODULE_BZ = 'rhcertification-8'
-AFFECTED_MODULE_JR = 'rhel-8'
+AFFECTED_MODULE_BZ = 'certificate_system_10'
+AFFECTED_MODULE_JR = 'ansible_automation_platform-2'

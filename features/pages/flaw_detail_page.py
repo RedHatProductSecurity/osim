@@ -144,6 +144,10 @@ class FlawDetailPage(BasePage):
         "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
         "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
         "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
+        "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
+        "DeselectAllTrackers": ("XPATH", "//button[contains(text(), 'Deselect All')]"),
+        "trackersList": ("XPATH", "//input[@class='osim-tracker form-check-input']"),
+        "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -694,3 +698,16 @@ class FlawDetailPage(BasePage):
     def display_affect_detail(self):
         self.click_button_with_js("affectExpandall")
         self.click_btn('affectDropdownBtn')
+
+    def trackers_list_count(self, trackers_list):
+        if trackers_list == "checkedTrackersList":
+            try:
+                elements = find_elements_in_page_factory(self, "checkedTrackersList")
+            except NoSuchElementException:
+                return 0
+        else:
+            try:
+                elements = find_elements_in_page_factory(self, "trackersList")
+            except NoSuchElementException:
+                return 0
+        return len(elements)
