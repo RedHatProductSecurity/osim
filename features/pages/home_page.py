@@ -147,3 +147,13 @@ class HomePage(BasePage):
     def get_specified_cell_value(self, row, column):
         locator = f"//div[@class='osim-incident-list']/table/tbody/tr[{row}]/td[{column}]"
         return self.driver.find_element(By.XPATH, locator).text
+
+    def get_jira_username(self):
+        # Get the current username
+        user_name = self.userBtn.get_text().strip()
+        if "|" not in user_name:
+            value = user_name
+        else:
+            value = user_name.split('|')[1].strip()
+
+        return value
