@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+# [Unreleased]
+### Fixed
+* Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
+
 ## [2024.7.0]
 ### Changed
 * Make text area descriptions layout static (always visible) (`OSIDB-2005`)
