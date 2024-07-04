@@ -162,16 +162,23 @@ def step_impl(context):
 @when("I update the random input fields")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
+    home_page = HomePage(context.browser)
+
     context.field_values = []
     for row in context.table:
         field = row["field"]
         value = generate_random_text()
-        if field == "owner":
-            value = "qduanmu@redhat.com"
+        if field == "contributors" or field == "owner":
+            value = home_page.get_jira_username()
+
         if field == "components":
             flaw_detail_page.set_components_field(value)
+        elif field == "contributors":
+            flaw_detail_page.set_contributors_field(value)
+            value = flaw_detail_page.firstContributorText.get_text().split("Remove")[0].strip()
         else:
             flaw_detail_page.set_input_field(field, value)
+
         context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
@@ -181,8 +188,9 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.firstContributorText.visibility_of_element_located()
     for value in context.field_values:
-        flaw_detail_page.check_value_exist(value)
+        flaw_detail_page.check_text_exist(value)
 
 
 @when("I update the CVE ID with a valid data")
@@ -207,7 +215,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_exist(context.value)
+    flaw_detail_page.check_text_exist(context.value)
 
 
 @when("I {action} the CWE ID")
@@ -301,8 +309,8 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.first_value)
-    flaw_detail_page.check_value_exist(context.second_value)
+    flaw_detail_page.check_text_exist(context.first_value)
+    flaw_detail_page.check_text_exist(context.second_value)
 
 
 @when("I add two RHSB references to the flaw")
@@ -320,7 +328,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.first_value)
+    flaw_detail_page.check_text_exist(context.first_value)
     flaw_detail_page.check_value_not_exist(context.second_value)
 
 
@@ -391,7 +399,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.expected)
+    flaw_detail_page.check_text_exist(context.expected)
 
 
 @when("I add a RHSB reference to the flaw with incorrect link")
@@ -508,7 +516,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_exist(context.ps_component)
+    flaw_detail_page.check_text_exist(context.ps_component)
 
 @when("I delete an affect of the flaw")
 def step_impl(context):

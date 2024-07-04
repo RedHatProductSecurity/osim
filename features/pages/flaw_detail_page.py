@@ -93,6 +93,10 @@ class FlawDetailPage(BasePage):
         "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
+        "contributorsText": ("XPATH", "//span[text()='Contributors']"),
+        "contributorListFirstOption": ("XPATH", "(//div[@class='menu']/div/span)[1]"),
+        "firstContributorText": ("XPATH", "(//li[@class='badge text-bg-secondary'])[1]"),
+
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
@@ -351,6 +355,15 @@ class FlawDetailPage(BasePage):
             component_element.click()
 
         field_input.send_keys(value)
+
+    def set_contributors_field(self, value):
+        field_input = self.driver.find_elements(
+            locate_with(By.XPATH, "//input[@class='osim-contributor-input']").
+            to_right_of(self.componentsText))[0]
+
+        field_input.send_keys(value)
+        # click first item list in menu
+        self.contributorListFirstOption.click_button()
 
     def set_input_field(self, field, value):
         text_element = getattr(self, field + "Text")
