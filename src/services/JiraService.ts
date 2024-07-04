@@ -170,7 +170,6 @@ async function osimRequestHeaders() {
     return new Headers({
       'Authorization': `Bearer ${settingsStore.settings.jiraApiKey}`,
       'Content-Type': 'application/json',
-      'User-Agent': 'OSIM',
     });
   } else {
     return new Headers({
