@@ -132,16 +132,17 @@ Feature: Flaw detail testing on public flaw
           |external_system|  affectedness_value|
           |       bugzilla|         NOTAFFECTED|
 
-    Scenario Outline: List filed trackers
+    Scenario: List filed trackers
       When I delete an affect of the flaw
-      When I add a new affect to <external_system> supported module and selected <affectedness_value>
+      When I add a new affect with valid data
       When I select the affect above and file a tracker
       Then The manager trackers list the filed trackers
-      Examples:
-          |external_system|  affectedness_value|
-          |       bugzilla|                 NEW|
 
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
       When I add a new affect with valid data
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
+
+    Scenario: Filter unfiled trackers
+      When I add some affects with valid data
+      Then I could filter trackers by stream or component name

@@ -11,6 +11,9 @@ Refer to the README of osim-selenium-image and Start the osim-selenium-image.
 - OSIM_URL: export OSIM_URL=$OSIM_URL
 - OSIDB_URL: export OSIDB_URL=$OSIDB_URL
 - SELENIUM_URL: export SELENIUM_URL=$SELENIUM_URL
+# Sometimes the supported affect module could be changed due to product-definitions
+- AFFECTED_MODULE_BZ: export AFFECTED_MODULE_BZ=$AFFECTED_MODULE_BZ
+- AFFECTED_MODULE_JR: export AFFECTED_MODULE_JR=$AFFECTED_MODULE_JR
 
 ## Run the tests
 There are a few methods how you can run test cases. Always run the commands from
