@@ -227,14 +227,6 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
     </div>
 
     <div v-for="(module, moduleIndex) in affectedModules" :key="`ps_module-${moduleIndex}`">
-      <div v-if="editableModuleName(module.id)" class="col-6">
-        <LabelEditable
-          v-model="module.name"
-          label="Module Name"
-          type="text"
-          @update:modelValue="(value) => renameModule(value as string, moduleIndex)"
-        />
-      </div>
       <LabelCollapsible
         :isExpanded="expandedModules[module.id] ?? false"
         class="mb-1"
@@ -273,6 +265,14 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
             </button>
           </div>
         </template>
+        <div v-if="editableModuleName(module.id)" class="mt-3 col-6">
+          <LabelEditable
+            v-model="module.name"
+            label="Module Name"
+            type="text"
+            @update:modelValue="(value) => renameModule(value as string, moduleIndex)"
+          />
+        </div>
         <div
           v-for="(affect, index) in module.affects"
           :key="affect.uuid || `new-affect-${index}`"

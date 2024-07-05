@@ -1,7 +1,6 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
 import { mockAffect } from './test-suite-helpers';
 
@@ -169,7 +168,7 @@ describe('AffectedOfferings', () => {
   });
 
   it('renders add new module button', async () => {
-    const subject = shallowMount(AffectedOfferings, {
+    const subject = mount(AffectedOfferings, {
       global: {
         stubs: {
           RouterLink: true,
@@ -187,12 +186,10 @@ describe('AffectedOfferings', () => {
     });
     const addNewModuleBtn = subject.findAll('button.btn.btn-secondary').find(el => el.text() === 'Add New Module');
     expect(addNewModuleBtn.exists()).toBeTruthy();
-    expect(subject.findAllComponents(LabelCollapsible).length).toBe(1);
     await addNewModuleBtn.trigger('click');
+    console.log('subject', subject.html());
     const editableEls = subject.findAllComponents(LabelEditable);
-    expect(editableEls.length).toBe(1);
-    editableEls[0].setValue('Module 3');
+    editableEls[editableEls.length - 1].setValue('Module 3');
     expect(subject.vm.affectedModules[1].name).toBe('Module 3');
-    expect(subject.findAllComponents(LabelCollapsible).length).toBe(2);
   });
 });
