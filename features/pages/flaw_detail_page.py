@@ -122,12 +122,12 @@ class FlawDetailPage(BasePage):
         "affectCreatedMsg": ("XPATH", "//div[text()='Affects Created.']"),
         # Affects locators
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
-        "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[1]"),
-        "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[1]"),
-        "affects__cvss3_score": ("XPATH", "(//span[text()='CVSSv3'])[1]"),
-        "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[1]"),
-        "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[1]"),
-        "affects__impact": ("XPATH", "(//span[text()='Impact'])[2]"),
+        "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[last()]"),
+        "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[last()]"),
+        "affects__cvss3_score": ("XPATH", "(//span[text()='CVSSv3'])[last()]"),
+        "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[last()]"),
+        "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[last()]"),
+        "affects__impact": ("XPATH", "(//span[text()='Impact'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
         "affectScoreSaveMsg": ("XPATH", "//div[text()='Affects CVSS scores saved.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
@@ -148,6 +148,11 @@ class FlawDetailPage(BasePage):
         "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
         "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
         "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
+        "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
+        "DeselectAllTrackers": ("XPATH", "//button[contains(text(), 'Deselect All')]"),
+        "trackersList": ("XPATH", "//input[@class='osim-tracker form-check-input']"),
+        "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
+        "FilterTrackers": ("XPATH", "//input[@placeholder='Filter by stream or component name']"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -707,3 +712,16 @@ class FlawDetailPage(BasePage):
     def display_affect_detail(self):
         self.click_button_with_js("affectExpandall")
         self.click_btn('affectDropdownBtn')
+
+    def trackers_list_count(self, trackers_list):
+        if trackers_list == "checkedTrackersList":
+            try:
+                elements = find_elements_in_page_factory(self, "checkedTrackersList")
+            except NoSuchElementException:
+                return 0
+        else:
+            try:
+                elements = find_elements_in_page_factory(self, "trackersList")
+            except NoSuchElementException:
+                return 0
+        return len(elements)
