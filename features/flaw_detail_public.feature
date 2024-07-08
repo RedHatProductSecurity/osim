@@ -75,6 +75,10 @@ Feature: Flaw detail testing on public flaw
       When I click self assign button and save changes
       Then The flaw is assigned to me
 
+    Scenario: Modify review status
+      When I update the cve review status
+      Then The review status is updated
+
     Scenario: Add external reference
       When I add two external references to the flaw
       Then Two external references added

@@ -282,6 +282,22 @@ def step_impl(context):
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
 
 
+@when('I update the cve review status')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
+    context.review_status = flaw_page.set_select_value('reviewStatusSelect')
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+
+
+@then("The review status is updated")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    _, review_status = flaw_page.get_select_value('reviewStatusSelect')
+    assert review_status == context.review_status, f'Review status update failed'
+
+
 def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
     go_to_specific_flaw_detail_page(context.browser)

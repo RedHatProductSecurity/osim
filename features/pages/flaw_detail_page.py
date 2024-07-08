@@ -33,6 +33,7 @@ class FlawDetailPage(BasePage):
         "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
+        "reviewStatusSelect": ("XPATH", "//select[@class='form-select col-3 osim-description-required']"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
         "statementText": ("XPATH", "//span[text()='Statement']"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
@@ -271,6 +272,8 @@ class FlawDetailPage(BasePage):
         )
 
     def get_select_element(self, field):
+        if field.endswith('Select'):
+            return getattr(self, field)
         text_element = getattr(self, field + "Text")
         field_select_list = self.driver.find_elements(
             locate_with(By.XPATH, "//select[@class='form-select is-invalid']").
@@ -279,7 +282,6 @@ class FlawDetailPage(BasePage):
             field_select_list = self.driver.find_elements(
                 locate_with(By.XPATH, "//select[@class='form-select']").
                 near(text_element))
-
         return field_select_list[0]
 
     def get_select_value(self, field):
@@ -294,16 +296,13 @@ class FlawDetailPage(BasePage):
 
     def set_select_value(self, field):
         field_select = self.get_select_element(field)
-
         all_values, current_value = self.get_select_value(field_select)
         if field == 'source':
             all_values = self.allowed_sources
         if current_value in all_values:
             all_values.remove(current_value)
-
         if "" in all_values:
             all_values.remove("")
-
         if all_values:
             updated_value = all_values[-1]
             field_select.select_element_by_value(updated_value)
