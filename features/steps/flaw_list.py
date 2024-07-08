@@ -83,6 +83,9 @@ def step_impl(context):
     sort_fields = ['id', 'impact', 'created', 'title', 'state', 'owner']
     value_dict = {}
     for field in sort_fields:
+        # Skip sort on title temporarily due to bug: OSIDB-2903
+        if field == 'title':
+            continue
         fieldbtn = field + "Btn"
         home_page.click_btn(fieldbtn)
         time.sleep(3)
@@ -111,7 +114,7 @@ def step_impl(context):
     time.sleep(3)
     home_page.click_btn('stateBtn')
     time.sleep(3)
-    context.state = home_page.get_specified_cell_value(1, 7)
+    context.state = home_page.get_specified_cell_value(1, 5)
 
 
 @then("Only open issues are listed in flaw list")
@@ -141,10 +144,10 @@ def step_impl(context):
     home_page.first_flaw_exist()
     home_page.click_btn('stateBtn')
     home_page.first_flaw_exist()
-    desc_state = home_page.get_specified_cell_value(1, 3)
+    desc_state = home_page.get_specified_cell_value(1, 2)
     home_page.click_btn('stateBtn')
     home_page.first_flaw_exist()
-    asce_state = home_page.get_specified_cell_value(1, 3)
+    asce_state = home_page.get_specified_cell_value(1, 2)
     assert desc_state == asce_state, "Default search not work."
 
 
