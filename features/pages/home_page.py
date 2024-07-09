@@ -128,7 +128,7 @@ class HomePage(BasePage):
 
     def get_sort_flaws(self, field, sort_fields):
         sorted_numbers = sorted(random.sample(range(1, 50), 3))
-        field_column = sort_fields.index(field) + 2
+        field_column = sort_fields.index(field) + 1
         for number in sorted_numbers:
             locator = f"//tr[@class='osim-issue-queue-item'][{number}]/td[{field_column}]"
             self.locators[f"{field}{number}Text"] = ("XPATH", locator)

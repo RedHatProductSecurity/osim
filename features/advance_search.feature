@@ -2,7 +2,7 @@ Feature: Flaw advance search testing
 
     Background: Before run scenarios
       Given I am an analyst AND I am logged into OSIM
-      Given I go to the advanced search page
+      * I go to the advanced search page
 
     Scenario: List all flaws
       When I am searching for all flaws

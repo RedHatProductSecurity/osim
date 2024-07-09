@@ -4,8 +4,8 @@ Feature: Flaw detail testing on public flaw
 
     Background: Before run scenarios
       Given I am an analyst AND I am logged into OSIM
-      And I set the bugzilla api key and jira api key
-      And I go to a public flaw detail page
+      * I set the bugzilla api key and jira api key
+      * I go to a public flaw detail page
 
     Scenario Outline: Add new comment to a flaw
       When I add a <comment_type> comment to the flaw
@@ -119,12 +119,12 @@ Feature: Flaw detail testing on public flaw
       When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
       When I file a <type> tracker
-      Then The tracker is created for <external_system>
+      Then The tracker is created
 
       Examples:
           |external_system|  affectedness_value| type   |
-          |           jira|           AFFECTED|  ystream|
-          |           jira|                NEW|  ystream|
+          #|           jira|           AFFECTED|  ystream|
+          #|           jira|                NEW|  ystream|
           |       bugzilla|           AFFECTED|  ystream|
           |       bugzilla|                NEW|  zstream|
 

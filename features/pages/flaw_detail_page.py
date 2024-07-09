@@ -146,7 +146,6 @@ class FlawDetailPage(BasePage):
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
         "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
         "filedTrackers": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']//input[@disabled='' and @checked=''])[1]"),
-        "trackerCount": ("XPATH", "//span[contains(text(), '2 trackers')]"),
         "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
         "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
         "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
@@ -155,6 +154,7 @@ class FlawDetailPage(BasePage):
         "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
         "FilterTrackers": ("XPATH", "//input[@placeholder='Filter by stream or component name']"),
         "trackerZstream": ("XPATH", "(//label[contains(text(), '.z')])[1]"),
+        "msgClose": ("XPATH", "(//button[@class='osim-toast-close-btn btn-close'])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -539,8 +539,7 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         self.click_btn('saveBtn')
         self.wait_msg('affectCreatedMsg')
-        #self.wait_msg('flawSavedMsg')
-        time.sleep(2)
+        self.wait_msg('flawSavedMsg')
         return ps_component_value
   
     def get_an_available_ps_module(self, affect_module):
@@ -714,7 +713,7 @@ class FlawDetailPage(BasePage):
 
     def display_affect_detail(self):
         self.click_button_with_js("affectExpandall")
-        self.click_btn('affectDropdownBtn')
+        self.click_button_with_js('affectDropdownBtn')
 
     def trackers_list_count(self, trackers_list):
         if trackers_list == "checkedTrackersList":
