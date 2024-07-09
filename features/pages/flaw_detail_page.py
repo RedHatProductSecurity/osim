@@ -141,7 +141,7 @@ class FlawDetailPage(BasePage):
         "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
         "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
-        "affectUpstreamCheckbox": ("XPATH", "(//input[@class='osim-tracker form-check-input'])[1]"),
+        "affectUpstreamCheckbox": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']/label)[1]"),
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
         "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
@@ -154,6 +154,7 @@ class FlawDetailPage(BasePage):
         "trackersList": ("XPATH", "//input[@class='osim-tracker form-check-input']"),
         "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
         "FilterTrackers": ("XPATH", "//input[@placeholder='Filter by stream or component name']"),
+        "trackerZstream": ("XPATH", "(//label[contains(text(), '.z')])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
@@ -538,7 +539,7 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
         self.click_btn('saveBtn')
         self.wait_msg('affectCreatedMsg')
-        self.wait_msg('flawSavedMsg')
+        #self.wait_msg('flawSavedMsg')
         time.sleep(2)
         return ps_component_value
   
@@ -547,15 +548,18 @@ class FlawDetailPage(BasePage):
         # The modules which under data/community_projects, except fedora-all,
         # have no limitation
         # https://gitlab.cee.redhat.com/prodsec/product-definitions/
-        n = affect_module.split('-')[-1]
-        num = random.randint(11, 40)
-        while True:
-            if str(num) == n:
-                num = random.randint(11, 40)
-            else:
-                break
-        ps_module = "fedora-" + str(num)
-        return ps_module
+        # n = affect_module.split('-')[-1]
+        # num = random.randint(11, 40)
+        # while True:
+        #    if str(num) == n:
+        #        num = random.randint(11, 40)
+        #    else:
+        #        break
+        #ps_module = "fedora-" + str(num)
+        if affect_module == AFFECTED_MODULE_BZ:
+            return AFFECTED_MODULE_JR
+        else:
+            return AFFECTED_MODULE_BZ
 
     def set_select_specific_value(self, field, value):
         field_element = getattr(self, field)

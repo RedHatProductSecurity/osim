@@ -118,17 +118,17 @@ Feature: Flaw detail testing on public flaw
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
-      When I select the affect above and file a tracker
+      When I file a <type> tracker
       Then The tracker is created for <external_system>
 
       Examples:
-          |external_system|  affectedness_value|
-          |           jira|           AFFECTED|
-          |           jira|                NEW|
-          |       bugzilla|           AFFECTED|
-          |       bugzilla|                NEW|
+          |external_system|  affectedness_value| type   |
+          |           jira|           AFFECTED|  ystream|
+          |           jira|                NEW|  ystream|
+          |       bugzilla|           AFFECTED|  ystream|
+          |       bugzilla|                NEW|  zstream|
 
-    Scenario Outline: Can't create tracker
+    Scenario Outline: Can not create tracker
       When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
       Then I can't file a tracker
