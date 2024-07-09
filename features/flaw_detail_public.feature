@@ -4,8 +4,8 @@ Feature: Flaw detail testing on public flaw
 
     Background: Before run scenarios
       Given I am an analyst AND I am logged into OSIM
-      And I set the bugzilla api key and jira api key
-      And I go to a public flaw detail page
+      * I set the bugzilla api key and jira api key
+      * I go to a public flaw detail page
 
     Scenario Outline: Add new comment to a flaw
       When I add a <comment_type> comment to the flaw
@@ -117,8 +117,8 @@ Feature: Flaw detail testing on public flaw
 
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
-      When I add a new affect to <external_system> supported module and selected <affectedness_value>
-      When I select the affect above and file a tracker
+      * I add a new affect to <external_system> supported module and selected <affectedness_value>
+      * I select the affect above and file a tracker
       Then The tracker is created for <external_system>
 
       Examples:
@@ -130,7 +130,7 @@ Feature: Flaw detail testing on public flaw
 
     Scenario Outline: Can't create tracker
       When I delete an affect of the flaw
-      When I add a new affect to <external_system> supported module and selected <affectedness_value>
+      * I add a new affect to <external_system> supported module and selected <affectedness_value>
       Then I can't file a tracker
 
       Examples:
@@ -139,13 +139,13 @@ Feature: Flaw detail testing on public flaw
 
     Scenario: List filed trackers
       When I delete an affect of the flaw
-      When I add a new affect with valid data
-      When I select the affect above and file a tracker
+      * I add a new affect with valid data
+      * I select the affect above and file a tracker
       Then The manager trackers list the filed trackers
 
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
-      When I add a new affect with valid data
+      * I add a new affect with valid data
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
 
     Scenario: Filter unfiled trackers
