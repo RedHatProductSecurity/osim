@@ -54,7 +54,6 @@ class BasePage(PageFactory):
         return element[0].is_selected()
 
     def check_element_exists(self, by, value):
-        e = self.driver.find_element(by, value)
         return WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of(e)
+            EC.presence_of_element_located((by, value))
         )
