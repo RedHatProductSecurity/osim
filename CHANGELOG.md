@@ -3,6 +3,7 @@
 # [Unreleased]
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
+* Internal comments creation fails on chrome browser (`OSIDB-3091`)
 
 ## [2024.7.0]
 ### Changed
