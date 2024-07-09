@@ -6,21 +6,17 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { trackerUrl } from '@/services/TrackerService';
 import {
+  AffectednessResolutionPairs,
   affectAffectedness,
   affectImpacts,
-  affectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
 import { formatDate, getRhCvss3 } from '@/utils/helpers';
 
 const { width: screenWidth } = useWindowSize();
-const resolutionOptions = computed(() => {
-  return {
-    AFFECTED: affectResolutions,
-    NEW: [''],
-    NOTAFFECTED: [''],
-  }[modelValue.value?.affectedness as string] || [''];
-});
+const resolutionOptions = computed(() =>
+  (modelValue.value?.affectedness && AffectednessResolutionPairs[modelValue.value?.affectedness]) || []
+);
 type NotUndefined<T> = Exclude<T, undefined>;
 
 defineProps<{
@@ -54,6 +50,11 @@ watch(() => rhCvss3.value?.vector, () => {
   }
 });
 
+watch(() => modelValue.value?.affectedness, () => {
+  if (modelValue.value) {
+    modelValue.value.resolution = '';
+  }
+});
 
 const hasTrackers = computed(() =>
   modelValue.value?.trackers
@@ -61,10 +62,6 @@ const hasTrackers = computed(() =>
   && modelValue.value?.trackers.every(({ ps_update_stream }) => ps_update_stream)
 );
 
-const hiddenResolutionOptions = computed(() => {
-  const availableOptions = ['', 'DELEGATED', 'WONTFIX', 'OOSS'];
-  return affectResolutions.filter(option => !availableOptions.includes(option));
-});
 </script>
 
 <template>
@@ -93,7 +90,6 @@ const hiddenResolutionOptions = computed(() => {
         :error="error?.resolution"
         label="Resolution"
         :options="resolutionOptions"
-        :optionsHidden="hiddenResolutionOptions"
       />
       <LabelSelect
         v-model="modelValue.impact"
