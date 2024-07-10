@@ -31,7 +31,7 @@ const isLoading = ref(false);
 </script>
 
 <template>
-  <label class="ps-3 mb-3 input-group osim-input">
+  <label class="ps-3 mb-2 input-group osim-input">
     <div class="row">
       <span class="form-label col-3 pe-3 ">
         Owner

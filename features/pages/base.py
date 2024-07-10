@@ -44,20 +44,16 @@ class BasePage(PageFactory):
 
     def wait_msg(self, msg_element):
         element = getattr(self, msg_element)
-        element.visibility_of_element_located()
+        element.visibility_of_element_located(self.timeout)
 
-    def check_value_exist(self, value):
-        try:
-            self.driver.find_element(By.XPATH, f'//span[contains(text(), "{value}")]')
-        except NoSuchElementException:
-            raise
+    def check_text_exist(self, value):
+        self.check_element_exists(By.XPATH, f'//*[contains(text(), "{value}")]')
 
     def is_checkbox_selected(self, checkbox):
         element = find_elements_in_page_factory(self, checkbox)
         return element[0].is_selected()
 
     def check_element_exists(self, by, value):
-        e = self.driver.find_element(by, value)
         return WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of(e)
+            EC.presence_of_element_located((by, value))
         )

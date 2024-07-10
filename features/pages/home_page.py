@@ -74,21 +74,6 @@ class HomePage(BasePage):
 #         flaw_checked = [c for c in flaw_checkboxes if c.get_attribute('checked') == 'true']
 #         assert len(flaw_checked) == 0, 'Incorrect check-all uncheck result'
 
-    def check_is_all_flaw_loaded(self):
-        self.firstFlaw.visibility_of_element_located()
-        self.loadMoreFlawsBtn.visibility_of_element_located()
-
-    def click_load_more_flaws_btn(self):
-        old_flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
-        self.loadMoreFlawsBtn.execute_script("arguments[0].click();")
-        return old_flaw_count
-
-    def is_more_flaw_loaded(self, old_count):
-        self.loadMoreFlawsBtn.element_to_be_clickable()
-        flaw_count = len(find_elements_in_page_factory(self, "flawRow"))
-        assert flaw_count > old_count, \
-            "No more flaws loaded after click the 'Load More Flaws' button"
-
     def input_filter_keyword_and_filter_flaw(self, keywd):
         self.flawFilterBox.visibility_of_element_located()
         self.flawFilterBox.set_text(keywd)
@@ -143,7 +128,7 @@ class HomePage(BasePage):
 
     def get_sort_flaws(self, field, sort_fields):
         sorted_numbers = sorted(random.sample(range(1, 50), 3))
-        field_column = sort_fields.index(field) + 2
+        field_column = sort_fields.index(field) + 1
         for number in sorted_numbers:
             locator = f"//tr[@class='osim-issue-queue-item'][{number}]/td[{field_column}]"
             self.locators[f"{field}{number}Text"] = ("XPATH", locator)
@@ -162,3 +147,13 @@ class HomePage(BasePage):
     def get_specified_cell_value(self, row, column):
         locator = f"//div[@class='osim-incident-list']/table/tbody/tr[{row}]/td[{column}]"
         return self.driver.find_element(By.XPATH, locator).text
+
+    def get_jira_username(self):
+        # Get the current username
+        user_name = self.userBtn.get_text().strip()
+        if "|" not in user_name:
+            value = user_name
+        else:
+            value = user_name.split('|')[1].strip()
+
+        return value

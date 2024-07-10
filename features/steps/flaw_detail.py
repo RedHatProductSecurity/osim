@@ -17,6 +17,7 @@ from features.utils import (
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
 from features.pages.advanced_search_page import AdvancedSearchPage
+from features.constants import AFFECTED_MODULE_JR
 
 
 MAX_RETRY = 10
@@ -162,16 +163,23 @@ def step_impl(context):
 @when("I update the random input fields")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
+    home_page = HomePage(context.browser)
+
     context.field_values = []
     for row in context.table:
         field = row["field"]
         value = generate_random_text()
-        if field == "owner":
-            value = "qduanmu@redhat.com"
+        if field == "contributors" or field == "owner":
+            value = home_page.get_jira_username()
+
         if field == "components":
             flaw_detail_page.set_components_field(value)
+        elif field == "contributors":
+            flaw_detail_page.set_contributors_field(value)
+            value = flaw_detail_page.firstContributorText.get_text().split("Remove")[0].strip()
         else:
             flaw_detail_page.set_input_field(field, value)
+
         context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
@@ -181,8 +189,9 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.firstContributorText.visibility_of_element_located()
     for value in context.field_values:
-        flaw_detail_page.check_value_exist(value)
+        flaw_detail_page.check_text_exist(value)
 
 
 @when("I update the CVE ID with a valid data")
@@ -207,7 +216,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_exist(context.value)
+    flaw_detail_page.check_text_exist(context.value)
 
 
 @when("I {action} the CWE ID")
@@ -273,6 +282,22 @@ def step_impl(context):
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
 
 
+@when('I update the cve review status')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
+    context.review_status = flaw_page.set_select_value('reviewStatusSelect')
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+
+
+@then("The review status is updated")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    _, review_status = flaw_page.get_select_value('reviewStatusSelect')
+    assert review_status == context.review_status, f'Review status update failed'
+
+
 def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
     go_to_specific_flaw_detail_page(context.browser)
@@ -301,8 +326,8 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.first_value)
-    flaw_detail_page.check_value_exist(context.second_value)
+    flaw_detail_page.check_text_exist(context.first_value)
+    flaw_detail_page.check_text_exist(context.second_value)
 
 
 @when("I add two RHSB references to the flaw")
@@ -320,7 +345,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.first_value)
+    flaw_detail_page.check_text_exist(context.first_value)
     flaw_detail_page.check_value_not_exist(context.second_value)
 
 
@@ -391,7 +416,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
-    flaw_detail_page.check_value_exist(context.expected)
+    flaw_detail_page.check_text_exist(context.expected)
 
 
 @when("I add a RHSB reference to the flaw with incorrect link")
@@ -508,7 +533,7 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_value_exist(context.ps_component)
+    flaw_detail_page.check_text_exist(context.ps_component)
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
@@ -605,3 +630,53 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
     flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()
+
+@then('The manager trackers list the filed trackers')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    flaw_detail_page.filedTrackers.visibility_of_element_located()
+
+@then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    context.trackersCount = flaw_detail_page.trackers_list_count("trackersList")
+    actions = ['Select', 'Deselect']
+    for action in actions:
+        if action == 'Select':
+            flaw_detail_page.click_button_with_js("SelectAllTrackers")
+            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
+            assert checked_count == context.trackersCount
+        if action == 'Deselect':
+            flaw_detail_page.click_button_with_js("DeselectAllTrackers")
+            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
+            assert checked_count == 0
+
+@when('I add some affects with valid data')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # Get the current trackers count
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    context.trackersCurrentCount = flaw_detail_page.trackers_list_count("trackersList")
+    # Add one more affect and get the trackers count of the new affect
+    context.ps_component = flaw_detail_page.set_new_affect_inputs('jira', 'AFFECTED')
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page.click_button_with_js("ManageTrackers")
+    context.trackersTotalCount = flaw_detail_page.trackers_list_count("trackersList")
+    context.trackersNewCount = context.trackersTotalCount - context.trackersCurrentCount
+
+
+@then('I could filter trackers by stream or component name')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # Filter by the component name
+    flaw_detail_page.FilterTrackers.set_text(context.ps_component)
+    trackersCount = flaw_detail_page.trackers_list_count("trackersList")
+    assert trackersCount == context.trackersNewCount
+    # Filter by the stream name
+    flaw_detail_page.FilterTrackers.set_text(AFFECTED_MODULE_JR)
+    trackersCount = flaw_detail_page.trackers_list_count("trackersList")
+    assert trackersCount == context.trackersNewCount

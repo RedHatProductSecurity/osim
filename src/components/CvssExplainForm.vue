@@ -14,12 +14,12 @@ const rhCvss = computed(() => modelValue.value?.cvss_scores
   <LabelCollapsible
     v-if="rhCvss > -1"
     label="Explain non-obvious CVSSv3 score metrics"
-    class="mb-3 cvss-score-mismatch"
+    class="ms-2 cvss-score-mismatch"
   >
     <textarea
       v-model="modelValue.cvss_scores[rhCvss].comment"
-      rows="5"
-      class="form-control col-9 d-inline-block"
+      rows="3"
+      class="form-control col-9 d-inline-block mb-3"
       placeholder="CVSS Score Explanation"
     />
   </LabelCollapsible>

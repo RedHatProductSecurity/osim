@@ -25,7 +25,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="mt-3 mb-5 osim-affect-trackers-container py-1 px-3">
+  <div class="mt-3 mb-2 osim-affect-trackers-container py-1 px-3">
     <h4 class="mb-2">
       Manage Trackers
       <button

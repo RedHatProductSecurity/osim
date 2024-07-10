@@ -44,7 +44,8 @@ const filteredStates = computed(() => {
     .filter(
       (state) =>
         state !== FlawClassificationStateEnum.Done
-        && state !== FlawClassificationStateEnum.Rejected,
+        && state !== FlawClassificationStateEnum.Rejected
+        && state !== FlawClassificationStateEnum.Empty,
     )
     .join(',');
 });
@@ -180,14 +181,6 @@ const nameForOption = (fieldName: string) => {
         </span>
         <span> Loading Flaws&hellip; </span>
       </div>
-      <span
-        v-if="isLoading"
-        class="spinner-border spinner-border-sm d-inline-block ms-3"
-        role="status"
-      >
-        <span class="visually-hidden">Loading...</span>
-      </span>
-      <span v-if="isLoading"> Loading Flaws&hellip; </span>
       <span
         v-if="issues.length"
         class="float-end"

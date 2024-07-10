@@ -81,6 +81,13 @@ def step_impl(context):
 @then('A new flaw is created')
 def step_impl(context):
     os.environ["FLAW_ID"] = check_created_flaw_exist(context)
+    # check validation alert that flaw has no affect
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.go_to_first_flaw_detail()
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.click_btn("alertDropdownBtn")
+    flaw_page.click_btn("alertFlawDropdownBtn")
+    flaw_page.flawWithoutAffectErrorText.visibility_of_element_located()
 
 
 @when("I add a CVE ID to a flaw without a CVE")

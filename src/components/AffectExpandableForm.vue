@@ -53,7 +53,7 @@ const resolutionLabel = computed(() => {
 </script>
 
 <template>
-  <LabelCollapsible :isExpanded="isExpanded" class="mt-2" :class="{'alert alert-warning': isAffectNew}">
+  <LabelCollapsible :isExpanded="isExpanded" class="mt-2 mb-0" :class="{'alert alert-warning': isAffectNew}">
     <template #label>
       <label class="mx-2 form-label">
         {{ `${affect.ps_component}` }}

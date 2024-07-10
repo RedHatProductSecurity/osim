@@ -41,7 +41,7 @@ const alertsExpanded = ref(false);
     @setExpanded="alertsExpanded = !alertsExpanded"
   >
     <template #label>
-      <label class="mx-2 form-label">
+      <label class="mx-2 mb-0 form-label">
         Alerts:
       </label>
       <span v-if="!alertsExpanded">

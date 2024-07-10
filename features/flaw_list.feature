@@ -2,8 +2,8 @@ Feature: Flaw list testing
 
     Background: Before run scenarios
       Given I am an analyst AND I am logged into OSIM
-      And I set the bugzilla api key and jira api key
-      And I am on the flaw list
+      * I set the bugzilla api key and jira api key
+      * I am on the flaw list
 
     Scenario: Redirect to the flaw page when click flaw link
       When I click the link of a flaw
