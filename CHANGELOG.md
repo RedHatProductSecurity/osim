@@ -1,10 +1,14 @@
 # OSIM Changelog
 
-# [Unreleased]
+## [Unreleased]
+### Added
+* Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
+
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
 * Duplicated loading spinner on flaw lists (`OSIDB-3092`)
 * Internal comments creation fails on chrome browser (`OSIDB-3091`)
+* Auto commit edited references and ackowledgements when start editting a new one (`OSIDB-2905`)
 
 ## [2024.7.0]
 ### Changed
