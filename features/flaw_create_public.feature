@@ -6,5 +6,5 @@ Feature: Flaw creation testing, public
 
     Scenario: Create a flaw with valid mandatory and additional data
       When I open the flaw create page
-      * I create flaw with valid data including optional fields
+      And I create flaw with valid data including optional fields
       Then A new flaw is created

@@ -7,7 +7,7 @@ Feature: Flaw creation testing, embargo
 
     Scenario: Create embargoed flaw
       When I open the flaw create page
-      * I create new embargoed flaw with valid data
+      And I create new embargoed flaw with valid data
       Then The flaw is created and marked as an embargoed flaw
 
     Scenario: Add CVE ID to a flaw without a CVE

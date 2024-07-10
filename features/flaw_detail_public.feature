@@ -117,8 +117,8 @@ Feature: Flaw detail testing on public flaw
 
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
-      * I add a new affect to <external_system> supported module and selected <affectedness_value>
-      * I select the affect above and file a tracker
+      And I add a new affect to <external_system> supported module and selected <affectedness_value>
+      And I select the affect above and file a tracker
       Then The tracker is created for <external_system>
 
       Examples:
@@ -130,7 +130,7 @@ Feature: Flaw detail testing on public flaw
 
     Scenario Outline: Can't create tracker
       When I delete an affect of the flaw
-      * I add a new affect to <external_system> supported module and selected <affectedness_value>
+      And I add a new affect to <external_system> supported module and selected <affectedness_value>
       Then I can't file a tracker
 
       Examples:
@@ -139,13 +139,13 @@ Feature: Flaw detail testing on public flaw
 
     Scenario: List filed trackers
       When I delete an affect of the flaw
-      * I add a new affect with valid data
-      * I select the affect above and file a tracker
+      And I add a new affect with valid data
+      And I select the affect above and file a tracker
       Then The manager trackers list the filed trackers
 
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
-      * I add a new affect with valid data
+      And I add a new affect with valid data
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
 
     Scenario: Filter unfiled trackers
