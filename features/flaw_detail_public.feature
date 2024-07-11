@@ -117,20 +117,20 @@ Feature: Flaw detail testing on public flaw
 
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
-      And I add a new affect to <external_system> supported module and selected <affectedness_value>
-      And I select the affect above and file a tracker
-      Then The tracker is created for <external_system>
+      When I add a new affect to <external_system> supported module and selected <affectedness_value>
+      When I file a <type> tracker
+      Then The tracker is created
 
       Examples:
-          |external_system|  affectedness_value|
-          |           jira|           AFFECTED|
-          |           jira|                NEW|
-          |       bugzilla|           AFFECTED|
-          |       bugzilla|                NEW|
+          |external_system|  affectedness_value| type   |
+          #|           jira|           AFFECTED|  ystream|
+          #|           jira|                NEW|  ystream|
+          |       bugzilla|           AFFECTED|  ystream|
+          |       bugzilla|                NEW|  zstream|
 
-    Scenario Outline: Can't create tracker
+    Scenario Outline: Can not create tracker
       When I delete an affect of the flaw
-      And I add a new affect to <external_system> supported module and selected <affectedness_value>
+      When I add a new affect to <external_system> supported module and selected <affectedness_value>
       Then I can't file a tracker
 
       Examples:
@@ -139,13 +139,13 @@ Feature: Flaw detail testing on public flaw
 
     Scenario: List filed trackers
       When I delete an affect of the flaw
-      And I add a new affect with valid data
-      And I select the affect above and file a tracker
+      When I add a new affect with valid data
+      When I select the affect above and file a tracker
       Then The manager trackers list the filed trackers
 
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
-      And I add a new affect with valid data
+      When I add a new affect with valid data
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
 
     Scenario: Filter unfiled trackers

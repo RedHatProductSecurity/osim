@@ -510,6 +510,7 @@ def step_impl(context):
     # flaw_detail_page.wait_msg('affectSaveMsg')
     flaw_detail_page.wait_msg('affectUpdateMsg')
     flaw_detail_page.wait_msg('flawSavedMsg')
+
  
 @then("All changes are saved")
 def step_impl(context):
@@ -533,11 +534,12 @@ def step_impl(context):
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.check_text_exist(context.ps_component)
+    flaw_detail_page.display_affect_detail()
+    component_xpath = f"//span[contains(text(), '{context.ps_component}')]"
+    flaw_detail_page.check_element_exists(By.XPATH, component_xpath)
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     context.module, context.component = \
         flaw_detail_page.click_affect_delete_btn()
@@ -545,7 +547,10 @@ def step_impl(context):
     assert warning == "Affected Offerings To Be Deleted"
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('affectDeleteMsg')
+    flaw_detail_page.click_button_with_js('msgClose')
     flaw_detail_page.wait_msg('flawSavedMsg')
+    flaw_detail_page.click_button_with_js('msgClose')
+    
 
 @then("The affect is deleted")
 def step_impl(context):
@@ -595,27 +600,31 @@ def step_impl(context):
     public_date = datetime.strptime(context.public_date, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
     assert public_date in v, f"Public date should be {public_date}, got {v}"
 
-@when('I select the affect above and file a tracker')
-def step_impl(context):
+@when('I file a {type} tracker')
+def step_impl(context, type):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
-    flaw_detail_page.click_button_with_js("affectUpstreamCheckbox")
+    if type == 'zstream':
+        trackertext = flaw_detail_page.trackerZstream.get_text()
+        flaw_detail_page.click_button_with_js("trackerZstream")
+    else:
+        trackertext = flaw_detail_page.affectUpstreamCheckbox.get_text()
+        flaw_detail_page.click_button_with_js("affectUpstreamCheckbox")
+    context.upstream = trackertext.split(' ')[0]
     flaw_detail_page.click_button_with_js("fileSelectedTrackers")
     flaw_detail_page.wait_msg("trackersFiledMsg")
+    flaw_detail_page.clear_text_with_js('msgClose')
 
 
-@then('The tracker is created for {external_system}')
-def step_impl(context, external_system):
+@then('The tracker is created')
+def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.display_affect_detail()
-     # Check the trackers count is not zero
-    flaw_detail_page.trackerCount.visibility_of_element_located()
-    if external_system == 'bugzilla':
-        flaw_detail_page.trackerBzSummary.visibility_of_element_located()
-    else:
-        flaw_detail_page.trackerJiraSummary.visibility_of_element_located()
+    # Check the tracker summary
+    trackerSummary_xpath = f"//summary[contains(text(), '{context.upstream}')]"
+    flaw_detail_page.check_element_exists(By.XPATH, trackerSummary_xpath)
 
 
 @when('I add a new affect to {external_system} supported module and selected {affectedness_value}')
