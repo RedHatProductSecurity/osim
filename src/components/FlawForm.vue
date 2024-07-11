@@ -219,13 +219,17 @@ const createdDate = computed(() => {
 });
 
 const theAffects = computed(() => {
-  const customSort = (a: ZodAffectType, b: ZodAffectType) => {
-    if (!a.uuid && b.uuid) return -1;
-    if (a.uuid && !b.uuid) return 1;
+  const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
+    if (!a.uuid && b.uuid) {
+      return -1;
+    }
+    if (a.uuid && !b.uuid) {
+      return 1;
+    }
     return 0;
   };
   return sortWith([
-    customSort,
+    unSavedAffectSort,
     ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
     ascend(prop('ps_module')),
     ascend(prop('ps_component'))
