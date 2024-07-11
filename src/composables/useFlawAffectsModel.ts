@@ -131,29 +131,9 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     affectsToDelete.value = [];
   }
 
-  function addBlankAffect() {
-    const embargoed = flaw.value.embargoed;
-    flaw.value.affects.push({
-      embargoed,
-      affectedness: '',
-      resolution: '',
-      delegated_resolution: '', // should this be null
-      ps_module: '',
-      ps_component: '',
-      impact: '',
-      cvss_scores: [{
-        // affect: z.string().uuid(),
-        cvss_version: 'V3',
-        issuer: 'RH',
-        comment: '',
-        score: null,
-        vector: '',
-        embargoed,
-        alerts: [],
-      }],
-      trackers: [{ errata: [] }],
-      alerts: [],
-    } as ZodAffectType);
+  function addAffect(newAffect: ZodAffectType) {
+    newAffect.embargoed = flaw.value.embargoed;
+    flaw.value.affects.push(newAffect);
   }
 
   function removeAffect(affectIdx: number) {
@@ -289,7 +269,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   return {
-    addBlankAffect,
+    addAffect,
     removeAffect,
     recoverAffect,
     saveAffects,
