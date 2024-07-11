@@ -221,10 +221,10 @@ const createdDate = computed(() => {
 const theAffects = computed(() => {
   const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
     if (!a.uuid && b.uuid) {
-      return -1;
+      return 1;
     }
     if (a.uuid && !b.uuid) {
-      return 1;
+      return -1;
     }
     return 0;
   };
