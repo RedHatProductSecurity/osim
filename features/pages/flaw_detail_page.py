@@ -75,29 +75,27 @@ class FlawDetailPage(BasePage):
 
         "titleText": ("XPATH", "//span[text()='Title']"),
         "titleValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[1]"),
-
         "componentsText": ("XPATH", "//span[text()='Components']"),
 
         "cveidText": ("XPATH", "//span[text()='CVE ID']"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[2]"),
-
         "cweidText": ("XPATH", "//span[text()='CWE ID']"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
 
         "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
-
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
         "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
-
         "contributorsText": ("XPATH", "//span[text()='Contributors']"),
         "contributorListFirstOption": ("XPATH", "(//div[@class='menu']/div/span)[1]"),
         "firstContributorText": ("XPATH", "(//li[@class='badge text-bg-secondary'])[1]"),
 
+        "promoteStateBtn": ("XPATH", "(//div[@class='osim-workflow-state-buttons']/button)[2]"),
+        "flawPromotedMsg": ("XPATH", "//strong[text()='Flaw Promoted']"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
