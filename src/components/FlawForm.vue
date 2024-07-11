@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
-import { sortWith, ascend, prop } from 'ramda';
+// import { sortWith, ascend, prop } from 'ramda';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -9,7 +9,6 @@ import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import AffectedOfferings from '@/components/AffectedOfferings.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import IssueFieldState from './IssueFieldState.vue';
@@ -24,10 +23,11 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
-import { type ZodTrackerType, type ZodAffectCVSSType, type ZodAffectType } from '@/types/zodAffect';
+// import { type ZodTrackerType, type ZodAffectCVSSType, type ZodAffectType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
+import FlawAffects from './FlawAffects.vue';
 
 const props = defineProps<{
   flaw: any;
@@ -61,7 +61,7 @@ const {
   toggleShouldCreateJiraTask,
   addBlankReference,
   addBlankAcknowledgment,
-  addBlankAffect,
+  addAffect,
   removeAffect,
   recoverAffect,
   updateFlaw,
@@ -170,33 +170,10 @@ const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
 
-const affectedOfferingsComp = ref<InstanceType<typeof AffectedOfferings> | null>(null);
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
 const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
 
 const expandFocusedComponent = (parent_uuid: string) => {
-
-  // Expand Affect (affect, affect CVSS, tracker)
-  const trackers: ZodTrackerType[] = ([] as ZodTrackerType[]).concat(
-    ...flaw.value.affects.map(aff => aff.trackers)
-  );
-  const trackerAffectUuid = trackers.find(tracker => tracker.uuid === parent_uuid)?.affects?.[0];
-
-  const affectCvss: ZodAffectCVSSType[] = ([] as ZodAffectCVSSType[]).concat(
-    ...flaw.value.affects.map(aff => aff.cvss_scores)
-  );
-  const affectCvssUuid = affectCvss.find(affCvss => affCvss.uuid === parent_uuid)?.affect;
-
-  const affect = flaw.value.affects.find(aff => [parent_uuid, trackerAffectUuid, affectCvssUuid].includes(aff.uuid));
-  if (affect !== undefined) {
-    if (affectedOfferingsComp.value) {
-      if (!affectedOfferingsComp.value.isExpanded(affect)) {
-        affectedOfferingsComp.value.togglePsModuleExpansion(affect?.ps_module);
-        affectedOfferingsComp.value.togglePsComponentExpansion(affect);
-      }
-    }
-    return;
-  }
 
   // Expand Flaw References section
   const reference = flawReferences.value.find(refer => refer.uuid === parent_uuid);
@@ -226,23 +203,23 @@ const createdDate = computed(() => {
   return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
 });
 
-const theAffects = computed(() => {
-  const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
-    if (!a.uuid && b.uuid) {
-      return 1;
-    }
-    if (a.uuid && !b.uuid) {
-      return -1;
-    }
-    return 0;
-  };
-  return sortWith([
-    unSavedAffectSort,
-    ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
-    ascend(prop('ps_module')),
-    ascend(prop('ps_component'))
-  ], flaw.value.affects);
-});
+// const theAffects = computed(() => {
+//   const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
+//     if (!a.uuid && b.uuid) {
+//       return 1;
+//     }
+//     if (a.uuid && !b.uuid) {
+//       return -1;
+//     }
+//     return 0;
+//   };
+//   return sortWith([
+//     unSavedAffectSort,
+//     ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
+//     ascend(prop('ps_module')),
+//     ascend(prop('ps_component'))
+//   ], flaw.value.affects);
+// });
 
 </script>
 
@@ -475,17 +452,17 @@ const theAffects = computed(() => {
           </div>
         </div>
         <div class="osim-flaw-form-section">
-          <AffectedOfferings
+          <FlawAffects
             v-if="mode === 'edit'"
-            ref="affectedOfferingsComp"
-            :theAffects="theAffects"
+            :affects="flaw.affects"
             :affectsToDelete="affectsToDelete"
             :error="errors.affects"
             :flawId="flaw.uuid"
-            @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
+            :embargoed="flaw.embargoed"
+            @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
             @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
             @affects:refresh="refreshAffects"
-            @add-blank-affect="addBlankAffect"
+            @affect:add="(affect) => addAffect(affect)"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
@@ -625,16 +602,9 @@ div.osim-content {
   }
 }
 
-
 .span-editable-text {
   cursor: text;
 }
-
-// .affected-offering {
-//   border: 1px solid #ddd;
-//   padding: 0.5rem;
-//   margin-bottom: 0.5rem;
-// }
 
 .action-buttons > button {
   margin: 0.2rem;
