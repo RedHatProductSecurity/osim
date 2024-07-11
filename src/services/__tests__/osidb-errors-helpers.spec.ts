@@ -70,6 +70,20 @@ describe('OSIDB Error helpers', () => {
     expect(getDisplayedOsidbError(error)).toBe('Likely error between OSIDB and database:\nSome error on line 1');
   });
 
+  it('should return default error when HTML does not match', () => {
+    const error = {
+      response: {
+        headers: {
+          'content-type': 'text/html',
+        },
+        data: '<h1>Server Error (500)</h1><p></p>',
+      }
+    };
+
+    expect(getDisplayedOsidbError(error))
+      .toBe('Likely error between OSIDB and database:\nPlease contact OSIM/OSIDB team');
+  });
+
   describe('parseOsidbErrors', () => {
     it('should return a string with each error message separated by a pair of newlines', () => {
       const errors = [

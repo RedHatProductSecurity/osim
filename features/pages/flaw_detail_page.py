@@ -455,7 +455,7 @@ class FlawDetailPage(BasePage):
         select = Select(add_reference_select)
 
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
-            (By.XPATH, "//select[@class='form-select mb-3 osim-reference-types']//option[contains(.,'External')]")))
+            (By.XPATH, "//select[@class='form-select mb-2 osim-reference-types']//option[contains(.,'External')]")))
 
         select.select_by_visible_text("External")
 
