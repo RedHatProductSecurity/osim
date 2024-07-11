@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
+* Sort affects by product family, alphabetically (`OSIDB-2533`)
 
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)

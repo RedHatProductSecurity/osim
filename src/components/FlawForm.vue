@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
+import { sortWith, ascend, prop } from 'ramda';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -23,7 +24,7 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
-import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
+import { type ZodTrackerType, type ZodAffectCVSSType, type ZodAffectType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
@@ -215,6 +216,24 @@ const createdDate = computed(() => {
     return '';
   }
   return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
+});
+
+const theAffects = computed(() => {
+  const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
+    if (!a.uuid && b.uuid) {
+      return 1;
+    }
+    if (a.uuid && !b.uuid) {
+      return -1;
+    }
+    return 0;
+  };
+  return sortWith([
+    unSavedAffectSort,
+    ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
+    ascend(prop('ps_module')),
+    ascend(prop('ps_component'))
+  ], flaw.value.affects);
 });
 
 </script>
@@ -451,7 +470,7 @@ const createdDate = computed(() => {
           <AffectedOfferings
             v-if="mode === 'edit'"
             ref="affectedOfferingsComp"
-            :theAffects="flaw.affects"
+            :theAffects="theAffects"
             :affectsToDelete="affectsToDelete"
             :error="errors.affects"
             :flawId="flaw.uuid"
