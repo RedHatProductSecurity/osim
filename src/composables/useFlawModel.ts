@@ -105,7 +105,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   async function updateFlaw() {
     const { execute } = useNetworkQueue();
-    const queue: Array<() => Promise<any>> = [];
+    const queue: (() => Promise<any>)[] = [];
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -115,19 +115,19 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       return;
     }
 
-    if (didAffectsChange.value) {
-      queue.push(saveAffects);
+    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
+
+    if (wasCvssModified.value) {
+      queue.push(saveCvssScores);
     }
 
     if (affectsToDelete.value.length) {
       queue.push(removeAffects);
     }
 
-    if (wasCvssModified.value) {
-      queue.push(saveCvssScores);
+    if (didAffectsChange.value) {
+      queue.push(saveAffects);
     }
-
-    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
 
     try {
       await execute(...queue);
