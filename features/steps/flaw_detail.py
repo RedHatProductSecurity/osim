@@ -278,7 +278,7 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     assignee = flaw_detail_page.get_current_value_of_field("owner")
     home_page = HomePage(context.browser)
-    login_user = home_page.userBtn.get_text()
+    login_user = home_page.get_jira_username()
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
 
 
