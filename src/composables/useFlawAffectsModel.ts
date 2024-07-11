@@ -40,7 +40,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   function affectsMatcherFor(affect: ZodAffectType) {
     return (affectToMatch: ZodAffectType) =>
       affectToMatch.uuid === affect.uuid
-      || (affectToMatch.ps_component === affect.ps_component && affectToMatch.ps_module === affect.ps_module);
+      || (
+        (affect.ps_component && affectToMatch.ps_component === affect.ps_component)
+        && (affect.ps_component && affectToMatch.ps_module === affect.ps_module)
+      );
   }
 
   function hasAffectCvssChanged(anAffect: ZodAffectType) {
@@ -182,9 +185,12 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       affectsWithChangedCvss.value = affectsWithChangedCvss.value.filter((affectToMatch) => affectToMatch !== affect);
     }
   }
+
+  let watchers: (() => void)[] = [];
   watch(flaw.value.affects, (affects) => {
-    affects.forEach((affect) => watch(affect, trackAffectChange, { deep: true }));
-  }, { deep: true });
+    watchers.forEach((unwatch: () => void) => unwatch());
+    watchers = affects.map((affect) => watch(affect, trackAffectChange, { deep: true }));
+  }, { immediate: true });
 
   async function removeAffects() {
     await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string).filter(Boolean));
