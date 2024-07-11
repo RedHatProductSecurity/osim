@@ -3,6 +3,7 @@ import { onBeforeMount, ref } from 'vue';
 import { isDefined, watchDebounced } from '@vueuse/core';
 import sanitize from 'sanitize-html';
 import LabelDiv from './widgets/LabelDiv.vue';
+import DropDown from './widgets/DropDown.vue';
 import useJiraContributors from '@/composables/useJiraContributors';
 import type { ZodJiraUserPickerType } from '@/types/zodJira';
 import { createCatchHandler } from '@/composables/service-helpers';
@@ -94,16 +95,15 @@ const remove = (index: number) => {
         </li>
       </ul>
 
-      <div v-if="results.length > 0" class="menu">
+      <DropDown v-if="results.length > 0">
         <div
           v-for="contributor in results"
           :key="contributor.name"
-          class="item"
           @click="add(contributor)"
         >
           <span v-html="sanitize(contributor.html)" />
         </div>
-      </div>
+      </DropDown>
     </div>
   </LabelDiv>
 </template>
@@ -123,34 +123,6 @@ const remove = (index: number) => {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-  }
-
-  .menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 1000;
-    display: block;
-    color: #212529;
-    background-color: #fff;
-    border: 1px solid rgb(0 0 0 / 15%);
-    border-radius: 0.25rem;
-    max-height: 400px;
-    overflow-y: auto;
-
-    .item {
-      display: block;
-      width: 100%;
-      padding: 0.25rem 1.5rem;
-      clear: both;
-      white-space: nowrap;
-      cursor: pointer;
-      font-size: .85rem;
-
-      &:hover {
-        background-color: #dee2e6;
-      }
-    }
   }
 }
 
