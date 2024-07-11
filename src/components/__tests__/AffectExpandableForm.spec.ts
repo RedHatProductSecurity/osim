@@ -1,12 +1,12 @@
-import { mount } from '@vue/test-utils';
+import { type VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {
-  affectResolutions,
   affectAffectedness,
+  AffectednessResolutionPairs,
 } from '@/types/zodAffect';
 
 vi.mock('@/stores/osimRuntime', async () => {
@@ -152,9 +152,7 @@ describe('AffectExpandableForm', () => {
     expect(affectednessOptions).toStrictEqual(affectAffectedness);
     await affectednessSelectEl.find('select').setValue('AFFECTED');
     const resolutionOptions = resolutionSelectEL.props('options');
-    expect(resolutionOptions).toStrictEqual(affectResolutions);
-    const resolutoinHiddenOptions = resolutionSelectEL.findAll('option[hidden]');
-    expect(resolutoinHiddenOptions.length).toBe(3);
+    expect(resolutionOptions).toStrictEqual(AffectednessResolutionPairs['AFFECTED']);
   });
 
   it('should render trackers with errata link', async () => {

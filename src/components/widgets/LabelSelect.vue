@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { isStringArray } from '@/utils/guards';
+
 defineEmits<{
   'update:modelValue': [value: string | undefined],
 }>();
 withDefaults(
   defineProps<{
     modelValue: string | null;
-    options: string[];
+    options: string[] | Record<string, string>;
     optionsHidden?: string[] | null;
     label: string;
     error: string | null;
@@ -38,15 +40,28 @@ withDefaults(
             $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)
           "
         >
-          <option
-            v-for="option in options"
-            :key="option"
-            :value="option"
-            :selected="option === modelValue"
-            :hidden="optionsHidden?.includes(option)"
-          >
-            {{ option }}
-          </option>
+          <template v-if="isStringArray(options)">
+            <option
+              v-for="option in options"
+              :key="option"
+              :value="option"
+              :selected="option === modelValue"
+              :hidden="optionsHidden?.includes(option)"
+            >
+              {{ option }}
+            </option>
+          </template>
+          <template v-else>
+            <option
+              v-for="(value, key) in options"
+              :key="key"
+              :value="value"
+              :selected="value === modelValue"
+              :hidden="optionsHidden?.includes(value)"
+            >
+              {{ key }}
+            </option>
+          </template>
         </select>
         <div
           v-if="error"

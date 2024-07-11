@@ -5,11 +5,23 @@ import {
   IssuerEnum,
 } from '../generated-client';
 
-import { zodOsimDateTime, extractEnum, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
+import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
+import { omit, pick } from 'ramda';
 
 
-const AffectednessEnumWithBlank = { '': '', ...AffectednessEnum } as const;
-const ResolutionEnumWithBlank = { '': '', ...ResolutionEnum } as const;
+const AffectednessEnumWithBlank = { 'Empty': '', ...AffectednessEnum } as const;
+const ResolutionEnumWithBlank = { 'Empty': '', ...ResolutionEnum } as const;
+
+export const affectImpacts = { ...omit([''], ImpactEnumWithBlank), Empty: '' } as const;
+export const affectResolutions = ResolutionEnumWithBlank;
+export const affectAffectedness = AffectednessEnumWithBlank;
+
+export const AffectednessResolutionPairs: Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>> = {
+  AFFECTED: pick(['Delegated', 'Wontfix', 'Ooss'], affectResolutions),
+  NEW: pick(['Empty', 'Wontfix', 'Ooss'], affectResolutions),
+  NOTAFFECTED: pick(['Empty'], affectResolutions),
+};
+
 
 export type ErratumSchemaType = typeof ErratumSchema;
 export const ErratumSchema = z.object({
@@ -66,8 +78,9 @@ export const AffectCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
-export const ZodAffectSchema = z.object({
+export type ZodAffectType = z.infer<typeof _ZodAffectSchema>;
+export type AffectSchemaType = typeof _ZodAffectSchema;
+const _ZodAffectSchema = z.object({
   uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
@@ -97,16 +110,16 @@ export const ZodAffectSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
 });
-export type AffectSchemaType = typeof ZodAffectSchema;
 
-
-
-const {
-  impact: zodAffectImpact,
-  resolution: zodAffectResolution,
-  affectedness: zodAffectAffectedness,
-} = ZodAffectSchema.shape;
-
-export const affectImpacts = extractEnum(zodAffectImpact);
-export const affectResolutions = extractEnum(zodAffectResolution);
-export const affectAffectedness = extractEnum(zodAffectAffectedness);
+export const ZodAffectSchema = _ZodAffectSchema.superRefine((data, zodContext) => {
+  if (data.affectedness) {
+    const resolution = AffectednessResolutionPairs[data.affectedness];
+    if (!Object.values(resolution).includes(data.resolution!)){
+      zodContext.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Resolution is not valid',
+        path: ['resolution']
+      });
+    }
+  }
+});
