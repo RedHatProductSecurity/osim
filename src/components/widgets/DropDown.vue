@@ -12,7 +12,7 @@
   position: absolute;
   top: 100%;
   right: 0;
-  z-index: 1000;
+  z-index: 1030;
   display: block !important;
   color: #212529;
   background-color: #fff;
