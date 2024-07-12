@@ -310,7 +310,10 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                 @keydown="clearSuggestions"
                 @click="clearSuggestions"
               />
-              <DropDown :show="suggestions.length > 0" :style="{ left: caretPos[0], top: caretPos[1], right: 'auto' }">
+              <DropDown
+                v-if="suggestions.length > 0"
+                :style="{ width: 'auto', left: caretPos[0], top: caretPos[1], right: 'auto' }"
+              >
                 <div
                   v-for="user in suggestions"
                   :key="user.name"
