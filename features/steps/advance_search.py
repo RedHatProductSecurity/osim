@@ -41,6 +41,7 @@ def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     advanced_search_page.first_flaw_exist()
 
+
 @when('I prepare the advance search keywords')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
@@ -48,13 +49,14 @@ def step_impl(context):
     fields = FIELD_FLAW_LIST + FIELD_IN_DATABASE
     context.fields_keywords = advanced_search_page.get_valid_search_keywords_from_created_flaw(fields, osidb_token)
 
+
 @then('I select the field and keyword to search flaws and I am able to view flaws matching the search')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
     osidb_token = get_osidb_token()
     for field in context.fields_keywords:
         value = context.fields_keywords[field]
-        advanced_search_page.clear_search_select()
+        advanced_search_page.click_button_with_js("closeSelBtn")
         advanced_search_page.select_field_and_value_to_search(field, value)
         advanced_search_page.click_btn("searchBtn")
         advanced_search_page.first_flaw_exist()

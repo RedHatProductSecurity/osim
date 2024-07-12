@@ -1,5 +1,4 @@
 import json
-import os
 import random
 import time
 
@@ -12,7 +11,7 @@ from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from seleniumpagefactory.Pagefactory import ElementNotVisibleException, ElementNotFoundException
+from seleniumpagefactory.Pagefactory import ElementNotVisibleException
 from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
@@ -21,6 +20,7 @@ from features.constants import (
     AFFECTED_MODULE_BZ,
     AFFECTED_MODULE_JR
 )
+from features.utils import get_flaw_id
 
 
 class FlawDetailPage(BasePage):
@@ -30,29 +30,29 @@ class FlawDetailPage(BasePage):
         self.timeout = 60
 
     locators = {
-        "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
+        "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
         "reviewStatusSelect": ("XPATH", "//select[@class='form-select col-3 osim-description-required']"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
-        "statementText": ("XPATH", "//span[text()='Statement']"),
+        "statementText": ("XPATH", "//span[contains(text(), 'Statement')]"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
-        "mitigationText": ("XPATH", "//span[text()='Mitigation']"),
+        "mitigationText": ("XPATH", "//span[contains(text(),'Mitigation')]"),
 
         "addPublicCommentBtn": ("XPATH", "//button[contains(text(), 'Add Public Comment')]"),
         "savePublicCommentBtn": ("XPATH", "//button[contains(text(),'Save Public Comment')]"),
         "publicCommentSavedMsg": ("XPATH", "//div[text()='Public comment saved.']"),
-        "newPublicCommentText": ("XPATH", "//span[text()='New Public Comment']"),
+        "newPublicCommentText": ("XPATH", "//span[contains(text(), 'New Public Comment')]"),
         "tabPrivateComments": ("XPATH", "//button[contains(text(), 'Private Comments')]"),
         "addPrivateCommentBtn": ("XPATH", "//button[contains(text(), 'Add Private Comment')]"),
         "savePrivateCommentBtn": ("XPATH", "//button[contains(text(),'Save Private Comment')]"),
         "privateCommentSavedMsg": ("XPATH", "//div[text()='Private comment saved.']"),
-        "newPrivateCommentText": ("XPATH", "//span[text()='New Private Comment']"),
+        "newPrivateCommentText": ("XPATH", "//span[contains(text(),'New Private Comment')]"),
         "tabInternalComments": ("XPATH", "//button[contains(text(), 'Internal Comments')]"),
         "addInternalCommentBtn": ("XPATH", "//button[contains(text(), 'Add Internal Comment')]"),
         "saveInternalCommentBtn": ("XPATH", "//button[contains(text(),'Save Internal Comment')]"),
         "internalCommentSavedMsg": ("XPATH", "//div[text()='Internal comment saved.']"),
-        "newInternalCommentText": ("XPATH", "//span[text()='New Internal Comment']"),
+        "newInternalCommentText": ("XPATH", "//span[contains(text(),'New Internal Comment')]"),
 
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
@@ -95,7 +95,7 @@ class FlawDetailPage(BasePage):
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
 
         "contributorsText": ("XPATH", "//span[text()='Contributors']"),
-        "contributorListFirstOption": ("XPATH", "(//div[@class='menu']/div/span)[1]"),
+        "contributorListFirstOption": ("XPATH", "(//div[@class='menu dropdown-menu']/div/span)[1]"),
         "firstContributorText": ("XPATH", "(//li[@class='badge text-bg-secondary'])[1]"),
 
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
@@ -444,10 +444,6 @@ class FlawDetailPage(BasePage):
         except ElementNotVisibleException:
             pass
 
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
-            self.saveReferenceBtn)
-
         add_reference_select = self.driver.find_elements(
             locate_with(By.TAG_NAME, "select").
             below(self.referenceCountLabel))[0]
@@ -456,6 +452,12 @@ class FlawDetailPage(BasePage):
 
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
             (By.XPATH, "//select[@class='form-select mb-2 osim-reference-types']//option[contains(.,'External')]")))
+
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
+            add_reference_select)
+
+        time.sleep(2)
 
         select.select_by_visible_text("External")
 
@@ -575,7 +577,7 @@ class FlawDetailPage(BasePage):
     def load_affects_results_from_osidb(self, token):
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
         headers = {"Authorization": f"Bearer {token}"}
-        cve_id = os.getenv("FLAW_ID")
+        cve_id = get_flaw_id()
         if cve_id.startswith("CVE-"):
             params = {"cve_id": cve_id}
         else:

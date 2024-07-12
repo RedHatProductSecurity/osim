@@ -1,5 +1,5 @@
 import json
-import os
+
 import requests
 import urllib.parse
 
@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from features.constants import OSIDB_URL
 
 from features.pages.base import BasePage
+from features.utils import get_flaw_id
 
 
 class AdvancedSearchPage(BasePage):
@@ -65,13 +66,10 @@ class AdvancedSearchPage(BasePage):
 
     def get_field_value_from_flawlist(self, field):
         field_value = getattr(self, field + 'Text')
-        return  field_value.get_text()
+        return field_value.get_text()
 
     def close_setting_keys_window(self):
         self.closeKeysetBtn.click_button()
-
-    def clear_search_select(self):
-        self.closeSelBtn.click_button()
 
     def get_value_from_osidb(self, field, token):
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
@@ -134,16 +132,15 @@ class AdvancedSearchPage(BasePage):
 
     def get_valid_search_keywords_from_created_flaw(self, fields, token):
         # return some valid search keywords
-        cve_id = os.getenv("FLAW_ID")
+        cve_id = get_flaw_id()
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
         headers = {"Authorization": f"Bearer {token}"}
         if "CVE" in cve_id:
             params = {"cve_id": cve_id}
         else:
             params = {"uuid": cve_id}
-        r = requests.get(url, params = params, headers = headers)
+        r = requests.get(url, params=params, headers=headers)
         flaw_info = json.loads(r.text).get('results')[0]
-
         affects = flaw_info.get('affects')
         if not affects:
             affect_fields = [

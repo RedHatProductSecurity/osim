@@ -10,17 +10,15 @@ from functools import wraps
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 
 from constants import (
-    TIMEOUT,
     OSIDB_URL,
     OSIM_URL,
     SELENIUM_URL,
     BUGZILLA_API_KEY,
     JIRA_API_KEY
 )
+from common_utils import get_flaw_id
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
@@ -116,7 +114,7 @@ def go_to_specific_flaw_detail_page(browser):
     """
     Go to a specific flaw detail page
     """
-    cve_id = os.getenv("FLAW_ID")
+    cve_id = get_flaw_id()
 
     if cve_id.startswith("CVE-"):
         go_to_home_page(browser)
