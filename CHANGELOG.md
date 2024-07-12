@@ -12,6 +12,9 @@
 * Auto commit edited references and ackowledgements when start editting a new one (`OSIDB-2905`)
 * Affects resolution is not updated after changing affectedness (`OSIDB-3123`)
 
+### Removed
+* Remove dirty flag from footer and from build validation process (`OSIDB-3068`)
+
 ## [2024.7.0]
 ### Changed
 * Make text area descriptions layout static (always visible) (`OSIDB-2005`)

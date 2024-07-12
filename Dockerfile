@@ -8,11 +8,10 @@ RUN yarn build
 RUN --mount=target=/mnt \
     cd /mnt \
     && git config --global --add safe.directory /mnt \
-    && printf '{"rev":"%s","tag":"%s","timestamp":"%s","dirty":%s}' >/opt/app-root/src/osim_build.json \
+    && printf '{"rev":"%s","tag":"%s","timestamp":"%s"}' >/opt/app-root/src/osim_build.json \
     "$(git rev-parse --verify HEAD)" \
     "$(git describe --always --tags --match 'v[0-9]*')" \
-    "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)" \
-    "$(if [ "$(git status --porcelain)" = "" ]; then echo false; else echo true; fi)"
+    "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)"
 
 # Nginx service stage
 FROM registry.access.redhat.com/ubi9/ubi-minimal AS nginx-base

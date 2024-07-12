@@ -61,7 +61,7 @@ describe('App', async () => {
           jira: 'jira-backend',
         },
         osimVersion: {
-          rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
+          rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z'
         },
         error: '',
       };
@@ -129,7 +129,7 @@ describe('App', async () => {
     const statusBar = subject.find('.osim-status-bar');
     expect(statusBar?.exists()).toBeTruthy();
     expect(statusBar?.text().includes('env: unittest')).toBeTruthy();
-    expect(statusBar?.text().includes('tag: osimtag (dirty)')).toBeTruthy();
+    expect(statusBar?.text().includes('tag: osimtag')).toBeTruthy();
     expect(statusBar?.text().includes('ts : 1970-01-01')).toBeTruthy();
   });
 });

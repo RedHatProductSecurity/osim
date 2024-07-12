@@ -20,7 +20,7 @@ vi.mock('@/stores/osimRuntime', async () => {
       jiraDisplay: 'http://jira-backend',
     },
     osimVersion: {
-      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
+      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z'
     },
     error: '',
   };
