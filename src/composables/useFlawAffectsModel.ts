@@ -133,7 +133,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function addAffect(newAffect: ZodAffectType) {
     newAffect.embargoed = flaw.value.embargoed;
-    flaw.value.affects.push(newAffect);
+    flaw.value.affects.unshift(newAffect);
   }
 
   function removeAffect(affectIdx: number) {
