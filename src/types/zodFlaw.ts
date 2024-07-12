@@ -250,4 +250,15 @@ export const ZodFlawSchema = z.object({
       ['affects', `${affect.index}`, 'ps_component'],
     );
   }
+
+  // Do we want validation for unregistered components in affected offerings?
+
+  // const unregisteredComponents = zodFlaw.components.filter(
+  //   (component) => !zodFlaw.affects.find(affect => affect.ps_component === component)
+  // );
+
+  // if (unregisteredComponents.length) {
+  //   const verb = unregisteredComponents.length === 1 ? 'is' : 'are';
+  //   raiseIssue(`${zodFlaw.components.join(', ')} ${verb} not in the Flaw's Affected Offerings`, ['components']);
+  // }
 });

@@ -13,6 +13,8 @@
 * Internal comments creation fails on chrome browser (`OSIDB-3091`)
 * Auto commit edited references and ackowledgements when start editting a new one (`OSIDB-2905`)
 * Affects resolution is not updated after changing affectedness (`OSIDB-3123`)
+* Affect CVSS scores wouldn't save properly (`OSIDB-3100`)
+
 
 ## [2024.7.0]
 ### Changed
