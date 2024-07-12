@@ -4,6 +4,8 @@
 ### Added
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
 * Sort affects by product family, alphabetically (`OSIDB-2533`)
+* Suggestions for Flaw Owner field (`OSIDB-3004`)
+* Suggestions for Jira mentions in internal comments (`OSIDB-3005`)
 
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
@@ -32,8 +34,6 @@
 * Create Jira task on demand for legacy flaws (`OSIDB-2883`)
 * Jira contributors field is now displayed on the Flaw form (`OSIDB-2916`)
 * Hover style on Cvss Calculator buttons (`OSIDB-2511`)
-* Suggestions for Flaw Owner field (`OSIDB-3004`)
-* Suggestions for Jira mentions in internal comments (`OSIDB-3005`)
 
 ### Changed
 * Temporary disable private comments creation (`OSIDB-3002`)
