@@ -220,17 +220,11 @@ const getLastWord = () => {
 };
 
 const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
-  if (event instanceof KeyboardEvent) {
-    if (event.key === 'Escape'
-      || event.key === 'ArrowUp'
-      || event.key === 'ArrowDown'
-      || event.key === 'ArrowLeft'
-      || event.key === 'ArrowRight'
-      || event.key === 'Enter'
-      || event.key === 'Tab') {
-      suggestions.value = [];
-      return;
-    }
+  if (event instanceof KeyboardEvent
+    && ['Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab']
+      .includes(event.key)) {
+    suggestions.value = [];
+    return;
   }
 
   if (event instanceof MouseEvent) {
