@@ -9,12 +9,21 @@ withDefaults(defineProps<{
   label: string;
   error?: string;
   disabled?: boolean;
+  loading?: boolean;
 }>(), {
   error: '',
   disabled: false
 });
 
-const elTextArea = ref();
+const elTextArea = ref<HTMLTextAreaElement | null>(null);
+
+defineExpose({
+  elTextArea
+});
+
+defineOptions({
+  inheritAttrs: false
+});
 
 // onMounted(() => {
 //   nextTick(() => {
@@ -34,7 +43,8 @@ const elTextArea = ref();
   <label class="osim-input mb-2 ps-3">
     <div class="row">
       <slot name="label">
-        <span class="form-label col-3">
+        <span class="form-label col-3 position-relative">
+          <span v-if="loading" v-osim-loading.grow="loading" class="throbber" />
           {{ label }}
           <!--attrs: {{ $attrs }}-->
         </span>
@@ -43,7 +53,7 @@ const elTextArea = ref();
       <!--    @keyup="resizeTextarea"-->
       <textarea
         v-bind="$attrs"
-        :ref="elTextArea"
+        ref="elTextArea"
         class="form-control col-9 d-inline-block"
         :class="{ 'is-invalid': error }"
         :value="modelValue"
@@ -62,5 +72,10 @@ const elTextArea = ref();
 <style scoped>
 .osim-input {
   display: block;
+
+  .throbber {
+    position: absolute;
+    left: 1rem;
+  }
 }
 </style>

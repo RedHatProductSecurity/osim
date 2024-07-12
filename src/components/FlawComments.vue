@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { isDefined, watchDebounced } from '@vueuse/core';
+import type { ZodJiraUserPickerType } from '@/types/zodJira';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
+import DropDown from '@/components/widgets/DropDown.vue';
 import { useInternalComments } from '@/composables/useInternalComments';
-import { taskUrl } from '@/services/JiraService';
+import { createCatchHandler } from '@/composables/service-helpers';
+import { searchJiraUsers, taskUrl } from '@/services/JiraService';
 import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 
 const userStore = useUserStore();
@@ -137,6 +141,106 @@ function sanitize(text: string) {
       .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
   );
 }
+
+const isInternalComment = computed(() => selectedTab.value === CommentType.Internal);
+const refTextArea = ref<InstanceType<typeof LabelTextarea> | null>(null);
+const suggestions = ref<ZodJiraUserPickerType[]>([]);
+const isLoadingSuggestions = ref(false);
+const caretPos = ref(['0px', '0px']);
+
+watchDebounced(newComment, async () => {
+  if (!isDefined(newComment)
+    || newComment.value === ''
+    || !refTextArea.value?.elTextArea?.value
+    || !isInternalComment.value) {
+    return;
+  }
+
+  const lastWord = getLastWord();
+  if (!lastWord?.startsWith('@') || lastWord.length < 2) {
+    return;
+  }
+  isLoadingSuggestions.value = true;
+  const users = await searchJiraUsers(lastWord.slice(1))
+    .catch(createCatchHandler('Failed to load jira users', false))
+    .finally(() => {
+      isLoadingSuggestions.value = false;
+      nextTick(() => refTextArea.value?.elTextArea?.focus());
+    });
+
+  if (!users?.data?.users) {
+    return;
+  }
+  calculateDropdownPosition(lastWord);
+  nextTick(() => {
+    suggestions.value = users.data?.users;
+  });
+
+}, { debounce: 500 });
+
+const calculateDropdownPosition = (lastWord: string) => {
+  const elTextArea = refTextArea.value!.elTextArea;
+  const selectionStart = elTextArea?.selectionStart ?? 0;
+
+  const textAreaRect = elTextArea!.getBoundingClientRect();
+  const textAreaStyle = getComputedStyle(elTextArea!);
+  const paddingLeft = Number.parseInt(textAreaStyle.getPropertyValue('padding-left').replace('px', ''));
+  const paddingTop = Number.parseInt(textAreaStyle.getPropertyValue('padding-top').replace('px', ''));
+  const lineHeight = Number.parseInt(textAreaStyle.getPropertyValue('line-height').replace('px', ''));
+
+  const textAreaOffset = (textAreaRect.top ?? 0) - (elTextArea!.parentElement?.getBoundingClientRect()?.top ?? 0);
+  const horizontalPos = selectionStart - newComment.value.slice(0, selectionStart).lastIndexOf('\n') - lastWord.length;
+  const verticalPos = elTextArea!.value.slice(0, selectionStart).split('\n').length ?? 0;
+
+  caretPos.value[0] = `calc(${paddingLeft}px + ${horizontalPos}ch)`;
+  caretPos.value[1] = (textAreaOffset + paddingTop + Math.min(lineHeight * verticalPos, textAreaRect.height)) + 'px';
+};
+
+const handleSuggestionClick = (user: any) => {
+  const lastWord = getLastWord();
+  if (!lastWord) {
+    return;
+  }
+
+  const username = `[~${user.name}]`;
+  const contentBefore = newComment.value.slice(0, newComment.value.lastIndexOf(lastWord));
+  const contentAfter = newComment.value.slice(newComment.value.lastIndexOf(lastWord) + lastWord.length);
+
+  newComment.value = contentBefore + username + contentAfter;
+
+  suggestions.value = [];
+  refTextArea.value?.elTextArea?.focus();
+};
+
+const getLastWord = () => {
+  const elTextArea = refTextArea.value?.elTextArea;
+  const selectionStart = elTextArea?.selectionStart ?? 0;
+
+  return newComment.value?.slice(0, selectionStart).split('\n')?.pop()?.split(' ')?.pop();
+};
+
+const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
+  if (event instanceof KeyboardEvent
+    && ['Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab']
+      .includes(event.key)) {
+    suggestions.value = [];
+    return;
+  }
+
+  if (event instanceof MouseEvent) {
+    suggestions.value = [];
+    return;
+  }
+
+  if (event instanceof FocusEvent) {
+    if (
+      event.relatedTarget !== event.currentTarget
+      && !(event.currentTarget as Node)?.contains(event.relatedTarget as Node)
+    ) {
+      suggestions.value = [];
+    }
+  }
+};
 </script>
 
 <template>
@@ -183,8 +287,37 @@ function sanitize(text: string) {
               && (internalCommentsAvailable
                 || selectedTab !== CommentType.Internal
               )"
+            class="position-relative"
+            tabindex="-1"
+            @blur.capture="clearSuggestions"
           >
-            <LabelTextarea v-model="newComment" :label="`New ${CommentType[selectedTab]} Comment`" />
+            <template v-if="!isInternalComment">
+              <LabelTextarea v-model="newComment" :label="`New ${CommentType[selectedTab]} Comment`" />
+            </template>
+            <template v-if="isInternalComment">
+              <LabelTextarea
+                ref="refTextArea"
+                v-model="newComment"
+                :label="`New ${CommentType[selectedTab]} Comment`"
+                :disabled="isLoadingSuggestions"
+                :loading="isLoadingSuggestions"
+                @keydown="clearSuggestions"
+                @click="clearSuggestions"
+              />
+              <DropDown
+                v-if="suggestions.length > 0"
+                :style="{ width: 'auto', left: caretPos[0], top: caretPos[1], right: 'auto' }"
+              >
+                <div
+                  v-for="user in suggestions"
+                  :key="user.name"
+                  class="item"
+                  @click="handleSuggestionClick(user)"
+                >
+                  <span v-html="(user.html)" />
+                </div>
+              </DropDown>
+            </template>
             <button type="button" class="btn btn-primary col" @click="handleCommentSave">
               Save {{ CommentType[selectedTab] }} Comment
             </button>
