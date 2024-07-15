@@ -689,3 +689,17 @@ def step_impl(context):
     flaw_detail_page.FilterTrackers.set_text(AFFECTED_MODULE_JR)
     trackersCount = flaw_detail_page.trackers_list_count("trackersList")
     assert trackersCount == context.trackersNewCount
+
+
+@when('I click state button to update flaw state')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.click_button_with_js('promoteStateBtn')
+    time.sleep(10)
+    flaw_page.wait_msg('flawPromotedMsg')
+
+
+@then('The flaw is updated to {new_state} following workflow')
+def step_impl(context, new_state):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.check_text_exist(new_state)
