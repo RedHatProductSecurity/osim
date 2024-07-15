@@ -7,7 +7,7 @@ import {
 } from '@/types/zodAffect';
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
-import { sort, equals, clone } from 'ramda';
+import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
 
 const props = defineProps<{
@@ -31,21 +31,37 @@ const savedAffects = clone(affects.value) as ZodAffectType[];
 
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 
-function sortAffects(affects: ZodAffectType[]): ZodAffectType[] {
-  return sort((a, b) => {
-    // Affects without uuid be always on the top
-    if (!a.uuid && b.uuid) return -1;
-    if (a.uuid && !b.uuid) return 1;
+// Sorting
+const sortKey = ref('ps_module');
+const sortOrder = ref(ascend);
 
-    // If an affect in edit mode, use the values from affectValuesPriorEdit
-    const aAdjusted = isBeingEdited(a) ? getAffectPriorEdit(a) : a;
-    const bAdjusted = isBeingEdited(b) ? getAffectPriorEdit(b) : b;
+const setSort = (key: string) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === ascend ? descend : ascend;
+  } else {
+    sortKey.value = key;
+    sortOrder.value = ascend;
+  }
+};
 
-    // Standard sorting
-    const moduleComparison = aAdjusted.ps_module.localeCompare(bAdjusted.ps_module);
-    if (moduleComparison !== 0) return moduleComparison;
-    return aAdjusted.ps_component.localeCompare(bAdjusted.ps_component);
-  }, affects);
+function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
+  const customSortKey = sortKey.value as keyof ZodAffectType;
+  const order = sortOrder.value;
+
+  const customSortFn = (affect: ZodAffectType) => {
+    if (customSortKey === 'trackers') return affect.trackers.length;
+    return affect[customSortKey] ?? '';
+  };
+
+  const comparator = standard
+    ? [ascend(prop('ps_module')), ascend(prop('ps_component'))]
+    : [order(customSortFn)];
+
+  return sortWith([
+    ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
+    ascend((affect: ZodAffectType) => isBeingEdited(affect) ? 0 : 1),
+    ...comparator
+  ])(affects);
 }
 
 enum displayModes {
@@ -95,14 +111,14 @@ const filteredAffects = computed(() => {
 });
 
 const sortedAffects = computed(() =>
-  sortAffects(filteredAffects.value)
+  sortAffects(filteredAffects.value, false)
 );
 
 const hasAffects = computed(() => allAffects.value.length > 0);
 
 // Affect Modules Filter
 const affectedModules = computed(() =>
-  uniques(sortAffects(allAffects.value).map((affect) => affect.ps_module)));
+  uniques(sortAffects(allAffects.value, true).map((affect) => affect.ps_module)));
 const selectedModules = ref<string[]>([]);
 
 function isModuleSelected(moduleName: string) {
@@ -589,13 +605,83 @@ const displayedTrackers = computed(() => {
                 @change="selectAllAffects()"
               />
             </th>
-            <th>Component</th>
-            <th>Module</th>
-            <th>Affectedness</th>
-            <th>Resolution</th>
-            <th>Impact</th>
-            <th>Cvss</th>
-            <th>Trackers</th>
+            <th @click="setSort('ps_component')">
+              Component
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'ps_component',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('ps_module')">
+              Module
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'ps_module',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('affectedness')">
+              Affectedness
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'affectedness',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('resolution')">
+              Resolution
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'resolution',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('impact')">
+              Impact
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'impact',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('cvss_scores')">
+              Cvss
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'cvss_scores',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
+            <th @click="setSort('trackers')">
+              Trackers
+              <i
+                :class="{
+                  'opacity-0': sortKey !== 'trackers',
+                  'bi-caret-down-fill': sortOrder === descend,
+                  'bi-caret-up-fill': sortOrder !== descend,
+                }"
+                class="bi"
+              />
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
