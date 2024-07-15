@@ -109,8 +109,7 @@ OSIM_NGINX_PROXY_CA=
       "osimVersion": {
         "rev":"dev",
         "tag":"dev",
-        "timestamp":"1970-01-01T00:00:00Z",
-        "dirty":true
+        "timestamp":"1970-01-01T00:00:00Z"
       }
     }
   ```

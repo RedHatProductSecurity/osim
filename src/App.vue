@@ -66,7 +66,6 @@ onBeforeUnmount(() => {
         | env: {{ osimRuntime.env }}
         | <span :title="osimRuntime.osimVersion.rev">
           tag: {{ osimRuntime.osimVersion.tag }}
-          <span v-if="osimRuntime.osimVersion.dirty">(dirty)</span>
         </span>
         | ts : {{ osimRuntime.osimVersion.timestamp
           .substring(0, osimRuntime.osimVersion.timestamp.indexOf('T')) }}

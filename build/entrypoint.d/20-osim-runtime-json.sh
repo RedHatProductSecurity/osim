@@ -14,13 +14,13 @@ OSIM_BACKENDS_BUGZILLA="${OSIM_BACKENDS_BUGZILLA:-http://bugzilla-service:8001}"
 OSIM_BACKENDS_JIRA="${OSIM_BACKENDS_JIRA:-http://jira-service:8002}"
 OSIM_BACKENDS_ERRATA="${OSIM_BACKENDS_ERRATA:-http://errata-service:8003}"
 OSIM_BACKENDS_JIRA_DISPLAY="${OSIM_BACKENDS_JIRA_DISPLAY:-http://jira-service:8002}"
-OSIM_VERSION='{"rev":"dev","tag":"dev","timestamp":"1970-01-01T00:00:00Z","dirty":true}'
+OSIM_VERSION='{"rev":"dev","tag":"dev","timestamp":"1970-01-01T00:00:00Z"}'
 OSIM_READONLY_MODE=${OSIM_READONLY_MODE:-false}
 
 if [ -f "/osim_build.json" ]; then
     # Add the OSIM build info
     # File format:
-    # {"rev":"dev","tag":"dev","timestamp":0,"dirty":true}
+    # {"rev":"dev","tag":"dev","timestamp":0}
     IFS= read -r -d '' OSIM_VERSION <"/osim_build.json" || :
 fi
 
