@@ -198,6 +198,14 @@ function cancelAllChanges() {
   });
 }
 
+const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
+  if (event.key === 'Escape') {
+    cancelChanges(affect);
+  } else if (event.key === 'Enter') {
+    commitChanges(affect);
+  }
+};
+
 // Modified affects
 const modifiedAffects = computed(() =>
   affects.value.filter(affect => {
@@ -713,6 +721,7 @@ const displayedTrackers = computed(() => {
                   v-if="isBeingEdited(affect)"
                   v-model="affect.ps_component"
                   class="form-control"
+                  @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>
                   {{ affect.ps_component }}
@@ -723,6 +732,7 @@ const displayedTrackers = computed(() => {
                   v-if="isBeingEdited(affect)"
                   v-model="affect.ps_module"
                   class="form-control"
+                  @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>
                   {{ affect.ps_module }}
@@ -733,6 +743,7 @@ const displayedTrackers = computed(() => {
                   v-if="isBeingEdited(affect)"
                   v-model="affect.affectedness"
                   class="form-select"
+                  @keydown="handleEdit($event, affect)"
                 >
                   <option
                     v-for="option in affectAffectedness"
@@ -752,6 +763,7 @@ const displayedTrackers = computed(() => {
                   v-if="isBeingEdited(affect)"
                   v-model="affect.resolution"
                   class="form-select"
+                  @keydown="handleEdit($event, affect)"
                 >
                   <option
                     v-for="option in resolutionOptions(affect.affectedness || '')"
@@ -772,6 +784,7 @@ const displayedTrackers = computed(() => {
                   v-if="isBeingEdited(affect)"
                   v-model="affect.impact"
                   class="form-select"
+                  @keydown="handleEdit($event, affect)"
                 >
                   <option
                     v-for="option in affectImpacts"
