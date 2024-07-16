@@ -9,6 +9,7 @@ import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
 const props = defineProps<{
   flawId: string;
@@ -117,6 +118,12 @@ const sortedAffects = computed(() =>
 const hasAffects = computed(() => allAffects.value.length > 0);
 
 // Affect Modules Filter
+const modulesExpanded = ref(true);
+
+function toggleModulesCollapse() {
+  modulesExpanded.value = !modulesExpanded.value;
+}
+
 const affectedModules = computed(() =>
   uniques(sortAffects(allAffects.value, true).map((affect) => affect.ps_module)));
 const selectedModules = ref<string[]>([]);
@@ -406,26 +413,39 @@ const displayedTrackers = computed(() => {
   <div v-if="affects" class="osim-affects-section my-2">
     <h4>Affected Offerings</h4>
     <div class="affect-modules-selection">
-      <template v-for="(moduleName) in affectedModules" :key="moduleName">
-        <button
-          v-if="moduleName"
-          type="button"
-          class="module-btn btn btn-sm"
-          :class="isModuleSelected(moduleName) ? 'btn-secondary' : 'border-gray'"
-          tabindex="-1"
-          @click="handleModuleSelection(moduleName)"
-        >
-          {{ moduleName }}
-        </button>
-      </template>
-      <button
-        v-if="selectedModules.length > 0"
-        type="button"
-        class="btn btn-primary btn-sm"
-        @click="selectedModules = []"
+      <LabelCollapsible
+        :isExpanded="modulesExpanded"
+        @setExpanded="toggleModulesCollapse"
       >
-        Clear
-      </button>
+        <template #label>
+          <label class="m-2 form-label">
+            Affected Modules
+          </label>
+        </template>
+        <template #buttons>
+          <button
+            v-if="selectedModules.length > 0"
+            type="button"
+            class="btn btn-primary btn-sm py-0"
+            style="height: 1.5rem;"
+            @click="selectedModules = []"
+          >
+            Clear
+          </button>
+        </template>
+        <template v-for="(moduleName) in affectedModules" :key="moduleName">
+          <button
+            v-if="moduleName"
+            type="button"
+            class="module-btn btn btn-sm"
+            :class="isModuleSelected(moduleName) ? 'btn-secondary' : 'border-gray'"
+            tabindex="-1"
+            @click="handleModuleSelection(moduleName)"
+          >
+            {{ moduleName }}
+          </button>
+        </template>
+      </LabelCollapsible>
     </div>
     <div class="affects-management">
       <div class="affects-toolbar d-flex pt-2 mt-2">
