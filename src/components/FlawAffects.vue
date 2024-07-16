@@ -412,6 +412,7 @@ const displayedTrackers = computed(() => {
           type="button"
           class="module-btn btn btn-sm"
           :class="isModuleSelected(moduleName) ? 'btn-secondary' : 'border-gray'"
+          tabindex="-1"
           @click="handleModuleSelection(moduleName)"
         >
           {{ moduleName }}
@@ -431,6 +432,7 @@ const displayedTrackers = computed(() => {
         <div v-if="hasAffects" class="pagination-controls d-flex gap-1">
           <button
             type="button"
+            tabindex="-1"
             class="btn btn-sm btn-secondary rounded-end-0"
             :disabled="currentPage === 1"
             @click="changePage(currentPage - 1)"
@@ -440,6 +442,7 @@ const displayedTrackers = computed(() => {
           <button
             v-for="page in totalPages"
             :key="page"
+            tabindex="-1"
             class="page-btn btn btn-sm rounded-0 btn-secondary"
             :disabled="page === currentPage"
             @click.prevent="changePage(page)"
@@ -448,6 +451,7 @@ const displayedTrackers = computed(() => {
           </button>
           <button
             type="button"
+            tabindex="-1"
             class="btn btn-sm btn-secondary rounded-start-0"
             :disabled="currentPage === totalPages || totalPages === 0"
             @click.prevent="changePage(currentPage + 1)"
@@ -807,6 +811,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Edit affect"
+                  tabindex="-1"
                   @click.stop="editAffect(affect)"
                 >
                   <i class="bi bi-pencil" />
@@ -816,6 +821,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Commit edit"
+                  tabindex="-1"
                   @click.stop="commitChanges(affect)"
                 >
                   <i class="bi bi-check" />
@@ -825,6 +831,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Remove affect"
+                  tabindex="-1"
                   @click.stop="removeAffect(affect)"
                 >
                   <i class="bi bi-trash" />
@@ -834,6 +841,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Cancel edit"
+                  tabindex="-1"
                   @click.stop="cancelChanges(affect)"
                 >
                   <i class="bi bi-x" />
@@ -843,6 +851,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Recover affect"
+                  tabindex="-1"
                   @click.stop="emit('affect:recover', affect)"
                 >
                   <i class="bi-arrow-counterclockwise" />
@@ -852,6 +861,7 @@ const displayedTrackers = computed(() => {
                   type="button"
                   class="input-group-text"
                   title="Discard changes"
+                  tabindex="-1"
                   @click.stop="restoreSavedAffect(affect)"
                 >
                   <i class="bi bi-backspace" />
