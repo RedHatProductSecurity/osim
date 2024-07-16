@@ -2,9 +2,22 @@ import { ref, onMounted, watch, watchEffect } from 'vue';import { z } from 'zod'
 import { useRoute, useRouter } from 'vue-router';
 import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
 
+export enum FilterOperator {
+  AND = 'AND',
+  OR = 'OR',
+  EQUALS = 'EQUALS',
+  CONTAINS = 'CONTAINS'
+}
+export enum FilterTextOperator {
+  EQUALS = 'EQUALS',
+  CONTAINS = 'CONTAINS'
+}
+
 type Facet = {
   field: string;
   value: string;
+  filterOperator: FilterOperator;
+  filterTextOperator: FilterTextOperator;
 };
 
 const facets = ref<Facet[]>([]);
@@ -29,12 +42,36 @@ export function useSearchParams() {
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach(key => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
-          facets.push({ field: key, value: route.query[key] as string });
+          const values = route.query[key].split(',');
+          values.forEach(value => {
+            let filterOperator = FilterOperator.AND;
+            let filterTextOperator = FilterTextOperator.EQUALS;
+            let facetValue = value;
+            if (facetValue.startsWith('~')) {
+              filterTextOperator = FilterTextOperator.CONTAINS;
+              facetValue = facetValue.substring(1);
+            }
+            if (facetValue.startsWith('-')) {
+              filterOperator = FilterOperator.OR;
+              facetValue = facetValue.substring(1);
+            }
+            facets.push({
+              filterOperator,
+              filterTextOperator,
+              field: key,
+              value: facetValue,
+            });
+          });
         }
       });
     }
 
-    facets.push({ field: '', value: '' });
+    facets.push({
+      field: '',
+      value: '',
+      filterOperator: FilterOperator.AND,
+      filterTextOperator:  FilterTextOperator.EQUALS,
+    });
     return facets;
   };
 
@@ -74,13 +111,25 @@ export function useSearchParams() {
   });
 
   function addFacet() {
-    facets.value.push({ field: '', value: '' });
+    facets.value.push({
+      field: '',
+      value: '',
+      filterOperator: FilterOperator.AND,
+      filterTextOperator: FilterTextOperator.EQUALS,
+    });
   }
 
   function removeFacet(index: number) {
+    const removedField = facets.value[index].field;
     facets.value.splice(index, 1);
     if (!facets.value.length) {
       addFacet();
+    }
+
+    // Update FilterOperator for first Item if all logic is OR
+    const sameFacets = facets.value.filter(({ field }) => field === removedField);
+    if (sameFacets.length > 0 && sameFacets.every(({ filterOperator }) => filterOperator === FilterOperator.OR)) {
+      sameFacets[0].filterOperator = FilterOperator.AND;
     }
   }
 
@@ -89,11 +138,34 @@ export function useSearchParams() {
     router.push({ name: 'search', query: { query: searchQuery } });
   }
 
+  function convertFieldValuetoQuery(item: Facet){
+    const {
+      value,
+      filterOperator = FilterOperator.AND,
+      filterTextOperator = FilterTextOperator.EQUALS,
+    } = item;
+    let searchValue = value;
+    if (filterOperator === FilterOperator.OR) {
+      searchValue = `-${searchValue}`;
+    }
+    if (filterTextOperator == FilterTextOperator.CONTAINS) {
+      searchValue = `~${searchValue}`;
+    }
+    return searchValue;
+  }
+
   function submitAdvancedSearch() {
     const params = facets.value.reduce(
-      (fields, { field, value }) => {
+      (fields, item) => {
+        const { field, value } = item;
         if (field && value || allowedEmptyFieldMapping[field]) {
-          fields[field] = value;
+          const searchValue = convertFieldValuetoQuery(item);
+          if (!fields[field]) {
+            fields[field] = searchValue;
+          } else {
+            const values = fields[field].split(',');
+            fields[field] = [...values, searchValue].join(',');
+          }
         }
         return fields;
       },

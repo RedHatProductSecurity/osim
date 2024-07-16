@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import { useRoute } from 'vue-router';
 import { flawFields } from '@/constants/flawFields';
-import { useSearchParams } from '@/composables/useSearchParams';
+import { useSearchParams, FilterOperator, FilterTextOperator } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
 import { affectAffectedness } from '@/types/zodAffect';
 import { sort } from 'ramda';
@@ -48,10 +48,14 @@ const sortFieldNames = sort((fieldA: string, fieldB: string) =>
   nameForOption(fieldA).localeCompare(nameForOption(fieldB))
 );
 
-const chosenFields = computed(() => facets.value.map(({ field }) => field));
+const shouldShowFilterOperator = (chooseField: string, facetIndex: number) => {
+  const sameFields = facets.value
+    .map(({ field }, index) => ({ field, index }))
+    .filter(({ field }) => field === chooseField);
 
-const unchosenFields = (chosenField: string) =>
-  sortFieldNames(flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField));
+  // check have same field search and hid filterOperator for first item
+  return sameFields.length > 1 && facetIndex !== sameFields[0].index;
+};
 
 
 const optionsFor = (field: string) =>
@@ -70,6 +74,14 @@ const optionsFor = (field: string) =>
     ],
     major_incident_state: flawIncidentStates,
     affects__affectedness: affectAffectedness,
+    filterOperator: [
+      FilterOperator.AND,
+      FilterOperator.OR
+    ],
+    filterTextOperator: [
+      FilterTextOperator.EQUALS,
+      FilterTextOperator.CONTAINS
+    ]
   })[field] || null;
 const shouldShowAdvanced = ref(route.query.mode === 'advanced');
 </script>
@@ -86,7 +98,7 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
             value=""
             disabled
           >Select field...</option>
-          <option v-for="field in unchosenFields(facet.field)" :key="field" :value="field">
+          <option v-for="field in sortFieldNames(flawFields)" :key="field" :value="field">
             {{ nameForOption(field) }}
           </option>
         </select>
@@ -107,6 +119,26 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
           class="form-control"
           :disabled="!facet.field"
         />
+        <select
+          v-if="shouldShowFilterOperator(facet.field, index) && facet.value"
+          v-model="facet.filterOperator"
+          class="form-select search-facet-field-logic"
+          @submit.prevent
+        >
+          <option v-for="option in optionsFor('filterOperator')" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
+        <select
+          v-if="!optionsFor(facet.field) && facet.value"
+          v-model="facet.filterTextOperator"
+          class="form-select search-facet-field-logic"
+          @submit.prevent
+        >
+          <option v-for="option in optionsFor('filterTextOperator')" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
         <button class="btn btn-outline-primary" type="button" @click="removeFacet(index)">
           <i class="bi-x" aria-label="remove field"></i>
         </button>
@@ -136,6 +168,12 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
   select.search-facet-field {
     display: flex;
     width: auto;
+    flex-grow: 0;
+  }
+
+  select.search-facet-field-logic {
+    display: flex;
+    width: 10%;
     flex-grow: 0;
   }
 }
