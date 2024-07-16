@@ -128,6 +128,12 @@ const affectedModules = computed(() =>
   uniques(sortAffects(allAffects.value, true).map((affect) => affect.ps_module)));
 const selectedModules = ref<string[]>([]);
 
+function moduleTrackersCount(moduleName: string) {
+  return affects.value
+    .filter(affect => affect.ps_module === moduleName)
+    .reduce((count, affect) => count + affect.trackers.length, 0);
+}
+
 function isModuleSelected(moduleName: string) {
   return selectedModules.value.includes(moduleName);
 }
@@ -439,10 +445,15 @@ const displayedTrackers = computed(() => {
             type="button"
             class="module-btn btn btn-sm"
             :class="isModuleSelected(moduleName) ? 'btn-secondary' : 'border-gray'"
+            :title="moduleTrackersCount(moduleName) === 0 ? 'This module has no trackers associated' : ''"
             tabindex="-1"
             @click="handleModuleSelection(moduleName)"
           >
-            {{ moduleName }}
+            <i
+              v-if="moduleTrackersCount(moduleName) === 0"
+              class="m-1 bi bi-ban"
+            />
+            <span>{{ moduleName }}</span>
           </button>
         </template>
       </LabelCollapsible>
