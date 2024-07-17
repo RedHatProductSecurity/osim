@@ -703,3 +703,18 @@ def step_impl(context):
 def step_impl(context, new_state):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.check_text_exist(new_state)
+
+
+@when('I click reject button to reject a flaw')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.click_button_with_js('rejectStateBtn')
+    flaw_page.set_reject_reason(generate_random_text())
+    flaw_page.click_button_with_js('rejectFlawBtn')
+    flaw_page.wait_msg('flawRejectedMsg')
+
+
+@then('The flaw is rejected')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.check_text_exist('REJECTED')

@@ -28,3 +28,7 @@ Feature: Flaw detail testing on embargo flaw
     Scenario: Make flaw public and add public data
       When I unembargo this flaw and add public date
       Then Flaw is unembargoed and have public date
+
+    Scenario: Reject a flaw
+      When I click reject button to reject a flaw
+      Then The flaw is rejected
