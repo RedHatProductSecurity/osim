@@ -314,6 +314,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                   class="item"
                   @click="handleSuggestionClick(user)"
                 >
+                  <!--eslint-disable-next-line vue/no-v-html -->
                   <span v-html="(user.html)" />
                 </div>
               </DropDown>
@@ -360,6 +361,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                   {{ CommentType[selectedTab] }}
                 </span>
               </p>
+              <!--eslint-disable-next-line vue/no-v-html -->
               <p class="osim-flaw-comment" v-html="sanitize(comment.body)" />
             </li>
           </ul>

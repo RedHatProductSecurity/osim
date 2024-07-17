@@ -38,6 +38,7 @@ fetchChangeLog();
     <Modal :show="isModalOpen" @close="closeModal">
       <template #header>
         <div class="d-flex justify-content-between w-100 alert alert-info m-0">
+          <!--eslint-disable-next-line vue/no-v-html -->
           <div v-html="html.header" />
           <div>
             <button
@@ -51,6 +52,7 @@ fetchChangeLog();
 
       </template>
       <template #body>
+        <!--eslint-disable-next-line vue/no-v-html -->
         <div class="px-2" v-html="html.body" />
       </template>
     </Modal>

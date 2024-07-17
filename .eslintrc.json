@@ -78,7 +78,8 @@
       {
         "ignores": ["Modal", "Tabs", "Toast", "Login", "Navbar", "Settings"]
       }
-    ]
+    ],
+    "vue/no-v-html": "error"
   }
 }
 

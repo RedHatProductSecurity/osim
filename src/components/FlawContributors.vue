@@ -101,6 +101,7 @@ const remove = (index: number) => {
           :key="contributor.name"
           @click="add(contributor)"
         >
+          <!--eslint-disable-next-line vue/no-v-html -->
           <span v-html="sanitize(contributor.html)" />
         </div>
       </DropDown>
