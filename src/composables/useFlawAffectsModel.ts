@@ -291,5 +291,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     wereAffectsModified,
     affectsToDelete,
     didAffectsChange,
+    initialAffects,
   };
 }
