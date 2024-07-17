@@ -549,7 +549,7 @@ const displayedTrackers = computed(() => {
             title="Some affects will be modified on save changes"
             @click.stop="toggleDisplayMode(displayModes.MODIFIED)"
           >
-            <i class="bi bi-arrow-down-up me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-file-earmark-diff me-1 h-fit" style="margin-top: .1ch;" />
             <span>Modified {{ modifiedAffects.length }}</span>
           </div>
           <div
@@ -772,18 +772,18 @@ const displayedTrackers = computed(() => {
               <td>
                 <div class="ps-3">
                   <i
-                    v-if="isNewAffect(affect)"
-                    class="bi bi-plus-lg"
-                    title="This affect is set for creation on save"
-                  />
-                  <i
-                    v-else-if="isBeingEdited(affect)"
+                    v-if="isBeingEdited(affect)"
                     class="bi bi-pencil"
                     title="This affect is currently being edited"
                   />
                   <i
+                    v-else-if="isNewAffect(affect)"
+                    class="bi bi-plus-lg"
+                    title="This affect is set for creation on save"
+                  />
+                  <i
                     v-else-if="isModified(affect)"
-                    class="bi bi-arrow-down-up"
+                    class="bi bi-file-earmark-diff"
                     title="This affect has modifications to save"
                   />
                   <i
@@ -791,7 +791,7 @@ const displayedTrackers = computed(() => {
                     class="bi bi-trash"
                     title="This affect is set for deletion on save"
                   />
-                  <i v-else class="bi bi-floppy" title="This affect is saved" />
+                  <i v-else class="bi bi-database-check" title="This affect is saved" />
                 </div>
               </td>
               <td>
