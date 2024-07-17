@@ -712,7 +712,7 @@ const displayedTrackers = computed(() => {
               />
             </th>
             <th @click="setSort('cvss_scores')">
-              Cvss
+              CVSS
               <i
                 :class="{
                   'opacity-0': sortKey !== 'cvss_scores',
