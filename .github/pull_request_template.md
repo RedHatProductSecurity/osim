@@ -2,9 +2,6 @@
 
 ## Checklist:
 
-- [ ] Linting passed
-- [ ] Type checks passed
-- [ ] Tests suite passed
 - [ ] Commits consolidated
 - [ ] Changelog updated
 - [ ] Test cases added/updated
