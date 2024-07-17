@@ -33,10 +33,13 @@ const savedAffects = clone(affects.value) as ZodAffectType[];
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 
 // Sorting
-const sortKey = ref('ps_module');
+type sortKeys = keyof Pick<ZodAffectType,
+  'ps_module' | 'ps_component' | 'trackers' | 'affectedness' | 'resolution' | 'impact' | 'cvss_scores'
+>;
+const sortKey = ref<sortKeys>('ps_module');
 const sortOrder = ref(ascend);
 
-const setSort = (key: string) => {
+const setSort = (key: sortKeys) => {
   if (sortKey.value === key) {
     sortOrder.value = sortOrder.value === ascend ? descend : ascend;
   } else {
@@ -46,17 +49,22 @@ const setSort = (key: string) => {
 };
 
 function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
-  const customSortKey = sortKey.value as keyof ZodAffectType;
+  const customSortKey = sortKey.value;
   const order = sortOrder.value;
 
   const customSortFn = (affect: ZodAffectType) => {
-    if (customSortKey === 'trackers') return affect.trackers.length;
-    return affect[customSortKey] ?? '';
+    if (customSortKey === 'trackers') {
+      return affect.trackers.length;
+    }
+    else if (customSortKey === 'cvss_scores') {
+      return affect[customSortKey].length;
+    }
+    return affect[customSortKey] || 0;
   };
 
   const comparator = standard
-    ? [ascend(prop('ps_module')), ascend(prop('ps_component'))]
-    : [order(customSortFn)];
+    ? [ascend<ZodAffectType>(prop('ps_module'))]
+    : [order<ZodAffectType>(customSortFn)];
 
   return sortWith([
     ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
