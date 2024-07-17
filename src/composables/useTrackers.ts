@@ -2,6 +2,7 @@ import { computed, ref, watch, type Ref } from 'vue';
 
 import { getTrackersForFlaws, type TrackersPost, fileTrackingFor } from '@/services/TrackerService';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import { getRelatedFlaws } from '@/services/FlawService';
 
 export type UpdateStream = ModuleComponentProductStream & UpdateStreamMeta;
 type ZodTrackerTypeWithAffect = ZodTrackerType & ZodAffectType;
@@ -33,6 +34,35 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   const trackerSelections = ref<Map<UpdateStream, boolean>>(new Map());
   const moduleComponents = ref<ModuleComponent[]>([]);
   const isFilingTrackers = ref(false);
+  const filterString = ref('');
+
+  getTrackersForFlaws({ flaw_uuids: [flawUuid] })
+    .then((response: any) => {
+      moduleComponents.value = response.modules_components;
+    })
+    .catch(console.error);
+
+  watch(moduleComponents, () => {
+    moduleComponents.value.forEach((moduleComponent) => {
+      const affect = affects.value.find((matchingAffect) => matchingAffect.uuid === moduleComponent.affect.uuid);
+      const trackers = availableUpdateStreams.value.filter((stream) => affect && stream.affectUuid === affect.uuid);
+      for (const tracker of trackers) {
+        trackerSelections.value.set(tracker as UpdateStream, Boolean(tracker.selected));
+      }
+    });
+  });
+
+  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent) =>
+    moduleComponent.streams.map((stream: UpdateStream) => ({
+      ...stream,
+      ps_component: moduleComponent.ps_component,
+      ps_module: moduleComponent.ps_module,
+      affectUuid: moduleComponent.affect.uuid
+    }))
+  ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
+    (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
+      && tracker.ps_component === stream.ps_component
+  )));
 
   const trackedAffectUuids = computed(() => affects.value.flatMap(
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
@@ -53,17 +83,6 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     })
   );
 
-  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent) =>
-    moduleComponent.streams.map((stream: UpdateStream) => ({
-      ...stream,
-      ps_component: moduleComponent.ps_component,
-      ps_module: moduleComponent.ps_module,
-      affectUuid: moduleComponent.affect.uuid
-    }))
-  ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
-    (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
-      && tracker.ps_component === stream.ps_component
-  )));
 
   const sortedStreams = computed(
     (): UpdateStream[] => availableUpdateStreams.value
@@ -85,7 +104,6 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     (): UpdateStream[] => sortedStreams.value.filter((tracker) => trackerSelections.value.get(tracker))
   );
 
-  const filterString = ref('');
 
   const untrackedAffects = computed(() => affects.value.filter((affect) => affect.trackers.length === 0));
 
