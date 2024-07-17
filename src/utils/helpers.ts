@@ -41,42 +41,6 @@ export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T 
   return objectIterator(sourceObj);
 }
 
-// export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T {
-//   return JSON.parse(JSON.stringify(deepToRaw(sourceObj)));
-// }
-
-// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
-export const groupBy = <T>(
-  array: T[],
-  predicate: (value: T, index: number, array: T[]) => string,
-) =>
-  array.reduce(
-    (acc, value, index, array) => {
-      (acc[predicate(value, index, array)] ||= []).push(value);
-      return acc;
-    },
-    {} as { [key: string]: T[] },
-  );
-
-export const assignKeyValue = (object: Record<string, any>, key: string, value: any = null) => {
-  object[key] = value;
-  return object;
-};
-
-export const objectMap = (object: Record<string, any>, mapFn: (key: string, value: any) => any) =>
-  Object.keys(object).reduce(
-    (acc, key) => assignKeyValue(acc, key, mapFn(key, object[key])),
-    {} as Record<string, any>,
-  );
-
-export const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
-  groupBy(
-    array
-      .filter((item: T) => item[key])
-      .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
-    (item: T) => item[key],
-  );
-
 type DeepMappable = any[] | Record<string, any>;
 
 const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
@@ -108,4 +72,13 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 
 export function getRhCvss3(scores: any[]) {
   return getSpecficCvssScore(scores, 'RH', 'V3');
+}
+
+type WithModuleComponent = {
+  ps_component: string;
+  ps_module: string;
+};
+
+export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
+  return first.ps_component === second.ps_component && first.ps_module === second.ps_module;
 }
