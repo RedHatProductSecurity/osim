@@ -519,27 +519,29 @@ const displayedTrackers = computed(() => {
           <span v-if="!hasAffects" class="mb-4">
             This flaw has no affects
           </span>
-          <span
+          <div
             v-if="selectedAffects.length > 0"
-            class="badge border border-secondary bg-light-gray text-black"
+            class="badge d-flex border border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.SELECTED }"
             style="cursor: pointer;"
             title="There are some affects selected"
             @click.stop="toggleDisplayMode(displayModes.SELECTED)"
           >
-            Selected {{ selectedAffects.length }}
-          </span>
-          <span
+            <i class="bi bi-check-square me-1 h-fit" style="margin-top: .1ch;" />
+            <span>Selected {{ selectedAffects.length }}</span>
+          </div>
+          <div
             v-if="affectsBeingEdited.length > 0"
-            class="badge border border-warning bg-light-yellow text-black"
+            class="badge d-flex border border-warning bg-light-yellow text-black"
             :class="{ 'bg-warning': displayMode === displayModes.EDITING }"
             style="cursor: pointer;"
             title="Some affects are being edited"
             @click.stop="toggleDisplayMode(displayModes.EDITING)"
           >
-            Editing {{ affectsBeingEdited.length }}
-          </span>
-          <span
+            <i class="bi bi-pencil me-1 h-fit" style="margin-top: .1ch;" />
+            <span>Editing {{ affectsBeingEdited.length }}</span>
+          </div>
+          <div
             v-if="modifiedAffects.length > 0"
             class="badge border border-success bg-light-green text-black"
             :class="{ 'bg-success': displayMode === displayModes.MODIFIED }"
@@ -547,28 +549,31 @@ const displayedTrackers = computed(() => {
             title="Some affects will be modified on save changes"
             @click.stop="toggleDisplayMode(displayModes.MODIFIED)"
           >
-            Modified {{ modifiedAffects.length }}
-          </span>
-          <span
+            <i class="bi bi-arrow-down-up me-1 h-fit" style="margin-top: .1ch;" />
+            <span>Modified {{ modifiedAffects.length }}</span>
+          </div>
+          <div
             v-if="affectsToDelete.length > 0"
-            class="badge border border-primary"
+            class="badge d-flex border border-primary"
             :class="{ 'bg-primary text-white': displayMode === displayModes.DELETED }"
             style="background-color: #ffe3d9; color: black; cursor: pointer;"
-            title="Some affects will be removed on save changes"
+            title="Some affects will be deleted on save changes"
             @click.stop="toggleDisplayMode(displayModes.DELETED)"
           >
-            To delete {{ affectsToDelete.length }}
-          </span>
-          <span
+            <i class="bi bi-trash me-1 h-fit" style="margin-top: .1ch;" />
+            <span>Removed {{ affectsToDelete.length }}</span>
+          </div>
+          <div
             v-if="newAffects.length > 0"
-            class="badge border border-info bg-light-teal text-black"
+            class="badge d-flex border border-info bg-light-teal text-black"
             :class="{ 'bg-info': displayMode === displayModes.CREATED }"
             style="cursor: pointer;"
             title="Some affects will be created on save changes"
             @click.stop="toggleDisplayMode(displayModes.CREATED)"
           >
-            To create {{ newAffects.length }}
-          </span>
+            <i class="bi bi-plus-lg me-1 h-fit" style="margin-top: .1ch;" />
+            <span>Added {{ newAffects.length }}</span>
+          </div>
         </div>
         <div class="affects-table-actions ms-auto">
           <button
@@ -632,10 +637,12 @@ const displayedTrackers = computed(() => {
             title="Deselect all selected affects"
             @click.prevent="selectedAffects = [];"
           >
-            Deselect
+            <i class="bi bi-x-square me-1" />
+            <span>Deselect</span>
           </button>
           <button type="button" class="btn btn-secondary ms-3" @click.prevent="addNewAffect()">
-            Add New Affect
+            <i class="bi bi-plus-lg me-1" />
+            <span>Add New Affect</span>
           </button>
         </div>
       </div>
@@ -655,6 +662,9 @@ const displayedTrackers = computed(() => {
                 :checked="areAllAffectsSelected"
                 @change="selectAllAffects()"
               />
+            </th>
+            <th>
+              <!-- State -->
             </th>
             <th @click="setSort('ps_component')">
               Component
@@ -758,6 +768,31 @@ const displayedTrackers = computed(() => {
                   :disabled="isBeingEdited(affect) || isRemoved(affect)"
                   @click.stop="toggleAffectSelection(affect)"
                 />
+              </td>
+              <td>
+                <div class="ps-3">
+                  <i
+                    v-if="isNewAffect(affect)"
+                    class="bi bi-plus-lg"
+                    title="This affect is set for creation on save"
+                  />
+                  <i
+                    v-else-if="isBeingEdited(affect)"
+                    class="bi bi-pencil"
+                    title="This affect is currently being edited"
+                  />
+                  <i
+                    v-else-if="isModified(affect)"
+                    class="bi bi-arrow-down-up"
+                    title="This affect has modifications to save"
+                  />
+                  <i
+                    v-else-if="isRemoved(affect)"
+                    class="bi bi-trash"
+                    title="This affect is set for deletion on save"
+                  />
+                  <i v-else class="bi bi-floppy" title="This affect is saved" />
+                </div>
               </td>
               <td>
                 <input
@@ -974,7 +1009,7 @@ const displayedTrackers = computed(() => {
         user-select: none;
       }
 
-      th:not(:nth-of-type(9)) {
+      th:not(:nth-of-type(10), :nth-of-type(2)) {
         cursor: pointer;
       }
 
@@ -1022,27 +1057,30 @@ const displayedTrackers = computed(() => {
           width: 2%;
         }
         &:nth-of-type(2) {
-          width: 20%;
+          width: 4%;
         }
         &:nth-of-type(3) {
           width: 20%;
         }
         &:nth-of-type(4) {
-          width: 10%;
+          width: 20%;
         }
         &:nth-of-type(5) {
-          width: 8%;
+          width: 10%;
         }
         &:nth-of-type(6) {
           width: 8%;
         }
         &:nth-of-type(7) {
-          width: 10%;
+          width: 8%;
         }
         &:nth-of-type(8) {
           width: 10%;
         }
         &:nth-of-type(9) {
+          width: 10%;
+        }
+        &:nth-of-type(10) {
           width: 8%;
         }
       }
