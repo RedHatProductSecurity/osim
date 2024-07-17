@@ -47,7 +47,7 @@ export const LoadingAnimationDirective: Directive = {
   unmounted: (el) => {
     const loader = loaders.get(el);
     if (loader) {
-      el.removeChild(loader);
+      loader.remove();
     }
   },
 };
