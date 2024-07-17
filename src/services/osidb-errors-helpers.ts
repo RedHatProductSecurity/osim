@@ -26,8 +26,13 @@ function parseObjectError(maybeObject: any): string {
     : maybeObject.toString();
 }
 
-export function parseOsidbErrors(errors: any[]) {
-  return errors.map(getDisplayedOsidbError).join('\n\n');
+function parseOsidbErrorsJson(data: Record<string, any>) {
+  return Object.entries(data)
+    .filter(([key]) => !['dt', 'env', 'revision', 'version'].includes(key))
+    .map(([key, value]) => {
+      const printableValue = value.toString() === '[object Object]' ? JSON.stringify(value, null, 2) : value;
+      return `${key}: ${printableValue}`;
+    });
 }
 
 function parseOsidbHtmlError(error: any) {
@@ -45,8 +50,6 @@ function parseOsidbHtmlError(error: any) {
   return 'Likely error between OSIDB and database:\n' + text;
 }
 
-function parseOsidbErrorsJson(data: Record<string, any>) {
-  return Object.entries(data)
-    .filter(([key]) => !['dt', 'env', 'revision', 'version'].includes(key))
-    .map(([key, value]) => `${key}: ${value}`);
+export function parseOsidbErrors(errors: any[]) {
+  return errors.map(getDisplayedOsidbError).join('\n\n');
 }
