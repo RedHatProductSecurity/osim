@@ -115,6 +115,18 @@ export async function putFlawCvssScores(
     .catch(createCatchHandler('CVSS Scores Update Error'));
 }
 
+export async function deleteFlawCvssScores(
+  flawId: string,
+  cvssScoresId: string,
+) {
+  return osidbFetch({
+    method: 'delete',
+    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'CVSS score deleted.' }))
+    .catch(createCatchHandler('Error deleting CVSS score:'));
+}
+
 // {
 //   "comment": "string",
 //   "cvss_version": "string",

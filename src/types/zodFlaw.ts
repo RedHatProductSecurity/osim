@@ -89,7 +89,7 @@ export const FlawCVSSSchema = z.object({
   cvss_version: z.string(),
   flaw: z.string().uuid(),
   issuer: z.nativeEnum(IssuerEnum),
-  score: z.number(), // $float
+  score: z.number().nullable(), // $float
   uuid: z.string().uuid().nullable(), // read-only
   vector: z.string().nullable(),
   embargoed: z.boolean().nullable(),

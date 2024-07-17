@@ -1,4 +1,4 @@
-import { putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
+import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import { computed, ref, watch, type Ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { groupWith, equals } from 'ramda';
@@ -92,9 +92,14 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   async function saveCvssScores() {
     if (flawRhCvss3.value?.created_dt) {
+      // Handle existing CVSS score
+      if (flawRhCvss3.value?.vector === null && flawRhCvss3.value?.uuid != null) {
+        return deleteFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid);
+      }
       return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value as unknown);
     }
 
+    // Handle newly created CVSS score
     const requestBody = {
       // "score":  is recalculated based on the vector by OSIDB and does not need to be included
       comment: flawRhCvss3.value?.comment,
