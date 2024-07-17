@@ -34,6 +34,7 @@ import FlawAffects from './FlawAffects.vue';
 const props = defineProps<{
   flaw: ZodFlawType;
   mode: 'create' | 'edit';
+  relatedFlaws: ZodFlawType[];
 }>();
 
 const emit = defineEmits<{
@@ -429,9 +430,11 @@ const createdDate = computed(() => {
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
+            :flaw="flaw"
+            :relatedFlaws="relatedFlaws"
             @affect:recover="(affect: ZodAffectType) => recoverAffect(affectsToDelete.indexOf(affect))"
             @affect:remove="(affect: ZodAffectType) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects()"
+            @affects:refresh="refreshAffects"
             @affect:add="addAffect"
           />
         </div>
