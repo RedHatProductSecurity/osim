@@ -31,7 +31,8 @@ import IssueFieldState from './IssueFieldState.vue';
 import FlawAffects from './FlawAffects.vue';
 
 const props = defineProps<{
-  flaw: any;
+  flaw: ZodFlawType;
+  relatedFlaws: ZodFlawType[];
   mode: 'create' | 'edit';
 }>();
 
@@ -440,6 +441,8 @@ const createdDate = computed(() => {
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
+            :flaw="flaw"
+            :relatedFlaws="relatedFlaws"
             @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
             @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
             @affects:refresh="refreshAffects"
