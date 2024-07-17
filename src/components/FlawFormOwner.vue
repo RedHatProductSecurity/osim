@@ -89,6 +89,7 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserPicker
           class="item"
           @click.prevent.stop="handleSuggestionClick(onBlur, user)"
         >
+          <!--eslint-disable-next-line vue/no-v-html -->
           <span v-html="sanitize(user.html)" />
         </div>
       </template>

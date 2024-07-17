@@ -16,7 +16,7 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
-  "ignorePatterns": ["dist/*"],
+  "ignorePatterns": ["dist/*","package*.json"],
   "plugins": ["@typescript-eslint", "vue", "@stylistic"],
   "rules": {
     "@stylistic/array-element-newline": ["error", "consistent"],
@@ -78,7 +78,8 @@
       {
         "ignores": ["Modal", "Tabs", "Toast", "Login", "Navbar", "Settings"]
       }
-    ]
+    ],
+    "vue/no-v-html": "error"
   }
 }
 

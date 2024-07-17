@@ -1,0 +1,52 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - uat
+    paths-ignore:
+      - 'selenium/**'
+      - 'features/**'
+      - 'build/**'
+  pull_request:
+    paths-ignore:
+      - 'selenium/**'
+      - 'features/**'
+      - 'build/**'
+  release:
+    types: [published]
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/iron' # '20.x'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn type-check
+
+  lint-ts-vue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/iron' # '20.x'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint-ts-vue
+
+  lint-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/iron' # '20.x'
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint-style
