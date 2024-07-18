@@ -115,12 +115,16 @@ const filteredAffects = computed(() => {
     toggleDisplayMode(displayModes.ALL);
   }
   return displayedAffects.value.filter(affect => {
-    const matchesSelectedModules = selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
-    const matchesAffectednessFilter = affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
-    const matchesResolutionFilter = resolutionsFilter.value.length === 0 || resolutionsFilter.value.includes(affect.resolution ?? '');
-    const matchesImpactsFilter = impactsFilter.value.length === 0 || impactsFilter.value.includes(affect.impact ?? '');
+    const matchesSelectedModules =
+      selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
+    const matchesAffectednessFilter =
+      affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
+    const matchesResolutionFilter =
+      resolutionsFilter.value.length === 0 || resolutionsFilter.value.includes(affect.resolution ?? '');
+    const matchesImpactsFilter =
+      impactsFilter.value.length === 0 || impactsFilter.value.includes(affect.impact ?? '');
     return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
-  })
+  });
 });
 
 const sortedAffects = computed(() =>
@@ -456,9 +460,10 @@ const displayedTrackers = computed(() => {
 <template>
   <div v-if="affects" class="osim-affects-section my-2">
     <h4>Affected Offerings</h4>
-    <div class="affect-modules-selection" :class="{'mb-4': modulesExpanded}">
+    <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
         :isExpanded="modulesExpanded"
+        :isExpandable="hasAffects"
         @setExpanded="toggleModulesCollapse"
       >
         <template #label>
@@ -482,19 +487,24 @@ const displayedTrackers = computed(() => {
             v-if="moduleName"
             type="button"
             class="module-btn btn btn-sm"
-            :class="isModuleSelected(moduleName) ? 'btn-secondary' : 'border-gray'"
+            :class="{
+              'btn-secondary': isModuleSelected(moduleName),
+              'border-gray': !isModuleSelected(moduleName),
+              'fw-bold': moduleTrackersCount(moduleName) === 0,
+            }"
             :title="moduleTrackersCount(moduleName) === 0 ? 'This module has no trackers associated' : ''"
             tabindex="-1"
             @click="handleModuleSelection(moduleName)"
           >
             <i
               v-if="moduleTrackersCount(moduleName) === 0"
-              class="m-1 bi bi-ban"
+              class="bi bi-asterisk me-1"
             />
             <span>{{ moduleName }}</span>
           </button>
         </template>
       </LabelCollapsible>
+      <span v-if="affectedModules.length === 0" class="my-2 p-2">No affected modules to display</span>
     </div>
     <div class="affects-management">
       <div v-if="hasAffects" class="pagination-controls d-flex gap-1 my-2">
@@ -546,9 +556,6 @@ const displayedTrackers = computed(() => {
           >
             All affects {{ allAffects.length }}
           </span>
-          <span v-if="!hasAffects" class="mb-4">
-            This flaw has no affects
-          </span>
           <div
             v-if="selectedAffects.length > 0"
             class="badge d-flex border border-secondary bg-light-gray text-black"
@@ -557,68 +564,60 @@ const displayedTrackers = computed(() => {
             title="There are some affects selected"
             @click.stop="toggleDisplayMode(displayModes.SELECTED)"
           >
-            <i class="bi bi-check-square me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-check-square me-1 h-fit" />
             <span>Selected {{ selectedAffects.length }}</span>
           </div>
           <div
             v-if="affectsBeingEdited.length > 0"
-            class="badge d-flex border border-warning bg-light-yellow text-black"
-            :class="{ 'bg-warning': displayMode === displayModes.EDITING }"
-            style="cursor: pointer;"
+            class="badge d-flex border bg-light-yellow"
+            style="cursor: pointer; border-color: #73480b !important; color: #73480b;"
+            :style="displayMode === displayModes.EDITING ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
             title="Some affects are being edited"
             @click.stop="toggleDisplayMode(displayModes.EDITING)"
           >
-            <i class="bi bi-pencil me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-pencil me-1 h-fit" />
             <span>Editing {{ affectsBeingEdited.length }}</span>
           </div>
           <div
             v-if="modifiedAffects.length > 0"
-            class="badge border border-success bg-light-green text-black"
-            :class="{ 'bg-success': displayMode === displayModes.MODIFIED }"
-            style="cursor: pointer;"
+            class="badge border bg-light-green"
+            style="cursor: pointer; color: #204d00; border-color: #204d00 !important;"
+            :style="displayMode === displayModes.MODIFIED
+              ? 'background-color: #204d00 !important; color: #d1f1bb;' : ''"
             title="Some affects will be modified on save changes"
             @click.stop="toggleDisplayMode(displayModes.MODIFIED)"
           >
-            <i class="bi bi-file-earmark-diff me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-file-earmark-diff me-1 h-fit" />
             <span>Modified {{ modifiedAffects.length }}</span>
           </div>
           <div
             v-if="affectsToDelete.length > 0"
-            class="badge d-flex border border-primary"
-            :class="{ 'bg-primary text-white': displayMode === displayModes.DELETED }"
-            style="background-color: #ffe3d9; color: black; cursor: pointer;"
+            class="badge d-flex border"
+            style="background-color: #ffe3d9; color: #731f00; cursor: pointer; border-color: #731f00 !important;"
+            :style="displayMode === displayModes.DELETED ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
             title="Some affects will be deleted on save changes"
             @click.stop="toggleDisplayMode(displayModes.DELETED)"
           >
-            <i class="bi bi-trash me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-trash me-1 h-fit" />
             <span>Removed {{ affectsToDelete.length }}</span>
           </div>
           <div
             v-if="newAffects.length > 0"
-            class="badge d-flex border border-info bg-light-teal text-black"
-            :class="{ 'bg-info': displayMode === displayModes.CREATED }"
-            style="cursor: pointer;"
+            class="badge d-flex border bg-light-teal"
+            style="background-color: #e0f0ff; color: #036; cursor: pointer; border-color: #036 !important;"
+            :style="displayMode === displayModes.CREATED ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
             title="Some affects will be created on save changes"
             @click.stop="toggleDisplayMode(displayModes.CREATED)"
           >
-            <i class="bi bi-plus-lg me-1 h-fit" style="margin-top: .1ch;" />
+            <i class="bi bi-plus-lg me-1 h-fit" />
             <span>Added {{ newAffects.length }}</span>
           </div>
         </div>
         <div class="affects-table-actions ms-auto">
           <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="btn btn-secondary btn-sm"
-            title="Edit all selected affects"
-            @click.prevent="editSelectedAffects()"
-          >
-            <i class="bi bi-pencil" />
-          </button>
-          <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
-            class="btn btn-secondary btn-sm"
+            class="btn btn-sm text-white"
             title="Commit changes on all affects being edited"
             @click.prevent="commitAllChanges()"
           >
@@ -627,7 +626,7 @@ const displayedTrackers = computed(() => {
           <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
-            class="btn btn-secondary btn-sm"
+            class="btn btn-sm text-white"
             title="Cancel changes on all affects being edited"
             @click.prevent="cancelAllChanges()"
           >
@@ -636,25 +635,16 @@ const displayedTrackers = computed(() => {
           <button
             v-if="modifiedAffects.length > 0"
             type="button"
-            class="btn btn-secondary btn-sm"
+            class="btn btn-sm text-white"
             title="Discard all affect modifications"
             @click.prevent="restoreAllSavedAffects()"
           >
             <i class="bi bi-backspace" />
           </button>
           <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="btn btn-secondary btn-sm"
-            title="Remove all selected affects"
-            @click.prevent="removeSelectedAffects()"
-          >
-            <i class="bi bi-trash" />
-          </button>
-          <button
             v-if="affectsToDelete.length > 0"
             type="button"
-            class="btn btn-secondary btn-sm"
+            class="btn btn-sm text-white"
             title="Recover all removed affects"
             @click.prevent="recoverAllAffects()"
           >
@@ -663,24 +653,41 @@ const displayedTrackers = computed(() => {
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="btn btn-secondary btn-sm"
+            class="btn btn-sm text-white"
+            title="Edit all selected affects"
+            @click.prevent="editSelectedAffects()"
+          >
+            <i class="bi bi-pencil" />
+          </button>
+          <button
+            v-if="selectedAffects.length > 0"
+            type="button"
+            class="btn btn-sm text-white"
+            title="Remove all selected affects"
+            @click.prevent="removeSelectedAffects()"
+          >
+            <i class="bi bi-trash" />
+          </button>
+          <button
+            v-if="selectedAffects.length > 0"
+            type="button"
+            class="btn btn-sm text-white"
             title="Deselect all selected affects"
             @click.prevent="selectedAffects = [];"
           >
-            <i class="bi bi-x-square me-1" />
-            <span>Deselect</span>
+            <div class="d-flex">
+              <i class="bi bi-x-square me-2" />
+              <span>Deselect</span>
+            </div>
           </button>
-          <button type="button" class="btn btn-secondary ms-3" @click.prevent="addNewAffect()">
-            <i class="bi bi-plus-lg me-1" />
-            <span>Add New Affect</span>
+          <button type="button" class="btn btn-sm btn-secondary" @click.prevent="addNewAffect()">
+            <i class="bi bi-plus-lg me-2" />
+            <span>New Affect</span>
           </button>
         </div>
       </div>
-      <span v-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
-        No affects found for current filters
-      </span>
-      <table v-else-if="hasAffects" class="table align-middle table-striped">
-        <thead class="sticky-top">
+      <table class="table align-middle table-striped mt-1" :class="{'mb-0': totalPages === 0}">
+        <thead class="sticky-top table-dark">
           <tr>
             <th>
               <input
@@ -720,27 +727,31 @@ const displayedTrackers = computed(() => {
             </th>
             <th @click="setSort('affectedness')">
               <span>Affectedness</span>
-                <i class="bi mx-1"
-                  :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
-                  type="button"
-                  id="affectedness-filter"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  @click.stop
-                />
-                <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
-                  <template v-for="affectedness in affectAffectedness" :key="affectedness">
-                    <button
-                      type="button"
-                      class="btn dropdown-item"
-                      @click.stop="toggleAffectednessFilter(affectedness)"
-                    >
-                    <i class="bi me-2" :class="affectednessFilter.includes(affectedness) ? 'bi-record-circle' : 'bi-circle'"/>
+              <i
+                id="affectedness-filter"
+                class="bi mx-1"
+                :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                @click.stop
+              />
+              <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                <template v-for="affectedness in affectAffectedness" :key="affectedness">
+                  <button
+                    type="button"
+                    class="btn dropdown-item"
+                    @click.stop="toggleAffectednessFilter(affectedness)"
+                  >
+                    <i
+                      class="bi me-2"
+                      :class="affectednessFilter.includes(affectedness) ? 'bi-record-circle' : 'bi-circle'"
+                    />
                     <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
-                    </button>
-                  </template>
-                </ul>
+                  </button>
+                </template>
+              </ul>
               <i
                 :class="{
                   'opacity-0': sortKey !== 'affectedness',
@@ -752,11 +763,12 @@ const displayedTrackers = computed(() => {
             </th>
             <th @click="setSort('resolution')">
               <span>Resolution</span>
-              <i class="bi mx-1"
+              <i
+                id="resolution-filter"
+                class="bi mx-1"
                 :class="resolutionsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                 :title="resolutionsFilter.length !== 0 ? 'There are resolution filters selected' : ''"
                 type="button"
-                id="resolution-filter"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 @click.stop
@@ -768,8 +780,11 @@ const displayedTrackers = computed(() => {
                     class="btn dropdown-item"
                     @click.stop="toggleResolutionsFilter(resolution)"
                   >
-                  <i class="bi me-2" :class="resolutionsFilter.includes(resolution) ? 'bi-record-circle' : 'bi-circle'"/>
-                  <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
+                    <i
+                      class="bi me-2"
+                      :class="resolutionsFilter.includes(resolution) ? 'bi-record-circle' : 'bi-circle'"
+                    />
+                    <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
                   </button>
                 </template>
               </ul>
@@ -779,16 +794,17 @@ const displayedTrackers = computed(() => {
                   'bi-caret-down-fill': sortOrder === descend,
                   'bi-caret-up-fill': sortOrder !== descend,
                 }"
-                class="bi"
+                class="bi align-middle"
               />
             </th>
             <th @click="setSort('impact')">
               <span>Impact</span>
-              <i class="bi mx-1"
+              <i
+                id="impact-filter"
+                class="bi mx-1"
                 :class="impactsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                 :title="impactsFilter.length !== 0 ? 'There are impact filters selected' : ''"
                 type="button"
-                id="impact-filter"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 @click.stop
@@ -800,8 +816,8 @@ const displayedTrackers = computed(() => {
                     class="btn dropdown-item"
                     @click.stop="toggleImpactsFilter(impact)"
                   >
-                  <i class="bi me-2" :class="impactsFilter.includes(impact) ? 'bi-record-circle' : 'bi-circle'"/>
-                  <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
+                    <i class="bi me-2" :class="impactsFilter.includes(impact) ? 'bi-record-circle' : 'bi-circle'" />
+                    <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
                   </button>
                 </template>
               </ul>
@@ -811,7 +827,7 @@ const displayedTrackers = computed(() => {
                   'bi-caret-down-fill': sortOrder === descend,
                   'bi-caret-up-fill': sortOrder !== descend,
                 }"
-                class="bi"
+                class="bi align-middle"
               />
             </th>
             <th @click="setSort('cvss_scores')">
@@ -847,13 +863,16 @@ const displayedTrackers = computed(() => {
                 'editing': isBeingEdited(affect),
                 'modified': isModified(affect) && !isBeingEdited(affect),
                 'new': isNewAffect(affect) && !isBeingEdited(affect),
-                'removed': isRemoved(affect)
+                'removed': isRemoved(affect),
+                'selected': isAffectSelected(affect),
               }"
+              style="position: relative;"
               :style="isSelectable(affect) ? 'cursor: pointer' : ''"
               :title="affectRowTooltip(affect)"
               @click.prevent="toggleAffectSelection(affect)"
             >
               <td>
+                <i class="row-left-indicator bi bi-caret-right-fill fs-4" />
                 <input
                   type="checkbox"
                   class="form-check-input"
@@ -976,7 +995,7 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="!isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text"
                   title="Edit affect"
                   tabindex="-1"
                   @click.stop="editAffect(affect)"
@@ -986,7 +1005,7 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text editing-btn"
                   title="Commit edit"
                   tabindex="-1"
                   @click.stop="commitChanges(affect)"
@@ -996,7 +1015,7 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="!isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text"
                   title="Remove affect"
                   tabindex="-1"
                   @click.stop="removeAffect(affect)"
@@ -1006,7 +1025,7 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text editing-btn"
                   title="Cancel edit"
                   tabindex="-1"
                   @click.stop="cancelChanges(affect)"
@@ -1016,7 +1035,7 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="affectsToDelete.includes(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text recover-btn"
                   title="Recover affect"
                   tabindex="-1"
                   @click.stop="emit('affect:recover', affect)"
@@ -1026,19 +1045,23 @@ const displayedTrackers = computed(() => {
                 <button
                   v-if="!isBeingEdited(affect) && isModified(affect)"
                   type="button"
-                  class="input-group-text"
+                  class="btn btn-sm input-group-text"
                   title="Discard changes"
                   tabindex="-1"
                   @click.stop="restoreSavedAffect(affect)"
                 >
                   <i class="bi bi-backspace" />
                 </button>
+                <i class="row-right-indicator bi bi-caret-left-fill fs-4" />
               </td>
             </tr>
           </template>
         </tbody>
       </table>
-      <span v-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
+      <span v-if="!hasAffects" class="my-2 p-2 d-flex">
+        This flaw has no affects
+      </span>
+      <span v-else-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
         No affects found for current filters
       </span>
     </div>
@@ -1082,10 +1105,13 @@ const displayedTrackers = computed(() => {
 
     .badge {
       user-select: none;
+      &:hover {
+        filter: brightness(0.9);
+      }
     }
 
     .affects-table-actions {
-      button {
+      .btn {
         margin-inline: .1rem;
       }
     }
@@ -1101,48 +1127,143 @@ const displayedTrackers = computed(() => {
 
   .affects-management {
     table {
-      th {
-        user-select: none;
-      }
-
-      th:not(:nth-of-type(10), :nth-of-type(2)) {
-        cursor: pointer;
-      }
-
-      td {
-        padding: .2rem;
-        padding-left: .5rem;
-
-        input, select {
-          padding: 0.15rem 0.5rem;
+      border-collapse: separate;
+      thead {
+        th {
+          user-select: none;
         }
-      }
 
-      :not(.editing) td {
-        user-select: none;
-      }
-
-      .editing td {
-        background-color: $light-yellow;
-      }
-
-      .modified  td {
-        background-color: $light-green;
-      }
-
-      .new  td {
-        background-color: $light-teal;
-      }
-
-      .removed td {
-        background-color: #ffe3d9;
-        color: #731f00;
+        th:not(:nth-of-type(10), :nth-of-type(2)) {
+          cursor: pointer;
+        }
       }
 
       tbody {
         tr {
+          transition: filter 0.25s;
+          .row-left-indicator, .row-right-indicator {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s, right 0.5s, left 0.5s;
+            top: 0.25ch;
+          }
+          .row-right-indicator {
+            right: -42px;
+          }
+          .row-left-indicator {
+            left: -42px;
+          }
           &:hover {
-            box-shadow: -0.25rem 0 0 0 rgba(238, 0, 0, 0.25);
+            filter: brightness(0.9);
+            td {
+              border-color: rgba(112, 112, 112, 0.75);
+            }
+            .row-left-indicator, .row-right-indicator {
+              opacity: 100;
+            }
+            .row-right-indicator {
+              right: -32px;
+            }
+            .row-left-indicator {
+              left: -32px;
+            }
+          }
+
+          td {
+            transition: background-color 0.5s, color 0.5s, border-color 0.25s;
+            padding-block: .2rem;
+            border-block: 0.2ch solid #e0e0e0;
+            background-color: #e0e0e0;
+            button {
+              transition: background-color 0.5s, color 0.5s;
+              border: none;
+              background-color: #212529;
+              color: white;
+            }
+
+            input, select {
+              padding: 0.15rem 0.5rem;
+            }
+          }
+        }
+
+        :not(.editing) td {
+          user-select: none;
+        }
+
+        .editing {
+          &:hover {
+            td {
+              border-color: rgba(115, 71, 10, 0.5) !important;
+            }
+          }
+          td {
+            border-color: $light-yellow !important;
+            background-color: $light-yellow;
+            color: #73480b;
+            button {
+              background-color: #73480b;
+            }
+          }
+        }
+
+        .modified {
+          &:hover {
+            td {
+              border-color: rgba(32, 77, 0, 0.5) !important;
+            }
+          }
+          td {
+            border-color: $light-green !important;
+            background-color: $light-green;
+            color: #204d00;
+            button {
+              background-color: #204d00;
+            }
+          }
+        }
+
+        .new {
+          &:hover {
+            td {
+              border-color: rgba(0, 51, 102, 0.5) !important;
+            }
+          }
+          td {
+            border-color: #e0f0ff !important;
+            background-color: #e0f0ff;
+            color: #036;
+            button {
+              background-color: #036;
+            }
+          }
+        }
+
+        .removed {
+          &:hover {
+            td {
+              border-color: rgba(115, 31, 0, 0.5) !important;
+            }
+          }
+          td {
+            border-color: #ffe3d9 !important;
+            background-color: #ffe3d9;
+            color: #731f00;
+            button {
+              background-color: #731f00;
+            }
+          }
+        }
+
+        .selected {
+          .row-left-indicator, .row-right-indicator {
+            opacity: 100;
+          }
+          .row-right-indicator {
+            right: -24px !important;
+          }
+          .row-left-indicator {
+            left: -24px !important;
           }
         }
       }
@@ -1171,16 +1292,22 @@ const displayedTrackers = computed(() => {
           width: 8%;
         }
         &:nth-of-type(8) {
-          width: 10%;
+          width: 8%;
         }
         &:nth-of-type(9) {
-          width: 10%;
+          width: 8%;
         }
         &:nth-of-type(10) {
           width: 8%;
         }
+        &:nth-of-type(11) {
+          min-width: 0%;
+          max-width: 0%;
+          width: 0%;
+        }
       }
     }
   }
+
 }
 </style>
