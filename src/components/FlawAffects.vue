@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref } from 'vue';
+import { computed, toRefs, ref, type Ref } from 'vue';
 import {
   affectImpacts,
   affectAffectedness,
@@ -114,9 +114,13 @@ const filteredAffects = computed(() => {
   if (displayedAffects.value.length <= 0) {
     toggleDisplayMode(displayModes.ALL);
   }
-  return selectedModules.value.length > 0
-    ? displayedAffects.value.filter(affect => selectedModules.value.includes(affect.ps_module))
-    : displayedAffects.value;
+  return displayedAffects.value.filter(affect => {
+    const matchesSelectedModules = selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
+    const matchesAffectednessFilter = affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
+    const matchesResolutionFilter = resolutionsFilter.value.length === 0 || resolutionsFilter.value.includes(affect.resolution ?? '');
+    const matchesImpactsFilter = impactsFilter.value.length === 0 || impactsFilter.value.includes(affect.impact ?? '');
+    return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
+  })
 });
 
 const sortedAffects = computed(() =>
@@ -125,7 +129,7 @@ const sortedAffects = computed(() =>
 
 const hasAffects = computed(() => allAffects.value.length > 0);
 
-// Affect Modules Filter
+// Affected Modules Filter
 const modulesExpanded = ref(true);
 
 function toggleModulesCollapse() {
@@ -153,6 +157,32 @@ function handleModuleSelection(moduleName: string) {
     selectedModules.value.push(moduleName);
   }
   currentPage.value = 1;
+}
+
+// Affect Field Specific Filters
+const affectednessFilter = ref<string[]>([]);
+const resolutionsFilter = ref<string[]>([]);
+const impactsFilter = ref<string[]>([]);
+
+function toggleFilter(filterArray: Ref<string[]>, item: string) {
+  const index = filterArray.value.indexOf(item);
+  if (index > -1) {
+    filterArray.value.splice(index, 1);
+  } else {
+    filterArray.value.push(item);
+  }
+}
+
+function toggleAffectednessFilter(affectedness: string) {
+  toggleFilter(affectednessFilter, affectedness);
+}
+
+function toggleResolutionsFilter(resolution: string) {
+  toggleFilter(resolutionsFilter, resolution);
+}
+
+function toggleImpactsFilter(impact: string) {
+  toggleFilter(impactsFilter, impact);
 }
 
 // Edit Affects
@@ -689,7 +719,28 @@ const displayedTrackers = computed(() => {
               />
             </th>
             <th @click="setSort('affectedness')">
-              Affectedness
+              <span>Affectedness</span>
+                <i class="bi mx-1"
+                  :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
+                  type="button"
+                  id="affectedness-filter"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  @click.stop
+                />
+                <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                  <template v-for="affectedness in affectAffectedness" :key="affectedness">
+                    <button
+                      type="button"
+                      class="btn dropdown-item"
+                      @click.stop="toggleAffectednessFilter(affectedness)"
+                    >
+                    <i class="bi me-2" :class="affectednessFilter.includes(affectedness) ? 'bi-record-circle' : 'bi-circle'"/>
+                    <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
+                    </button>
+                  </template>
+                </ul>
               <i
                 :class="{
                   'opacity-0': sortKey !== 'affectedness',
@@ -700,7 +751,28 @@ const displayedTrackers = computed(() => {
               />
             </th>
             <th @click="setSort('resolution')">
-              Resolution
+              <span>Resolution</span>
+              <i class="bi mx-1"
+                :class="resolutionsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                :title="resolutionsFilter.length !== 0 ? 'There are resolution filters selected' : ''"
+                type="button"
+                id="resolution-filter"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                @click.stop
+              />
+              <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+                <template v-for="resolution in affectResolutions" :key="resolution">
+                  <button
+                    type="button"
+                    class="btn dropdown-item"
+                    @click.stop="toggleResolutionsFilter(resolution)"
+                  >
+                  <i class="bi me-2" :class="resolutionsFilter.includes(resolution) ? 'bi-record-circle' : 'bi-circle'"/>
+                  <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
+                  </button>
+                </template>
+              </ul>
               <i
                 :class="{
                   'opacity-0': sortKey !== 'resolution',
@@ -711,7 +783,28 @@ const displayedTrackers = computed(() => {
               />
             </th>
             <th @click="setSort('impact')">
-              Impact
+              <span>Impact</span>
+              <i class="bi mx-1"
+                :class="impactsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                :title="impactsFilter.length !== 0 ? 'There are impact filters selected' : ''"
+                type="button"
+                id="impact-filter"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                @click.stop
+              />
+              <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+                <template v-for="impact in affectImpacts" :key="impact">
+                  <button
+                    type="button"
+                    class="btn dropdown-item"
+                    @click.stop="toggleImpactsFilter(impact)"
+                  >
+                  <i class="bi me-2" :class="impactsFilter.includes(impact) ? 'bi-record-circle' : 'bi-circle'"/>
+                  <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
+                  </button>
+                </template>
+              </ul>
               <i
                 :class="{
                   'opacity-0': sortKey !== 'impact',
@@ -1069,7 +1162,7 @@ const displayedTrackers = computed(() => {
           width: 10%;
         }
         &:nth-of-type(6) {
-          width: 8%;
+          width: 10%;
         }
         &:nth-of-type(7) {
           width: 8%;
