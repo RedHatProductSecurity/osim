@@ -184,22 +184,25 @@ function changePage(page: number) {
     tr td,
     tr th {
       &:nth-of-type(1) {
-        width: 12%;
-      }
-      &:nth-of-type(2) {
-        width: 5%;
-      }
-      &:nth-of-type(3) {
         width: 10%;
       }
+      &:nth-of-type(2) {
+        width: 10%;
+      }
+      &:nth-of-type(3) {
+        width: 20%;
+      }
       &:nth-of-type(4) {
-        width: 5%;
+        width: 20%;
       }
       &:nth-of-type(5) {
         width: 10%;
       }
       &:nth-of-type(6) {
-        width: 10%;
+        width: 15%;
+      }
+      &:nth-of-type(7) {
+        width: 15%;
       }
     }
   }
