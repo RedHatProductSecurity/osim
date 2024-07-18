@@ -15,9 +15,15 @@
 * Affects resolution is not updated after changing affectedness (`OSIDB-3123`)
 * Affect CVSS scores wouldn't save properly (`OSIDB-3100`)
 * Can't clear CVSS score from a flaw (`OSIDB-1843`)
+* Flaw could not be saved without affects in several situations (`OSIDB-3099`)
 
 ### Removed
 * Remove dirty flag from footer and from build validation process (`OSIDB-3068`)
+* Being unable (with one action) simultaneously update a flaw's components and affects (`OSIDB-3100`)
+
+### Changed
+* Reload trackers after filing trackers (`OSIDB-3049`)
+* Changed order of saving operations when updating a flaw (`OSIDB-3100`, `OSIDB-3099`)
 
 ## [2024.7.0]
 ### Changed

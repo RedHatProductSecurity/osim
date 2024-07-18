@@ -99,7 +99,9 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
     });
   });
 
-  function setAll(isSelected: boolean) {
+  loadTrackers();
+
+  function setAllTrackerSelections(isSelected: boolean) {
     for (const stream of sortedStreams.value) {
       trackerSelections.value.set(stream, isSelected);
     }
@@ -120,11 +122,11 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
       })
   );
 
-  getTrackersForFlaws({ flaw_uuids: [flawUuid] })
-    .then((response: any) => {
-      moduleComponents.value = response.modules_components;
-    })
-    .catch(console.error);
+  function loadTrackers() {
+    return getTrackersForFlaws({ flaw_uuids: [flawUuid] })
+      .then((response: any) => moduleComponents.value = response.modules_components)
+      .catch(console.error);
+  }
 
   function getUpdateStreamsFor(module: string, component: string) {
     const moduleComponent = moduleComponents.value.find(
@@ -135,7 +137,9 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
 
   function fileTrackers() {
     isFilingTrackers.value = true;
-    fileTrackingFor(trackersToFile.value).finally(() => isFilingTrackers.value = false);
+    return fileTrackingFor(trackersToFile.value)
+      .then(loadTrackers)
+      .finally(() => isFilingTrackers.value = false);
   }
 
   return {
@@ -145,7 +149,7 @@ export function useTrackers(flawUuid: string, affects: ZodAffectType[]) {
     availableUpdateStreams,
     trackerSelections,
     trackersToFile,
-    setAll,
+    setAllTrackerSelections,
     sortedStreams,
     unselectedStreams,
     selectedStreams,

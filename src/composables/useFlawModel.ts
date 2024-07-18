@@ -30,7 +30,13 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { wasCvssModified, saveCvssScores } = cvssScoresModel;
-  const { didAffectsChange, saveAffects, removeAffects, affectsToDelete } = flawAffectsModel;
+  const {
+    didAffectsChange,
+    saveAffects,
+    removeAffects,
+    affectsToDelete,
+    initialAffects,
+  } = flawAffectsModel;
 
   const router = useRouter();
   const committedFlaw = ref<ZodFlawType | null>(null);
@@ -38,6 +44,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
+
+  const isInTriageWithoutAffects = computed(
+    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.length === 0
+  );
 
   function isValid() {
     return ZodFlawSchema.safeParse(flaw.value).success;
@@ -105,7 +115,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
 
   async function updateFlaw() {
     const { execute } = useNetworkQueue();
-    const queue: Array<() => Promise<any>> = [];
+    const queue: (() => Promise<any>)[] = [];
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -115,19 +125,23 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       return;
     }
 
-    if (didAffectsChange.value) {
+    if (isInTriageWithoutAffects.value && didAffectsChange.value) {
       queue.push(saveAffects);
+    }
+
+    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
+
+    if (wasCvssModified.value) {
+      queue.push(saveCvssScores);
     }
 
     if (affectsToDelete.value.length) {
       queue.push(removeAffects);
     }
 
-    if (wasCvssModified.value) {
-      queue.push(saveCvssScores);
+    if (!isInTriageWithoutAffects.value && didAffectsChange.value) {
+      queue.push(saveAffects);
     }
-
-    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
 
     try {
       await execute(...queue);

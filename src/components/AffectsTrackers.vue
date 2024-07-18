@@ -11,7 +11,7 @@ const {
   trackerSelections,
   trackersToFile,
   fileTrackers,
-  setAll,
+  setAllTrackerSelections,
   unselectedStreams,
   selectedStreams,
   filterString,
@@ -73,7 +73,7 @@ const emit = defineEmits<{
             <button
               type="button"
               class="btn btn-white btn-outline-black btn-sm me-2"
-              @click="setAll(true)"
+              @click="setAllTrackerSelections(true)"
             >
               <i class="bi bi-check-all"></i>
               Select All
@@ -82,7 +82,7 @@ const emit = defineEmits<{
             <button
               type="button"
               class="btn btn-white btn-outline-black btn-sm me-2"
-              @click="setAll(false)"
+              @click="setAllTrackerSelections(false)"
             >
               <i class="bi bi-eraser"></i>
               Deselect All
