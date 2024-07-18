@@ -839,7 +839,7 @@ const displayedTrackers = computed(() => {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody class="table-group-divider">
+        <tbody>
           <template v-for="(affect, affectIndex) in paginatedAffects" :key="affectIndex">
             <tr
               :class="{
@@ -1038,6 +1038,9 @@ const displayedTrackers = computed(() => {
           </template>
         </tbody>
       </table>
+      <span v-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
+        No affects found for current filters
+      </span>
     </div>
     <FlawTrackers
       :displayedTrackers="displayedTrackers"
