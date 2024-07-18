@@ -426,7 +426,7 @@ const displayedTrackers = computed(() => {
 <template>
   <div v-if="affects" class="osim-affects-section my-2">
     <h4>Affected Offerings</h4>
-    <div class="affect-modules-selection">
+    <div class="affect-modules-selection" :class="{'mb-4': modulesExpanded}">
       <LabelCollapsible
         :isExpanded="modulesExpanded"
         @setExpanded="toggleModulesCollapse"
@@ -467,38 +467,38 @@ const displayedTrackers = computed(() => {
       </LabelCollapsible>
     </div>
     <div class="affects-management">
-      <div class="affects-toolbar d-flex pt-2 mt-2">
-        <div v-if="hasAffects" class="pagination-controls d-flex gap-1">
-          <button
-            type="button"
-            tabindex="-1"
-            class="btn btn-sm btn-secondary rounded-end-0"
-            :disabled="currentPage === 1"
-            @click="changePage(currentPage - 1)"
-          >
-            <i class="bi bi-arrow-left fs-5" />
-          </button>
-          <button
-            v-for="page in totalPages"
-            :key="page"
-            tabindex="-1"
-            class="page-btn btn btn-sm rounded-0 btn-secondary"
-            :disabled="page === currentPage"
-            @click.prevent="changePage(page)"
-          >
-            {{ page }}
-          </button>
-          <button
-            type="button"
-            tabindex="-1"
-            class="btn btn-sm btn-secondary rounded-start-0"
-            :disabled="currentPage === totalPages || totalPages === 0"
-            @click.prevent="changePage(currentPage + 1)"
-          >
-            <i class="bi bi-arrow-right fs-5" />
-          </button>
-        </div>
-        <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'mx-3': hasAffects }">
+      <div v-if="hasAffects" class="pagination-controls d-flex gap-1 my-2">
+        <button
+          type="button"
+          tabindex="-1"
+          class="btn btn-sm btn-secondary rounded-end-0"
+          :disabled="currentPage === 1"
+          @click="changePage(currentPage - 1)"
+        >
+          <i class="bi bi-arrow-left fs-5" />
+        </button>
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          tabindex="-1"
+          class="page-btn btn btn-sm rounded-0 btn-secondary"
+          :disabled="page === currentPage"
+          @click.prevent="changePage(page)"
+        >
+          {{ page }}
+        </button>
+        <button
+          type="button"
+          tabindex="-1"
+          class="btn btn-sm btn-secondary rounded-start-0"
+          :disabled="currentPage === totalPages || totalPages === 0"
+          @click.prevent="changePage(currentPage + 1)"
+        >
+          <i class="bi bi-arrow-right fs-5" />
+        </button>
+      </div>
+      <div class="affects-toolbar d-flex">
+        <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'me-3': hasAffects }">
           <span
             v-if="paginatedAffects.length > 0"
             class="badge  border border-black bg-light-gray text-black"
@@ -973,7 +973,7 @@ const displayedTrackers = computed(() => {
     }
   }
 
-  .affects-toolbar {
+  .affects-toolbar, .pagination-controls {
     button {
       height: 2rem;
       padding-block: 0;
