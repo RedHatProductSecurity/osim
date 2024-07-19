@@ -24,6 +24,7 @@ type ModuleComponentProductStream = {
 type UpdateStreamMeta = {
   affectUuid?: string;
   ps_component?: string;
+  ps_module?: string;
 };
 
 export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
@@ -51,25 +52,22 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     })
   );
 
-  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap(
-    (moduleComponent: any) =>
-      moduleComponent.streams.map((stream: Record<string, any>) => (
-        {
-          ...stream,
-          ps_component: moduleComponent.ps_component,
-          affectUuid: moduleComponent.affect.uuid
-        }
-      ))
-  )
-    .filter((stream: any) => !alreadyFiledTrackers.value.find(
-      (tracker: any) => tracker.ps_update_stream === stream.ps_update_stream
-        && tracker.ps_component === stream.ps_component
-    ))
-  );
+  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent: any) =>
+    moduleComponent.streams.map((stream: Record<string, any>) => ({
+      ...stream,
+      ps_component: moduleComponent.ps_component,
+      ps_module: moduleComponent.ps_module,
+      affectUuid: moduleComponent.affect.uuid
+    }))
+  ).filter((stream: any) => !alreadyFiledTrackers.value.find(
+    (tracker: any) => tracker.ps_update_stream === stream.ps_update_stream
+      && tracker.ps_component === stream.ps_component
+  )));
 
   const sortedStreams = computed(
     (): UpdateStream[] => availableUpdateStreams.value
-      .toSorted((a, b) => a.ps_update_stream.localeCompare(b.ps_update_stream))
+      .slice()
+      .sort((a, b) => a.ps_update_stream.localeCompare(b.ps_update_stream))
       .filter((tracker) =>
         filterString.value === ''
           ? tracker
@@ -87,6 +85,16 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   );
 
   const filterString = ref('');
+
+  const untrackedAffects = computed(() => affects.value.filter((affect) => affect.trackers.length === 0));
+
+  const untrackableAffects = computed(() => untrackedAffects.value
+    .filter(
+      (affect) => availableUpdateStreams.value.find(
+        stream => stream.ps_module === affect.ps_module && stream.ps_component === affect.ps_component
+      ) === undefined
+    )
+  );
 
   watch(moduleComponents, () => {
     moduleComponents.value.forEach((moduleComponent) => {
@@ -148,6 +156,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     getUpdateStreamsFor,
     alreadyFiledTrackers,
     availableUpdateStreams,
+    untrackableAffects,
     trackerSelections,
     trackersToFile,
     setAllTrackerSelections,
