@@ -94,8 +94,12 @@ class FlawDetailPage(BasePage):
         "contributorListFirstOption": ("XPATH", "(//div[@class='menu']/div/span)[1]"),
         "firstContributorText": ("XPATH", "(//li[@class='badge text-bg-secondary'])[1]"),
 
+        "rejectStateBtn": ("XPATH", "(//div[@class='osim-workflow-state-buttons']/button)[1]"),
         "promoteStateBtn": ("XPATH", "(//div[@class='osim-workflow-state-buttons']/button)[2]"),
         "flawPromotedMsg": ("XPATH", "//strong[text()='Flaw Promoted']"),
+        "rejectFlawBtn":  ("XPATH", "//button[contains(text(), 'Reject Flaw')]"),
+        "rejectReasonText": ("XPATH", "//span[text()='Please provide a reason for rejecting the flaw']"),
+        "flawRejectedMsg": ("XPATH", "//strong[text()='Flaw Rejected']"),
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
@@ -725,3 +729,9 @@ class FlawDetailPage(BasePage):
             except NoSuchElementException:
                 return 0
         return len(elements)
+
+    def set_reject_reason(self, value):
+        element = getattr(self, 'rejectReasonText')
+        reason_text_area = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").below(element))[0]
+        reason_text_area.send_keys(value)
