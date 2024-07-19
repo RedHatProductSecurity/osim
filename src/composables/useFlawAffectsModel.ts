@@ -190,7 +190,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   watch(flaw.value.affects, (affects) => {
     watchers.forEach((unwatch: () => void) => unwatch());
     watchers = affects.map((affect) => watch(affect, trackAffectChange, { deep: true }));
-  }, { immediate: true });
+  }, { immediate: true, deep: false });
 
   async function removeAffects() {
     await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string).filter(Boolean));
