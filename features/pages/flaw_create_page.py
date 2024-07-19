@@ -1,6 +1,3 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.relative_locator import locate_with
-
 from .flaw_detail_page import FlawDetailPage
 
 
@@ -20,11 +17,11 @@ class FlawCreatePage(FlawDetailPage):
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
 
-        "comment#0Text": ("XPATH", "//span[text()='Comment#0']"),
+        "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
-        "statementText": ("XPATH", "//span[text()='Statement']"),
+        "statementText": ("XPATH", "//span[contains(text(), 'Statement')]"),
 
         "impactText": ("XPATH", "//span[text()='Impact']"),
         "sourceText": ("XPATH", "//span[text()='CVE Source']"),

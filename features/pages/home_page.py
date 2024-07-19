@@ -29,7 +29,7 @@ class HomePage(BasePage):
         "flawFilterBox": ("CSS", "input[placeholder='Filter Issues/Flaws']"),
         "advancedSearchDropDownBtn": ("XPATH", '//form[@role="search"]/div/button[2]'),
         "advancedSearchBtn": ("XPATH", "//a[contains(text(), 'Advanced Search')]"),
-        "cve_idText": ("XPATH", "//tr[3]/td[1]/a"),
+        "cve_idText": ("XPATH", "//tr[1]/td[1]/a"),
         "quickSearchBox": ("XPATH", "//form[@role='search']/div/input"),
         "quickSearchBtn": ("XPATH", "//form[@role='search']/div/button"),
         "myIssuesCheckbox": ("XPATH", "(//input[@class='d-inline-block form-check-input'])[1]"),

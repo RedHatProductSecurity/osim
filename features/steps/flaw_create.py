@@ -12,6 +12,7 @@ from features.utils import (
     go_to_advanced_search_page,
     go_to_specific_flaw_detail_page
 )
+from features.common_utils import set_flaw_id_to_file
 
 
 MAX_RETRY = 5
@@ -88,6 +89,7 @@ def step_impl(context):
     flaw_page.click_btn("alertDropdownBtn")
     flaw_page.click_btn("alertFlawDropdownBtn")
     flaw_page.flawWithoutAffectErrorText.visibility_of_element_located()
+    set_flaw_id_to_file()
 
 
 @when("I add a CVE ID to a flaw without a CVE")
@@ -126,6 +128,7 @@ def step_impl(context):
 @then("The flaw CVE ID is saved")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
+    set_flaw_id_to_file()
 
 
 @when('I create new embargoed flaw with valid data')

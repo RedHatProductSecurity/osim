@@ -156,7 +156,7 @@ def step_impl(context):
     home_page = HomePage(context.browser)
     detail_page = FlawDetailPage(context.browser)
     # Get the current username
-    context.user_name = home_page.userBtn.get_text()
+    context.user_name = home_page.get_jira_username()
     # Go to a specific flaw detail page
     go_to_specific_flaw_detail_page(context.browser)
     # Assign this flaw to the current user
