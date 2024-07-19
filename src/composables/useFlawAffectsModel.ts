@@ -223,7 +223,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
     if (wereAffectsModified.value) {
       try {
-        const response: any = await putAffects(affectsToCreate.value.map(requestBodyFromAffect));
+        const response: any = await putAffects(affectsToUpdate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
         resetModifiedAffects();
       } catch (error) {
