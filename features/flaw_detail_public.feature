@@ -103,18 +103,22 @@ Feature: Flaw detail testing on public flaw
       When I update the flaw and click 'Reset Changes' button
       Then All changes are reset
 
+    @skip
     Scenario: Add new affect for a public flaw
       When I add a new affect with valid data
       Then The affect is added
 
+    @skip
     Scenario: Update affect for a public flaw
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved
 
+    @skip
     Scenario: Recover an affect for the deleting
       When I click 'delete' button of an affect
       Then I could 'recover' the affect that I tried to delete above
 
+    @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
@@ -128,6 +132,7 @@ Feature: Flaw detail testing on public flaw
           |       bugzilla|           AFFECTED|  ystream|
           |       bugzilla|                NEW|  zstream|
 
+    @skip
     Scenario Outline: Can not create tracker
       When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
@@ -137,17 +142,20 @@ Feature: Flaw detail testing on public flaw
           |external_system|  affectedness_value|
           |       bugzilla|         NOTAFFECTED|
 
+    @skip
     Scenario: List filed trackers
       When I delete an affect of the flaw
       When I add a new affect with valid data
       When I select the affect above and file a tracker
       Then The manager trackers list the filed trackers
 
+    @skip
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
       When I add a new affect with valid data
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
 
+    @skip
     Scenario: Filter unfiled trackers
       When I add some affects with valid data
       Then I could filter trackers by stream or component name

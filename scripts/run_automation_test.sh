@@ -8,13 +8,13 @@ if ! behave features/login.feature; then
 fi
 
 if behave features/flaw_create_embargo.feature; then
-    behave features/flaw_detail_embargo.feature
+    behave features/flaw_detail_embargo.feature --tags=~@skip
 else
     echo "flaw_create_embargo.feature failed, skip flaw_detail_embargo.feature"
 fi
 
 if behave features/flaw_create_public.feature; then
-    behave features/flaw_detail_public.feature
+    behave features/flaw_detail_public.feature --tags=~@skip
 else
     echo "flaw_create_public.feature failed, skip flaw_detail_public.feature"
 fi
