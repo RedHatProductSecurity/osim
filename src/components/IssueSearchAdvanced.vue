@@ -13,8 +13,6 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const route = useRoute();
-
 const emit = defineEmits(['filter:save']);
 
 const isNonEmptyDescriptionSelected = ref(false);
@@ -86,7 +84,7 @@ const optionsFor = (field: string) =>
     major_incident_state: flawIncidentStates,
     affects__affectedness: affectAffectedness,
   })[field] || null;
-const shouldShowAdvanced = ref(route.query.mode === 'advanced');
+const shouldShowAdvanced = ref(true);
 </script>
 
 <template>
