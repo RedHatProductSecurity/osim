@@ -26,5 +26,6 @@ const modelValue = defineModel<boolean | undefined>();
 <style scoped>
 .osim-input {
   display: block;
+  user-select: none;
 }
 </style>
