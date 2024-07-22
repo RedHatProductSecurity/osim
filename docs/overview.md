@@ -9,7 +9,6 @@
 | `.env.local`            | Local Vue environment variables              |
 | `docs/`                 | The docs                                     |
 | `features/`             | Selenium tests                               |
-| `openshift/`            | OpenShift config (incomplete; for reference) |
 | `scripts/`              | Dev utility scripts                          |
 | `build/`                | Files to support building the deployed image |
 | `dist/`                 | The compiled app                             |
