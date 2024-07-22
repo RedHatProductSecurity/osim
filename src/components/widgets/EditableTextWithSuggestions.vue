@@ -18,6 +18,8 @@ const props = withDefaults(defineProps<{
   debounce?: number,
 }>(), {
   debounce: 500,
+  error: undefined,
+  placeholder: undefined,
 });
 
 const emit = defineEmits<{

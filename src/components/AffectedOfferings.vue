@@ -27,7 +27,7 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const { getUpdateStreamsFor } = useTrackers(props.flawId, props.theAffects);
+const { getUpdateStreamsFor } = useTrackers(props.flawId, theAffects);
 
 const affectsNotBeingDeleted = computed(
   () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))
@@ -143,7 +143,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       <button
         v-if="isAnythingExpanded"
         type="button"
-        class="btn btn-sm btn-secondary"
+        class="btn btn-sm btn-secondary me-2"
         @click="collapseAll()"
       >
         Collapse All Affects
@@ -154,7 +154,6 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
         class="button btn btn-sm btn-black text-white"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
-        <!-- <i class="bi bi-journal-plus"></i> -->
         <i class="bi bi-binoculars"></i>
         Manage Trackers
       </button>

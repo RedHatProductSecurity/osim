@@ -36,7 +36,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     removeAffects,
     affectsToDelete,
     initialAffects,
-    refreshAffects,
   } = flawAffectsModel;
 
   const router = useRouter();

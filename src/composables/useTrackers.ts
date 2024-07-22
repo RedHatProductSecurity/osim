@@ -124,7 +124,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   function loadTrackers() {
     return getTrackersForFlaws({ flaw_uuids: [flawUuid] })
       .then((response: any) => {
-        moduleComponents.value = response.modules_components
+        moduleComponents.value = response.modules_components;
       })
       .catch(console.error);
   }
