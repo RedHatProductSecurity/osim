@@ -17,6 +17,8 @@ const emit = defineEmits(['filter:save']);
 
 const isNonEmptyDescriptionSelected = ref(false);
 
+const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
+
 watch(isNonEmptyDescriptionSelected, () => {
   const facet = facets.value.find(facet => facet.field === 'cve_description');
   if (isNonEmptyDescriptionSelected.value) {
@@ -25,8 +27,17 @@ watch(isNonEmptyDescriptionSelected, () => {
     } else {
       facet.value = 'nonempty';
     }
-  } else if (facet) {
+  } else if (facet && descriptionParamValue.value === 'nonempty') {
     facet.value = '';
+  }
+});
+
+watch(descriptionParamValue, (value) => {
+  if (value !== 'nonempty' && isNonEmptyDescriptionSelected.value) {
+    isNonEmptyDescriptionSelected.value = false;
+  }
+  if (value === 'nonempty' && !isNonEmptyDescriptionSelected.value) {
+    isNonEmptyDescriptionSelected.value = true;
   }
 });
 
