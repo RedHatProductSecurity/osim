@@ -6,6 +6,7 @@
 * Sort affects by product family, alphabetically (`OSIDB-2533`)
 * Suggestions for Flaw Owner field (`OSIDB-3004`)
 * Suggestions for Jira mentions in internal comments (`OSIDB-3005`)
+* Support for non empty CVE Description on advanced search (`OSIDB-3138`)
 
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
