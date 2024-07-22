@@ -27,10 +27,12 @@ export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost
   }
 
   const errors = [];
+  const successes = [];
 
   for (const tracker of trackerData) {
     try {
-      await postTracker(tracker, trackerData.at(-1) === tracker);
+      const response = await postTracker(tracker, trackerData.at(-1) === tracker);
+      successes.push(response);
     } catch (error: any) {
       if (error?.response?.data !== null && typeof error?.response?.data === 'object') {
         error.response.data.stream = tracker.ps_update_stream;
@@ -47,8 +49,10 @@ export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost
 
   if (errors.length) {
     createCatchHandler(`${errors.length} trackers failed to file`)(errors);
+    return Promise.reject({ errors, successes });
   } else {
     createSuccessHandler({ title: 'Success!', body: `${trackerData.length} trackers filed.` })({ data: null });
+    return Promise.resolve({ successes });
   }
 }
 

@@ -6,7 +6,7 @@ import {
   putAffectCvssScore,
   postAffectCvssScore,
 } from '@/services/AffectService';
-// import { getDisplayedOsidbError } from '@/services/OsidbAuthService';
+import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
@@ -20,6 +20,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectIdsForPutRequest = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
+
+  function refreshAffects() {
+    return getFlaw(flaw.value.uuid).then((response) => {
+      console.log('refreshing affects');
+      flaw.value.affects = response.affects;
+    });
+  }
 
   function isCvssNew(cvssScore: ZodAffectCVSSType) {
     if (
@@ -292,5 +299,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     affectsToDelete,
     didAffectsChange,
     initialAffects,
+    refreshAffects,
   };
 }

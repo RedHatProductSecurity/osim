@@ -21,6 +21,7 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
+  'affects:refresh': [];
   'add-blank-affect': [];
 }>();
 
@@ -127,6 +128,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       v-show="shouldShowTrackers"
       :flawId="flawId"
       :theAffects="affectsNotBeingDeleted"
+      @affects-trackers:refresh="emit('affects:refresh')"
       @affects-trackers:hide="shouldShowTrackers = false"
     />
     <div class="my-2 py-2">
