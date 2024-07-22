@@ -11,7 +11,7 @@ from selenium.webdriver.support.relative_locator import locate_with
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from seleniumpagefactory.Pagefactory import ElementNotVisibleException
+from seleniumpagefactory.Pagefactory import ElementNotVisibleException, ElementNotFoundException
 from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory
@@ -85,6 +85,7 @@ class FlawDetailPage(BasePage):
         "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
+        "publicDateFutureText": ("XPATH", "//span[text()='Public Date [FUTURE]']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
         "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
@@ -373,7 +374,14 @@ class FlawDetailPage(BasePage):
         self.contributorListFirstOption.click_button()
 
     def set_input_field(self, field, value):
-        text_element = getattr(self, field + "Text")
+        try:
+            text_element = getattr(self, field + "Text")
+        except ElementNotFoundException:
+            if field == "publicDate":
+                text_element = self.publicDateFutureText
+            else:
+                raise
+
         # find edit button and input using relative locators
         if "Date" not in field:
             edit_btn = self.driver.find_elements(

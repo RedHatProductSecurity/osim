@@ -523,6 +523,7 @@ def step_impl(context):
     # There is a bug OSIDB-3042, so the following step will be failed
     assert context.value_dict == field_value_dict
 
+
 @when("I add a new affect with valid data")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
@@ -537,6 +538,7 @@ def step_impl(context):
     flaw_detail_page.display_affect_detail()
     component_xpath = f"//span[contains(text(), '{context.ps_component}')]"
     flaw_detail_page.check_element_exists(By.XPATH, component_xpath)
+
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
@@ -560,6 +562,7 @@ def step_impl(context):
                     token, context.component)
     assert (context.module, context.component) not in module_component_list
 
+
 @when("I click 'delete' button of an affect")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
@@ -568,6 +571,7 @@ def step_impl(context):
         flaw_detail_page.click_affect_delete_btn()
     # Click the delete button of the affect
     flaw_detail_page.click_button_with_js('affectRecoverBtn')
+
 
 @then("I could 'recover' the affect that I tried to delete above")
 def step_impl(context):
@@ -599,6 +603,7 @@ def step_impl(context):
     v = flaw_detail_page.get_input_value("publicDate")
     public_date = datetime.strptime(context.public_date, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
     assert public_date in v, f"Public date should be {public_date}, got {v}"
+
 
 @when('I file a {type} tracker')
 def step_impl(context, type):
@@ -633,6 +638,7 @@ def step_imp(context, external_system, affectedness_value):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.set_new_affect_inputs(external_system, affectedness_value)
 
+
 @then("I can't file a tracker")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
@@ -640,12 +646,14 @@ def step_impl(context):
     flaw_detail_page.click_button_with_js("ManageTrackers")
     flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()
 
+
 @then('The manager trackers list the filed trackers')
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
     flaw_detail_page.filedTrackers.visibility_of_element_located()
+
 
 @then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')
 def step_impl(context):
@@ -662,6 +670,7 @@ def step_impl(context):
             flaw_detail_page.click_button_with_js("DeselectAllTrackers")
             checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
             assert checked_count == 0
+
 
 @when('I add some affects with valid data')
 def step_impl(context):
