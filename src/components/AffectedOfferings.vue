@@ -21,12 +21,13 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
+  'affects:refresh': [];
   'add-blank-affect': [];
 }>();
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const { getUpdateStreamsFor } = useTrackers(props.flawId, props.theAffects);
+const { getUpdateStreamsFor } = useTrackers(props.flawId, theAffects);
 
 const affectsNotBeingDeleted = computed(
   () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))
@@ -127,6 +128,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       v-show="shouldShowTrackers"
       :flawId="flawId"
       :theAffects="affectsNotBeingDeleted"
+      @affects-trackers:refresh="emit('affects:refresh')"
       @affects-trackers:hide="shouldShowTrackers = false"
     />
     <div class="my-2 py-2">
@@ -141,7 +143,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       <button
         v-if="isAnythingExpanded"
         type="button"
-        class="btn btn-sm btn-secondary"
+        class="btn btn-sm btn-secondary me-2"
         @click="collapseAll()"
       >
         Collapse All Affects
@@ -152,7 +154,6 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
         class="button btn btn-sm btn-black text-white"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
-        <!-- <i class="bi bi-journal-plus"></i> -->
         <i class="bi bi-binoculars"></i>
         Manage Trackers
       </button>

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { type ZodAffectType } from '@/types/zodAffect';
 import { useTrackers } from '@/composables/useTrackers';
+import { toRef } from 'vue';
 
 const props = defineProps<{
   flawId: string;
   theAffects: ZodAffectType[];
 }>();
+
+const theAffects = toRef(props, 'theAffects');
 
 const {
   trackerSelections,
@@ -17,11 +20,18 @@ const {
   filterString,
   alreadyFiledTrackers,
   isFilingTrackers,
-} = useTrackers(props.flawId, props.theAffects);
+} = useTrackers(props.flawId, theAffects);
 
 const emit = defineEmits<{
   'affects-trackers:hide': [];
+  'affects-trackers:refresh': [];
 }>();
+
+function handleFileTrackers() {
+  fileTrackers().then(() => {
+    emit('affects-trackers:refresh');
+  });
+}
 </script>
 
 <template>
@@ -152,7 +162,7 @@ const emit = defineEmits<{
           type="button"
           class="btn btn-sm btn-black text-white osim-file-trackers mt-3"
           :disabled="!trackersToFile.length || isFilingTrackers"
-          @click="fileTrackers"
+          @click="handleFileTrackers"
         >
           <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
           File Selected Trackers

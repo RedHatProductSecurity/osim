@@ -76,6 +76,7 @@ const {
   isSaving,
   isValid,
   errors,
+  refreshAffects,
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 
@@ -476,6 +477,7 @@ const theAffects = computed(() => {
             :flawId="flaw.uuid"
             @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
             @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
+            @affects:refresh="refreshAffects"
             @add-blank-affect="addBlankAffect"
           />
         </div>
