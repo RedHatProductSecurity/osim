@@ -82,12 +82,12 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserPicker
           Self Assign
         </button>
       </template>
-      <template v-if="results.length > 0" #suggestions="{ onBlur }">
+      <template v-if="results.length > 0" #suggestions="{ abort }">
         <div
           v-for="user in results"
           :key="user.name"
           class="item"
-          @click.prevent.stop="handleSuggestionClick(onBlur, user)"
+          @click.prevent.stop="handleSuggestionClick(abort, user)"
         >
           <!--eslint-disable-next-line vue/no-v-html -->
           <span v-html="sanitize(user.html)" />
