@@ -55,7 +55,7 @@ vi.mock('vue-router', async () => {
 
   return {
     ...actual,
-    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock
     }))
@@ -140,7 +140,6 @@ describe('FlawSearchView', () => {
   it('should call saveFilter on save filter button click', async () => {
     (useRoute as Mock).mockReturnValue({
       'query': {
-        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },
@@ -171,7 +170,6 @@ describe('FlawSearchView', () => {
   it('should call with correct filters from route on mounted', async () => {
     (useRoute as Mock).mockReturnValue({
       'query': {
-        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },

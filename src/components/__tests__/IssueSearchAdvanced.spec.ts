@@ -10,7 +10,7 @@ vi.mock('vue-router', async () => {
 
   return {
     ...actual,
-    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock
     }))
