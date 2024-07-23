@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
-import { useRoute } from 'vue-router';
+import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
@@ -13,9 +13,33 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 
-const route = useRoute();
-
 const emit = defineEmits(['filter:save']);
+
+const isNonEmptyDescriptionSelected = ref(false);
+
+const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
+
+watch(isNonEmptyDescriptionSelected, () => {
+  const facet = facets.value.find(facet => facet.field === 'cve_description');
+  if (isNonEmptyDescriptionSelected.value) {
+    if (!facet) {
+      facets.value.push({ field: 'cve_description', value: 'nonempty' });
+    } else {
+      facet.value = 'nonempty';
+    }
+  } else if (facet && descriptionParamValue.value === 'nonempty') {
+    facet.value = '';
+  }
+});
+
+watch(descriptionParamValue, (value) => {
+  if (value !== 'nonempty' && isNonEmptyDescriptionSelected.value) {
+    isNonEmptyDescriptionSelected.value = false;
+  }
+  if (value === 'nonempty' && !isNonEmptyDescriptionSelected.value) {
+    isNonEmptyDescriptionSelected.value = true;
+  }
+});
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -71,7 +95,7 @@ const optionsFor = (field: string) =>
     major_incident_state: flawIncidentStates,
     affects__affectedness: affectAffectedness,
   })[field] || null;
-const shouldShowAdvanced = ref(route.query.mode === 'advanced');
+const shouldShowAdvanced = ref(true);
 </script>
 
 <template>
@@ -123,6 +147,11 @@ const shouldShowAdvanced = ref(route.query.mode === 'advanced');
       >
         Save as Default
       </button>
+      <LabelCheckbox
+        v-model="isNonEmptyDescriptionSelected"
+        label="Non Empty CVE Description"
+        class="d-inline-block"
+      />
     </form>
   </details>
 </template>

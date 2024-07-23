@@ -8,7 +8,7 @@ vi.mock('vue-router', async () => {
 
   return {
     ...actual,
-    useRoute: vi.fn(() => ({ query: { mode: 'advanced', query: 'search' } })),
+    useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock,
       push: pushMock
@@ -19,7 +19,7 @@ vi.mock('vue-router', async () => {
 describe('useSearchParams', () => {
   beforeEach(() => {
     (useRoute as Mock).mockReturnValue({
-      'query': { mode: 'advanced', query: 'search' },
+      'query': { query: 'search' },
     });
   });
 
@@ -69,7 +69,6 @@ describe('useSearchParams', () => {
   it('getSearchParams', () => {
     (useRoute as Mock).mockReturnValue({
       'query': {
-        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test'
       },
@@ -85,7 +84,6 @@ describe('useSearchParams', () => {
   it('populatedFacets from route', () => {
     (useRoute as Mock).mockReturnValue({
       'query': {
-        mode: 'advanced',
         query: 'search',
         'affects__ps_component': 'test',
         'acknowledgments__name': 'test'

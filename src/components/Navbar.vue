@@ -138,7 +138,7 @@ const usernameDisplay = computed(() => {
               <li>
                 <RouterLink
                   class="dropdown-item"
-                  :to="{ name: 'search', query: { 'mode': 'advanced' } }"
+                  :to="{ name: 'search' }"
                 >
                   Advanced Search
                 </RouterLink>
