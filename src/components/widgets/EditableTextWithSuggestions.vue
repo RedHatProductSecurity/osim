@@ -113,7 +113,7 @@ function onBlur(e: FocusEvent | null) {
       @blur.capture="onBlur"
     >
       <DropDown v-if="!!$slots.suggestions">
-        <slot name="suggestions" v-bind="{ commit, onBlur }" />
+        <slot name="suggestions" v-bind="{ commit, onBlur, abort }" />
       </DropDown>
       <input
         ref="elInput"
