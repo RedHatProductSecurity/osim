@@ -11,6 +11,7 @@
 * Suggestions for Flaw Owner field (`OSIDB-3004`)
 * Suggestions for Jira mentions in internal comments (`OSIDB-3005`)
 * Support for non empty CVE Description on advanced search (`OSIDB-3138`)
+* Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
 
 ### Fixed
 * Bugzilla tracker link overlaps with the workflow actions (`OSIDB-3089`)
