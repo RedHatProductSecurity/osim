@@ -265,7 +265,10 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 const modifiedAffects = computed(() =>
   affects.value.filter(affect => {
     const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
-    return savedAffect && !equals(savedAffect, affect) && !affectsBeingEdited.value.includes(affect);
+    return savedAffect
+      && !equals(savedAffect, affect)
+      && !affectsBeingEdited.value.includes(affect)
+      && !newAffects.value.includes(affect);
   })
 );
 
