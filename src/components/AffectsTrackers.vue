@@ -20,6 +20,7 @@ const {
   filterString,
   alreadyFiledTrackers,
   isFilingTrackers,
+  untrackableAffects,
 } = useTrackers(props.flawId, theAffects);
 
 const emit = defineEmits<{
@@ -49,7 +50,7 @@ function handleFileTrackers() {
     </h4>
 
     <div class="osim-trackers-filing mb-2">
-      <div v-if="alreadyFiledTrackers.length" class="osim-tracker-selections mb-2">
+      <div v-if="alreadyFiledTrackers.length" class="osim-tracker-list mb-2">
         <h5>Filed</h5>
         <label
           v-for="(tracker, index) in alreadyFiledTrackers"
@@ -63,6 +64,23 @@ function handleFileTrackers() {
           />
           {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
         </label>
+      </div>
+      <div v-if="untrackableAffects.length > 0">
+        <div class="ms-3 alert alert-danger w-50">
+          <h5>Untrackable Affects</h5>
+          <p>
+            These affects do not have available trackers. This may indicate an issue with product defintions.
+            Please contact the OSIDB/OSIM team for assistance.
+          </p>
+          <div class="osim-tracker-list">
+            <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
+              <span class="ps-1 text-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                {{ affect.ps_module }}/{{ affect.ps_component }}
+              </span>
+            </span>
+          </div>
+        </div>
       </div>
       <h5>
         Unfiled
@@ -115,7 +133,7 @@ function handleFileTrackers() {
         </div>
         <div class="row">
           <div class="col-6 pt-1">
-            <div class="osim-tracker-selections mb-2">
+            <div class="osim-tracker-list mb-2">
               <label
                 v-for="(tracker, index) in unselectedStreams"
                 :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
@@ -141,7 +159,7 @@ function handleFileTrackers() {
           </div>
 
           <div class="col-6 pt-1">
-            <div class="osim-tracker-selections mb-2">
+            <div class="osim-tracker-list mb-2">
               <label
                 v-for="(tracker, index) in selectedStreams"
                 :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
@@ -176,19 +194,16 @@ function handleFileTrackers() {
 <style lang="scss" scoped>
 @import '@/scss/bootstrap-overrides';
 
-.osim-tracker-selections {
+.osim-tracker-list {
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column;
+  max-height: 30vh;
+  overflow-y: auto;
+  background-color: #fff;
 }
 
 .osim-trackers-filing {
   overflow: hidden;
-
-  .col-6:has(.osim-tracker-selections) {
-    max-height: 30vh;
-    overflow-y: auto;
-    background-color: #fff;
-  }
 }
 
 .osim-affect-trackers-container {

@@ -1,11 +1,17 @@
 # OSIM Changelog
 
 ## [Unreleased]
+
 ### Fixed
 * Fix comment#0 and description fields layout (`OSIDB-3174`)
 
-## [2024.7.1]
 ### Added
+* Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
+
+## [2024.7.1]
+
+### Added
+* Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
 * Sort affects by product family, alphabetically (`OSIDB-2533`)
 * Suggestions for Flaw Owner field (`OSIDB-3004`)
