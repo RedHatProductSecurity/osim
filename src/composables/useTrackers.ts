@@ -1,9 +1,10 @@
 import { computed, ref, watch, type Ref } from 'vue';
 
 import { getTrackersForFlaws, type TrackersPost, fileTrackingFor } from '@/services/TrackerService';
-import type { ZodAffectType } from '@/types/zodAffect';
+import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 
 export type UpdateStream = ModuleComponentProductStream & UpdateStreamMeta;
+type ZodTrackerTypeWithAffect = ZodTrackerType & ZodAffectType;
 
 type ModuleComponent = {
   ps_module: string;
@@ -22,7 +23,7 @@ type ModuleComponentProductStream = {
 };
 
 type UpdateStreamMeta = {
-  affectUuid?: string;
+  affectUuid?: string | null;
   ps_component?: string;
   ps_module?: string;
 };
@@ -52,15 +53,15 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     })
   );
 
-  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent: any) =>
-    moduleComponent.streams.map((stream: Record<string, any>) => ({
+  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent) =>
+    moduleComponent.streams.map((stream: UpdateStream) => ({
       ...stream,
       ps_component: moduleComponent.ps_component,
       ps_module: moduleComponent.ps_module,
       affectUuid: moduleComponent.affect.uuid
     }))
-  ).filter((stream: any) => !alreadyFiledTrackers.value.find(
-    (tracker: any) => tracker.ps_update_stream === stream.ps_update_stream
+  ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
+    (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
       && tracker.ps_component === stream.ps_component
   )));
 
@@ -139,7 +140,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
 
   function getUpdateStreamsFor(module: string, component: string) {
     const moduleComponent = moduleComponents.value.find(
-      ({ ps_module, ps_component }: any) => ps_module === module && ps_component === component
+      ({ ps_module, ps_component }: ModuleComponent) => ps_module === module && ps_component === component
     );
     return moduleComponent ? moduleComponent.streams : [];
   }
