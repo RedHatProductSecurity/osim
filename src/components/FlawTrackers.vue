@@ -109,7 +109,7 @@ function changePage(page: number) {
           No trackers to display
         </div>
         <table v-else class="table table-striped table-info mb-0">
-          <thead class="sticky-top">
+          <thead class="sticky-top" style="z-index: 1;">
             <tr>
               <th>Module</th>
               <th>Type</th>
