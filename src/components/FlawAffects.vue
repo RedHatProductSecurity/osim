@@ -544,7 +544,8 @@ const displayedTrackers = computed(() => {
         <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'me-3': hasAffects }">
           <span
             v-if="paginatedAffects.length > 0"
-            class="badge border border-black bg-light-gray text-black"
+            class="badge border"
+            style="background-color: #212529; border-color: #212529 !important;"
             :title="`Display mode: ${displayMode}`"
           >
             Displaying {{ paginatedAffects.length }}
@@ -561,7 +562,7 @@ const displayedTrackers = computed(() => {
           </span>
           <div
             v-if="selectedAffects.length > 0"
-            class="badge d-flex border border-secondary bg-light-gray text-black"
+            class="badge border border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.SELECTED }"
             style="cursor: pointer;"
             title="There are some affects selected"
@@ -572,7 +573,7 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="affectsBeingEdited.length > 0"
-            class="badge d-flex border bg-light-yellow"
+            class="badge border bg-light-yellow"
             style="cursor: pointer; border-color: #73480b !important; color: #73480b;"
             :style="displayMode === displayModes.EDITING ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
             title="Some affects are being edited"
@@ -595,7 +596,7 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="affectsToDelete.length > 0"
-            class="badge d-flex border"
+            class="badge border"
             style="background-color: #ffe3d9; color: #731f00; cursor: pointer; border-color: #731f00 !important;"
             :style="displayMode === displayModes.DELETED ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
             title="Some affects will be deleted on save changes"
@@ -606,7 +607,7 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="newAffects.length > 0"
-            class="badge d-flex border bg-light-teal"
+            class="badge border bg-light-teal"
             style="background-color: #e0f0ff; color: #036; cursor: pointer; border-color: #036 !important;"
             :style="displayMode === displayModes.CREATED ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
             title="Some affects will be created on save changes"
@@ -1106,18 +1107,23 @@ const displayedTrackers = computed(() => {
       }
     }
 
-    .badge {
-      user-select: none;
-      &:hover {
-        filter: brightness(0.9);
-      }
-    }
-
     .affects-table-actions {
       .btn {
+        background-color: #212529;
+        border-color: #212529;
         margin-inline: .1rem;
       }
     }
+  }
+
+  .affects-info-badges {
+        > :not(:first-child).badge {
+        user-select: none;
+        transition: filter .25s, background-color .25s, border-color .25s;
+        &:hover {
+          filter: brightness(0.9);
+        }
+      }
   }
 
   .affect-action-btns {
