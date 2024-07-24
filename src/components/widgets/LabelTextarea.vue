@@ -69,13 +69,17 @@ defineOptions({
   </label>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .osim-input {
   display: block;
 
   .throbber {
     position: absolute;
     left: 1rem;
+  }
+
+  textarea {
+    position: relative;
   }
 }
 </style>
