@@ -1,9 +1,10 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.7.2]
 
 ### Fixed
 * Fix comment#0 and description fields layout (`OSIDB-3174`)
+* Indicate when single tracker successfully filed (`OSIDB-3144`)
 
 ### Added
 * Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
@@ -14,7 +15,6 @@
 ## [2024.7.1]
 
 ### Added
-* Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
 * Sort affects by product family, alphabetically (`OSIDB-2533`)
 * Suggestions for Flaw Owner field (`OSIDB-3004`)
@@ -265,7 +265,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.2...HEAD
+[2024.7.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.1...v2024.7.2
 [2024.7.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.0...v2024.7.1
 [2024.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.2...v2024.7.0
 [2024.6.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.6.1...v2024.6.2
