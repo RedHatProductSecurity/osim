@@ -541,14 +541,14 @@ const displayedTrackers = computed(() => {
         <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'me-3': hasAffects }">
           <span
             v-if="paginatedAffects.length > 0"
-            class="badge  border border-black bg-light-gray text-black"
+            class="badge border border-black bg-light-gray text-black"
             :title="`Display mode: ${displayMode}`"
           >
             Displaying {{ paginatedAffects.length }}
           </span>
           <span
             v-if="hasAffects"
-            class="badge  border border-secondary bg-light-gray text-black"
+            class="badge border border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.ALL }"
             :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : ''"
             title="All affects in this flaw"
