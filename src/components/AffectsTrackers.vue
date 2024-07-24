@@ -50,7 +50,7 @@ function handleFileTrackers() {
     </h4>
 
     <div class="osim-trackers-filing mb-2">
-      <div v-if="alreadyFiledTrackers.length" class="osim-tracker-list mb-2">
+      <div v-if="alreadyFiledTrackers.length" class="osim-tracker-list mb-2 w-50">
         <h5>Filed</h5>
         <label
           v-for="(tracker, index) in alreadyFiledTrackers"
@@ -204,6 +204,10 @@ function handleFileTrackers() {
 
 .osim-trackers-filing {
   overflow: hidden;
+
+  &>.osim-tracker-list:first-of-type {
+    background-color: transparent;
+  }
 }
 
 .osim-affect-trackers-container {
