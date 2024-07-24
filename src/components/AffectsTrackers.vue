@@ -65,14 +65,14 @@ function handleFileTrackers() {
           {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
         </label>
       </div>
-      <div v-if="untrackableAffects.length > 0" class="row">
-        <div class="ms-2 col-6 alert alert-danger">
+      <div v-if="untrackableAffects.length > 0">
+        <div class="ms-3 alert alert-danger w-50">
           <h5>Untrackable Affects</h5>
           <p>
             These affects do not have available trackers. This may indicate an issue with product defintions.
             Please contact the OSIDB/OSIM team for assistance.
           </p>
-          <div class="osim-trackers-list">
+          <div class="osim-tracker-list">
             <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
               <span class="ps-1 text-danger">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -80,8 +80,6 @@ function handleFileTrackers() {
               </span>
             </span>
           </div>
-        </div>
-        <div class="col-6">
         </div>
       </div>
       <h5>
@@ -198,17 +196,14 @@ function handleFileTrackers() {
 
 .osim-tracker-list {
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column;
+  max-height: 30vh;
+  overflow-y: auto;
+  background-color: #fff;
 }
 
 .osim-trackers-filing {
   overflow: hidden;
-
-  .col-6:has(.osim-tracker-list) {
-    max-height: 30vh;
-    overflow-y: auto;
-    background-color: #fff;
-  }
 }
 
 .osim-affect-trackers-container {
