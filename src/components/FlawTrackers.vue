@@ -111,8 +111,9 @@ function changePage(page: number) {
         <table v-else class="table table-striped table-info mb-0">
           <thead class="sticky-top" style="z-index: 1;">
             <tr>
-              <th>Module</th>
+              <th>Bug ID</th>
               <th>Type</th>
+              <th>Module</th>
               <th>Product Stream</th>
               <th>Status</th>
               <th>Created date</th>
@@ -124,12 +125,15 @@ function changePage(page: number) {
               v-for="(tracker, trackerIndex) in paginatedTrackers"
               :key="trackerIndex"
             >
-              <td>{{ tracker.ps_update_stream }}</td>
               <td>
                 <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }">
-                  {{ `${tracker.type} ` }}<i class="bi-box-arrow-up-right" />
+                  {{ `${tracker.external_system_id} ` }}<i class="bi-box-arrow-up-right" />
                 </RouterLink>
               </td>
+              <td>
+                {{ tracker.type }}
+              </td>
+              <td>{{ tracker.ps_update_stream }}</td>
               <td>
                 {{ tracker.ps_update_stream }}
               </td>
@@ -195,14 +199,20 @@ function changePage(page: number) {
       &:nth-of-type(4) {
         width: 20%;
       }
-      &:nth-of-type(5) {
+      &:nth-of-type(4) {
         width: 10%;
+      }
+      &:nth-of-type(5) {
+        width: 5%;
       }
       &:nth-of-type(6) {
         width: 15%;
       }
       &:nth-of-type(7) {
         width: 15%;
+      }
+      &:nth-of-type(7) {
+        width: 10%;
       }
     }
   }
