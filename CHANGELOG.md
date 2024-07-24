@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Fix comment#0 and description fields layout (`OSIDB-3174`)
+
 ## [2024.7.1]
 ### Added
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
