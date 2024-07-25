@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
@@ -20,7 +20,7 @@ const hasTrackers = computed(() => props.allTrackersCount > 0);
 
 // Sorting
 const sortedTrackers = computed(() =>
-  sortTrackers(props.displayedTrackers)
+  sortTrackers(filteredTrackers.value)
 );
 
 type sortKeys = keyof Pick<ZodTrackerType,
@@ -53,6 +53,37 @@ function sortTrackers(affects: ZodTrackerType[]): ZodTrackerType[] {
     ...comparator
   ])(affects);
 }
+
+// Trackers filters by field
+const filteredTrackers = computed(() => {
+  return props.displayedTrackers.filter(tracker => {
+    const matchesStatusFilter =
+      statusFilter.value.length === 0 || statusFilter.value.includes(tracker.status ?? 'EMPTY');
+    return matchesStatusFilter;
+  });
+});
+
+const trackerStatuses = computed(() => {
+  const statuses = props.displayedTrackers.map(item => item.status || 'EMPTY');
+  const uniqueStatuses = [...new Set(statuses)];
+  return uniqueStatuses;
+});
+
+const statusFilter = ref<string[]>([]);
+
+function toggleFilter(filterArray: Ref<string[]>, item: string) {
+  const index = filterArray.value.indexOf(item);
+  if (index > -1) {
+    filterArray.value.splice(index, 1);
+  } else {
+    filterArray.value.push(item);
+  }
+}
+
+function toggleStatusFilter(status: string) {
+  toggleFilter(statusFilter, status);
+}
+
 
 // Trackers Pagination
 const currentPage = ref(1);
@@ -142,17 +173,38 @@ function changePage(page: number) {
       <div
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <div v-if="sortedTrackers.length === 0">
-          No trackers to display
-        </div>
-        <table v-else class="table table-striped table-info mb-0">
+        <table class="table table-striped table-info mb-0">
           <thead class="sticky-top" style="z-index: 1;">
             <tr>
               <th>Bug ID</th>
               <th>Type</th>
               <th>Module</th>
               <th>Product Stream</th>
-              <th>Status</th>
+              <th>
+                Status
+                <i
+                  id="status-filter"
+                  class="bi mx-1"
+                  :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="statusFilter.length !== 0 ? 'There are status filters selected' : ''"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  @click.stop
+                />
+                <ul class="dropdown-menu" aria-labelledby="status-filter" style="z-index: 10;">
+                  <template v-for="status in trackerStatuses" :key="status">
+                    <button
+                      type="button"
+                      class="btn dropdown-item"
+                      @click.stop="toggleStatusFilter(status)"
+                    >
+                      <i class="bi me-2" :class="statusFilter.includes(status) ? 'bi-record-circle' : 'bi-circle'" />
+                      <span>{{ status.toUpperCase() }}</span>
+                    </button>
+                  </template>
+                </ul>
+              </th>
               <th
                 @click="setSort('created_dt')"
               >
@@ -199,13 +251,16 @@ function changePage(page: number) {
                 {{ tracker.ps_update_stream }}
               </td>
               <td>
-                {{ tracker.status }}
+                {{ tracker.status?.toUpperCase() || 'EMPTY' }}
               </td>
               <td>{{ formatDate(tracker.created_dt ?? '', true) }}</td>
               <td>{{ formatDate(tracker.updated_dt ?? '', true) }}</td>
             </tr>
           </tbody>
         </table>
+        <div v-if="sortedTrackers.length === 0">
+          No trackers to display
+        </div>
       </div>
     </div>
   </div>
