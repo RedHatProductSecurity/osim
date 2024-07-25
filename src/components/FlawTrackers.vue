@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodTrackerType } from '@/types/zodAffect';
+import { ascend, descend, sortWith } from 'ramda';
 
 const props = defineProps<{
   displayedTrackers: ZodTrackerType[];
@@ -17,6 +18,42 @@ const shouldShowTrackers = ref(false);
 
 const hasTrackers = computed(() => props.allTrackersCount > 0);
 
+// Sorting
+const sortedTrackers = computed(() =>
+  sortTrackers(props.displayedTrackers)
+);
+
+type sortKeys = keyof Pick<ZodTrackerType,
+  'created_dt' | 'updated_dt'
+>;
+
+const sortKey = ref<sortKeys>('created_dt');
+const sortOrder = ref(ascend);
+
+const setSort = (key: sortKeys) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === ascend ? descend : ascend;
+  } else {
+    sortKey.value = key;
+    sortOrder.value = ascend;
+  }
+};
+
+function sortTrackers(affects: ZodTrackerType[]): ZodTrackerType[] {
+  const customSortKey = sortKey.value;
+  const order = sortOrder.value;
+
+  const customSortFn = (affect: ZodTrackerType) => {
+    return affect[customSortKey] || 0;
+  };
+
+  const comparator = [order<ZodTrackerType>(customSortFn)];
+
+  return sortWith([
+    ...comparator
+  ])(affects);
+}
+
 // Trackers Pagination
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
@@ -24,11 +61,11 @@ const itemsPerPage = ref(10);
 const paginatedTrackers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
-  return props.displayedTrackers.slice(start, end);
+  return sortedTrackers.value.slice(start, end);
 });
 
 const totalPages = computed(() =>
-  Math.ceil(props.displayedTrackers.length / itemsPerPage.value)
+  Math.ceil(sortedTrackers.value.length / itemsPerPage.value)
 );
 
 function changePage(page: number) {
@@ -105,7 +142,7 @@ function changePage(page: number) {
       <div
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <div v-if="displayedTrackers.length === 0">
+        <div v-if="sortedTrackers.length === 0">
           No trackers to display
         </div>
         <table v-else class="table table-striped table-info mb-0">
@@ -116,8 +153,32 @@ function changePage(page: number) {
               <th>Module</th>
               <th>Product Stream</th>
               <th>Status</th>
-              <th>Created date</th>
-              <th>Updated date</th>
+              <th
+                @click="setSort('created_dt')"
+              >
+                Created date
+                <i
+                  :class="{
+                    'opacity-0': sortKey !== 'created_dt',
+                    'bi-caret-down-fill': sortOrder === descend,
+                    'bi-caret-up-fill': sortOrder !== descend,
+                  }"
+                  class="bi"
+                />
+              </th>
+              <th
+                @click="setSort('updated_dt')"
+              >
+                Updated date
+                <i
+                  :class="{
+                    'opacity-0': sortKey !== 'updated_dt',
+                    'bi-caret-down-fill': sortOrder === descend,
+                    'bi-caret-up-fill': sortOrder !== descend,
+                  }"
+                  class="bi"
+                />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -180,6 +241,15 @@ function changePage(page: number) {
   }
 
   table {
+    thead {
+      th {
+        user-select: none;
+      }
+
+      th:nth-of-type(6), th:nth-of-type(7) {
+        cursor: pointer;
+      }
+    }
     td {
         padding: .25rem;
         padding-left: .5rem;
