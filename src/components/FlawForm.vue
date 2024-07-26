@@ -481,7 +481,8 @@ const createdDate = computed(() => {
           />
         </div>
       </div>
-      <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
+    </div>
+    <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
         <!-- <button type="button" class="btn btn-primary col">Customer Pending</button>-->
         <!-- <button type="button" class="btn btn-primary col">
         Close this issue without actions
@@ -493,27 +494,26 @@ const createdDate = computed(() => {
         <!-- <button type="button" class="btn btn-primary col">
         Create hardening bug/weakness
       </button>-->
-        <div v-if="mode === 'edit'">
-          <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
-          <button
-            v-osim-loading.grow="isSaving"
-            type="submit"
-            class="btn btn-primary ms-3"
-            :disabled="isSaving"
-          >
-            Save Changes
-          </button>
-        </div>
-        <div v-if="mode === 'create'">
-          <button
-            v-osim-loading.grow="isSaving"
-            type="submit"
-            class="btn btn-primary ms-3"
-            :disabled="isSaving"
-          >
-            Create New Flaw
-          </button>
-        </div>
+      <div v-if="mode === 'edit'">
+        <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
+        <button
+          v-osim-loading.grow="isSaving"
+          type="submit"
+          class="btn btn-primary ms-3"
+          :disabled="isSaving"
+        >
+          Save Changes
+        </button>
+      </div>
+      <div v-if="mode === 'create'">
+        <button
+          v-osim-loading.grow="isSaving"
+          type="submit"
+          class="btn btn-primary ms-3"
+          :disabled="isSaving"
+        >
+          Create New Flaw
+        </button>
       </div>
     </div>
   </form>
