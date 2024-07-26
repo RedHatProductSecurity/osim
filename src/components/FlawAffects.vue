@@ -306,11 +306,11 @@ function isNewAffect(affect: ZodAffectType) {
 function addNewAffect() {
   const affect = {
     embargoed: props.embargoed,
-    affectedness: '',
+    affectedness: 'NEW',
     resolution: '',
     delegated_resolution: '', // should this be null
-    ps_module: '',
-    ps_component: `NewComponent${newAffects.value.length}`,
+    ps_module: `NewModule-${newAffects.value.length}`,
+    ps_component: `NewComponent-${newAffects.value.length}`,
     impact: '',
     cvss_scores: [{
       // affect: z.string().uuid(),
