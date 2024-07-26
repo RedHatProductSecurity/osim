@@ -4,7 +4,6 @@ from datetime import date, datetime
 
 from behave import when, then
 from selenium.webdriver.common.by import By
-from seleniumpagefactory.Pagefactory import ElementNotFoundException
 
 from features.utils import (
     generate_cve,
@@ -12,11 +11,9 @@ from features.utils import (
     generate_random_text,
     go_to_specific_flaw_detail_page,
     get_osidb_token,
-    go_to_advanced_search_page
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
-from features.pages.advanced_search_page import AdvancedSearchPage
 from features.constants import AFFECTED_MODULE_JR
 
 
@@ -730,3 +727,20 @@ def step_impl(context):
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.check_text_exist('REJECTED')
+
+
+@when("I click the erase button of CVSSv3 field")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.click_btn("cvssV3EraseButton")
+    flaw_page.click_btn("saveBtn")
+    flaw_page.wait_msg('flawSavedMsg')
+    flaw_page.wait_msg('cvssV3DeleteMsg')
+
+
+@then("The CVSSv3 field is empty")
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    cvss_score = flaw_detail_page.get_cvssV3_score()
+    assert cvss_score == "", f"The CVSSv3 score should be empty, got {cvss_score}"
