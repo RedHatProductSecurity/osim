@@ -4,6 +4,7 @@ import {
   affectImpacts,
   affectAffectedness,
   affectResolutions,
+  AffectednessResolutionPairs,
 } from '@/types/zodAffect';
 import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
@@ -407,18 +408,9 @@ function affectCvss3Vector(affect: ZodAffectType) {
     || null;
 }
 
-function resolutionOptions(affectedness: string) {
-  return {
-    AFFECTED: affectResolutions,
-    NEW: [''],
-    NOTAFFECTED: [''],
-  }[affectedness] || [''];
+function resolutionOptions(affect: ZodAffectType) {
+  return (affect?.affectedness && AffectednessResolutionPairs[affect?.affectedness]) || [];
 }
-
-const hiddenResolutionOptions = computed(() => {
-  const availableOptions = ['EMPTY', 'DELEGATED', 'WONTFIX', 'OOSS'];
-  return affectResolutions.filter(option => !availableOptions.includes(option));
-});
 
 function affectRowTooltip(affect: ZodAffectType) {
   if (isRemoved(affect)) {
@@ -988,11 +980,10 @@ const displayedTrackers = computed(() => {
                   @keydown="handleEdit($event, affect)"
                 >
                   <option
-                    v-for="option in resolutionOptions(affect.affectedness || '')"
+                    v-for="option in resolutionOptions(affect)"
                     :key="option"
                     :value="option"
                     :selected="option === affect.resolution"
-                    :hidden="hiddenResolutionOptions?.includes(option)"
                   >
                     {{ option }}
                   </option>
