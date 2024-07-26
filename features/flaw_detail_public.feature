@@ -55,6 +55,7 @@ Feature: Flaw detail testing on public flaw
         |    components |
         |         owner |
         |  contributors |
+        |        cvssV3 |
       Then The random input fields are updated
 
     Scenario Outline: Update CWE ID

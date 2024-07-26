@@ -177,12 +177,15 @@ def step_impl(context):
         elif field == "contributors":
             flaw_detail_page.set_contributors_field(value)
             value = flaw_detail_page.firstContributorText.get_text().split("Remove")[0].strip()
+        elif field == "cvssV3":
+            value = flaw_detail_page.set_cvssV3_field()
         else:
             flaw_detail_page.set_input_field(field, value)
 
         context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
+    flaw_detail_page.wait_msg("cvssV3SavedMsg")
 
 
 @then("The random input fields are updated")

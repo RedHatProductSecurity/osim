@@ -82,6 +82,10 @@ class FlawDetailPage(BasePage):
         "cweidText": ("XPATH", "//span[text()='CWE ID']"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
 
+        "cvssV3Text": ("XPATH", "//span[text()=' CVSSv3 ']"),
+        "cvssV3Score": ("XPATH", "//span[@class='osim-cvss-score']"),
+        "cvssV3SavedMsg": ("XPATH", "//div[text()='Saved CVSS Scores']"),
+
         "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
         "publicDateText": ("XPATH", "//span[text()='Public Date']"),
@@ -372,6 +376,22 @@ class FlawDetailPage(BasePage):
         field_input.send_keys(value)
         # click first item list in menu
         self.contributorListFirstOption.click_button()
+
+    def set_cvssV3_field(self):
+        field_input = self.driver.find_elements(
+            locate_with(By.XPATH, "//div[@class='input-wrapper col']").
+            near(self.cvssV3Text))[0]
+
+        field_input.click()
+        # (//div[@class="btn-group-vertical btn-group-sm osim-factor-severity-select"])[1]/button[position()>1]
+        for i in range(1, 9):
+            items = self.driver.find_elements(
+                By.XPATH, f'(//div[@class="btn-group-vertical btn-group-sm osim-factor-severity-select"])[{i}]/button[position()>1]')
+
+            item = random.choice(items)
+            item.click()
+
+        return self.cvssV3Score.get_text()
 
     def set_input_field(self, field, value):
         try:
