@@ -578,20 +578,19 @@ const displayedTrackers = computed(() => {
           </div>
           <span
             v-if="hasAffects"
-            class="badge border border-secondary bg-light-gray text-black"
+            class="btn btn-sm border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.ALL }"
-            :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : ''"
-            title="All affects in this flaw"
+            :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : 'cursor: auto'"
+            :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
             @click.stop="toggleDisplayMode(displayModes.ALL)"
           >
             All affects {{ allAffects.length }}
           </span>
           <div
             v-if="selectedAffects.length > 0"
-            class="badge border border-secondary bg-light-gray text-black"
+            class="btn btn-sm border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.SELECTED }"
-            style="cursor: pointer;"
-            title="There are some affects selected"
+            :title="displayMode !== displayModes.SELECTED ? 'Display selected affects' : 'Displaying selected affects'"
             @click.stop="toggleDisplayMode(displayModes.SELECTED)"
           >
             <i class="bi bi-check-square me-1 h-fit" />
@@ -599,10 +598,11 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="affectsBeingEdited.length > 0"
-            class="badge border bg-light-yellow"
-            style="cursor: pointer; border-color: #73480b !important; color: #73480b;"
-            :style="displayMode === displayModes.EDITING ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
-            title="Some affects are being edited"
+            class="btn btn-sm bg-light-yellow"
+            style="border-color: #73480b !important; color: #73480b;"
+            :style="displayMode === displayModes.EDITING
+              ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
+            :title="displayMode === displayModes.EDITING ? 'Displaying editing affects' :'Display editing affects'"
             @click.stop="toggleDisplayMode(displayModes.EDITING)"
           >
             <i class="bi bi-pencil me-1 h-fit" />
@@ -610,11 +610,11 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="modifiedAffects.length > 0"
-            class="badge border bg-light-green"
-            style="cursor: pointer; color: #204d00; border-color: #204d00 !important;"
+            class="btn btn-sm bg-light-green"
+            style="color: #204d00; border-color: #204d00 !important;"
             :style="displayMode === displayModes.MODIFIED
               ? 'background-color: #204d00 !important; color: #d1f1bb;' : ''"
-            title="Some affects will be modified on save changes"
+            :title="displayMode === displayModes.MODIFIED ? 'Displaying modified affects' : 'Display modified affects'"
             @click.stop="toggleDisplayMode(displayModes.MODIFIED)"
           >
             <i class="bi bi-file-earmark-diff me-1 h-fit" />
@@ -622,10 +622,11 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="affectsToDelete.length > 0"
-            class="badge border"
-            style="background-color: #ffe3d9; color: #731f00; cursor: pointer; border-color: #731f00 !important;"
-            :style="displayMode === displayModes.DELETED ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
-            title="Some affects will be deleted on save changes"
+            class="btn btn-sm"
+            style="background-color: #ffe3d9; color: #731f00; border-color: #731f00 !important;"
+            :style="displayMode === displayModes.DELETED
+              ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
+            :title="displayMode === displayModes.DELETED ? 'Displaying removed affects' : 'Display removed affects'"
             @click.stop="toggleDisplayMode(displayModes.DELETED)"
           >
             <i class="bi bi-trash me-1 h-fit" />
@@ -633,10 +634,11 @@ const displayedTrackers = computed(() => {
           </div>
           <div
             v-if="newAffects.length > 0"
-            class="badge border bg-light-teal"
-            style="background-color: #e0f0ff; color: #036; cursor: pointer; border-color: #036 !important;"
-            :style="displayMode === displayModes.CREATED ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
-            title="Some affects will be created on save changes"
+            class="btn btn-sm bg-light-teal"
+            style="background-color: #e0f0ff; color: #036; border-color: #036 !important;"
+            :style="displayMode === displayModes.CREATED
+              ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
+            :title="displayMode === displayModes.CREATED ? 'Displaying new affects' : 'Display new affects'"
             @click.stop="toggleDisplayMode(displayModes.CREATED)"
           >
             <i class="bi bi-plus-lg me-1 h-fit" />
