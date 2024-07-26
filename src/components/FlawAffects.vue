@@ -433,6 +433,8 @@ function affectRowTooltip(affect: ZodAffectType) {
 }
 
 // Affects Pagination
+const minItemsPerPage = 5;
+const maxItemsPerPage = 20;
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
@@ -449,6 +451,18 @@ const totalPages = computed(() =>
 function changePage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
+  }
+}
+
+function reduceItemsPerPage() {
+  if (itemsPerPage.value > minItemsPerPage) {
+    itemsPerPage.value --;
+  }
+}
+
+function increaseItemsPerPage() {
+  if (itemsPerPage.value < maxItemsPerPage) {
+    itemsPerPage.value ++;
   }
 }
 
@@ -542,14 +556,26 @@ const displayedTrackers = computed(() => {
       </div>
       <div class="affects-toolbar d-flex">
         <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'me-3': hasAffects }">
-          <span
+          <div
             v-if="paginatedAffects.length > 0"
-            class="badge border"
-            style="background-color: #212529; border-color: #212529 !important;"
-            :title="`Display mode: ${displayMode}`"
+            class="btn btn-sm btn-secondary"
+            style="pointer-events: none;"
           >
-            Displaying {{ paginatedAffects.length }}
-          </span>
+            <i
+              :style="itemsPerPage > minItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
+              class="bi bi-dash-square"
+              title="Reduce affects per page"
+              @click="reduceItemsPerPage()"
+            />
+            <span class="mx-2">{{ `Per page: ${itemsPerPage}` }}</span>
+            <i
+              :style="itemsPerPage < maxItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
+              class="bi bi-plus-square"
+              title="Increase affects per page"
+              style="pointer-events: auto;"
+              @click="increaseItemsPerPage()"
+            />
+          </div>
           <span
             v-if="hasAffects"
             class="badge border border-secondary bg-light-gray text-black"
