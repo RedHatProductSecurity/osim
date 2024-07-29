@@ -55,7 +55,7 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
 }
 
 export async function getRelatedFlaws (affects: ZodAffectType[]) {
-  if (!affects || affects[0]) {
+  if (!affects || !affects[0]) {
     return [];
   }
   const { ps_module: firstAffectPsModule, ps_component: firstAffectPsComponent } = affects[0];
