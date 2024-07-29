@@ -54,18 +54,21 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
   });
 }
 
-export async function getRelatedFlaws (affects: ZodAffectType[]) {
-  if (!affects || !affects[0]) {
-    return [];
-  }
-  const { ps_module: firstAffectPsModule, ps_component: firstAffectPsComponent } = affects[0];
+export async function getRelatedFlaws (affects: ZodAffectType[]): Promise<ZodFlawType[]> {
+
   let relatedFlaws: ZodFlawType[] = [];
+
+  if (!affects || !affects[0]) {
+    return relatedFlaws;
+  }
+
+  const { ps_module: firstAffectPsModule, ps_component: firstAffectPsComponent } = affects[0];
+
   try {
     const response = await osidbFetch({
       method: 'get',
       url: '/osidb/api/v1/flaws',
       params: {
-        include_fields: FLAW_LIST_FIELDS.join(','),
         affects__ps_module: firstAffectPsModule,
         affects__ps_component: firstAffectPsComponent,
       },
@@ -76,14 +79,13 @@ export async function getRelatedFlaws (affects: ZodAffectType[]) {
       relatedFlaws = relatedFlaws.filter((flaw) => flaw.affects.some(
         (matchingAffect) =>
           affect.ps_module === matchingAffect.ps_module && affect.ps_component === matchingAffect.ps_component
-      )
-      );
+      ));
     }
-    return relatedFlaws;
   } catch (error) {
     console.error('Problem fetching related flaws:', error);
-
   }
+
+  return relatedFlaws;
 }
 
 export async function getFlaw(uuid: string): Promise<ZodFlawType> {
