@@ -476,8 +476,8 @@ const displayedTrackers = computed(() => {
   return sortedAffects.value.flatMap(affect => affect.trackers);
 });
 
-function fileTrackersForAffect(affect: ZodAffectType) {
-  affectsManaging.value = [affect];
+function fileTrackersForAffects(affects: ZodAffectType[]) {
+  affectsManaging.value = affects;
   openModal();
 }
 </script>
@@ -720,7 +720,16 @@ function fileTrackersForAffect(affect: ZodAffectType) {
               <span>Deselect</span>
             </div>
           </button>
-          <button type="button" class="btn btn-sm btn-secondary" @click.prevent="addNewAffect()">
+          <button
+            v-if="selectedAffects.length > 0"
+            type="button"
+            class="btn btn-sm btn-info"
+            style="background-color: rgb(122, 199, 199);"
+            @click.prevent.stop="fileTrackersForAffects(selectedAffects)"
+          >
+            Manage Trackers
+          </button>
+          <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
             <i class="bi bi-plus-lg me-2" />
             <span>New Affect</span>
           </button>
@@ -1036,7 +1045,7 @@ function fileTrackersForAffect(affect: ZodAffectType) {
                     type="button"
                     :disabled="isBeingEdited(affect) || isRemoved(affect)"
                     class="btn btn-sm input-group-text px-1 py-0 my-auto"
-                    @click.prevent.stop="fileTrackersForAffect(affect)"
+                    @click.prevent.stop="fileTrackersForAffects([affect])"
                   >
                     <i class="bi bi-plus" />
                   </button>
