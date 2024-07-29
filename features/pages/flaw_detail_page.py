@@ -14,7 +14,7 @@ from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException, ElementNotFoundException
 from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
-from features.page_factory_utils import find_elements_in_page_factory
+from features.page_factory_utils import find_elements_in_page_factory, find_element_in_page_factory
 from features.constants import (
     OSIDB_URL,
     AFFECTED_MODULE_BZ,
@@ -84,7 +84,9 @@ class FlawDetailPage(BasePage):
 
         "cvssV3Text": ("XPATH", "//span[text()=' CVSSv3 ']"),
         "cvssV3Score": ("XPATH", "//span[@class='osim-cvss-score']"),
+        "cvssV3EraseButton": ("XPATH", "//button[@class='erase-button input-group-text']"),
         "cvssV3SavedMsg": ("XPATH", "//div[text()='Saved CVSS Scores']"),
+        "cvssV3DeleteMsg": ("XPATH", "//div[text()='CVSS score deleted.']"),
 
         "reportedDateText": ("XPATH", "//span[text()='Reported Date']"),
         "reportedDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[1]"),
@@ -377,6 +379,9 @@ class FlawDetailPage(BasePage):
         # click first item list in menu
         self.contributorListFirstOption.click_button()
 
+    def get_cvssV3_score(self):
+        return find_element_in_page_factory(self, "cvssV3Score").text
+
     def set_cvssV3_field(self):
         field_input = self.driver.find_elements(
             locate_with(By.XPATH, "//div[@class='input-wrapper col']").
@@ -391,7 +396,7 @@ class FlawDetailPage(BasePage):
             item = random.choice(items)
             item.click()
 
-        return self.cvssV3Score.get_text()
+        return self.get_cvssV3_score()
 
     def set_input_field(self, field, value):
         try:

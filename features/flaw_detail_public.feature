@@ -58,6 +58,10 @@ Feature: Flaw detail testing on public flaw
         |        cvssV3 |
       Then The random input fields are updated
 
+    Scenario: Erase CVSSv3 field value
+      When I click the erase button of CVSSv3 field
+      Then The CVSSv3 field is empty
+
     Scenario Outline: Update CWE ID
       When I <action> the CWE ID
       Then The CWE ID is updated
