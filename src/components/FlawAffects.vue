@@ -10,7 +10,12 @@ import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
+import TrackersManager from '@/components/TrackersManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+import Modal from '@/components/widgets/Modal.vue';
+import { useModal } from '@/composables/useModal';
+
+const { isModalOpen, openModal, closeModal } = useModal();
 
 const props = defineProps<{
   flawId: string;
@@ -25,6 +30,7 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'affect:add': [value: ZodAffectType];
+  'affects:refresh': [];
 }>();
 
 const { affects, affectsToDelete } = toRefs(props);
@@ -32,6 +38,10 @@ const { affects, affectsToDelete } = toRefs(props);
 const savedAffects = clone(affects.value) as ZodAffectType[];
 
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
+
+const affectsNotBeingDeleted = computed(
+  () => affects.value.filter((affect) => !affectsToDelete.value.includes(affect))
+);
 
 // Sorting
 type sortKeys = keyof Pick<ZodAffectType,
@@ -460,10 +470,16 @@ function increaseItemsPerPage() {
 
 // Trackers
 const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.trackers));
+const affectsManaging = ref<ZodAffectType[]>();
 
 const displayedTrackers = computed(() => {
   return sortedAffects.value.flatMap(affect => affect.trackers);
 });
+
+function fileTrackersForAffect(affect: ZodAffectType) {
+  affectsManaging.value = [affect];
+  openModal();
+}
 </script>
 
 <template>
@@ -1013,7 +1029,19 @@ const displayedTrackers = computed(() => {
                 </span>
               </td>
               <td>{{ affectCvss3Vector(affect) }}</td>
-              <td>{{ affect.trackers.length }}</td>
+              <td>
+                <div class="d-flex">
+                  <span class="me-2">{{ affect.trackers.length }}</span>
+                  <button
+                    type="button"
+                    :disabled="isBeingEdited(affect) || isRemoved(affect)"
+                    class="btn btn-sm input-group-text px-1 py-0 my-auto"
+                    @click.prevent.stop="fileTrackersForAffect(affect)"
+                  >
+                    <i class="bi bi-plus" />
+                  </button>
+                </div>
+              </td>
               <td class="affect-action-btns">
                 <button
                   v-if="!isBeingEdited(affect) && !affectsToDelete.includes(affect)"
@@ -1089,13 +1117,38 @@ const displayedTrackers = computed(() => {
       </span>
     </div>
     <FlawTrackers
+      :flawId="flawId"
       :displayedTrackers="displayedTrackers"
+      :affectsNotBeingDeleted="affectsNotBeingDeleted"
       :allTrackersCount="allTrackers.length"
     />
   </div>
+  <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal">
+    <template #header>
+      <div class="d-flex w-100">
+        <h4 class="m-0">Tracker Manager</h4>
+        <button
+          type="button"
+          class="btn btn-close ms-auto"
+          aria-label="Close"
+          @click="closeModal"
+        />
+      </div>
+    </template>
+    <template #body>
+      <TrackersManager
+        :flawId="flawId"
+        :affects="affectsManaging || []"
+        @affects-trackers:refresh="emit('affects:refresh')"
+      />
+    </template>
+    <template #footer>
+      <div></div>
+    </template>
+  </Modal>
 </template>
 
-<style scoped lang=scss>
+<style scoped lang="scss">
 @import '@/scss/bootstrap-overrides';
 
 .osim-affects-section {

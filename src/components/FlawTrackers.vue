@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
-import type { ZodTrackerType } from '@/types/zodAffect';
+import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
+import AffectsTrackers from '@/components/AffectsTrackers.vue';
 
 const props = defineProps<{
+  flawId: string;
   displayedTrackers: ZodTrackerType[];
+  affectsNotBeingDeleted: ZodAffectType[];
   allTrackersCount: number;
 }>();
 
-// TODO File Tracker
-// const emit = defineEmits<{
-//   'file-tracker': [value: object];
-// }>();
+const emit = defineEmits<{
+  'file-tracker': [value: object];
+  'affects:refresh': [];
+}>();
 
 const shouldShowTrackers = ref(false);
 
@@ -263,6 +266,13 @@ function changePage(page: number) {
         </div>
       </div>
     </div>
+    <AffectsTrackers
+      v-show="shouldShowTrackers"
+      :flawId="flawId"
+      :theAffects="affectsNotBeingDeleted"
+      @affects-trackers:refresh="emit('affects:refresh')"
+      @affects-trackers:hide="shouldShowTrackers = false"
+    />
   </div>
 </template>
 
