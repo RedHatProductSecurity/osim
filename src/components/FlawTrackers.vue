@@ -168,8 +168,8 @@ function changePage(page: number) {
             class="btn btn-sm btn-info ms-auto"
             @click="shouldShowTrackers = !shouldShowTrackers"
           >
-            <i class="bi bi-binoculars"></i>
-            Manage Trackers
+            <i class="bi bi-binoculars" />
+            Manage All Trackers
           </button>
         </div>
       </div>
