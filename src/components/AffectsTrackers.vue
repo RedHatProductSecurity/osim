@@ -50,7 +50,7 @@ function handleFileTrackers() {
     </h4>
 
     <div class="osim-trackers-filing mb-2">
-      <div v-if="alreadyFiledTrackers.length" class="osim-tracker-list mb-2">
+      <div v-if="alreadyFiledTrackers?.length" class="osim-tracker-list mb-2">
         <h5>Filed</h5>
         <label
           v-for="(tracker, index) in alreadyFiledTrackers"
@@ -183,7 +183,7 @@ function handleFileTrackers() {
           v-osim-loading.grow="isFilingTrackers"
           type="button"
           class="btn btn-sm btn-black text-white osim-file-trackers mt-3"
-          :disabled="!trackersToFile.length || isFilingTrackers"
+          :disabled="!trackersToFile?.length || isFilingTrackers"
           @click="handleFileTrackers"
         >
           <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
