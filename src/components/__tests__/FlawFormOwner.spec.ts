@@ -60,6 +60,9 @@ describe('Owner field', () => {
       global: {
         plugins: [pinia],
       },
+      props:{
+        taskKey: 'OSIM-1234'
+      }
     });
   });
 
@@ -91,7 +94,7 @@ describe('Owner field', () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
       data: {
         users:
-          [{ name: 'test', displayName: 'Test User', html: 'Test User' }]
+          [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
       }
     });
     const input = subject.find('input');

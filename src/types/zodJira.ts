@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-export type ZodJiraUserPickerType = z.infer<typeof JiraUserPickerSchema>;
-export const JiraUserPickerSchema = z.object({
+export type ZodJiraUserAssignableType = z.infer<typeof JiraUserAssignableSchema>;
+export const JiraUserAssignableSchema = z.object({
   displayName: z.string(),
-  html: z.string(),
   name: z.string(),
+  emailAddress: z.string().email().optional(),
+  avatarUrl: z.string().url()
 });
 
 

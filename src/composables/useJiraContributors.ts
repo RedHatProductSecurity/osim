@@ -31,7 +31,7 @@ export default function useJiraContributors(task_key: string) {
       return [];
     }
     isLoadingContributors.value = true;
-    const users = await searchJiraUsers(query)
+    const users = await searchJiraUsers(query, task_key)
       .catch(createCatchHandler('Failed to search contributors', false));
     isLoadingContributors.value = false;
     return users?.data?.users ?? [];

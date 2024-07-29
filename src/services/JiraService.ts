@@ -4,7 +4,7 @@ import { getNextAccessToken } from '@/services/OsidbAuthService';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
-import type { ZodJiraUserPickerType, ZodJiraIssueType } from '@/types/zodJira';
+import type { ZodJiraUserAssignableType, ZodJiraIssueType } from '@/types/zodJira';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
@@ -93,11 +93,11 @@ export async function getJiraComments(taskId: string) {
   });
 }
 
-export async function searchJiraUsers(query: string) {
-  return jiraFetch<{ users: ZodJiraUserPickerType[] }>({
+export async function searchJiraUsers(query: string, issueKey: string) {
+  return jiraFetch<{ users: ZodJiraUserAssignableType[] }>({
     method: 'get',
-    url: '/rest/api/2/user/picker',
-    params: { query },
+    url: '/rest/internal/2/users/assignee',
+    params: { issueKey, query },
   });
 }
 

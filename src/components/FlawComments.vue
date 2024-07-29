@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { isDefined, watchDebounced } from '@vueuse/core';
-import type { ZodJiraUserPickerType } from '@/types/zodJira';
+import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -13,6 +13,7 @@ import { useInternalComments } from '@/composables/useInternalComments';
 import { createCatchHandler } from '@/composables/service-helpers';
 import { searchJiraUsers, taskUrl } from '@/services/JiraService';
 import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
+import JiraUser from './widgets/JiraUser.vue';
 
 const userStore = useUserStore();
 
@@ -144,7 +145,7 @@ function sanitize(text: string) {
 
 const isInternalComment = computed(() => selectedTab.value === CommentType.Internal);
 const refTextArea = ref<InstanceType<typeof LabelTextarea> | null>(null);
-const suggestions = ref<ZodJiraUserPickerType[]>([]);
+const suggestions = ref<ZodJiraUserAssignableType[]>([]);
 const isLoadingSuggestions = ref(false);
 const caretPos = ref(['0px', '0px']);
 
@@ -152,7 +153,8 @@ watchDebounced(newComment, async () => {
   if (!isDefined(newComment)
     || newComment.value === ''
     || !refTextArea.value?.elTextArea?.value
-    || !isInternalComment.value) {
+    || !isInternalComment.value
+    || !props.taskKey) {
     return;
   }
 
@@ -161,7 +163,7 @@ watchDebounced(newComment, async () => {
     return;
   }
   isLoadingSuggestions.value = true;
-  const users = await searchJiraUsers(lastWord.slice(1))
+  const users = await searchJiraUsers(lastWord.slice(1), props.taskKey)
     .catch(createCatchHandler('Failed to load jira users', false))
     .finally(() => {
       isLoadingSuggestions.value = false;
@@ -314,8 +316,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                   class="item"
                   @click="handleSuggestionClick(user)"
                 >
-                  <!--eslint-disable-next-line vue/no-v-html -->
-                  <span v-html="(user.html)" />
+                  <JiraUser v-bind="user" :query="getLastWord()?.slice(1)" />
                 </div>
               </DropDown>
             </template>

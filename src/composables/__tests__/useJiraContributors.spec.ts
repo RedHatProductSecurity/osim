@@ -1,6 +1,6 @@
 import { getJiraIssue, searchJiraUsers } from '@/services/JiraService';
 import useJiraContributors from '../useJiraContributors';
-import type { ZodJiraContributorType, ZodJiraUserPickerType } from '@/types/zodJira';
+import type { ZodJiraContributorType, ZodJiraUserAssignableType } from '@/types/zodJira';
 
 vi.mock('@/services/JiraService', () => ({
   getJiraIssue: vi.fn().mockResolvedValue({}),
@@ -8,16 +8,18 @@ vi.mock('@/services/JiraService', () => ({
 }));
 
 describe('useJiraContributors', () => {
-  const mockUsers: ZodJiraUserPickerType[] = [
+  const mockUsers: ZodJiraUserAssignableType[] = [
     {
       displayName: 'Alvaro Tinoco',
       name: 'atinoco',
-      html: 'Alvaro <b>Tinoco</b>',
+      emailAddress: '',
+      avatarUrl: ''
     },
     {
       displayName: 'John Doe',
       name: 'jdoe',
-      html: 'John <b>Doe</b>',
+      emailAddress: '',
+      avatarUrl: ''
     },
   ];
 
@@ -78,7 +80,7 @@ describe('useJiraContributors', () => {
 
       const result = await searchContributors('Alvaro');
 
-      expect(searchJiraUsers).toHaveBeenCalledWith('Alvaro');
+      expect(searchJiraUsers).toHaveBeenCalledWith('Alvaro', 'task_key');
       expect(result).toEqual(mockUsers);
     });
 

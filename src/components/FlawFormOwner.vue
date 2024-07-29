@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { nextTick, computed, ref, toValue } from 'vue';
-import sanitize from 'sanitize-html';
 import { useMemoize } from '@vueuse/core';
 import { createCatchHandler } from '@/composables/service-helpers';
 import { searchJiraUsers } from '@/services/JiraService';
 import { useUserStore } from '@/stores/UserStore';
-import type { ZodJiraUserPickerType } from '@/types/zodJira';
+import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import LabelDiv from './widgets/LabelDiv.vue';
 import EditableTextWithSuggestions from './widgets/EditableTextWithSuggestions.vue';
+import JiraUser from './widgets/JiraUser.vue';
 
 const owner = defineModel<string | null>({ default: null });
+const props = defineProps<{
+  taskKey?: string | null;
+}>();
 const userStore = useUserStore();
 
 async function selfAssign() {
@@ -33,14 +36,15 @@ const isAssignedToMe = computed(() =>
 );
 
 const isLoading = ref(false);
-const results = ref<ZodJiraUserPickerType[]>([]);
+const queryRef = ref('');
+const results = ref<ZodJiraUserAssignableType[]>([]);
 
 const cacheJiraUsers = useMemoize(async (query: string) => {
-  if (!query) {
+  if (!query || !props.taskKey) {
     return [];
   }
   isLoading.value = true;
-  const users = await searchJiraUsers(query)
+  const users = await searchJiraUsers(query, props.taskKey)
     .catch(createCatchHandler('Failed to search jira users', false));
   isLoading.value = false;
   return users?.data?.users ?? [];
@@ -50,9 +54,10 @@ const cacheJiraUsers = useMemoize(async (query: string) => {
 const onQueryChange = async (query: string) => {
   const users = await cacheJiraUsers(query);
   results.value = users ?? [];
+  queryRef.value = query;
 };
 
-const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserPickerType) => {
+const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssignableType) => {
   owner.value = toValue(user.name);
   results.value = [];
   nextTick(fn);
@@ -89,8 +94,8 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserPicker
           class="item"
           @click.prevent.stop="handleSuggestionClick(abort, user)"
         >
-          <!--eslint-disable-next-line vue/no-v-html -->
-          <span v-html="sanitize(user.html)" />
+
+          <JiraUser v-bind="user" :query="queryRef" />
         </div>
       </template>
     </EditableTextWithSuggestions>
