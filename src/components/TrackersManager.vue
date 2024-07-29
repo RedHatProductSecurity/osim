@@ -25,7 +25,7 @@ const {
   isLoadingTrackers,
 } = useTrackers(props.flawId, affects);
 
-const unselectedAffectStreams = computed(() => {
+const availableAffectStreams = computed(() => {
   const referenceAffect = props.affects;
   return unselectedStreams.value.filter((tracker) => {
     return referenceAffect.some((refAffect) => {
@@ -99,9 +99,9 @@ function handleFileTrackers() {
           <div class="col mb-2">
             <button
               type="button"
-              :disabled="isLoadingTrackers || unselectedAffectStreams.length === 0"
+              :disabled="isLoadingTrackers || availableAffectStreams.length === 0"
               class="btn btn-white btn-outline-black btn-sm me-2"
-              @click="toggleTrackerSelections(unselectedAffectStreams)"
+              @click="toggleTrackerSelections(availableAffectStreams)"
             >
               <i class="bi bi-check-all" />
               Select All
@@ -121,7 +121,7 @@ function handleFileTrackers() {
         </div>
         <div class="row mt-2">
           <div class="col">
-            <h5 class="me-2 d-inline-block fs-5">Unselected</h5>
+            <h5 class="me-2 d-inline-block fs-5">Available</h5>
             <caption class="ms-2">
               <span class="fst-italic">
                 (<i class="bi bi-box-arrow-in-right" /> indicates a Suggested Tracker)
@@ -144,11 +144,11 @@ function handleFileTrackers() {
           </div>
           <div class="col-6 pt-1">
             <div class="osim-tracker-list mb-2">
-              <div v-if="unselectedAffectStreams.length === 0 && !isLoadingTrackers" class="ms-1">
-                <span> No unselected trackers&hellip; </span>
+              <div v-if="availableAffectStreams.length === 0 && !isLoadingTrackers" class="ms-1">
+                <span> No available trackers&hellip; </span>
               </div>
               <label
-                v-for="(tracker, index) in unselectedAffectStreams"
+                v-for="(tracker, index) in availableAffectStreams"
                 :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
               >
                 <input
