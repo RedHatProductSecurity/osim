@@ -190,6 +190,23 @@ function handleFileTrackers() {
             </div>
           </div>
         </div>
+        <div v-if="untrackableAffects && untrackableAffects.length > 0" class="row me-1">
+          <div class="alert alert-danger mt-2">
+            <h5>Untrackable Affects</h5>
+            <p>
+              These affects do not have available trackers. This may indicate an issue with product defintions.
+              Please contact the OSIDB/OSIM team for assistance.
+            </p>
+            <div class="osim-tracker-list p-1" style="border-radius: 5px;">
+              <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
+                <span class="ps-2 text-danger">
+                  <i class="bi bi-exclamation-triangle"></i>
+                  {{ affect.ps_module }}/{{ affect.ps_component }}
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
         <button
           v-osim-loading.grow="isFilingTrackers"
           type="button"
@@ -200,23 +217,6 @@ function handleFileTrackers() {
           <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
           File Selected Trackers
         </button>
-      </div>
-      <div v-if="untrackableAffects && untrackableAffects.length > 0" class="col">
-        <div class="alert alert-danger mt-2">
-          <h5>Untrackable Affects</h5>
-          <p>
-            These affects do not have available trackers. This may indicate an issue with product defintions.
-            Please contact the OSIDB/OSIM team for assistance.
-          </p>
-          <div class="osim-tracker-list p-1" style="border-radius: 5px;">
-            <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
-              <span class="ps-2 text-danger">
-                <i class="bi bi-exclamation-triangle"></i>
-                {{ affect.ps_module }}/{{ affect.ps_component }}
-              </span>
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   </div>
