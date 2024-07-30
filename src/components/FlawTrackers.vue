@@ -315,6 +315,7 @@ function changePage(page: number) {
         cursor: pointer;
       }
     }
+
     td {
         padding: .25rem;
         padding-left: .5rem;
@@ -325,29 +326,29 @@ function changePage(page: number) {
       &:nth-of-type(1) {
         width: 10%;
       }
+
       &:nth-of-type(2) {
         width: 10%;
       }
+
       &:nth-of-type(3) {
         width: 20%;
       }
+
       &:nth-of-type(4) {
         width: 20%;
       }
-      &:nth-of-type(4) {
-        width: 10%;
-      }
+
       &:nth-of-type(5) {
         width: 5%;
       }
+
       &:nth-of-type(6) {
         width: 15%;
       }
+
       &:nth-of-type(7) {
         width: 15%;
-      }
-      &:nth-of-type(7) {
-        width: 10%;
       }
     }
   }

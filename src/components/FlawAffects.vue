@@ -34,11 +34,9 @@ const emit = defineEmits<{
 }>();
 
 const { affects, affectsToDelete } = toRefs(props);
-
-const savedAffects = clone(affects.value) as ZodAffectType[];
-
+const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
-
+const savedAffects = clone(affects.value) as ZodAffectType[];
 const affectsNotBeingDeleted = computed(
   () => affects.value.filter((affect) => !affectsToDelete.value.includes(affect))
 );
@@ -47,6 +45,11 @@ const affectsNotBeingDeleted = computed(
 type sortKeys = keyof Pick<ZodAffectType,
   'ps_module' | 'ps_component' | 'trackers' | 'affectedness' | 'resolution' | 'impact' | 'cvss_scores'
 >;
+
+const sortedAffects = computed(() =>
+  sortAffects(filteredAffects.value, false)
+);
+
 const sortKey = ref<sortKeys>('ps_module');
 const sortOrder = ref(ascend);
 
@@ -84,6 +87,7 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
   ])(affects);
 }
 
+// Display Modes
 enum displayModes {
   ALL = 'All',
   SELECTED = 'Selected',
@@ -137,12 +141,6 @@ const filteredAffects = computed(() => {
     return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
   });
 });
-
-const sortedAffects = computed(() =>
-  sortAffects(filteredAffects.value, false)
-);
-
-const hasAffects = computed(() => allAffects.value.length > 0);
 
 // Affected Modules Filter
 const modulesExpanded = ref(true);
@@ -319,7 +317,7 @@ function addNewAffect() {
     embargoed: props.embargoed,
     affectedness: 'NEW',
     resolution: '',
-    delegated_resolution: '', // should this be null
+    delegated_resolution: '',
     ps_module: `NewModule-${newAffects.value.length}`,
     ps_component: `NewComponent-${newAffects.value.length}`,
     impact: '',
@@ -483,7 +481,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 </script>
 
 <template>
-  <div v-if="affects" class="osim-affects-section my-2">
+  <div v-if="affects" class="osim-affects-section">
     <h4>Affected Offerings</h4>
     <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
@@ -492,7 +490,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         @setExpanded="toggleModulesCollapse"
       >
         <template #label>
-          <label class="m-2 form-label">
+          <label class="form-label m-2">
             Affected Modules
           </label>
         </template>
@@ -723,8 +721,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="btn btn-sm btn-info"
-            style="background-color: rgb(122, 199, 199);"
+            class="btn btn-sm btn-info trackers-btn"
             @click.prevent.stop="fileTrackersForAffects(selectedAffects)"
           >
             Manage Trackers
@@ -1161,6 +1158,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 @import '@/scss/bootstrap-overrides';
 
 .osim-affects-section {
+  margin-block: 1rem;
+
   .affect-modules-selection {
     button {
       height: 2rem;
@@ -1169,7 +1168,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     }
 
     .module-btn {
-      transition: color 0.15s background-color 0.15s;
+      transition: color .15s background-color .15s;
+
       &:not(.btn-secondary):hover {
         background-color: $gray;
         border-color: $secondary !important;
@@ -1194,6 +1194,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         border-color: #212529;
         margin-inline: .1rem;
       }
+
+      .trackers-btn {
+        background-color: #7ac7c7;
+      }
     }
   }
 
@@ -1201,8 +1205,9 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         > :not(:first-child).badge {
         user-select: none;
         transition: filter .25s, background-color .25s, border-color .25s;
+
         &:hover {
-          filter: brightness(0.9);
+          filter: brightness(.9);
         }
       }
   }
@@ -1210,14 +1215,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
   .affect-action-btns {
     button {
       display: inline;
-      margin: 0.1rem;
-      padding: 0.15rem 0.5rem;
+      margin: .1rem;
+      padding: .15rem .5rem;
     }
   }
 
   .affects-management {
     table {
       border-collapse: separate;
+
       thead {
         th {
           user-select: none;
@@ -1230,49 +1236,47 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 
       tbody {
         tr {
-          transition: filter 0.25s;
-          .row-left-indicator, .row-right-indicator {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 0.5s, right 0.5s, left 0.5s;
-            top: 0.25ch;
-          }
+          transition: filter .25s;
+
+          td {
+            transition: background-color .5s, color .5s, border-color .25s;
+            padding-block: .2rem;
+            border-block: .2ch solid #e0e0e0;
+            background-color: #e0e0e0;
+
           .row-right-indicator {
             right: -42px;
           }
+
           .row-left-indicator {
             left: -42px;
           }
+
           &:hover {
-            filter: brightness(0.9);
+            filter: brightness(.9);
+
             td {
-              border-color: rgba(112, 112, 112, 0.75);
+              border-color: #707070bf;
             }
+
             .row-left-indicator, .row-right-indicator {
               opacity: 100;
             }
-            .row-right-indicator {
-              right: -32px;
-            }
-            .row-left-indicator {
-              left: -32px;
-            }
-          }
 
-          td {
-            transition: background-color 0.5s, color 0.5s, border-color 0.25s;
-            padding-block: .2rem;
-            border-block: 0.2ch solid #e0e0e0;
-            background-color: #e0e0e0;
-            button {
-              transition: background-color 0.5s, color 0.5s;
+            .btn {
+              display: inline;
+              margin-inline: .1rem;
+              width: 28px;
+              height: 25px;
+              padding: 0 .1rem;
+              transition: background-color .5s, color .5s;
               border: none;
               background-color: #212529;
               color: white;
             }
 
             input, select {
-              padding: 0.15rem 0.5rem;
+              padding: .15rem .5rem;
             }
           }
         }
@@ -1284,13 +1288,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         .editing {
           &:hover {
             td {
-              border-color: rgba(115, 71, 10, 0.5) !important;
+              border-color: #73470a80 !important;
             }
           }
+
           td {
             border-color: $light-yellow !important;
             background-color: $light-yellow;
             color: #73480b;
+
             button {
               background-color: #73480b;
             }
@@ -1300,13 +1306,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         .modified {
           &:hover {
             td {
-              border-color: rgba(32, 77, 0, 0.5) !important;
+              border-color: #204d0080 !important;
             }
           }
+
           td {
             border-color: $light-green !important;
             background-color: $light-green;
             color: #204d00;
+
             button {
               background-color: #204d00;
             }
@@ -1316,13 +1324,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         .new {
           &:hover {
             td {
-              border-color: rgba(0, 51, 102, 0.5) !important;
+              border-color: #00336680 !important;
             }
           }
+
           td {
             border-color: #e0f0ff !important;
             background-color: #e0f0ff;
             color: #036;
+
             button {
               background-color: #036;
             }
@@ -1332,13 +1342,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         .removed {
           &:hover {
             td {
-              border-color: rgba(115, 31, 0, 0.5) !important;
+              border-color: #731f0080 !important;
             }
           }
+
           td {
             border-color: #ffe3d9 !important;
             background-color: #ffe3d9;
             color: #731f00;
+
             button {
               background-color: #731f00;
             }
@@ -1349,9 +1361,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           .row-left-indicator, .row-right-indicator {
             opacity: 100;
           }
+
           .row-right-indicator {
             right: -24px !important;
           }
+
           .row-left-indicator {
             left: -24px !important;
           }
@@ -1363,33 +1377,43 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         &:nth-of-type(1) {
           width: 2%;
         }
+
         &:nth-of-type(2) {
           width: 4%;
         }
+
         &:nth-of-type(3) {
           width: 20%;
         }
+
         &:nth-of-type(4) {
           width: 20%;
         }
+
         &:nth-of-type(5) {
           width: 10%;
         }
+
         &:nth-of-type(6) {
           width: 10%;
         }
+
         &:nth-of-type(7) {
           width: 8%;
         }
+
         &:nth-of-type(8) {
           width: 8%;
         }
+
         &:nth-of-type(9) {
           width: 8%;
         }
+
         &:nth-of-type(10) {
           width: 8%;
         }
+
         &:nth-of-type(11) {
           min-width: 0%;
           max-width: 0%;
