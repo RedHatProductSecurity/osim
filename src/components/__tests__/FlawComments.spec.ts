@@ -224,7 +224,7 @@ describe('FlawComments', () => {
   it('Should call `searchJiraUsers` on internal comments', async () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
       data: {
-        users: [{ name: 'test', displayName: 'Test User', html: 'Test User' }]
+        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
       }
     });
 
@@ -239,6 +239,6 @@ describe('FlawComments', () => {
     vi.runAllTimers();
     await flushPromises();
 
-    expect(searchJiraUsers).toHaveBeenCalledWith('user');
+    expect(searchJiraUsers).toHaveBeenCalledWith('user', 'sampleKey');
   });
 });

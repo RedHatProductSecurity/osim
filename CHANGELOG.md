@@ -8,6 +8,9 @@
 ### Added
 * Indicate when trackers are unexpectedly not available (`OSIDB-3158`)
 
+### Changed
+* Jira suggestions are now filtered by the current project (`OSIDB-3189`)
+
 ## [2024.7.1]
 
 ### Added

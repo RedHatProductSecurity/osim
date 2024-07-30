@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
 import { isDefined, watchDebounced } from '@vueuse/core';
-import sanitize from 'sanitize-html';
 import LabelDiv from './widgets/LabelDiv.vue';
 import DropDown from './widgets/DropDown.vue';
+import JiraUser from './widgets/JiraUser.vue';
 import useJiraContributors from '@/composables/useJiraContributors';
-import type { ZodJiraUserPickerType } from '@/types/zodJira';
+import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import { createCatchHandler } from '@/composables/service-helpers';
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const inputRef = ref<HTMLInputElement | null>(null);
 const query = ref<string>();
-const results = ref<ZodJiraUserPickerType[]>([]);
+const results = ref<ZodJiraUserAssignableType[]>([]);
 
 const {
   contributors,
@@ -51,7 +51,7 @@ const onBlur = (event: FocusEvent) => {
   }
 };
 
-const add = (contributor: ZodJiraUserPickerType) => {
+const add = (contributor: ZodJiraUserAssignableType) => {
   contributors.value.push(contributor);
   query.value = '';
   results.value = [];
@@ -101,8 +101,7 @@ const remove = (index: number) => {
           :key="contributor.name"
           @click="add(contributor)"
         >
-          <!--eslint-disable-next-line vue/no-v-html -->
-          <span v-html="sanitize(contributor.html)" />
+          <JiraUser v-bind="contributor" :query />
         </div>
       </DropDown>
     </div>

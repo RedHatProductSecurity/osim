@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JiraUser > highlights the query text 1`] = `
+"<!-- eslint-disable-next-line vue/no-v-html -->
+<span>John <b>Doe</b></span>"
+`;
+
+exports[`JiraUser > renders correctly with all props 1`] = `
+"<!-- eslint-disable-next-line vue/no-v-html -->
+<span>John <b>Doe</b> - john.<b>doe</b>@example.com (john<b>doe</b>)</span>"
+`;
+
+exports[`JiraUser > renders correctly with displayName and emailAddress 1`] = `
+"<!-- eslint-disable-next-line vue/no-v-html -->
+<span>John Doe - john.doe@example.com</span>"
+`;
+
+exports[`JiraUser > renders correctly with only displayName 1`] = `
+"<!-- eslint-disable-next-line vue/no-v-html -->
+<span>John Doe</span>"
+`;

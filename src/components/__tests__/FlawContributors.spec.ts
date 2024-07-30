@@ -67,7 +67,7 @@ describe('FlawContributors', () => {
   });
 
   it('should show search results when search is done', async () => {
-    useJiraContributors.searchContributors.mockResolvedValue([{ name: 'test', html: 'test user' }]);
+    useJiraContributors.searchContributors.mockResolvedValue([{ name: 'test', displayName: 'test user' }]);
     const wrapper = mountComponent();
     const input = wrapper.find('input');
     await input.setValue('test');
