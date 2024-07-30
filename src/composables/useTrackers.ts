@@ -44,6 +44,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
       ...stream,
       ps_component: moduleComponent.ps_component,
       ps_module: moduleComponent.ps_module,
+      // TODO: Fix this--it's broken for multiflaws/related flaws
       affectUuid: moduleComponent.affect.uuid
     }))
   ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
@@ -103,6 +104,12 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
 
   const flawUuids = computed(() => relatedFlaws.value.map((flaw) => flaw.uuid));
 
+  const relatedAffects = computed(() => relatedFlaws.value.reduce(
+    (affectsBook: Record<string, ZodAffectType[]>, flaw) => {
+      affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects;
+      return affectsBook;
+    }, {}));
+
   watch(moduleComponents, () => {
     moduleComponents.value.forEach((moduleComponent) => {
       const affect = affects.value.find((matchingAffect) => matchingAffect.uuid === moduleComponent.affect.uuid);
@@ -114,7 +121,8 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   });
 
   watch(affects, async () => {
-    relatedFlaws.value = await getRelatedFlaws(affects.value);
+    const fetchedRelatedFlaws = await getRelatedFlaws(affects.value);
+    relatedFlaws.value = fetchedRelatedFlaws;//.filter((flaw: ZodFlawType) => flaw.uuid !== flawUuid);
     console.log(relatedFlaws.value);
   }, { immediate: true });
 
@@ -150,7 +158,9 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     Array.from(trackerSelections.value)
       .filter(([, selected]) => selected)
       .map(([tracker]) => {
+        // TODO: Fix--this is broken for multiflaws/related flaws
         const affect = affects.value.find((matchingAffect) => matchingAffect.uuid === tracker.affectUuid);
+        console.log(affect, trackerSelections.value, affects, tracker)
         return {
           affects: [tracker.affectUuid],
           ps_update_stream: tracker.ps_update_stream,
@@ -197,5 +207,6 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     selectedStreams,
     filterString,
     isFilingTrackers,
+    relatedAffects,
   };
 }
