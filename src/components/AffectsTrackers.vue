@@ -66,20 +66,24 @@ function handleFileTrackers() {
         </label>
       </div>
       <div v-if="untrackableAffects.length > 0">
-        <div class="ms-3 alert alert-danger w-50">
-          <h5>Untrackable Affects</h5>
-          <p>
-            These affects do not have available trackers. This may indicate an issue with product defintions.
-            Please contact the OSIDB/OSIM team for assistance.
-          </p>
-          <div class="osim-tracker-list">
-            <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
-              <span class="ps-1 text-danger">
-                <i class="bi bi-exclamation-triangle"></i>
-                {{ affect.ps_module }}/{{ affect.ps_component }}
+        <div class="ms-3 alert alert-danger w-50 border-0">
+          <details>
+            <summary>
+              <h5 class="d-inline-block">Untrackable Affects</h5>
+            </summary>
+            <p>
+              These affects do not have available trackers. This may indicate an issue with product defintions.
+              Please contact the OSIDB/OSIM team for assistance.
+            </p>
+            <div class="osim-tracker-list">
+              <span v-for="affect in untrackableAffects" :key="`${affect.ps_module}-${affect.ps_component}`">
+                <p class="ps-1 text-danger my-0">
+                  <i class="bi bi-exclamation-triangle"></i>
+                  {{ affect.ps_module }}/{{ affect.ps_component }}
+                </p>
               </span>
-            </span>
-          </div>
+            </div>
+          </details>
         </div>
       </div>
       <h5>
@@ -194,6 +198,10 @@ function handleFileTrackers() {
 <style lang="scss" scoped>
 @import '@/scss/bootstrap-overrides';
 
+details:not([open]) h5 {
+  margin-bottom: 0;
+}
+
 .osim-tracker-list {
   display: flex;
   flex-flow: column;
@@ -216,7 +224,6 @@ function handleFileTrackers() {
     color: black;
   }
 }
-
 
 .osim-tracker-selection-disabled {
   text-decoration: strike-through;
