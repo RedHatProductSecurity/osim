@@ -5,9 +5,11 @@ import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
 import AffectsTrackers from '@/components/AffectsTrackers.vue';
 
+type TrackerWithModule = ZodTrackerType & { ps_module: string };
+
 const props = defineProps<{
   flawId: string;
-  displayedTrackers: ZodTrackerType[];
+  displayedTrackers: TrackerWithModule[];
   affectsNotBeingDeleted: ZodAffectType[];
   allTrackersCount: number;
 }>();
@@ -42,19 +44,19 @@ const setSort = (key: sortKeys) => {
   }
 };
 
-function sortTrackers(affects: ZodTrackerType[]): ZodTrackerType[] {
+function sortTrackers(trackers: TrackerWithModule[]): TrackerWithModule[] {
   const customSortKey = sortKey.value;
   const order = sortOrder.value;
 
-  const customSortFn = (affect: ZodTrackerType) => {
+  const customSortFn = (affect: TrackerWithModule) => {
     return affect[customSortKey] || 0;
   };
 
-  const comparator = [order<ZodTrackerType>(customSortFn)];
+  const comparator = [order<TrackerWithModule>(customSortFn)];
 
   return sortWith([
     ...comparator
-  ])(affects);
+  ])(trackers);
 }
 
 // Trackers filters by field
@@ -180,7 +182,6 @@ function changePage(page: number) {
           <thead class="sticky-top" style="z-index: 1;">
             <tr>
               <th>Bug ID</th>
-              <th>Type</th>
               <th>Module</th>
               <th>Product Stream</th>
               <th>
@@ -246,16 +247,9 @@ function changePage(page: number) {
                   {{ `${tracker.external_system_id} ` }}<i class="bi-box-arrow-up-right" />
                 </RouterLink>
               </td>
-              <td>
-                {{ tracker.type }}
-              </td>
               <td>{{ tracker.ps_update_stream }}</td>
-              <td>
-                {{ tracker.ps_update_stream }}
-              </td>
-              <td>
-                {{ tracker.status?.toUpperCase() || 'EMPTY' }}
-              </td>
+              <td>{{ tracker.ps_module }}</td>
+              <td>{{ tracker.status?.toUpperCase() || 'EMPTY' }}</td>
               <td>{{ formatDate(tracker.created_dt ?? '', true) }}</td>
               <td>{{ formatDate(tracker.updated_dt ?? '', true) }}</td>
             </tr>
@@ -311,8 +305,34 @@ function changePage(page: number) {
         user-select: none;
       }
 
-      th:nth-of-type(6), th:nth-of-type(7) {
-        cursor: pointer;
+      tr th {
+        user-select: none;
+
+        &:nth-of-type(1) {
+          width: 15%;
+        }
+
+        &:nth-of-type(2) {
+          width: 20%;
+        }
+
+        &:nth-of-type(3) {
+          width: 20%;
+        }
+
+        &:nth-of-type(4) {
+          width: 15%;
+        }
+
+        &:nth-of-type(5) {
+          width: 15%;
+          cursor: pointer;
+        }
+
+        &:nth-of-type(6) {
+          width: 15%;
+          cursor: pointer;
+        }
       }
     }
 
@@ -324,15 +344,15 @@ function changePage(page: number) {
     tr td,
     tr th {
       &:nth-of-type(1) {
-        width: 10%;
+        width: 15%;
       }
 
       &:nth-of-type(2) {
-        width: 10%;
+        width: 23%;
       }
 
       &:nth-of-type(3) {
-        width: 20%;
+        width: 15%;
       }
 
       &:nth-of-type(4) {
@@ -340,15 +360,7 @@ function changePage(page: number) {
       }
 
       &:nth-of-type(5) {
-        width: 5%;
-      }
-
-      &:nth-of-type(6) {
-        width: 15%;
-      }
-
-      &:nth-of-type(7) {
-        width: 15%;
+        width: 20%;
       }
     }
   }
