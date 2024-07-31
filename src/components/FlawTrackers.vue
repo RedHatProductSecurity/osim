@@ -146,22 +146,21 @@ function changePage(page: number) {
               <i class="bi bi-arrow-right fs-5" />
             </button>
           </div>
-
-          <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'mx-3': hasTrackers }">
-            <span
+          <div class="trackers-badges" :class="{ 'mx-3': hasTrackers }">
+            <div
               v-if="hasTrackers"
-              class="badge border bg-light-teal text-black"
+              class="badge"
               title="All trackers in this flaw"
             >
-              All trackers {{ allTrackersCount }}
-            </span>
-            <span
+              <span>All trackers {{ allTrackersCount }}</span>
+            </div>
+            <div
               v-if="paginatedTrackers.length > 0"
-              class="badge bg-light-teal text-black"
+              class="badge"
               title="Trackers displayed in current page"
             >
-              Displaying {{ paginatedTrackers.length }}
-            </span>
+              <span>Displaying {{ paginatedTrackers.length }}</span>
+            </div>
           </div>
           <!-- TODO View/Hide Available Trackers Button -->
           <button
@@ -194,7 +193,6 @@ function changePage(page: number) {
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
-                  @click.stop
                 />
                 <ul class="dropdown-menu" aria-labelledby="status-filter" style="z-index: 10;">
                   <template v-for="status in trackerStatuses" :key="status">
@@ -203,7 +201,11 @@ function changePage(page: number) {
                       class="btn dropdown-item"
                       @click.stop="toggleStatusFilter(status)"
                     >
-                      <i class="bi me-2" :class="statusFilter.includes(status) ? 'bi-record-circle' : 'bi-circle'" />
+                      <input
+                        type="checkbox"
+                        class="form-check-input me-2"
+                        :checked="statusFilter.includes(status)"
+                      />
                       <span>{{ status.toUpperCase() }}</span>
                     </button>
                   </template>
@@ -292,6 +294,26 @@ function changePage(page: number) {
       }
     }
 
+    .trackers-badges {
+      display: flex;
+      margin-block: 0;
+      gap: 0.25rem;
+
+      .badge {
+        height: 28px;
+        border-radius: 0.25rem;
+        background-color: $light-teal;
+        color: black;
+        margin-block: auto;
+
+        span {
+          font-size: 12px;
+          vertical-align: middle;
+          text-align: center;
+        }
+      }
+    }
+
     .affects-table-actions {
       button {
         margin-inline: .1rem;
@@ -301,10 +323,6 @@ function changePage(page: number) {
 
   table {
     thead {
-      th {
-        user-select: none;
-      }
-
       tr th {
         user-select: none;
 
@@ -337,31 +355,8 @@ function changePage(page: number) {
     }
 
     td {
-        padding: .25rem;
-        padding-left: .5rem;
-      }
-
-    tr td,
-    tr th {
-      &:nth-of-type(1) {
-        width: 15%;
-      }
-
-      &:nth-of-type(2) {
-        width: 23%;
-      }
-
-      &:nth-of-type(3) {
-        width: 15%;
-      }
-
-      &:nth-of-type(4) {
-        width: 20%;
-      }
-
-      &:nth-of-type(5) {
-        width: 20%;
-      }
+      padding: .25rem;
+      padding-left: .5rem;
     }
   }
 }

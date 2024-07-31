@@ -271,11 +271,17 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 };
 
 // Modified affects
+const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { [key]: omitted, ...rest } = obj;
+  return rest;
+};
+
 const modifiedAffects = computed(() =>
   affects.value.filter(affect => {
     const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
     return savedAffect
-      && !equals(savedAffect, affect)
+      && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
       && !affectsBeingEdited.value.includes(affect)
       && !newAffects.value.includes(affect);
   })
@@ -374,7 +380,12 @@ function recoverAllAffects() {
 const selectedAffects = ref<ZodAffectType[]>([]);
 
 const areAllAffectsSelected = computed(() => {
-  return isAllSelectable() && paginatedAffects.value.filter(affect => isSelectable(affect)).every(affect =>
+  return paginatedAffects.value.filter(affect => isSelectable(affect)).every(affect =>
+    isAffectSelected(affect));
+});
+
+const indeterminateSelection = computed(() => {
+  return !areAllAffectsSelected.value && paginatedAffects.value.filter(affect => isSelectable(affect)).some(affect =>
     isAffectSelected(affect));
 });
 
@@ -382,8 +393,8 @@ function isSelectable(affect: ZodAffectType) {
   return !isBeingEdited(affect) && !isRemoved(affect);
 }
 
-function isAllSelectable() {
-  return paginatedAffects.value.filter(affect => isSelectable(affect)).length > 0;
+function isAllNotSelectable() {
+  return paginatedAffects.value.every(affect => !isSelectable(affect));
 }
 
 function isAffectSelected(affect: any) {
@@ -401,11 +412,14 @@ function toggleAffectSelection(affect: ZodAffectType) {
   }
 }
 
-function selectAllAffects() {
+function selectAffects(event: Event) {
   if (areAllAffectsSelected.value) {
     paginatedAffects.value.forEach(affect => toggleAffectSelection(affect));
-  } else {
+  } else if (selectedAffects.value.length === 0) {
     paginatedAffects.value.filter(affect => !isAffectSelected(affect)).forEach(affect => toggleAffectSelection(affect));
+  } else {
+    paginatedAffects.value.filter(affect => isAffectSelected(affect)).forEach(affect => toggleAffectSelection(affect));
+    (event.target as HTMLInputElement).checked = false;
   }
 }
 
@@ -505,8 +519,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="selectedModules.length > 0"
             type="button"
-            class="btn btn-primary btn-sm py-0"
-            style="height: 1.5rem;"
+            class="clear-modules-btn btn btn-primary btn-sm"
             @click="selectedModules = []"
           >
             Clear
@@ -516,6 +529,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="moduleName"
             type="button"
+            tabindex="-1"
             class="module-btn btn btn-sm"
             :class="{
               'btn-secondary': isModuleSelected(moduleName),
@@ -523,21 +537,20 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               'fw-bold': moduleTrackersCount(moduleName) === 0,
             }"
             :title="moduleTrackersCount(moduleName) === 0 ? 'This module has no trackers associated' : ''"
-            tabindex="-1"
             @click="handleModuleSelection(moduleName)"
           >
             <i
               v-if="moduleTrackersCount(moduleName) === 0"
-              class="bi bi-asterisk me-1"
+              class="bi bi-exclamation-lg"
             />
             <span>{{ moduleName }}</span>
           </button>
         </template>
       </LabelCollapsible>
-      <span v-if="affectedModules.length === 0" class="my-2 p-2">No affected modules to display</span>
+      <span v-if="affectedModules.length === 0" class="my-2 p-2">No modules to display</span>
     </div>
     <div class="affects-management">
-      <div v-if="hasAffects" class="pagination-controls d-flex gap-1 my-2">
+      <div v-if="hasAffects" class="pagination-controls gap-1 my-2">
         <button
           type="button"
           tabindex="-1"
@@ -567,41 +580,40 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <i class="bi bi-arrow-right fs-5" />
         </button>
       </div>
-      <div class="affects-toolbar d-flex">
-        <div class="affects-info-badges my-auto d-flex gap-1" :class="{ 'me-3': hasAffects }">
+      <div class="affects-toolbar">
+        <div class="badges my-auto gap-1" :class="{ 'me-3': hasAffects }">
           <div
             v-if="paginatedAffects.length > 0"
-            class="btn btn-sm btn-secondary"
+            class="btn btn-sm btn-secondary d-flex py-0"
             style="pointer-events: none;"
           >
             <i
               :style="itemsPerPage > minItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
-              class="bi bi-dash-square"
+              class="bi bi-dash-square fs-6 my-auto"
               title="Reduce affects per page"
               @click="reduceItemsPerPage()"
             />
-            <span class="mx-2">{{ `Per page: ${itemsPerPage}` }}</span>
+            <span class="mx-2 my-auto">{{ `Per page: ${itemsPerPage}` }}</span>
             <i
               :style="itemsPerPage < maxItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
-              class="bi bi-plus-square"
+              class="bi bi-plus-square fs-6 my-auto"
               title="Increase affects per page"
-              style="pointer-events: auto;"
               @click="increaseItemsPerPage()"
             />
           </div>
-          <span
+          <div
             v-if="hasAffects"
-            class="btn btn-sm border-secondary bg-light-gray text-black"
+            class="badge-btn btn btn-sm border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.ALL }"
             :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : 'cursor: auto'"
             :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
             @click.stop="toggleDisplayMode(displayModes.ALL)"
           >
-            All affects {{ allAffects.length }}
-          </span>
+            <span>All affects {{ allAffects.length }}</span>
+          </div>
           <div
             v-if="selectedAffects.length > 0"
-            class="btn btn-sm border-secondary bg-light-gray text-black"
+            class="badge-btn btn btn-sm border-secondary bg-light-gray text-black"
             :class="{ 'bg-secondary text-white': displayMode === displayModes.SELECTED }"
             :title="displayMode !== displayModes.SELECTED ? 'Display selected affects' : 'Displaying selected affects'"
             @click.stop="toggleDisplayMode(displayModes.SELECTED)"
@@ -611,7 +623,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="affectsBeingEdited.length > 0"
-            class="btn btn-sm bg-light-yellow"
+            class="badge-btn btn btn-sm bg-light-yellow"
             style="border-color: #73480b !important; color: #73480b;"
             :style="displayMode === displayModes.EDITING
               ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
@@ -623,7 +635,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="modifiedAffects.length > 0"
-            class="btn btn-sm bg-light-green"
+            class="badge-btn btn btn-sm bg-light-green"
             style="color: #204d00; border-color: #204d00 !important;"
             :style="displayMode === displayModes.MODIFIED
               ? 'background-color: #204d00 !important; color: #d1f1bb;' : ''"
@@ -635,7 +647,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="affectsToDelete.length > 0"
-            class="btn btn-sm"
+            class="badge-btn btn btn-sm"
             style="background-color: #ffe3d9; color: #731f00; border-color: #731f00 !important;"
             :style="displayMode === displayModes.DELETED
               ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
@@ -647,7 +659,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="newAffects.length > 0"
-            class="btn btn-sm bg-light-teal"
+            class="badge-btn btn btn-sm bg-light-blue"
             style="background-color: #e0f0ff; color: #036; border-color: #036 !important;"
             :style="displayMode === displayModes.CREATED
               ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
@@ -662,25 +674,25 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white"
             title="Commit changes on all affects being edited"
             @click.prevent="commitAllChanges()"
           >
-            <i class="bi bi-check" />
+            <i class="bi bi-check2-all fs-5 lh-sm" />
           </button>
           <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white px-1"
             title="Cancel changes on all affects being edited"
             @click.prevent="cancelAllChanges()"
           >
-            <i class="bi bi-x" />
+            <i class="bi bi-x fs-4 lh-1" />
           </button>
           <button
             v-if="modifiedAffects.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white"
             title="Discard all affect modifications"
             @click.prevent="restoreAllSavedAffects()"
           >
@@ -689,16 +701,16 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="affectsToDelete.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white"
             title="Recover all removed affects"
             @click.prevent="recoverAllAffects()"
           >
-            <i class="bi-arrow-counterclockwise" />
+            <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
           </button>
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white"
             title="Edit all selected affects"
             @click.prevent="editSelectedAffects()"
           >
@@ -707,7 +719,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="btn btn-sm text-white"
+            class="icon-btn btn btn-sm text-white"
             title="Remove all selected affects"
             @click.prevent="removeSelectedAffects()"
           >
@@ -716,26 +728,13 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="btn btn-sm text-white"
-            title="Deselect all selected affects"
-            @click.prevent="selectedAffects = [];"
-          >
-            <div class="d-flex">
-              <i class="bi bi-x-square me-2" />
-              <span>Deselect</span>
-            </div>
-          </button>
-          <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="btn btn-sm btn-info trackers-btn"
+            class="trackers-btn btn btn-sm btn-info"
             @click.prevent.stop="fileTrackersForAffects(selectedAffects)"
           >
             Manage Trackers
           </button>
           <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
-            <i class="bi bi-plus-lg me-2" />
-            <span>New Affect</span>
+            Add New Affect
           </button>
         </div>
       </div>
@@ -747,10 +746,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 type="checkbox"
                 class="form-check-input"
                 aria-label="Select All affects in Table"
-                title="Toggle selection for all affects in this page not removed or being edited"
-                :disabled="!isAllSelectable()"
-                :checked="areAllAffectsSelected"
-                @change="selectAllAffects()"
+                :disabled="isAllNotSelectable()"
+                :indeterminate="indeterminateSelection"
+                :checked="areAllAffectsSelected && !isAllNotSelectable()"
+                @change="selectAffects($event)"
               />
             </th>
             <th>
@@ -797,9 +796,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                     class="btn dropdown-item"
                     @click.stop="toggleAffectednessFilter(affectedness)"
                   >
-                    <i
-                      class="bi me-2"
-                      :class="affectednessFilter.includes(affectedness) ? 'bi-record-circle' : 'bi-circle'"
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      :checked="affectednessFilter.includes(affectedness)"
                     />
                     <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
                   </button>
@@ -833,9 +833,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                     class="btn dropdown-item"
                     @click.stop="toggleResolutionsFilter(resolution)"
                   >
-                    <i
-                      class="bi me-2"
-                      :class="resolutionsFilter.includes(resolution) ? 'bi-record-circle' : 'bi-circle'"
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      :checked="resolutionsFilter.includes(resolution)"
                     />
                     <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
                   </button>
@@ -869,7 +870,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                     class="btn dropdown-item"
                     @click.stop="toggleImpactsFilter(impact)"
                   >
-                    <i class="bi me-2" :class="impactsFilter.includes(impact) ? 'bi-record-circle' : 'bi-circle'" />
+                    <input
+                      type="checkbox"
+                      class="form-check-input me-2"
+                      :checked="impactsFilter.includes(impact)"
+                    />
                     <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
                   </button>
                 </template>
@@ -1043,23 +1048,23 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               </td>
               <td>{{ affectCvss3Vector(affect) }}</td>
               <td>
-                <div class="d-flex">
-                  <span class="me-2">{{ affect.trackers.length }}</span>
+                <div class="affect-tracker-cell">
+                  <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
                   <button
                     type="button"
                     :disabled="isBeingEdited(affect) || isRemoved(affect)"
-                    class="btn btn-sm input-group-text px-1 py-0 my-auto"
+                    class="btn btn-sm px-1 py-0 d-flex rounded-circle"
                     @click.prevent.stop="fileTrackersForAffects([affect])"
                   >
-                    <i class="bi bi-plus" />
+                    <i class="bi bi-plus lh-sm m-auto" />
                   </button>
                 </div>
               </td>
-              <td class="affect-action-btns">
+              <td>
                 <button
                   v-if="!isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text"
+                  class="btn btn-sm"
                   title="Edit affect"
                   tabindex="-1"
                   @click.stop="editAffect(affect)"
@@ -1069,17 +1074,17 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 <button
                   v-if="isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text editing-btn"
+                  class="btn btn-sm"
                   title="Commit edit"
                   tabindex="-1"
                   @click.stop="commitChanges(affect)"
                 >
-                  <i class="bi bi-check" />
+                  <i class="bi bi-check2 fs-5 lh-sm" />
                 </button>
                 <button
                   v-if="!isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text"
+                  class="btn btn-sm"
                   title="Remove affect"
                   tabindex="-1"
                   @click.stop="removeAffect(affect)"
@@ -1089,27 +1094,27 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 <button
                   v-if="isBeingEdited(affect) && !affectsToDelete.includes(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text editing-btn"
+                  class="btn btn-sm"
                   title="Cancel edit"
                   tabindex="-1"
                   @click.stop="cancelChanges(affect)"
                 >
-                  <i class="bi bi-x" />
+                  <i class="bi bi-x fs-5 lh-sm" />
                 </button>
                 <button
                   v-if="affectsToDelete.includes(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text recover-btn"
+                  class="btn btn-sm recover-btn"
                   title="Recover affect"
                   tabindex="-1"
                   @click.stop="emit('affect:recover', affect)"
                 >
-                  <i class="bi-arrow-counterclockwise" />
+                  <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
                 </button>
                 <button
                   v-if="!isBeingEdited(affect) && isModified(affect)"
                   type="button"
-                  class="btn btn-sm input-group-text"
+                  class="btn btn-sm"
                   title="Discard changes"
                   tabindex="-1"
                   @click.stop="restoreSavedAffect(affect)"
@@ -1174,8 +1179,21 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       margin: .15rem;
     }
 
+    .clear-modules-btn {
+      height: 1.5rem;
+    }
+
     .module-btn {
       transition: color .15s background-color .15s;
+
+      i {
+        margin-inline: -3.5px;
+        font-size: 18px;
+      }
+
+      span {
+        line-height: 2rem;
+      }
 
       &:not(.btn-secondary):hover {
         background-color: $gray;
@@ -1184,60 +1202,132 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     }
   }
 
-  .affects-toolbar, .pagination-controls {
-    button {
-      height: 2rem;
-      padding-block: 0;
+  .affects-management {
+    .pagination-controls {
+      display: flex;
 
-      &.page-btn:disabled {
-        background-color: transparent;
-        color: black;
-      }
-    }
+      button {
+        height: 2rem;
+        padding-block: 0;
 
-    .affects-table-actions {
-      .btn {
-        background-color: #212529;
-        border-color: #212529;
-        margin-inline: .1rem;
-      }
-
-      .trackers-btn {
-        background-color: #7ac7c7;
-      }
-    }
-  }
-
-  .affects-info-badges {
-        > :not(:first-child).badge {
-        user-select: none;
-        transition: filter .25s, background-color .25s, border-color .25s;
-
-        &:hover {
-          filter: brightness(.9);
+        &.page-btn:disabled {
+          background-color: transparent;
+          color: black;
         }
       }
-  }
-
-  .affect-action-btns {
-    button {
-      display: inline;
-      margin: .1rem;
-      padding: .15rem .5rem;
     }
-  }
 
-  .affects-management {
+    .affects-toolbar {
+      display: flex;
+      height: 32px;
+
+      .badges {
+        display: flex;
+
+        > div {
+          height: 32px;
+          display: flex;
+
+          span {
+            margin: auto;
+          }
+        }
+
+        > :not(:first-child).badge {
+          user-select: none;
+          transition: filter .25s, background-color .25s, border-color .25s;
+
+          &:hover {
+            filter: brightness(.9);
+          }
+        }
+      }
+
+      .affects-table-actions {
+        button {
+          height: 32px;
+          background-color: #212529;
+          border-color: #212529;
+          margin-inline: .1rem;
+
+          &.icon-btn {
+            width: 38px;
+            height: 32px;
+          }
+
+          i {
+            font-size: 16px;
+          }
+        }
+
+        .trackers-btn {
+          background-color: #7ac7c7;
+        }
+      }
+    }
+
     table {
       border-collapse: separate;
 
-      thead {
-        th {
-          user-select: none;
-        }
+      tr {
+        height: 39.2px;
+      }
 
-        th:not(:nth-of-type(10), :nth-of-type(2)) {
-          cursor: pointer;
+      thead {
+        tr {
+          th {
+            user-select: none;
+
+            &:nth-of-type(1) {
+              width: 2%;
+            }
+
+            &:nth-of-type(2) {
+              width: 4%;
+            }
+
+            &:nth-of-type(3) {
+              width: 20%;
+            }
+
+            &:nth-of-type(4) {
+              width: 20%;
+            }
+
+            &:nth-of-type(5) {
+              width: 10%;
+            }
+
+            &:nth-of-type(6) {
+              width: 10%;
+            }
+
+            &:nth-of-type(7) {
+              width: 8%;
+            }
+
+            &:nth-of-type(8) {
+              width: 8%;
+            }
+
+            &:nth-of-type(9) {
+              width: 8%;
+            }
+
+            &:nth-of-type(10) {
+              width: 8%;
+            }
+
+            &:nth-of-type(11) {
+              min-width: 0%;
+              max-width: 0%;
+              width: 0%;
+            }
+
+            &:not(:nth-of-type(10), :nth-of-type(2)) {
+              cursor: pointer;
+            }
+          }
         }
       }
 
@@ -1251,23 +1341,19 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             border-block: .2ch solid #e0e0e0;
             background-color: #e0e0e0;
 
-          .row-right-indicator {
-            right: -42px;
-          }
+            .row-right-indicator {
+              right: -42px;
+            }
 
-          .row-left-indicator {
-            left: -42px;
-          }
-
-          &:hover {
-            filter: brightness(.9);
-
-            td {
-              border-color: #707070bf;
+            .row-left-indicator {
+              left: -42px;
             }
 
             .row-left-indicator, .row-right-indicator {
-              opacity: 100;
+              position: absolute;
+              opacity: 0;
+              transition: opacity .5s, right .5s, left .5s;
+              top: 0;
             }
 
             .btn {
@@ -1280,91 +1366,44 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               border: none;
               background-color: #212529;
               color: white;
+
+              .bi {
+                line-height: 0;
+                font-size: 15px;
+              }
             }
 
             input, select {
               padding: .15rem .5rem;
             }
+
+            .affect-tracker-cell {
+              display: flex;
+
+              .btn {
+                width: 26px; height: 26px;
+
+                .bi {
+                  font-size: 18px;
+                }
+              }
+            }
           }
-        }
 
-        :not(.editing) td {
-          user-select: none;
-        }
+          :not(.editing) td {
+            user-select: none;
+          }
 
-        .editing {
           &:hover {
+            filter: brightness(.9);
+
             td {
-              border-color: #73470a80 !important;
-            }
-          }
-
-          td {
-            border-color: $light-yellow !important;
-            background-color: $light-yellow;
-            color: #73480b;
-
-            button {
-              background-color: #73480b;
+              border-color: #707070bf;
             }
           }
         }
 
-        .modified {
-          &:hover {
-            td {
-              border-color: #204d0080 !important;
-            }
-          }
-
-          td {
-            border-color: $light-green !important;
-            background-color: $light-green;
-            color: #204d00;
-
-            button {
-              background-color: #204d00;
-            }
-          }
-        }
-
-        .new {
-          &:hover {
-            td {
-              border-color: #00336680 !important;
-            }
-          }
-
-          td {
-            border-color: #e0f0ff !important;
-            background-color: #e0f0ff;
-            color: #036;
-
-            button {
-              background-color: #036;
-            }
-          }
-        }
-
-        .removed {
-          &:hover {
-            td {
-              border-color: #731f0080 !important;
-            }
-          }
-
-          td {
-            border-color: #ffe3d9 !important;
-            background-color: #ffe3d9;
-            color: #731f00;
-
-            button {
-              background-color: #731f00;
-            }
-          }
-        }
-
-        .selected {
+        tr.selected td {
           .row-left-indicator, .row-right-indicator {
             opacity: 100;
           }
@@ -1377,54 +1416,61 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             left: -24px !important;
           }
         }
-      }
 
-      tr td,
-      tr th {
-        &:nth-of-type(1) {
-          width: 2%;
+        tr.editing td {
+          border-color: $light-yellow !important;
+          background-color: $light-yellow;
+          color: #73480b;
+
+          .btn {
+            background-color: #73480b;
+          }
         }
 
-        &:nth-of-type(2) {
-          width: 4%;
+        tr.modified td {
+          border-color: $light-green !important;
+          background-color: $light-green;
+          color: #204d00;
+
+          .btn {
+            background-color: #204d00;
+          }
         }
 
-        &:nth-of-type(3) {
-          width: 20%;
+        tr.new td {
+          border-color: #e0f0ff !important;
+          background-color: #e0f0ff;
+          color: #036;
+
+          .btn {
+            background-color: #036;
+          }
         }
 
-        &:nth-of-type(4) {
-          width: 20%;
+        tr.removed td {
+          border-color: #ffe3d9 !important;
+          background-color: #ffe3d9;
+          color: #731f00;
+
+          .btn {
+            background-color: #731f00;
+          }
         }
 
-        &:nth-of-type(5) {
-          width: 10%;
+        tr.editing:hover td {
+          border-color: #73470a80 !important;
         }
 
-        &:nth-of-type(6) {
-          width: 10%;
+        tr.modified:hover td{
+          border-color: #204d0080 !important;
         }
 
-        &:nth-of-type(7) {
-          width: 8%;
+        tr.new:hover td {
+          border-color: #00336680 !important;
         }
 
-        &:nth-of-type(8) {
-          width: 8%;
-        }
-
-        &:nth-of-type(9) {
-          width: 8%;
-        }
-
-        &:nth-of-type(10) {
-          width: 8%;
-        }
-
-        &:nth-of-type(11) {
-          min-width: 0%;
-          max-width: 0%;
-          width: 0%;
+        tr.removed:hover td {
+          border-color: #731f0080 !important;
         }
       }
     }
