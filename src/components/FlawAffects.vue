@@ -447,10 +447,28 @@ function affectRowTooltip(affect: ZodAffectType) {
 }
 
 // Affects Pagination
-const minItemsPerPage = 5;
+const minItemsPerPage = 1;
 const maxItemsPerPage = 20;
+const maxPagesToShow = 7;
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
+const pages = computed(() => {
+  const result: number[] = [];
+  if (totalPages.value > maxPagesToShow) {
+    if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
+      return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
+    } else if (currentPage.value <= 3) {
+      return [...Array.from({ length: 5 }, (_, i) => i + 1), '..', totalPages.value];
+    } else if (currentPage.value >= totalPages.value - 2) {
+      return [1, '..', ...Array.from({ length: 5 }, (_, i) => totalPages.value - 4 + i)];
+    }
+  } else {
+    for (let i = 1; i <= totalPages.value; i++) {
+      result.push(i);
+    }
+  }
+  return result;
+});
 
 const paginatedAffects = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
@@ -561,12 +579,13 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           <i class="bi bi-arrow-left fs-5" />
         </button>
         <button
-          v-for="page in totalPages"
+          v-for="page in pages"
           :key="page"
           tabindex="-1"
           class="page-btn btn btn-sm rounded-0 btn-secondary"
-          :disabled="page === currentPage"
-          @click.prevent="changePage(page)"
+          style="width: 34.8px;"
+          :disabled="page === currentPage || page === '..'"
+          @click.prevent="changePage(page as number)"
         >
           {{ page }}
         </button>
