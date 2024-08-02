@@ -135,9 +135,9 @@ const filteredAffects = computed(() => {
     const matchesAffectednessFilter =
       affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
     const matchesResolutionFilter =
-      resolutionsFilter.value.length === 0 || resolutionsFilter.value.includes(affect.resolution ?? '');
+      resolutionFilter.value.length === 0 || resolutionFilter.value.includes(affect.resolution ?? '');
     const matchesImpactsFilter =
-      impactsFilter.value.length === 0 || impactsFilter.value.includes(affect.impact ?? '');
+      impactFilter.value.length === 0 || impactFilter.value.includes(affect.impact ?? '');
     return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
   });
 });
@@ -174,8 +174,8 @@ function handleModuleSelection(moduleName: string) {
 
 // Affect Field Specific Filters
 const affectednessFilter = ref<string[]>([]);
-const resolutionsFilter = ref<string[]>([]);
-const impactsFilter = ref<string[]>([]);
+const resolutionFilter = ref<string[]>([]);
+const impactFilter = ref<string[]>([]);
 
 function toggleFilter(filterArray: Ref<string[]>, item: string) {
   const index = filterArray.value.indexOf(item);
@@ -190,12 +190,12 @@ function toggleAffectednessFilter(affectedness: string) {
   toggleFilter(affectednessFilter, affectedness);
 }
 
-function toggleResolutionsFilter(resolution: string) {
-  toggleFilter(resolutionsFilter, resolution);
+function toggleResolutionFilter(resolution: string) {
+  toggleFilter(resolutionFilter, resolution);
 }
 
-function toggleImpactsFilter(impact: string) {
-  toggleFilter(impactsFilter, impact);
+function toggleImpactFilter(impact: string) {
+  toggleFilter(impactFilter, impact);
 }
 
 // Edit Affects
@@ -811,7 +811,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="bi text-white"
                   style="font-size: 16px;"
                   :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
+                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filter selected' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
@@ -854,8 +854,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 <i
                   class="bi text-white"
                   style="font-size: 16px;"
-                  :class="resolutionsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="resolutionsFilter.length !== 0 ? 'There are resolution filters selected' : ''"
+                  :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="resolutionFilter.length !== 0 ? 'There are resolution filter selected' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
@@ -863,13 +863,13 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   <li><a
                     href="#"
                     class="btn py-0 dropdown-item"
-                    @click.prevent.stop="toggleResolutionsFilter(resolution)"
+                    @click.prevent.stop="toggleResolutionFilter(resolution)"
                   >
                     <input
                       type="checkbox"
                       class="form-check-input me-2"
-                      :checked="resolutionsFilter.includes(resolution)"
-                      @click.stop="toggleResolutionsFilter(resolution)"
+                      :checked="resolutionFilter.includes(resolution)"
+                      @click.stop="toggleResolutionFilter(resolution)"
                     />
                     <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
                   </a></li>
@@ -898,8 +898,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 <i
                   class="bi text-white"
                   style="font-size: 16px;"
-                  :class="impactsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="impactsFilter.length !== 0 ? 'There are impact filters selected' : ''"
+                  :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="impactFilter.length !== 0 ? 'There are impact filter selected' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
@@ -907,13 +907,13 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   <li><a
                     href="#"
                     class="btn py-0 dropdown-item"
-                    @click.prevent.stop="toggleImpactsFilter(impact)"
+                    @click.prevent.stop="toggleImpactFilter(impact)"
                   >
                     <input
                       type="checkbox"
                       class="form-check-input me-2"
-                      :checked="impactsFilter.includes(impact)"
-                      @click.stop="toggleImpactsFilter(impact)"
+                      :checked="impactFilter.includes(impact)"
+                      @click.stop="toggleImpactFilter(impact)"
                     />
                     <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
                   </a></li>
