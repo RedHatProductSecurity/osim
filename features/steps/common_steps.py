@@ -3,6 +3,7 @@ import time
 from behave import given
 
 from features.utils import (
+    osim_home_page,
     login_with_valid_account,
     set_bugzilla_api_key,
     set_jira_api_key,
@@ -11,6 +12,9 @@ from features.utils import (
     go_to_advanced_search_page
 )
 
+@given('I am an analyst AND want to log into OSIM')
+def step_impl(context):
+    context.browser = osim_home_page()
 
 @given('I am an analyst AND I am logged into OSIM')
 def step_impl(context):
