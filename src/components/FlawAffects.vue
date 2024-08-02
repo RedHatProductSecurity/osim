@@ -797,31 +797,38 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               />
             </th>
             <th @click="setSort('affectedness')">
-              <span>Affectedness</span>
-              <i
+              <span class="align-bottom me-1">Affectedness</span>
+              <button
                 id="affectedness-filter"
-                class="bi mx-1"
-                :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
                 type="button"
+                class="btn btn-sm border-0 p-0 me-1"
                 data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
                 aria-expanded="false"
                 @click.stop
-              />
+              >
+                <i
+                  class="bi text-white"
+                  style="font-size: 16px;"
+                  :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filters selected' : ''"
+                />
+              </button>
               <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
                 <template v-for="affectedness in affectAffectedness" :key="affectedness">
-                  <button
-                    type="button"
-                    class="btn dropdown-item"
-                    @click.stop="toggleAffectednessFilter(affectedness)"
+                  <li><a
+                    href="#"
+                    class="btn py-0 dropdown-item"
+                    @click.prevent.stop="toggleAffectednessFilter(affectedness)"
                   >
                     <input
                       type="checkbox"
                       class="form-check-input me-2"
                       :checked="affectednessFilter.includes(affectedness)"
+                      @click.stop="toggleAffectednessFilter(affectedness)"
                     />
                     <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
-                  </button>
+                  </a></li>
                 </template>
               </ul>
               <i
@@ -830,35 +837,42 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   'bi-caret-down-fill': sortOrder === descend,
                   'bi-caret-up-fill': sortOrder !== descend,
                 }"
-                class="bi"
+                class="bi align-middle"
               />
             </th>
             <th @click="setSort('resolution')">
-              <span>Resolution</span>
-              <i
+              <span class="align-bottom me-1">Resolution</span>
+              <button
                 id="resolution-filter"
-                class="bi mx-1"
-                :class="resolutionsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                :title="resolutionsFilter.length !== 0 ? 'There are resolution filters selected' : ''"
                 type="button"
+                class="btn btn-sm border-0 p-0 me-1"
                 data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
                 aria-expanded="false"
                 @click.stop
-              />
+              >
+                <i
+                  class="bi text-white"
+                  style="font-size: 16px;"
+                  :class="resolutionsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="resolutionsFilter.length !== 0 ? 'There are resolution filters selected' : ''"
+                />
+              </button>
               <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
                 <template v-for="resolution in affectResolutions" :key="resolution">
-                  <button
-                    type="button"
-                    class="btn dropdown-item"
-                    @click.stop="toggleResolutionsFilter(resolution)"
+                  <li><a
+                    href="#"
+                    class="btn py-0 dropdown-item"
+                    @click.prevent.stop="toggleResolutionsFilter(resolution)"
                   >
                     <input
                       type="checkbox"
                       class="form-check-input me-2"
                       :checked="resolutionsFilter.includes(resolution)"
+                      @click.stop="toggleResolutionsFilter(resolution)"
                     />
                     <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
-                  </button>
+                  </a></li>
                 </template>
               </ul>
               <i
@@ -871,31 +885,38 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               />
             </th>
             <th @click="setSort('impact')">
-              <span>Impact</span>
-              <i
+              <span class="align-bottom me-1">Impact</span>
+              <button
                 id="impact-filter"
-                class="bi mx-1"
-                :class="impactsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                :title="impactsFilter.length !== 0 ? 'There are impact filters selected' : ''"
                 type="button"
+                class="btn btn-sm border-0 p-0 me-1"
                 data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
                 aria-expanded="false"
                 @click.stop
-              />
+              >
+                <i
+                  class="bi text-white"
+                  style="font-size: 16px;"
+                  :class="impactsFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                  :title="impactsFilter.length !== 0 ? 'There are impact filters selected' : ''"
+                />
+              </button>
               <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
                 <template v-for="impact in affectImpacts" :key="impact">
-                  <button
-                    type="button"
-                    class="btn dropdown-item"
-                    @click.stop="toggleImpactsFilter(impact)"
+                  <li><a
+                    href="#"
+                    class="btn py-0 dropdown-item"
+                    @click.prevent.stop="toggleImpactsFilter(impact)"
                   >
                     <input
                       type="checkbox"
                       class="form-check-input me-2"
                       :checked="impactsFilter.includes(impact)"
+                      @click.stop="toggleImpactsFilter(impact)"
                     />
                     <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
-                  </button>
+                  </a></li>
                 </template>
               </ul>
               <i

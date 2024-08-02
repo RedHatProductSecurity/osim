@@ -69,7 +69,7 @@ const filteredTrackers = computed(() => {
 });
 
 const trackerStatuses = computed(() => {
-  const statuses = props.displayedTrackers.map(item => item.status || 'EMPTY');
+  const statuses = props.displayedTrackers.map(item => item.status?.toUpperCase() || 'EMPTY');
   const uniqueStatuses = [...new Set(statuses)];
   return uniqueStatuses;
 });
@@ -88,7 +88,6 @@ function toggleFilter(filterArray: Ref<string[]>, item: string) {
 function toggleStatusFilter(status: string) {
   toggleFilter(statusFilter, status);
 }
-
 
 // Trackers Pagination
 const currentPage = ref(1);
@@ -184,30 +183,40 @@ function changePage(page: number) {
               <th>Module</th>
               <th>Product Stream</th>
               <th>
-                Status
-                <i
+                <span class="align-bottom me-1">Status</span>
+                <button
                   id="status-filter"
-                  class="bi mx-1"
-                  :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="statusFilter.length !== 0 ? 'There are status filters selected' : ''"
                   type="button"
+                  class="btn btn-sm border-0 p-0"
                   data-bs-toggle="dropdown"
+                  data-bs-auto-close="outside"
                   aria-expanded="false"
-                />
-                <ul class="dropdown-menu" aria-labelledby="status-filter" style="z-index: 10;">
+                >
+                  <i
+                    class="bi"
+                    style="font-size: 16px;"
+                    :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                    :title="statusFilter.length !== 0 ? 'There are status filters selected' : ''"
+                  />
+                </button>
+                <ul
+                  class="dropdown-menu"
+                  aria-labelledby="status-filter"
+                >
                   <template v-for="status in trackerStatuses" :key="status">
-                    <button
-                      type="button"
-                      class="btn dropdown-item"
-                      @click.stop="toggleStatusFilter(status)"
+                    <li><a
+                      href="#"
+                      class="btn py-0 dropdown-item"
+                      @click.prevent="toggleStatusFilter(status)"
                     >
                       <input
                         type="checkbox"
                         class="form-check-input me-2"
                         :checked="statusFilter.includes(status)"
+                        @click.stop="toggleStatusFilter(status)"
                       />
                       <span>{{ status.toUpperCase() }}</span>
-                    </button>
+                    </a></li>
                   </template>
                 </ul>
               </th>
@@ -323,6 +332,10 @@ function changePage(page: number) {
 
   table {
     thead {
+      .dropdown-menu {
+        z-index: 10;
+      }
+
       tr th {
         user-select: none;
 
