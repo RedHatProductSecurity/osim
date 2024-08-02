@@ -805,6 +805,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
                 aria-expanded="false"
+                @contextmenu.prevent="affectednessFilter = []"
                 @click.stop
               >
                 <i
@@ -849,6 +850,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
                 aria-expanded="false"
+                @contextmenu.prevent="resolutionFilter = []"
                 @click.stop
               >
                 <i
@@ -893,6 +895,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
                 aria-expanded="false"
+                @contextmenu.prevent="impactFilter = []"
                 @click.stop
               >
                 <i
