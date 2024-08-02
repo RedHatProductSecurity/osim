@@ -197,7 +197,7 @@ function changePage(page: number) {
                     class="bi"
                     style="font-size: 16px;"
                     :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                    :title="statusFilter.length !== 0 ? 'There are status filters selected' : ''"
+                    :title="statusFilter.length !== 0 ? 'Filtering by some statuses' : ''"
                   />
                 </button>
                 <ul
