@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { sort } from 'ramda';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import { flawFields } from '@/constants/flawFields';
-import { useSearchParams } from '@/composables/useSearchParams';
+import { useSearchParams, supportRangeOption } from '@/composables/useSearchParams';
+import DateRange from '@/components/widgets/DateRange.vue';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
 import { affectAffectedness } from '@/types/zodAffect';
-import { sort } from 'ramda';
+
 const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
 
 const props = defineProps<{
@@ -60,6 +62,8 @@ const nameForOption = (fieldName: string) => {
     cve_description: 'CVE Description',
     requires_cve_description: 'CVE Description Review',
     major_incident_state: 'Incident State',
+    created_dt: 'Created At',
+    updated_dt: 'Updated At'
   };
   let name =
     mappings[fieldName]
@@ -76,7 +80,6 @@ const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
   sortFieldNames(flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField));
-
 
 const optionsFor = (field: string) =>
   ({
@@ -114,8 +117,12 @@ const shouldShowAdvanced = ref(true);
             {{ nameForOption(field) }}
           </option>
         </select>
+        <DateRange
+          v-if="supportRangeOption(facet.field)"
+          v-model="facet.range"
+        />
         <select
-          v-if="optionsFor(facet.field)"
+          v-else-if="optionsFor(facet.field)"
           v-model="facet.value"
           class="form-select"
           @submit.prevent
