@@ -812,7 +812,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="bi text-white"
                   style="font-size: 16px;"
                   :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="affectednessFilter.length !== 0 ? 'There are affectedness filter selected' : ''"
+                  :title="affectednessFilter.length !== 0 ? 'Filtering by some affectedness' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
@@ -857,7 +857,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="bi text-white"
                   style="font-size: 16px;"
                   :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="resolutionFilter.length !== 0 ? 'There are resolution filter selected' : ''"
+                  :title="resolutionFilter.length !== 0 ? 'Filtering by some resolutions' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
@@ -902,7 +902,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="bi text-white"
                   style="font-size: 16px;"
                   :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                  :title="impactFilter.length !== 0 ? 'There are impact filter selected' : ''"
+                  :title="impactFilter.length !== 0 ? 'Filtering by some impacts' : ''"
                 />
               </button>
               <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
