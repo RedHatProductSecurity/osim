@@ -191,6 +191,7 @@ function changePage(page: number) {
                   data-bs-toggle="dropdown"
                   data-bs-auto-close="outside"
                   aria-expanded="false"
+                  @contextmenu.prevent="statusFilter = []"
                 >
                   <i
                     class="bi"
