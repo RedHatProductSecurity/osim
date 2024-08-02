@@ -17,7 +17,7 @@ class FlawCreatePage(FlawDetailPage):
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
 
-        "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
+        "comment#0Text": ("XPATH", "//span[contains(text(),'Comment#0')]"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
