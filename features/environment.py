@@ -1,2 +1,3 @@
 def after_scenario(context, scenario):
-    context.browser.quit()
+    if hasattr(context, "browser"):
+        context.browser.quit()

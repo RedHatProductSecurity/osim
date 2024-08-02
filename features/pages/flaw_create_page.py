@@ -9,7 +9,7 @@ class FlawCreatePage(FlawDetailPage):
 
     locators = {
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
-
+        "osimToast": ("XPATH", "//div[contains(@class,'osim-toast toast show')]"),
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
 

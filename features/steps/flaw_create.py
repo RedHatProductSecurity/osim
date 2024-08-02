@@ -51,6 +51,8 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
                 break
     else:
         flaw_create_page.click_btn('createNewFlawBtn')
+        flaw_create_page.wait_msg('osimToast')
+        print(flaw_create_page.osimToast.get_text())
         flaw_create_page.wait_msg('flawCreatedMsg')
 
 
