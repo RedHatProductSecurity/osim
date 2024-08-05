@@ -54,7 +54,7 @@ def init_remote_firefox_browser():
     op.add_argument("-headless")
     return webdriver.Remote(command_executor=SELENIUM_URL, options=op)
 
-def osim_home_page():
+def osim_login_page():
     """
     This function is used to get the index page of OSIM
     """
@@ -66,8 +66,7 @@ def login_with_valid_account():
     """
     This function defines the login.
     """
-    browser = init_remote_firefox_browser()
-    browser.get(OSIM_URL)
+    browser = osim_login_page()
     login_page = LoginPage(browser)
     login_page.login()
     return browser

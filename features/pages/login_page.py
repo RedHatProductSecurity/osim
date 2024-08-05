@@ -13,6 +13,3 @@ class LoginPage(BasePage):
 
     def login(self):
         self.loginBtn.click_button()
-
-    def check_login(self):
-        self.loginBtn.visibility_of_element_located()
