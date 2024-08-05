@@ -2,8 +2,9 @@
 import { computed, toRefs, ref, watch } from 'vue';
 
 import { type ZodAffectType } from '@/types/zodAffect';
+import { type ZodFlawType } from '@/types/zodFlaw';
 import { uniques } from '@/utils/helpers';
-import { useTrackers } from '@/composables/useTrackers';
+import { useTrackersForSingleFlaw } from '@/composables/useTrackersForSingleFlaw';
 
 import AffectExpandableForm from '@/components/AffectExpandableForm.vue';
 import AffectsTrackers from '@/components/AffectsTrackers.vue';
@@ -12,6 +13,7 @@ import OsimButton from '@/components/widgets/OsimButton.vue';
 
 const props = defineProps<{
   flawId: string;
+  relatedFlaws: ZodFlawType[];
   theAffects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: Record<string, any>[] | null;
@@ -27,7 +29,7 @@ const emit = defineEmits<{
 
 const { theAffects, affectsToDelete } = toRefs(props);
 
-const { getUpdateStreamsFor } = useTrackers(props.flawId, theAffects);
+const { getUpdateStreamsFor } = useTrackersForSingleFlaw(theAffects);
 
 const affectsNotBeingDeleted = computed(
   () => theAffects.value.filter((affect) => !affectsToDelete.value.includes(affect))
@@ -118,7 +120,6 @@ function moduleComponentName(moduleName: string = '<module not set>', componentN
 }
 
 defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded });
-
 </script>
 
 <template>
@@ -128,6 +129,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       v-show="shouldShowTrackers"
       :flawId="flawId"
       :theAffects="affectsNotBeingDeleted"
+      :relatedFlaws="relatedFlaws"
       @affects-trackers:refresh="emit('affects:refresh')"
       @affects-trackers:hide="shouldShowTrackers = false"
     />

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import FlawForm from '../components/FlawForm.vue';
-import { getFlaw } from '../services/FlawService';
+import { getFlaw, getRelatedFlaws } from '../services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const flaw = ref<ZodFlawType | null>(null);
+const relatedFlaws = ref<ZodFlawType[]>([]);
 const errorLoadingFlaw = ref(false);
 const props = defineProps<{
   id: string;
@@ -14,16 +15,24 @@ const props = defineProps<{
 
 const { addToast } = useToastStore();
 
-refreshFlaw();
+fetchFlaw();
 
-watch(() => props.id, refreshFlaw);
+watch(() => props.id, fetchFlaw);
 
-function refreshFlaw() {
+function fetchFlaw() {
   errorLoadingFlaw.value = false;
   getFlaw(props.id)
     .then((theFlaw) => {
       flaw.value = Object.assign({}, theFlaw);
-      history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
+      getRelatedFlaws(theFlaw.affects)
+        .then((flaws) => {
+          console.log('relatedFlaws', flaws);
+          relatedFlaws.value = flaws;
+        })
+        .catch(console.error)
+        .finally(() => {
+          history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
+        });
     })
     .catch((err) => {
       errorLoadingFlaw.value = true;
@@ -43,8 +52,9 @@ function refreshFlaw() {
       v-if="flaw"
       :key="`${flaw.uuid}-${flaw.updated_dt}`"
       v-model:flaw="flaw"
+      :relatedFlaws="relatedFlaws"
       mode="edit"
-      @refresh:flaw="refreshFlaw"
+      @refresh:flaw="fetchFlaw"
     />
     <div v-if="errorLoadingFlaw">
       <div class="row justify-content-around">

@@ -30,6 +30,7 @@ describe('Trackers Manager', () => {
         mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
       ],
       affectsToDelete: [],
+      relatedFlaws: [],
       error: null,
       flawId: '[[TEST]] flaw-id',
     }

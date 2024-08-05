@@ -30,7 +30,8 @@ import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
 
 const props = defineProps<{
-  flaw: any;
+  flaw: ZodFlawType;
+  relatedFlaws: ZodFlawType[];
   mode: 'create' | 'edit';
 }>();
 
@@ -475,6 +476,7 @@ const theAffects = computed(() => {
             :affectsToDelete="affectsToDelete"
             :error="errors.affects"
             :flawId="flaw.uuid"
+            :relatedFlaws="relatedFlaws"
             @affect:recover="(affect) => recoverAffect(flaw.affects.indexOf(affect))"
             @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
             @affects:refresh="refreshAffects"

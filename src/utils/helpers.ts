@@ -109,3 +109,12 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 export function getRhCvss3 (scores: any[]) {
   return getSpecficCvssScore(scores, 'RH', 'V3');
 }
+
+type WithModuleComponent = {
+  ps_component: string;
+  ps_module: string;
+};
+
+export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
+  return first.ps_component === second.ps_component && first.ps_module === second.ps_module;
+}
