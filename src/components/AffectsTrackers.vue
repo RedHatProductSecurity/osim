@@ -65,7 +65,7 @@ function handleFileTrackers() {
           {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
         </label>
       </div>
-      <div v-if="untrackableAffects.length > 0">
+      <div v-if="untrackableAffects?.length > 0">
         <div class="ms-3 alert alert-danger w-50 border-0">
           <details>
             <summary>

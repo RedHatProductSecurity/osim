@@ -67,13 +67,14 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
   const order = sortOrder.value;
 
   const customSortFn = (affect: ZodAffectType) => {
+    const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
     if (customSortKey === 'trackers') {
-      return affect.trackers.length;
+      return affectToSort.trackers.length;
     }
     else if (customSortKey === 'cvss_scores') {
-      return affect[customSortKey].length;
+      return affectToSort[customSortKey].length;
     }
-    return affect[customSortKey] || 0;
+    return affectToSort[customSortKey] || 0;
   };
 
   const comparator = standard
@@ -82,7 +83,6 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
 
   return sortWith([
     ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-    ascend((affect: ZodAffectType) => isBeingEdited(affect) ? 0 : 1),
     ...comparator
   ])(affects);
 }
