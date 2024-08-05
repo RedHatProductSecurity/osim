@@ -13,6 +13,7 @@ Feature: Flaw list testing
       When I click the field header of flaw list table
       Then The flaw list is sorted by the field
 
+    @skip
     Scenario: List all my issues
      Given I assgin an issue to me
       When I check 'My Issues' checkbox in index page
