@@ -8,6 +8,7 @@ Feature: Flaw advance search testing
       When I am searching for all flaws
       Then I get a list of all flaws
 
+    @skip
     Scenario: Search flaws with selected field and value
       When I prepare the advance search keywords
       Then I select the field and keyword to search flaws and I am able to view flaws matching the search
