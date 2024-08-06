@@ -26,7 +26,8 @@ describe('AffectedOfferings', () => {
         ],
         affectsToDelete: [],
         relatedFlaws: [],
-        flawId: 'id-1',        // error: [mockError(), mockError(), mockError()],
+        flawId: 'id-1',
+        // error: [mockError(), mockError(), mockError()],
         error: null,
       },
     });
