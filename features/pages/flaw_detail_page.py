@@ -70,7 +70,7 @@ class FlawDetailPage(BasePage):
         "acknowledgmentUpdatedMsg": ("XPATH", "//div[text()='Acknowledgment updated.']"),
         "acknowledgmentDeletedMsg": ("XPATH", "//div[text()='Acknowledgment deleted.']"),
 
-        "impactText": ("XPATH", "//span[text()='Impact']"),
+        "impactText": ("XPATH", "(//span[text()='Impact'])[1]"),
         "sourceText": ("XPATH", "//span[text()='CVE Source']"),
 
         "titleText": ("XPATH", "//span[text()='Title']"),
@@ -167,7 +167,9 @@ class FlawDetailPage(BasePage):
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
-        "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]")
+        "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]"),
+        'stateText': ("XPATH", "(//span[contains(text(), 'State')])[1]"),
+        'embargoedText': ("XPATH", "//span[contains(text(), 'Embargo')]")
     }
 
     # Data is from OSIDB allowed sources:
@@ -770,3 +772,51 @@ class FlawDetailPage(BasePage):
         reason_text_area = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").below(element))[0]
         reason_text_area.send_keys(value)
+
+    def get_selected_value(self, field):
+        element = getattr(self, field)
+        field_select = self.driver.find_elements(
+            locate_with(By.XPATH, "//select[@class='form-select']").near(element))[0]
+        selected_item = field_select.get_list_selected_item()
+        current_value = selected_item[0] if selected_item else None
+        return current_value
+
+    def get_field_value(self, field,  path):
+        element = getattr(self, field)
+        state_element = self.driver.find_elements(
+            locate_with(By.XPATH, path).near(element))[0]
+        return state_element.get_text()
+
+    def get_valid_search_keywords_from_created_flaw(self, fields):
+        result = {}
+        for field in fields:
+            if field == 'cve_id':
+                result[field] = self.get_current_value_of_field("cveidText")
+            elif field == "cwe_id":
+                result[field] = self.get_current_value_of_field("cweidText")
+            elif field in ['title', 'owner']:
+                result[field] = self.get_current_value_of_field(field+'Text')
+            elif field in ["impact", "source"]:
+                result[field] = self.get_selected_value(field+'Text')
+            elif field == "workflow_state":
+                result[field] = self.get_field_value('stateText', "//span[@class='form-control rounded-0']")
+            elif field == "cve_description":
+                 result[field] = self.get_document_text_field('description')
+            elif field == "requires_cve_description":
+                _,result[field] = self.get_select_value('reviewStatusSelect')
+            elif field == "embargoed":
+                result[field] = 'false'
+        return(result)
+
+    def get_value_from_detail_page(self, field):
+        if field == "cwe_id":
+            return self.get_current_value_of_field("cweidText")
+        elif field == "source":
+            return self.get_selected_value(field+'Text')
+        elif field == "cve_description":
+            return self.get_document_text_field('description')
+        elif field == "requires_cve_description":
+            _, value = self.get_select_value('reviewStatusSelect')
+            return value
+        if field == "embargoed":
+           return self.get_field_value('embargoedText', "//span[@class='form-control']")

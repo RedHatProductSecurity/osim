@@ -51,7 +51,8 @@ def init_remote_firefox_browser():
     profile.set_preference('network.negotiate-auth.trusted-uris', 'https://')
     op = Options()
     op.profile = profile
-    op.add_argument("-headless")
+    if 'CI' in os.environ:
+        op.add_argument("-headless")
     return webdriver.Remote(command_executor=SELENIUM_URL, options=op)
 
 def osim_login_page():
