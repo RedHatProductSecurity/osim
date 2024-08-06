@@ -10,15 +10,21 @@ export const SettingsSchema = z.object({
   bugzillaApiKey: z.string().optional().or(z.literal('')).default(''),
   jiraApiKey: z.string().optional().or(z.literal('')).default(''),
   showNotifications: z.boolean(),
+  affectsPerPage: z.number(),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
 
-const defaultValues: SettingsType = { bugzillaApiKey: '', jiraApiKey: '', showNotifications: false };
-const apiKeys = useStorage('OSIM::API-KEYS', defaultValues);
+const defaultValues: SettingsType = {
+  bugzillaApiKey: '',
+  jiraApiKey: '',
+  showNotifications: false,
+  affectsPerPage: 10
+};
+const osimSettings = useStorage('OSIM::USER-SETTINGS', defaultValues);
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>(apiKeys.value);
+  const settings = ref<SettingsType>(osimSettings.value);
   // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
 
   const validatedSettings = SettingsSchema.safeParse(settings.value);
@@ -32,7 +38,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   }
 
   watch(settings, () => {
-    apiKeys.value = settings.value;
+    osimSettings.value = settings.value;
   });
 
   function save(newSettings: SettingsType) {
@@ -44,6 +50,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       showNotifications: false,
       bugzillaApiKey: '',
       jiraApiKey: '',
+      affectsPerPage: 10,
     };
   }
 
