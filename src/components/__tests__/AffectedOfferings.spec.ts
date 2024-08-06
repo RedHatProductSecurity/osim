@@ -25,7 +25,8 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         affectsToDelete: [],
-        // error: [mockError(), mockError(), mockError()],
+        relatedFlaws: [],
+        flawId: 'id-1',        // error: [mockError(), mockError(), mockError()],
         error: null,
       },
     });
@@ -42,6 +43,8 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         affectsToDelete: [],
+        relatedFlaws: [],
+        flawId: 'id-1',
         error: [],
       },
     });
@@ -64,6 +67,8 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         affectsToDelete: [],
+        relatedFlaws: [],
+        flawId: 'id-1',
         error: [],
       },
     });
@@ -86,6 +91,8 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         affectsToDelete: [],
+        relatedFlaws: [],
+        flawId: 'id-1',
         error: [],
       },
     });
@@ -111,10 +118,12 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
           mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
         ],
+        relatedFlaws: [],
         affectsToDelete: [
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         error: [],
+        flawId: 'id-1',
       },
     });
 
@@ -147,10 +156,12 @@ describe('AffectedOfferings', () => {
           mockAffect({ ps_module: 'Module 1', ps_component: 'Component 1' }),
           mockAffect({ ps_module: 'Module 1', ps_component: 'Component 2' }),
         ],
+        relatedFlaws: [],
         affectsToDelete: [
           mockAffect({ ps_module: 'Module 2', ps_component: 'Component 1' }),
         ],
         error: null,
+        flawId: 'id-1',
       },
     });
 
