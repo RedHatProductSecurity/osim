@@ -79,7 +79,7 @@ async function handleFileTrackers() {
       Manage Trackers
       <button
         type="button"
-        class="btn btn-white btn-outline-dark-teal btn-sm"
+        class="btn btn-lightest-info btn-outline-dark-teal btn-sm"
         @click="emit('affects-trackers:hide')"
       >
         <i class="bi bi-eye-slash-fill"></i>
@@ -255,7 +255,7 @@ async function handleFileTrackers() {
   flex-flow: column;
   max-height: 30vh;
   overflow-y: auto;
-  background-color: $lightest-info;
+  background-color: #fff;
 }
 
 .osim-trackers-filing {
@@ -272,6 +272,7 @@ async function handleFileTrackers() {
     color: dark-teal;
   }
 }
+
 h3, h4, h5, h6 {
   color: #147878;
 }

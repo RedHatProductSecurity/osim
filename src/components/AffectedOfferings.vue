@@ -153,7 +153,7 @@ defineExpose({ togglePsModuleExpansion, togglePsComponentExpansion, isExpanded }
       <button
         v-show="!shouldShowTrackers"
         type="button"
-        class="button btn btn-sm btn-black text-white"
+        class="btn btn-lightest-info btn-outline-dark-teal btn-sm"
         @click="shouldShowTrackers = !shouldShowTrackers"
       >
         <i class="bi bi-binoculars"></i>
