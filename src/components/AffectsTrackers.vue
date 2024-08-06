@@ -191,7 +191,6 @@ async function handleFileTrackers() {
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
-                      <!-- @input="tabProps.trackerSelections.set(tracker, !tabProps.trackerSelections.get(tracker))" -->
                       <span
                         v-if="tracker.selected"
                         title="Suggested Tracker"
@@ -243,6 +242,22 @@ async function handleFileTrackers() {
 
 <style lang="scss" scoped>
 @import '@/scss/bootstrap-overrides';
+
+:deep(.nav-tabs) {
+  border-bottom-color: $info;
+
+ .nav-item .nav-link {
+  color: $info;
+  border: none;
+  background-color: $lighter-info;
+
+  &.active {
+    color: $dark-teal;
+    border: 1px solid $info;
+    border-bottom: none;
+    background-color:white;
+  }}
+}
 
 .osim-tracker-tabs {
   padding-left: 1rem;
