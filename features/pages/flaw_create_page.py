@@ -9,7 +9,6 @@ class FlawCreatePage(FlawDetailPage):
 
     locators = {
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
-
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
 
@@ -17,7 +16,7 @@ class FlawCreatePage(FlawDetailPage):
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
 
-        "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
+        "comment#0Text": ("XPATH", "//span[contains(text(),'Comment#0')]"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),

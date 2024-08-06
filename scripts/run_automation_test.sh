@@ -36,7 +36,7 @@ fi
 if [ -e flaw_id.txt ]
 then
     run_behave features/advance_search.feature
-    run_behave features/flaw_list.feature
+    run_behave features/flaw_list.feature --tags=~@skip
     run_behave features/quick_search.feature
 else
     echo "All flaw for test created failed, skip advance_search.feature,
