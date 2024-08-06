@@ -14,7 +14,10 @@ import TrackersManager from '@/components/TrackersManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
+const settingsStore = useSettingsStore();
+const settings = ref(settingsStore.settings);
 const { isModalOpen, openModal, closeModal } = useModal();
 
 const props = defineProps<{
@@ -451,7 +454,7 @@ const minItemsPerPage = 1;
 const maxItemsPerPage = 20;
 const maxPagesToShow = 7;
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+
 const pages = computed(() => {
   const result: number[] = [];
   if (totalPages.value > maxPagesToShow) {
@@ -471,13 +474,13 @@ const pages = computed(() => {
 });
 
 const paginatedAffects = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
+  const start = (currentPage.value - 1) * settings.value.affectsPerPage;
+  const end = start + settings.value.affectsPerPage;
   return sortedAffects.value.slice(start, end);
 });
 
 const totalPages = computed(() =>
-  Math.ceil(sortedAffects.value.length / itemsPerPage.value)
+  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
 );
 
 function changePage(page: number) {
@@ -487,14 +490,14 @@ function changePage(page: number) {
 }
 
 function reduceItemsPerPage() {
-  if (itemsPerPage.value > minItemsPerPage) {
-    itemsPerPage.value --;
+  if (settings.value.affectsPerPage > minItemsPerPage) {
+    settings.value.affectsPerPage --;
   }
 }
 
 function increaseItemsPerPage() {
-  if (itemsPerPage.value < maxItemsPerPage) {
-    itemsPerPage.value ++;
+  if (settings.value.affectsPerPage < maxItemsPerPage) {
+    settings.value.affectsPerPage ++;
   }
 }
 
@@ -607,14 +610,18 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             style="pointer-events: none;"
           >
             <i
-              :style="itemsPerPage > minItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
+              :style="settings.affectsPerPage > minItemsPerPage
+                ? 'pointer-events: auto;'
+                : 'opacity: 50%; pointer-events: none;'"
               class="bi bi-dash-square fs-6 my-auto"
               title="Reduce affects per page"
               @click="reduceItemsPerPage()"
             />
-            <span class="mx-2 my-auto">{{ `Per page: ${itemsPerPage}` }}</span>
+            <span class="mx-2 my-auto">{{ `Per page: ${settings.affectsPerPage}` }}</span>
             <i
-              :style="itemsPerPage < maxItemsPerPage ? 'pointer-events: auto;' : 'opacity: 50%; pointer-events: none;'"
+              :style="settings.affectsPerPage < maxItemsPerPage
+                ? 'pointer-events: auto;'
+                : 'opacity: 50%; pointer-events: none;'"
               class="bi bi-plus-square fs-6 my-auto"
               title="Increase affects per page"
               @click="increaseItemsPerPage()"
