@@ -3,7 +3,7 @@ import { computed, ref, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
-import AffectsTrackers from '@/components/AffectsTrackers.vue';
+import TrackerManager from '@/components/TrackersManager.vue';
 
 type TrackerWithModule = ZodTrackerType & { ps_module: string };
 
@@ -19,7 +19,7 @@ const emit = defineEmits<{
   'affects:refresh': [];
 }>();
 
-const shouldShowTrackers = ref(false);
+const showTrackerManager = ref(false);
 
 const hasTrackers = computed(() => props.allTrackersCount > 0);
 
@@ -161,15 +161,23 @@ function changePage(page: number) {
               <span>Displaying {{ paginatedTrackers.length }}</span>
             </div>
           </div>
-          <!-- TODO View/Hide Available Trackers Button -->
           <button
-            v-show="!shouldShowTrackers"
+            v-if="!showTrackerManager"
             type="button"
             class="btn btn-sm btn-info ms-auto"
-            @click="shouldShowTrackers = !shouldShowTrackers"
+            @click="showTrackerManager = true"
           >
             <i class="bi bi-binoculars" />
-            Manage All Trackers
+            Show Tracker Manager
+          </button>
+          <button
+            v-else
+            type="button"
+            class="btn btn-sm btn-info ms-auto"
+            @click="showTrackerManager = false"
+          >
+            <i class="bi bi-eye-slash-fill" />
+            Hide Tracker Manager
           </button>
         </div>
       </div>
@@ -195,7 +203,7 @@ function changePage(page: number) {
                 >
                   <i
                     class="bi"
-                    style="font-size: 16px;"
+                    style="font-size: 1rem;"
                     :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                     :title="statusFilter.length !== 0 ? 'Filtering by some statuses' : ''"
                   />
@@ -272,12 +280,12 @@ function changePage(page: number) {
         </div>
       </div>
     </div>
-    <AffectsTrackers
-      v-show="shouldShowTrackers"
+    <TrackerManager
+      v-if="showTrackerManager"
+      mode="embedded"
       :flawId="flawId"
-      :theAffects="affectsNotBeingDeleted"
+      :affects="affectsNotBeingDeleted"
       @affects-trackers:refresh="emit('affects:refresh')"
-      @affects-trackers:hide="shouldShowTrackers = false"
     />
   </div>
 </template>
@@ -288,7 +296,7 @@ function changePage(page: number) {
 .affects-trackers {
   .osim-tracker-card {
     div {
-      padding: 0.5rem;
+      padding: .5rem;
       background-color: $light-teal;
     }
   }
@@ -307,17 +315,17 @@ function changePage(page: number) {
     .trackers-badges {
       display: flex;
       margin-block: 0;
-      gap: 0.25rem;
+      gap: .25rem;
 
       .badge {
         height: 28px;
-        border-radius: 0.25rem;
+        border-radius: .25rem;
         background-color: $light-teal;
         color: black;
         margin-block: auto;
 
         span {
-          font-size: 12px;
+          font-size: .75rem;
           vertical-align: middle;
           text-align: center;
         }

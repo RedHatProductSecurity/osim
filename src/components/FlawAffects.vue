@@ -10,7 +10,7 @@ import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
-import TrackersManager from '@/components/TrackersManager.vue';
+import TrackerManager from '@/components/TrackersManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
@@ -817,7 +817,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 16px;"
+                  style="font-size: 1rem;"
                   :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="affectednessFilter.length !== 0 ? 'Filtering by some affectedness' : ''"
                 />
@@ -862,7 +862,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 16px;"
+                  style="font-size: 1rem;"
                   :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="resolutionFilter.length !== 0 ? 'Filtering by some resolutions' : ''"
                 />
@@ -907,7 +907,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 16px;"
+                  style="font-size: 1rem;"
                   :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="impactFilter.length !== 0 ? 'Filtering by some impacts' : ''"
                 />
@@ -1204,7 +1204,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       </div>
     </template>
     <template #body>
-      <TrackersManager
+      <TrackerManager
+        mode="modal"
         :flawId="flawId"
         :affects="affectsManaging || []"
         @affects-trackers:refresh="emit('affects:refresh')"
@@ -1238,7 +1239,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 
       i {
         margin-inline: -3.5px;
-        font-size: 18px;
+        font-size: 1.125rem;
       }
 
       span {
@@ -1306,7 +1307,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           }
 
           i {
-            font-size: 16px;
+            font-size: 1rem;
           }
         }
 
@@ -1419,7 +1420,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 
               .bi {
                 line-height: 0;
-                font-size: 15px;
+                font-size: .938rem;
               }
             }
 
@@ -1431,10 +1432,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               display: flex;
 
               .btn {
-                width: 26px; height: 26px;
+                width: 26px;
+                height: 26px;
 
                 .bi {
-                  font-size: 18px;
+                  font-size: 1.125rem;
                 }
               }
             }
