@@ -514,14 +514,12 @@ const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.tra
 const affectsManaging = ref<ZodAffectType[]>();
 
 const displayedTrackers = computed(() => {
-  const aux = sortedAffects.value.flatMap(affect =>
+  return sortedAffects.value.flatMap(affect =>
     affect.trackers.map(tracker => ({
       ...tracker,
       ps_module: affect.ps_module
     }))
   );
-  console.log(aux);
-  return aux;
 });
 
 function fileTrackersForAffects(affects: ZodAffectType[]) {
