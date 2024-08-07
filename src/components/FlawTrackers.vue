@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
@@ -108,6 +108,12 @@ function changePage(page: number) {
     currentPage.value = page;
   }
 }
+
+watch(pages, () => {
+  if (currentPage.value > pages.value.length) {
+    currentPage.value = pages.value.length;
+  }
+});
 </script>
 
 <template>
