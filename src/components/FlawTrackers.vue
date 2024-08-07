@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
 import TrackerManager from '@/components/TrackersManager.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { usePagination } from '@/composables/usePagination';
 
 type TrackerWithModule = ZodTrackerType & { ps_module: string };
 
@@ -93,29 +94,19 @@ function toggleStatusFilter(status: string) {
   toggleFilter(statusFilter, status);
 }
 
-// Trackers Pagination
-const minItemsPerPage = 5;
-const maxItemsPerPage = 20;
-const maxPagesToShow = 7;
-const currentPage = ref(1);
+// Trackers pagination
+const totalPages = computed(() =>
+  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage)
+);
 
-const pages = computed(() => {
-  const result: number[] = [];
-  if (totalPages.value > maxPagesToShow) {
-    if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
-      return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
-    } else if (currentPage.value <= 3) {
-      return [...Array.from({ length: 5 }, (_, i) => i + 1), '..', totalPages.value];
-    } else if (currentPage.value >= totalPages.value - 2) {
-      return [1, '..', ...Array.from({ length: 5 }, (_, i) => totalPages.value - 4 + i)];
-    }
-  } else {
-    for (let i = 1; i <= totalPages.value; i++) {
-      result.push(i);
-    }
-  }
-  return result;
-});
+const {
+  pages,
+  itemsPerPage,
+  currentPage,
+  minItemsPerPage,
+  maxItemsPerPage,
+  changePage,
+} = usePagination(totalPages, settings.value.trackersPerPage);
 
 const paginatedTrackers = computed(() => {
   const start = (currentPage.value - 1) * settings.value.trackersPerPage;
@@ -123,33 +114,19 @@ const paginatedTrackers = computed(() => {
   return sortedTrackers.value.slice(start, end);
 });
 
-const totalPages = computed(() =>
-  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage)
-);
-
-function changePage(page: number) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
-}
-
 function reduceItemsPerPage() {
   if (settings.value.trackersPerPage > minItemsPerPage) {
-    settings.value.trackersPerPage --;
+    settings.value.trackersPerPage--;
+    itemsPerPage.value--;
   }
 }
 
 function increaseItemsPerPage() {
   if (settings.value.trackersPerPage < maxItemsPerPage) {
-    settings.value.trackersPerPage ++;
+    settings.value.trackersPerPage++;
+    itemsPerPage.value++;
   }
 }
-
-watch(pages, () => {
-  if (currentPage.value > pages.value.length) {
-    currentPage.value = pages.value.length;
-  }
-});
 </script>
 
 <template>
@@ -400,6 +377,7 @@ watch(pages, () => {
         background-color: $light-teal;
         color: black;
         margin-block: auto;
+        user-select: none;
 
         span {
           font-size: .75rem;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, type Ref, watch } from 'vue';
+import { computed, toRefs, ref, type Ref } from 'vue';
 import {
   affectImpacts,
   affectAffectedness,
@@ -15,6 +15,7 @@ import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { usePagination } from '@/composables/usePagination';
 
 const settingsStore = useSettingsStore();
 const settings = ref(settingsStore.settings);
@@ -125,7 +126,6 @@ function toggleDisplayMode(mode: displayModes) {
   } else {
     displayMode.value = mode;
   }
-  currentPage.value = 1;
 }
 
 const filteredAffects = computed(() => {
@@ -172,7 +172,6 @@ function handleModuleSelection(moduleName: string) {
   } else {
     selectedModules.value.push(moduleName);
   }
-  currentPage.value = 1;
 }
 
 // Affect Field Specific Filters
@@ -452,28 +451,18 @@ function affectRowTooltip(affect: ZodAffectType) {
 }
 
 // Affects Pagination
-const minItemsPerPage = 5;
-const maxItemsPerPage = 20;
-const maxPagesToShow = 7;
-const currentPage = ref(1);
+const totalPages = computed(() =>
+  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
+);
 
-const pages = computed(() => {
-  const result: number[] = [];
-  if (totalPages.value > maxPagesToShow) {
-    if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
-      return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
-    } else if (currentPage.value <= 3) {
-      return [...Array.from({ length: 5 }, (_, i) => i + 1), '..', totalPages.value];
-    } else if (currentPage.value >= totalPages.value - 2) {
-      return [1, '..', ...Array.from({ length: 5 }, (_, i) => totalPages.value - 4 + i)];
-    }
-  } else {
-    for (let i = 1; i <= totalPages.value; i++) {
-      result.push(i);
-    }
-  }
-  return result;
-});
+const {
+  pages,
+  itemsPerPage,
+  currentPage,
+  minItemsPerPage,
+  maxItemsPerPage,
+  changePage,
+} = usePagination(totalPages, settings.value.affectsPerPage);
 
 const paginatedAffects = computed(() => {
   const start = (currentPage.value - 1) * settings.value.affectsPerPage;
@@ -481,33 +470,19 @@ const paginatedAffects = computed(() => {
   return sortedAffects.value.slice(start, end);
 });
 
-const totalPages = computed(() =>
-  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
-);
-
-function changePage(page: number) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
-}
-
 function reduceItemsPerPage() {
   if (settings.value.affectsPerPage > minItemsPerPage) {
     settings.value.affectsPerPage --;
+    itemsPerPage.value--;
   }
 }
 
 function increaseItemsPerPage() {
   if (settings.value.affectsPerPage < maxItemsPerPage) {
     settings.value.affectsPerPage ++;
+    itemsPerPage.value++;
   }
 }
-
-watch(pages, () => {
-  if (currentPage.value > pages.value.length) {
-    currentPage.value = pages.value.length;
-  }
-});
 
 // Trackers
 const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.trackers));
