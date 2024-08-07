@@ -83,7 +83,6 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           // EditableDate: true,
           RouterLink: true,
-          AffectedOfferings: true,
           AffectExpandableForm: true,
         },
       },
@@ -125,7 +124,6 @@ describe('FlawForm', () => {
           // osimFormatDate not defined on test run, so we need to stub it
           EditableDate: true,
           RouterLink: true,
-          AffectedOfferings: true,
           AffectExpandableForm: true,
 
         },
