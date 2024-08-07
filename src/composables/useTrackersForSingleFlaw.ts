@@ -39,7 +39,6 @@ export function useTrackersForSingleFlaw(
   const isFilingTrackers = ref(false);
   const filterString = ref('');
   const moduleComponents = ref<ModuleComponent[]>([]);
-  // const relatedFlaws = ref<ZodFlawType[]>([]);
   const flawUuid = computed(() => affects.value.map((affect) => affect.uuid).find(Boolean));
 
   const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent) =>
@@ -47,7 +46,6 @@ export function useTrackersForSingleFlaw(
       ...stream,
       ps_component: moduleComponent.ps_component,
       ps_module: moduleComponent.ps_module,
-      // TODO: Fix this--it's broken for multiflaws/related flaws
       affectUuid: moduleComponent.affect.uuid
     }))
   ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
@@ -114,7 +112,6 @@ export function useTrackersForSingleFlaw(
         const trackers = availableUpdateStreams.value.filter((stream) =>
           affect && stream.ps_component === affect.ps_component && stream.ps_module === affect.ps_module
         );
-        console.log('🚨', affect, trackers);
         for (const tracker of trackers) {
           trackerSelections.value.set(tracker as UpdateStream, Boolean(tracker.selected));
         }
@@ -134,10 +131,8 @@ export function useTrackersForSingleFlaw(
     Array.from(trackerSelections.value)
       .filter(([, selected]) => selected)
       .map(([tracker]) => {
-        // TODO: Fix--this is broken for multiflaws/related flaws
         const affect = affects.value.find((matchingAffect) =>
           matchingAffect.ps_component === tracker.ps_component && matchingAffect.ps_module === tracker.ps_module);
-        // console.log(affect, trackerSelections.value, affects, tracker);
         return {
           affects: [tracker.affectUuid],
           ps_update_stream: tracker.ps_update_stream,

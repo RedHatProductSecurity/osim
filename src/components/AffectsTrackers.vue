@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { toRefs, computed, watch, ref } from 'vue';
+import { toRefs, computed, ref } from 'vue';
 
 import { type ZodAffectType } from '@/types/zodAffect';
 import { type ZodFlawType } from '@/types/zodFlaw';
-import { useTrackersForSingleFlaw } from '@/composables/useTrackersForSingleFlaw';
+
 import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+
 import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
@@ -21,10 +22,6 @@ const emit = defineEmits<{
   'affects-trackers:refresh': [];
 }>();
 
-// type MultiFlawTrackers = Record<string, ReturnType<typeof useTrackers>>;
-
-// const multiFlawTrackers = ref<MultiFlawTrackers>({});
-// const filterString = ref('');
 
 const shouldApplyToRelated = ref(true);
 
@@ -39,13 +36,8 @@ const {
   fileTrackers,
 } = useTrackersForRelatedFlaws(theAffects, relatedFlaws);
 
-
-console.log('relatedFlaws in AffectsTracker', relatedFlaws.value);
-
 function updateSelection(trackerSelections: Map<any, any>, tracker: any) {
-  console.log('trackerSelections', trackerSelections);
   const isSelected = trackerSelections.get(tracker);
-  console.log(isSelected);
   trackerSelections.set(tracker, !isSelected);
   if (shouldApplyToRelated.value) {
     synchronizeTrackerSelections(trackerSelections);
@@ -60,14 +52,8 @@ function handleSetAll(tabProps: any, isSelected: boolean) {
 }
 
 async function handleFileTrackers() {
-  // for (const [, { fileTrackers }] of Object.entries(multiFlawTrackers.value)) {
-  //   console.log(fileTrackers, multiFlawTrackers.value);
-  //   await fileTrackers();
-  //   fileTrackers().then(() => {
-  //     emit('affects-trackers:refresh');
-  //   });
-  // }
-  // emit('affects-trackers:refresh');
+  await fileTrackers();
+  emit('affects-trackers:refresh');
 }
 
 

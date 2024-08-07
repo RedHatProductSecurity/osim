@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from 'vue';
 
-import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import type { ZodAffectType } from '@/types/zodAffect';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ModuleComponent } from '@/composables/useTrackersForSingleFlaw';
 
@@ -83,7 +83,6 @@ export function useTrackersForRelatedFlaws(primaryAffects: Ref<ZodAffectType[]>,
     Object.keys(newRelatedAffects).forEach((flawCveOrId) => {
       multiFlawTrackers.value[flawCveOrId] = useTrackersForSingleFlaw(ref(newRelatedAffects[flawCveOrId]));
     });
-    console.log('👀 Related Affects Watcher', multiFlawTrackers.value, newRelatedAffects);
   });
 
   watch(filterString, (newFilterString) => {
@@ -100,62 +99,38 @@ export function useTrackersForRelatedFlaws(primaryAffects: Ref<ZodAffectType[]>,
           const newFlawAffects = ref(newRelatedAffects[flawCveOrId]);
           multiFlawTrackers.value[flawCveOrId] = useTrackersForSingleFlaw(newFlawAffects, relatedFlawModuleComponents);
         });
-        console.log('👀 Related Affects Watcher', multiFlawTrackers.value, newRelatedAffects, relatedFlawModuleComponents.value);
       })
       .catch(console.error);
   });
 
-  // watch(
-  //   // computed(() => Object.keys(multiFlawTrackers.value)),
-  //   computed(() => Object.values(multiFlawTrackers.value)),
-  //   (newMultiFlawTrackers) => {
-  //     selectionWatchers.forEach((unwatch) => unwatch());
-  //     console.log('👀 Multi-Flaw Selections Watcher', Object.values(newMultiFlawTrackers));
-
-
-  //     // if (!shouldApplySelectionsToEachRelatedFlaw.value) {
-  //     //   return;
-  //     // }
-
-  //     selectionWatchers = Object.values(newMultiFlawTrackers).map((newTracker) =>
-  //       watch(newTracker.trackerSelections, (newSelections) => {
-
-  //         console.log('👀👀👀👀 Multi-Flaw Individual Selection watcher', newSelections);
-  //         synchronizeTrackerSelections(newSelections);
-  //       }, { deep: true }));
-  //     // );
-  //   }, { immediate: true, deep: false }
-  // );
-
   async function fileTrackers() {
-    try {
-      for (const [, { fileTrackers }] of Object.entries(multiFlawTrackers.value)) {
-        console.log(fileTrackers, multiFlawTrackers.value);
+    const errors: unknown[] = [];
+    for (const [, { fileTrackers }] of Object.entries(multiFlawTrackers.value)) {
+      console.log(Object.entries(multiFlawTrackers.value));
+      try {
         await fileTrackers();
+      } catch (error) {
+        errors.push(error);
       }
-      return { success: true };
-    } catch (error) {
-      console.error('Error occurred while filing trackers:', error);
-      return error;
     }
+
+    if (errors.length > 0) {
+      console.error('Error(s) occurred while filing trackers:', errors);
+    }
+
+    return { success: !errors.length, errors };
   }
 
   function synchronizeTrackerSelections(selections: Map<any, any>) {
     for (const trackerManager of Object.values(multiFlawTrackers.value)) {
-      // console.log(trackerManager.trackerSelections);
-      for (const [updateStream, isSelected] of (trackerManager.trackerSelections).entries()) {
-        // console.log(updateStream, isSelected, selections);
+      const trackerSelections = trackerManager.trackerSelections as unknown as Map<any, any>;
+      for (const updateStream of trackerSelections.keys()) {
         const selectionUpdateStream = Array.from(selections.keys())
-          .find((selection: any) => 
+          .find((selection: any) =>
             selection.ps_module === updateStream.ps_module
             && selection.ps_component === updateStream.ps_component
-        );
-        // console.log(trackerManager.trackerSelections.get(updateStream));
-        // console.log(selectionUpdateStream,
-        //   selections.get(selectionUpdateStream)
-        // );
-        trackerManager.trackerSelections.set(updateStream, selections.get(selectionUpdateStream));
-        // console.log(trackerManager.trackerSelections.get(updateStream));
+          );
+        trackerSelections.set(updateStream, selections.get(selectionUpdateStream));
       }
     }
   }
