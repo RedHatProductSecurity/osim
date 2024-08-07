@@ -4,6 +4,7 @@ import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
 import TrackerManager from '@/components/TrackersManager.vue';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 type TrackerWithModule = ZodTrackerType & { ps_module: string };
 
@@ -18,6 +19,9 @@ const emit = defineEmits<{
   'file-tracker': [value: object];
   'affects:refresh': [];
 }>();
+
+const settingsStore = useSettingsStore();
+const settings = ref(settingsStore.settings);
 
 const showTrackerManager = ref(false);
 
@@ -90,22 +94,54 @@ function toggleStatusFilter(status: string) {
 }
 
 // Trackers Pagination
+const minItemsPerPage = 5;
+const maxItemsPerPage = 20;
+const maxPagesToShow = 7;
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+
+const pages = computed(() => {
+  const result: number[] = [];
+  if (totalPages.value > maxPagesToShow) {
+    if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
+      return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
+    } else if (currentPage.value <= 3) {
+      return [...Array.from({ length: 5 }, (_, i) => i + 1), '..', totalPages.value];
+    } else if (currentPage.value >= totalPages.value - 2) {
+      return [1, '..', ...Array.from({ length: 5 }, (_, i) => totalPages.value - 4 + i)];
+    }
+  } else {
+    for (let i = 1; i <= totalPages.value; i++) {
+      result.push(i);
+    }
+  }
+  return result;
+});
 
 const paginatedTrackers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
+  const start = (currentPage.value - 1) * settings.value.trackersPerPage;
+  const end = start + settings.value.trackersPerPage;
   return sortedTrackers.value.slice(start, end);
 });
 
 const totalPages = computed(() =>
-  Math.ceil(sortedTrackers.value.length / itemsPerPage.value)
+  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage)
 );
 
 function changePage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
+  }
+}
+
+function reduceItemsPerPage() {
+  if (settings.value.trackersPerPage > minItemsPerPage) {
+    settings.value.trackersPerPage --;
+  }
+}
+
+function increaseItemsPerPage() {
+  if (settings.value.trackersPerPage < maxItemsPerPage) {
+    settings.value.trackersPerPage ++;
   }
 }
 
@@ -123,35 +159,59 @@ watch(pages, () => {
         <div class="affect-trackers-heading d-flex p-1 pt-2 px-3">
           <h5 class="m-0">Trackers</h5>
         </div>
-        <div class="trackers-toolbar d-flex p-2 pt-1">
-          <div class="pagination-controls d-flex gap-1">
-            <button
-              type="button"
-              class="btn btn-sm btn-info rounded-end-0"
-              :disabled="currentPage === 1"
-              @click="changePage(currentPage - 1)"
+        <div v-if="hasTrackers" class="pagination-controls gap-1 ms-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-info rounded-end-0"
+            :disabled="currentPage === 1"
+            @click="changePage(currentPage - 1)"
+          >
+            <i class="bi bi-arrow-left fs-5" />
+          </button>
+          <button
+            v-for="page in pages"
+            :key="page"
+            class="page-btn btn btn-sm rounded-0 btn-info"
+            style="width: 34.8px;"
+            :disabled="page === currentPage || page === '..'"
+            @click.prevent="changePage(page as number)"
+          >
+            {{ page }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-info rounded-start-0"
+            :disabled="currentPage === totalPages || totalPages === 0"
+            @click.prevent="changePage(currentPage + 1)"
+          >
+            <i class="bi bi-arrow-right fs-5" />
+          </button>
+        </div>
+        <div class="trackers-toolbar p-2 pt-1">
+          <div class="trackers-badges">
+            <div
+              v-if="paginatedTrackers.length > 0"
+              class="btn btn-sm badge d-flex py-0"
+              style="pointer-events: none;"
             >
-              <i class="bi bi-arrow-left fs-5" />
-            </button>
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              class="page-btn btn btn-sm rounded-0 btn-info"
-              :disabled="page === currentPage"
-              @click.prevent="changePage(page)"
-            >
-              {{ page }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-info rounded-start-0"
-              :disabled="currentPage === totalPages || totalPages === 0"
-              @click.prevent="changePage(currentPage + 1)"
-            >
-              <i class="bi bi-arrow-right fs-5" />
-            </button>
-          </div>
-          <div class="trackers-badges" :class="{ 'mx-3': hasTrackers }">
+              <i
+                :style="settings.trackersPerPage > minItemsPerPage
+                  ? 'pointer-events: auto;'
+                  : 'opacity: 50%; pointer-events: none;'"
+                class="bi bi-dash-square fs-6 my-auto"
+                title="Reduce trackers per page"
+                @click="reduceItemsPerPage()"
+              />
+              <span class="mx-2 my-auto">{{ `Per page: ${settings.trackersPerPage}` }}</span>
+              <i
+                :style="settings.trackersPerPage < maxItemsPerPage
+                  ? 'pointer-events: auto;'
+                  : 'opacity: 50%; pointer-events: none;'"
+                class="bi bi-plus-square fs-6 my-auto"
+                title="Increase trackers per page"
+                @click="increaseItemsPerPage()"
+              />
+            </div>
             <div
               v-if="hasTrackers"
               class="badge"
@@ -300,6 +360,15 @@ watch(pages, () => {
 @import '@/scss/bootstrap-overrides';
 
 .affects-trackers {
+  .pagination-controls {
+    display: flex;
+
+    button {
+      height: 2rem;
+      padding-block: 0;
+    }
+  }
+
   .osim-tracker-card {
     div {
       padding: .5rem;
@@ -308,6 +377,8 @@ watch(pages, () => {
   }
 
   .trackers-toolbar {
+    display: flex;
+
     button {
       height: 2rem;
       padding-block: 0;
