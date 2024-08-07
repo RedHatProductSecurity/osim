@@ -11,6 +11,7 @@ export const SettingsSchema = z.object({
   jiraApiKey: z.string().optional().or(z.literal('')).default(''),
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
+  trackersPerPage: z.number(),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -19,7 +20,8 @@ const defaultValues: SettingsType = {
   bugzillaApiKey: '',
   jiraApiKey: '',
   showNotifications: false,
-  affectsPerPage: 10
+  affectsPerPage: 10,
+  trackersPerPage: 10,
 };
 const osimSettings = useStorage('OSIM::USER-SETTINGS', defaultValues);
 
@@ -51,6 +53,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       bugzillaApiKey: '',
       jiraApiKey: '',
       affectsPerPage: 10,
+      trackersPerPage: 10,
     };
   }
 

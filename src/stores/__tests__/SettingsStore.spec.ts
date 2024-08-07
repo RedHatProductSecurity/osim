@@ -8,6 +8,7 @@ const initialState = {
   jiraApiKey: '',
   showNotifications: false,
   affectsPerPage: 10,
+  trackersPerPage: 10,
 };
 
 // While not used in this file, store below depends on global pinia test instance
@@ -32,6 +33,7 @@ describe('SettingsStore', () => {
       jiraApiKey: 'beep-beep-who-got-the-keys-to-the-jeep',
       showNotifications: true,
       affectsPerPage: 10,
+      trackersPerPage: 10,
     });
     expect(
       settingsStore.settings.bugzillaApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
