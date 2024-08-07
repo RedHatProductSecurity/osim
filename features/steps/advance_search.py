@@ -2,7 +2,7 @@ from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
-from features.utils import get_osidb_token
+from pages.home_page import HomePage
 
 
 FIELD_FLAW_LIST = [
@@ -12,14 +12,14 @@ FIELD_FLAW_LIST = [
     "workflow_state",
     "owner"
 ]
-FIELD_IN_DATABASE = [
-    "uuid",
+FIELD_IN_DETAIL = [
+#    "uuid",
 #    "cvss_scores__score",
 #    "cvss_scores__vector",
 #    "affects__ps_module",
 #    "affects__ps_component",
 #    "affects__trackers__ps_update_stream",
-    "acknowledgments__name",
+#    "acknowledgments__name",
     #"affects__trackers__errata__advisory_name",
 #    "affects__trackers__external_system_id",
     "cwe_id",
@@ -45,16 +45,15 @@ def step_impl(context):
 
 @when('I prepare the advance search keywords')
 def step_impl(context):
-    advanced_search_page = AdvancedSearchPage(context.browser)
-    osidb_token = get_osidb_token()
-    fields = FIELD_FLAW_LIST + FIELD_IN_DATABASE
-    context.fields_keywords = advanced_search_page.get_valid_search_keywords_from_created_flaw(fields, osidb_token)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    fields = FIELD_FLAW_LIST + FIELD_IN_DETAIL
+    context.fields_keywords = flaw_detail_page.get_valid_search_keywords_from_created_flaw(fields)
 
-
-@then('I select the field and keyword to search flaws and I am able to view flaws matching the search')
+@then('I use keywords to search flaws and I am able to view flaws matching the search keywords')
 def step_impl(context):
     advanced_search_page = AdvancedSearchPage(context.browser)
-    osidb_token = get_osidb_token()
+    flaw_detail_page = FlawDetailPage(context.browser)
+    home_page = HomePage(context.browser)
     for field in context.fields_keywords:
         value = context.fields_keywords[field]
         advanced_search_page.click_button_with_js("closeSelBtn")
@@ -66,14 +65,19 @@ def step_impl(context):
             # Check the result in the flaw list page, no need to go into detail page
             if field in FIELD_FLAW_LIST:
                 field_value = advanced_search_page.get_field_value_from_flawlist(field)
-            elif field in FIELD_IN_DATABASE:
-                field_value = advanced_search_page.get_value_from_osidb(field, osidb_token)
+                assert value == field_value
+            # Check the result in the flaw detail page
+            elif field in FIELD_IN_DETAIL:
+                advanced_search_page.go_to_first_flaw_detail()
+                field_value = flaw_detail_page.get_value_from_detail_page(field)
                 if field == "embargoed":
-                    value = True if value == 'true' else False
-        if field == "embargoed":
-            assert value == field_value
-        else:
-            assert value in field_value
+                    value = "No" if value == 'false' else 'Yes'
+                assert value == field_value
+                # Go back advance search to do the next feild search
+                home_page.click_button_with_js("advancedSearchDropDownBtn")
+                home_page.click_button_with_js("advancedSearchBtn")
+
+
         # 2. Check the flaws list count is correct. Since the data is sharing
         # currently, this check will be added when the test data is lockdown in
         # the future.
