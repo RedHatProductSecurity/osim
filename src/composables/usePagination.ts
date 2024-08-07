@@ -32,8 +32,8 @@ export function usePagination(totalPages: Ref<number>, initialItemsPerPage: numb
   }
 
   watch(pages, () => {
-    if (currentPage.value > pages.value.length) {
-      currentPage.value = pages.value.length;
+    if (currentPage.value > totalPages.value && pages.value.length > 1) {
+      currentPage.value = totalPages.value;
     }
   });
 

@@ -82,8 +82,9 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
   };
 
   const comparator = standard
-    ? [ascend<ZodAffectType>(prop('ps_module'))]
-    : [order<ZodAffectType>(customSortFn)];
+    ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
+    : [order<ZodAffectType>(customSortFn),
+      order<ZodAffectType>(customSortKey === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
 
   return sortWith([
     ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
