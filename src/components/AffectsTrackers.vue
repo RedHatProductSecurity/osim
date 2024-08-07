@@ -116,7 +116,22 @@ async function handleFileTrackers() {
                   type="checkbox"
                   class="osim-tracker form-check-input"
                 />
-                {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
+                <span
+                  class="osim-tracker-label"
+                  :class="{'osim-suggested-tracker': tracker.selected}"
+                >
+                  <span>{{ `${tracker.ps_update_stream}` }}</span>
+                  <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                  <span
+                    v-if="tracker.selected"
+                    title="Suggested Tracker"
+                    class="ps-1"
+                  >
+                    <i class="bi bi-box-arrow-in-right">
+                      <span class="visually-hidden"> Suggested Tracker </span>
+                    </i>
+                  </span>
+                </span>
               </label>
             </div>
             <div v-if="tabProps.untrackableAffects.length > 0">
@@ -167,11 +182,18 @@ async function handleFileTrackers() {
               </div>
               <div class="row">
                 <div class="col-6">
-                  <h6 class="me-2 ">Unselected</h6>
-                  <!-- <caption class="ms-4 mt-0"> -->
-                  <span class="border-start-2 fst-italic">
-                    >  <i class="bi bi-box-arrow-in-right" /> Suggested Tracker
-                  </span>
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6 class="me-2 ">Unselected</h6>
+                    </div>
+                    <div>
+                      <span class="osim-suggested-tracker ps-2 me-3">
+                        <span class="pe-1">Suggested Trackers</span>
+                        <i class="bi bi-box-arrow-in-right" />
+                      </span>
+                    </div>
+                    <!-- <caption class="ms-4 mt-0"> -->
+                  </div>
                   <!-- </caption> -->
                 </div>
                 <div class="col-6">
@@ -192,15 +214,21 @@ async function handleFileTrackers() {
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
                       <span
-                        v-if="tracker.selected"
-                        title="Suggested Tracker"
-                        class="ps-1"
+                        class="osim-tracker-label"
+                        :class="{'osim-suggested-tracker': tracker.selected}"
                       >
-                        <i class="bi bi-box-arrow-in-right">
-                          <span class="visually-hidden"> Suggested Tracker </span>
-                        </i>
+                        <span>{{ `${tracker.ps_update_stream}` }}</span>
+                        <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                        <span
+                          v-if="tracker.selected"
+                          title="Suggested Tracker"
+                          class="ps-1"
+                        >
+                          <i class="bi bi-box-arrow-in-right">
+                            <span class="visually-hidden"> Suggested Tracker </span>
+                          </i>
+                        </span>
                       </span>
-                      {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
                     </label>
                   </div>
                 </div>
@@ -216,19 +244,34 @@ async function handleFileTrackers() {
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
-                      {{ `${tracker.ps_update_stream} (${tracker.ps_component})` }}
+                      <span
+                        class="osim-tracker-label"
+                        :class="{'osim-suggested-tracker': tracker.selected}"
+                      >
+                        <span>{{ `${tracker.ps_update_stream}` }}</span>
+                        <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                        <span
+                          v-if="tracker.selected"
+                          title="Suggested Tracker"
+                          class="ps-1"
+                        >
+                          <i class="bi bi-box-arrow-in-right">
+                            <span class="visually-hidden"> Suggested Tracker </span>
+                          </i>
+                        </span>
+                      </span>
                     </label>
                   </div>
                 </div>
               </div>
               <button
-                v-osim-loading.grow="tabProps.isFilingTrackers"
                 type="button"
                 class="btn btn-sm btn-dark-teal text-white osim-file-trackers mt-3"
                 :disabled="!trackersToFile.length || isFilingTrackers"
                 @click="handleFileTrackers"
               >
-                <i v-if="isFilingTrackers" class="bi bi-archive"></i>
+                <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
+                <i v-else v-osim-loading.grow="isFilingTrackers"></i>
                 File Selected Trackers
               </button>
             </div>
@@ -243,34 +286,83 @@ async function handleFileTrackers() {
 <style lang="scss" scoped>
 @import '@/scss/bootstrap-overrides';
 
+label{
+  padding: 0.125rem ;
+  margin: 0;
+
+  .osim-tracker-label {
+    padding-left: 0.125rem;
+  }
+
+  input[type="checkbox"].osim-tracker {
+    margin-top: .1875rem;
+    margin-right: .375rem;
+    border-color: $dark-teal;
+
+    &:checked {
+      background-color: $dark-teal;
+      border-color: $dark-teal;
+    }
+
+    &:active {
+      outline: 2px solid rgba($info, 0.5) ;
+      border-color: $info;
+    }
+
+    &:focus {
+      outline: 2px solid rgba($info, 0.5) ;
+      border-color: $info;
+    }
+  }
+}
+
+.osim-suggested-tracker {
+  padding-right: .25rem;
+  background-color: $lighter-info;
+
+  i {
+    margin-right: .25rem;
+  }
+}
+
 :deep(.nav-tabs) {
   border-bottom-color: $info;
 
- .nav-item .nav-link {
-  color: $info;
-  border: none;
-  background-color: $lighter-info;
+  .nav-item .nav-link {
+    color: $info;
+    border: none;
+    background-color: $lighter-info;
 
-  &.active {
-    color: $dark-teal;
-    border: 1px solid $info;
-    border-bottom: none;
-    background-color:white;
-  }}
+    &.active {
+      color: $dark-teal;
+      border: 1px solid $info;
+      border-bottom: none;
+      background-color:white;
+    }
+  }
 }
 
 .osim-tracker-tabs {
+  border-left: 1px solid $info;
   padding-left: 1rem;
   margin:0;
   background-color: $lightest-info;
 }
 
+
+
 .osim-tracker-list {
   display: flex;
   flex-flow: column;
   max-height: 30vh;
+  margin-right: 1rem;
   overflow-y: auto;
   background-color: #fff;
+
+  &:has(label) {
+    padding: .25rem;
+    border: 1px solid $info;
+  }
 }
 
 .osim-trackers-filing {
@@ -283,7 +375,7 @@ async function handleFileTrackers() {
   border-radius: 5px;
 
   .btn-white:not(:hover) {
-    background-color: white;
+    background-color: #fff;
     color: dark-teal;
   }
 }
@@ -297,11 +389,6 @@ h3, h4, h5, h6 {
   font-style: italic;
   color: gray;
 }
-
-input[type="checkbox"].osim-tracker {
-  margin-bottom: .5rem;
-}
-
 
 button.osim-file-trackers:disabled {
   cursor: not-allowed;
