@@ -72,15 +72,14 @@ class FlawDetailPage(BasePage):
 
         "impactText": ("XPATH", "//span[text()='Impact']"),
         "sourceText": ("XPATH", "//span[text()='CVE Source']"),
-
         "titleText": ("XPATH", "//span[text()='Title']"),
         "titleValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[1]"),
         "componentsText": ("XPATH", "//span[text()='Components']"),
-
         "cveidText": ("XPATH", "//span[text()='CVE ID']"),
         "cveidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[2]"),
         "cweidText": ("XPATH", "//span[text()='CWE ID']"),
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
+        "incidentStateText": ("XPATH", "//span[text()='Incident State']"),
 
         "cvssV3Text": ("XPATH", "//span[text()=' CVSSv3 ']"),
         "cvssV3Score": ("XPATH", "//span[@class='osim-cvss-score']"),
@@ -206,6 +205,12 @@ class FlawDetailPage(BasePage):
         'XEN',
     ]
 
+    def switch_element_visibility(self, element, visibility):
+        try:
+            self.driver.execute_script(f"arguments[0].style.visibility='{visibility}'", element)
+        except ElementNotVisibleException:
+            pass
+
     def add_comment_btn_exist(self, comment_type):
         button_element = getattr(self, 'add' + comment_type + 'CommentBtn')
         button_element.visibility_of_element_located()
@@ -227,13 +232,13 @@ class FlawDetailPage(BasePage):
             field_btn = field + 'Btn'
             if find_elements_in_page_factory(self, field_btn):
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", getattr(self, field_btn))
-                hide_e1 = find_elements_in_page_factory(self, 'bottomFooter')[0]
-                hide_e2 = find_elements_in_page_factory(self, 'bottomBar')[0]
-                self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e1)
-                self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_e2)
+                bottom_footer = find_elements_in_page_factory(self, 'bottomFooter')[0]
+                bottom_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
+                self.switch_element_visibility(bottom_footer, 'hidden')
+                self.switch_element_visibility(bottom_bar, 'hidden')
                 self.click_btn(field_btn)
-                self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e1)
-                self.driver.execute_script("arguments[0].style.visibility='visible'", hide_e2)
+                self.switch_element_visibility(bottom_footer, 'visible')
+                self.switch_element_visibility(bottom_bar, 'visible')
         field_element = getattr(self, field + 'Text')
         field_input = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").near(field_element))[0]
@@ -578,7 +583,7 @@ class FlawDetailPage(BasePage):
         self.wait_msg('affectCreatedMsg')
         self.wait_msg('flawSavedMsg')
         return ps_component_value
-  
+
     def get_an_available_ps_module(self, affect_module):
         # Get the suitable ps_modules for update
         # The modules which under data/community_projects, except fedora-all,
@@ -598,16 +603,24 @@ class FlawDetailPage(BasePage):
             return AFFECTED_MODULE_BZ
 
     def set_select_specific_value(self, field, value):
-        field_element = getattr(self, field)
-        select_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
+        select_element = getattr(self, field)
+        if not field.endswith('Select'):
+            select_element = self.driver.find_elements(
+                locate_with(By.XPATH, "//select[@class='form-select']").near(select_element))[0]
         try:
-            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomBar)
-            self.driver.execute_script("arguments[0].style.visibility='hidden'", self.bottomFooter)
+            if find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
+                self.toastMsgCloseBtn.click_button()
         except ElementNotVisibleException:
             pass
+
+        bottom_footer = find_elements_in_page_factory(self, 'bottomFooter')[0]
+        bottom_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
+        self.switch_element_visibility(bottom_footer, 'hidden')
+        self.switch_element_visibility(bottom_bar, 'hidden')
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(value)
+        self.switch_element_visibility(bottom_footer, 'visible')
+        self.switch_element_visibility(bottom_bar, 'visible')
 
     def load_affects_results_from_osidb(self, token):
         url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")

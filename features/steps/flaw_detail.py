@@ -511,7 +511,7 @@ def step_impl(context):
     flaw_detail_page.wait_msg('affectUpdateMsg')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
- 
+
 @then("All changes are saved")
 def step_impl(context):
     token = get_osidb_token()
@@ -552,7 +552,6 @@ def step_impl(context):
     flaw_detail_page.click_button_with_js('msgClose')
     flaw_detail_page.wait_msg('flawSavedMsg')
     flaw_detail_page.click_button_with_js('msgClose')
-    
 
 @then("The affect is deleted")
 def step_impl(context):
@@ -744,3 +743,22 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     cvss_score = flaw_detail_page.get_cvssV3_score()
     assert cvss_score == "", f"The CVSSv3 score should be empty, got {cvss_score}"
+
+
+@when('I update flaw incident state to {new_state}')
+def step_impl(context, new_state):
+    flaw_page = FlawDetailPage(context.browser)
+    if new_state == 'APPROVED':
+        flaw_page.set_document_text_field(
+            'description', generate_random_text())
+        flaw_page.set_select_specific_value('reviewStatusSelect', 'APPROVED')
+    flaw_page.set_select_specific_value('incidentStateText', new_state)
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+
+
+@then('The flaw incident state is updated to {new_state}')
+def step_impl(context, new_state):
+    flaw_page = FlawDetailPage(context.browser)
+    _, v = flaw_page.get_select_value('incidentState')
+    assert v == new_state, f"Incident state should be {new_state}, got {v}"
