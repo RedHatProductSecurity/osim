@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, type Ref } from 'vue';
+import { computed, toRefs, ref, type Ref, watch } from 'vue';
 import {
   affectImpacts,
   affectAffectedness,
@@ -452,7 +452,7 @@ function affectRowTooltip(affect: ZodAffectType) {
 }
 
 // Affects Pagination
-const minItemsPerPage = 1;
+const minItemsPerPage = 5;
 const maxItemsPerPage = 20;
 const maxPagesToShow = 7;
 const currentPage = ref(1);
@@ -502,6 +502,12 @@ function increaseItemsPerPage() {
     settings.value.affectsPerPage ++;
   }
 }
+
+watch(pages, () => {
+  if (currentPage.value > pages.value.length) {
+    currentPage.value = pages.value.length;
+  }
+});
 
 // Trackers
 const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.trackers));
