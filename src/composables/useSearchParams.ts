@@ -45,9 +45,9 @@ export function useSearchParams() {
   const router = useRouter();
 
   function getRangeFromURL(value: string, key: string) {
-    let type = '';
-    let start = '';
-    let end = '';
+    let type = null;
+    let start = null;
+    let end = null;
     if (supportRangeOption(key)) {
       const values = value.split('_');
       if (values.length > 0) {
@@ -111,7 +111,7 @@ export function useSearchParams() {
       field: '',
       value: '',
       range: {
-        type: '',
+        type: null,
         start: null,
         end: null,
       },
@@ -177,7 +177,7 @@ export function useSearchParams() {
       field: '',
       value: '',
       range: {
-        type: '',
+        type: null,
         start: null,
         end: null
       }
