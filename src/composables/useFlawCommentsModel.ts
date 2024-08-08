@@ -2,16 +2,17 @@ import { computed, ref, type Ref } from 'vue';
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 import { postFlawComment } from '@/services/FlawService';
+import { CommentType } from '@/constants';
 
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
-type OsidbCommentFilter = 'public' | 'private' | 'system';
+type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>
 type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
 
 const filterFunctions: OsidbCommentFilterFunctions = {
-  public: (comment: any) => !comment.is_private,
-  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
-  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
+  Public: (comment: any) => !comment.is_private,
+  Private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
+  System: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
 export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boolean>, afterSaveSuccess: () => void) {
@@ -19,9 +20,9 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
   const isLoadingInternalComments = ref(false);
   const internalComments = ref<ZodFlawCommentType[]>([]);
 
-  const publicComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.public));
-  const privateComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.private));
-  const systemComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.system));
+  const publicComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.Public));
+  const privateComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.Private));
+  const systemComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.System));
 
   function loadInternalComments() {
     isLoadingInternalComments.value = true;

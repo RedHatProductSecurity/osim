@@ -14,6 +14,7 @@ import { createCatchHandler } from '@/composables/service-helpers';
 import { searchJiraUsers, jiraTaskUrl, jiraUserUrl } from '@/services/JiraService';
 import JiraUser from './widgets/JiraUser.vue';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
+import { CommentType } from '@/constants';
 
 const userStore = useUserStore();
 
@@ -28,13 +29,6 @@ const props = defineProps<{
   bugzillaLink: string;
   isSaving: boolean;
 }>();
-
-enum CommentType {
-    Public,
-    Private,
-    Internal,
-    System,
-}
 
 const newComment = ref('');
 const isAddingNewComment = ref(false);
