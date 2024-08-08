@@ -4,3 +4,5 @@ export enum CommentType {
     Internal,
     System,
 }
+
+export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
