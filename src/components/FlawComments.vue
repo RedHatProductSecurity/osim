@@ -265,6 +265,21 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
       </template>
       <template #tab-content>
         <div class="tab-content">
+          <div class="ms-3 mb-4">
+            <span
+              v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
+              class="spinner-border spinner-border-sm d-inline-block"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </span>
+            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal">
+              Internal comments not available
+            </div>
+            <div v-else-if="displayedComments?.length === 0">
+              No {{ CommentType[selectedTab].toLowerCase() }} comments
+            </div>
+          </div>
           <div
             v-if="(
               isAddingNewComment
@@ -311,19 +326,6 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
             </button>
           </div>
           <ul class="comments list-unstyled">
-            <span
-              v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
-              class="spinner-border spinner-border-sm d-inline-block ms-3"
-              role="status"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </span>
-            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal" class="ms-3">
-              Internal comments not available
-            </div>
-            <div v-else-if="displayedComments?.length === 0" class="ms-3">
-              No {{ CommentType[selectedTab].toLowerCase() }} comments
-            </div>
             <li
               v-for="(comment, commentIndex) in displayedComments"
               :key="commentIndex"
