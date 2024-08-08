@@ -2,7 +2,7 @@ import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import FlawComments from '@/components/FlawComments.vue';
-import { ref } from 'vue';
+import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { searchJiraUsers } from '@/services/JiraService';
 
 createTestingPinia();
@@ -18,7 +18,7 @@ vi.mock('@/stores/osimRuntime', async () => {
       jiraDisplay: 'http://jira-backend',
     },
     osimVersion: {
-      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z'
+      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
     },
     error: '',
   };
@@ -40,22 +40,10 @@ vi.mock('@/stores/osimRuntime', async () => {
   };
 });
 
-vi.mock('@/composables/useInternalComments', () => {
-  return {
-    useInternalComments: () => ({
-      internalComments: ref([
-        { author: 'noonerelevant', body: 'First comment', timestamp: '2021-07-29T14:50:50Z' },
-        { author: 'onelessrelevant', body: 'Second comment', timestamp: '2023-09-20T14:50:50Z' },
-      ]),
-      internalCommentsAvailable: vi.fn(() => true),
-      loadInternalComments: vi.fn(),
-    }),
-  };
-});
-
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),
-  taskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
+  jiraTaskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
+  jiraUserUrl: vi.fn(),
 }));
 
 describe('FlawComments', () => {
@@ -66,8 +54,14 @@ describe('FlawComments', () => {
     vi.useFakeTimers();
     subject = mount(FlawComments, {
       props: {
-        comments: [],
+        publicComments: [],
+        privateComments: [],
+        internalComments: [],
+        internalCommentsAvailable: true,
+        isLoadingInternalComments: false,
+        systemComments: [],
         taskKey: 'sampleKey',
+        bugzillaLink: 'sampleBzLink',
         isSaving: false,
       },
     });
@@ -121,18 +115,24 @@ describe('FlawComments', () => {
   it('Show message if no comments', () => {
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
-    const noCommentsMessage = subject.find('ul.comments div');
+    const noCommentsMessage = subject.find('.info-message div');
     expect(noCommentsMessage.text()).toBe('No public comments');
   });
 
   it('Correctly display public comments', () => {
     subject = mount(FlawComments, {
       props: {
-        comments: [
-          { uuid: 1, creator: 'noonerelevant', text: 'First comment', created_dt: '2021-07-29T14:50:50Z' },
-          { uuid: 2, creator: 'onelessrelevant', text: 'Second comment', created_dt: '2023-09-20T14:50:50Z' },
-        ],
-        taskKey: '',
+        publicComments: [
+          { creator: 'noonerelevant', text: 'First public comment', created_dt: '2021-07-29T14:50:50Z' },
+          { creator: 'onelessrelevant', text: 'Second public comment', created_dt: '2023-09-20T14:50:50Z' },
+        ] as ZodFlawCommentType[],
+        privateComments: [],
+        internalComments: [],
+        internalCommentsAvailable: false,
+        isLoadingInternalComments: false,
+        systemComments: [],
+        taskKey: 'sampleKey',
+        bugzillaLink: 'sampleBzLink',
         isSaving: false,
       },
     });
@@ -143,12 +143,35 @@ describe('FlawComments', () => {
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
     expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 02:50 PM UTC Public');
-    expect(firstBody.text()).toBe('First comment');
+    expect(firstBody.text()).toBe('First public comment');
     // Seccond public comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
     expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 02:50 PM UTC Public');
-    expect(secondBody.text()).toBe('Second comment');
+    expect(secondBody.text()).toBe('Second public comment');
+  });
+
+  it('Correctly display private comments', async () => {
+    subject = mount(FlawComments, {
+      props: {
+        publicComments: [],
+        privateComments: [
+          { creator: 'noonerelevant', text: 'First private comment', created_dt: '2021-07-29T15:50:50Z' },
+          { creator: 'onelessrelevant', text: 'Second private comment', created_dt: '2023-09-20T15:50:50Z' },
+        ] as ZodFlawCommentType[],
+        internalComments: [],
+        internalCommentsAvailable: false,
+        isLoadingInternalComments: false,
+        systemComments: [],
+        taskKey: 'sampleKey',
+        bugzillaLink: 'sampleBzLink',
+        isSaving: false,
+      },
+    });
+
+    const navLinks = subject.findAll('.nav-link');
+    await navLinks[1].trigger('click');
+    expect(subject.html()).toMatchSnapshot();
   });
 
   it('Show Jira link button on internal comments', async () => {
@@ -161,20 +184,36 @@ describe('FlawComments', () => {
   });
 
   it('Correctly display internal comments', async () => {
+    subject = mount(FlawComments, {
+      props: {
+        publicComments: [],
+        privateComments: [],
+        internalComments: [
+          { creator: 'noonerelevant', text: 'First internal comment', created_dt: '2021-07-29T16:50:50Z' },
+          { creator: 'onelessrelevant', text: 'Second internal comment', created_dt: '2023-09-20T16:50:50Z' },
+        ] as ZodFlawCommentType[],
+        internalCommentsAvailable: true,
+        isLoadingInternalComments: false,
+        systemComments: [],
+        taskKey: 'sampleKey',
+        bugzillaLink: 'sampleBzLink',
+        isSaving: false,
+      },
+    });
     const navLinks = subject.findAll('.nav-link');
     await navLinks[2].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
-    // First public comment checks
+    // First internal comment checks
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 02:50 PM UTC Internal');
-    expect(firstBody.text()).toBe('First comment');
-    // Seccond public comment checks
+    expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 04:50 PM UTC Internal');
+    expect(firstBody.text()).toBe('First internal comment');
+    // Seccond internal comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 02:50 PM UTC Internal');
-    expect(secondBody.text()).toBe('Second comment');
+    expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 04:50 PM UTC Internal');
+    expect(secondBody.text()).toBe('Second internal comment');
   });
 
   it('Don\'Show any action button on system comments', async () => {
@@ -189,18 +228,24 @@ describe('FlawComments', () => {
     await navLinks[3].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
-    const noCommentsMessage = subject.find('ul.comments div');
+    const noCommentsMessage = subject.find('.info-message div');
     expect(noCommentsMessage.text()).toBe('No system comments');
   });
 
   it('Correctly display system comments', async () => {
     subject = mount(FlawComments, {
       props: {
-        comments: [
-          { uuid: 1, creator: SYSTEM_EMAIL, text: 'First comment', created_dt: '2021-07-29T14:50:50Z' },
-          { uuid: 2, creator: SYSTEM_EMAIL, text: 'Second comment', created_dt: '2023-09-20T14:50:50Z' },
-        ],
+        publicComments: [],
+        privateComments: [],
+        internalComments: [],
+        internalCommentsAvailable: false,
+        isLoadingInternalComments: false,
+        systemComments: [
+          { creator: SYSTEM_EMAIL, text: 'First system comment', created_dt: '2021-07-29T17:50:50Z' },
+          { creator: SYSTEM_EMAIL, text: 'Second system comment', created_dt: '2023-09-20T17:50:50Z' },
+        ] as ZodFlawCommentType[],
         taskKey: 'sampleKey',
+        bugzillaLink: 'sampleBzLink',
         isSaving: false,
       },
     });
@@ -212,13 +257,34 @@ describe('FlawComments', () => {
     // First system comment checks
     const firstHeader = commentElements[0].findAll('p')[0];
     const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toBe(`${SYSTEM_EMAIL} - 2021-07-29 02:50 PM UTC System`);
-    expect(firstBody.text()).toBe('First comment');
+    expect(firstHeader.text()).toBe(`${SYSTEM_EMAIL} - 2021-07-29 05:50 PM UTC System`);
+    expect(firstBody.text()).toBe('First system comment');
     // Seccond system comment checks
     const secondHeader = commentElements[1].findAll('p')[0];
     const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toBe(`${SYSTEM_EMAIL} - 2023-09-20 02:50 PM UTC System`);
-    expect(secondBody.text()).toBe('Second comment');
+    expect(secondHeader.text()).toBe(`${SYSTEM_EMAIL} - 2023-09-20 05:50 PM UTC System`);
+    expect(secondBody.text()).toBe('Second system comment');
+  });
+
+  it('Should call `searchJiraUsers` on internal comments', async () => {
+    vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
+      data: {
+        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
+      }
+    });
+
+    const navLinks = subject.findAll('.nav-link');
+    await navLinks[2].trigger('click');
+    const addCommentButton = subject.find('.tab-actions button');
+    await addCommentButton.trigger('click');
+
+    const newCommentInput = subject.find('.tab-content textarea ');
+    await newCommentInput.setValue('test @user');
+
+    vi.runAllTimers();
+    await flushPromises();
+
+    expect(searchJiraUsers).toHaveBeenCalledWith('user', 'sampleKey');
   });
 
   it('Should call `searchJiraUsers` on internal comments', async () => {

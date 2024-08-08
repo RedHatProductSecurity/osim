@@ -98,7 +98,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export type ZodFlawCommentSchemaType = z.infer<typeof ZodFlawCommentSchema>
+export type ZodFlawCommentType = z.infer<typeof ZodFlawCommentSchema>
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),

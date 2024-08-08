@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { isDefined, watchDebounced } from '@vueuse/core';
 import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -9,49 +9,33 @@ import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
 import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
-import { useInternalComments } from '@/composables/useInternalComments';
 import { createCatchHandler } from '@/composables/service-helpers';
-import { searchJiraUsers, taskUrl } from '@/services/JiraService';
-import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
+import { searchJiraUsers, jiraTaskUrl, jiraUserUrl } from '@/services/JiraService';
 import JiraUser from './widgets/JiraUser.vue';
+import { type ZodFlawCommentType } from '@/types/zodFlaw';
+import { CommentType } from '@/constants';
 
 const userStore = useUserStore();
 
 const props = defineProps<{
-  comments: ZodFlawCommentSchemaType[];
+  publicComments: ZodFlawCommentType[];
+  privateComments: ZodFlawCommentType[];
+  internalComments: ZodFlawCommentType[];
+  internalCommentsAvailable: boolean;
+  isLoadingInternalComments: boolean;
+  systemComments: ZodFlawCommentType[];
   taskKey: string | null | undefined;
+  bugzillaLink: string;
   isSaving: boolean;
 }>();
-
-enum CommentType {
-    Public,
-    Private,
-    Internal,
-    System,
-}
-
-const {
-  internalComments,
-  addInternalComment,
-  loadInternalComments,
-  isSavingInternalComment,
-  isLoadingInternalComments,
-  internalCommentsAvailable,
-} = useInternalComments(props.taskKey ?? '');
-
-watch(isSavingInternalComment, () => {
-  emit('disableForm', isSavingInternalComment.value);
-});
 
 const newComment = ref('');
 const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
-  'comment:addFlawComment': [comment: string, creator: string, isPrivate: boolean];
-  'disableForm': [value: boolean];
+  'comment:addFlawComment': [comment: string, creator: string, type: string];
+  'loadInternalComments': [];
 }>();
-
-const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 const commentLabels = computed(() => {
   return Object.keys(CommentType)
@@ -71,76 +55,55 @@ const handleTabChange = (index: number) => {
   selectedTab.value = index;
 };
 
-type CommentFilter = 'public' | 'private' | 'system';
-type CommentFilterFunctions = Record<CommentFilter, (comment: any) => boolean>;
-
-const filterFunctions: CommentFilterFunctions = {
-  public: (comment: any) => !comment.is_private,
-  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
-  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
-};
-
-function parseOsidbComments(comments: ZodFlawCommentSchemaType[]) {
-  return comments.map((comment: any) => {
-    return {
-      author: comment.creator,
-      timestamp: comment.created_dt,
-      body: comment.text,
-    };
-  });
-}
-
-const publicComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.public)));
-const privateComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.private)));
-const systemComments = computed(() => parseOsidbComments(props.comments.filter(filterFunctions.system)));
-
 const displayedComments = computed(() => {
   switch (selectedTab.value) {
   case CommentType.Public:
-    return publicComments.value;
+    return props.publicComments;
   case CommentType.Private:
-    return privateComments.value;
+    return props.privateComments;
   case CommentType.Internal:
-    return internalComments.value;
+    return props.internalComments;
   case CommentType.System:
-    return systemComments.value;
+    return props.systemComments;
   default:
     return [];
   }
 });
 
 onMounted(async () => {
-  loadInternalComments();
+  emit('loadInternalComments');
 });
 
 async function handleCommentSave() {
-  if (selectedTab.value === CommentType.Public || selectedTab.value === CommentType.Private) {
-    // Osidb Bugzilla comment save
-    emit('comment:addFlawComment', newComment.value, userStore.userName, CommentType[selectedTab.value] === 'Private');
-    isAddingNewComment.value = false;
-    newComment.value = '';
-  } else if (selectedTab.value === CommentType.Internal && props.taskKey) {
-    // Internal Jira comment save
-    await addInternalComment(newComment.value)
-      .then(() => {
-        isAddingNewComment.value = false;
-        newComment.value = '';
-      });
-  }
+  emit(
+    'comment:addFlawComment',
+    newComment.value,
+    userStore.userName,
+    CommentType[selectedTab.value],
+  );
+  newComment.value = '';
+  isAddingNewComment.value = false;
 }
 
-function sanitize(text: string) {
+const parseCommentDisplayText = (text: string) => parseJiraTags(linkify(sanitizeHtml(text)));
+
+function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
 
-  const urlRegex = /\b(https?:\/\/[\S]+)\b/g;
-  const jiraTagRegex = /\[~([^[\]]+)\]/g;
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  return (
-    sanitizeHtml(text)
-      .replace(urlRegex, '<a target="_blank" href="$1">$1</a>')
-      .replace(jiraTagRegex, (match, p1) => `${p1}`)
-      .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
-  );
+  const jiraRegex = /\[([^|]+)\|([^\]]+)\]/g;
+
+  return text
+    .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
+    .replace(jiraRegex, '<a target="_blank" href="$2">$2</a>');
+}
+
+function parseJiraTags(text: string) {
+  const jiraUserLink = `${osimRuntime.value.backends.jiraDisplay}/ViewProfile.jspa?name=`;
+  const jiraTagRegex = /\[~([^[\]]+)\]/g;
+
+  return text
+    .replace(jiraTagRegex, (match, p1) => `<a target="_blank" href="${jiraUserLink}${p1}">${p1}</a>`);
 }
 
 const isInternalComment = computed(() => selectedTab.value === CommentType.Internal);
@@ -270,8 +233,17 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
             Add {{ CommentType[selectedTab] }} Comment
           </button>
           <a
+            v-if="(selectedTab === CommentType.Public || selectedTab === CommentType.Private)"
+            :href="bugzillaLink"
+            target="_blank"
+            class="btn btn-secondary tab-btn"
+            :disabled="isSaving"
+          >
+            View on Bugzilla
+          </a>
+          <a
             v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
-            :href="taskUrl(taskKey ?? '#')"
+            :href="taskKey ? jiraTaskUrl(taskKey) : '#'"
             target="_blank"
             class="btn btn-secondary tab-btn"
             :disabled="isSaving"
@@ -282,6 +254,21 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
       </template>
       <template #tab-content>
         <div class="tab-content">
+          <div class="info-message ms-3 mb-4">
+            <span
+              v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
+              class="spinner-border spinner-border-sm d-inline-block"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </span>
+            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal">
+              Internal comments not available
+            </div>
+            <div v-else-if="displayedComments?.length === 0">
+              No {{ CommentType[selectedTab].toLowerCase() }} comments
+            </div>
+          </div>
           <div
             v-if="(
               isAddingNewComment
@@ -328,28 +315,23 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
             </button>
           </div>
           <ul class="comments list-unstyled">
-            <span
-              v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
-              class="spinner-border spinner-border-sm d-inline-block ms-3"
-              role="status"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </span>
-            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal" class="ms-3">
-              Internal comments not available
-            </div>
-            <div v-else-if="displayedComments.length === 0" class="ms-3">
-              No {{ CommentType[selectedTab].toLowerCase() }} comments
-            </div>
             <li
               v-for="(comment, commentIndex) in displayedComments"
               :key="commentIndex"
               class="bg-light p-4 mt-3 rounded-2"
             >
               <p class="border-bottom pb-3">
-                <i class="bi bi-caret-right-fill"></i>
-                {{ comment.author }}
-                - {{ DateTime.fromISO(comment.timestamp, { setZone: true }).toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
+                <i class="bi bi-caret-right-fill me-2"></i>
+                <a
+                  v-if="selectedTab === CommentType.Internal"
+                  :href="jiraUserUrl(comment.creator || '')"
+                  target="_blank"
+                >
+                  {{ comment.creator }}
+                </a>
+                <span v-else>{{ comment.creator }}</span>
+                - {{ DateTime.fromISO(comment.created_dt ?? '',{ setZone: true })
+                  .toFormat('yyyy-MM-dd hh:mm a ZZZZ') }}
                 <span
                   class="badge rounded-pill float-end cursor-pointer"
                   :class="{
@@ -363,7 +345,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
                 </span>
               </p>
               <!--eslint-disable-next-line vue/no-v-html -->
-              <p class="osim-flaw-comment" v-html="sanitize(comment.body)" />
+              <p class="osim-flaw-comment" v-html="parseCommentDisplayText(comment.text ?? '')" />
             </li>
           </ul>
         </div>

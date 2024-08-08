@@ -148,18 +148,21 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
 }
 
 export async function postFlawComment(
-  uuid: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
+  flawId: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
 ) {
+  const type = isPrivate ? 'Private' : 'Public';
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/flaws/${uuid}/comments`,
+    url: `/osidb/api/v1/flaws/${flawId}/comments`,
     data: {
       text: comment,
       creator: creator,
       is_private: isPrivate,
       embargoed,
     },
-  }).then((response) => response.data);
+  }).then(createSuccessHandler({ title: 'Success!', body: `${type} comment saved.` }))
+    .then((response) => response.data)
+    .catch(createCatchHandler(`Error saving ${type} comment`));
 }
 
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`

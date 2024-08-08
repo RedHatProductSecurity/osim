@@ -1,7 +1,10 @@
 # OSIM Changelog
 
-## [2024.7.2]
+## [Unreleased]
+### Added
+* Add button to Bugzilla on public and private comments
 
+## [2024.7.2]
 ### Fixed
 * Fix comment#0 and description fields layout (`OSIDB-3174`)
 * Indicate when single tracker successfully filed (`OSIDB-3144`)
@@ -13,7 +16,6 @@
 * Jira suggestions are now filtered by the current project (`OSIDB-3189`)
 
 ## [2024.7.1]
-
 ### Added
 * Apply modified style to references and ackowledgements cards when they differ to the saved value (`OSIDB-2905`)
 * Sort affects by product family, alphabetically (`OSIDB-2533`)
