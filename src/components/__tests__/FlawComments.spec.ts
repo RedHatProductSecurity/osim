@@ -171,18 +171,7 @@ describe('FlawComments', () => {
 
     const navLinks = subject.findAll('.nav-link');
     await navLinks[1].trigger('click');
-    const commentElements = subject.findAll('ul.comments li');
-    expect(commentElements.length).toBe(2);
-    // First public comment checks
-    const firstHeader = commentElements[0].findAll('p')[0];
-    const firstBody = commentElements[0].findAll('p')[1];
-    expect(firstHeader.text()).toBe('noonerelevant - 2021-07-29 03:50 PM UTC Private');
-    expect(firstBody.text()).toBe('First private comment');
-    // Seccond public comment checks
-    const secondHeader = commentElements[1].findAll('p')[0];
-    const secondBody = commentElements[1].findAll('p')[1];
-    expect(secondHeader.text()).toBe('onelessrelevant - 2023-09-20 03:50 PM UTC Private');
-    expect(secondBody.text()).toBe('Second private comment');
+    expect(subject.html()).toMatchSnapshot();
   });
 
   it('Show Jira link button on internal comments', async () => {
