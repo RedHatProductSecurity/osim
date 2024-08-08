@@ -2,7 +2,6 @@ import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import FlawComments from '@/components/FlawComments.vue';
-import { ref } from 'vue';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { searchJiraUsers } from '@/services/JiraService';
 
@@ -43,7 +42,8 @@ vi.mock('@/stores/osimRuntime', async () => {
 
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),
-  taskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
+  jiraTaskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
+  jiraUserUrl: vi.fn(),
 }));
 
 describe('FlawComments', () => {

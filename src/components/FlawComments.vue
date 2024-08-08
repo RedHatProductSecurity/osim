@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { isDefined, watchDebounced } from '@vueuse/core';
 import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
@@ -12,7 +12,6 @@ import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
 import { createCatchHandler } from '@/composables/service-helpers';
 import { searchJiraUsers, jiraTaskUrl, jiraUserUrl } from '@/services/JiraService';
-import { type ZodFlawCommentSchemaType } from '@/types/zodFlaw';
 import JiraUser from './widgets/JiraUser.vue';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 
@@ -25,7 +24,7 @@ const props = defineProps<{
   internalCommentsAvailable: boolean;
   isLoadingInternalComments: boolean;
   systemComments: ZodFlawCommentType[];
-  taskKey: string;
+  taskKey: string | null | undefined;
   bugzillaLink: string;
   isSaving: boolean;
 }>();
@@ -255,7 +254,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
           </a>
           <a
             v-if="(selectedTab === CommentType.Internal && internalCommentsAvailable)"
-            :href="jiraTaskUrl(taskKey)"
+            :href="taskKey ? jiraTaskUrl(taskKey) : '#'"
             target="_blank"
             class="btn btn-secondary tab-btn"
             :disabled="isSaving"

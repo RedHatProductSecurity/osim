@@ -490,12 +490,17 @@ const theAffects = computed(() => {
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
           <FlawComments
-            :comments="flaw.comments"
-            :taskKey="flaw.task_key"
-            :error="errors.comments"
-            :isSaving="isSaving"
+            :publicComments
+            :privateComments
+            :internalComments
+            :internalCommentsAvailable
+            :isLoadingInternalComments
+            :systemComments
+            :taskKey="flaw.task_key || ''"
+            :bugzillaLink
+            :isSaving
             @comment:addFlawComment="addFlawComment"
-            @disableForm="(value) => formDisabled = value"
+            @loadInternalComments="loadInternalComments"
           />
         </div>
       </div>
