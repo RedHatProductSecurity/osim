@@ -115,7 +115,7 @@ describe('FlawComments', () => {
   it('Show message if no comments', () => {
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
-    const noCommentsMessage = subject.find('ul.comments div');
+    const noCommentsMessage = subject.find('.info-message div');
     expect(noCommentsMessage.text()).toBe('No public comments');
   });
 
@@ -239,7 +239,7 @@ describe('FlawComments', () => {
     await navLinks[3].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
-    const noCommentsMessage = subject.find('ul.comments div');
+    const noCommentsMessage = subject.find('.info-message div');
     expect(noCommentsMessage.text()).toBe('No system comments');
   });
 

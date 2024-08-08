@@ -265,7 +265,7 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
       </template>
       <template #tab-content>
         <div class="tab-content">
-          <div class="ms-3 mb-4">
+          <div class="info-message ms-3 mb-4">
             <span
               v-if="isLoadingInternalComments && selectedTab === CommentType.Internal"
               class="spinner-border spinner-border-sm d-inline-block"
