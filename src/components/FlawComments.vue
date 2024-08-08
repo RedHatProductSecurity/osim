@@ -7,7 +7,6 @@ import sanitizeHtml from 'sanitize-html';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
-import { compose } from 'ramda';
 import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
 import { createCatchHandler } from '@/composables/service-helpers';
@@ -86,11 +85,7 @@ async function handleCommentSave() {
   isAddingNewComment.value = false;
 }
 
-const parseCommentDisplayText = compose(
-  sanitizeHtml,
-  linkify,
-  parseJiraTags
-);
+const parseCommentDisplayText = (text: string) => parseJiraTags(linkify(sanitizeHtml(text)));
 
 function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
