@@ -5,6 +5,15 @@ import { postFlawComment } from '@/services/FlawService';
 
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
+type OsidbCommentFilter = 'public' | 'private' | 'system';
+type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
+
+const filterFunctions: OsidbCommentFilterFunctions = {
+  public: (comment: any) => !comment.is_private,
+  private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
+  system: (comment: any) => comment.creator === SYSTEM_EMAIL,
+};
+
 export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boolean>, afterSaveSuccess: () => void) {
   const internalCommentsAvailable = ref(false);
   const isLoadingInternalComments = ref(false);
@@ -13,15 +22,6 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
   const publicComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.public));
   const privateComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.private));
   const systemComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.system));
-
-  type OsidbCommentFilter = 'public' | 'private' | 'system';
-  type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
-
-  const filterFunctions: OsidbCommentFilterFunctions = {
-    public: (comment: any) => !comment.is_private,
-    private: (comment: any) => comment.is_private && comment.creator !== SYSTEM_EMAIL,
-    system: (comment: any) => comment.creator === SYSTEM_EMAIL,
-  };
 
   function loadInternalComments() {
     isLoadingInternalComments.value = true;
