@@ -175,3 +175,14 @@ Feature: Flaw detail testing on public flaw
         |        PRE_SECONDARY_ASSESSMENT |
         |            SECONDARY_ASSESSMENT |
         |                            DONE |
+
+    Scenario Outline: Update flaw incident state
+      When I update flaw incident state to <new_state>
+      Then The flaw incident state is updated to <new_state>
+
+      Examples:
+        |           new_state |
+        |           REQUESTED |
+        |            APPROVED |
+        |       CISA_APPROVED |
+        |            REJECTED |
