@@ -1,10 +1,10 @@
 import { mount } from '@vue/test-utils';
-import { sampleFlaw } from './SampleData';
+import { sampleFlaw_1 } from './__sampledata__/sampleFlaws';
 import CvssExplainForm from '../CvssExplainForm.vue';
 
 describe('CVSS Explain Form', () => {
   it('renders correctly', () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     const wrapper = mount(CvssExplainForm, {
       props: {
         modelValue: flaw
@@ -20,7 +20,7 @@ describe('CVSS Explain Form', () => {
   });
 
   it('syncs modelValue with textarea', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.cvss_scores[0].comment = 'some text';
 
     const wrapper = mount(CvssExplainForm, {

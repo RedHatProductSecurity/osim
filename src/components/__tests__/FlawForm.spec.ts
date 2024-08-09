@@ -22,7 +22,7 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
-import { sampleFlaw } from './SampleData';
+import { sampleFlaw_1 } from './__sampledata__/sampleFlaws';
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 
@@ -71,7 +71,7 @@ vi.mock('@/composables/useTrackers', () => {
 });
 
 describe('FlawForm', () => {
-  function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw(), mode: 'edit' }) {
+  function mountWithProps(props: typeof FlawForm.$props = { flaw: sampleFlaw_1, mode: 'edit' }) {
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
       props,
@@ -110,7 +110,7 @@ describe('FlawForm', () => {
       },
       // shallow: true,
       props: {
-        flaw: sampleFlaw(),
+        flaw: sampleFlaw_1,
         mode: 'edit',
       },
       global: {
@@ -140,7 +140,7 @@ describe('FlawForm', () => {
   });
 
   it('shows the expected fields in edit mode', async () => {
-    mountWithProps({ flaw: sampleFlaw(), mode: 'edit' });
+    mountWithProps({ flaw: sampleFlaw_1, mode: 'edit' });
 
     const titleField = subject
       .findAllComponents(LabelEditable)
@@ -229,7 +229,7 @@ describe('FlawForm', () => {
   });
 
   it('shows the expected fields in create mode', async () => {
-    mountWithProps({ flaw: sampleFlaw(), mode: 'create' });
+    mountWithProps({ flaw: sampleFlaw_1, mode: 'create' });
 
     const titleField = subject
       .findAllComponents(LabelEditable)
@@ -299,7 +299,7 @@ describe('FlawForm', () => {
   });
 
   it('renders the description field', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.major_incident_state = '';
     mountWithProps({ flaw, mode: 'edit' });
     const descriptionField = subject
@@ -363,7 +363,7 @@ describe('FlawForm', () => {
   });
 
   it('triggers validations for the description field', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.major_incident_state = '';
     mountWithProps({ flaw, mode: 'edit' });
     const descriptionField = subject
@@ -381,7 +381,7 @@ describe('FlawForm', () => {
   });
 
   it('displays correct Owner field value from props', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.owner = 'test owner';
     mountWithProps({ flaw, mode: 'edit' });
     const assigneeField = subject.findComponent(FlawFormOwner);
@@ -424,7 +424,7 @@ describe('FlawForm', () => {
   });
 
   it('sends a mocked PUT request with an updated owner', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.owner = 'networking test owner';
     const result = await mockedPutFlaw(flaw.uuid, flaw);
     expect(result.owner).toBe('networking test owner');
@@ -448,7 +448,7 @@ describe('FlawForm', () => {
   });
 
   it('if embargoed and public date is in the past, it returns an error', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     flaw.unembargo_dt = '2022-02-01';
     mountWithProps({ flaw, mode: 'edit' });
@@ -457,7 +457,7 @@ describe('FlawForm', () => {
   });
 
   it('if embargoed and public date is later today (in the future) it returns null', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
     mountWithProps({ flaw, mode: 'edit' });
@@ -466,7 +466,7 @@ describe('FlawForm', () => {
   });
 
   it('if embargoed and public date is in the future, it returns null', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
     mountWithProps({ flaw, mode: 'edit' });
@@ -475,7 +475,7 @@ describe('FlawForm', () => {
   });
 
   it('if NOT embargoed and public date is in the future, it returns an error ', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = false;
     flaw.unembargo_dt = '3000-01-01';
     mountWithProps({ flaw, mode: 'edit' });
@@ -484,7 +484,7 @@ describe('FlawForm', () => {
   });
 
   it('if NOT embargoed and public date is today or in the past, it returns null', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = false;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T00:00:00Z';
     mountWithProps({ flaw, mode: 'edit' });
@@ -493,7 +493,7 @@ describe('FlawForm', () => {
   });
 
   it('if NOT embargoed and public date is null, it returns an error message', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = false;
     flaw.unembargo_dt = null;
     mountWithProps({ flaw, mode: 'edit' });
@@ -502,7 +502,7 @@ describe('FlawForm', () => {
   });
 
   it('if embargoed and public date is null, it returns null', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     flaw.unembargo_dt = null;
     mountWithProps({ flaw, mode: 'edit' });
@@ -511,7 +511,7 @@ describe('FlawForm', () => {
   });
 
   it('sets public date if empty when unembargo button is clicked', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     flaw.unembargo_dt = null;
     mountWithProps({ flaw, mode: 'edit' });
@@ -522,7 +522,7 @@ describe('FlawForm', () => {
   });
 
   it('should show only allowed sources in edit mode', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     mountWithProps({ flaw, mode: 'edit' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
@@ -534,7 +534,7 @@ describe('FlawForm', () => {
   });
 
   it('should show all sources in create mode', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     mountWithProps({ flaw, mode: 'create' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
@@ -553,7 +553,7 @@ describe('FlawForm', () => {
   });
 
   it('should not show a link to bugzilla if ID does not exists', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.meta_attr = {};
     mountWithProps({ flaw, mode:'edit' });
 
@@ -562,7 +562,7 @@ describe('FlawForm', () => {
   });
 
   it('should show CreatedDate on Flaw Edit', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     mountWithProps({ flaw, mode:'edit' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
@@ -574,7 +574,7 @@ describe('FlawForm', () => {
   });
 
   it('should not show CreatedDate on Flaw Creation', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     mountWithProps({ flaw, mode:'new' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
@@ -583,7 +583,7 @@ describe('FlawForm', () => {
   });
 
   it('should show border when flaw is embargoed', async () => {
-    const flaw = sampleFlaw();
+    const flaw = sampleFlaw_1;
     flaw.embargoed = true;
     mountWithProps({ flaw, mode:'edit' });
     let flawForm = subject.find('div.osim-flaw-form-embargoed');
