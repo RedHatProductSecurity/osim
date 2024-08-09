@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import inject from '@rollup/plugin-inject';
 import viteBasicSslPlugin from '@vitejs/plugin-basic-ssl';
 // import copy from '@rollup-extras/plugin-copy';
 
@@ -11,6 +12,11 @@ export default defineConfig({
   plugins: [
     vue(),
     viteBasicSslPlugin(),
+    inject({
+      exclude: 'node_modules/**',
+      'console.log': path.resolve(__dirname, 'src/shims/console/log.js'),
+      'console.error': path.resolve(__dirname, 'src/shims/console/error.js'),
+    })
   ],
   build: {
     sourcemap: true,
