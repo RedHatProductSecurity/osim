@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "@rollup/plugin-inject": "^5.0.5",
     "@vueuse/core": "^10.4.1",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.2",
@@ -38,6 +39,7 @@
     "pinia": "^2.1.4",
     "ramda": "^0.29.1",
     "sanitize-html": "^2.12.1",
+    "splunk-logging": "^0.11.1",
     "vue": "^3.4.19",
     "vue-imask": "^7.1.2",
     "vue-router": "^4.2.4",
