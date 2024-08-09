@@ -28,7 +28,7 @@ cat <<EOF >>/tmp/osim-nginx-proxy.conf
     proxy_ssl_server_name on; # required
 
     # Trailing slash in proxy_pass strips the location directive prefix from the downstream URL
-    proxy_pass ${OSIM_NGINX_PROXY_SPLUNK}/;
+    proxy_pass ${OSIM_NGINX_PROXY_SPLUNK};
 }
 EOF
 
