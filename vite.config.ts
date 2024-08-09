@@ -6,17 +6,18 @@ import inject from '@rollup/plugin-inject';
 import viteBasicSslPlugin from '@vitejs/plugin-basic-ssl';
 // import copy from '@rollup-extras/plugin-copy';
 
-
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     viteBasicSslPlugin(),
-    inject({
+    mode === 'production'
+    && inject({
       exclude: 'node_modules/**',
       'console.log': path.resolve(__dirname, 'src/shims/console/log.js'),
       'console.error': path.resolve(__dirname, 'src/shims/console/error.js'),
-    })
+      'console.warn': path.resolve(__dirname, 'src/shims/console/warn.js'),
+    }),
   ],
   build: {
     sourcemap: true,
@@ -28,6 +29,12 @@ export default defineConfig({
           }
         },
       },
+    },
+  },
+  esbuild: {
+    pure: ['console.debug'],
+    define: {
+      OSIM_ENV: JSON.stringify(process.env.OSIM_ENV || 'dev'),
     },
   },
   server: {
@@ -42,7 +49,6 @@ export default defineConfig({
       // I think this does something other than intended
       // 'source-map-js': 'source-map',
       // path: 'path-browserify',
-
     },
   },
-});
+}));
