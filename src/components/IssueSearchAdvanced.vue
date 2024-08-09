@@ -25,6 +25,8 @@ watch(isNonEmptyDescriptionSelected, () => {
   const facet = facets.value.find(facet => facet.field === 'cve_description');
   if (isNonEmptyDescriptionSelected.value) {
     if (!facet) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       facets.value.push({ field: 'cve_description', value: 'nonempty' });
     } else {
       facet.value = 'nonempty';

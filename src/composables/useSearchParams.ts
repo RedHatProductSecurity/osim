@@ -15,7 +15,7 @@ type Facet = {
   field: string;
   value: string;
   range: {
-    type: DateRange,
+    type: DateRange | null,
     start: string | null,
     end: string | null
   }
@@ -31,7 +31,7 @@ const searchQuery = z.object({
 });
 
 export function supportRangeOption (field: string) {
-  const mapping = {
+  const mapping: Record<string, string> = {
     created_dt: 'dateRange',
     updated_dt: 'dateRange'
   };
@@ -45,13 +45,13 @@ export function useSearchParams() {
   const router = useRouter();
 
   function getRangeFromURL(value: string, key: string) {
-    let type = null;
+    let type: DateRange | null = null;
     let start = null;
     let end = null;
     if (supportRangeOption(key)) {
       const values = value.split('_');
       if (values.length > 0) {
-        type = values[0];
+        type = values[0] as DateRange;
         if (values[1] && values[2]) {
           start = supportRangeOption(key) === 'dateRange' ? new Date(values[1]).toISOString() : values[1];
           end = supportRangeOption(key) === 'dateRange' ? new Date(values[2]).toISOString() : values[2];
@@ -66,18 +66,22 @@ export function useSearchParams() {
     };
   }
 
-  function parseValueForURL(facet) {
+  function parseValueForURL(facet: Facet) {
     const { field, value, range } = facet;
     if (supportRangeOption(field)) {
       const values = [range.type];
       if (range.type === DateRange.CUSTOM) {
         if (range.start) {
           values.push(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
             supportRangeOption(field) === 'dateRange' ? parseDate(range.start) : range.start
           );
         }
         if (range.end) {
           values.push(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
             supportRangeOption(field) === 'dateRange'
               ? parseDate(range.end)
               : range.end
@@ -196,14 +200,14 @@ export function useSearchParams() {
     router.push({ name: 'search', query: { query: searchQuery } });
   }
 
-  function parseDate(date): string {
+  function parseDate(date: string): string {
     return DateTime.fromISO(date).toUTC().toFormat('yyyy-MM-dd');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function rangeFieldName(name: string) {
     // This need to update for supporting number range like GTE, LTE, EQUALS
-    const mapping = {};
+    const mapping: Record<string, string> = {};
     return mapping[name] || name;
   }
 
