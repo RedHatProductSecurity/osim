@@ -42,6 +42,8 @@ const includedFields = [
   'mitigation',
   'statement',
   'major_incident_state',
+  'created_dt',
+  'updated_dt'
 ];
 
 export const flawFields = fieldsFor(ZodFlawSchema)
