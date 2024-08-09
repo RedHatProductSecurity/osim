@@ -23,8 +23,7 @@ function logger(message, severity) {
       event: {
         message,
         severity,
-        // eslint-disable-next-line no-undef -- This is replaced by vite at build time.
-        environment: OSIM_ENV || 'unset'
+        environment: JSON.parse(localStorage.getItem('UserStore'))?.env || 'unset',
       },
       sourcetype: 'osim',
     }),

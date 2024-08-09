@@ -33,9 +33,6 @@ export default defineConfig(({ mode }) => ({
   },
   esbuild: {
     pure: ['console.debug'],
-    define: {
-      OSIM_ENV: JSON.stringify(process.env.OSIM_ENV || 'dev'),
-    },
   },
   server: {
     https: true,
