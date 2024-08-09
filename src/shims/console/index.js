@@ -3,38 +3,58 @@
  * in order to send the logs to the splunk server.
  */
 
-export const error = (...args) => {
-  fetch('/proxy/splunk/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: JSON.stringify({
-      message: args,
-      severity: 'ERROR',
-      metadata: {
-        index: 'rh_osidb',
-        source: 'osim',
-        sourcetype: 'osim',
-      },
-    }),
-  });
-};
 
-export const info = (...args) => {
-  fetch('/proxy/splunk/', {
+const SPLUNK_URL = new URL('/proxy/splunk/', window.location.origin).href;
+
+
+/**
+ * Send the log message to the splunk server.
+ *
+ * @param {any} message Message to log, this can be any type.
+ * @param {"INFO"|"ERROR"|"WARN"} severity Severity of the log message.
+ */
+function logger(message, severity) {
+  fetch(SPLUNK_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: JSON.stringify({
-      message: args,
-      severity: 'INFO',
-      metadata: {
-        index: 'rh_osidb',
-        source: 'osim',
-        sourcetype: 'osim',
+      event: {
+        message,
+        severity,
+        // eslint-disable-next-line no-undef -- This is replaced by vite at build time.
+        environment: OSIM_ENV || 'unset'
       },
+      sourcetype: 'osim',
     }),
   });
-};
+}
+
+
+function formatMessage(args) {
+  if (typeof args === 'string') {
+    return args;
+  }
+
+  if (Array.isArray(args) && args.length === 1) {
+    return args[0];
+  }
+
+  return args;
+}
+
+export function log() {
+  const message = formatMessage(Array.from(arguments));
+  logger(message, 'INFO');
+}
+
+export function error() {
+  const message = formatMessage(Array.from(arguments));
+  logger(message, 'ERROR');
+}
+
+export function warn() {
+  const message = formatMessage(Array.from(arguments));
+  logger(message, 'WARN');
+}
