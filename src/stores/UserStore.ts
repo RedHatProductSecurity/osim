@@ -44,7 +44,7 @@ const userStoreLocalStorage = z.object({
   whoami: whoamiResponse.nullable(),
   jiraUsername: z.string(),
 });
-type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
+export type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 const _userStoreSession = useLocalStorage(
   _userStoreKey, { refresh: '', env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage

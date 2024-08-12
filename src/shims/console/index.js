@@ -3,17 +3,22 @@
  * in order to send the logs to the splunk server.
  */
 
-
 const SPLUNK_URL = new URL('/proxy/splunk/', window.location.origin).href;
-
 
 /**
  * Send the log message to the splunk server.
  *
+ * @typedef {import("../../stores/UserStore").UserStoreLocalStorage} UserStore;
  * @param {any} message Message to log, this can be any type.
  * @param {"INFO"|"ERROR"|"WARN"} severity Severity of the log message.
  */
 function logger(message, severity) {
+  /** @type UserStore */
+  const store = JSON.parse(localStorage.getItem('UserStore')) || {};
+
+  const environment = store?.env || 'unset';
+  const username = store?.whoami?.username || 'unset';
+
   fetch(SPLUNK_URL, {
     method: 'POST',
     headers: {
@@ -23,13 +28,13 @@ function logger(message, severity) {
       event: {
         message,
         severity,
-        environment: JSON.parse(localStorage.getItem('UserStore'))?.env || 'unset',
+        environment,
+        username,
       },
       sourcetype: 'osim',
     }),
   });
 }
-
 
 function formatMessage(args) {
   if (typeof args === 'string') {
