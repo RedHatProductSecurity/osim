@@ -62,13 +62,8 @@ describe('useSearchParams', () => {
     removeFacet();
     expect(facets.value.length).toBe(1);
     expect(facets.value[0]).toStrictEqual({
-      field:'',
-      value:'',
-      range: {
-        start: null,
-        end: null,
-        type: null
-      }
+      field: '',
+      value: '',
     });
   });
 
@@ -97,26 +92,18 @@ describe('useSearchParams', () => {
     });
     const { populateFacets } = useSearchParams();
     const facets = populateFacets();
-    const emptyRange = {
-      start: null,
-      end: null,
-      type: null
-    };
     expect(facets).toEqual([
       {
         field: 'affects__ps_component',
         value: 'test',
-        range: emptyRange,
       },
       {
         field: 'acknowledgments__name',
         value: 'test',
-        range: emptyRange,
       },
       {
         field: '',
         value: '',
-        range: emptyRange,
       }
     ]);
   });

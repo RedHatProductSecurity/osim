@@ -2,22 +2,15 @@ import { ref, onMounted, watch, watchEffect } from 'vue';import { z } from 'zod'
 import { useRoute, useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { flawFields } from '@/constants/flawFields';
-
-export enum DateRange {
-  THIS_WEEK = 'This Week',
-  LAST_WEEK = 'Last Week',
-  THIS_MONTH = 'This Month',
-  LAST_MONTH = 'Last Month',
-  CUSTOM = 'Custom',
-}
+import { DateRange } from '@/constants/range';
 
 type Facet = {
   field: string;
   value: string;
-  range: {
-    type: DateRange | null,
-    start: string | null,
-    end: string | null
+  range?: {
+    type: DateRange | undefined,
+    start: string | undefined,
+    end: string | undefined
   }
 };
 
@@ -48,41 +41,41 @@ export function useSearchParams() {
     let type: DateRange | null = null;
     let start = null;
     let end = null;
-    if (supportRangeOption(key)) {
+    const rangeOption = supportRangeOption(key);
+    if (rangeOption) {
       const values = value.split('_');
       if (values.length > 0) {
         type = values[0] as DateRange;
         if (values[1] && values[2]) {
-          start = supportRangeOption(key) === 'dateRange' ? new Date(values[1]).toISOString() : values[1];
-          end = supportRangeOption(key) === 'dateRange' ? new Date(values[2]).toISOString() : values[2];
+          start = rangeOption === 'dateRange' ? new Date(values[1]).toISOString() : values[1];
+          end = rangeOption === 'dateRange' ? new Date(values[2]).toISOString() : values[2];
           type = DateRange.CUSTOM;
         }
       }
+      return {
+        type,
+        start,
+        end
+      };
+    } else {
+      return null;
     }
-    return {
-      type,
-      start,
-      end
-    };
   }
 
   function parseValueForURL(facet: Facet) {
     const { field, value, range } = facet;
-    if (supportRangeOption(field)) {
+    const rangeOption = supportRangeOption(field);
+    if (rangeOption) {
       const values = [range.type];
       if (range.type === DateRange.CUSTOM) {
         if (range.start) {
           values.push(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            supportRangeOption(field) === 'dateRange' ? parseDate(range.start) : range.start
+            rangeOption === 'dateRange' ? parseDate(range.start) : range.start
           );
         }
         if (range.end) {
           values.push(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            supportRangeOption(field) === 'dateRange'
+            rangeOption === 'dateRange'
               ? parseDate(range.end)
               : range.end
           );
@@ -104,8 +97,8 @@ export function useSearchParams() {
           const range = getRangeFromURL(value, key);
           facets.push({
             value,
-            range,
             field: key,
+            ...(range && { range })
           });
         }
       });
@@ -114,11 +107,6 @@ export function useSearchParams() {
     facets.push({
       field: '',
       value: '',
-      range: {
-        type: null,
-        start: null,
-        end: null,
-      },
     });
     return facets;
   };
@@ -152,6 +140,14 @@ export function useSearchParams() {
         addFacet();
       } else {
         if (supportRangeOption(newFacet?.field)) {
+          // assign range values
+          if (!newFacet.range) {
+            newFacet.range = {
+              type:undefined,
+              start: undefined,
+              end: undefined
+            };
+          }
           switch (newFacet.range.type) {
           case DateRange.THIS_WEEK:
           case DateRange.LAST_WEEK:
@@ -180,11 +176,6 @@ export function useSearchParams() {
     facets.value.push({
       field: '',
       value: '',
-      range: {
-        type: null,
-        start: null,
-        end: null
-      }
     });
   }
 

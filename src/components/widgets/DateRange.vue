@@ -1,69 +1,61 @@
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
-import { DateRange } from '@/composables/useSearchParams';
+import { ref, watch } from 'vue';
+import { DateRange } from '@/constants/range';
 import EditableDate from '@/components/widgets/EditableDate.vue';
 
+interface DateRangeModel {
+  type: string | undefined;
+  start: string | undefined;
+  end: string | undefined;
+}
 
-const props = defineProps({
-  modelValue: {
-    type: Object,
-    required: true
+const model = defineModel<DateRangeModel>({
+  type: Object,
+  required: true,
+  default: () => ({ type: undefined, start: undefined, end: undefined })
+});
+
+const error = ref<string | null>(null);
+
+watch([() => model?.value?.start, () => model?.value?.end], () => {
+  error.value = null;
+  if (model?.value?.type === DateRange.CUSTOM && model.value.start && model.value.end) {
+    if (new Date(model.value.start) > new Date(model.value.end)) {
+      error.value = 'End Date must be after Start Date';
+    }
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
-const error = ref<string | null>(null);
-
-const localSelectedOption = ref(props.modelValue.type || '');
-const localStart = ref(props.modelValue.start || null);
-const localEnd = ref(props.modelValue.end || null);
-
-const emitRange = () => {
-  const range: Record<string, string> = { type: localSelectedOption.value };
-  error.value = null;
-  if (localSelectedOption.value === DateRange.CUSTOM) {
-    range.start = localStart.value;
-    range.end = localEnd.value;
-    if (new Date(range.start) > new Date(range.end)) {
-      error.value = 'End Date is must be after start Date';
-    }
+watch(() => model?.value?.type, () => {
+  if (model.value) {
+    model.value.start = undefined;
+    model.value.end = undefined;
+    error.value = null;
   }
-  emit('update:modelValue', range);
-};
-
-watch([localStart, localEnd], emitRange);
-
-watch(localSelectedOption, () => {
-  localStart.value = null;
-  localEnd.value = null;
-  error.value = null;
-  emitRange();
 });
 </script>
 
 <template>
   <select
-    v-model="localSelectedOption"
+    v-model="model.type"
     class="form-select form-date-option"
-    @submit.prevent
   >
-    <option :value="DateRange.THIS_WEEK">This Week</option>
-    <option :value="DateRange.LAST_WEEK">Last Week</option>
-    <option :value="DateRange.THIS_MONTH">This Month</option>
-    <option :value="DateRange.LAST_MONTH">Last Month</option>
-    <option :value="DateRange.CUSTOM">Custom</option>
+    <option
+      v-for="(range, key) in DateRange"
+      :key="key"
+      :value="range"
+    >{{ range }}</option>
   </select>
-  <div v-if="localSelectedOption === DateRange.CUSTOM" class="form-date-custom">
+  <div v-if="model.type === DateRange.CUSTOM" class="form-date-custom">
     <EditableDate
-      v-model="localStart"
+      v-model="model.start"
     />
     <EditableDate
-      v-model="localEnd"
+      v-model="model.end"
       :error="error"
     />
   </div>
 </template>
-
 
 <style>
 .form-date-custom {
@@ -84,5 +76,4 @@ watch(localSelectedOption, () => {
     border-radius: 0 !important;
   }
 }
-
 </style>
