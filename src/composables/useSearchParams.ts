@@ -23,12 +23,12 @@ const searchQuery = z.object({
   }),
 });
 
-export function supportRangeOption (field: string) {
+export function supportRangeOption (field: string): string {
   const mapping: Record<string, string> = {
     created_dt: 'dateRange',
     updated_dt: 'dateRange'
   };
-  return mapping[field];
+  return mapping[field] || '';
 }
 
 export function useSearchParams() {
@@ -38,9 +38,9 @@ export function useSearchParams() {
   const router = useRouter();
 
   function getRangeFromURL(value: string, key: string) {
-    let type: DateRange | null = null;
-    let start = null;
-    let end = null;
+    let type: DateRange | undefined = undefined;
+    let start = undefined;
+    let end = undefined;
     const rangeOption = supportRangeOption(key);
     if (rangeOption) {
       const values = value.split('_');
@@ -65,8 +65,8 @@ export function useSearchParams() {
   function parseValueForURL(facet: Facet) {
     const { field, value, range } = facet;
     const rangeOption = supportRangeOption(field);
-    if (rangeOption) {
-      const values = [range.type];
+    if (rangeOption && range) {
+      const values: string[] = [range.type as string];
       if (range.type === DateRange.CUSTOM) {
         if (range.start) {
           values.push(
@@ -75,9 +75,7 @@ export function useSearchParams() {
         }
         if (range.end) {
           values.push(
-            rangeOption === 'dateRange'
-              ? parseDate(range.end)
-              : range.end
+            rangeOption === 'dateRange' ? parseDate(range.end) : range.end
           );
         }
       }
