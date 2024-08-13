@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { isCveValid } from '@/utils/helpers';
 
 const props = defineProps<{
   labels: string[];
@@ -43,7 +44,6 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
           type="button"
           class="nav-link osim-add-tab"
           data-bs-toggle="dropdown"
-          @click="emit('add-tab')"
         >
           <i class="bi bi-plus"></i>
         </button>
@@ -54,7 +54,14 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
               class="border border-info px-1 mx-2 focus-ring focus-ring-info"
               type="text"
               placeholder="Search..."
+              @submit.prevent="emit('add-tab', searchFilter)"
             />
+            <button
+              :disabled="!isCveValid(searchFilter)"
+              class="btn btn-info btn-sm"
+              type="button"
+              @click="emit('add-tab', searchFilter)"
+            >Add</button>
           </li>
           <li v-for="item in filteredItems" :key="item">
             <button
@@ -85,5 +92,10 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
 
 .osim-add-tab {
   background-color: #fff;
+}
+
+.osim-dropdown-menu {
+  max-height: 12rem;
+  overflow-y: auto;
 }
 </style>

@@ -12,6 +12,8 @@ import type { TrackersPost } from '@/services/TrackerService';
 
 import { useTrackersForSingleFlaw } from '@/composables/useTrackersForSingleFlaw';
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
+import { getFlaw } from '@/services/FlawService';
+import { createCatchHandler } from './service-helpers';
 
 type UseTrackersReturnType = ReturnType<typeof useTrackersForSingleFlaw>;
 
@@ -201,10 +203,15 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
   function addRelatedFlaw (flawId: string) {
     const flaw = relatedFlaws.value.find((flaw) => flaw.uuid === flawId || flaw.cve_id === flawId);
     if (flaw === undefined) {
-      console.error('useTrackersForRelatedFlaws::addRelatedFlaw() Could not add related flaw with id:', flawId);
-      return;
+      getFlaw(flawId)
+        .then((fetchedFlaw) => {
+          selectedRelatedFlaws.value.push(fetchedFlaw);
+        }).catch(
+          createCatchHandler('useTrackersForRelatedFlaws::addRelatedFlaw(): Fetch for Related Flaw Unsuccessful')
+        );
+    } else {
+      selectedRelatedFlaws.value.push(flaw);
     }
-    selectedRelatedFlaws.value.push(flaw);
   }
 
   return {

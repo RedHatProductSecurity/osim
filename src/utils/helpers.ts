@@ -56,6 +56,9 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
   );
 
 export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
+
+export const isCveValid = (cve: string) => cveRegex.test(cve);
+
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
 
 export function formatDate(date: Date | string, includeTime: boolean): string {
