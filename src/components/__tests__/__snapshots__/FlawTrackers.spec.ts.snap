@@ -26,6 +26,7 @@ exports[`FlawTrackers > Correctly renders the component when there are not track
             <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" style="font-size: 1rem;" title=""></i></button>
               <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
             </th>
+            <th data-v-7006d35c="">Resolution</th>
             <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
             <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
@@ -68,6 +69,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
               </ul>
             </th>
+            <th data-v-7006d35c="">Resolution</th>
             <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
             <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
@@ -80,6 +82,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
           </tr>
@@ -90,6 +93,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
           </tr>
@@ -100,6 +104,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
           </tr>
@@ -110,6 +115,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
           </tr>
@@ -120,6 +126,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
           </tr>
@@ -130,6 +137,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
           </tr>
@@ -140,6 +148,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
           </tr>
@@ -150,6 +159,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
           </tr>
@@ -160,6 +170,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
           </tr>
@@ -170,6 +181,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
           </tr>
@@ -211,6 +223,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
               </ul>
             </th>
+            <th data-v-7006d35c="">Resolution</th>
             <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
             <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
@@ -223,6 +236,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
           </tr>
@@ -233,6 +247,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
           </tr>
@@ -243,6 +258,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
           </tr>
@@ -253,6 +269,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
           </tr>
@@ -263,6 +280,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
           </tr>
@@ -273,6 +291,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
           </tr>
@@ -283,6 +302,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
           </tr>
@@ -293,6 +313,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
           </tr>
@@ -303,6 +324,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
           </tr>
@@ -313,6 +335,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
             <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
           </tr>

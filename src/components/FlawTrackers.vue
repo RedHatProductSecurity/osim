@@ -272,6 +272,7 @@ function increaseItemsPerPage() {
                   </template>
                 </ul>
               </th>
+              <th>Resolution</th>
               <th
                 @click="setSort('created_dt')"
               >
@@ -313,6 +314,7 @@ function increaseItemsPerPage() {
               <td>{{ tracker.ps_update_stream }}</td>
               <td>{{ tracker.ps_module }}</td>
               <td>{{ tracker.status?.toUpperCase() || 'EMPTY' }}</td>
+              <td>{{ tracker.resolution?.toUpperCase() }}</td>
               <td>{{ formatDate(tracker.created_dt ?? '', true) }}</td>
               <td>{{ formatDate(tracker.updated_dt ?? '', true) }}</td>
             </tr>
@@ -404,28 +406,32 @@ function increaseItemsPerPage() {
         user-select: none;
 
         &:nth-of-type(1) {
-          width: 15%;
+          width: 12.5%;
         }
 
         &:nth-of-type(2) {
-          width: 20%;
+          width: 18.5%;
         }
 
         &:nth-of-type(3) {
-          width: 20%;
+          width: 18.5%;
         }
 
         &:nth-of-type(4) {
-          width: 15%;
+          width: 12.5%;
         }
 
         &:nth-of-type(5) {
-          width: 15%;
-          cursor: pointer;
+          width: 12.5%;
         }
 
         &:nth-of-type(6) {
-          width: 15%;
+          width: 12.5%;
+          cursor: pointer;
+        }
+
+        &:nth-of-type(7) {
+          width: 12.5%;
           cursor: pointer;
         }
       }

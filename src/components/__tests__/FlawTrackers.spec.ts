@@ -85,7 +85,7 @@ describe('FlawTrackers', () => {
     let firstTracker = trackersTableRows[0];
     expect(firstTracker.find('td:nth-of-type(2)').text()).toBe('xxxx-0-006');
 
-    const componentHeader = subject.find('.affects-trackers table thead tr th:nth-of-type(5)');
+    const componentHeader = subject.find('.affects-trackers table thead tr th:nth-of-type(6)');
     expect(componentHeader.exists()).toBe(true);
     expect(componentHeader.text()).toBe('Created date');
     await componentHeader.trigger('click');
