@@ -148,17 +148,6 @@ Feature: Flaw detail testing on public flaw
       When I add some affects with valid data
       Then I could filter trackers by stream or component name
 
-    Scenario Outline: Update flaw state
-      When I click state button to update flaw state
-      Then The flaw is updated to <new_state> following workflow
-
-      Examples:
-        |                       new_state |
-        |                          TRIAGE |
-        |        PRE_SECONDARY_ASSESSMENT |
-        |            SECONDARY_ASSESSMENT |
-        |                            DONE |
-
     Scenario Outline: Update flaw incident state
       When I update flaw incident state to <new_state>
       Then The flaw incident state is updated to <new_state>
@@ -169,3 +158,14 @@ Feature: Flaw detail testing on public flaw
         |            APPROVED |
         |       CISA_APPROVED |
         |            REJECTED |
+
+    Scenario Outline: Update flaw state
+      When I click state button to update flaw state
+      Then The flaw is updated to <new_state> following workflow
+
+      Examples:
+        |                       new_state |
+        |                          TRIAGE |
+        |        PRE_SECONDARY_ASSESSMENT |
+        |            SECONDARY_ASSESSMENT |
+        |                            DONE |

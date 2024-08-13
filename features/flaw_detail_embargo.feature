@@ -28,7 +28,6 @@ Feature: Flaw detail testing on embargo flaw
       When I delete an affect of the flaw
       Then The affect is deleted
 
-    @skip
     Scenario: Make flaw public and add public date
       When I unembargo this flaw and add public date
       Then Flaw is unembargoed and have public date
