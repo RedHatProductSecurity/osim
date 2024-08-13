@@ -211,7 +211,7 @@ function increaseItemsPerPage() {
             @click="showTrackerManager = true"
           >
             <i class="bi bi-binoculars" />
-            Show Tracker Manager
+            Show Trackers Manager
           </button>
           <button
             v-else
@@ -220,7 +220,7 @@ function increaseItemsPerPage() {
             @click="showTrackerManager = false"
           >
             <i class="bi bi-eye-slash-fill" />
-            Hide Tracker Manager
+            Hide Trackers Manager
           </button>
         </div>
       </div>

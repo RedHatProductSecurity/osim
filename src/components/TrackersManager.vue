@@ -59,7 +59,7 @@ function handleFileTrackers() {
 </script>
 
 <template>
-  <div class="d-flex flex-column py-3 px-4" :class="{'embedded': mode === 'embedded'}">
+  <div class="trackers-manager py-3 px-4" :class="{'embedded': mode === 'embedded'}">
     <h4 v-if="mode === 'embedded'" class="mb-2 d-flex">
       Trackers Manager
     </h4>
@@ -258,11 +258,16 @@ function handleFileTrackers() {
 <style lang="scss" scoped>
 @import '@/scss/bootstrap-overrides';
 
-.embedded {
-  border-top: 0 !important;
-  border: 10px solid #212529;
-  border-bottom-right-radius: .375rem;
-  border-bottom-left-radius: .375rem;
+.trackers-manager {
+  display: flex;
+  flex-direction: column;
+
+  &.embedded {
+    border-top: 0 !important;
+    border: 10px solid #212529;
+    border-bottom-right-radius: .375rem;
+    border-bottom-left-radius: .375rem;
+  }
 }
 
 .osim-tracker-list {

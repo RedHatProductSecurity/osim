@@ -92,7 +92,7 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
           <td data-v-0fd8a3c0=""></td>
           <td data-v-0fd8a3c0="">
-            <div data-v-0fd8a3c0="" class="affect-tracker-cell"><span data-v-0fd8a3c0="" class="me-2 my-auto">4</span><button data-v-0fd8a3c0="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-0fd8a3c0="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            <div data-v-0fd8a3c0="" class="affect-tracker-cell"><span data-v-0fd8a3c0="" class="me-2 my-auto">6</span><button data-v-0fd8a3c0="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-0fd8a3c0="" class="bi bi-plus lh-sm m-auto"></i></button></div>
           </td>
           <td data-v-0fd8a3c0=""><button data-v-0fd8a3c0="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-0fd8a3c0="" class="bi bi-pencil"></i></button>
             <!--v-if--><button data-v-0fd8a3c0="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-0fd8a3c0="" class="bi bi-trash"></i></button>
@@ -176,7 +176,7 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
           <td data-v-0fd8a3c0=""></td>
           <td data-v-0fd8a3c0="">
-            <div data-v-0fd8a3c0="" class="affect-tracker-cell"><span data-v-0fd8a3c0="" class="me-2 my-auto">4</span><button data-v-0fd8a3c0="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-0fd8a3c0="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            <div data-v-0fd8a3c0="" class="affect-tracker-cell"><span data-v-0fd8a3c0="" class="me-2 my-auto">6</span><button data-v-0fd8a3c0="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-0fd8a3c0="" class="bi bi-plus lh-sm m-auto"></i></button></div>
           </td>
           <td data-v-0fd8a3c0=""><button data-v-0fd8a3c0="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-0fd8a3c0="" class="bi bi-pencil"></i></button>
             <!--v-if--><button data-v-0fd8a3c0="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-0fd8a3c0="" class="bi bi-trash"></i></button>
@@ -216,13 +216,13 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
         <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
           <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
         </div>
-        <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;" disabled="">1</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
+        <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;" disabled="">1</button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
         <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
           <div data-v-7006d35c="" class="trackers-badges">
             <div data-v-7006d35c="" class="btn btn-sm badge d-flex py-0" style="pointer-events: none;"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-            <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 8</span></div>
-            <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 8</span></div>
-          </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Tracker Manager </button>
+            <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 12</span></div>
+            <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 10</span></div>
+          </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
@@ -235,6 +235,7 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
               <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" style="font-size: 1rem;" title=""></i></button>
                 <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
                   <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
+                  <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
                 </ul>
               </th>
               <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
@@ -244,9 +245,29 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <tbody data-v-7006d35c="">
             <tr data-v-7006d35c="">
               <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
               </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
+              <td data-v-7006d35c="">xxxx-0-006</td>
+              <td data-v-7006d35c="">openshift-1</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-006</td>
+              <td data-v-7006d35c="">openshift-5-1</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-005</td>
               <td data-v-7006d35c="">openshift-1</td>
               <td data-v-7006d35c="">NEW</td>
               <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -254,73 +275,73 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
               </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
+              <td data-v-7006d35c="">xxxx-0-005</td>
+              <td data-v-7006d35c="">openshift-5-1</td>
+              <td data-v-7006d35c="">NEW</td>
+              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-004</td>
+              <td data-v-7006d35c="">openshift-1</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-004</td>
+              <td data-v-7006d35c="">openshift-5-1</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-003</td>
               <td data-v-7006d35c="">openshift-1</td>
               <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+              <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
               </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
+              <td data-v-7006d35c="">xxxx-0-003</td>
+              <td data-v-7006d35c="">openshift-5-1</td>
+              <td data-v-7006d35c="">NEW</td>
+              <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
+            </tr>
+            <tr data-v-7006d35c="">
+              <td data-v-7006d35c="">
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              </td>
+              <td data-v-7006d35c="">xxxx-0-002</td>
               <td data-v-7006d35c="">openshift-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
               </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
-              <td data-v-7006d35c="">openshift-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-            </tr>
-            <tr data-v-7006d35c="">
-              <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-              </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
+              <td data-v-7006d35c="">xxxx-0-002</td>
               <td data-v-7006d35c="">openshift-5-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-            </tr>
-            <tr data-v-7006d35c="">
-              <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-              </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
-              <td data-v-7006d35c="">openshift-5-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-            </tr>
-            <tr data-v-7006d35c="">
-              <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-              </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
-              <td data-v-7006d35c="">openshift-5-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-            </tr>
-            <tr data-v-7006d35c="">
-              <td data-v-7006d35c="">
-                <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0000 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-              </td>
-              <td data-v-7006d35c="">xxxx-0-yyy</td>
-              <td data-v-7006d35c="">openshift-5-1</td>
-              <td data-v-7006d35c="">NEW</td>
-              <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-              <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+              <td data-v-7006d35c="">CLOSED</td>
+              <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
+              <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
             </tr>
           </tbody>
         </table>
@@ -427,7 +448,7 @@ exports[`FlawAffects > Correctly renders the component when there are not affect
             <!--v-if-->
             <!--v-if-->
             <!--v-if-->
-          </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Tracker Manager </button>
+          </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
