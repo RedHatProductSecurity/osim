@@ -23,7 +23,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function refreshAffects() {
     return getFlaw(flaw.value.uuid).then((response) => {
-      console.log('refreshing affects');
+      console.debug('refreshing affects');
       flaw.value.affects = response.affects;
     });
   }
@@ -33,7 +33,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       (cvssScore.uuid && !cvssScore.affect)
       || (!cvssScore.uuid && cvssScore.affect)
     ) {
-      console.error('CVSS score is missing either uuid or affect', cvssScore);
+      console.error('useFlawAffectsModel::isCvssNew() CVSS score is missing either uuid or affect', cvssScore);
     }
     return !cvssScore.uuid && !cvssScore.affect;
   }
@@ -224,7 +224,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         const response: any = await postAffects(affectsToCreate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
       } catch (error) {
-        console.error('Error occurred while creating affect(s):', error);
+        console.error('useFlawAffectsModel::saveAffects() Error occurred while creating affect(s):', error);
       }
     }
 
@@ -234,7 +234,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         savedAffects.push(...response.data.results);
         resetModifiedAffects();
       } catch (error) {
-        console.error('Error occurred while updating affect(s):', error);
+        console.error('useFlawAffectsModel::saveAffects() Error occurred while updating affect(s):', error);
       }
     }
 
@@ -250,7 +250,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           const savedAffect = savedAffects.find(affectsMatcherFor(affect));
 
           if (!savedAffect) {
-            console.error('Could not find saved affect for:', affect);
+            console.error('useFlawAffectsModel::saveAffects() Could not find saved affect for:', affect);
             continue;
           }
 
@@ -275,7 +275,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           ++affectWithChangedCvssCount;
           resetAffectCvssChanges();
         } catch (error) {
-          console.error('Error following affect save:', error);
+          console.error('useFlawAffectsModel::saveAffects() Error following affect save:', error);
         }
       }
 

@@ -59,7 +59,7 @@ function addPublicCveRequestComment() {
   savingComment.value = true;
   // extract uuid from osimLink
   const flawUuidMatch = /\/flaws?\/([^#?]+)/.exec(props.osimLink);
-  console.log('saving comment');
+  console.debug('saving comment');
   if (flawUuidMatch != null) {
     // new Promise((resolve, reject) => {
     //   setTimeout(resolve, 5000);

@@ -69,7 +69,7 @@ export const osidbHealth = computed<OsidbHealthy>(() => {
 let setupCallCount = 0;
 export async function setup() {
   if (setupCallCount > 0) {
-    console.warn('osimRuntime.setup called more than once:', setupCallCount + 1);
+    console.warn('osimRuntime::setup() called more than once:', setupCallCount + 1);
   }
   setupCallCount++;
   await fetchRuntime()
@@ -95,7 +95,7 @@ async function fetchOsimVersionFallback() {
       runtime.value.osimVersion.rev = json.sha.substring(0, 7);
       runtime.value.osimVersion.tag = '[fetched from Github]';
     })
-    .catch(console.error);
+    .catch(e => console.error('osimRuntime::fetchOsimVersionFallback() failed', e));
 }
 
 function fetchRuntime() {
@@ -109,11 +109,12 @@ function fetchRuntime() {
       try {
         runtime.value = OsimRuntime.parse(json);
       } catch (e) {
-        console.error('Unable to parse OsimRuntime', e);
-        console.log(OsimRuntime.safeParse(json).error?.issues.map(
+        console.error('osimRuntime::fetchRuntime() Unable to parse OsimRuntime',
+          e,
+          OsimRuntime.safeParse(json).error?.issues.map(
           // Provides additional helpful context for zod parsing errors
-          issue => issue.path.join('/') + ': ' + issue.message
-        ));
+            issue => issue.path.join('/') + ': ' + issue.message
+          ));
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
@@ -127,7 +128,7 @@ function fetchRuntime() {
       }
     })
     .catch((e) => {
-      console.error('Unable to get backends', e);
+      console.error('osimRuntime::fetchRuntime() Unable to get backends', e);
       runtime.value.error =
         'Error finding backends. ' +
         'Possible deployment misconfiguration. Please try again.';
@@ -146,13 +147,13 @@ function fetchOsidbHealthy() {
       try {
         _osidbHealth.value = OsidbHealthy.parse(json);
       } catch (e) {
-        console.error('Unable to parse OSIDB health', e);
+        console.error('osimRuntime::fetchOsidbHealthy() Unable to parse OSIDB health', e);
         runtime.value.error = 'Unexpected response from OSIDB. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
     })
     .catch((e) => {
-      console.error('Unable to get OSIDB health', e);
+      console.error('osimRuntime::fetchOsidbHealthy() Unable to get OSIDB health', e);
       runtime.value.error =
         'Error getting OSIDB health. ' +
         'Possible deployment misconfiguration. Please try again.';

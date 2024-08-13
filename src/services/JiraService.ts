@@ -155,7 +155,8 @@ export async function getJiraUsername() {
     if (res.response.ok) {
       return res.data.name;
     }
-  }).catch(() => {
+  }).catch((error) => {
+    console.error('JiraService::getJiraUsername() Error getting your username from jira', error);
     useToastStore().addToast({
       'title': 'Jira Error',
       'body': `Error getting your username from <a href="${osimRuntime.value.backends.jiraDisplay}">Jira</a>. ` +

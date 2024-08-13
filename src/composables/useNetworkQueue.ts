@@ -21,7 +21,7 @@ export function useNetworkQueue() {
       try {
         lastResult = await action();
       } catch (error) {
-        console.error('Error executing action in queue', error);
+        console.error('useNetworkQueue::execute() Error executing action in queue', error);
         ++unsuccessfulCalls.value;
         pendingCalls.value -= remainingTasks;
         throw new Error(`Failed to execute all tasks queue on action ${action}`);

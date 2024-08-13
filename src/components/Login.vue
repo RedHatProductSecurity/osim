@@ -64,7 +64,7 @@ function login(event: Event) {
   //   });
   // })
     .catch(e => {
-      console.debug('Error logging in', e);
+      console.error('Login::login() Error logging in', e);
       if (osimRuntime.value.backends.osidbAuth === 'kerberos') {
         error.value = [
           'Error logging in.',

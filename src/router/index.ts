@@ -183,7 +183,7 @@ router.beforeEach(async (to, from) => {
   if (!canVisitWithoutAuth && !isAuthenticated) {
     if (isNavigationBackButton) {
       console.log(
-        'unauthenticated (probably just logged out), pressed back, and going to protected route'
+        'router::beforeEach() unauthenticated (probably just logged out), pressed back, and going to protected route'
       );
       history.pushState(popState, '', router.resolve({ name: 'login' }).path);
       return { name: 'login' };
@@ -194,7 +194,7 @@ router.beforeEach(async (to, from) => {
       query.redirect = to.fullPath;
     }
 
-    console.log('not authenticated, redirecting to login page');
+    console.log('router::beforeEach() not authenticated, redirecting to login page');
     return { name: 'login', query };
   }
 });
