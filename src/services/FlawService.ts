@@ -89,10 +89,10 @@ export async function getRelatedFlaws (affects: ZodAffectType[]): Promise<ZodFla
   return relatedFlaws;
 }
 
-export async function getFlaw(uuid: string): Promise<ZodFlawType> {
+export async function getFlaw(uuidOrCve: string): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: `/osidb/api/v1/flaws/${uuidOrCve}`,
     params: {
       include_meta_attr: 'bz_id',
     },
