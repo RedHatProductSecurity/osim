@@ -17,10 +17,10 @@ const model = defineModel<DateRangeModel>({
 
 const error = ref<string | null>(null);
 
-watch([() => model?.value?.start, () => model?.value?.end], () => {
+watch(() => [model?.value?.start, model?.value?.end], () => {
   error.value = null;
   if (model?.value?.type === DateRange.CUSTOM && model.value.start && model.value.end) {
-    if (new Date(model.value.start) > new Date(model.value.end)) {
+    if (new Date(model.value.start) >= new Date(model.value.end)) {
       error.value = 'End Date must be after Start Date';
     }
   }
