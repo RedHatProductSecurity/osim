@@ -1,3 +1,1 @@
-import { error } from '.';
-
-export default error;
+export { error as default } from './';
