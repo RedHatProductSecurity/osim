@@ -2,13 +2,13 @@ import { ref, onMounted, watch, watchEffect } from 'vue';import { z } from 'zod'
 import { useRoute, useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
 import { flawFields } from '@/constants/flawFields';
-import { DateRange } from '@/constants/range';
+import { DateRangeTypeEnum } from '@/constants/range';
 
 type Facet = {
   field: string;
   value: string;
   range?: {
-    type: DateRange | undefined,
+    type: DateRangeTypeEnum | undefined,
     start: string | undefined,
     end: string | undefined
   }
@@ -38,18 +38,19 @@ export function useSearchParams() {
   const router = useRouter();
 
   function getRangeFromURL(value: string, key: string) {
-    let type: DateRange | undefined = undefined;
-    let start = undefined;
-    let end = undefined;
+    let type: DateRangeTypeEnum | undefined;
+    let start: string | undefined;
+    let end: string | undefined;
     const rangeOption = supportRangeOption(key);
+
     if (rangeOption) {
       const values = value.split('_');
       if (values.length > 0) {
-        type = values[0] as DateRange;
+        type = values[0] as DateRangeTypeEnum;
         if (values[1] && values[2]) {
           start = rangeOption === 'dateRange' ? new Date(values[1]).toISOString() : values[1];
           end = rangeOption === 'dateRange' ? new Date(values[2]).toISOString() : values[2];
-          type = DateRange.CUSTOM;
+          type = DateRangeTypeEnum.CUSTOM;
         }
       }
       return {
@@ -67,7 +68,7 @@ export function useSearchParams() {
     const rangeOption = supportRangeOption(field);
     if (rangeOption && range) {
       const values: string[] = [range.type as string];
-      if (range.type === DateRange.CUSTOM) {
+      if (range.type === DateRangeTypeEnum.CUSTOM) {
         if (range.start) {
           values.push(
             rangeOption === 'dateRange' ? parseDate(range.start) : range.start
@@ -131,35 +132,37 @@ export function useSearchParams() {
     facets.value = populateFacets();
   });
 
+
   watchEffect(() => {
-    const newFacet = facets.value[facets.value.length - 1];
-    if (newFacet?.field) {
-      if (newFacet.value) {
+    const newFacet = facets.value.at(-1);
+    if (!newFacet) {
+      return;
+    }
+    if (newFacet?.field && newFacet.value) {
+      addFacet();
+      return;
+    }
+
+    if (supportRangeOption(newFacet?.field)) {
+      // assign range values
+      if (!newFacet.range) {
+        newFacet.range = {
+          type:undefined,
+          start: undefined,
+          end: undefined
+        };
+      }
+
+      if (
+        [
+          DateRangeTypeEnum.THIS_WEEK,
+          DateRangeTypeEnum.LAST_WEEK,
+          DateRangeTypeEnum.THIS_MONTH,
+          DateRangeTypeEnum.LAST_MONTH,
+        ].includes(newFacet.range.type!)
+        || DateRangeTypeEnum.CUSTOM === newFacet.range.type && newFacet.range.start && newFacet.range.end
+      ){
         addFacet();
-      } else {
-        if (supportRangeOption(newFacet?.field)) {
-          // assign range values
-          if (!newFacet.range) {
-            newFacet.range = {
-              type:undefined,
-              start: undefined,
-              end: undefined
-            };
-          }
-          switch (newFacet.range.type) {
-          case DateRange.THIS_WEEK:
-          case DateRange.LAST_WEEK:
-          case DateRange.THIS_MONTH:
-          case DateRange.LAST_MONTH:
-            addFacet();
-            break;
-          case DateRange.CUSTOM:
-            if (newFacet.range.start && newFacet.range.end) {
-              addFacet();
-            }
-            break;
-          }
-        }
       }
     }
   });

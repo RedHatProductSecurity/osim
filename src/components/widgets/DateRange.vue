@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { DateRange } from '@/constants/range';
+import { DateRangeTypeEnum } from '@/constants/range';
 import EditableDate from '@/components/widgets/EditableDate.vue';
 
-interface DateRangeModel {
-  type: string | undefined;
-  start: string | undefined;
-  end: string | undefined;
+type DateRangeModel = {
+  type?: DateRangeTypeEnum;
+  start?: string;
+  end?: string;
 }
 
 const model = defineModel<DateRangeModel>({
@@ -19,7 +19,7 @@ const error = ref<string | null>(null);
 
 watch(() => [model?.value?.start, model?.value?.end], () => {
   error.value = null;
-  if (model?.value?.type === DateRange.CUSTOM && model.value.start && model.value.end) {
+  if (model?.value?.type === DateRangeTypeEnum.CUSTOM && model.value.start && model.value.end) {
     if (new Date(model.value.start) >= new Date(model.value.end)) {
       error.value = 'End Date must be after Start Date';
     }
@@ -41,12 +41,12 @@ watch(() => model?.value?.type, () => {
     class="form-select form-date-option"
   >
     <option
-      v-for="(range, key) in DateRange"
+      v-for="(range, key) in DateRangeTypeEnum"
       :key="key"
       :value="range"
     >{{ range }}</option>
   </select>
-  <div v-if="model.type === DateRange.CUSTOM" class="form-date-custom">
+  <div v-if="model.type === DateRangeTypeEnum.CUSTOM" class="form-date-custom">
     <EditableDate
       v-model="model.start"
     />

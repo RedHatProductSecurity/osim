@@ -1,4 +1,4 @@
-export enum DateRange {
+export enum DateRangeTypeEnum {
   THIS_WEEK = 'This Week',
   LAST_WEEK = 'Last Week',
   THIS_MONTH = 'This Month',
