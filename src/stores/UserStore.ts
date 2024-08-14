@@ -204,19 +204,12 @@ export const useUserStore = defineStore('UserStore', () => {
 
   // Watch authentication changes from other tabs
   watch(isAuthenticated, () => {
-    console.warn('UserStore::isAuthenticated() changed', {
-      currentRoute: router.currentRoute,
-      isAuthenticated: isAuthenticated.value
-    });
     if (isAuthenticated.value) {
       if (router.currentRoute.value.name === 'login') {
-        console.log('UserStore::isAuthenticated() isAuthenticated became true while on login page');
-
         try {
           const maybeRedirect = queryRedirect.parse(router.currentRoute.value);
           const redirect = maybeRedirect.query.redirect;
           if (redirect.startsWith('/')) { // avoid possible third-party redirection
-            console.log('UserStore::isAuthenticated() redirect:', redirect);
             router.push(redirect);
             return;
           } else {
@@ -225,29 +218,22 @@ export const useUserStore = defineStore('UserStore', () => {
         } catch (e) {
           // do nothing
         }
-        console.log('UserStore::isAuthenticated() watch push to index');
         router.push({
           name: 'index',
         });
         return;
       }
     } else {
-      console.log('UserStore::isAuthenticated()', router.currentRoute.value);
       $reset();   // wipes tokens if tokens are expired
       if (router.currentRoute.value.name !== 'login') {
-        console.log('UserStore::isAuthenticated() isAuthenticated became false while not on login page');
-
         // Preserve destination
         const currentPath = router.currentRoute.value.fullPath;
-        console.log('UserStore::isAuthenticated() current path:', currentPath);
         if (currentPath !== '/') {
           const query: any = {};
           query.redirect = currentPath;
-          console.log('UserStore::isAuthenticated() UserStore unauthenticated path not slash to login');
           router.push({ name: 'login', query });
           return;
         }
-        console.log('UserStore::isAuthenticated() UserStore unauthenticated to login');
         router.push({
           name: 'login',
         });

@@ -150,7 +150,7 @@ export async function getNextAccessToken() {
     const parsedBody = RefreshResponse.parse(responseBody);
     return parsedBody.access;
   } catch (e) {
-    console.log('OsidbAuthService::getNextAccessToken() Error getting access token', e);
+    console.error('OsidbAuthService::getNextAccessToken() Error getting access token', e);
     return userStore.logout()
       .finally(() => {
         throw new Error('Unable to parse next access token');
