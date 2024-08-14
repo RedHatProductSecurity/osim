@@ -111,15 +111,4 @@ const _ZodAffectSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export const ZodAffectSchema = _ZodAffectSchema.superRefine((data, zodContext) => {
-  if (data.affectedness) {
-    const resolution = AffectednessResolutionPairs[data.affectedness];
-    if (!Object.values(resolution).includes(data.resolution!)){
-      zodContext.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Resolution is not valid',
-        path: ['resolution']
-      });
-    }
-  }
-});
+export const ZodAffectSchema = _ZodAffectSchema;
