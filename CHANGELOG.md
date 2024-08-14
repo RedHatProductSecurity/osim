@@ -4,6 +4,9 @@
 ### Added
 * Add button to Bugzilla on public and private comments
 
+### Fixed
+* Allow saving flaws with historical affects (`OSIDB-3262`)
+
 ## [2024.7.2]
 ### Fixed
 * Fix comment#0 and description fields layout (`OSIDB-3174`)
