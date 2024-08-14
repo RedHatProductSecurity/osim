@@ -8,7 +8,6 @@ import {
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { omit, pick } from 'ramda';
 
-
 const AffectednessEnumWithBlank = { 'Empty': '', ...AffectednessEnum } as const;
 const ResolutionEnumWithBlank = { 'Empty': '', ...ResolutionEnum } as const;
 
@@ -16,11 +15,23 @@ export const affectImpacts = { ...omit([''], ImpactEnumWithBlank), Empty: '' } a
 export const affectResolutions = ResolutionEnumWithBlank;
 export const affectAffectedness = AffectednessEnumWithBlank;
 
-export const AffectednessResolutionPairs: Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>> = {
-  AFFECTED: pick(['Delegated', 'Wontfix', 'Ooss'], affectResolutions),
-  NEW: pick(['Empty', 'Wontfix', 'Ooss'], affectResolutions),
-  NOTAFFECTED: pick(['Empty'], affectResolutions),
-};
+type valueof<T> = T[keyof T];
+type PossibleResolutions = Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>>;
+
+export function possibleAffectResolutions(impact: valueof<typeof affectImpacts>): PossibleResolutions {
+  const pickResolution = (options: (keyof typeof ResolutionEnumWithBlank)[], resolutions: typeof affectResolutions) => {
+    const possibleResolutions = options.filter(option => (
+      impact === affectImpacts.Low && option === 'Defer' || option !== 'Defer'
+    ));
+    return pick(possibleResolutions, resolutions);
+  };
+
+  return {
+    AFFECTED: pickResolution(['Delegated', 'Defer', 'Ooss'], affectResolutions),
+    NEW: pickResolution(['Empty', 'Defer', 'Ooss'], affectResolutions),
+    NOTAFFECTED: pickResolution(['Empty'], affectResolutions),
+  };
+}
 
 
 export type ErratumSchemaType = typeof ErratumSchema;
