@@ -121,8 +121,6 @@ export const useUserStore = defineStore('UserStore', () => {
   }
 
   async function login(username: string = '', password: string = '') {
-    console.debug(osimRuntime.value.backends.osidbAuth);
-
     const requestMetadata: { [key: string]: any } = {};
     if (osimRuntime.value.backends.osidbAuth == 'kerberos') {
       requestMetadata['method'] = 'GET';

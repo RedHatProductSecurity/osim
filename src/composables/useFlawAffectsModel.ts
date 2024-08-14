@@ -23,7 +23,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function refreshAffects() {
     return getFlaw(flaw.value.uuid).then((response) => {
-      console.debug('refreshing affects');
       flaw.value.affects = response.affects;
     });
   }
