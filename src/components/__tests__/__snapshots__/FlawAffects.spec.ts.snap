@@ -44,8 +44,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <th data-v-0fd8a3c0="">
             <!-- State -->
           </th>
-          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""> Module <i data-v-0fd8a3c0="" class="bi-caret-up-fill bi"></i></th>
+          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" class="align-bottom me-1">Affectedness</span><button data-v-0fd8a3c0="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-0fd8a3c0="" class="bi text-white bi-funnel" style="font-size: 1rem;" title=""></i></button>
             <ul data-v-0fd8a3c0="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-0fd8a3c0=""><a data-v-0fd8a3c0="" href="#" class="btn py-0 dropdown-item"><input data-v-0fd8a3c0="" type="checkbox" class="form-check-input me-2"><span data-v-0fd8a3c0="">EMPTY</span></a></li>
@@ -85,8 +85,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -106,8 +106,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -127,8 +127,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -148,8 +148,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -169,8 +169,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-5-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -190,8 +190,8 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-6-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0=""></span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">WONTFIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">CRITICAL</span></td>
@@ -409,8 +409,8 @@ exports[`FlawAffects > Correctly renders the component when there are not affect
           <th data-v-0fd8a3c0="">
             <!-- State -->
           </th>
-          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""> Module <i data-v-0fd8a3c0="" class="bi-caret-up-fill bi"></i></th>
+          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" class="align-bottom me-1">Affectedness</span><button data-v-0fd8a3c0="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-0fd8a3c0="" class="bi text-white bi-funnel" style="font-size: 1rem;" title=""></i></button>
             <ul data-v-0fd8a3c0="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-0fd8a3c0=""><a data-v-0fd8a3c0="" href="#" class="btn py-0 dropdown-item"><input data-v-0fd8a3c0="" type="checkbox" class="form-check-input me-2"><span data-v-0fd8a3c0="">EMPTY</span></a></li>
@@ -534,8 +534,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <th data-v-0fd8a3c0="">
             <!-- State -->
           </th>
-          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""> Module <i data-v-0fd8a3c0="" class="bi-caret-up-fill bi"></i></th>
+          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" class="align-bottom me-1">Affectedness</span><button data-v-0fd8a3c0="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-0fd8a3c0="" class="bi text-white bi-funnel" style="font-size: 1rem;" title=""></i></button>
             <ul data-v-0fd8a3c0="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-0fd8a3c0=""><a data-v-0fd8a3c0="" href="#" class="btn py-0 dropdown-item"><input data-v-0fd8a3c0="" type="checkbox" class="form-check-input me-2"><span data-v-0fd8a3c0="">EMPTY</span></a></li>
@@ -575,8 +575,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -596,8 +596,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -617,8 +617,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -638,8 +638,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -659,8 +659,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-5-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -680,8 +680,8 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-6-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0=""></span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">WONTFIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">CRITICAL</span></td>
@@ -960,8 +960,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <th data-v-0fd8a3c0="">
             <!-- State -->
           </th>
-          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""> Module <i data-v-0fd8a3c0="" class="bi-caret-up-fill bi"></i></th>
+          <th data-v-0fd8a3c0=""> Component <i data-v-0fd8a3c0="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           <th data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" class="align-bottom me-1">Affectedness</span><button data-v-0fd8a3c0="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-0fd8a3c0="" class="bi text-white bi-funnel" style="font-size: 1rem;" title=""></i></button>
             <ul data-v-0fd8a3c0="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-0fd8a3c0=""><a data-v-0fd8a3c0="" href="#" class="btn py-0 dropdown-item"><input data-v-0fd8a3c0="" type="checkbox" class="form-check-input me-2"><span data-v-0fd8a3c0="">EMPTY</span></a></li>
@@ -1001,8 +1001,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -1022,8 +1022,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -1043,8 +1043,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -1064,8 +1064,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -1085,8 +1085,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-5-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">LOW</span></td>
@@ -1106,8 +1106,8 @@ exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-6-1</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0=""></span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">WONTFIX</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">CRITICAL</span></td>

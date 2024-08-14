@@ -763,22 +763,22 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             <th>
               <!-- State -->
             </th>
-            <th @click="setSort('ps_component')">
-              Component
+            <th @click="setSort('ps_module')">
+              Module
               <i
                 :class="{
-                  'opacity-0': sortKey !== 'ps_component',
+                  'opacity-0': sortKey !== 'ps_module',
                   'bi-caret-down-fill': sortOrder === descend,
                   'bi-caret-up-fill': sortOrder !== descend,
                 }"
                 class="bi"
               />
             </th>
-            <th @click="setSort('ps_module')">
-              Module
+            <th @click="setSort('ps_component')">
+              Component
               <i
                 :class="{
-                  'opacity-0': sortKey !== 'ps_module',
+                  'opacity-0': sortKey !== 'ps_component',
                   'bi-caret-down-fill': sortOrder === descend,
                   'bi-caret-up-fill': sortOrder !== descend,
                 }"
@@ -999,23 +999,23 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               <td>
                 <input
                   v-if="isBeingEdited(affect)"
-                  v-model="affect.ps_component"
-                  class="form-control"
-                  @keydown="handleEdit($event, affect)"
-                />
-                <span v-else>
-                  {{ affect.ps_component }}
-                </span>
-              </td>
-              <td>
-                <input
-                  v-if="isBeingEdited(affect)"
                   v-model="affect.ps_module"
                   class="form-control"
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>
                   {{ affect.ps_module }}
+                </span>
+              </td>
+              <td>
+                <input
+                  v-if="isBeingEdited(affect)"
+                  v-model="affect.ps_component"
+                  class="form-control"
+                  @keydown="handleEdit($event, affect)"
+                />
+                <span v-else>
+                  {{ affect.ps_component }}
                 </span>
               </td>
               <td>

@@ -214,11 +214,11 @@ describe('FlawAffects', () => {
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let firstAffect = affectsTableRows[0];
-    expect(firstAffect.find('td:nth-of-type(3) span').text()).toBe('openshift-1-1');
+    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-1-1');
     let secondAffect = affectsTableRows[1];
-    expect(secondAffect.find('td:nth-of-type(3) span').text()).toBe('openshift-2-1');
+    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-2-1');
 
-    const componentHeader = subject.find('.affects-management table thead tr th:nth-of-type(3)');
+    const componentHeader = subject.find('.affects-management table thead tr th:nth-of-type(4)');
     expect(componentHeader.exists()).toBe(true);
     expect(componentHeader.text()).toBe('Component');
     await componentHeader.trigger('click');
@@ -226,9 +226,9 @@ describe('FlawAffects', () => {
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     firstAffect = affectsTableRows[0];
-    expect(firstAffect.find('td:nth-of-type(3) span').text()).toBe('openshift-4-1');
+    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-4-1');
     secondAffect = affectsTableRows[1];
-    expect(secondAffect.find('td:nth-of-type(3) span').text()).toBe('openshift-3-1');
+    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-3-1');
   });
 
   it('Affects can be filtered by affectedness', async () => {
