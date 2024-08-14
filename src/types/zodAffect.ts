@@ -78,9 +78,9 @@ export const AffectCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export type ZodAffectType = z.infer<typeof _ZodAffectSchema>;
-export type AffectSchemaType = typeof _ZodAffectSchema;
-const _ZodAffectSchema = z.object({
+export type ZodAffectType = z.infer<typeof ZodAffectSchema>;
+export type AffectSchemaType = typeof ZodAffectSchema;
+export const ZodAffectSchema = z.object({
   uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
@@ -110,5 +110,3 @@ const _ZodAffectSchema = z.object({
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
 });
-
-export const ZodAffectSchema = _ZodAffectSchema;
