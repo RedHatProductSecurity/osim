@@ -40,12 +40,10 @@ function beginEdit() {
 function commit() {
   editing.value = false;
   emit('update:modelValue', editedModelValue.value);
-  console.log('commit');
 }
 function abort() {
   editing.value = false;
   editedModelValue.value = props.modelValue;
-  console.log('abort');
 }
 function onBlur(e: FocusEvent | null) {
   if (e == null || e.currentTarget == null) {

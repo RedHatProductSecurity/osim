@@ -45,7 +45,7 @@ export function useFlawsFetching() {
         total.value = response.data.count;
       })
       .catch((err) => {
-        console.error('IssueQueue: getFlaws error: ', err);
+        console.error('useFlawsFetching::loadFlaws() IssueQueue: getFlaws error: ', err);
       })
       .finally(() => {
         isLoading.value = false;
@@ -72,7 +72,7 @@ export function useFlawsFetching() {
         }
       })
       .catch((err) => {
-        console.error('Error fetching more flaws: ', err);
+        console.error('useFlawsFetching::loadMoreFlaws() Error fetching more flaws: ', err);
       })
       .finally(() => {
         isLoading.value = false;

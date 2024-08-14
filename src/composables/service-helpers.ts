@@ -13,7 +13,7 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
       body: displayedError,
       css: 'warning',
     });
-    console.error('❌ ', error);
+    console.error('service-helpers::createCatchHandler() ' + title, error);
 
     if (shouldThrow) {
       throw error;

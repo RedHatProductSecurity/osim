@@ -32,7 +32,7 @@ function refreshFlaw() {
         title: 'Error loading Flaw',
         body: getDisplayedOsidbError(err),
       });
-      console.error(err);
+      console.error('FlawEditView::refreshFlaw() Error loading flaw', err);
     });
 }
 </script>

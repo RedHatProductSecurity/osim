@@ -10,7 +10,6 @@ export default function useJiraContributors(task_key: string) {
   const isLoadingContributors = ref(false);
 
   const { ignoreUpdates } = watchIgnorable(contributors, () => {
-    console.log('Contributors updated');
     hasNewContributors.value = true;
   }, { deep: true });
 

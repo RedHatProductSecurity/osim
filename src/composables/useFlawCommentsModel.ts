@@ -43,9 +43,9 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
       })
       .catch((res) => {
         if (res?.response?.status === 404) {
-          console.error('Error loading internal Jira comments: Task id not found.');
+          console.error('useFlawCommentsModel::loadInternalComments() Error loading Jira comments: Task id not found.');
         } else {
-          console.error('Error loading internal Jira comments');
+          console.error('useFlawCommentsModel::loadInternalComments() Error loading Jira comments');
         }
         internalCommentsAvailable.value = false;
       })

@@ -18,7 +18,7 @@ export async function beforeFetch(options: OsidbFetchOptions) {
         throw new Error('An updated_dt could not be fetched');
       }
     } catch (error) {
-      console.error('Problem on fetch preparation. ', (error as Error).message);
+      console.error('FlawService::beforeFetch() Problem on fetch preparation. ', (error as Error).message);
       throw new Error('Problem on fetch preparation. ' + (error as Error).message);
     }
   }
@@ -187,7 +187,7 @@ export async function promoteFlaw(uuid: string) {
         body: displayedError,
         css: 'warning',
       });
-      console.error('❌ Problem promoting flaw:', error);
+      console.error('FlawService::promoteFlaw() Problem promoting flaw:', error);
       throw error;
     });
 }
@@ -215,7 +215,7 @@ export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
         body: displayedError,
         css: 'warning',
       });
-      console.error('❌ Problem rejecting flaw:', error);
+      console.error('FlawService::rejectFlaw() Problem rejecting flaw:', error);
       throw error;
     });
 }

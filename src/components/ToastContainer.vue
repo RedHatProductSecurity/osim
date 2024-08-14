@@ -27,7 +27,6 @@ const height = computed<string>(() => {
 });
 
 function clearAll() {
-  console.log('clearing all');
   toasts.length = 0;
   // while (toasts.length > 0) {
   //   toasts.shift();

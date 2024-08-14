@@ -13,27 +13,33 @@ const SPLUNK_URL = new URL('/proxy/splunk/', window.location.origin).href;
  * @param {"INFO"|"ERROR"|"WARN"} severity Severity of the log message.
  */
 function logger(message, severity) {
+  try {
   /** @type UserStore */
-  const store = JSON.parse(localStorage.getItem('UserStore')) || {};
+    const store = JSON.parse(localStorage.getItem('UserStore')) || {};
 
-  const environment = store?.env || 'unset';
-  const username = store?.whoami?.username || 'unset';
+    const environment = store?.env || 'unset';
+    const username = store?.whoami?.username || 'unset';
 
-  fetch(SPLUNK_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: JSON.stringify({
-      event: {
-        message,
-        severity,
-        environment,
-        username,
+    fetch(SPLUNK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      sourcetype: 'osim',
-    }),
-  });
+      body: JSON.stringify({
+        event: {
+          message,
+          severity,
+          environment,
+          username,
+        },
+        sourcetype: 'osim',
+      },
+      getCircularReplacer()),
+    });
+  } catch (e) {
+    // We have to use window.console.error here because we are overriding the console.error
+    window.console.error('Failed to send log to splunk', e);
+  }
 }
 
 function formatMessage(args) {
@@ -46,6 +52,29 @@ function formatMessage(args) {
   }
 
   return args;
+}
+
+/**
+ * This handles circular references for JSON.stringify.
+ * Vue refs are circular references and will cause JSON.stringify to throw an error.
+ */
+function getCircularReplacer() {
+  const ancestors = [];
+  return function (key, value) {
+    if (typeof value !== 'object' || value === null) {
+      return value;
+    }
+    // `this` is the object that value is contained in,
+    // i.e., its direct parent.
+    while (ancestors.length > 0 && ancestors.at(-1) !== this) {
+      ancestors.pop();
+    }
+    if (ancestors.includes(value)) {
+      return '[Circular]';
+    }
+    ancestors.push(value);
+    return value;
+  };
 }
 
 export function log() {

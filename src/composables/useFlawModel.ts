@@ -92,7 +92,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
           }
         });
     } catch (error) {
-      console.error('Error when saving flaw:', error);
+      console.error('useFlawModel::createFlaw() Error when saving flaw:', error);
     } finally {
       isSaving.value = false;
     }
@@ -146,7 +146,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     try {
       await execute(...queue);
     } catch (error) {
-      console.error('Error updating flaw:', error);
+      console.error('useFlawModel::updateFlaw() Error updating flaw:', error);
       isSaving.value = false;
       return;
     }

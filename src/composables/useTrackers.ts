@@ -135,7 +135,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
       .then((response: any) => {
         moduleComponents.value = response.modules_components;
       })
-      .catch(console.error);
+      .catch(e => console.error('useTrackers::loadTrackers() Error loading trackers', e));
   }
 
   function getUpdateStreamsFor(module: string, component: string) {

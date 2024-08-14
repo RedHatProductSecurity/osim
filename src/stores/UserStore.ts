@@ -121,8 +121,6 @@ export const useUserStore = defineStore('UserStore', () => {
   }
 
   async function login(username: string = '', password: string = '') {
-    console.log(osimRuntime.value.backends.osidbAuth);
-
     const requestMetadata: { [key: string]: any } = {};
     if (osimRuntime.value.backends.osidbAuth == 'kerberos') {
       requestMetadata['method'] = 'GET';
@@ -173,7 +171,7 @@ export const useUserStore = defineStore('UserStore', () => {
       })
       .catch(e => {
         $reset();
-        console.error('UserStore: unsuccessful login request', e);
+        console.error('UserStore::login() unsuccessful login request', e);
         throw e;
       });
   }
@@ -204,48 +202,36 @@ export const useUserStore = defineStore('UserStore', () => {
 
   // Watch authentication changes from other tabs
   watch(isAuthenticated, () => {
-    console.log('isAuthenticated changed, current route:', router.currentRoute);
-    console.log('isAuthenticated changed, isAuthenticated:', isAuthenticated.value);
     if (isAuthenticated.value) {
       if (router.currentRoute.value.name === 'login') {
-        console.log('isAuthenticated became true while on login page');
-
         try {
           const maybeRedirect = queryRedirect.parse(router.currentRoute.value);
           const redirect = maybeRedirect.query.redirect;
           if (redirect.startsWith('/')) { // avoid possible third-party redirection
-            console.log('UserStore watch redirect:', redirect);
             router.push(redirect);
             return;
           } else {
-            console.log('Refusing to redirect to', redirect);
+            console.log('UserStore::isAuthenticated() Refusing to redirect to', redirect);
           }
         } catch (e) {
           // do nothing
         }
-        console.log('UserStore watch push to index');
         router.push({
           name: 'index',
         });
         return;
       }
     } else {
-      console.log(router.currentRoute.value);
       $reset();   // wipes tokens if tokens are expired
       if (router.currentRoute.value.name !== 'login') {
-        console.log('isAuthenticated became false while not on login page');
-
         // Preserve destination
         const currentPath = router.currentRoute.value.fullPath;
-        console.log('current path:', currentPath);
         if (currentPath !== '/') {
           const query: any = {};
           query.redirect = currentPath;
-          console.log('UserStore unauthenticated path not slash to login');
           router.push({ name: 'login', query });
           return;
         }
-        console.log('UserStore unauthenticated to login');
         router.push({
           name: 'login',
         });
