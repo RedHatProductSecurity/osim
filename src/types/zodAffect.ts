@@ -7,6 +7,8 @@ import {
 
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { omit, pick } from 'ramda';
+import type { valueof } from '@/utils/helpers';
+
 
 const AffectednessEnumWithBlank = { 'Empty': '', ...AffectednessEnum } as const;
 const ResolutionEnumWithBlank = { 'Empty': '', ...ResolutionEnum } as const;
@@ -15,10 +17,9 @@ export const affectImpacts = { ...omit([''], ImpactEnumWithBlank), Empty: '' } a
 export const affectResolutions = ResolutionEnumWithBlank;
 export const affectAffectedness = AffectednessEnumWithBlank;
 
-type valueof<T> = T[keyof T];
 type PossibleResolutions = Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>>;
 
-export function possibleAffectResolutions(impact: valueof<typeof affectImpacts>): PossibleResolutions {
+export function possibleAffectResolutions(impact?: valueof<typeof affectImpacts>): PossibleResolutions {
   const pickResolution = (options: (keyof typeof ResolutionEnumWithBlank)[], resolutions: typeof affectResolutions) => {
     const possibleResolutions = options.filter(option => (
       impact === affectImpacts.Low && option === 'Defer' || option !== 'Defer'

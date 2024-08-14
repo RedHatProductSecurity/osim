@@ -6,7 +6,7 @@ import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import {
   affectAffectedness,
-  AffectednessResolutionPairs,
+  possibleAffectResolutions,
 } from '@/types/zodAffect';
 
 vi.mock('@/stores/osimRuntime', async () => {
@@ -152,7 +152,24 @@ describe('AffectExpandableForm', () => {
     expect(affectednessOptions).toStrictEqual(affectAffectedness);
     await affectednessSelectEl.find('select').setValue('AFFECTED');
     const resolutionOptions = resolutionSelectEL.props('options');
-    expect(resolutionOptions).toStrictEqual(AffectednessResolutionPairs['AFFECTED']);
+    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions('IMPORTANT')['AFFECTED']);
+  });
+
+  it('should allow DEFER with impact LOW', async () => {
+    const formComponent = subject.findAllComponents(AffectedOfferingForm);
+    expect(formComponent.length).toBe(1);
+    const selectComponents = formComponent[0].findAllComponents(LabelSelect);
+    expect(selectComponents.length).toBe(3);
+    const affectednessSelect = selectComponents[0];
+    const resolutionSelect = selectComponents[1];
+    const impactSelect = selectComponents[2];
+    const affectednessOptions = affectednessSelect.props('options');
+    expect(affectednessOptions).toStrictEqual(affectAffectedness);
+    await affectednessSelect.setValue('AFFECTED');
+    const resolutionOptions = resolutionSelect.props('options');
+    impactSelect.setValue('LOW');
+    resolutionSelect.setValue('DEFER');
+    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions('IMPORTANT')['AFFECTED']);
   });
 
   it('should render trackers with errata link', async () => {

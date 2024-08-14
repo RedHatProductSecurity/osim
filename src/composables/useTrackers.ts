@@ -1,7 +1,8 @@
+import type { valueof } from './../utils/helpers';
 import { computed, ref, watch, type Ref } from 'vue';
 
 import { getTrackersForFlaws, type TrackersPost, fileTrackingFor } from '@/services/TrackerService';
-import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import { affectResolutions, type ZodAffectType, type ZodTrackerType } from '@/types/zodAffect';
 
 export type UpdateStream = ModuleComponentProductStream & UpdateStreamMeta;
 type ZodTrackerTypeWithAffect = ZodTrackerType & ZodAffectType;
@@ -53,17 +54,30 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     })
   );
 
-  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value.flatMap((moduleComponent) =>
-    moduleComponent.streams.map((stream: UpdateStream) => ({
-      ...stream,
-      ps_component: moduleComponent.ps_component,
-      ps_module: moduleComponent.ps_module,
-      affectUuid: moduleComponent.affect.uuid
-    }))
-  ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
-    (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
+  function isResolutionTrackable(affect: ZodAffectType) {
+    const allowedResolutions: valueof<typeof affectResolutions>[] = [
+      affectResolutions.Delegated,
+      affectResolutions.Empty,
+    ];
+
+    return affect.resolution
+      ? allowedResolutions.includes(affect.resolution)
+      : false;
+  }
+
+  const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value
+    .filter(moduleComponent => isResolutionTrackable(moduleComponent.affect))
+    .flatMap((moduleComponent) =>
+      moduleComponent.streams.map((stream: UpdateStream) => ({
+        ...stream,
+        ps_component: moduleComponent.ps_component,
+        ps_module: moduleComponent.ps_module,
+        affectUuid: moduleComponent.affect.uuid
+      }))
+    ).filter((stream: UpdateStream) => !alreadyFiledTrackers.value.find(
+      (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
       && tracker.ps_component === stream.ps_component
-  )));
+    )));
 
   const sortedStreams = computed(
     (): UpdateStream[] => availableUpdateStreams.value
@@ -90,8 +104,9 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   const untrackedAffects = computed(() => affects.value.filter((affect) => affect.trackers.length === 0));
 
   const untrackableAffects = computed(() => untrackedAffects.value
-    .filter(
-      (affect) => availableUpdateStreams.value.find(
+    .filter((affect) =>
+      isResolutionTrackable(affect) // Don't report affects that have invalid resolutions as untrackable
+      && availableUpdateStreams.value.find(
         stream => stream.ps_module === affect.ps_module && stream.ps_component === affect.ps_component
       ) === undefined
     )
