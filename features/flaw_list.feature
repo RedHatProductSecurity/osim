@@ -16,13 +16,13 @@ Feature: Flaw list testing
     @skip
     Scenario: List all my issues
      Given I assgin an issue to me
-      When I check 'My Issues' checkbox in index page
+      When I check 'My Issues' checkbox on home page
       Then Only my issues are listed in flaw list
 
     Scenario: List all open issues
-      When I check 'Open Issues' checkbox of flaw list
+      When I check 'Open Issues' checkbox on home page
       Then Only open issues are listed in flaw list
 
     Scenario: List flaws by default filter
-      When I set a default filter and back to flaw list
+      When I set a default filter and back to home page
       Then The flaw list is filtered by the default filter

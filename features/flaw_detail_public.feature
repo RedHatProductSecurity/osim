@@ -7,15 +7,9 @@ Feature: Flaw detail testing on public flaw
       * I set the bugzilla api key and jira api key
       * I go to a public flaw detail page
 
-    Scenario Outline: Add new comment to a flaw
-      When I add a <comment_type> comment to the flaw
-      Then A <comment_type> comment is added to the flaw
-
-      Examples:
-        |         comment_type |
-        |               Public |
-        |              Private |
-        |             Internal |
+    Scenario: Add new comments to a flaw
+      When I add new comments to the flaw
+      Then The comments are added to the flaw
 
     Scenario Outline: Update Document Text Fields
       When I <action> the document text fields
@@ -27,14 +21,9 @@ Feature: Flaw detail testing on public flaw
         |         delete |
         |            add |
 
-    Scenario Outline: Update dropdown options
-      When I update the dropdown <field> value
-      Then The dropdown <field> value is updated
-
-      Examples:
-        |         field |
-        |        impact |
-        |        source |
+    Scenario: Update dropdown options
+      When I update the dropdown field values
+      Then The dropdown field values are updated
 
     Scenario: Add acknowledgement
       When I add an acknowledgment to the flaw
@@ -48,15 +37,9 @@ Feature: Flaw detail testing on public flaw
       When I delete an acknowledgement from acknowledgement list
       Then Acknowledgement is removed from flaw
 
-    Scenario: Update editable random input fields
-      When I update the random input fields
-        |         field |
-        |         title |
-        |    components |
-        |         owner |
-        |  contributors |
-        |        cvssV3 |
-      Then The random input fields are updated
+    Scenario: Update editable input fields
+      When I update the input fields
+      Then The input fields are updated
 
     Scenario: Erase CVSSv3 field value
       When I click the erase button of CVSSv3 field
