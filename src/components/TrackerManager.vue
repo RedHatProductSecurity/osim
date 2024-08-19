@@ -61,12 +61,11 @@ function handleFileTrackers() {
     <h4 v-if="mode === 'embedded'" class="mb-2 d-flex">
       Trackers Manager
     </h4>
-    <div class="d-flex gap-2">
+    <div class="trackers-search-bar gap-2">
       <input
         v-model="filterString"
         type="text"
         class="form-control form-control-sm"
-        style="width: 35%;"
         placeholder="Filter by stream or component name"
       />
       <button
@@ -265,6 +264,14 @@ function handleFileTrackers() {
     border: 10px solid #212529;
     border-bottom-right-radius: .375rem;
     border-bottom-left-radius: .375rem;
+  }
+
+  .trackers-search-bar {
+    display: flex;
+
+    input {
+      width: 65ch;
+    }
   }
 }
 

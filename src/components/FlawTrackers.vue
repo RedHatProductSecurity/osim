@@ -149,7 +149,6 @@ function increaseItemsPerPage() {
             v-for="page in pages"
             :key="page"
             class="page-btn btn btn-sm rounded-0 btn-info"
-            style="width: 34.8px;"
             :disabled="page === currentPage || page === '..'"
             @click.prevent="changePage(page as number)"
           >
@@ -165,11 +164,10 @@ function increaseItemsPerPage() {
           </button>
         </div>
         <div class="trackers-toolbar p-2 pt-1">
-          <div class="trackers-badges">
+          <div class="tracker-badges">
             <div
               v-if="paginatedTrackers.length > 0"
-              class="btn btn-sm badge d-flex py-0"
-              style="pointer-events: none;"
+              class="per-page-btn btn btn-sm badge"
             >
               <i
                 :style="settings.trackersPerPage > minItemsPerPage
@@ -228,7 +226,7 @@ function increaseItemsPerPage() {
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
         <table class="table table-striped table-info mb-0">
-          <thead class="sticky-top" style="z-index: 1;">
+          <thead class="sticky-top">
             <tr>
               <th>Bug ID</th>
               <th>Module</th>
@@ -246,7 +244,6 @@ function increaseItemsPerPage() {
                 >
                   <i
                     class="bi"
-                    style="font-size: 1rem;"
                     :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                     :title="statusFilter.length !== 0 ? 'Filtering by some statuses' : ''"
                   />
@@ -346,6 +343,10 @@ function increaseItemsPerPage() {
       height: 2rem;
       padding-block: 0;
     }
+
+    .page-btn {
+      width: 34.8px;
+    }
   }
 
   .osim-tracker-card {
@@ -368,10 +369,16 @@ function increaseItemsPerPage() {
       }
     }
 
-    .trackers-badges {
+    .tracker-badges {
       display: flex;
       margin-block: 0;
       gap: .25rem;
+
+      .per-page-btn {
+        display: flex;
+        padding-block: 0;
+        pointer-events: none;
+      }
 
       .badge {
         height: 28px;
@@ -398,12 +405,18 @@ function increaseItemsPerPage() {
 
   table {
     thead {
+      z-index: 1;
+
       .dropdown-menu {
         z-index: 10;
       }
 
       tr th {
         user-select: none;
+
+        #status-filter .bi {
+          font-size: 1rem;
+        }
 
         &:nth-of-type(1) {
           width: 12.5%;

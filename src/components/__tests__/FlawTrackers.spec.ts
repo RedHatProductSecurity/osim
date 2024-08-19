@@ -52,10 +52,10 @@ describe('FlawTrackers', () => {
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let rowCount = trackersTableRows.length;
     expect(rowCount).toBe(10);
-    let itemsPerPageIndicator = subject.find('.trackers-toolbar .trackers-badges .btn span');
+    let itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
 
-    const reduceItemsBtn = subject.find('.trackers-toolbar .trackers-badges .btn .bi-dash-square');
+    const reduceItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-dash-square');
     for (let i = 0; i < 5; i++) {
       await reduceItemsBtn.trigger('click');
     }
@@ -63,10 +63,10 @@ describe('FlawTrackers', () => {
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
     expect(rowCount).toBe(5);
-    itemsPerPageIndicator = subject.find('.trackers-toolbar .trackers-badges .btn span');
+    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
 
-    const increaseItemsBtn = subject.find('.trackers-toolbar .trackers-badges .btn .bi-plus-square');
+    const increaseItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-plus-square');
     for (let i = 0; i < 5; i++) {
       await increaseItemsBtn.trigger('click');
     }
@@ -74,7 +74,7 @@ describe('FlawTrackers', () => {
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
     expect(rowCount).toBe(10);
-    itemsPerPageIndicator = subject.find('.trackers-toolbar .trackers-badges .btn span');
+    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 

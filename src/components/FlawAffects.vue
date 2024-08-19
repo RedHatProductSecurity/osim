@@ -588,8 +588,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         <div class="badges my-auto gap-1" :class="{ 'me-3': hasAffects }">
           <div
             v-if="paginatedAffects.length > 0"
-            class="btn btn-sm btn-secondary d-flex py-0"
-            style="pointer-events: none;"
+            class="per-page-btn btn btn-sm btn-secondary"
           >
             <i
               :style="settings.affectsPerPage > minItemsPerPage
@@ -799,7 +798,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 1rem;"
                   :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="affectednessFilter.length !== 0 ? 'Filtering by some affectedness' : ''"
                 />
@@ -844,7 +842,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 1rem;"
                   :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="resolutionFilter.length !== 0 ? 'Filtering by some resolutions' : ''"
                 />
@@ -889,7 +886,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               >
                 <i
                   class="bi text-white"
-                  style="font-size: 1rem;"
                   :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
                   :title="impactFilter.length !== 0 ? 'Filtering by some impacts' : ''"
                 />
@@ -956,7 +952,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 'removed': isRemoved(affect),
                 'selected': isAffectSelected(affect),
               }"
-              style="position: relative;"
               :style="isSelectable(affect) ? 'cursor: pointer' : ''"
               :title="affectRowTooltip(affect)"
               @click.prevent="toggleAffectSelection(affect)"
@@ -1257,6 +1252,12 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       .badges {
         display: flex;
 
+        .per-page-btn {
+          display: flex;
+          padding-block: 0;
+          pointer-events: none;
+        }
+
         > div {
           height: 32px;
           display: flex;
@@ -1366,6 +1367,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 
       tbody {
         tr {
+          position: relative;
           transition: filter .25s;
 
           td {
@@ -1510,5 +1512,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     }
   }
 
+  #impact-filter > .bi,
+  #resolution-filter > .bi,
+  #affectedness-filter > .bi {
+    font-size: 1rem;
+  }
 }
 </style>
