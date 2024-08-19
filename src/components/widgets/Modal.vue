@@ -24,6 +24,9 @@ watch(show, () => {
   }
 }, { immediate: true });
 
+defineOptions({
+  inheritAttrs: false
+});
 </script>
 
 <template>
