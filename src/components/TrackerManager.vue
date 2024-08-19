@@ -253,7 +253,6 @@ function handleFileTrackers() {
 </template>
 
 <style lang="scss" scoped>
-@import '@/scss/bootstrap-overrides';
 
 .trackers-manager {
   display: flex;
