@@ -10,7 +10,7 @@ import { type ZodAffectType } from '@/types/zodAffect';
 import { uniques } from '@/utils/helpers';
 import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
-import TrackerManager from '@/components/TrackersManager.vue';
+import TrackerManager from '@/components/TrackerManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import { useModal } from '@/composables/useModal';

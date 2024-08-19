@@ -3,7 +3,7 @@ import { computed, ref, type Ref } from 'vue';
 import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { ascend, descend, sortWith } from 'ramda';
-import TrackerManager from '@/components/TrackersManager.vue';
+import TrackerManager from '@/components/TrackerManager.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { usePagination } from '@/composables/usePagination';
 

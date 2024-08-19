@@ -329,9 +329,9 @@ describe('FlawAffects', () => {
     await affectsTableRows[1].trigger('click');
     await affectsTableRows[2].trigger('click');
 
-    const trackersManagerSelection = subject.find('.affects-toolbar .affects-table-actions .trackers-btn');
-    expect(trackersManagerSelection.text()).toBe('Manage Trackers');
-    await trackersManagerSelection.trigger('click');
+    const trackerManagerSelection = subject.find('.affects-toolbar .affects-table-actions .trackers-btn');
+    expect(trackerManagerSelection.text()).toBe('Manage Trackers');
+    await trackerManagerSelection.trigger('click');
 
     const modal = subject.find('.modal');
     expect(modal.exists()).toBe(true);

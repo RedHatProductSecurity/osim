@@ -98,18 +98,18 @@ describe('FlawTrackers', () => {
   it('Displays embedded trackers manager', async () => {
     subject = mountWithTrackers();
 
-    let trackersManagerElement = subject.find('.trackers-manager');
-    expect(trackersManagerElement.exists()).toBe(false);
+    let trackerManagerElement = subject.find('.trackers-manager');
+    expect(trackerManagerElement.exists()).toBe(false);
 
-    let toggleTrackersManagerView = subject.find('.trackers-toolbar .btn-info');
-    expect(toggleTrackersManagerView.text()).toBe('Show Trackers Manager');
-    await toggleTrackersManagerView.trigger('click');
+    let toggleTrackerManagerView = subject.find('.trackers-toolbar .btn-info');
+    expect(toggleTrackerManagerView.text()).toBe('Show Trackers Manager');
+    await toggleTrackerManagerView.trigger('click');
 
-    trackersManagerElement = subject.find('.trackers-manager');
-    expect(trackersManagerElement.exists()).toBe(true);
+    trackerManagerElement = subject.find('.trackers-manager');
+    expect(trackerManagerElement.exists()).toBe(true);
 
-    toggleTrackersManagerView = subject.find('.trackers-toolbar .btn-info');
-    expect(toggleTrackersManagerView.text()).toBe('Hide Trackers Manager');
+    toggleTrackerManagerView = subject.find('.trackers-toolbar .btn-info');
+    expect(toggleTrackerManagerView.text()).toBe('Hide Trackers Manager');
 
     expect(subject.html()).toMatchSnapshot();
   });
