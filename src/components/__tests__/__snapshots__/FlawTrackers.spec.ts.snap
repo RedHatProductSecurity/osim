@@ -9,7 +9,7 @@ exports[`FlawTrackers > Correctly renders the component when there are not track
       </div>
       <!--v-if-->
       <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="trackers-badges">
+        <div data-v-7006d35c="" class="tracker-badges">
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
@@ -18,12 +18,12 @@ exports[`FlawTrackers > Correctly renders the component when there are not track
     </div>
     <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
       <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="" class="sticky-top" style="z-index: 1;">
+        <thead data-v-7006d35c="" class="sticky-top">
           <tr data-v-7006d35c="">
             <th data-v-7006d35c="">Bug ID</th>
             <th data-v-7006d35c="">Module</th>
             <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" style="font-size: 1rem;" title=""></i></button>
+            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
             </th>
             <th data-v-7006d35c="">Resolution</th>
@@ -47,10 +47,10 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
       <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
       </div>
-      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;" disabled="">1</button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
+      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
       <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="trackers-badges">
-          <div data-v-7006d35c="" class="btn btn-sm badge d-flex py-0" style="pointer-events: none;"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
+        <div data-v-7006d35c="" class="tracker-badges">
+          <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 12</span></div>
           <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 10</span></div>
         </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
@@ -58,12 +58,12 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
     </div>
     <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
       <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="" class="sticky-top" style="z-index: 1;">
+        <thead data-v-7006d35c="" class="sticky-top">
           <tr data-v-7006d35c="">
             <th data-v-7006d35c="">Bug ID</th>
             <th data-v-7006d35c="">Module</th>
             <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" style="font-size: 1rem;" title=""></i></button>
+            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
@@ -201,10 +201,10 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
       <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
       </div>
-      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;" disabled="">1</button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" style="width: 34.8px;">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
+      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-7006d35c="" class="page-btn btn btn-sm rounded-0 btn-info">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
       <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="trackers-badges">
-          <div data-v-7006d35c="" class="btn btn-sm badge d-flex py-0" style="pointer-events: none;"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
+        <div data-v-7006d35c="" class="tracker-badges">
+          <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 12</span></div>
           <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 10</span></div>
         </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-eye-slash-fill"></i> Hide Trackers Manager </button>
@@ -212,12 +212,12 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
     </div>
     <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
       <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="" class="sticky-top" style="z-index: 1;">
+        <thead data-v-7006d35c="" class="sticky-top">
           <tr data-v-7006d35c="">
             <th data-v-7006d35c="">Bug ID</th>
             <th data-v-7006d35c="">Module</th>
             <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" style="font-size: 1rem;" title=""></i></button>
+            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
                 <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
@@ -344,46 +344,46 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
       <!--v-if-->
     </div>
   </div>
-  <div data-v-6855088c="" data-v-7006d35c="" class="trackers-manager py-3 px-4 embedded">
-    <h4 data-v-6855088c="" class="mb-2 d-flex"> Trackers Manager </h4>
-    <div data-v-6855088c="" class="d-flex gap-2"><input data-v-6855088c="" type="text" class="form-control form-control-sm" style="width: 35%;" placeholder="Filter by stream or component name"><button data-v-6855088c="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-6855088c="" class="bi bi-check-all"></i> Select All </button><button data-v-6855088c="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-6855088c="" class="bi bi-x-square"></i> Deselect All </button></div>
-    <div class="row mt-3" data-v-6855088c="">
-      <div class="col" data-v-6855088c="">
-        <h5 class="d-inline-block fs-5" data-v-6855088c="">Available Trackers</h5><span class="fst-italic" data-v-6855088c=""> (<i class="bi bi-box-arrow-in-right" data-v-6855088c=""></i> indicates a Suggested Tracker) </span>
+  <div data-v-4977998e="" data-v-7006d35c="" class="trackers-manager py-3 px-4 embedded">
+    <h4 data-v-4977998e="" class="mb-2 d-flex"> Trackers Manager </h4>
+    <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
+    <div class="row mt-3" data-v-4977998e="">
+      <div class="col" data-v-4977998e="">
+        <h5 class="d-inline-block fs-5" data-v-4977998e="">Available Trackers</h5><span class="fst-italic" data-v-4977998e=""> (<i class="bi bi-box-arrow-in-right" data-v-4977998e=""></i> indicates a Suggested Tracker) </span>
       </div>
-      <div class="col" data-v-6855088c="">
-        <h6 class="fs-5" data-v-6855088c="">Selected To File</h6>
+      <div class="col" data-v-4977998e="">
+        <h6 class="fs-5" data-v-4977998e="">Selected To File</h6>
       </div>
     </div>
-    <div data-v-6855088c="" class="row">
-      <div data-v-6855088c="" class="col">
-        <div data-v-6855088c="" class="mb-2">
-          <div data-v-6855088c="" class="ms-2 mb-1"><span data-v-6855088c="" class="spinner-border spinner-border-sm" role="status"><span data-v-6855088c="" class="visually-hidden">Loading...</span></span><span data-v-6855088c=""> Loading trackers… </span></div>
+    <div data-v-4977998e="" class="row">
+      <div data-v-4977998e="" class="col">
+        <div data-v-4977998e="" class="mb-2">
+          <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
           <!--v-if-->
         </div>
       </div>
-      <div data-v-6855088c="" class="col">
-        <div data-v-6855088c="" class="mb-2">
-          <div data-v-6855088c="" class="ms-2 mb-1"><span data-v-6855088c="" class="spinner-border spinner-border-sm" role="status"><span data-v-6855088c="" class="visually-hidden">Loading...</span></span><span data-v-6855088c=""> Loading trackers… </span></div>
+      <div data-v-4977998e="" class="col">
+        <div data-v-4977998e="" class="mb-2">
+          <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
           <!--v-if-->
         </div>
       </div>
     </div>
-    <div data-v-6855088c="" class="row mt-4">
-      <div data-v-6855088c="" class="col mb-2">
-        <h5 data-v-6855088c="">Already Filed</h5>
-        <div data-v-6855088c="" class="ms-2 mb-1"><span data-v-6855088c="" class="spinner-border spinner-border-sm" role="status"><span data-v-6855088c="" class="visually-hidden">Loading...</span></span><span data-v-6855088c=""> Loading trackers… </span></div>
+    <div data-v-4977998e="" class="row mt-4">
+      <div data-v-4977998e="" class="col mb-2">
+        <h5 data-v-4977998e="">Already Filed</h5>
+        <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
         <!--v-if-->
       </div>
-      <div data-v-6855088c="" class="col">
-        <div data-v-6855088c="">
-          <h5 data-v-6855088c="">Untrackable Affects <i data-v-6855088c="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
-          <div data-v-6855088c="" class="ms-2 mb-1"><span data-v-6855088c="" class="spinner-border spinner-border-sm" role="status"><span data-v-6855088c="" class="visually-hidden">Loading...</span></span><span data-v-6855088c=""> Loading trackers… </span></div>
+      <div data-v-4977998e="" class="col">
+        <div data-v-4977998e="">
+          <h5 data-v-4977998e="">Untrackable Affects <i data-v-4977998e="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
+          <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
           <!--v-if-->
           <!--v-if-->
         </div>
       </div>
-    </div><button data-v-6855088c="" type="button" class="btn btn-sm btn-black osim-file-trackers mt-4" disabled=""><i data-v-6855088c="" class="bi bi-archive"></i> File Selected Trackers </button>
+    </div><button data-v-4977998e="" type="button" class="btn btn-sm btn-black osim-file-trackers mt-4" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
   </div>
 </div>"
 `;
