@@ -200,25 +200,6 @@ const createdDate = computed(() => {
   }
   return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
 });
-
-// const theAffects = computed(() => {
-//   const unSavedAffectSort = (a: ZodAffectType, b: ZodAffectType) => {
-//     if (!a.uuid && b.uuid) {
-//       return 1;
-//     }
-//     if (a.uuid && !b.uuid) {
-//       return -1;
-//     }
-//     return 0;
-//   };
-//   return sortWith([
-//     unSavedAffectSort,
-//     ascend((affect: ZodAffectType) => affect.ps_product ?? ''),
-//     ascend(prop('ps_module')),
-//     ascend(prop('ps_component'))
-//   ], flaw.value.affects);
-// });
-
 </script>
 
 <template>
