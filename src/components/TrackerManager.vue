@@ -112,7 +112,7 @@ function handleFileTrackers() {
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <span> Loading trackers&hellip; </span>
+            <span>Loading trackers&hellip;</span>
           </div>
           <div v-if="availableAffectStreams?.length === 0 && !isLoadingTrackers" class="ms-2">
             <span> No available trackers&hellip; </span>
@@ -151,7 +151,7 @@ function handleFileTrackers() {
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <span> Loading trackers&hellip; </span>
+            <span>Loading trackers&hellip;</span>
           </div>
           <div v-if="selectedAffectStreams?.length === 0 && !isLoadingTrackers" class="ms-2">
             <span> No trackers selected&hellip; </span>
@@ -183,7 +183,7 @@ function handleFileTrackers() {
           >
             <span class="visually-hidden">Loading...</span>
           </span>
-          <span> Loading trackers&hellip; </span>
+          <span>Loading trackers&hellip;</span>
         </div>
         <div v-if="alreadyFiledTrackers?.length === 0 && !isLoadingTrackers" class="ms-2">
           <span> No filed trackers&hellip; </span>
@@ -220,7 +220,7 @@ function handleFileTrackers() {
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <span> Loading trackers&hellip; </span>
+            <span>Loading trackers&hellip;</span>
           </div>
           <div v-if="untrackableAffects?.length === 0 && !isLoadingTrackers" class="ms-2">
             <span> No untrackable affects&hellip; </span>
