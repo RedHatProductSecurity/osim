@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { sampleFlaw_1 } from './__sampledata__/sampleFlaws';
+import { sampleFlaw_1 } from './__fixtures__/sampleFlaws';
 import CvssExplainForm from '../CvssExplainForm.vue';
 
 describe('CVSS Explain Form', () => {

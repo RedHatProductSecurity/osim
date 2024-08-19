@@ -1,5 +1,5 @@
 import { VueWrapper, mount } from '@vue/test-utils';
-import { sampleFlaw_1 } from './__sampledata__/sampleFlaws';
+import { sampleFlaw_1 } from './__fixtures__/sampleFlaws';
 import { AlertTypeEnum } from '@/generated-client';
 import { randomUUID } from 'crypto';
 import FlawAlertsList from '../FlawAlertsList.vue';

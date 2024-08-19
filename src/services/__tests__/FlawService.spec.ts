@@ -1,4 +1,4 @@
-import { sampleFlaw_1 } from '@/components/__tests__/__sampledata__/sampleFlaws';
+import { sampleFlaw_1 } from '@/components/__tests__/__fixtures__/sampleFlaws';
 import { putFlaw } from '../FlawService';
 import { createTestingPinia } from '@pinia/testing';
 

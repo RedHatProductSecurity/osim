@@ -22,7 +22,7 @@ import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
-import { sampleFlaw_1 } from './__sampledata__/sampleFlaws';
+import { sampleFlaw_1 } from './__fixtures__/sampleFlaws';
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 

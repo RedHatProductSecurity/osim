@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import FlawTrackers from '@/components/FlawTrackers.vue';
-import { sampleFlawAffects_1 } from './__sampledata__/sampleFlawAffects';
+import { sampleFlawAffects_1 } from './__fixtures__/sampleFlawAffects';
 import { mount } from '@vue/test-utils';
 
 
