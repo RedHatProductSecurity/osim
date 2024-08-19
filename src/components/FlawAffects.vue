@@ -456,12 +456,12 @@ const totalPages = computed(() =>
   Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
 );
 
+const minItemsPerPage = 5;
+const maxItemsPerPage = 20;
 const {
   pages,
   itemsPerPage,
   currentPage,
-  minItemsPerPage,
-  maxItemsPerPage,
   changePage,
 } = usePagination(totalPages, settings.value.affectsPerPage);
 
