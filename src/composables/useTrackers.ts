@@ -174,6 +174,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     isFilingTrackers.value = true;
     return fileTrackingFor(trackersToFile.value)
       .then(loadTrackers)
+      .catch(e => console.error('useTrackers::loadTrackers() Error filing trackers', e))
       .finally(() => isFilingTrackers.value = false);
   }
 
