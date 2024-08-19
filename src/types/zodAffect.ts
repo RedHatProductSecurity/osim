@@ -19,7 +19,7 @@ export const affectAffectedness = AffectednessEnumWithBlank;
 
 type PossibleResolutions = Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>>;
 
-export function possibleAffectResolutions(impact?: valueof<typeof affectImpacts>): PossibleResolutions {
+export function possibleAffectResolutions(impact?: valueof<typeof affectImpacts> | null): PossibleResolutions {
   const pickResolution = (options: (keyof typeof ResolutionEnumWithBlank)[], resolutions: typeof affectResolutions) => {
     const possibleResolutions = options.filter(option => (
       impact === affectImpacts.Low && option === 'Defer' || option !== 'Defer'
