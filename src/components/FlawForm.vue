@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
-// import { sortWith, ascend, prop } from 'ramda';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
@@ -23,7 +22,6 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
-// import { type ZodTrackerType, type ZodAffectCVSSType, type ZodAffectType } from '@/types/zodAffect';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
