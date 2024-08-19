@@ -9,8 +9,6 @@ const props = defineProps<{
   mode: 'modal' | 'embedded';
 }>();
 
-const affects = toRef(props, 'affects');
-
 const {
   trackerSelections,
   trackersToFile,
@@ -23,7 +21,7 @@ const {
   alreadyFiledTrackers,
   untrackableAffects,
   isLoadingTrackers,
-} = useTrackers(props.flawId, affects);
+} = useTrackers(props.flawId, toRef(props, 'affects'));
 
 const availableAffectStreams = computed(() => {
   const referenceAffect = props.affects;
