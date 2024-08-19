@@ -9,7 +9,11 @@ const props = defineProps<{
   mode: 'modal' | 'embedded';
 }>();
 
+const emit = defineEmits<{
+  'affects-trackers:refresh': [];
+}>();
 const {
+
   trackerSelections,
   trackersToFile,
   fileTrackers,
@@ -44,10 +48,6 @@ const selectedAffectStreams = computed(() => {
     );
   });
 });
-
-const emit = defineEmits<{
-  'affects-trackers:refresh': [];
-}>();
 
 function handleFileTrackers() {
   fileTrackers().then(() => {
