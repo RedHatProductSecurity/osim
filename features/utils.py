@@ -88,28 +88,13 @@ def skip_step_when_needed(func):
     return wrapper
 
 
-def set_jira_api_key(browser):
-    """
-    set osim jira API key in settings
-    """
+def set_api_keys(browser):
     home_page = HomePage(browser)
     home_page.click_btn("userBtn")
     home_page.click_btn("settingsBtn")
-
     settings_page = SettingsPage(browser)
-    settings_page.set_jira_api_key(JIRA_API_KEY)
-
-
-def set_bugzilla_api_key(browser):
-    """
-    set osim jira API key in settings
-    """
-    home_page = HomePage(browser)
-    home_page.click_btn("userBtn")
-    home_page.click_btn("settingsBtn")
-
-    settings_page = SettingsPage(browser)
-    settings_page.set_bugzilla_api_key(BUGZILLA_API_KEY)
+    settings_page.set_api_key('bugzilla', BUGZILLA_API_KEY)
+    settings_page.set_api_key('jira', JIRA_API_KEY)
 
 
 def go_to_home_page(browser):

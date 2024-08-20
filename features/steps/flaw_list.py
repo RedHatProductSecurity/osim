@@ -104,7 +104,7 @@ def step_impl(context):
             assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."
 
 
-@when("I check 'Open Issues' checkbox of flaw list")
+@when("I check 'Open Issues' checkbox on home page")
 def step_impl(context):
     home_page = HomePage(context.browser)
     home_page.click_btn('openIssuesCheckbox')
@@ -123,7 +123,7 @@ def step_impl(context):
     assert context.state != 'DONE', 'Closed issue(s) in open issues filter result'
 
 
-@when("I set a default filter and back to flaw list")
+@when("I set a default filter and back to home page")
 def step_impl(context):
     go_to_advanced_search_page(context.browser)
     # Set a default search
@@ -165,7 +165,7 @@ def step_impl(context):
     detail_page.wait_msg('flawSavedMsg')
 
 
-@when("I check 'My Issues' checkbox in index page")
+@when("I check 'My Issues' checkbox on home page")
 def step_impl(context):
     home_page = HomePage(context.browser)
     go_to_home_page(context.browser)

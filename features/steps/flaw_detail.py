@@ -18,7 +18,7 @@ from features.constants import AFFECTED_MODULE_JR
 
 
 MAX_RETRY = 10
-DOCUMENT_TEXT_FIELDS = {
+DOCUMENT_TEXT_ACTION_FIELD_DICT = {
     # Exclude 'comment#0' because it's mandatory in creation
     'add': ['description', 'statement', 'mitigation'],
     # requires_cve_description can not be REQUESTED if description is missing
@@ -26,38 +26,45 @@ DOCUMENT_TEXT_FIELDS = {
     # Exclude 'description' because of OSIDB-2308
     'update': ['description', 'statement', 'mitigation']
 }
+DROPDOWN_FIELDS = ['impact', 'source']
+INPUT_FIELDS = ['title', 'components', 'owner', 'contributors', 'cvssV3']
+COMMENT_TYPES = ['Public', 'Private', 'Internal']
 
 
-@when("I add a {comment_type} comment to the flaw")
-def step_impl(context, comment_type):
+@when("I add new comments to the flaw")
+def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    if comment_type != 'Public':
-        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
-    flaw_detail_page.add_comment_btn_exist(comment_type)
-    flaw_detail_page.click_button_with_js('add' + comment_type + 'CommentBtn')
+    context.new_comments = []
+    for comment_type in COMMENT_TYPES:
+        if comment_type != 'Public':
+            flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+        flaw_detail_page.add_comment_btn_exist(comment_type)
+        flaw_detail_page.click_button_with_js('add' + comment_type + 'CommentBtn')
 
-    new_comment = generate_random_text()
-    flaw_detail_page.set_comment_value(comment_type, new_comment)
-    flaw_detail_page.click_button_with_js('save' + comment_type + 'CommentBtn')
-    flaw_detail_page.wait_msg(comment_type.lower() + "CommentSavedMsg")
-    time.sleep(2)
-    context.new_comment = new_comment
+        new_comment = generate_random_text()
+        flaw_detail_page.set_comment_value(comment_type, new_comment)
+        flaw_detail_page.click_button_with_js('save' + comment_type + 'CommentBtn')
+        flaw_detail_page.wait_msg(comment_type.lower() + "CommentSavedMsg")
+        time.sleep(2)
+        context.new_comments.append(new_comment)
 
 
-@then('A {comment_type} comment is added to the flaw')
-def step_impl(context, comment_type):
-    # Check the comment saved successfully
+@then('The comments are added to the flaw')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    if comment_type != 'Public':
-        flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
-    comment_xpath = f"//p[@class='osim-flaw-comment' and text()='{context.new_comment}']"
-    flaw_detail_page.check_element_exists(By.XPATH, comment_xpath)
+    for comment_type in COMMENT_TYPES:
+        if comment_type != 'Public':
+            flaw_detail_page.click_button_with_js('tab' + comment_type + 'Comments')
+            comment_text = context.new_comments[COMMENT_TYPES.index(comment_type)]
+            comment_xpath = f"//p[@class='osim-flaw-comment' and text()='{comment_text}']"
+            flaw_detail_page.check_element_exists(By.XPATH, comment_xpath)
 
 
 @when('I {action} the document text fields')
 def step_impl(context, action):
     flaw_detail_page = FlawDetailPage(context.browser)
-    fields = DOCUMENT_TEXT_FIELDS.get(action)
+    fields = DOCUMENT_TEXT_ACTION_FIELD_DICT.get(action)
     text_dict = dict.fromkeys(fields, '')
     if action != 'delete':
         for field in fields:
@@ -100,21 +107,25 @@ def step_impl(context):
     flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
 
 
-@when('I update the dropdown {field} value')
-def step_impl(context, field):
+@when('I update the dropdown field values')
+def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    v = flaw_detail_page.set_select_value(field)
-    context.selected = v
+    context.field_values = []
+    for field in DROPDOWN_FIELDS:
+        value = flaw_detail_page.set_select_value(field)
+        context.field_values.append(value)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
 
-@then('The dropdown {field} value is updated')
-def step_impl(context, field):
+@then('The dropdown field values are updated')
+def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    _, v = flaw_detail_page.get_select_value(field)
-    assert context.selected == v, f"{field} value should be {context.selected}, got {v}"
+    for field in DROPDOWN_FIELDS:
+        _, v = flaw_detail_page.get_select_value(field)
+        updated_value = context.field_values[DROPDOWN_FIELDS.index(field)]
+        assert v == updated_value, f"{field} value should be {updated_value}, got {v}"
 
 
 @when("I edit the first acknowledgement in correct format")
@@ -157,14 +168,13 @@ def step_impl(context):
     flaw_detail_page.check_acknowledgement_not_exist(context.ack_value)
 
 
-@when("I update the random input fields")
+@when("I update the input fields")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     home_page = HomePage(context.browser)
 
     context.field_values = []
-    for row in context.table:
-        field = row["field"]
+    for field in INPUT_FIELDS:
         value = generate_random_text()
         if field == "contributors" or field == "owner":
             value = home_page.get_jira_username()
@@ -185,7 +195,7 @@ def step_impl(context):
     flaw_detail_page.wait_msg("cvssV3SavedMsg")
 
 
-@then("The random input fields are updated")
+@then("The input fields are updated")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)

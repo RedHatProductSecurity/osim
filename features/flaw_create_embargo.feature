@@ -10,6 +10,6 @@ Feature: Flaw creation testing, embargo
       And I create new embargoed flaw with valid data
       Then The flaw is created and marked as an embargoed flaw
 
-    Scenario: Add CVE ID to a flaw without a CVE
-      When I add a CVE ID to a flaw without a CVE
+    Scenario: Add CVE ID to a flaw
+      When I add a CVE ID to a flaw
       Then The flaw CVE ID is saved

@@ -51,7 +51,7 @@ class FlawDetailPage(BasePage):
         "tabInternalComments": ("XPATH", "//button[contains(text(), 'Internal Comments')]"),
         "addInternalCommentBtn": ("XPATH", "//button[contains(text(), 'Add Internal Comment')]"),
         "saveInternalCommentBtn": ("XPATH", "//button[contains(text(),'Save Internal Comment')]"),
-        "internalCommentSavedMsg": ("XPATH", "//div[text()='Internal comment saved.']"),
+        "internalCommentSavedMsg": ("XPATH", "//div[text()='Internal comment saved']"),
         "newInternalCommentText": ("XPATH", "//span[contains(text(),'New Internal Comment')]"),
 
         "resetBtn": ("XPATH", '//button[text()="Reset Changes"]'),
