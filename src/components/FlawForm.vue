@@ -473,7 +473,7 @@ const createdDate = computed(() => {
           Save Changes
         </button>
       </div>
-      <div v-if="mode === 'create'">
+      <div v-else-if="mode === 'create'">
         <button
           v-osim-loading.grow="isSaving"
           type="submit"
