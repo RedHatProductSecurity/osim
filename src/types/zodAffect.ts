@@ -9,7 +9,6 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { omit, pick } from 'ramda';
 import type { ValueOf } from '@/utils/typeHelpers';
 
-
 const AffectednessEnumWithBlank = { 'Empty': '', ...AffectednessEnum } as const;
 const ResolutionEnumWithBlank = { 'Empty': '', ...ResolutionEnum } as const;
 
@@ -28,8 +27,8 @@ export function possibleAffectResolutions(impact?: ValueOf<typeof affectImpacts>
   };
 
   return {
-    AFFECTED: pickResolution(['Delegated', 'Defer', 'Ooss'], affectResolutions),
-    NEW: pickResolution(['Empty', 'Defer', 'Ooss'], affectResolutions),
+    AFFECTED: pickResolution(['Delegated', 'Defer', 'Wontfix', 'Ooss'], affectResolutions),
+    NEW: pickResolution(['Empty', 'Defer', 'Wontfix', 'Ooss'], affectResolutions),
     NOTAFFECTED: pickResolution(['Empty'], affectResolutions),
   };
 }
