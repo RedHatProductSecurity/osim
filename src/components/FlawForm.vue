@@ -441,7 +441,7 @@ const createdDate = computed(() => {
             @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
             @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
             @affects:refresh="refreshAffects"
-            @affect:add="(affect) => addAffect(affect)"
+            @affect:add="addAffect"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
