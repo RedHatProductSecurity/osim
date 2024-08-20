@@ -1,4 +1,4 @@
-import type { valueof } from './../utils/helpers';
+import type { ValueOf, Nullable } from '@/utils/typeHelpers';
 import { computed, ref, watch, type Ref } from 'vue';
 
 import { getTrackersForFlaws, type TrackersPost, fileTrackingFor } from '@/services/TrackerService';
@@ -54,15 +54,16 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     })
   );
 
-  function isResolutionTrackable(affect: ZodAffectType) {
-    const allowedResolutions: valueof<typeof affectResolutions>[] = [
-      affectResolutions.Delegated,
-      affectResolutions.Empty,
-    ];
+  type AllowedResolution = ValueOf<typeof affectResolutions>;
+  type AllowedResolutionGuard = ZodAffectType & typeof allowedResolutions[number];
 
-    return affect.resolution
-      ? allowedResolutions.includes(affect.resolution)
-      : false;
+  const allowedResolutions: Nullable<AllowedResolution>[] = [
+    affectResolutions.Delegated,
+    affectResolutions.Empty,
+  ];
+
+  function isResolutionTrackable(affect: ZodAffectType): affect is AllowedResolutionGuard {
+    return allowedResolutions.includes(affect.resolution);
   }
 
   const availableUpdateStreams = computed((): UpdateStream[] => moduleComponents.value

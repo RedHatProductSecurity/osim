@@ -2,8 +2,6 @@ import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue
 import { DateTime } from 'luxon';
 import * as R from 'ramda';
 
-export type valueof<T> = T[keyof T];
-
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
   const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
