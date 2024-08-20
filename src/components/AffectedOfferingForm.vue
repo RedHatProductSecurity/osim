@@ -6,7 +6,7 @@ import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { trackerUrl } from '@/services/TrackerService';
 import {
-  AffectednessResolutionPairs,
+  possibleAffectResolutions,
   affectAffectedness,
   affectImpacts,
   type ZodAffectType,
@@ -14,13 +14,13 @@ import {
 import { formatDate, getRhCvss3 } from '@/utils/helpers';
 
 const { width: screenWidth } = useWindowSize();
-const resolutionOptions = computed(() =>
-  (modelValue.value?.affectedness && AffectednessResolutionPairs[modelValue.value?.affectedness]) || []
-);
-type NotUndefined<T> = Exclude<T, undefined>;
+
+const resolutionOptions = computed(() => modelValue.value?.affectedness
+  ? possibleAffectResolutions(modelValue.value?.impact)[modelValue.value.affectedness]
+  : []);
 
 defineProps<{
-  error: Record<string, NotUndefined<any>> | null;
+  error: Record<string, Exclude<any, undefined>> | null;
 }>();
 
 const isScreenSortaSmall = computed(() => screenWidth.value < 950);
@@ -50,9 +50,9 @@ watch(() => rhCvss3.value?.vector, () => {
   }
 });
 
-watch(() => modelValue.value?.affectedness, () => {
+watch([() => modelValue.value?.affectedness, () => modelValue.value?.impact], () => {
   if (modelValue.value) {
-    modelValue.value.resolution = '';
+    modelValue.value.resolution = Object.values(resolutionOptions.value)[0];
   }
 });
 

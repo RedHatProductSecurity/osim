@@ -7,6 +7,9 @@
 ### Fixed
 * Allow saving flaws with historical affects (`OSIDB-3262`)
 
+### Changed
+* `DEFER` has replaced `WONTFIX` as an affect resolution, and cannot be selected when impact is not `LOW` (`OSIDB-3285`, `OSIDB-3286`, `OSIDB-3288`)
+
 ## [2024.7.2]
 ### Fixed
 * Fix comment#0 and description fields layout (`OSIDB-3174`)

@@ -4,7 +4,7 @@ import { computed, toRef } from 'vue';
 
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import AffectedOfferingForm from '@/components/AffectedOfferingForm.vue';
-import { type ZodAffectType } from '@/types/zodAffect';
+import { affectResolutions, affectAffectedness, type ZodAffectType } from '@/types/zodAffect';
 import { type UpdateStream } from '@/composables/useTrackers';
 
 const props = defineProps<{
@@ -33,9 +33,9 @@ const affectednessLabel = computed(() => {
   const affectedness: string = props.affect.affectedness || '';
   const affectednessValue = {
     [affectedness]: affectedness,
-    'NEW': 'New',
-    'AFFECTED': 'Affected',
-    'NOTAFFECTED': 'Not Affected',
+    [affectAffectedness.New]: 'New',
+    [affectAffectedness.Affected]: 'Affected',
+    [affectAffectedness.Notaffected]: 'Not Affected',
   }[affectedness];
   return affectednessValue && `Affectedness: ${affectednessValue}` || '';
 });
@@ -44,9 +44,9 @@ const resolutionLabel = computed(() => {
   const resolution: string = props.affect.resolution || '';
   const resolutionValue = {
     [resolution]: resolution,
-    'DELEGATED': 'Delegated',
-    'WONTFIX': 'Won\'t Fix',
-    'OOSS': 'OOSS',
+    [affectResolutions.Delegated]: 'Delegated',
+    [affectResolutions.Defer]: 'Defer',
+    [affectResolutions.Ooss]: 'OOSS',
   }[resolution];
   return resolutionValue && `Resolution: ${resolutionValue}` || '';
 });
