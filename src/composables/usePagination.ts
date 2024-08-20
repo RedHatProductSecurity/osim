@@ -1,12 +1,12 @@
 import { type Ref, ref, computed, watch } from 'vue';
 
-export function usePagination(totalPages: Ref<number>, initialItemsPerPage: number, maxPagesToShow?: number) {
+export function usePagination(totalPages: Ref<number>, initialItemsPerPage: number, maxPagesToShow = 7) {
   const currentPage = ref(1);
   const itemsPerPage = ref(initialItemsPerPage);
 
   const pages = computed(() => {
     const result: number[] = [];
-    if (totalPages.value > (maxPagesToShow || 7)) {
+    if (totalPages.value > maxPagesToShow) {
       if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
         return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
       } else if (currentPage.value <= 3) {
