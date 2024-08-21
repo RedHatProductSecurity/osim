@@ -3,14 +3,14 @@
 ## [Unreleased]
 ### Added
 * Add button to Bugzilla on public and private comments
-* `DEFER` is now a possible affect resolution, but can only be selected when impact is `LOW` (`OSIDB-3285`, `OSIDB-3286`, `OSIDB-3288`)
+* `DEFER` is now a possible affect resolution (`OSIDB-3286`, `OSIDB-3288`)
 
 ### Fixed
 * Allow saving flaws with historical affects (`OSIDB-3262`)
 
 ## [2024.7.2]
 ### Fixed
-* Fix comment#0 and description fields layout (`OSIDB-3174`)
+* Fix comment#0 and description fields layout (`OSIDB-3174`)$$
 * Indicate when single tracker successfully filed (`OSIDB-3144`)
 
 ### Added
