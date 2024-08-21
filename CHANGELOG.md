@@ -10,7 +10,7 @@
 
 ## [2024.7.2]
 ### Fixed
-* Fix comment#0 and description fields layout (`OSIDB-3174`)$$
+* Fix comment#0 and description fields layout (`OSIDB-3174`)
 * Indicate when single tracker successfully filed (`OSIDB-3144`)
 
 ### Added
