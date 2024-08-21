@@ -134,6 +134,53 @@ describe('FlawAffects', () => {
     expect(affectsTableEditingRows.length).toBe(1);
   });
 
+  it('Show DEFER resolution option when affect impact is LOW', async () => {
+    subject = mountWithAffects();
+
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
+    expect(affectRowEditBtn.exists()).toBe(true);
+    await affectRowEditBtn.trigger('click');
+
+    const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
+    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
+    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+
+    const selectedImpact = impactSelect.find('option[selected]');
+    expect(selectedImpact.text()).toBe('LOW');
+
+    const selectedAffectedness = affectednessSelect.find('option[selected]');
+    expect(selectedAffectedness.text()).toBe('AFFECTED');
+
+    const resolutionOptions = resolutionSelect.findAll('option').map(wrapper => wrapper.text());
+    expect(resolutionOptions.length).toBe(4);
+    expect(resolutionOptions.includes('DELEGATED')).toBe(true);
+  });
+
+  it('Don\'t show DEFER resolution option if impact is not LOW', async () => {
+    subject = mountWithAffects();
+
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    const affectRowEditBtn = affectsTableRows[5].find('td:last-of-type button:first-of-type');
+    expect(affectRowEditBtn.exists()).toBe(true);
+    await affectRowEditBtn.trigger('click');
+
+    const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
+    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
+    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+
+    const selectedImpact = impactSelect.find('option[selected]');
+    expect(selectedImpact.text()).toBe('CRITICAL');
+
+    const selectedAffectedness = affectednessSelect.find('option[selected]');
+    expect(selectedAffectedness.text()).toBe('');
+
+    const resolutionOptions = resolutionSelect.findAll('option').map(wrapper => wrapper.text());
+    expect(resolutionOptions.includes('DEFER')).toBe(false);
+  });
+
   it('Affects can be modified', async () => {
     subject = mountWithAffects();
 
