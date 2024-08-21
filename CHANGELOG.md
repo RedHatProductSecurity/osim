@@ -3,7 +3,7 @@
 ## [Unreleased]
 ### Added
 * Add button to Bugzilla on public and private comments
-* `DEFER` is now a possible affect resolution, but can only be selected when impact is `LOW` (`OSIDB-3285`, `OSIDB-3286`, `OSIDB-3288`)
+* `DEFER` is now a possible affect resolution (`OSIDB-3286`, `OSIDB-3288`)
 
 ### Fixed
 * Allow saving flaws with historical affects (`OSIDB-3262`)

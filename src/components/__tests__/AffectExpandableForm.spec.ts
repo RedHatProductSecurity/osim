@@ -152,7 +152,7 @@ describe('AffectExpandableForm', () => {
     expect(affectednessOptions).toStrictEqual(affectAffectedness);
     await affectednessSelectEl.find('select').setValue('AFFECTED');
     const resolutionOptions = resolutionSelectEL.props('options');
-    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions('IMPORTANT')['AFFECTED']);
+    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions['AFFECTED']);
   });
 
   it('should allow DEFER with impact LOW', async () => {
@@ -169,7 +169,7 @@ describe('AffectExpandableForm', () => {
     const resolutionOptions = resolutionSelect.props('options');
     impactSelect.setValue('LOW');
     resolutionSelect.setValue('DEFER');
-    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions('IMPORTANT')['AFFECTED']);
+    expect(resolutionOptions).toStrictEqual(possibleAffectResolutions['AFFECTED']);
   });
 
   it('should NOT allow DEFER without impact LOW', async () => {

@@ -16,7 +16,7 @@ import { formatDate, getRhCvss3 } from '@/utils/helpers';
 const { width: screenWidth } = useWindowSize();
 
 const resolutionOptions = computed(() => modelValue.value?.affectedness
-  ? possibleAffectResolutions(modelValue.value?.impact)[modelValue.value.affectedness]
+  ? possibleAffectResolutions[modelValue.value.affectedness]
   : []);
 
 defineProps<{
