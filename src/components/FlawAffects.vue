@@ -41,9 +41,6 @@ const { affects, affectsToDelete } = toRefs(props);
 const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 const savedAffects = clone(affects.value) as ZodAffectType[];
-const affectsNotBeingDeleted = computed(
-  () => affects.value.filter((affect) => !affectsToDelete.value.includes(affect))
-);
 
 // Sorting
 type sortKeys = keyof Pick<ZodAffectType,
@@ -490,12 +487,14 @@ const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.tra
 const affectsManaging = ref<ZodAffectType[]>();
 
 const displayedTrackers = computed(() => {
-  return sortedAffects.value.flatMap(affect =>
-    affect.trackers.map(tracker => ({
-      ...tracker,
-      ps_module: affect.ps_module
-    }))
-  );
+  return sortedAffects.value
+    .filter(affect => !affectsToDelete.value.includes(affect))
+    .flatMap(affect =>
+      affect.trackers.map(tracker => ({
+        ...tracker,
+        ps_module: affect.ps_module
+      }))
+    );
 });
 
 function fileTrackersForAffects(affects: ZodAffectType[]) {
@@ -1164,7 +1163,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     <FlawTrackers
       :flawId="flawId"
       :displayedTrackers="displayedTrackers"
-      :affectsNotBeingDeleted="affectsNotBeingDeleted"
+      :affectsNotBeingDeleted="affects"
       :allTrackersCount="allTrackers.length"
     />
   </div>
