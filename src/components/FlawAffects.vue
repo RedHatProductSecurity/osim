@@ -457,7 +457,6 @@ const minItemsPerPage = 5;
 const maxItemsPerPage = 20;
 const {
   pages,
-  itemsPerPage,
   currentPage,
   changePage,
 } = usePagination(totalPages, settings.value.affectsPerPage);
@@ -471,14 +470,12 @@ const paginatedAffects = computed(() => {
 function reduceItemsPerPage() {
   if (settings.value.affectsPerPage > minItemsPerPage) {
     settings.value.affectsPerPage --;
-    itemsPerPage.value--;
   }
 }
 
 function increaseItemsPerPage() {
   if (settings.value.affectsPerPage < maxItemsPerPage) {
     settings.value.affectsPerPage ++;
-    itemsPerPage.value++;
   }
 }
 

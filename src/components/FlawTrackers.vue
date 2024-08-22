@@ -100,7 +100,6 @@ const minItemsPerPage = 5;
 const maxItemsPerPage = 20;
 const {
   pages,
-  itemsPerPage,
   currentPage,
   changePage,
 } = usePagination(totalPages, settings.value.trackersPerPage);
@@ -114,14 +113,12 @@ const paginatedTrackers = computed(() => {
 function reduceItemsPerPage() {
   if (settings.value.trackersPerPage > minItemsPerPage) {
     settings.value.trackersPerPage--;
-    itemsPerPage.value--;
   }
 }
 
 function increaseItemsPerPage() {
   if (settings.value.trackersPerPage < maxItemsPerPage) {
     settings.value.trackersPerPage++;
-    itemsPerPage.value++;
   }
 }
 </script>

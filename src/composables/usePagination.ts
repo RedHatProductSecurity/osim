@@ -1,8 +1,7 @@
 import { type Ref, ref, computed, watch } from 'vue';
 
-export function usePagination(totalPages: Ref<number>, initialItemsPerPage: number, maxPagesToShow = 7) {
+export function usePagination(totalPages: Ref<number>, maxPagesToShow = 7) {
   const currentPage = ref(1);
-  const itemsPerPage = ref(initialItemsPerPage);
 
   const pages = computed(() => {
     const result: number[] = [];
@@ -36,7 +35,6 @@ export function usePagination(totalPages: Ref<number>, initialItemsPerPage: numb
 
   return {
     pages,
-    itemsPerPage,
     currentPage,
     changePage,
   };
