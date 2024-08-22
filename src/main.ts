@@ -8,11 +8,9 @@ import router from './router';
 import { InputLabelDirective } from '@/directives/InputLabelDirective.js';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 
-import 'bootstrap/scss/bootstrap.scss';
-import 'bootstrap-icons/font/bootstrap-icons.scss';
 import './scss/index.scss';
 import './assets/main.css';
-import 'bootstrap/js/index.esm.js';
+import 'bootstrap';
 
 const app = createApp(App);
 const pinia = createPinia();

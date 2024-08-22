@@ -1,2 +1,14 @@
+// Override Bootstrap variables here
 @import "./bootstrap-overrides";
-@import "../node_modules/bootstrap/scss/bootstrap"
+
+// Import Bootstrap functions and variables
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+// Extend Bootstrap with customizations
+@import "./bootstrap-customization";
+
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap";
+@import 'bootstrap-icons/font/bootstrap-icons.css'; // Vite scss loader is broken. See https://github.com/twbs/icons/issues/1381

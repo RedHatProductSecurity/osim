@@ -19,23 +19,9 @@ $font-family-base: 'Red Hat Text';
 $font-family-monospace: 'Red Hat Mono', monospace;
 $font-family-code: $font-family-monospace;
 
-// A variable with !default flag will default to the previously set value of
-//  this variable (if any available). As all bootstrap variables have this flag, 
-//  you could import your custom-variables.scss before the bootstrap/scss/bootstrap;
-$redhat-primary: $redhat-red-50;
-$redhat-secondary: $redhat-gray-50;
-$primary: $redhat-primary;
-$secondary: $redhat-secondary;
-$danger: $redhat-danger-50;
-$success: $redhat-success-40;
-$black: $redhat-gray-95;
-$info: $redhat-teal-40;
-$light-teal: $redhat-teal-10;
+// Custom colors
 $light-info: $redhat-teal-10;
-$warning: $redhat-yellow-30;
-$gray: $redhat-gray-20;
-$blue: $redhat-blue-40;
-$link-color: $blue;
+$light-teal: $redhat-teal-10;
 $light-gray: $redhat-gray-10;
 $light-light-gray: #fcfcfc;
 $light-light-orange: #fffaf3;
@@ -43,32 +29,18 @@ $light-purple: $redhat-purple-10;
 $light-green: $redhat-success-10;
 $light-yellow: $redhat-yellow-10;
 $light-orange: $redhat-orange-10;
-$theme-colors: (
-  'black': $black,
-  'blue': $blue,
-  'gray': $gray,
-  'light-light-gray': $light-light-gray,
-  'light-light-orange': $light-light-orange,
-  'light-gray': $light-gray,
-  'light-purple': $light-purple,
-  'light-green': $light-green,
-  'light-yellow': $light-yellow,
-  'light-orange': $light-orange,
-  'light-info': $light-info,
-  'light-teal': $light-teal,
-  'primary': $primary,
-  'secondary': $secondary,
-  'info': $info,
-  'success': $success,
-  'danger': $danger,
-  'warning': $warning,
-);
+$redhat-primary: $redhat-red-50;
+$redhat-secondary: $redhat-gray-50;
 
-// Create your own map
-$custom-colors: (
-  'custom-color': #900,
-);
 
-// Merge the maps
-$theme-colors: map-merge($theme-colors, $custom-colors);
-
+// Bootstrap color overrides
+$primary: $redhat-primary;
+$secondary: $redhat-secondary;
+$danger: $redhat-danger-50;
+$success: $redhat-success-40;
+$black: $redhat-gray-95;
+$info: $redhat-teal-40;
+$warning: $redhat-yellow-30;
+$gray: $redhat-gray-20;
+$blue: $redhat-blue-40;
+$link-color: $blue;
