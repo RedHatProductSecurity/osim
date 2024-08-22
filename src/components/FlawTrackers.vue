@@ -56,12 +56,9 @@ function sortTrackers(trackers: TrackerWithModule[]): TrackerWithModule[] {
   const customSortFn = (affect: TrackerWithModule) => {
     return affect[customSortKey] || 0;
   };
-
   const comparator = [order<TrackerWithModule>(customSortFn)];
 
-  return sortWith([
-    ...comparator
-  ])(trackers);
+  return sortWith(comparator)(trackers);
 }
 
 // Trackers filters by field
