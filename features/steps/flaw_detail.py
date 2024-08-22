@@ -713,7 +713,6 @@ def step_impl(context):
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.click_button_with_js('promoteStateBtn')
-    time.sleep(10)
     flaw_page.wait_msg('flawPromotedMsg')
 
 
@@ -762,6 +761,7 @@ def step_impl(context, new_state):
         flaw_page.set_document_text_field(
             'description', generate_random_text())
         flaw_page.set_select_specific_value('reviewStatusSelect', 'APPROVED')
+        flaw_page.driver.execute_script("window.scrollTo(0, 0);")
     flaw_page.set_select_specific_value('incidentStateText', new_state)
     flaw_page.click_btn('saveBtn')
     flaw_page.wait_msg('flawSavedMsg')

@@ -223,10 +223,8 @@ class FlawDetailPage(BasePage):
     def set_comment_value(self, comment_type, value):
         self.componentsText.execute_script("arguments[0].scrollIntoView(true);")
         comment_text_element = getattr(self, 'new' + comment_type + 'CommentText')
-        div = self.driver.find_elements(
-            locate_with(By.TAG_NAME, "div").above(comment_text_element))[0]
         comment_text_area = self.driver.find_elements(
-            locate_with(By.TAG_NAME, "textarea").below(div))[0]
+            locate_with(By.TAG_NAME, "textarea").near(comment_text_element))[0]
         comment_text_area.send_keys(value)
 
     def set_document_text_field(self, field, value):
@@ -526,7 +524,8 @@ class FlawDetailPage(BasePage):
     def click_reference_dropdown_button(self):
         v = self.referenceCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
-        if reference_count > 0:
+        if (reference_count > 0 and
+                not self.is_element_exists(By.XPATH, "//i[@class='bi bi-dash-square-dotted me-1']")):
             reference_dropdown_btn = self.driver.find_elements(
                 locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
                 near(self.referenceCountLabel))[0]
@@ -542,7 +541,8 @@ class FlawDetailPage(BasePage):
     def click_acknowledgments_dropdown_btn(self):
         v = self.acknowledgmentCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
-        if reference_count > 0:
+        if (reference_count > 0 and
+                not self.is_element_exists(By.XPATH, "//i[@class='bi bi-dash-square-dotted me-1']")):
             reference_dropdown_btn = self.driver.find_elements(
                 locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
                 near(self.acknowledgmentCountLabel))[0]
@@ -619,6 +619,9 @@ class FlawDetailPage(BasePage):
         bottom_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
         self.switch_element_visibility(bottom_footer, 'hidden')
         self.switch_element_visibility(bottom_bar, 'hidden')
+
+        time.sleep(2)
+
         select_element.execute_script("arguments[0].scrollIntoView(true);")
         select_element.select_element_by_value(value)
         self.switch_element_visibility(bottom_footer, 'visible')
