@@ -20,9 +20,13 @@ defineEmits<{
 }>();
 
 const params = computed(() => {
+  const searchParams = getSearchParams();
+  if (searchParams.order) {
+    searchParams.order += ',' + tableFilters.value.order;
+  }
   const paramsObj = {
     ...tableFilters.value,
-    ...getSearchParams()
+    ...searchParams,
   };
 
   return paramsObj;
@@ -65,7 +69,7 @@ function saveFilter() {
 
 <template>
   <main class="mt-3">
-    <div class="container">
+    <div>
       <IssueSearchAdvanced
         :isLoading="isLoading"
         @filter:save="saveFilter"

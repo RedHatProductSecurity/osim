@@ -8,10 +8,12 @@ type Facet = {
 };
 
 const facets = ref<Facet[]>([]);
+const query = ref<string>('');
 const search = ref('');
 
 const searchQuery = z.object({
   query: z.object({
+    search: z.string().nullish(),
     query: z.string().nullish(),
   }),
 });
@@ -42,9 +44,13 @@ export function useSearchParams() {
     // generate search params based on route query
     const params: Record<string, string> = {};
     const parsedRoute = searchQuery.parse(route);
+    search.value = parsedRoute.query.search || '';
+    if (parsedRoute.query.search) {
+      params.search = parsedRoute.query.search;
+    }
     search.value = parsedRoute.query.query || '';
     if (parsedRoute.query.query) {
-      params.search = parsedRoute.query.query;
+      params.query = parsedRoute.query.query;
     }
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach(key => {
@@ -67,9 +73,9 @@ export function useSearchParams() {
     }
   });
 
-  watch(() => route.query.query, () => {
+  watch(() => route.query.search, () => {
     // repopulate facets after quick query changed
-    search.value = `${route.query.query || ''}`;
+    search.value = `${route.query.search || ''}`;
     facets.value = populateFacets();
   });
 
@@ -86,11 +92,11 @@ export function useSearchParams() {
 
   function submitQuickSearch(searchQuery: string) {
     search.value = searchQuery;
-    router.push({ name: 'search', query: { query: searchQuery } });
+    router.push({ name: 'search', query: { search: searchQuery } });
   }
 
   function submitAdvancedSearch() {
-    const params = facets.value.reduce(
+    let params = facets.value.reduce(
       (fields, { field, value }) => {
         if (field && value || allowedEmptyFieldMapping[field]) {
           fields[field] = value;
@@ -99,9 +105,15 @@ export function useSearchParams() {
       },
       {} as Record<string, string>,
     );
+
+    params = query.value
+      ? { ...params, query: query.value }
+      : params;
+    params = search.value
+      ? { ...params, search: search.value }
+      : params;
     router.replace({
       query:{
-        ...(route.query.query && ({ query: route.query.query })),
         ...params,
       }
     });
@@ -109,6 +121,7 @@ export function useSearchParams() {
 
   return {
     facets,
+    query,
     search,
     removeFacet,
     addFacet,
