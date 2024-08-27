@@ -1,7 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { DateTime } from 'luxon';
-import ProgressRing from '@/widgets/ProgressRing/ProgressRing.vue';
 
 import Toast, { type ToastProps } from '@/widgets/Toast/Toast.vue';
 
