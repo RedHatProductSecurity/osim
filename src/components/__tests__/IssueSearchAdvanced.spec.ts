@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
 import DjangoQLCompletion from 'djangoql-completion';
 
 describe('issueSearchAdvanced', () => {
-  let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
+  let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue').default;
 
   vi.mock('djangoql-completion');
   vi.mock('vue-router', () => ({
@@ -31,7 +31,7 @@ describe('issueSearchAdvanced', () => {
   };
 
   beforeEach(async () => {
-    IssueSearchAdvanced = (await import('@/components/IssueSearchAdvanced.vue')).default;
+    IssueSearchAdvanced = (await import('@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue')).default;
   });
 
   afterEach(() => {

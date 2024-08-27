@@ -2,11 +2,11 @@ import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
+import Navbar from '@/components/Navbar/Navbar.vue';
+
 import router from '@/router';
 import { useToastStore } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
-
-import Navbar from '../Navbar.vue';
 
 describe('navbar', () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;
@@ -58,38 +58,6 @@ describe('navbar', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('hides widget test option when not dev environment', () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    vi.mock('@/stores/osimRuntime', async () => {
-      const osimRuntimeValue = { env: 'unittest' };
-      return {
-        osimRuntime: {
-          ...osimRuntimeValue,
-        },
-      };
-    });
-    subject = mount(Navbar, {
-      global: {
-        plugins: [
-          pinia,
-          router,
-        ],
-      },
-    });
-    const listItems = subject.findAll('.dropdown-item');
-    let widgetTestOptionExists = false;
-    for (const item of listItems) {
-      if (item.text() === 'Widget Test') {
-        widgetTestOptionExists = true;
-        break;
-      }
-    }
-    expect(widgetTestOptionExists).toBe(false);
   });
 
   it('renders show notification icon with empty notification count', async () => {

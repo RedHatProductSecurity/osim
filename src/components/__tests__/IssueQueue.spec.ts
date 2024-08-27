@@ -2,12 +2,11 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
-import IssueQueueItem from '@/components/IssueQueueItem.vue';
+import IssueQueueItem from '@/components/IssueQueueItem/IssueQueueItem.vue';
+import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import router from '@/router';
-
-import IssueQueue from '../IssueQueue.vue';
-import LabelCheckbox from '../widgets/LabelCheckbox.vue';
+import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
   useLocalStorage: vi.fn((key: string) => {

@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 
-import FlawAffects from '@/components/FlawAffects.vue';
+import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 
 import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 

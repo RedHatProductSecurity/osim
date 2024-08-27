@@ -2,12 +2,12 @@ import { VueWrapper, mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
+import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
+
 import router from '@/router';
 import { useToastStore } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
-
-import ToastContainer from '../ToastContainer.vue';
-import Toast from '../widgets/Toast.vue';
+import Toast from '@/widgets/Toast/Toast.vue';
 
 describe('toastContainer', () => {
   let subject: VueWrapper<InstanceType<typeof ToastContainer>>;

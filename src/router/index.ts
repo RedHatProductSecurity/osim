@@ -111,20 +111,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/widget-test',
-      name: 'widget-test',
-      component: WidgetTestView,
-      meta: {
-        canVisitWithoutAuth: true,
-        title: 'Sample',
-      },
-      beforeEnter() {
-        if (osimRuntime.value.env !== 'dev') {
-          return { name: 'not-found' };
-        }
-      },
-    },
-    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: NotFoundView,

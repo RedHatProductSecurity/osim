@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils';
 
+import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
+
 import { osimFullFlawTest } from './test-suite-helpers';
-import CvssExplainForm from '../CvssExplainForm.vue';
 
 describe('cVSS Explain Form', () => {
   osimFullFlawTest('renders correctly', ({ flaw }) => {

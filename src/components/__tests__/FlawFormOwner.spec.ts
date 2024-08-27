@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 
+import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
+
 import { useUserStore } from '@/stores/UserStore';
 import { searchJiraUsers } from '@/services/JiraService';
-
-import FlawFormOwner from '../FlawFormOwner.vue';
 
 const pinia = createTestingPinia();
 const userStore = useUserStore();

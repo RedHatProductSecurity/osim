@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { IMaskDirective } from 'vue-imask';
 
-import ExampleForm from '../ExampleForm.vue';
+import ExampleForm from '@/components/ExampleForm/ExampleForm.vue';
 
 describe('exampleForm', () => {
   it('renders properly', () => {

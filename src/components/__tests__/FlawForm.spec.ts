@@ -6,19 +6,20 @@ import { DateTime } from 'luxon';
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
-import LabelEditable from '@/components/widgets/LabelEditable.vue';
-import IssueFieldState from '@/components/IssueFieldState.vue';
-import FlawForm from '@/components/FlawForm.vue';
-import LabelDiv from '@/components/widgets/LabelDiv.vue';
-import LabelSelect from '@/components/widgets/LabelSelect.vue';
-import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import CvssCalculator from '@/components/CvssCalculator.vue';
-import FlawFormOwner from '@/components/FlawFormOwner.vue';
-import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
-import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
+import FlawForm from '@/components/FlawForm/FlawForm.vue';
+import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
+import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
+import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
 
 import { blankFlaw } from '@/composables/useFlawModel';
 
+import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
+import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
+import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
+import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
+import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
+import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import { useToastStore } from '@/stores/ToastStore';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import {
@@ -26,7 +27,6 @@ import {
 } from '@/generated-client';
 import { flawSources } from '@/types/zodFlaw';
 
-import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import { osimFullFlawTest } from './test-suite-helpers';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
