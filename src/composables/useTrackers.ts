@@ -132,7 +132,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     }
   }
 
-  function toggleTrackerSelections(affectStreams: UpdateStream[]) {
+  function updateTrackerSelections(affectStreams: UpdateStream[]) {
     for (const stream of affectStreams) {
       trackerSelections.value.set(stream, !trackerSelections.value.get(stream));
     }
@@ -187,7 +187,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     trackerSelections,
     trackersToFile,
     setAllTrackerSelections,
-    toggleTrackerSelections,
+    updateTrackerSelections,
     sortedStreams,
     unselectedStreams,
     selectedStreams,

@@ -17,7 +17,7 @@ const {
   trackerSelections,
   trackersToFile,
   fileTrackers,
-  toggleTrackerSelections,
+  updateTrackerSelections,
   unselectedStreams,
   selectedStreams,
   filterString,
@@ -72,7 +72,7 @@ function handleFileTrackers() {
         type="button"
         :disabled="isLoadingTrackers || availableAffectStreams?.length === 0"
         class="btn btn-sm btn-black"
-        @click="toggleTrackerSelections(availableAffectStreams)"
+        @click="updateTrackerSelections(availableAffectStreams)"
       >
         <i class="bi bi-check-all" />
         Select All
@@ -82,7 +82,7 @@ function handleFileTrackers() {
         type="button"
         :disabled="isLoadingTrackers || selectedAffectStreams?.length === 0"
         class="btn btn-sm btn-black"
-        @click="toggleTrackerSelections(selectedAffectStreams)"
+        @click="updateTrackerSelections(selectedAffectStreams)"
       >
         <i class="bi bi-x-square" />
         Deselect All
