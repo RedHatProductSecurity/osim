@@ -13,8 +13,8 @@ export function usePagination(totalPages: Ref<number>, maxPagesToShow = 7) {
       } else if (currentPage.value >= totalPages.value - 2) {
         return [1, '..', ...Array.from({ length: btnCount }, (_, i) => totalPages.value - 4 + i)];
       }
-    } 
-  
+    }
+
     return Array.from({ length: totalPages.value }, (_, i) => i + 1);
   });
 

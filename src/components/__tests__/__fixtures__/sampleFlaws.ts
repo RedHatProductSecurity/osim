@@ -41,8 +41,8 @@ export function sampleFlaw_0(): ZodFlawType {
     // revision: 'b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c',
     // version: '3.5.2',
     // env: 'stage',
-  }
-};
+  };
+}
 
 const flawUuid_1 = '3ede0314-a6c5-4462-bcf3-b034a15cf106';
 export function sampleFlaw_1(): ZodFlawType {
