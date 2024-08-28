@@ -19,7 +19,7 @@ function sampleAlert(alertType: AlertTypeEnum, parentUuid: string, parentModel: 
 }
 
 describe('AlertsList', () => {
-  function mountWithProps(props: typeof FlawAlertsList.$props = { flaw: sampleFlaw_1 }) {
+  function mountWithProps(props: typeof FlawAlertsList.$props = { flaw: sampleFlaw_1() }) {
     subject = mount(FlawAlertsList, {
       props,
     });
@@ -29,7 +29,7 @@ describe('AlertsList', () => {
   beforeEach(() => {
     subject = mount(FlawAlertsList, {
       props: {
-        'flaw': sampleFlaw_1
+        'flaw': sampleFlaw_1()
       },
     });
   });
@@ -46,7 +46,7 @@ describe('AlertsList', () => {
   });
 
   it('is vissible when alerts are present', async () => {
-    const flaw = sampleFlaw_1;
+    const flaw = sampleFlaw_1();
     flaw.alerts.push(sampleAlert('ERROR', flaw.uuid, 'flaw'));
     mountWithProps({ flaw });
     const comp = subject.findComponent(FlawAlertsList);
@@ -55,7 +55,7 @@ describe('AlertsList', () => {
   });
 
   it('respective sections are visible based on alerts existence', async () => {
-    const flaw = sampleFlaw_1;
+    const flaw = sampleFlaw_1();
     flaw.alerts.push(sampleAlert('ERROR', flaw.uuid, 'flaw'));
     flaw.comments[0].alerts.push(sampleAlert('ERROR', flaw.comments[0].uuid, 'flawacomment'));
     mountWithProps({ flaw });

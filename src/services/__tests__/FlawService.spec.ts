@@ -46,7 +46,7 @@ describe('FlawService', () => {
 
 
   it('Should get updated_dt when updating flaw', async () => {
-    const flaw = sampleFlaw_1;
+    const flaw = sampleFlaw_1();
     const updated_dt = '2024-06-17T00:00:00Z';
     global.fetch = vi.fn().mockResolvedValue(createFetchMock({
       updated_dt

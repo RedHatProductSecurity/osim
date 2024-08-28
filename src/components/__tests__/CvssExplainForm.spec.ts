@@ -4,7 +4,7 @@ import CvssExplainForm from '../CvssExplainForm.vue';
 
 describe('CVSS Explain Form', () => {
   it('renders correctly', () => {
-    const flaw = sampleFlaw_1;
+    const flaw = sampleFlaw_1();
     const wrapper = mount(CvssExplainForm, {
       props: {
         modelValue: flaw
@@ -20,7 +20,7 @@ describe('CVSS Explain Form', () => {
   });
 
   it('syncs modelValue with textarea', async () => {
-    const flaw = sampleFlaw_1;
+    const flaw = sampleFlaw_1();
     flaw.cvss_scores[0].comment = 'some text';
 
     const wrapper = mount(CvssExplainForm, {
