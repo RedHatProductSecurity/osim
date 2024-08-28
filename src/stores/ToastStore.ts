@@ -1,16 +1,15 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { DateTime } from 'luxon';
+import type { ToastProps } from '@/components/widgets/Toast.vue';
 
 
 export interface ToastNew {
   title?: string,
   body: string,
-  // timestamp: moment.Moment,
-  // key?: number,
   bodyHtml?: boolean,
   timeoutMs?: number,
-  css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
+  css?: ToastProps['css'],
 }
 
 interface ToastAdded extends ToastNew {
