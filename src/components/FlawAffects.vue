@@ -606,8 +606,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="hasAffects"
-            class="badge-btn btn btn-sm border-secondary bg-light-gray text-black"
-            :class="{ 'bg-secondary text-white': displayMode === displayModes.ALL }"
+            class="badge-btn btn btn-sm border-secondary"
+            :class="displayMode === displayModes.ALL ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
             :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : 'cursor: auto'"
             :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
             @click.stop="toggleDisplayMode(displayModes.ALL)"
@@ -616,8 +616,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           </div>
           <div
             v-if="selectedAffects.length > 0"
-            class="badge-btn btn btn-sm border-secondary bg-light-gray text-black"
-            :class="{ 'bg-secondary text-white': displayMode === displayModes.SELECTED }"
+            class="badge-btn btn btn-sm border-secondary"
+            :class="displayMode === displayModes.SELECTED ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
             :title="displayMode !== displayModes.SELECTED ? 'Display selected affects' : 'Displaying selected affects'"
             @click.stop="toggleDisplayMode(displayModes.SELECTED)"
           >
