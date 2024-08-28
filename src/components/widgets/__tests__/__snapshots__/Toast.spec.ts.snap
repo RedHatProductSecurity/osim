@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Toast > Should render component with title 'Default', body 'Test body' and undefined style 1`] = `
+"<div data-v-db9a8853="" class="osim-toast toast show text-bg-light fresh-leave-active" role="alert" aria-labelledby="modalTitle" aria-live="assertive" aria-atomic="true">
+  <!--:style="{display: show? 'block' : 'none'}"-->
+  <div data-v-db9a8853="" class="toast-header"><strong data-v-db9a8853="" class="me-auto">Default</strong><small data-v-db9a8853="" class="text-muted">1 hour ago</small><button data-v-db9a8853="" type="button" class="osim-toast-close-btn btn-close" aria-label="Close">
+      <!--v-if-->
+    </button></div>
+  <div data-v-db9a8853="" class="toast-body osim-toast-body">
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <!--v-if-->
+    <div data-v-db9a8853="">Test body</div>
+  </div>
+</div>"
+`;
+
+exports[`Toast > Should render component with title 'Error', body 'Test body' and 'danger' style 1`] = `
+"<div data-v-db9a8853="" class="osim-toast toast show text-bg-danger fresh-leave-active" role="alert" aria-labelledby="modalTitle" aria-live="assertive" aria-atomic="true">
+  <!--:style="{display: show? 'block' : 'none'}"-->
+  <div data-v-db9a8853="" class="toast-header"><strong data-v-db9a8853="" class="me-auto">Error</strong><small data-v-db9a8853="" class="text-muted">1 hour ago</small><button data-v-db9a8853="" type="button" class="osim-toast-close-btn btn-close" aria-label="Close">
+      <!--v-if-->
+    </button></div>
+  <div data-v-db9a8853="" class="toast-body osim-toast-body">
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <!--v-if-->
+    <div data-v-db9a8853="">Test body</div>
+  </div>
+</div>"
+`;
+
+exports[`Toast > Should render component with title 'Success', body 'Test body' and 'success' style 1`] = `
+"<div data-v-db9a8853="" class="osim-toast toast show text-bg-success fresh-leave-active" role="alert" aria-labelledby="modalTitle" aria-live="assertive" aria-atomic="true">
+  <!--:style="{display: show? 'block' : 'none'}"-->
+  <div data-v-db9a8853="" class="toast-header"><strong data-v-db9a8853="" class="me-auto">Success</strong><small data-v-db9a8853="" class="text-muted">1 hour ago</small><button data-v-db9a8853="" type="button" class="osim-toast-close-btn btn-close" aria-label="Close">
+      <!--v-if-->
+    </button></div>
+  <div data-v-db9a8853="" class="toast-body osim-toast-body">
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <!--v-if-->
+    <div data-v-db9a8853="">Test body</div>
+  </div>
+</div>"
+`;
+
+exports[`Toast > Should render component with title 'Warn', body 'Test body' and 'warning' style 1`] = `
+"<div data-v-db9a8853="" class="osim-toast toast show text-bg-warning fresh-leave-active" role="alert" aria-labelledby="modalTitle" aria-live="assertive" aria-atomic="true">
+  <!--:style="{display: show? 'block' : 'none'}"-->
+  <div data-v-db9a8853="" class="toast-header"><strong data-v-db9a8853="" class="me-auto">Warn</strong><small data-v-db9a8853="" class="text-muted">1 hour ago</small><button data-v-db9a8853="" type="button" class="osim-toast-close-btn btn-close" aria-label="Close">
+      <!--v-if-->
+    </button></div>
+  <div data-v-db9a8853="" class="toast-body osim-toast-body">
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <!--v-if-->
+    <div data-v-db9a8853="">Test body</div>
+  </div>
+</div>"
+`;
