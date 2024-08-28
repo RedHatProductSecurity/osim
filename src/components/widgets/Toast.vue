@@ -7,14 +7,20 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 
 const { settings } = useSettingsStore();
 
-const props = defineProps<{
+export interface ToastProps {
   title?: string,
   body: string,
   timestamp: DateTime,
   bodyHtml?: boolean,
   timeoutMs?: number,
   css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
-}>();
+}
+
+const props = withDefaults(defineProps<ToastProps>(), {
+  css: 'light',
+  title: '',
+  timeoutMs: undefined,
+});
 
 const emit = defineEmits<{
   close: [],
@@ -23,9 +29,18 @@ const emit = defineEmits<{
   stale: [],
 }>();
 
-const css = computed(() => {
-  return props.css ?? 'light';
-});
+const cssMapping: Record<NonNullable<ToastProps['css']>, string> = {
+  primary: 'text-bg-primary',
+  secondary: 'text-bg-secondary',
+  success: 'text-bg-success',
+  danger: 'text-bg-danger',
+  warning: 'text-bg-warning',
+  info: 'text-bg-info',
+  light: 'text-bg-light',
+  dark: 'text-bg-dark',
+};
+
+const css = computed(() => cssMapping[props.css]);
 
 const isStale = ref(false);
 const freshMs = 10000;  // ms for inactive toast to remain fresh
@@ -134,8 +149,7 @@ const transitionDurationMs = ref(16);
 const toastClasses = computed(() => {
   const classes: { [key: string]: boolean } = {};
 
-  const textBgKey: string = 'text-bg-' + css.value;
-  classes[textBgKey] = true;
+  classes[css.value] = true;
 
   const freshAndBecomingStale = !settings.showNotifications && !active.value && !isStale.value;
   classes['fresh-leave-active'] = freshAndBecomingStale;
@@ -185,9 +199,8 @@ const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
     </div>
     <div class="toast-body osim-toast-body">
       <slot name="body">
-        <!-- eslint-disable vue/no-v-html -->
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div v-if="bodyHtml" v-html="body"></div>
-        <!-- eslint-enable -->
         <div v-if="!bodyHtml">
           {{ body }}
         </div>
@@ -240,5 +253,4 @@ button.osim-toast-close-btn {
     transform: translateX(20px);
   }
 }
-
 </style>
