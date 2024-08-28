@@ -4,21 +4,18 @@ export function usePagination(totalPages: Ref<number>, maxPagesToShow = 7) {
   const currentPage = ref(1);
 
   const pages = computed(() => {
-    const result: number[] = [];
+    const btnCount = 5;
     if (totalPages.value > maxPagesToShow) {
       if (currentPage.value > 3 && currentPage.value < totalPages.value - 2) {
         return [1, '..', currentPage.value - 1, currentPage.value, currentPage.value + 1, '..', totalPages.value];
       } else if (currentPage.value <= 3) {
-        return [...Array.from({ length: 5 }, (_, i) => i + 1), '..', totalPages.value];
+        return [...Array.from({ length: btnCount }, (_, i) => i + 1), '..', totalPages.value];
       } else if (currentPage.value >= totalPages.value - 2) {
-        return [1, '..', ...Array.from({ length: 5 }, (_, i) => totalPages.value - 4 + i)];
+        return [1, '..', ...Array.from({ length: btnCount }, (_, i) => totalPages.value - 4 + i)];
       }
-    } else {
-      for (let i = 1; i <= totalPages.value; i++) {
-        result.push(i);
-      }
-    }
-    return result;
+    } 
+  
+    return Array.from({ length: totalPages.value }, (_, i) => i + 1);
   });
 
   function changePage(page: number) {
