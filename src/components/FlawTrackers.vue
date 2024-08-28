@@ -142,7 +142,7 @@ function increaseItemsPerPage() {
           <button
             v-for="page in pages"
             :key="page"
-            class="page-btn btn btn-sm rounded-0 btn-info"
+            class="osim-page-btn btn btn-sm rounded-0 btn-info"
             :disabled="page === currentPage || page === '..'"
             @click.prevent="changePage(page as number)"
           >
@@ -338,7 +338,7 @@ function increaseItemsPerPage() {
       padding-block: 0;
     }
 
-    .page-btn {
+    .osim-page-btn {
       width: 34.8px;
     }
   }
@@ -357,7 +357,7 @@ function increaseItemsPerPage() {
       height: 2rem;
       padding-block: 0;
 
-      &.page-btn:disabled {
+      &.osim-page-btn:disabled {
         background-color: transparent;
         color: $info;
       }

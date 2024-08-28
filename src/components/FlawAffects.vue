@@ -563,7 +563,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           v-for="page in pages"
           :key="page"
           tabindex="-1"
-          class="page-btn btn btn-sm rounded-0 btn-secondary"
+          class="osim-page-btn btn btn-sm rounded-0 btn-secondary"
           style="width: 34.8px;"
           :disabled="page === currentPage || page === '..'"
           @click.prevent="changePage(page as number)"
@@ -1234,7 +1234,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         height: 2rem;
         padding-block: 0;
 
-        &.page-btn:disabled {
+        &.osim-page-btn:disabled {
           background-color: transparent;
           color: black;
         }
