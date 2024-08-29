@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import FlawTrackers from '@/components/FlawTrackers.vue';
-import { sampleFlawAffects_1 } from './__fixtures__/sampleFlawAffects';
+import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 import { mount } from '@vue/test-utils';
 
 
@@ -10,48 +10,49 @@ createTestingPinia();
 describe('FlawTrackers', () => {
   let subject;
 
-  function mountWithoutTrackers() {
-    const flawId = '09e64027-6e5e-47f1-9150-f2536ccf7fd0';
-    return mount(FlawTrackers, {
+  osimRequiredFlawTest('Correctly renders the component when there are not trackers to display', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
       props: {
-        flawId: flawId,
+        flawId: flaw.uuid,
         displayedTrackers: [],
         affectsNotBeingDeleted: [],
         allTrackersCount: 0,
       },
     });
-  }
+    expect(subject.html()).toMatchSnapshot();
+  });
 
-  function mountWithTrackers() {
-    const flawId = '09e64027-6e5e-47f1-9150-f2536ccf7fd0';
-    const trackers = sampleFlawAffects_1(flawId)
-      .flatMap(affect => affect.trackers.map(tracker => ({ ...tracker, ps_module: affect.ps_module })));
-    return mount(FlawTrackers, {
+  osimFullFlawTest('Correctly renders the component when there are trackers to display', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
       props: {
-        flawId: flawId,
-        displayedTrackers: trackers,
-        affectsNotBeingDeleted: sampleFlawAffects_1(flawId),
-        allTrackersCount: trackers.length,
+        flawId: flaw.uuid,
+        displayedTrackers: flaw.affects
+          .flatMap(affect => affect.trackers
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+          ),
+        affectsNotBeingDeleted: [],
+        allTrackersCount: 0,
       },
     });
-  }
-
-  it('Correctly renders the component when there are not trackers to display', async () => {
-    subject = mountWithoutTrackers();
     expect(subject.html()).toMatchSnapshot();
   });
 
-  it('Correctly renders the component when there are trackers to display', async () => {
-    subject = mountWithTrackers();
-    expect(subject.html()).toMatchSnapshot();
-  });
-
-  it('Per page setting correctly changes the table page items number', async () => {
-    subject = mountWithTrackers();
+  osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
+      props: {
+        flawId: flaw.uuid,
+        displayedTrackers: flaw.affects
+          .flatMap(affect => affect.trackers
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+          ),
+        affectsNotBeingDeleted: [],
+        allTrackersCount: 0,
+      },
+    });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let rowCount = trackersTableRows.length;
-    expect(rowCount).toBe(10);
+    expect(rowCount).toBe(6);
     let itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
 
@@ -73,13 +74,23 @@ describe('FlawTrackers', () => {
 
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
-    expect(rowCount).toBe(10);
+    expect(rowCount).toBe(6);
     itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
-  it('Trackers can be sorted by clicking on the date field columns', async () => {
-    subject = mountWithTrackers();
+  osimFullFlawTest('Trackers can be sorted by clicking on the date field columns', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
+      props: {
+        flawId: flaw.uuid,
+        displayedTrackers: flaw.affects
+          .flatMap(affect => affect.trackers
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+          ),
+        affectsNotBeingDeleted: [],
+        allTrackersCount: 0,
+      },
+    });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let firstTracker = trackersTableRows[0];
@@ -95,8 +106,18 @@ describe('FlawTrackers', () => {
     expect(firstTracker.find('td:nth-of-type(2)').text()).toBe('xxxx-0-001');
   });
 
-  it('Displays embedded trackers manager', async () => {
-    subject = mountWithTrackers();
+  osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
+      props: {
+        flawId: flaw.uuid,
+        displayedTrackers: flaw.affects
+          .flatMap(affect => affect.trackers
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+          ),
+        affectsNotBeingDeleted: [],
+        allTrackersCount: 0,
+      },
+    });
 
     let trackerManagerElement = subject.find('.trackers-manager');
     expect(trackerManagerElement.exists()).toBe(false);

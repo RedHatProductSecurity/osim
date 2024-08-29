@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import FlawAffects from '@/components/FlawAffects.vue';
-import { sampleFlawAffects_1 } from './__fixtures__/sampleFlawAffects';
+import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 import { mount } from '@vue/test-utils';
 
 
@@ -10,44 +10,42 @@ createTestingPinia();
 describe('FlawAffects', () => {
   let subject;
 
-  function mountWithoutAffects() {
-    const flawId = '09e64027-6e5e-47f1-9150-f2536ccf7fd0';
-    return mount(FlawAffects, {
+  osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
       props: {
-        flawId: flawId,
-        embargoed: false,
-        affects: [],
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
         affectsToDelete:[],
         error: [],
       },
     });
-  }
+    expect(subject.html()).toMatchSnapshot();
+  });
 
-  function mountWithAffects() {
-    const flawId = '59395ac1-b65a-4542-bf44-e9c97e18470c';
-    return mount(FlawAffects, {
+  osimFullFlawTest('Correctly renders the component when there are affects to display', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
       props: {
-        flawId: flawId,
-        embargoed: false,
-        affects: sampleFlawAffects_1(flawId),
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
         affectsToDelete:[],
         error: [],
       },
     });
-  }
-
-  it('Correctly renders the component when there are not affects to display', async () => {
-    subject = mountWithoutAffects();
     expect(subject.html()).toMatchSnapshot();
   });
 
-  it('Correctly renders the component when there are affects to display', async () => {
-    subject = mountWithAffects();
-    expect(subject.html()).toMatchSnapshot();
-  });
-
-  it('Filter tables when affected modules are selected', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Filter tables when affected modules are selected', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let rowCount = affectsTableRows.length;
@@ -61,8 +59,16 @@ describe('FlawAffects', () => {
     expect(rowCount).toBe(1);
   });
 
-  it('Per page setting correctly changes the table page items number', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let rowCount = affectsTableRows.length;
@@ -92,8 +98,16 @@ describe('FlawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
-  it('Affects are selectable by clicking in the row', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects are selectable by clicking in the row', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableSelectedRows = subject.findAll('.affects-management table tbody tr.selected');
     expect(affectsTableSelectedRows.length).toBe(0);
@@ -105,8 +119,16 @@ describe('FlawAffects', () => {
     expect(affectsTableSelectedRows.length).toBe(1);
   });
 
-  it('Selection actions are displayed on toolbar', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Selection actions are displayed on toolbar', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let tableActions = subject.findAll('.affects-toolbar .affects-table-actions .btn');
     expect(tableActions.length).toBe(1);
@@ -119,8 +141,16 @@ describe('FlawAffects', () => {
     expect(tableActions.length).toBe(4);
   });
 
-  it('Affects can be set to edit mode', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be set to edit mode', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
     expect(affectsTableEditingRows.length).toBe(0);
@@ -134,8 +164,16 @@ describe('FlawAffects', () => {
     expect(affectsTableEditingRows.length).toBe(1);
   });
 
-  it('Show DEFER resolution option when affect impact is LOW', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Show DEFER resolution option when affect impact is LOW', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
@@ -158,8 +196,16 @@ describe('FlawAffects', () => {
     expect(resolutionOptions.includes('DELEGATED')).toBe(true);
   });
 
-  it('Don\'t show DEFER resolution option if impact is not LOW', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Don\'t show DEFER resolution option if impact is not LOW', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowEditBtn = affectsTableRows[5].find('td:last-of-type button:first-of-type');
@@ -181,8 +227,16 @@ describe('FlawAffects', () => {
     expect(resolutionOptions.includes('DEFER')).toBe(false);
   });
 
-  it('Affects can be modified', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be modified', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.modified');
     expect(affectsTableEditingRows.length).toBe(0);
@@ -206,8 +260,16 @@ describe('FlawAffects', () => {
     expect(affectsTableModifiedRows.length).toBe(1);
   });
 
-  it('Affect changes can be discarded', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affect changes can be discarded', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.modified');
     expect(affectsTableEditingRows.length).toBe(0);
@@ -231,8 +293,16 @@ describe('FlawAffects', () => {
     expect(affectsTableModifiedRows.length).toBe(0);
   });
 
-  it('Toolbar state badges can be activate to filter affects', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Toolbar state badges can be activate to filter affects', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let badgeBtns = subject.findAll('.affects-toolbar .badges .badge-btn');
     expect(badgeBtns.length).toBe(1);
@@ -256,8 +326,16 @@ describe('FlawAffects', () => {
     expect(affectsTableRows.length).toBe(6);
   });
 
-  it('Affects can be sorted by clicking on the field column', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be sorted by clicking on the field column', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let firstAffect = affectsTableRows[0];
@@ -273,13 +351,21 @@ describe('FlawAffects', () => {
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     firstAffect = affectsTableRows[0];
-    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-4-1');
+    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-6-1');
     secondAffect = affectsTableRows[1];
-    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-3-1');
+    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-5-1');
   });
 
-  it('Affects can be filtered by affectedness', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be filtered by affectedness', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
@@ -303,8 +389,16 @@ describe('FlawAffects', () => {
     expect(affectednessFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  it('Affects can be filtered by resolution', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be filtered by resolution', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
@@ -328,8 +422,16 @@ describe('FlawAffects', () => {
     expect(resolutionFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  it('Affects can be filtered by impact', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Affects can be filtered by impact', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
@@ -353,8 +455,16 @@ describe('FlawAffects', () => {
     expect(impactFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  it('Displays tracker manager for individual affect', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Displays tracker manager for individual affect', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowTrackersBtn = affectsTableRows[0]
@@ -368,8 +478,16 @@ describe('FlawAffects', () => {
     expect(subject.html()).toMatchSnapshot();
   });
 
-  it('Displays tracker manager for a selection of affects', async () => {
-    subject = mountWithAffects();
+  osimFullFlawTest('Displays tracker manager for a selection of affects', async ({ flaw }) => {
+    subject = mount(FlawAffects, {
+      props: {
+        flawId: flaw.uuid,
+        embargoed: flaw.embargoed,
+        affects: flaw.affects,
+        affectsToDelete:[],
+        error: [],
+      },
+    });
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     await affectsTableRows[0].trigger('click');

@@ -1,5 +1,5 @@
 import { VueWrapper, mount } from '@vue/test-utils';
-import { sampleFlaw_1 } from './__fixtures__/sampleFlaws';
+import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 import { AlertTypeEnum } from '@/generated-client';
 import { randomUUID } from 'crypto';
 import FlawAlertsList from '../FlawAlertsList.vue';
@@ -19,46 +19,50 @@ function sampleAlert(alertType: AlertTypeEnum, parentUuid: string, parentModel: 
 }
 
 describe('AlertsList', () => {
-  function mountWithProps(props: typeof FlawAlertsList.$props = { flaw: sampleFlaw_1() }) {
-    subject = mount(FlawAlertsList, {
-      props,
-    });
-  }
 
   let subject: VueWrapper<InstanceType<typeof FlawAlertsList>>;
-  beforeEach(() => {
+
+  osimFullFlawTest('mounts and renders', async ({ flaw }) => {
     subject = mount(FlawAlertsList, {
       props: {
-        'flaw': sampleFlaw_1()
+        'flaw': flaw
       },
     });
-  });
-
-  it('mounts and renders', async () => {
     expect(subject.exists()).toBe(true);
     expect(subject.vm).toBeDefined();
   });
 
-  it('is not vissible when no alerts are present', async () => {
+  osimEmptyFlawTest('is not vissible when no alerts are present', async ({ flaw }) => {
+    subject = mount(FlawAlertsList, {
+      props: {
+        'flaw': flaw
+      },
+    });
     const comp = subject.findComponent(FlawAlertsList);
     expect(comp?.exists()).toBe(true);
     expect(comp?.isVisible()).toBe(false);
   });
 
-  it('is vissible when alerts are present', async () => {
-    const flaw = sampleFlaw_1();
+  osimFullFlawTest('is vissible when alerts are present', async ({ flaw }) => {
     flaw.alerts.push(sampleAlert('ERROR', flaw.uuid, 'flaw'));
-    mountWithProps({ flaw });
+    subject = mount(FlawAlertsList, {
+      props: {
+        'flaw': flaw
+      },
+    });
     const comp = subject.findComponent(FlawAlertsList);
     expect(comp?.exists()).toBe(true);
     expect(comp?.isVisible()).toBe(true);
   });
 
-  it('respective sections are visible based on alerts existence', async () => {
-    const flaw = sampleFlaw_1();
+  osimFullFlawTest('respective sections are visible based on alerts existence', async ({ flaw }) => {
     flaw.alerts.push(sampleAlert('ERROR', flaw.uuid, 'flaw'));
     flaw.comments[0].alerts.push(sampleAlert('ERROR', flaw.comments[0].uuid, 'flawacomment'));
-    mountWithProps({ flaw });
+    subject = mount(FlawAlertsList, {
+      props: {
+        'flaw': flaw
+      },
+    });
 
     const compList = subject.findAllComponents(FlawAlertsSection);
 

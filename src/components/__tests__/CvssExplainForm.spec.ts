@@ -1,10 +1,9 @@
 import { mount } from '@vue/test-utils';
-import { sampleFlaw_1 } from './__fixtures__/sampleFlaws';
+import { osimFullFlawTest } from './test-suite-helpers';
 import CvssExplainForm from '../CvssExplainForm.vue';
 
 describe('CVSS Explain Form', () => {
-  it('renders correctly', () => {
-    const flaw = sampleFlaw_1();
+  osimFullFlawTest('renders correctly', ({ flaw }) => {
     const wrapper = mount(CvssExplainForm, {
       props: {
         modelValue: flaw
@@ -19,8 +18,7 @@ describe('CVSS Explain Form', () => {
     expect(textarea.exists()).toBe(true);
   });
 
-  it('syncs modelValue with textarea', async () => {
-    const flaw = sampleFlaw_1();
+  osimFullFlawTest('syncs modelValue with textarea', async ({ flaw }) => {
     flaw.cvss_scores[0].comment = 'some text';
 
     const wrapper = mount(CvssExplainForm, {

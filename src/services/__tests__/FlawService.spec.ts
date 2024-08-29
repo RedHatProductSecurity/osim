@@ -1,4 +1,4 @@
-import { sampleFlaw_1 } from '@/components/__tests__/__fixtures__/sampleFlaws';
+import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 import { putFlaw } from '../FlawService';
 import { createTestingPinia } from '@pinia/testing';
 
@@ -45,8 +45,7 @@ describe('FlawService', () => {
   });
 
 
-  it('Should get updated_dt when updating flaw', async () => {
-    const flaw = sampleFlaw_1();
+  osimFullFlawTest('Should get updated_dt when updating flaw', async ({ flaw }) => {
     const updated_dt = '2024-06-17T00:00:00Z';
     global.fetch = vi.fn().mockResolvedValue(createFetchMock({
       updated_dt

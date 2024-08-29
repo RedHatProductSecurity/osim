@@ -47,12 +47,12 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
       <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
       </div>
-      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="osim-page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-7006d35c="" class="osim-page-btn btn btn-sm rounded-0 btn-info">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
+      <!--v-if-->
       <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
         <div data-v-7006d35c="" class="tracker-badges">
           <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-          <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 12</span></div>
-          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 10</span></div>
+          <!--v-if-->
+          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
         </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
@@ -80,18 +80,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-006</td>
-            <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
+            <td data-v-7006d35c="">openshift-5</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -102,18 +91,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-005</td>
-            <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
+            <td data-v-7006d35c="">openshift-5</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -132,32 +110,10 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -176,14 +132,14 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c="">xxxx-0-001</td>
+            <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
+            <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
+            <td data-v-7006d35c="">2024-12-01 13:06 UTC</td>
           </tr>
         </tbody>
       </table>
@@ -201,12 +157,12 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
       <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
       </div>
-      <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="osim-page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-7006d35c="" class="osim-page-btn btn btn-sm rounded-0 btn-info">2</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0"><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
+      <!--v-if-->
       <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
         <div data-v-7006d35c="" class="tracker-badges">
           <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-          <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 12</span></div>
-          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 10</span></div>
+          <!--v-if-->
+          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
         </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-eye-slash-fill"></i> Hide Trackers Manager </button>
       </div>
     </div>
@@ -234,18 +190,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-006</td>
-            <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
+            <td data-v-7006d35c="">openshift-5</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -256,18 +201,7 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-005</td>
-            <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
+            <td data-v-7006d35c="">openshift-5</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -286,32 +220,10 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
               <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
             <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
-          </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
-            </td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -330,14 +242,14 @@ exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c="">
-              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
+              <routerlink data-v-7006d35c="" to="[object Object]">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></routerlink>
             </td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
-            <td data-v-7006d35c="">openshift-5-1</td>
-            <td data-v-7006d35c="">CLOSED</td>
+            <td data-v-7006d35c="">xxxx-0-001</td>
+            <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
+            <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
+            <td data-v-7006d35c="">2024-12-01 13:06 UTC</td>
           </tr>
         </tbody>
       </table>
