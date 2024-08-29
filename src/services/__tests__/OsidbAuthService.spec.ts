@@ -1,0 +1,108 @@
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { getNextAccessToken } from '../OsidbAuthService';
+import { setActivePinia } from 'pinia';
+import { createTestingPinia } from '@pinia/testing';
+import { createHmac } from 'crypto';
+import { DateTime } from 'luxon';
+import { useUserStore } from '@/stores/UserStore';
+
+const encodeJWT = (payload: any) => {
+  const encoding = (str: string) =>
+    str.replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+
+  const segments = [
+    { typ: 'JWT', alg: 'HS256' },
+    payload
+  ].map((segment) => JSON.stringify(segment))
+    .map(btoa)
+    .map(encoding);
+
+  const signature = encoding(
+    createHmac('sha256', 'TEST-SECRET')
+      .update(segments.join('.'))
+      .digest('base64')
+  );
+
+  return segments.concat(signature).join('.');
+};
+
+describe('OsidbAuthService', () => {
+  const accessJWT = encodeJWT({
+    'token_type': 'access',
+    'exp': Math.floor(DateTime.fromISO('2024-08-29T11:45:58.000Z').toSeconds()),
+    'iat': Math.floor(DateTime.fromISO('2024-08-29T11:41:58.000Z').toSeconds()),
+    'jti': '0000',
+    'user_id': 1337
+  });
+
+  const refreshEndpoint = http.post('/auth/token/refresh', () => {
+    return HttpResponse.json({ access: accessJWT });
+  });
+
+  const server = setupServer(refreshEndpoint);
+
+  beforeAll(() => {
+    server.listen({ onUnhandledRequest: 'error' });
+  });
+
+  beforeEach(() => {
+    setActivePinia(createTestingPinia());
+
+    vi.useFakeTimers({
+      now: new Date('2024-08-29T11:42:58.000Z')
+    });
+  });
+
+  afterAll(() => server.close());
+
+  afterEach(() => {
+    server.restoreHandlers();
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
+
+
+  it('Should get access token', async () => {
+    const token = await getNextAccessToken();
+
+    expect(refreshEndpoint.isUsed).toBeTruthy();
+    expect(token).toEqual(accessJWT);
+  });
+
+  it('Should use cached access token', async () => {
+    const accessToken = encodeJWT({
+      'token_type': 'access',
+      'exp': Math.floor(DateTime.fromISO('2024-08-29T11:45:58.000Z').toSeconds()),
+      'iat': Math.floor(DateTime.fromISO('2024-08-29T11:42:58.000Z').toSeconds()),
+      'jti': '1111',
+      'user_id': 1337
+    });
+    const userStore = useUserStore();
+    userStore.accessToken = accessToken;
+
+    const token = await getNextAccessToken();
+
+    expect(refreshEndpoint.isUsed).toBeFalsy();
+    expect(token).toEqual(accessToken);
+  });
+
+  it('Should refresh expired access token', async () => {
+    const expiredAccessJWT = encodeJWT({
+      'token_type': 'access',
+      'exp': Math.floor(DateTime.fromISO('2024-08-28T10:35:58.000Z').toSeconds()),
+      'iat': Math.floor(DateTime.fromISO('2024-08-29T11:30:58.000Z').toSeconds()),
+      'jti': '0000',
+      'user_id': 1337
+    });
+    const userStore = useUserStore();
+    userStore.accessToken = expiredAccessJWT;
+
+    const token = await getNextAccessToken();
+
+    expect(token).toEqual(accessJWT);
+    expect(refreshEndpoint.isUsed).toBeTruthy();
+  });
+});
