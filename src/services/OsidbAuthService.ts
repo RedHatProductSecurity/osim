@@ -126,6 +126,9 @@ export async function getNextAccessToken() {
   const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
   const userStore = useUserStore();
   let response;
+  if (userStore.accessToken && !userStore.isAccessTokenExpired) {
+    return userStore.accessToken;
+  }
   try {
     const fetchResponse = await fetch(url, {
       method: 'post',
@@ -148,6 +151,7 @@ export async function getNextAccessToken() {
   try {
     const responseBody = response;
     const parsedBody = RefreshResponse.parse(responseBody);
+    userStore.accessToken = parsedBody.access;
     return parsedBody.access;
   } catch (e) {
     console.error('OsidbAuthService::getNextAccessToken() Error getting access token', e);
