@@ -1,135 +1,58 @@
-import { VueWrapper, mount } from '@vue/test-utils';
-import { describe, it, expect } from 'vitest';
-import router from '@/router';
+import type { Ref } from 'vue';
+import { shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import App from '@/App.vue';
-import ToastContainer from '../ToastContainer.vue';
+import { OsimRuntimeStatus, osimRuntimeStatus } from '@/stores/osimRuntime';
 
 describe('App', async () => {
-  let subject: VueWrapper<InstanceType<typeof App>>;
-  beforeEach(() => {
+  vi.mock('@/stores/osimRuntime', async (importOriginal) => {
+    const { ref } = await import('vue');
+    const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
 
-    vi.mock('@vueuse/core', () => ({
-      useLocalStorage: vi.fn((key: string, defaults) => {
-        return {
-          UserStore: {
-            value: defaults || {
-              // Set your fake user data here
-              refresh: 'mocked_refresh_token',
-              env: 'mocked_env',
-              whoami: {
-                email: 'test@example.com',
-                username: 'testuser',
-              },
-            },
-          },
-          SearchStore: {
-            value: defaults || {
-              searchFilters: { 'test':'test' }
-            }
-          }
-        }[key];
+    return {
+      ...osimRuntime,
+      setup: vi.fn(),
+      osimRuntimeStatus: ref(osimRuntime.OsimRuntimeStatus.READY),
+      osimRuntime: ref({
+        readOnly: false,
+        env: 'dev',
+        osimVersion: { rev: '1', tag: '1.0.0', timestamp: '2024-08-29' },
+        error: 'OSIDB is not ready',
+        backends: {}
       }),
-      useElementBounding: vi.fn(() => ({
-        bottom: 1000,
-        height: 100,
-        top: 100
-      })),
-      useStorage: vi.fn((key, defaults = {
-        bugzillaApiKey: '',
-        jiraApiKey: '',
-        showNotifications: false,
-      }) => ({
-        value: defaults,
-      })),
-    }));
+    };
+  });
 
-    vi.mock('jwt-decode', () => ({
-      default: vi.fn(() => ({
-        sub: '1234567890',
-        name: 'Test User',
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365)
-      })),
-    }));
-
-    vi.mock('@/stores/osimRuntime', async () => {
-      const osimRuntimeValue = {
-        env: 'unittest',
-        backends: {
-          osidb: 'osidb-backend',
-          bugzilla: 'bugzilla-backend',
-          jira: 'jira-backend',
-        },
-        osimVersion: {
-          rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z'
-        },
-        error: '',
-      };
-      return {
-        setup: vi.fn(() => { }),
-        osimRuntimeStatus: 1,
-        osidbHealth: {
-          revision: '',
-        },
-        osimRuntime: {
-          value: osimRuntimeValue, // as accessed by <script setup>
-          ...osimRuntimeValue, // as accessed by <template>
-        },
-        OsimRuntimeStatus: {
-          INIT: 0,
-          READY: 1,
-          ERROR: 2,
-        },
-      };
-    });
-
-    router.push('/');
+  const mountApp = () => shallowMount(App, {
+    global: {
+      plugins: [createTestingPinia()],
+      mocks: {
+        $route: {
+          meta: {}
+        }
+      },
+    }
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
-  it('renders ToastContainer', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    subject = mount(App, {
-      global: {
-        stubs: {
-          ChangeLog: true
-        },
-        plugins: [
-          pinia,
-          router
-        ]
-      }
-    });
-    const toastContainer = subject.findAllComponents(ToastContainer)?.[0];
-    expect(toastContainer?.exists()).toBeTruthy();
+  it('Renders the App component when OSIDB is READY', () => {
+    const wrapper = mountApp();
+
+    expect(wrapper.find('.osim-content-layered').exists()).toBe(true);
+    expect(wrapper.find('.osim-status-bar').exists()).toBe(true);
+    expect(wrapper.find('.osim-backend-error').exists()).toBe(false);
+    expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('renders runtime information', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    subject = mount(App, {
-      global: {
-        stubs: {
-          ChangeLog: true
-        },
-        plugins: [
-          pinia,
-          router,
-        ],
-      },
-    });
-    const statusBar = subject.find('.osim-status-bar');
-    expect(statusBar?.exists()).toBeTruthy();
-    expect(statusBar?.text().includes('env: unittest')).toBeTruthy();
-    expect(statusBar?.text().includes('tag: osimtag')).toBeTruthy();
-    expect(statusBar?.text().includes('ts : 1970-01-01')).toBeTruthy();
+  it('Renders the App component when OSIDB is NOT READY', () => {
+    (osimRuntimeStatus as Ref<OsimRuntimeStatus>).value = OsimRuntimeStatus.ERROR;
+    const wrapper = mountApp();
+
+    expect(wrapper.find('.osim-backend-error').exists()).toBe(true);
+    expect(wrapper.find('.osim-content-layered').exists()).toBe(false);
+    expect(wrapper.html()).toMatchSnapshot();
   });
 });

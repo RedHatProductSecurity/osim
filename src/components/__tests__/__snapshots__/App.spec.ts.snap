@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App > Renders the App component when OSIDB is NOT READY 1`] = `"<div class="osim-backend-error">OSIDB is not ready</div>"`;
+
+exports[`App > Renders the App component when OSIDB is READY 1`] = `
+"<header>
+  <navbar-stub></navbar-stub>
+</header>
+<div class="osim-content-layered">
+  <toast-container-stub></toast-container-stub>
+  <router-view-stub name="default" class="osim-page-view"></router-view-stub>
+</div>
+<footer class="fixed-bottom osim-status-bar">
+  <!--TODO add active request count-->
+  <!--<div>[ Requests: {{ activeRequestCount }} ]</div>-->
+  <change-log-stub></change-log-stub>
+  <div> [ OSIM | env: dev | <span title="1"> tag: 1.0.0</span> | ts : () ] </div>
+  <div> [ OSIDB | env: | <span title="">ver: </span> ] </div>
+  <div class="osim-status-osidb-err"> [err: OSIDB is not ready] </div>
+</footer>"
+`;
