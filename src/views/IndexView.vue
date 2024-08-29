@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, onDeactivated, ref, watch, type Ref } from 'vue';
 import IssueQueue from '../components/IssueQueue.vue';
 import { useFlawsFetching } from '../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
@@ -41,6 +41,9 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
   };
 }
 
+onDeactivated(() => {
+  loadFlaws(params);
+});
 </script>
 
 <template>

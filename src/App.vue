@@ -54,7 +54,11 @@ onBeforeUnmount(() => {
     </header>
     <div class="osim-content-layered">
       <ToastContainer />
-      <RouterView class="osim-page-view" />
+      <RouterView v-slot="{ Component }" class="osim-page-view">
+        <KeepAlive include="IndexView">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </div>
     <footer ref="elFooter" class="fixed-bottom osim-status-bar">
       <!--TODO add active request count-->
