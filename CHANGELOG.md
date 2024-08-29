@@ -16,12 +16,14 @@
 * Re-design of affects view (`OSIDB-2818`)
 * Re-design of trackers view (`OSIDB-2818`)
 * Modified layout of trackers manager (`OSIDB-2818`)
+* Fetch flaws on the background to improve performance (`OSIDB-3373`)
 
 ### Fixed
 * Correct `affected module` information source on trackers display (`OSIDB-2818`)
 
 ### Removed
 * Removed `type` information for trackers display (`OSIDB-2818`)
+
 
 ## [2024.8.0]
 ### Added
