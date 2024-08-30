@@ -73,19 +73,13 @@ export const useUserStore = defineStore('UserStore', () => {
 
   const accessToken = ref<string>();
   const isAccessTokenExpired = computed<boolean>(() => {
-    if (accessToken.value == null) {
+    try {
+      const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
+      return !exp || DateTime.now().toSeconds() >= exp - 60;
+    } catch (e) {
+      console.debug('UserStore: access token not a valid JWT', accessToken.value, e);
       return true;
     }
-    const exp = jwtDecode<JwtPayload>(accessToken.value)?.exp;
-    if (!exp) {
-      return true;
-    }
-
-    // get timestamp in seconds minus 1 minute to account for clock drift
-    const now = Math.floor(DateTime.now().minus({ minutes: 1 }).toSeconds());
-    const expiration = Math.floor(DateTime.fromSeconds(exp).toSeconds());
-
-    return now >= expiration;
   });
 
   const whoami = computed<WhoamiType | null>(() => {
