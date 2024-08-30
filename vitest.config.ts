@@ -21,6 +21,7 @@ export default defineConfig(configEnv =>
         exclude: [...configDefaults.exclude, 'e2e/*'],
         root: fileURLToPath(new URL('./', import.meta.url)),
         globals: true,
+        onConsoleLog: (_, type) => type === 'stderr',
         globalSetup: [
           // './src/__tests__/global-setup.ts',
         ],
