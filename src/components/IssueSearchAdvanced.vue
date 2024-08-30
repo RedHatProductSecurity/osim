@@ -2,12 +2,16 @@
 import { computed, ref, watch } from 'vue';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import Modal from '@/components/widgets/Modal.vue';
+import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
+import { useModal } from '@/composables/useModal';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
 import { affectAffectedness } from '@/types/zodAffect';
 import { sort } from 'ramda';
 const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
+const { isModalOpen, openModal, closeModal } = useModal();
 
 const props = defineProps<{
   isLoading: boolean;
@@ -113,7 +117,7 @@ watch(queryFilterVisible, () => {
       <div v-if="queryFilterVisible" class="input-group my-1">
         <div type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;">
           <span class="my-auto">Query Filter</span>
-          <button class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button">
+          <button class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button" @click="openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
@@ -188,6 +192,29 @@ watch(queryFilterVisible, () => {
       </div>
     </form>
   </details>
+  <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal()">
+    <template #header>
+      <h1>Query Filter Guide</h1>
+      <button
+        type="button"
+        class="btn-close ms-auto"
+        aria-label="Close"
+        @click="closeModal()"
+      />
+    </template>
+    <template #body>
+      <QueryFilterGuide />
+    </template>
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn-secondary m-0"
+        @click="closeModal()"
+      >
+        Close
+      </button>
+    </template>
+  </Modal>
 </template>
 
 <style lang="scss" scoped>
