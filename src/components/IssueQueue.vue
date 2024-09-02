@@ -32,7 +32,7 @@ const props = defineProps<{
 const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
-const selectedSortField = ref<ColumnField>('created_dt');
+const selectedSortField = ref<ColumnField | null>('created_dt');
 const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
 const isOpenIssuesSelected = ref(false);
@@ -63,12 +63,15 @@ const params = computed(() => {
     paramsObj.workflow_state = filteredStates.value;
   }
 
-  const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
-  paramsObj.order = {
-    [selectedSortField.value]: `${sortOrderPrefix}${selectedSortField.value}`,
-    id: `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`,
-    state: `${sortOrderPrefix}workflow_state`,
-  }[selectedSortField.value];
+  if (selectedSortField.value) {
+    const sortOrderPrefix = isSortedByAscending.value ? '' : '-';
+    paramsObj.order = {
+      [selectedSortField.value]: `${sortOrderPrefix}${selectedSortField.value}`,
+      id: `${sortOrderPrefix}cve_id,${sortOrderPrefix}uuid`,
+      state: `${sortOrderPrefix}workflow_state`,
+    }[selectedSortField.value];
+  }
+
   return paramsObj;
 });
 
@@ -88,9 +91,18 @@ const relevantIssues = computed<FilteredIssue[]>(() => {
 });
 
 function selectSortField(field: ColumnField) {
-  isSortedByAscending.value =
-    selectedSortField.value === field ? !isSortedByAscending.value : false;
-  selectedSortField.value = field;
+  // Toggle between descending, ascending and no ordering
+  // If selecting a new field, set to descending
+  if (selectedSortField.value === field) {
+    if (!isSortedByAscending.value) {
+      isSortedByAscending.value = true;
+    } else {
+      selectedSortField.value = null;
+    }
+  } else {
+    isSortedByAscending.value = false;
+    selectedSortField.value = field;
+  }
 }
 
 function relevantFields(issue: any) {

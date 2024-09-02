@@ -185,6 +185,9 @@ describe('IssueQueue', () => {
     expect(fetchEvents[1][0]._value).toEqual({
       order: 'cve_id,uuid',
     });
+    // remove order
+    await idColumn.trigger('click');
+    expect(fetchEvents[1][0]._value).toEqual({});
     const impactColumn = wrapper.findAll('th').at(1);
     await impactColumn.trigger('click');
     expect(fetchEvents[1][0]._value).toEqual({
