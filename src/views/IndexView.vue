@@ -11,7 +11,7 @@ const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws }
 const tableFilters = ref<Record<string, string>>({});
 
 const showFilter = computed(() =>
-  Object.keys(searchStore.searchFilters).length > 0
+  Object.keys(searchStore.searchFilters).length > 0 || searchStore.queryFilter !== ''
 );
 
 const isDefaultFilterSelected = ref<boolean>(showFilter.value);
@@ -19,7 +19,8 @@ const isDefaultFilterSelected = ref<boolean>(showFilter.value);
 const params = computed(() => {
   const paramsObj = {
     ...tableFilters.value,
-    ...isDefaultFilterSelected.value && searchStore.searchFilters
+    ...isDefaultFilterSelected.value && searchStore.searchFilters,
+    ...isDefaultFilterSelected.value && { query: searchStore.queryFilter },
   };
 
   return paramsObj;
@@ -44,6 +45,14 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
 onDeactivated(() => {
   loadFlaws(params);
 });
+
+const defaultFilters = computed(() => {
+  return {
+    query: searchStore.queryFilter,
+    ...searchStore.searchFilters,
+  };
+});
+
 </script>
 
 <template>
@@ -55,7 +64,7 @@ onDeactivated(() => {
       :total="total"
       :isFinalPageFetched="isFinalPageFetched"
       :showFilter="showFilter"
-      :defaultFilters="searchStore.searchFilters"
+      :defaultFilters="defaultFilters"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />

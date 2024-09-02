@@ -9,7 +9,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import { allowedEmptyFieldMapping } from '@/constants/flawFields';
 
 const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
-const { getSearchParams, facets } = useSearchParams();
+const { getSearchParams, facets, query } = useSearchParams();
 
 const searchStore = useSearchStore();
 const { addToast } = useToastStore();
@@ -58,7 +58,7 @@ function saveFilter() {
     },
       {} as Record<string, string>,
   );
-  searchStore.saveFilter(filters);
+  searchStore.saveFilter(filters, query.value);
   addToast({
     title: 'Default Filter',
     body: 'User\'s default filter saved',

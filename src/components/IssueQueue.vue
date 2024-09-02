@@ -200,12 +200,12 @@ const nameForOption = (fieldName: string) => {
       > Loaded {{ issues.length }} of {{ total }}</span>
     </div>
     <details v-if="showFilter" class="osim-default-filter">
-      <summary class="mb-2">Default Filters</summary>
-      <div>
+      <summary>Default Filters</summary>
+      <div class="my-2">
         <span
           v-for="(value, key) in defaultFilters"
           :key="key"
-          class="badge rounded-pill bg-primary text-light border me-2 mb-1 pe-auto"
+          class="badge bg-secondary me-1"
         >
           {{ nameForOption(key) }} : {{ value }}
         </span>
@@ -293,6 +293,7 @@ const nameForOption = (fieldName: string) => {
 
   .osim-default-filter{
     padding-left: 0.75rem;
+    user-select: none;
   }
 
   &:hover i {
