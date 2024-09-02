@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Improved performance by reusing access token until is expired (`OSIDB-3373`)
+
 ## [2024.8.0]
 ### Added
 * Add button to Bugzilla on public and private comments

@@ -1,9 +1,10 @@
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
 import { useLocalStorage } from '@vueuse/core';
+import { DateTime } from 'luxon';
 
 // const router = useRouter();
 import router from '@/router';
@@ -59,12 +60,26 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   const jwtRefresh = computed<JwtPayload | null>(() => {
+    if (!_userStoreSession.value.refresh) {
+      return null;
+    }
     try {
       return jwtDecode(_userStoreSession.value.refresh);
     } catch (e) {
       console.debug('UserStore: refresh token not a valid JWT', refresh.value, e);
     }
     return null;
+  });
+
+  const accessToken = ref<string>();
+  const isAccessTokenExpired = computed<boolean>(() => {
+    try {
+      const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
+      return !exp || DateTime.now().toSeconds() >= exp - 60;
+    } catch (e) {
+      console.debug('UserStore: access token not a valid JWT', accessToken.value, e);
+      return true;
+    }
   });
 
   const whoami = computed<WhoamiType | null>(() => {
@@ -166,7 +181,7 @@ export const useUserStore = defineStore('UserStore', () => {
       .then(json => {
         const parsedWhoamiResponse = whoamiResponse.parse(json);
         _userStoreSession.value.whoami = parsedWhoamiResponse;
-      }).then(async() => {
+      }).then(async () => {
         await updateJiraUsername();
       })
       .catch(e => {
@@ -248,6 +263,8 @@ export const useUserStore = defineStore('UserStore', () => {
 
   return {
     refresh,
+    accessToken,
+    isAccessTokenExpired,
     jwtRefresh,
     whoami,
     userName,
