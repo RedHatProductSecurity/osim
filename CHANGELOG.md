@@ -16,6 +16,7 @@ trackers will be refreshed (`OSIDB-3402`)
 * Display score on affect's CVSS column (`OSIDB-3397`)
 * Allow removing CVSS on affects (`OSIDB-3397`)
 * Support saving query filter on default user search (`OSIDB-3387`)
+* Add query filter support on advance search (`OSIDB-3088`)
 
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
