@@ -53,6 +53,10 @@ function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaw
     () => Object.entries(multiFlawTrackers.value).some(([, { isFilingTrackers }]) => isFilingTrackers)
   );
 
+  const isLoadingTrackers = computed(
+    () => Object.entries(multiFlawTrackers.value).some(([, { isLoadingTrackers }]) => isLoadingTrackers)
+  );
+
   const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap((flaw) => flaw.affects));
 
   const affectsByUuid = computed((): Record<string, ZodAffectType> => allRelatedAffects.value
@@ -93,6 +97,7 @@ function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaw
     affectsBySelectedFlawId,
     isFilingTrackers,
     trackersToFile,
+    isLoadingTrackers
   };
 }
 

@@ -28,7 +28,7 @@ import CvssExplainForm from './CvssExplainForm.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import IssueFieldReferences from './IssueFieldReferences.vue';
 import IssueFieldState from './IssueFieldState.vue';
-import FlawAffects from './FlawAffects.vue';
+import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 
 const props = defineProps<{
   flaw: ZodFlawType;

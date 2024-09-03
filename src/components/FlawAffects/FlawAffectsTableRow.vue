@@ -1,0 +1,454 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import {
+  affectImpacts,
+  affectAffectedness,
+  possibleAffectResolutions,
+  type ZodAffectType,
+} from '@/types/zodAffect';
+
+import { CVSS_V3 } from '@/constants';
+
+const emit = defineEmits<{
+  'affect:recover': [value: ZodAffectType];
+  'affect:revert': [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
+  'affect:commit': [value: ZodAffectType];
+  'affect:cancel': [value: ZodAffectType];
+  'affect:edit': [value: ZodAffectType];
+}>();
+
+const affect = defineModel<ZodAffectType>('affect');
+const props = defineProps<{
+  isRemoved: boolean;
+  isBeingEdited: boolean;
+  isModified: boolean;
+  isLast: boolean;
+  isNew: boolean;
+  isSelected: boolean;
+  error: Record<string, any>[] | null;
+}>();
+
+// Edit Affects
+// const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
+
+// function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
+//   return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid) || affect;
+// }
+
+const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
+  if (event.key === 'Escape') {
+    emit('affect:cancel', affect);
+  } else if (event.key === 'Enter') {
+    emit('affect:commit', affect);
+  }
+};
+
+// Select Affects
+const selectedAffects = ref<ZodAffectType[]>([]);
+
+const isSelectable = computed(() => !props.isBeingEdited && !props.isRemoved);
+
+function toggleAffectSelection(affect: ZodAffectType) {
+  if (!isSelectable.value) {
+    return;
+  }
+  if (!props.isSelected) {
+    selectedAffects.value.push(affect);
+  } else {
+    selectedAffects.value = selectedAffects.value.filter(a => a !== affect);
+  }
+}
+
+function revertChanges(affect: ZodAffectType) {
+  emit('affect:revert', affect);
+  if (props.isSelected) {
+    toggleAffectSelection(affect);
+  }
+}
+
+// Affects Fields
+function affectCvss3Vector(affect: ZodAffectType) {
+  affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === CVSS_V3)
+    ?.vector
+    || null;
+}
+
+function resolutionOptions(affect: ZodAffectType) {
+  return affect?.affectedness
+    ? possibleAffectResolutions[affect.affectedness]
+    : [];
+}
+const affectRowTooltip = computed(() => {
+  if (props.isRemoved) {
+    return 'This affect will be deleted on save changes';
+  } else if (props.isNew) {
+    return 'This affect will be created on save changes';
+  } else if (props.isModified) {
+    return 'This affect will be updated on save changes';
+  } else {
+    return '';
+  }
+});
+
+</script>
+
+<template>
+  <tr
+    v-if="affect"
+    :class="{
+      'border-bottom border-gray': isLast,
+      'editing': isBeingEdited,
+      'modified': isModified && !isBeingEdited,
+      'new': props.isNew && !isBeingEdited,
+      'removed': isRemoved,
+      'selected': props.isSelected }"
+    :style="isSelectable ? 'cursor: pointer' : ''"
+    :title="affectRowTooltip"
+    @click.prevent="toggleAffectSelection(affect)"
+  >
+    <td>
+      <i class="row-left-indicator bi bi-caret-right-fill fs-4" />
+      <input
+        type="checkbox"
+        class="form-check-input"
+        :checked="props.isSelected"
+        :disabled="isBeingEdited || isRemoved"
+        @click.stop="toggleAffectSelection(affect)"
+      />
+    </td>
+    <td>
+      <div class="ps-3">
+        <i
+          v-if="isBeingEdited"
+          class="bi bi-pencil"
+          title="This affect is currently being edited"
+        />
+        <i
+          v-else-if="props.isNew"
+          class="bi bi-plus-lg"
+          title="This affect is set for creation on save"
+        />
+        <i
+          v-else-if="isModified"
+          class="bi bi-file-earmark-diff"
+          title="This affect has modifications to save"
+        />
+        <i
+          v-else-if="isRemoved"
+          class="bi bi-trash"
+          title="This affect is set for deletion on save"
+        />
+        <i v-else class="bi bi-database-check" title="This affect is saved" />
+      </div>
+    </td>
+    <td>
+      <input
+        v-if="isBeingEdited"
+        v-model="affect.ps_module"
+        class="form-control"
+        @keydown="handleEdit($event, affect)"
+      />
+      <span v-else>
+        {{ affect.ps_module }}
+      </span>
+    </td>
+    <td>
+      <input
+        v-if="isBeingEdited"
+        v-model="affect.ps_component"
+        class="form-control"
+        @keydown="handleEdit($event, affect)"
+      />
+      <span v-else>
+        {{ affect.ps_component }}
+      </span>
+    </td>
+    <td>
+      <select
+        v-if="isBeingEdited"
+        v-model="affect.affectedness"
+        class="form-select"
+        @keydown="handleEdit($event, affect)"
+      >
+        <option
+          v-for="option in affectAffectedness"
+          :key="option"
+          :value="option"
+          :selected="option === affect.affectedness"
+        >
+          {{ option }}
+        </option>
+      </select>
+      <span v-else>
+        {{ affect.affectedness }}
+      </span>
+    </td>
+    <td>
+      <select
+        v-if="isBeingEdited"
+        v-model="affect.resolution"
+        class="form-select"
+        @keydown="handleEdit($event, affect)"
+      >
+        <option
+          v-for="option in resolutionOptions(affect)"
+          :key="option"
+          :value="option"
+          :selected="option === affect.resolution"
+        >
+          {{ option }}
+        </option>
+      </select>
+      <span v-else>
+        {{ affect.resolution }}
+      </span>
+    </td>
+    <td>
+      <select
+        v-if="isBeingEdited"
+        v-model="affect.impact"
+        class="form-select"
+        @keydown="handleEdit($event, affect)"
+      >
+        <option
+          v-for="option in affectImpacts"
+          :key="option"
+          :value="option"
+          :selected="option === affect.impact"
+        >
+          {{ option }}
+        </option>
+      </select>
+      <span v-else>
+        {{ affect.impact }}
+      </span>
+    </td>
+    <td>{{ affectCvss3Vector(affect) }}</td>
+    <td>
+      <div class="affect-tracker-cell">
+        <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
+        <button
+          type="button"
+          :disabled="isBeingEdited || isRemoved"
+          class="btn btn-sm px-1 py-0 d-flex rounded-circle"
+        >
+          <!-- @click.prevent.stop="fileTrackersForAffects([affect])" -->
+          <i class="bi bi-plus lh-sm m-auto" />
+        </button>
+      </div>
+    </td>
+    <td>
+      <button
+        v-if="!isBeingEdited && !isRemoved"
+        type="button"
+        class="btn btn-sm"
+        title="Edit affect"
+        tabindex="-1"
+        @click.stop="emit('affect:edit', affect)"
+      >
+        <i class="bi bi-pencil" />
+      </button>
+      <button
+        v-if="isBeingEdited && !isRemoved"
+        type="button"
+        class="btn btn-sm"
+        title="Commit edit"
+        tabindex="-1"
+        @click.stop="emit('affect:commit', affect)"
+      >
+        <i class="bi bi-check2 fs-5 lh-sm" />
+      </button>
+      <button
+        v-if="!isBeingEdited && !isRemoved"
+        type="button"
+        class="btn btn-sm"
+        title="Remove affect"
+        tabindex="-1"
+        @click.stop="emit('affect:remove', affect)"
+      >
+        <i class="bi bi-trash" />
+      </button>
+      <button
+        v-if="isBeingEdited && !isRemoved"
+        type="button"
+        class="btn btn-sm"
+        title="Cancel edit"
+        tabindex="-1"
+        @click.stop="emit('affect:cancel', affect)"
+      >
+        <i class="bi bi-x fs-5 lh-sm" />
+      </button>
+      <button
+        v-if="isRemoved"
+        type="button"
+        class="btn btn-sm recover-btn"
+        title="Recover affect"
+        tabindex="-1"
+        @click.stop="emit('affect:recover', affect)"
+      >
+        <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
+      </button>
+      <button
+        v-if="!isBeingEdited && isModified"
+        type="button"
+        class="btn btn-sm"
+        title="Discard changes (Revert)"
+        tabindex="-1"
+        @click.stop="revertChanges(affect)"
+      >
+        <i class="bi bi-backspace" />
+      </button>
+      <i class="row-right-indicator bi bi-caret-left-fill fs-4" />
+    </td>
+  </tr>
+</template>
+
+<style scoped lang="scss">
+@import '@/scss/bootstrap-overrides';
+
+tr {
+  height: 39.2px;
+  position: relative;
+  transition: filter .25s;
+
+  td {
+    transition: background-color .5s, color .5s, border-color .25s;
+    padding-block: .2rem;
+    border-block: .2ch solid #e0e0e0;
+    background-color: #e0e0e0;
+
+    .row-right-indicator {
+      right: -42px;
+    }
+
+    .row-left-indicator {
+      left: -42px;
+    }
+
+    .row-left-indicator, .row-right-indicator {
+      position: absolute;
+      opacity: 0;
+      transition: opacity .5s, right .5s, left .5s;
+      top: 0;
+    }
+
+    .btn {
+      display: inline;
+      margin-inline: .1rem;
+      width: 28px;
+      height: 25px;
+      padding: 0 .1rem;
+      transition: background-color .5s, color .5s;
+      border: none;
+      background-color: #212529;
+      color: white;
+
+      .bi {
+        line-height: 0;
+        font-size: .938rem;
+      }
+    }
+
+    input, select {
+      padding: .15rem .5rem;
+    }
+
+    .affect-tracker-cell {
+      display: flex;
+
+      .btn {
+        width: 26px;
+        height: 26px;
+
+        .bi {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+
+  :not(.editing) td {
+    user-select: none;
+  }
+
+  &:hover {
+    filter: brightness(.9);
+
+    td {
+      border-color: #707070bf;
+    }
+  }
+}
+
+tr.selected td {
+  .row-left-indicator, .row-right-indicator {
+    opacity: 100;
+  }
+
+  .row-right-indicator {
+    right: -24px !important;
+  }
+
+  .row-left-indicator {
+    left: -24px !important;
+  }
+}
+
+tr.editing td {
+  border-color: $light-yellow !important;
+  background-color: $light-yellow;
+  color: #73480b;
+
+  .btn {
+    background-color: #73480b;
+  }
+}
+
+tr.modified td {
+  border-color: $light-green !important;
+  background-color: $light-green;
+  color: #204d00;
+
+  .btn {
+    background-color: #204d00;
+  }
+}
+
+tr.new td {
+  border-color: #e0f0ff !important;
+  background-color: #e0f0ff;
+  color: #036;
+
+  .btn {
+    background-color: #036;
+  }
+}
+
+tr.removed td {
+  border-color: #ffe3d9 !important;
+  background-color: #ffe3d9;
+  color: #731f00;
+
+  .btn {
+    background-color: #731f00;
+  }
+}
+
+tr.editing:hover td {
+  border-color: #73470a80 !important;
+}
+
+tr.modified:hover td{
+  border-color: #204d0080 !important;
+}
+
+tr.new:hover td {
+  border-color: #00336680 !important;
+}
+
+tr.removed:hover td {
+  border-color: #731f0080 !important;
+}
+
+</style>

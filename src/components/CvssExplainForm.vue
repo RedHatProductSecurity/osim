@@ -4,12 +4,13 @@ import { computed } from 'vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
+import { CVSS_V3 } from '@/constants';
 
 const modelValue = defineModel<ZodFlawType>({ required: true });
 
 const rhCvss = computed(() => modelValue.value?.cvss_scores
-  .findIndex(cvss => cvss.issuer === 'RH'
-  && cvss.cvss_version === 'V3'));
+  .findIndex((cvss) => cvss.issuer === 'RH'
+    && cvss.cvss_version === CVSS_V3));
 </script>
 
 <template>

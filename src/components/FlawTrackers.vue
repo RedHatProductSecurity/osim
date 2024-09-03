@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from 'vue';
-
+import { formatDate } from '@/utils/helpers';
+import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import type { ZodFlawType } from '@/types/zodFlaw';
 import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager.vue';
 
 import { usePagination } from '@/composables/usePagination';
 
-import { formatDate } from '@/utils/helpers';
-import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
 type TrackerWithModule = { ps_module: string } & ZodTrackerType;
 
 const props = defineProps<{
-  affectsNotBeingDeleted: ZodAffectType[];
-  allTrackersCount: number;
+  flaw: ZodFlawType;
+  relatedFlaws: ZodFlawType[];
   displayedTrackers: TrackerWithModule[];
+  affectsNotBeingDeleted: ZodAffectType[]; // ???
+  allTrackersCount: number;
   flawId: string;
 }>();
 
@@ -318,15 +320,15 @@ function increaseItemsPerPage() {
         <div v-if="sortedTrackers.length === 0">
           No trackers to display
         </div>
+        <TrackerManager
+          v-if="showTrackerManager"
+          :relatedFlaws="relatedFlaws"
+          :flaw="flaw"
+          :affects="affectsNotBeingDeleted"
+          @affects-trackers:refresh="emit('affects:refresh')"
+        />
       </div>
     </div>
-    <TrackerManager
-      v-if="showTrackerManager"
-      mode="embedded"
-      :flawId="flawId"
-      :affects="affectsNotBeingDeleted"
-      @affects-trackers:refresh="emit('affects:refresh')"
-    />
   </div>
 </template>
 
