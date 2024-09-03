@@ -2037,6 +2037,14 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
+djangoql-completion@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/djangoql-completion/-/djangoql-completion-0.5.0.tgz#984fcef2cf25499b44722b3ef36d5e63e210749f"
+  integrity sha512-07P9Ksyb9Urnb/I/DfSIIw41xXdps9mTcIXR7PYbz/vryBUQSEc4tYC3CZ3dHJXQVk665kzseNxXBxqOvpzxSQ==
+  dependencies:
+    lex "1.7.9"
+    lodash "4.17.21"
+
 doctrine@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-3.0.0.tgz#addebead72a6574db783639dc87a121773973961"
@@ -3207,6 +3215,11 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+lex@1.7.9:
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/lex/-/lex-1.7.9.tgz#5d5636ccef574348362938b79a47f0eed8ed0d43"
+  integrity sha512-vzaalVBmFLnMaedq0QAsBAaXsWahzRpvnIBdBjj7y+7EKTS6lnziU2y/PsU2c6rV5qYj2B5IDw0uNJ9peXD0vw==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
