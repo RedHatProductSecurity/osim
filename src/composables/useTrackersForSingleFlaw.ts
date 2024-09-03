@@ -154,12 +154,6 @@ export function useTrackersForSingleFlaw(
     }
   }
 
-  function updateTrackerSelections(affectStreams: UpdateStreamOsim[]) {
-    for (const stream of affectStreams) {
-      trackerSelections.value.set(stream, !trackerSelections.value.get(stream));
-    }
-  }
-
   const trackersToFile = computed((): TrackersPost[] =>
     Array.from(trackerSelections.value)
       .filter(([, selected]) => selected)
@@ -177,8 +171,6 @@ export function useTrackersForSingleFlaw(
   );
 
   function loadTrackers() {
-    isLoadingTrackers.value = true;
-
     if (relatedModuleComponents) {
       moduleComponents.value = relatedModuleComponents.value;
       return;
@@ -187,6 +179,8 @@ export function useTrackersForSingleFlaw(
     if (!flawUuid.value) {
       return;
     }
+
+    isLoadingTrackers.value = true;
 
     return getTrackersForFlaws({ flaw_uuids: [flawUuid.value] })
       .then((response: any) => {
@@ -220,7 +214,6 @@ export function useTrackersForSingleFlaw(
     trackerSelections,
     trackersToFile,
     setAllTrackerSelections,
-    updateTrackerSelections,
     filteredSortedStreams,
     unselectedStreams,
     selectedStreams,

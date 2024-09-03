@@ -41,8 +41,17 @@ const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
 });
 export const server = setupServer();
 
-vi.spyOn(console, 'warn').mockImplementation((...msg) => { assert.fail(msg.join(' ')); });
-vi.spyOn(console, 'error').mockImplementation((...msg) => { assert.fail(msg.join(' ')); });
+vi.spyOn(console, 'warn').mockImplementation((...msg) => {
+  const warning = msg.join(' ');
+  console.debug(warning);
+  assert.fail(warning);
+});
+
+vi.spyOn(console, 'error').mockImplementation((...msg) => {
+  const error = msg.join(' ');
+  console.debug(error);
+  assert.fail(error);
+});
 
 beforeAll(() => {
   server.listen({
