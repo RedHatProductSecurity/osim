@@ -47,38 +47,6 @@ $light-purple: $redhat-purple-10;
 $light-green: $redhat-success-10;
 $light-yellow: $redhat-yellow-10;
 $light-orange: $redhat-orange-10;
-$theme-colors: (
-  'black': $black,
-  'blue': $blue,
-  'gray': $gray,
-  'light-light-gray': $light-light-gray,
-  'light-light-orange': $light-light-orange,
-  'light-gray': $light-gray,
-  'light-purple': $light-purple,
-  'light-green': $light-green,
-  'light-yellow': $light-yellow,
-  'light-orange': $light-orange,
-  'light-info': $light-info,
-  'lighter-info': $lighter-info,
-  'lightest-info': $lightest-info,
-  'lightish-info': $light-info,
-  'light-teal': $light-teal,
-  'dark-teal': $dark-teal,
-  'primary': $primary,
-  'secondary': $secondary,
-  'info': $info,
-  'success': $success,
-  'danger': $danger,
-  'warning': $warning,
-);
-
-// Create your own map
-$custom-colors: (
-  'custom-color': #900,
-);
-
-// Merge the maps
-$theme-colors: map-merge($theme-colors, $custom-colors);
 
 // Bootstrap color overrides
 $primary: $redhat-primary;

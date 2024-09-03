@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import FlawAffects from '@/components/FlawAffects.vue';
+import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
@@ -25,11 +25,17 @@ vi.mock('@/composables/useTrackers', () => ({
   }),
 }));
 
-vi.mock('@/composables/useTrackers', () => ({
-  useTrackers: vi.fn().mockReturnValue({
-    trackersToFile: [],
-  }),
-}));
+const globalOptions = {
+  global: {
+    stubs: {
+      RouterLink: true,
+    },
+    directives: {
+      'osim-loading': LoadingAnimationDirective,
+    },
+  },
+};
+
 describe('flawAffects', () => {
   osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
     const subject = mountFlawAffects(flaw);
