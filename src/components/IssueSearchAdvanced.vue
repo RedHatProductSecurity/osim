@@ -133,6 +133,14 @@ onUnmounted(() => {
           type="text"
           class="form-control"
         />
+        <button
+          class="btn btn-sm btn-secondary rounded-0 py-0"
+          title="Clear query"
+          type="button"
+          @click="query = ''"
+        >
+          <i class="bi bi-eraser fs-5"></i>
+        </button>
         <button class="btn btn-secondary py-0" type="button" @click="() => queryFilterVisible = false">
           <i class="bi bi-x fs-5" aria-label="hide query filter" />
         </button>
@@ -186,6 +194,14 @@ onUnmounted(() => {
             <i class="bi bi-slash-circle fs-5" />
           </button>
         </div>
+        <button
+          class="btn btn-sm btn-primary rounded-0 py-0"
+          title="Clear field"
+          type="button"
+          @click="facet.value = ''"
+        >
+          <i class="bi bi-eraser fs-5"></i>
+        </button>
         <button class="btn btn-primary py-0" type="button" @click="removeFacet(index)">
           <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
