@@ -1,0 +1,311 @@
+<script setup lang="ts">
+import { descend } from 'ramda';
+
+import {
+  affectImpacts,
+  affectAffectedness,
+  affectResolutions,
+  // possibleAffectResolutions,
+  type ZodAffectType,
+} from '@/types/zodAffect';
+
+import { useFilterSortAffects } from './useFilterSortAffects';
+import { useAffectSelections } from './useAffectSelections';
+
+const props = defineProps<{
+  affectsBeingEdited: ZodAffectType[];
+  affectsToDelete: ZodAffectType[];
+  selectedModules: string[];
+}>();
+
+const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
+
+const {
+  affectednessFilter,
+  impactFilter,
+  resolutionFilter,
+  setAffectednessFilter,
+  setImpactFilter,
+  setResolutionFilter,
+  setSort,
+  sortKey,
+  sortOrder,
+} = useFilterSortAffects();
+
+// Edit Affects
+
+function isBeingEdited(affect: ZodAffectType) {
+  return props.affectsBeingEdited.includes(affect);
+}
+
+const {
+  areAllAffectsSelectable,
+  areAllAffectsSelected,
+  isIndeterminateSelection,
+  toggleMultipleAffectSelections,
+} = useAffectSelections(affects, affect => !isRemoved(affect) && !isBeingEdited(affect));
+
+function isRemoved(affect: ZodAffectType) {
+  return props.affectsToDelete.includes(affect);
+}
+</script>
+
+<template>
+  <thead class="sticky-top table-dark">
+    <tr>
+      <th>
+        <input
+          type="checkbox"
+          class="form-check-input"
+          aria-label="Select All affects in Table"
+          :disabled="!areAllAffectsSelectable"
+          :indeterminate="isIndeterminateSelection"
+          :checked="areAllAffectsSelected && areAllAffectsSelectable"
+          @change="toggleMultipleAffectSelections"
+        />
+      </th>
+      <th>
+        <!-- State -->
+      </th>
+      <th @click="setSort('ps_module')">
+        Module
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'ps_module',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi"
+        />
+      </th>
+      <th @click="setSort('ps_component')">
+        Component
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'ps_component',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi"
+        />
+      </th>
+      <th @click="setSort('affectedness')">
+        <span class="align-bottom me-1">Affectedness</span>
+        <button
+          id="affectedness-filter"
+          type="button"
+          class="btn btn-sm border-0 p-0 me-1"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="outside"
+          aria-expanded="false"
+          @contextmenu.prevent="affectednessFilter = []"
+          @click.stop
+        >
+          <i
+            class="bi text-white"
+            :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="affectednessFilter.length !== 0 ? 'Filtering by some affectedness' : ''"
+          />
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+          <template v-for="affectedness in affectAffectedness" :key="affectedness">
+            <li><a
+              href="#"
+              class="btn py-0 dropdown-item"
+              @click.prevent.stop="setAffectednessFilter(affectedness)"
+            >
+              <input
+                type="checkbox"
+                class="form-check-input me-2"
+                :checked="affectednessFilter.includes(affectedness)"
+                @click.stop="setAffectednessFilter(affectedness)"
+              />
+              <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
+            </a></li>
+          </template>
+        </ul>
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'affectedness',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi align-middle"
+        />
+      </th>
+      <th @click="setSort('resolution')">
+        <span class="align-bottom me-1">Resolution</span>
+        <button
+          id="resolution-filter"
+          type="button"
+          class="btn btn-sm border-0 p-0 me-1"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="outside"
+          aria-expanded="false"
+          @contextmenu.prevent="resolutionFilter = []"
+          @click.stop
+        >
+          <i
+            class="bi text-white"
+            :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="resolutionFilter.length !== 0 ? 'Filtering by some resolutions' : ''"
+          />
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+          <template v-for="resolution in affectResolutions" :key="resolution">
+            <li><a
+              href="#"
+              class="btn py-0 dropdown-item"
+              @click.prevent.stop="setResolutionFilter(resolution)"
+            >
+              <input
+                type="checkbox"
+                class="form-check-input me-2"
+                :checked="resolutionFilter.includes(resolution)"
+                @click.stop="setResolutionFilter(resolution)"
+              />
+              <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
+            </a></li>
+          </template>
+        </ul>
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'resolution',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi align-middle"
+        />
+      </th>
+      <th @click="setSort('impact')">
+        <span class="align-bottom me-1">Impact</span>
+        <button
+          id="impact-filter"
+          type="button"
+          class="btn btn-sm border-0 p-0 me-1"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="outside"
+          aria-expanded="false"
+          @contextmenu.prevent="impactFilter = []"
+          @click.stop
+        >
+          <i
+            class="bi text-white"
+            :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="impactFilter.length !== 0 ? 'Filtering by some impacts' : ''"
+          />
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+          <template v-for="impact in affectImpacts" :key="impact">
+            <li><a
+              href="#"
+              class="btn py-0 dropdown-item"
+              @click.prevent.stop="setImpactFilter(impact)"
+            >
+              <input
+                type="checkbox"
+                class="form-check-input me-2"
+                :checked="impactFilter.includes(impact)"
+                @click.stop="setImpactFilter(impact)"
+              />
+              <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
+            </a></li>
+          </template>
+        </ul>
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'impact',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi align-middle"
+        />
+      </th>
+      <th @click="setSort('cvss_scores')">
+        CVSS
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'cvss_scores',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi"
+        />
+      </th>
+      <th @click="setSort('trackers')">
+        Trackers
+        <i
+          :class="{
+            'opacity-0': sortKey !== 'trackers',
+            'bi-caret-down-fill': sortOrder === descend,
+            'bi-caret-up-fill': sortOrder !== descend,
+          }"
+          class="bi"
+        />
+      </th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+</template>
+
+<style scoped lang="scss">
+@import '@/scss/bootstrap-overrides';
+
+thead {
+  tr {
+    th {
+      user-select: none;
+
+      &:nth-of-type(1) {
+        width: 2%;
+      }
+
+      &:nth-of-type(2) {
+        width: 4%;
+      }
+
+      &:nth-of-type(3) {
+        width: 20%;
+      }
+
+      &:nth-of-type(4) {
+        width: 20%;
+      }
+
+      &:nth-of-type(5) {
+        width: 10%;
+      }
+
+      &:nth-of-type(6) {
+        width: 10%;
+      }
+
+      &:nth-of-type(7) {
+        width: 8%;
+      }
+
+      &:nth-of-type(8) {
+        width: 8%;
+      }
+
+      &:nth-of-type(9) {
+        width: 8%;
+      }
+
+      &:nth-of-type(10) {
+        width: 8%;
+      }
+
+      &:nth-of-type(11) {
+        min-width: 0%;
+        max-width: 0%;
+        width: 0%;
+      }
+
+      &:not(:nth-of-type(10), :nth-of-type(2)) {
+        cursor: pointer;
+      }
+    }
+  }
+}
+</style>

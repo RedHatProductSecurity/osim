@@ -1,18 +1,19 @@
 import { computed, ref, watch, type Ref, type UnwrapNestedRefs } from 'vue';
 
-import type { ZodAffectType } from '@/types/zodAffect';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import type {
   ModuleComponent,
   UpdateStreamOsim,
   UpdateStreamSelections,
 } from '@/composables/useTrackersForSingleFlaw';
-
-import type { TrackersPost } from '@/services/TrackerService';
-
 import { useTrackersForSingleFlaw } from '@/composables/useTrackersForSingleFlaw';
+
+import type { ZodAffectType } from '@/types/zodAffect';
+import type { ZodFlawType } from '@/types/zodFlaw';
+import type { TrackersPost } from '@/services/TrackerService';
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
 import { getFlaw } from '@/services/FlawService';
+import { isAffectIn } from '@/utils/helpers';
+
 import { createCatchHandler } from './service-helpers';
 
 type UseTrackersReturnType = ReturnType<typeof useTrackersForSingleFlaw>;
@@ -20,15 +21,15 @@ type UseTrackersReturnType = ReturnType<typeof useTrackersForSingleFlaw>;
 // For use with reactive values rather than refs (calls from template tags)
 type UnrefUseTrackersReturnType = UnwrapNestedRefs<UseTrackersReturnType>;
 
-type MultiFlawTrackers = Record<string, UseTrackersReturnType> | Record<string, UnrefUseTrackersReturnType>;
+type MultiFlawTrackers = Record<string, UnrefUseTrackersReturnType> | Record<string, UseTrackersReturnType>;
 
 function useState(flaw: ZodFlawType) {
-
   const multiFlawTrackers = ref<MultiFlawTrackers>({});
   const filterString = ref('');
   const relatedFlawModuleComponents = ref<ModuleComponent[]>([]);
+  const isLoadingTrackers = ref(false);
   const shouldFileAsMultiFlaw = ref(true);
-  const selectedRelatedFlaws = ref<ZodFlawType[]>([ flaw ]);
+  const selectedRelatedFlaws = ref<ZodFlawType[]>([flaw]);
 
   return {
     multiFlawTrackers,
@@ -36,39 +37,52 @@ function useState(flaw: ZodFlawType) {
     relatedFlawModuleComponents,
     shouldFileAsMultiFlaw,
     selectedRelatedFlaws,
+    isLoadingTrackers,
   };
 }
 
-function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaws: Ref<ZodFlawType[]>) {
+function useComputedState(
+  multiFlawTrackers: Ref<MultiFlawTrackers>,
+  relatedFlaws: Ref<ZodFlawType[]>,
+  specificAffectsToTrack: ZodAffectType[],
+) {
+  const flawUuids = computed(() => relatedFlaws.value.map(flaw => flaw.uuid));
 
-  const flawUuids = computed(() => relatedFlaws.value.map((flaw) => flaw.uuid));
+  const shouldIncludeAffect = (affect: ZodAffectType) =>
+    specificAffectsToTrack.length === 0 || isAffectIn(affect, specificAffectsToTrack);
 
   const affectsBySelectedFlawId = computed(() => relatedFlaws.value.reduce(
     (affectsBook: Record<string, ZodAffectType[]>, flaw) => {
-      affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects;
+      affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects.filter(shouldIncludeAffect);
       return affectsBook;
     }, {}));
 
   const isFilingTrackers = computed(
-    () => Object.entries(multiFlawTrackers.value).some(([, { isFilingTrackers }]) => isFilingTrackers)
+    () => Object.entries(multiFlawTrackers.value).some(([, { isFilingTrackers }]) => isFilingTrackers),
   );
 
-  const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap((flaw) => flaw.affects));
+  const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap(
+    flaw => flaw.affects.filter(shouldIncludeAffect),
+  ));
 
   const affectsByUuid = computed((): Record<string, ZodAffectType> => allRelatedAffects.value
     .reduce((dictionary: Record<string, ZodAffectType>, affect: ZodAffectType) => {
       dictionary[affect.uuid as string] = affect;
       return dictionary;
-    }, {})
+    }, {}),
   );
 
-  const allSelectedStreams = computed(
+  const selectedStreams = computed(
     () => Object.values(multiFlawTrackers.value)
       .flatMap(({ selectedStreams }) => selectedStreams));
 
+  const unselectedStreams = computed(
+    () => Object.values(multiFlawTrackers.value)
+      .flatMap(({ unselectedStreams }) => unselectedStreams));
+
   const trackersToFile = computed(
     (): TrackersPost[] => Object.values(
-      allSelectedStreams.value.reduce((trackers: Record<string, TrackersPost>, tracker) => {
+      selectedStreams.value.reduce((trackers: Record<string, TrackersPost>, tracker) => {
         const key = `${tracker.ps_module}-${tracker.ps_component}`;
         const affect = affectsByUuid.value[tracker.affectUuid];
         if (key in trackers) {
@@ -84,34 +98,42 @@ function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaw
           updated_dt: affect?.updated_dt,
         } as TrackersPost;
         return trackers;
-      }, {})
-    )
+      }, {}),
+    ),
   );
 
   return {
-    flawUuids,
     affectsBySelectedFlawId,
+    flawUuids,
     isFilingTrackers,
+    selectedStreams,
     trackersToFile,
+    unselectedStreams,
   };
 }
 
-export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<ZodFlawType[]>) {
-
+export function useTrackersForRelatedFlaws(
+  flaw: ZodFlawType,
+  relatedFlaws: Ref<ZodFlawType[]>,
+  specificAffectsToTrack: ZodAffectType[] = [],
+) {
   const {
-    multiFlawTrackers,
     filterString,
+    isLoadingTrackers,
+    multiFlawTrackers,
     relatedFlawModuleComponents,
-    shouldFileAsMultiFlaw,
     selectedRelatedFlaws,
+    shouldFileAsMultiFlaw,
   } = useState(flaw);
 
   const {
-    isFilingTrackers,
-    trackersToFile,
     affectsBySelectedFlawId,
     flawUuids,
-  } = useComputedState(multiFlawTrackers, selectedRelatedFlaws);
+    isFilingTrackers,
+    selectedStreams,
+    trackersToFile,
+    unselectedStreams,
+  } = useComputedState(multiFlawTrackers, selectedRelatedFlaws, specificAffectsToTrack);
 
   watch(filterString, (newFilterString) => {
     for (const tracker of Object.values(multiFlawTrackers.value)) {
@@ -120,6 +142,7 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
   });
 
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
+    isLoadingTrackers.value = true;
     getTrackersForFlaws({ flaw_uuids: flawUuids.value })
       .then((response: any) => {
         relatedFlawModuleComponents.value = response.modules_components;
@@ -129,22 +152,22 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
           if (!multiFlawTrackers.value[flawCveOrId]) {
             multiFlawTrackers.value[flawCveOrId] = useTrackersForSingleFlaw(
               ref(newRelatedAffects[flawCveOrId]),
-              relatedFlawModuleComponents
+              relatedFlawModuleComponents,
             );
           }
         });
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => isLoadingTrackers.value = false);
   }, { immediate: true });
 
   async function fileTrackers() {
-
     if (isFilingTrackers.value) {
       console.error('useTrackersForRelatedFlaws::fileTrackers() ][ Already filing trackers, aborting request');
       return;
     }
 
-    Object.values(multiFlawTrackers.value).forEach((tracker) => tracker.isFilingTrackers = true);
+    Object.values(multiFlawTrackers.value).forEach(tracker => tracker.isFilingTrackers = true);
     const errors: unknown[] = [];
 
     if (shouldFileAsMultiFlaw.value) {
@@ -153,7 +176,7 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
       } catch (error) {
         errors.push(error);
       } finally {
-        Object.values(multiFlawTrackers.value).forEach((tracker) => tracker.isFilingTrackers = false);
+        Object.values(multiFlawTrackers.value).forEach(tracker => tracker.isFilingTrackers = false);
       }
     } else {
       for (const tracker of Object.values(multiFlawTrackers.value)) {
@@ -176,14 +199,12 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
 
   function synchronizeTrackerSelections(selections: UpdateStreamSelections) {
     for (const trackerManager of Object.values(multiFlawTrackers.value)) {
-
       for (const updateStream of trackerManager.trackerSelections.keys()) {
-
         const selectionUpdateStream = Array.from(selections.keys())
           .find((selection: UpdateStreamOsim) =>
             selection.ps_module === updateStream.ps_module
             && selection.ps_component === updateStream.ps_component
-            && selection.ps_update_stream === updateStream.ps_update_stream
+            && selection.ps_update_stream === updateStream.ps_update_stream,
           );
 
         const selection = selections.get(selectionUpdateStream as UpdateStreamOsim);
@@ -193,21 +214,21 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
         } else {
           console.error(
             'useTrackersForRelatedFlaws::synchronizeTrackerSelections() '
-            + '][ Could not find selection for update stream:', updateStream
+            + '][ Could not find selection for update stream:', updateStream,
           );
         }
       }
     }
   }
 
-  function addRelatedFlaw (flawId: string) {
-    const flaw = relatedFlaws.value.find((flaw) => flaw.uuid === flawId || flaw.cve_id === flawId);
+  function addRelatedFlaw(flawId: string) {
+    const flaw = relatedFlaws.value.find(flaw => flaw.uuid === flawId || flaw.cve_id === flawId);
     if (flaw === undefined) {
       getFlaw(flawId)
         .then((fetchedFlaw) => {
           selectedRelatedFlaws.value.push(fetchedFlaw);
         }).catch(
-          createCatchHandler('useTrackersForRelatedFlaws::addRelatedFlaw(): Fetch for Related Flaw Unsuccessful')
+          createCatchHandler('useTrackersForRelatedFlaws::addRelatedFlaw(): Fetch for Related Flaw Unsuccessful'),
         );
     } else {
       selectedRelatedFlaws.value.push(flaw);
@@ -224,5 +245,8 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
     affectsBySelectedFlawId,
     shouldFileAsMultiFlaw,
     multiFlawTrackers,
+    isLoadingTrackers,
+    selectedStreams,
+    unselectedStreams,
   };
 }

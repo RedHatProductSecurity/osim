@@ -1,36 +1,42 @@
 import { describe, expect } from 'vitest';
 
-import FlawAffects from '@/components/FlawAffects.vue';
+import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
+import { getTrackersForFlaws } from '@/services/TrackerService';
 import { mountWithConfig } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
+import { getNextAccessToken } from '@/services/OsidbAuthService';
 
 import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 
+vi.mock('@/services/OsidbAuthService');
+vi.mock('@/services/TrackerService');
+
 const mountFlawAffects = (flaw: ZodFlawType) => mountWithConfig(FlawAffects, {
   props: {
-    flawId: flaw.uuid,
     embargoed: flaw.embargoed,
-    affects: flaw.affects,
-    affectsToDelete: [],
+    flaw,
+    relatedFlaws: [flaw],
     error: [],
-    affectCvssToDelete: {},
   },
 });
 
-vi.mock('@/composables/useTrackers', () => ({
-  useTrackers: vi.fn().mockReturnValue({
-    trackersToFile: [],
-    isLoadingTrackers: true,
-  }),
-}));
-
-vi.mock('@/composables/useTrackers', () => ({
-  useTrackers: vi.fn().mockReturnValue({
-    trackersToFile: [],
-  }),
-}));
+let FlawAffects: typeof import('@/components/FlawAffects/FlawAffects.vue').default;
 describe('flawAffects', () => {
+  beforeAll(() => {
+    vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
+    vi.mocked(getNextAccessToken).mockResolvedValue('mocked-access-token');
+  });
+
+  beforeEach(async () => {
+    const importedComponent = await import('@/components/FlawAffects/FlawAffects.vue');
+    FlawAffects = importedComponent.default;
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
   osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
     const subject = mountFlawAffects(flaw);
 

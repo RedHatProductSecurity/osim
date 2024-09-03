@@ -5,12 +5,13 @@ import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
 
 const modelValue = defineModel<ZodFlawType>({ required: true });
 
 const rhCvss = computed(() => modelValue.value?.cvss_scores
   .findIndex(cvss => cvss.issuer === IssuerEnum.Rh
-  && cvss.cvss_version === 'V3'));
+  && cvss.cvss_version === CVSS_V3));
 
 const isExpanded = ref(false);
 </script>

@@ -10,7 +10,7 @@ const flaw = ref(blankFlaw());
 
 <template>
   <main>
-    <FlawForm v-model:flaw="flaw" mode="create" />
+    <FlawForm v-model:flaw="flaw" :relatedFlaws="[]" mode="create" />
   </main>
 </template>
 

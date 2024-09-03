@@ -4,6 +4,8 @@ import { DateTime } from 'luxon';
 import * as R from 'ramda';
 
 import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
+import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
 
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
@@ -80,8 +82,12 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
   );
 }
 
-export function getRhCvss3(scores: any[]) {
-  return getSpecficCvssScore(scores, IssuerEnum.Rh, 'V3');
+export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
+  return score.issuer === IssuerEnum.Rh && score.cvss_version === CVSS_V3;
+}
+
+export function affectRhCvss3(affect: ZodAffectType) {
+  return affect.cvss_scores.find(isCVSS3issuedByRH);
 }
 
 export function capitalize(string: string) {
@@ -91,8 +97,22 @@ export function capitalize(string: string) {
 type WithModuleComponent = {
   ps_component: string;
   ps_module: string;
+  uuid?: null | string;
 };
 
 export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
   return first.ps_component === second.ps_component && first.ps_module === second.ps_module;
+}
+
+export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
+  const doIdsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
+  return doIdsMatch || matchModuleComponent(first, second);
+}
+
+export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
+  return Boolean(affects.find(affectToMatch => doAffectsMatch(affect, affectToMatch)));
+}
+
+export function affectsMatcherFor(affect: ZodAffectType) {
+  return (affectToMatch: ZodAffectType) => doAffectsMatch(affect, affectToMatch);
 }
