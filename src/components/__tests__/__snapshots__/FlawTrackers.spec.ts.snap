@@ -34,9 +34,9 @@ exports[`flawTrackers > Correctly renders the component when there are not track
         <tbody data-v-7006d35c=""></tbody>
       </table>
       <div data-v-7006d35c=""> No trackers to display </div>
+      <!--v-if-->
     </div>
   </div>
-  <!--v-if-->
 </div>"
 `;
 
@@ -132,9 +132,9 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
         </tbody>
       </table>
       <!--v-if-->
+      <!--v-if-->
     </div>
   </div>
-  <!--v-if-->
 </div>"
 `;
 
@@ -151,7 +151,7 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <!--v-if-->
           <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
-        </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-eye-slash-fill"></i> Hide Trackers Manager </button>
+        </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
     <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
@@ -230,48 +230,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
         </tbody>
       </table>
       <!--v-if-->
+      <!--v-if-->
     </div>
-  </div>
-  <div data-v-4977998e="" data-v-7006d35c="" class="trackers-manager py-3 px-4 embedded">
-    <h4 data-v-4977998e="" class="mb-2 d-flex"> Trackers Manager </h4>
-    <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
-    <div class="row mt-3" data-v-4977998e="">
-      <div class="col" data-v-4977998e="">
-        <h5 class="d-inline-block fs-5" data-v-4977998e="">Available Trackers</h5><span class="fst-italic" data-v-4977998e=""> (<i class="bi bi-box-arrow-in-right" data-v-4977998e=""></i> indicates a Suggested Tracker) </span>
-      </div>
-      <div class="col" data-v-4977998e="">
-        <h6 class="fs-5" data-v-4977998e="">Selected To File</h6>
-      </div>
-    </div>
-    <div data-v-4977998e="" class="row">
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="" class="mb-2">
-          <!--v-if-->
-          <div data-v-4977998e="" class="osim-tracker-list"></div>
-        </div>
-      </div>
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="" class="mb-2">
-          <!--v-if-->
-          <div data-v-4977998e="" class="osim-tracker-list"></div>
-        </div>
-      </div>
-    </div>
-    <div data-v-4977998e="" class="row mt-4">
-      <div data-v-4977998e="" class="col mb-2">
-        <h5 data-v-4977998e="">Already Filed</h5>
-        <!--v-if-->
-        <div data-v-4977998e="" class="osim-tracker-list"></div>
-      </div>
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="">
-          <h5 data-v-4977998e="">Untrackable Affects <i data-v-4977998e="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
-          <!--v-if-->
-          <!--v-if-->
-          <!--v-if-->
-        </div>
-      </div>
-    </div><button data-v-4977998e="" type="button" class="btn btn-sm btn-black osim-file-trackers mt-4" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
   </div>
 </div>"
 `;
