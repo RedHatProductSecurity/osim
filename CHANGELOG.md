@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Allow using default ordering in flaw list page (`OSIDB-3187`)
+
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
 
