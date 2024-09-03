@@ -5,7 +5,6 @@ import { sort } from 'ramda';
 // @ts-expect-error missing types
 import DjangoQL from 'djangoql-completion';
 
-import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
 
@@ -24,35 +23,11 @@ const emit = defineEmits(['filter:save']);
 const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
 const { closeModal, isModalOpen, openModal } = useModal();
 
-const isNonEmptyDescriptionSelected = ref(false);
-
-const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
-
 const queryFilterVisible = ref(true);
 
+const emptinessSupportedFields = ['cve_id', 'cve_description', 'statement', 'mitigation', 'owner', 'cwe_id'];
+
 const djangoCompletion = ref();
-
-watch(isNonEmptyDescriptionSelected, () => {
-  const facet = facets.value.find(facet => facet.field === 'cve_description');
-  if (isNonEmptyDescriptionSelected.value) {
-    if (!facet) {
-      facets.value.push({ field: 'cve_description', value: 'nonempty' });
-    } else {
-      facet.value = 'nonempty';
-    }
-  } else if (facet && descriptionParamValue.value === 'nonempty') {
-    facet.value = '';
-  }
-});
-
-watch(descriptionParamValue, (value) => {
-  if (value !== 'nonempty' && isNonEmptyDescriptionSelected.value) {
-    isNonEmptyDescriptionSelected.value = false;
-  }
-  if (value === 'nonempty' && !isNonEmptyDescriptionSelected.value) {
-    isNonEmptyDescriptionSelected.value = true;
-  }
-});
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -191,6 +166,26 @@ onUnmounted(() => {
           class="form-control"
           :disabled="!facet.field"
         />
+        <div v-if="emptinessSupportedFields.includes(facet.field)" class="btn-group">
+          <button
+            class="btn btn-sm btn-primary rounded-0 py-0"
+            title="Non empty field search"
+            type="button"
+            :disabled="facet.value === 'isempty'"
+            @click="facet.value = 'isempty'"
+          >
+            <i class="bi bi-circle fs-5" />
+          </button>
+          <button
+            class="btn btn-sm btn-primary rounded-0 py-0"
+            title="Empty field search"
+            type="button"
+            :disabled="facet.value === 'nonempty'"
+            @click="facet.value = 'nonempty'"
+          >
+            <i class="bi bi-slash-circle fs-5" />
+          </button>
+        </div>
         <button class="btn btn-primary py-0" type="button" @click="removeFacet(index)">
           <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
@@ -216,11 +211,6 @@ onUnmounted(() => {
         >
           Show Query Filter
         </button>
-        <LabelCheckbox
-          v-model="isNonEmptyDescriptionSelected"
-          label="Non Empty CVE Description"
-          class="d-inline-block"
-        />
       </div>
     </form>
   </details>
