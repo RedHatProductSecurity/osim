@@ -4,8 +4,7 @@
 ### Added
 * Add query filter support on advance search (`OSIDB-3088`)
 * Support saving query filter on default user search (`OSIDB-3387`)
-* Add query filter support on advance search (`OSIDB-3088`)
-* Support saving query filter on default user search (`OSIDB-3387`)
+* Allow emptiness advanced search on supported fields (`OSIDB-3389`)
 
 ### Fixed
 * Fix swapped values on trackers `Modules` and `Stream` values (`OSIDB-3443`)
