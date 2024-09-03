@@ -8,28 +8,27 @@ import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
+import IssueFieldState from '@/components/IssueFieldState.vue';
+import IssueFieldReferences from '@/components/IssueFieldReferences.vue';
+import IssueFieldAcknowledgments from '@/components/IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
-import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
+import CvssExplainForm from '@/components/CvssExplainForm.vue';
+import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
 import { type ZodFlawType, descriptionRequiredStates, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
-import type { ZodAffectType } from '@/types/zodAffect';
-
-import CvssExplainForm from './CvssExplainForm.vue';
-import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
-import IssueFieldReferences from './IssueFieldReferences.vue';
-import IssueFieldState from './IssueFieldState.vue';
-import FlawAffects from './FlawAffects.vue';
+import { allowedSources } from '@/constants/';
 
 const props = defineProps<{
   flaw: ZodFlawType;
@@ -76,9 +75,6 @@ const {
   osimLink,
   privateComments,
   publicComments,
-  recoverAffect,
-  refreshAffects,
-  removeAffect,
   rhCvss3String,
   saveAcknowledgments,
   saveReferences,
@@ -134,39 +130,6 @@ const onUnembargoed = (isEmbargoed: boolean) => {
     flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
   }
 };
-
-const allowedSources = [
-  '',
-  'ADOBE',
-  'APPLE',
-  'BUGTRAQ',
-  'CERT',
-  'CUSTOMER',
-  'CVE',
-  'DEBIAN',
-  'DISTROS',
-  'GENTOO',
-  'GIT',
-  'GOOGLE',
-  'HW_VENDOR',
-  'INTERNET',
-  'LKML',
-  'MAGEIA',
-  'MOZILLA',
-  'NVD',
-  'OPENSSL',
-  'ORACLE',
-  'OSSSECURITY',
-  'OSV',
-  'REDHAT',
-  'RESEARCHER',
-  'SECUNIA',
-  'SKO',
-  'SUSE',
-  'TWITTER',
-  'UBUNTU',
-  'UPSTREAM',
-];
 
 const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
@@ -444,10 +407,6 @@ const createdDate = computed(() => {
             :embargoed="flaw.embargoed"
             :flaw="flaw"
             :relatedFlaws="relatedFlaws"
-            @affect:recover="(affect: ZodAffectType) => recoverAffect(affectsToDelete.indexOf(affect))"
-            @affect:remove="(affect: ZodAffectType) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects"
-            @affect:add="addAffect"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

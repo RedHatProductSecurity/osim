@@ -5,9 +5,9 @@ import { groupWith, equals } from 'ramda';
 import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { CVSS_V3 } from '@/constants';
 
 const formatScore = (score: any) => score?.toFixed(1);
-
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
 export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
@@ -18,7 +18,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   }
 
   function getRHCvssData() {
-    return getCvssData('RH', 'V3')
+    return getCvssData('RH', CVSS_V3)
       || {
         score: null,
         vector: null,
@@ -42,7 +42,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     wasCvssModified.value = false;
   });
 
-  const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
+  const flawNvdCvss3 = computed(() => getCvssData('NIST', CVSS_V3));
 
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
@@ -105,7 +105,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     const requestBody = {
       // "score":  is recalculated based on the vector by OSIDB and does not need to be included
       comment: flawRhCvss3.value?.comment,
-      cvss_version: 'V3',
+      cvss_version: CVSS_V3,
       issuer: 'RH',
       vector: flawRhCvss3.value?.vector,
       embargoed: flaw.value.embargoed,

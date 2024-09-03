@@ -5,20 +5,23 @@ import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager.vue';
 
-import { usePagination } from '@/composables/usePagination';
+import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 
 import { formatDate } from '@/utils/helpers';
 import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import type { ZodFlawType } from '@/types/zodFlaw';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { trackerUrl } from '@/services/TrackerService';
 
 type TrackerWithModule = { ps_module: string } & ZodTrackerType;
 
 const props = defineProps<{
-  affectsNotBeingDeleted: ZodAffectType[];
+  affectsNotBeingDeleted: ZodAffectType[]; // ???
   allTrackersCount: number;
   displayedTrackers: TrackerWithModule[];
+  flaw: ZodFlawType;
   flawId: string;
+  relatedFlaws: ZodFlawType[];
 }>();
 
 const emit = defineEmits<{
@@ -34,9 +37,7 @@ const showTrackerManager = ref(false);
 const hasTrackers = computed(() => props.allTrackersCount > 0);
 
 // Sorting
-const sortedTrackers = computed(() =>
-  sortTrackers(filteredTrackers.value),
-);
+const sortedTrackers = computed(() => sortTrackers(filteredTrackers.value));
 
 type sortKeys = keyof Pick<ZodTrackerType,
   'created_dt' | 'updated_dt'
@@ -96,36 +97,17 @@ function toggleStatusFilter(status: string) {
   toggleFilter(statusFilter, status);
 }
 
-// Trackers pagination
-const totalPages = computed(() =>
-  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage),
-);
-
-const minItemsPerPage = 5;
-const maxItemsPerPage = 20;
 const {
   changePage,
   currentPage,
+  decreaseItemsPerPage,
+  increaseItemsPerPage,
+  maxItemsPerPage,
+  minItemsPerPage,
   pages,
-} = usePagination(totalPages, settings.value.trackersPerPage);
-
-const paginatedTrackers = computed(() => {
-  const start = (currentPage.value - 1) * settings.value.trackersPerPage;
-  const end = start + settings.value.trackersPerPage;
-  return sortedTrackers.value.slice(start, end);
-});
-
-function reduceItemsPerPage() {
-  if (settings.value.trackersPerPage > minItemsPerPage) {
-    settings.value.trackersPerPage--;
-  }
-}
-
-function increaseItemsPerPage() {
-  if (settings.value.trackersPerPage < maxItemsPerPage) {
-    settings.value.trackersPerPage++;
-  }
-}
+  paginatedItems: paginatedTrackers,
+  totalPages,
+} = usePaginationWithSettings(sortedTrackers, { setting: 'trackersPerPage' });
 </script>
 
 <template>
@@ -174,7 +156,7 @@ function increaseItemsPerPage() {
                   : 'opacity: 50%; pointer-events: none;'"
                 class="bi bi-dash-square fs-6 my-auto"
                 title="Reduce trackers per page"
-                @click="reduceItemsPerPage()"
+                @click="decreaseItemsPerPage()"
               />
               <span class="mx-2 my-auto">{{ `Per page: ${settings.trackersPerPage}` }}</span>
               <i
@@ -326,15 +308,15 @@ function increaseItemsPerPage() {
         <div v-if="sortedTrackers.length === 0">
           No trackers to display
         </div>
+        <TrackerManager
+          v-if="showTrackerManager"
+          :relatedFlaws="relatedFlaws"
+          :flaw="flaw"
+          :affects="affectsNotBeingDeleted"
+          @affects-trackers:refresh="emit('affects:refresh')"
+        />
       </div>
     </div>
-    <TrackerManager
-      v-if="showTrackerManager"
-      mode="embedded"
-      :flawId="flawId"
-      :affects="affectsNotBeingDeleted"
-      @affects-trackers:refresh="emit('affects:refresh')"
-    />
   </div>
 </template>
 

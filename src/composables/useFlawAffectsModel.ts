@@ -15,6 +15,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { CVSS_V3 } from '@/constants';
 
 function isCvssNew(cvssScore: ZodAffectCVSSType) {
   if (
@@ -61,13 +62,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     const affect = flaw.value.affects.find(matchAffectTo);
 
     if ( // affect is new and has cvss scores
-      affect && !affect.uuid && affect.cvss_scores.length && affectCvssData(affect, 'RH', 'V3')?.vector
+      affect && !affect.uuid && affect.cvss_scores.length && affectCvssData(affect, 'RH', CVSS_V3)?.vector
     ) {
       return true;
     }
 
     if ( // affect has no relevant cvss scores to check
-      !affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector
+      !affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', CVSS_V3)?.vector
     ) {
       return false;
     }
@@ -90,7 +91,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       || matchAffectTo(affect),
     );
 
-    if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector) {
+    if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', CVSS_V3)?.vector) {
       return [];
     }
 
@@ -140,13 +141,17 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     flaw.value.affects.unshift(newAffect);
   }
 
-  function removeAffect(affectIdx: number) {
-    const deletedAffect = flaw.value.affects.splice(affectIdx, 1)[0];
-    affectsToDelete.value.push(deletedAffect);
+  function removeAffect(affect: ZodAffectType, isRecoverable = true) {
+    const affectIndex = flaw.value.affects.findIndex((affectToMatch) => affectToMatch === affect);
+    if (affectIndex === -1) return;
+    const deletedAffect = flaw.value.affects.splice(affectIndex, 1)[0];
+    if (isRecoverable) affectsToDelete.value.push(deletedAffect);
   }
 
-  function recoverAffect(affectIdx: number) {
-    const recoveredAffect = affectsToDelete.value.splice(affectIdx, 1)[0];
+  function recoverAffect(affect: ZodAffectType) {
+    const affectIndex = affectsToDelete.value.findIndex((affectToMatch) => affectToMatch === affect);
+    if (affectIndex === -1) return;
+    const recoveredAffect = affectsToDelete.value.splice(affectIndex, 1)[0];
     flaw.value.affects.push(recoveredAffect);
   }
 

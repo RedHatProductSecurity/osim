@@ -30,7 +30,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flaw = ref<ZodFlawType>(forFlaw);
   const shouldCreateJiraTask = ref(false);
   const cvssScoresModel = useFlawCvssScores(flaw);
-  const flawAffectsModel = useFlawAffectsModel(flaw);
+
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
@@ -39,7 +39,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     initialAffects,
     removeAffects,
     saveAffects,
-  } = flawAffectsModel;
+  } = useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<null | ZodFlawType>(null);
@@ -184,7 +184,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     updateFlaw,
     afterSaveSuccess,
     ...cvssScoresModel,
-    ...flawAffectsModel,
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };

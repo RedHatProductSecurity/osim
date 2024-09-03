@@ -3,6 +3,8 @@ import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue
 import { DateTime } from 'luxon';
 import * as R from 'ramda';
 
+import { CVSS_V3 } from '@/constants';
+
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
   const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
@@ -74,7 +76,7 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 }
 
 export function getRhCvss3(scores: any[]) {
-  return getSpecficCvssScore(scores, 'RH', 'V3');
+  return getSpecficCvssScore(scores, 'RH', CVSS_V3);
 }
 
 type WithModuleComponent = {
