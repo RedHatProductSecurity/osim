@@ -26,7 +26,7 @@ vi.mock('@vueuse/core', async (originalImport) => ({
   }),
   useStorage: vi.fn((key: string, defaults) => {
     return {
-      'OSIM::API-KEYS': {
+      'OSIM::USER-SETTINGS': {
         value: defaults || {
           bugzillaApiKey: '',
           jiraApiKey: '',

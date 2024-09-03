@@ -3,9 +3,25 @@
 ## [Unreleased]
 ### Added
 * Allow using default ordering in flaw list page (`OSIDB-3187`)
+* Support operations for a selection of affects (`OSIDB-2818`)
+* Support filing trackers for a selection or individual affects (`OSIDB-2818`)
+* Provide default values when adding new affects (`OSIDB-2818`)
+* Added different filters for affects and trackers (`OSIDB-2818`)
+* Support field specific sorting for affects and trackers (`OSIDB-2818`)
+* New modal view for trackers manager for individual/selected affects (`OSIDB-2818`)
+* Provide Bug ID information for trackers display (`OSIDB-2818`)
 
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
+* Re-design of affects view (`OSIDB-2818`)
+* Re-design of trackers view (`OSIDB-2818`)
+* Modified layout of trackers manager (`OSIDB-2818`)
+
+### Fixed
+* Correct `affected module` information source on trackers display (`OSIDB-2818`)
+
+### Removed
+* Removed `type` information for trackers display (`OSIDB-2818`)
 
 ## [2024.8.0]
 ### Added

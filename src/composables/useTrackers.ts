@@ -34,6 +34,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   const trackerSelections = ref<Map<UpdateStream, boolean>>(new Map());
   const moduleComponents = ref<ModuleComponent[]>([]);
   const isFilingTrackers = ref(false);
+  const isLoadingTrackers = ref(false);
 
   const trackedAffectUuids = computed(() => affects.value.flatMap(
     (affect) => affect.trackers.flatMap(tracker => tracker.affects)
@@ -131,6 +132,12 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     }
   }
 
+  function updateTrackerSelections(affectStreams: UpdateStream[]) {
+    for (const stream of affectStreams) {
+      trackerSelections.value.set(stream, !trackerSelections.value.get(stream));
+    }
+  }
+
   const trackersToFile = computed((): TrackersPost[] =>
     Array.from(trackerSelections.value)
       .filter(([, selected]) => selected)
@@ -147,11 +154,13 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
   );
 
   function loadTrackers() {
+    isLoadingTrackers.value = true;
     return getTrackersForFlaws({ flaw_uuids: [flawUuid] })
       .then((response: any) => {
         moduleComponents.value = response.modules_components;
       })
-      .catch(e => console.error('useTrackers::loadTrackers() Error loading trackers', e));
+      .catch(e => console.error('useTrackers::loadTrackers() Error loading trackers', e))
+      .finally(() => isLoadingTrackers.value = false);
   }
 
   function getUpdateStreamsFor(module: string, component: string) {
@@ -165,6 +174,7 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     isFilingTrackers.value = true;
     return fileTrackingFor(trackersToFile.value)
       .then(loadTrackers)
+      .catch(e => console.error('useTrackers::loadTrackers() Error filing trackers', e))
       .finally(() => isFilingTrackers.value = false);
   }
 
@@ -177,10 +187,12 @@ export function useTrackers(flawUuid: string, affects: Ref<ZodAffectType[]>) {
     trackerSelections,
     trackersToFile,
     setAllTrackerSelections,
+    updateTrackerSelections,
     sortedStreams,
     unselectedStreams,
     selectedStreams,
     filterString,
     isFilingTrackers,
+    isLoadingTrackers,
   };
 }

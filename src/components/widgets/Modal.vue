@@ -24,6 +24,9 @@ watch(show, () => {
   }
 }, { immediate: true });
 
+defineOptions({
+  inheritAttrs: false
+});
 </script>
 
 <template>
@@ -38,7 +41,7 @@ watch(show, () => {
       aria-labelledby="modalTitle"
       :role="show ? 'dialog' : ''"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog" v-bind="$attrs">
         <div class="modal-content">
           <div class="modal-header">
             <slot name="header">
