@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
-from features.pages.flaw_create_page import FlawCreatePage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.utils import (
     generate_cve,
@@ -19,7 +18,7 @@ MAX_RETRY = 5
 
 
 def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
-    flaw_create_page = FlawCreatePage(context.browser)
+    flaw_create_page = FlawDetailPage(context.browser)
     context.title = generate_random_text()
     flaw_create_page.set_input_field('title', context.title)
     flaw_create_page.set_components_field(generate_random_text())
@@ -70,7 +69,7 @@ def check_created_flaw_exist(context, embargoed=False):
 
 @when('I open the flaw create page')
 def step_impl(context):
-    flaw_page = FlawCreatePage(context.browser)
+    flaw_page = FlawDetailPage(context.browser)
     flaw_page.click_btn('createFlawLink')
 
 
@@ -107,10 +106,9 @@ def step_impl(context):
     advanced_search_page.first_flaw_exist()
     advanced_search_page.go_to_first_flaw_detail()
 
-    flaw_create_page = FlawCreatePage(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     context.cve_id = generate_cve()
-    flaw_create_page.set_input_field('cveid', context.cve_id)
+    flaw_detail_page.set_input_field('cveid', context.cve_id)
     count = 0
     while count < MAX_RETRY:
         flaw_detail_page.click_btn('saveBtn')
@@ -118,7 +116,7 @@ def step_impl(context):
             flaw_detail_page.wait_msg('flawSavedMsg')
         except Exception:
             context.cve_id = generate_cve()
-            flaw_create_page.set_input_field('cveid', context.cve_id)
+            flaw_detail_page.set_input_field('cveid', context.cve_id)
             count += 1
         else:
             os.environ["FLAW_ID"] = context.cve_id
