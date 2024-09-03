@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import Modal from '@/components/widgets/Modal.vue';
@@ -10,6 +10,10 @@ import { useSearchParams } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
 import { affectAffectedness } from '@/types/zodAffect';
 import { sort } from 'ramda';
+// @ts-expect-error missing types
+import DjangoQL from 'djangoql-completion';
+import { osimRuntime } from '@/stores/osimRuntime';
+
 const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
 const { isModalOpen, openModal, closeModal } = useModal();
 
@@ -24,6 +28,8 @@ const isNonEmptyDescriptionSelected = ref(false);
 const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
 
 const queryFilterVisible = ref(true);
+
+const djangoCompletion = ref();
 
 watch(isNonEmptyDescriptionSelected, () => {
   const facet = facets.value.find(facet => facet.field === 'cve_description');
@@ -108,6 +114,30 @@ watch(queryFilterVisible, () => {
     query.value = '';
   }
 });
+
+onMounted(() => {
+  const djangoQL = new DjangoQL({
+    completionEnabled: true,
+    introspections: `${osimRuntime.value.backends.osidb}/osidb/api/v1/introspection`,
+    selector: 'textarea#query',
+    autoResize: true,
+    syntaxHelp: null,
+    onSubmit: function(value: string) {
+      query.value = value;
+      submitAdvancedSearch();
+    },
+  });
+
+  djangoQL.popupCompletion();
+
+  djangoCompletion.value = djangoQL;
+});
+
+onUnmounted(() => {
+  if (djangoCompletion.value) {
+    djangoCompletion.value.destroyCompletionElement();
+  }
+});
 </script>
 
 <template>
@@ -121,7 +151,8 @@ watch(queryFilterVisible, () => {
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
-        <input
+        <textarea
+          id="query"
           v-model="query"
           type="text"
           class="form-control"
@@ -231,4 +262,9 @@ watch(queryFilterVisible, () => {
     flex-grow: 0;
   }
 }
+</style>
+
+<style lang="scss">
+@import '@/scss/djangoql';
+@import 'djangoql-completion/dist/completion.css';
 </style>
