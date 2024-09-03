@@ -3,14 +3,6 @@
 ## [Unreleased]
 ### Added
 * Allow using default ordering in flaw list page (`OSIDB-3187`)
-
-### Changed
-* Improved performance by reusing access token until is expired (`OSIDB-3373`)
-
-## [2024.8.0]
-### Added
-* Add button to Bugzilla on public and private comments
-* `DEFER` is now a possible affect resolution (`OSIDB-3286`, `OSIDB-3288`)
 * Support operations for a selection of affects (`OSIDB-2818`)
 * Support filing trackers for a selection or individual affects (`OSIDB-2818`)
 * Provide default values when adding new affects (`OSIDB-2818`)
@@ -20,6 +12,7 @@
 * Provide Bug ID information for trackers display (`OSIDB-2818`)
 
 ### Changed
+* Improved performance by reusing access token until is expired (`OSIDB-3373`)
 * Re-design of affects view (`OSIDB-2818`)
 * Re-design of trackers view (`OSIDB-2818`)
 * Modified layout of trackers manager (`OSIDB-2818`)
@@ -30,8 +23,10 @@
 ### Removed
 * Removed `type` information for trackers display (`OSIDB-2818`)
 
-
-## [2024.7.2]
+## [2024.8.0]
+### Added
+* Add button to Bugzilla on public and private comments
+* `DEFER` is now a possible affect resolution (`OSIDB-3286`, `OSIDB-3288`)
 
 ### Fixed
 * Allow saving flaws with historical affects (`OSIDB-3262`)
