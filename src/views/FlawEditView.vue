@@ -19,9 +19,7 @@ const flaw = ref<null | ZodFlawType>(null);
 const errorLoadingFlaw = ref(false);
 const { addToast } = useToastStore();
 
-fetchFlaw();
-
-watch(() => props.id, fetchFlaw);
+watch(() => props.id, fetchFlaw, { immediate: true });
 
 function fetchFlaw() {
   errorLoadingFlaw.value = false;
@@ -29,10 +27,7 @@ function fetchFlaw() {
     .then((theFlaw) => {
       flaw.value = Object.assign({}, theFlaw);
       getRelatedFlaws(theFlaw.affects)
-        .then((flaws) => {
-          console.log('relatedFlaws', flaws);
-          relatedFlaws.value = flaws;
-        })
+        .then(flaws => relatedFlaws.value = flaws)
         .catch(console.error)
         .finally(() => {
           history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
