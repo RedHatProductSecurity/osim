@@ -121,9 +121,9 @@ onUnmounted(() => {
     <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div v-if="queryFilterVisible" class="input-group my-1">
-        <div type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;">
+        <div type="button" class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
-          <button class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button" @click="openModal()">
+          <button class="btn btn-sm text-white" type="button" @click="openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
@@ -233,6 +233,18 @@ onUnmounted(() => {
         >
           Show Query Filter
         </button>
+        <select class="sort-by-search form-select search-facet-field d-inline-block" @submit.prevent>
+          <option
+            selected
+            value="Sort By"
+            disabled
+          >
+            Sort By
+          </option>
+          <option v-for="field in facets.keys" :key="field" :value="field">
+            {{ nameForOption(field) }}
+          </option>
+        </select>
       </div>
     </form>
   </details>
@@ -269,10 +281,33 @@ onUnmounted(() => {
     cursor: pointer;
   }
 
+  .query-input {
+    display: flex;
+    max-width: 241.5px;
+    pointer-events: none;
+    padding-block: 0;
+
+    button {
+      padding: 0;
+      margin-left: auto;
+      margin-block: auto;
+      pointer-events: auto;
+      border: 0;
+    }
+  }
+
   select.search-facet-field {
     display: flex;
     width: auto;
     flex-grow: 0;
+  }
+
+  select.sort-by-search {
+    min-width: 160.75px;
+  }
+
+  .search-btn {
+    width: 241.5px;
   }
 }
 </style>
