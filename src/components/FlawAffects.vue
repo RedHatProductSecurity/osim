@@ -1409,6 +1409,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             padding-block: .2rem;
             border-block: .2ch solid #e0e0e0;
             background-color: #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
 
             .row-right-indicator {
               right: -42px;
