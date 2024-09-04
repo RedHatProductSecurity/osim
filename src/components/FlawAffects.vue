@@ -424,10 +424,30 @@ function selectAffects(event: Event) {
 }
 
 // Affects Fields
-function affectCvss3Vector(affect: ZodAffectType) {
-  return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
-    ?.vector
-    || null;
+function useAffectCvss3Vector(affect: ZodAffectType) {
+  return computed({
+    get() {
+      return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
+        ?.vector
+        || null;
+    },
+    set(newValue: string | null) {
+      const cvssScore = affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
+      if (cvssScore) {
+        cvssScore.vector = newValue;
+      } else {
+        affect.cvss_scores.push({
+          issuer: 'RH',
+          cvss_version: 'V3',
+          comment: '',
+          score: null,
+          vector: newValue,
+          embargoed: props.embargoed,
+          alerts: [],
+        });
+      }
+    },
+  });
 }
 
 function resolutionOptions(affect: ZodAffectType) {
@@ -1069,7 +1089,17 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   {{ affect.impact }}
                 </span>
               </td>
-              <td>{{ affectCvss3Vector(affect) }}</td>
+              <td>
+                <input
+                  v-if="isBeingEdited(affect)"
+                  v-model="useAffectCvss3Vector(affect).value"
+                  class="form-control"
+                  @keydown="handleEdit($event, affect)"
+                />
+                <span v-else>
+                  {{ useAffectCvss3Vector(affect).value || '' }}
+                </span>
+              </td>
               <td>
                 <div class="affect-tracker-cell">
                   <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
