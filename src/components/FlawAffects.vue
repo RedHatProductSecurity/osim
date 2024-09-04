@@ -427,15 +427,23 @@ function selectAffects(event: Event) {
 function useAffectCvss3Vector(affect: ZodAffectType) {
   return computed({
     get() {
-      return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
-        ?.vector
-        || null;
-    },
-    set(newValue: string | null) {
-      const cvssScore = affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
-      if (cvssScore) {
-        cvssScore.vector = newValue;
+      const cvss = affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
+      if (cvss) {
+        return `${cvss.score} ${cvss.vector}`;
       } else {
+        return '';
+      }
+    },
+    set(newValue: string) {
+      const cvssScoreIndex = affect.cvss_scores.findIndex(
+        ({ issuer, cvss_version }) =>
+          issuer === 'RH' && cvss_version === 'V3'
+      );
+      if (newValue === '' && cvssScoreIndex !== -1) {
+        affect.cvss_scores.splice(cvssScoreIndex, 1);
+      } else if (cvssScoreIndex !== -1) {
+        affect.cvss_scores[cvssScoreIndex].vector = newValue;
+      } else if (newValue !== '') {
         affect.cvss_scores.push({
           issuer: 'RH',
           cvss_version: 'V3',
@@ -1347,11 +1355,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(3) {
-              width: 20%;
+              width: 10%;
             }
 
             &:nth-of-type(4) {
-              width: 20%;
+              width: 14%;
             }
 
             &:nth-of-type(5) {
@@ -1367,7 +1375,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(8) {
-              width: 8%;
+              width: 28%;
             }
 
             &:nth-of-type(9) {
@@ -1375,7 +1383,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(10) {
-              width: 8%;
+              width: 6%;
             }
 
             &:nth-of-type(11) {
