@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import { osimFullFlawTest } from './test-suite-helpers';
 import {
-  Source642Enum
+  Source521Enum,
 } from '@/generated-client';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
@@ -186,7 +186,7 @@ describe('FlawForm', () => {
       .find((component) => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
     const sourceOptionEls = sourceField.findAll('option');
-    const sourceOptionCount = Object.keys(Source642Enum).length + 1;
+    const sourceOptionCount = Object.keys(Source521Enum).length + 1;
     expect(sourceOptionEls.length).toBe(sourceOptionCount);
 
     const workflowStateField = subject

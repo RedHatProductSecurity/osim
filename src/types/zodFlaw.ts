@@ -3,7 +3,7 @@ import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
   RequiresCveDescriptionEnum,
-  Source642Enum,
+  Source521Enum,
   IssuerEnum,
   FlawReferenceType,
 } from '../generated-client';
@@ -13,11 +13,11 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
-export const Source642EnumWithBlank = { '': '', ...Source642Enum } as const;
+export const Source521EnumWithBlank = { '': '', ...Source521Enum } as const;
 export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
-export const flawSources = Object.values(Source642EnumWithBlank);
+export const flawSources = Object.values(Source521EnumWithBlank);
 
 const flawImpactsWeight = {
   '': 0,
@@ -146,7 +146,7 @@ export const ZodFlawSchema = z.object({
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
-  source: z.nativeEnum(Source642EnumWithBlank).refine(
+  source: z.nativeEnum(Source521EnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' }
   ),
