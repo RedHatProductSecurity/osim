@@ -1,3 +1,4 @@
+import os
 import time
 import random
 from datetime import date, datetime
@@ -14,7 +15,10 @@ from features.utils import (
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
-from features.constants import AFFECTED_MODULE_JR
+from features.constants import (
+    AFFECTED_MODULE_JR,
+    CVSS_COMMENT_FLAW_ID,
+)
 
 
 MAX_RETRY = 10
@@ -776,3 +780,23 @@ def step_impl(context, new_state):
     flaw_page = FlawDetailPage(context.browser)
     _, v = flaw_page.get_select_value('incidentState')
     assert v == new_state, f"Incident state should be {new_state}, got {v}"
+
+
+@when('I {action} the CVSS score explanation')
+def step_impl(context, action):
+    # For now, this scenario can only apply to specific flaw(s).
+    go_to_specific_flaw_detail_page(context.browser, CVSS_COMMENT_FLAW_ID)
+    flaw_page = FlawDetailPage(context.browser)
+    context.value = '' if action == 'delete' else generate_random_text()
+    flaw_page.set_cvss_score_explanation(context.value)
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+    flaw_page.wait_msg('cvssScoreSavedMsg')
+
+
+@then('The CVSS score explanation is updated')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser, CVSS_COMMENT_FLAW_ID)
+    flaw_page = FlawDetailPage(context.browser)
+    updated_value = flaw_page.get_cvss_score_explanation()
+    assert context.value == updated_value, "Failed to update CVSS score explanation."
