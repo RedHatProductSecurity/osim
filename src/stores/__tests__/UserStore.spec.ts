@@ -53,7 +53,7 @@ describe('UserStore', () => {
 
   it('should set `isAccessTokenExpired` to true when access token is undefined', () => {
     userStore.accessToken = undefined;
-    expect(userStore.isAccessTokenExpired).toBe(true);
+    expect(userStore.isAccessTokenExpired()).toBe(true);
   });
 
   it('should set `isAccessTokenExpired` to true when access token is about to expire', () => {
@@ -65,7 +65,7 @@ describe('UserStore', () => {
       'user_id': 1337
     });
 
-    expect(userStore.isAccessTokenExpired).toBe(true);
+    expect(userStore.isAccessTokenExpired()).toBe(true);
   });
 
   it('should set `isAccessTokenExpired` to false when access token is active', () => {
@@ -77,14 +77,14 @@ describe('UserStore', () => {
       'user_id': 1337
     });
 
-    expect(userStore.isAccessTokenExpired).toBe(false);
+    expect(userStore.isAccessTokenExpired()).toBe(false);
   });
 
   it('should not throw when access token is invalid', () => {
     expect(() => {
       userStore.accessToken = 'invalid';
 
-      expect(userStore.isAccessTokenExpired).toBe(true);
+      expect(userStore.isAccessTokenExpired()).toBe(true);
     }).not.toThrow();
   });
 });
