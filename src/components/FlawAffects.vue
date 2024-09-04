@@ -425,7 +425,7 @@ function selectAffects(event: Event) {
 
 // Affects Fields
 function affectCvss3Vector(affect: ZodAffectType) {
-  affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
+  return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
     ?.vector
     || null;
 }
@@ -444,7 +444,7 @@ function affectRowTooltip(affect: ZodAffectType) {
   } else if (isModified(affect)) {
     return 'This affect will be updated on save changes';
   } else {
-    '';
+    return '';
   }
 }
 
