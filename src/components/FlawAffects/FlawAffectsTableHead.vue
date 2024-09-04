@@ -9,7 +9,8 @@ import {
   // possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-import { displayModes } from './';
+
+import { type affectSortKeys, displayModes } from './';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { usePagination } from '@/composables/usePagination';
@@ -36,11 +37,6 @@ const affectednessFilter = ref<string[]>([]);
 const resolutionFilter = ref<string[]>([]);
 const impactFilter = ref<string[]>([]);
 
-// Sorting
-type sortKeys = keyof Pick<ZodAffectType,
-  'ps_module' | 'ps_component' | 'trackers' | 'affectedness' | 'resolution' | 'impact' | 'cvss_scores'
->;
-
 const filteredAffects = computed(() => {
   if (affects.value.length <= 0) {
     emit('affects:display-mode', displayModes.ALL);
@@ -62,7 +58,7 @@ const sortedAffects = computed(() =>
   sortAffects(filteredAffects.value, false)
 );
 
-const sortKey = ref<sortKeys>('ps_module');
+const sortKey = ref<affectSortKeys>('ps_module');
 const sortOrder = ref(ascend);
 // // Affects Pagination
 const totalPages = computed(() =>
@@ -83,28 +79,12 @@ const paginatedAffects = computed(() => {
   return sortedAffects.value.slice(start, end);
 });
 
-// // function reduceItemsPerPage() {
-// //   if (settings.value.affectsPerPage > minItemsPerPage) {
-// //     settings.value.affectsPerPage --;
-// //   }
-// // }
-
-// // function increaseItemsPerPage() {
-// //   if (settings.value.affectsPerPage < maxItemsPerPage) {
-// //     settings.value.affectsPerPage ++;
-// //   }
-// // }
-
-// const selectedModules = ref<string[]>([]);
-
-
-
-function toggleFilter(filterArray: Ref<string[]>, item: string) {
-  const index = filterArray.value.indexOf(item);
+function toggleFilter(filterArray: Ref<string[]>, sortValue: string) {
+  const index = filterArray.value.indexOf(sortValue);
   if (index > -1) {
     filterArray.value.splice(index, 1);
   } else {
-    filterArray.value.push(item);
+    filterArray.value.push(sortValue);
   }
 }
 
@@ -177,7 +157,7 @@ function selectAffects(event: Event) {
   }
 }
 
-function setSort(key: sortKeys) {
+function setSort(key: affectSortKeys) {
   if (sortKey.value === key) {
     sortOrder.value = sortOrder.value === ascend ? descend : ascend;
   } else {

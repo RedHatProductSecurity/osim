@@ -18,6 +18,8 @@ import { usePaginationWithSettings } from '@/composables/usePaginationWithSettin
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { uniques } from '@/utils/helpers';
 
+const settings = useSettingsStore();
+
 const {
   isModalOpen: isManageTrackersModalOpen,
   openModal: openManageTrackersModal,
@@ -128,27 +130,27 @@ const {
 // };
 
 function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
-  const customSortKey = sortKey.value;
   const order = sortOrder.value;
 
   const customSortFn = (affect: ZodAffectType) => {
     const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
-    if (customSortKey === 'trackers') {
+    if (sortKey.value === 'trackers') {
       return affectToSort.trackers.length;
-    } else if (customSortKey === 'cvss_scores') {
-      return affectToSort[customSortKey].length;
     }
-    return affectToSort[customSortKey] || 0;
+    else if (sortKey.value === 'cvss_scores') {
+      return affectToSort[sortKey.value].length;
+    }
+    return affectToSort[sortKey.value] || 0;
   };
 
-  const comparator = standard
+  const comparators = standard
     ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
     : [order<ZodAffectType>(customSortFn),
-        order<ZodAffectType>(customSortKey === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
+      order<ZodAffectType>(sortKey.value === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
 
   return sortWith([
     ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-    ...comparator,
+    ...comparators
   ])(affects);
 }
 

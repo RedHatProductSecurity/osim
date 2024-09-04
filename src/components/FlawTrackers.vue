@@ -6,10 +6,8 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager.vue';
-
-import { usePagination } from '@/composables/usePagination';
-
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 
 type TrackerWithModule = { ps_module: string } & ZodTrackerType;
 
@@ -35,9 +33,7 @@ const showTrackerManager = ref(false);
 const hasTrackers = computed(() => props.allTrackersCount > 0);
 
 // Sorting
-const sortedTrackers = computed(() =>
-  sortTrackers(filteredTrackers.value),
-);
+const sortedTrackers = computed(() => sortTrackers(filteredTrackers.value));
 
 type sortKeys = keyof Pick<ZodTrackerType,
   'created_dt' | 'updated_dt'
@@ -97,36 +93,17 @@ function toggleStatusFilter(status: string) {
   toggleFilter(statusFilter, status);
 }
 
-// Trackers pagination
-const totalPages = computed(() =>
-  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage),
-);
-
-const minItemsPerPage = 5;
-const maxItemsPerPage = 20;
 const {
   changePage,
+  decreaseItemsPerPage,
+  increaseItemsPerPage,
   currentPage,
+  totalPages,
   pages,
-} = usePagination(totalPages, settings.value.trackersPerPage);
-
-const paginatedTrackers = computed(() => {
-  const start = (currentPage.value - 1) * settings.value.trackersPerPage;
-  const end = start + settings.value.trackersPerPage;
-  return sortedTrackers.value.slice(start, end);
-});
-
-function reduceItemsPerPage() {
-  if (settings.value.trackersPerPage > minItemsPerPage) {
-    settings.value.trackersPerPage--;
-  }
-}
-
-function increaseItemsPerPage() {
-  if (settings.value.trackersPerPage < maxItemsPerPage) {
-    settings.value.trackersPerPage++;
-  }
-}
+  paginatedItems: paginatedTrackers,
+  maxItemsPerPage,
+  minItemsPerPage,
+} = usePaginationWithSettings(sortedTrackers, { setting: 'trackersPerPage' });
 </script>
 
 <template>
@@ -175,7 +152,7 @@ function increaseItemsPerPage() {
                   : 'opacity: 50%; pointer-events: none;'"
                 class="bi bi-dash-square fs-6 my-auto"
                 title="Reduce trackers per page"
-                @click="reduceItemsPerPage()"
+                @click="decreaseItemsPerPage()"
               />
               <span class="mx-2 my-auto">{{ `Per page: ${settings.trackersPerPage}` }}</span>
               <i

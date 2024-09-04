@@ -9,6 +9,6 @@ export enum displayModes {
   CREATED = 'Created',
 }
 
-export type sortKeys = keyof Pick<ZodAffectType,
+export type affectSortKeys = keyof Pick<ZodAffectType,
   'ps_module' | 'ps_component' | 'trackers' | 'affectedness' | 'resolution' | 'impact' | 'cvss_scores'
 >;

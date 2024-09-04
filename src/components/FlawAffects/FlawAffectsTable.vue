@@ -5,8 +5,7 @@ import { equals, clone, prop, ascend, sortWith } from 'ramda';
 import type { ZodAffectType } from '@/types';
 import { displayModes } from './';
 
-import { useSettingsStore } from '@/stores/SettingsStore';
-import { usePagination } from '@/composables/usePagination';
+import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
@@ -45,7 +44,6 @@ const impactFilter = ref<string[]>([]);
 
 // Edit Affects
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
-const settings = ref(useSettingsStore().settings);
 
 // Sorting
 type sortKeys = keyof Pick<ZodAffectType,
@@ -75,28 +73,10 @@ const sortedAffects = computed(() => sortAffects(filteredAffects.value, false));
 const sortKey = ref<sortKeys>('ps_module');
 const sortOrder = ref(ascend);
 
-// Affects Pagination
-const totalPages = computed(() =>
-  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
-);
-
-// const minItemsPerPage = 5;
-// const maxItemsPerPage = 20;
 const {
-  // pages,
-  currentPage,
-  // changePage,
-} = usePagination(totalPages, settings.value.affectsPerPage);
-
-const paginatedAffects = computed(() => {
-  const start = (currentPage.value - 1) * settings.value.affectsPerPage;
-  const end = start + settings.value.affectsPerPage;
-  return sortedAffects.value.slice(start, end);
-});
-
-function isBeingEdited(affect: ZodAffectType) {
-  return affectsEdited.value.includes(affect);
-}
+  totalPages,
+  paginatedItems: paginatedAffects,
+} = usePaginationWithSettings(sortedAffects, { setting: 'affectsPerPage' });
 
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
   return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid) || affect;
@@ -157,6 +137,10 @@ function isModified(affect: ZodAffectType) {
 
 function isNewAffect(affect: ZodAffectType) {
   return newAffects.value.includes(affect);
+}
+
+function isBeingEdited(affect: ZodAffectType) {
+  return affectsEdited.value.includes(affect);
 }
 </script>
 
