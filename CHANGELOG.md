@@ -17,6 +17,7 @@
 * Re-design of trackers view (`OSIDB-2818`)
 * Modified layout of trackers manager (`OSIDB-2818`)
 * Fetch flaws on the background to improve performance (`OSIDB-3373`)
+* Add CVEORG Source for Flaw (`OSIDB-3394`)
 
 ### Fixed
 * Correct `affected module` information source on trackers display (`OSIDB-2818`)
