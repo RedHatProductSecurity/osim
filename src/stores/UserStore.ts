@@ -72,7 +72,7 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   const accessToken = ref<string>();
-  const isAccessTokenExpired = computed<boolean>(() => {
+  const isAccessTokenExpired = () => {
     try {
       const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
       return !exp || DateTime.now().toSeconds() >= exp - 60;
@@ -80,7 +80,7 @@ export const useUserStore = defineStore('UserStore', () => {
       console.debug('UserStore: access token not a valid JWT', accessToken.value, e);
       return true;
     }
-  });
+  };
 
   const whoami = computed<WhoamiType | null>(() => {
     return _userStoreSession.value.whoami || null;

@@ -126,7 +126,7 @@ export async function getNextAccessToken() {
   const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
   const userStore = useUserStore();
   let response;
-  if (userStore.accessToken && !userStore.isAccessTokenExpired) {
+  if (userStore.accessToken && !userStore.isAccessTokenExpired()) {
     return userStore.accessToken;
   }
   try {
