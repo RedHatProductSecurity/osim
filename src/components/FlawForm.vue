@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue';
-
 import { DateTime } from 'luxon';
+
+import { allowedSources } from '@/constants/';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
-import LabelDiv from '@/components/widgets/LabelDiv.vue';
-import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
 
@@ -45,12 +45,10 @@ function onSaveSuccess() {
 }
 
 const {
-  addAffect,
   addBlankAcknowledgment,
   addBlankReference,
   addFlawComment,
   affectCvssToDelete,
-  affectsToDelete,
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
@@ -75,9 +73,6 @@ const {
   osimLink,
   privateComments,
   publicComments,
-  recoverAffect,
-  refreshAffects,
-  removeAffect,
   rhCvss3String,
   saveAcknowledgments,
   saveReferences,
@@ -133,39 +128,6 @@ const onUnembargoed = (isEmbargoed: boolean) => {
     flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
   }
 };
-
-const allowedSources = [
-  '',
-  'ADOBE',
-  'APPLE',
-  'BUGTRAQ',
-  'CERT',
-  'CUSTOMER',
-  'CVE',
-  'DEBIAN',
-  'DISTROS',
-  'GENTOO',
-  'GIT',
-  'GOOGLE',
-  'HW_VENDOR',
-  'INTERNET',
-  'LKML',
-  'MAGEIA',
-  'MOZILLA',
-  'NVD',
-  'OPENSSL',
-  'ORACLE',
-  'OSSSECURITY',
-  'OSV',
-  'REDHAT',
-  'RESEARCHER',
-  'SECUNIA',
-  'SKO',
-  'SUSE',
-  'TWITTER',
-  'UBUNTU',
-  'UPSTREAM',
-];
 
 const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
@@ -436,17 +398,12 @@ const createdDate = computed(() => {
           <FlawAffects
             v-if="mode === 'edit'"
             :affects="flaw.affects"
-            :affectsToDelete="affectsToDelete"
             :affectCvssToDelete="affectCvssToDelete"
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
             :flaw="flaw"
             :relatedFlaws="relatedFlaws"
-            @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
-            @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects"
-            @affect:add="addAffect"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

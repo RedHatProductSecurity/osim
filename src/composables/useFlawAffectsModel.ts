@@ -141,13 +141,17 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     flaw.value.affects.unshift(newAffect);
   }
 
-  function removeAffect(affectIdx: number) {
-    const deletedAffect = flaw.value.affects.splice(affectIdx, 1)[0];
-    affectsToDelete.value.push(deletedAffect);
+  function removeAffect(affect: ZodAffectType, isRecoverable = true) {
+    const affectIndex = flaw.value.affects.findIndex((affectToMatch) => affectToMatch === affect);
+    if (affectIndex === -1) return;
+    const deletedAffect = flaw.value.affects.splice(affectIndex, 1)[0];
+    if (isRecoverable) affectsToDelete.value.push(deletedAffect);
   }
 
-  function recoverAffect(affectIdx: number) {
-    const recoveredAffect = affectsToDelete.value.splice(affectIdx, 1)[0];
+  function recoverAffect(affect: ZodAffectType) {
+    const affectIndex = affectsToDelete.value.findIndex((affectToMatch) => affectToMatch === affect);
+    if (affectIndex === -1) return;
+    const recoveredAffect = affectsToDelete.value.splice(affectIndex, 1)[0];
     flaw.value.affects.push(recoveredAffect);
   }
 
