@@ -50,7 +50,7 @@ const selectedAffectStreams = computed(() => {
 });
 
 function handleFileTrackers() {
-  fileTrackers().then(() => {
+  fileTrackers().finally(() => {
     emit('affects-trackers:refresh');
   });
 }

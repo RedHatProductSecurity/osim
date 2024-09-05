@@ -10,6 +10,8 @@
 * Support field specific sorting for affects and trackers (`OSIDB-2818`)
 * New modal view for trackers manager for individual/selected affects (`OSIDB-2818`)
 * Provide Bug ID information for trackers display (`OSIDB-2818`)
+* In the event of saving multiple trackers with some failing, the affect 
+trackers will be refreshed (`OSIDB-3402`)
 
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
