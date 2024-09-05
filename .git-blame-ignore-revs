@@ -21,3 +21,4 @@ bfb87b2a9b6218c8e6f7298311095ca007561474 # 🎨 Format form components code
 671f8cace1334566346e001a22a3ea99f4cdc54e # 🎨 Revert formatting
 78e9e4cc4b822906fcf61fb8195b7e8fa8fcfcf4 # 🎨 Use explicit URLs for REST endpoints
 02668d11c52935ea2c5413cf243d6143aa7f2429 # 🎨 Fix formatting
+b9411bed08f3f8033f562a5215dbb0426dfcde8a # 🚨 Fix all ESLint errors
