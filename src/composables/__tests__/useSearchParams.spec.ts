@@ -41,7 +41,7 @@ describe('useSearchParams', () => {
     expect(search.value).toBe('search');
     expect(useRouter().push).toHaveBeenCalled();
     expect(useRouter().push.mock.calls[0][0])
-      .toStrictEqual({ name: 'search', query: { query: 'search' } });
+      .toStrictEqual({ name: 'search', query: { search: 'search' } });
   });
 
   it('update facets on addFacet', () => {
@@ -76,7 +76,7 @@ describe('useSearchParams', () => {
     const { getSearchParams } = useSearchParams();
     const searchParams = getSearchParams();
     expect(searchParams).toStrictEqual({
-      'search': 'search',
+      'query': 'search',
       'affects__ps_component': 'test'
     });
   });

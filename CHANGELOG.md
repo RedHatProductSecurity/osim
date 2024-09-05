@@ -12,6 +12,7 @@
 * Provide Bug ID information for trackers display (`OSIDB-2818`)
 * In the event of saving multiple trackers with some failing, the affect 
 trackers will be refreshed (`OSIDB-3402`)
+* Add query filter support on advance search (`OSIDB-3088`)
 
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
@@ -26,7 +27,6 @@ trackers will be refreshed (`OSIDB-3402`)
 
 ### Removed
 * Removed `type` information for trackers display (`OSIDB-2818`)
-
 
 ## [2024.8.0]
 ### Added

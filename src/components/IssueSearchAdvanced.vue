@@ -2,12 +2,16 @@
 import { computed, ref, watch } from 'vue';
 import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import Modal from '@/components/widgets/Modal.vue';
+import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
+import { useModal } from '@/composables/useModal';
 import { flawFields } from '@/constants/flawFields';
 import { useSearchParams } from '@/composables/useSearchParams';
 import { descriptionRequiredStates } from '@/types/zodFlaw';
 import { affectAffectedness } from '@/types/zodAffect';
 import { sort } from 'ramda';
-const { facets, removeFacet, submitAdvancedSearch } = useSearchParams();
+const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
+const { isModalOpen, openModal, closeModal } = useModal();
 
 const props = defineProps<{
   isLoading: boolean;
@@ -18,6 +22,8 @@ const emit = defineEmits(['filter:save']);
 const isNonEmptyDescriptionSelected = ref(false);
 
 const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
+
+const queryFilterVisible = ref(true);
 
 watch(isNonEmptyDescriptionSelected, () => {
   const facet = facets.value.find(facet => facet.field === 'cve_description');
@@ -77,7 +83,6 @@ const chosenFields = computed(() => facets.value.map(({ field }) => field));
 const unchosenFields = (chosenField: string) =>
   sortFieldNames(flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField));
 
-
 const optionsFor = (field: string) =>
   ({
     source: flawSources,
@@ -95,14 +100,37 @@ const optionsFor = (field: string) =>
     major_incident_state: flawIncidentStates,
     affects__affectedness: affectAffectedness,
   })[field] || null;
+
 const shouldShowAdvanced = ref(true);
+
+watch(queryFilterVisible, () => {
+  if (!queryFilterVisible.value) {
+    query.value = '';
+  }
+});
 </script>
 
 <template>
-  <details :open="shouldShowAdvanced" class="osim-advanced-search-container">
-    <summary class="mb-2" @click="shouldShowAdvanced = true">Advanced Search</summary>
+  <details :open="shouldShowAdvanced" class="osim-advanced-search-container container-fluid">
+    <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
-      <div v-for="(facet, index) in facets" :key="facet.field" class="input-group mb-2">
+      <div v-if="queryFilterVisible" class="input-group my-1">
+        <div type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;">
+          <span class="my-auto">Query Filter</span>
+          <button class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button" @click="openModal()">
+            <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
+          </button>
+        </div>
+        <input
+          v-model="query"
+          type="text"
+          class="form-control"
+        />
+        <button class="btn btn-secondary py-0" type="button" @click="() => queryFilterVisible = false">
+          <i class="bi bi-x fs-5" aria-label="hide query filter" />
+        </button>
+      </div>
+      <div v-for="(facet, index) in facets" :key="facet.field" class="input-group my-1">
         <select v-model="facet.field" class="form-select search-facet-field" @submit.prevent>
           <option
             v-if="!facet.field"
@@ -131,33 +159,68 @@ const shouldShowAdvanced = ref(true);
           class="form-control"
           :disabled="!facet.field"
         />
-        <button class="btn btn-outline-primary" type="button" @click="removeFacet(index)">
-          <i class="bi-x" aria-label="remove field"></i>
+        <button class="btn btn-primary py-0" type="button" @click="removeFacet(index)">
+          <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
       </div>
-      <button class="btn btn-primary me-3" type="submit" :disabled="props.isLoading">
-        <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
-        Search
-      </button>
-      <button
-        class="btn btn-primary me-3"
-        type="button"
-        :disabled="isLoading"
-        @click="emit('filter:save')"
-      >
-        Save as Default
-      </button>
-      <LabelCheckbox
-        v-model="isNonEmptyDescriptionSelected"
-        label="Non Empty CVE Description"
-        class="d-inline-block"
-      />
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit" :disabled="props.isLoading">
+          <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
+          Search
+        </button>
+        <button
+          class="btn btn-primary me-2"
+          type="button"
+          :disabled="isLoading"
+          @click="emit('filter:save')"
+        >
+          Save as Default
+        </button>
+        <button
+          v-if="!queryFilterVisible"
+          class="btn btn-secondary"
+          type="button"
+          @click="() => queryFilterVisible = true"
+        >
+          Show Query Filter
+        </button>
+        <LabelCheckbox
+          v-model="isNonEmptyDescriptionSelected"
+          label="Non Empty CVE Description"
+          class="d-inline-block"
+        />
+      </div>
     </form>
   </details>
+  <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal()">
+    <template #header>
+      <h1>Query Filter Guide</h1>
+      <button
+        type="button"
+        class="btn-close ms-auto"
+        aria-label="Close"
+        @click="closeModal()"
+      />
+    </template>
+    <template #body>
+      <QueryFilterGuide />
+    </template>
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn-secondary m-0"
+        @click="closeModal()"
+      >
+        Close
+      </button>
+    </template>
+  </Modal>
 </template>
 
 <style lang="scss" scoped>
 .osim-advanced-search-container {
+  width: 97.5%;
+
   i {
     cursor: pointer;
   }

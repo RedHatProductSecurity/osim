@@ -56,7 +56,7 @@ describe('IssueSearchAdvanced', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'search', acknowledgments__name: 'test' } });
+      .toStrictEqual({ query: { query: 'test' } });
   });
 
   it('shouldn\'t render duplicate options on dropdown', () => {
@@ -71,7 +71,7 @@ describe('IssueSearchAdvanced', () => {
   it('should render save filter button', async () => {
     let filterSaveEvents = wrapper.emitted('filter:save');
     expect(filterSaveEvents).toBeFalsy();
-    const saveButton = wrapper.find('button[type="button"].btn-primary.me-3');
+    const saveButton = wrapper.find('button[type="button"].btn-primary.me-2');
     expect(saveButton.exists()).toBeTruthy();
     expect(saveButton.text()).toBe('Save as Default');
     await saveButton.trigger('click');
@@ -94,6 +94,6 @@ describe('IssueSearchAdvanced', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'search', cve_id: '' } });
+      .toStrictEqual({ query: { cve_id: '' } });
   });
 });
