@@ -334,6 +334,7 @@ function addNewAffect() {
       comment: '',
       score: null,
       vector: '',
+      embargoed: props.embargoed,
       alerts: [],
     }],
     trackers: [{ errata: [] }],
@@ -424,15 +425,24 @@ function selectAffects(event: Event) {
 }
 
 // Affects Fields
+function affectCvss(affect: ZodAffectType) {
+  return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
+}
+
+function affectCvssDisplay(affect: ZodAffectType) {
+  const cvssScore = affectCvss(affect)?.score;
+  const cvssVector = useAffectCvss3Vector(affect).value;
+  if (cvssScore && cvssVector) {
+    return `${affectCvss(affect)?.score || ''} ${useAffectCvss3Vector(affect).value}`;
+  } else {
+    return useAffectCvss3Vector(affect).value;
+  }
+}
+
 function useAffectCvss3Vector(affect: ZodAffectType) {
   return computed({
     get() {
-      const cvss = affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
-      if (cvss) {
-        return `${cvss.score} ${cvss.vector}`;
-      } else {
-        return '';
-      }
+      return affectCvss(affect)?.vector || '';
     },
     set(newValue: string) {
       const cvssScoreIndex = affect.cvss_scores.findIndex(
@@ -440,7 +450,7 @@ function useAffectCvss3Vector(affect: ZodAffectType) {
           issuer === 'RH' && cvss_version === 'V3'
       );
       if (newValue === '' && cvssScoreIndex !== -1) {
-        affect.cvss_scores.splice(cvssScoreIndex, 1);
+        // affect.cvss_scores.splice(cvssScoreIndex, 1);
       } else if (cvssScoreIndex !== -1) {
         affect.cvss_scores[cvssScoreIndex].vector = newValue;
       } else if (newValue !== '') {
@@ -1105,7 +1115,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>
-                  {{ useAffectCvss3Vector(affect).value || '' }}
+                  {{ affectCvssDisplay(affect) }}
                 </span>
               </td>
               <td>
