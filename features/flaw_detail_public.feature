@@ -166,6 +166,8 @@ Feature: Flaw detail testing on public flaw
       Examples:
         |                       new_state |
         |                          TRIAGE |
-        |        PRE_SECONDARY_ASSESSMENT |
-        |            SECONDARY_ASSESSMENT |
-        |                            DONE |
+        # Below state can only work after affect(s) attached
+        # |        PRE_SECONDARY_ASSESSMENT |
+        # |            SECONDARY_ASSESSMENT |
+        # Below state can only work after tracker(s) filed
+        # |                            DONE |

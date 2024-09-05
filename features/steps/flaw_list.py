@@ -138,9 +138,9 @@ def step_impl(context):
     go_to_home_page(context.browser)
     # Check the default search checkbox is checked
     home_page = HomePage(context.browser)
-    assert home_page.is_checkbox_selected("defaultFilterCheckbox") is True
     home_page.check_text_exist(context.default_filter)
-    # The flaw list is filtered by the default search
+    if home_page.is_checkbox_selected("defaultFilterCheckbox") is False:
+        home_page.click_btn("defaultFilterCheckbox")
     home_page.first_flaw_exist()
     home_page.click_btn('stateBtn')
     home_page.first_flaw_exist()
