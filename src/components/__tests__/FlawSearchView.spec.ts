@@ -1,244 +1,131 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-import { useRoute, useRouter } from 'vue-router';
 import { createTestingPinia } from '@pinia/testing';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import { useFlawsFetching } from '../../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { useSearchParams } from '@/composables/useSearchParams';
+import { ref, type ComponentPublicInstance, type Ref } from 'vue';
 
-vi.mock('@vueuse/core', () => ({
-  useLocalStorage: vi.fn((key: string, defaults) => {
-    return {
-      UserStore: {
-        value: defaults || {
-          // Set your fake user data here
-          refresh: 'mocked_refresh_token',
-          env: 'mocked_env',
-          whoami: {
-            email: 'test@example.com',
-            username: 'testuser',
-          },
-        },
-        SearchStore: {
-          value: defaults || {
-            searchFilters: { 'test':'test' }
-          }
-        }
-      },
-    }[key];
-  }),
-  useStorage: vi.fn((key: string, defaults) => {
-    return {
-      'OSIM::USER-SETTINGS': {
-        value: defaults || {
-          bugzillaApiKey: '',
-          jiraApiKey: '',
-          showNotifications: false,
-        },
-      },
-    }[key];
-  }),
-}));
-
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({
-    sub: '1234567890',
-    name: 'Test User',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365,
-  })),
-}));
-
-vi.mock('vue-router', async () => {
-  const actual = await vi.importActual('vue-router');
-  const replaceMock = vi.fn();
-
-  return {
-    ...actual,
-    useRoute: vi.fn(() => ({ query: { query: 'search' } })),
-    useRouter: vi.fn(() => ({
-      replace: replaceMock
-    }))
-  };
+const mountFlawSearchView = (): VueWrapper<ComponentPublicInstance
+  & Partial<{
+    params: Record<string, string>,
+    setTableFilters: (filters: Ref<Record<string, string>>) => void,
+    fetchMoreFlaws: () => void,
+    saveFilter: () => void,
+  }>> => mount(FlawSearchView, {
+  global: {
+    plugins: [createTestingPinia()],
+  },
+  shallow: true,
 });
 
-vi.mock('../../composables/useFlawsFetching', () => ({
-  useFlawsFetching: vi.fn(() => ({
-    issues: [],
-    isLoading: false,
-    isFinalPageFetched: false,
-    total:0,
-    loadFlaws: vi.fn(),
-    loadMoreFlaws: vi.fn(),
-  })),
-}));
-
-describe('FlawSearchView', () => {
-  let wrapper: VueWrapper<any>;
-  const props: typeof FlawSearchView.props = {};
-
-  beforeEach(() => {
-    vi.mocked(useFlawsFetching).mockReturnValue({
-      issues: [],
-      isLoading: false,
-      isFinalPageFetched: false,
-      total:0,
-      loadFlaws: vi.fn(),
-      loadMoreFlaws: vi.fn(),
-    });
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    wrapper = mount(FlawSearchView, {
-      props,
-      global: {
-        mocks: { useRoute },
-        plugins:[pinia]
-      }
+describe('flawSearchView', () => {
+  vi.mock('@/composables/useSearchParams', async () => {
+    const { ref } = await import('vue');
+    return ({
+      useSearchParams: vi.fn().mockReturnValue({
+        getSearchParams: vi.fn().mockReturnValue({
+          query: 'djangoql query',
+          search: 'quick search',
+        }),
+        facets: ref([]),
+      })
     });
   });
+
+  vi.mock('@/composables/useFlawsFetching', async () => {
+    const { ref } = await import('vue');
+    return ({
+      useFlawsFetching: vi.fn().mockReturnValue({
+        issues: ref([]),
+        isLoading: ref(false),
+        isFinalPageFetched: ref(false),
+        total: 1337,
+        loadFlaws: vi.fn(),
+        loadMoreFlaws: vi.fn()
+      })
+    });
+  });
+
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  afterAll(() => {
-    vi.clearAllMocks();
-  });
-
   it('should render', () => {
-    expect(wrapper.exists()).toBe(true);
+    const wrapper = mountFlawSearchView();
+
+    expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('should call Load on mounted', async () => {
+  it('should load flaws when params change', async () => {
+    const wrapper = mountFlawSearchView();
+    const { loadFlaws } = useFlawsFetching();
+
+    wrapper.vm.setTableFilters!(ref({
+      order: 'created_dt'
+    }));
     await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
-      'order': '-created_dt',
-      'query': 'search',
+
+    expect(loadFlaws).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.params).toEqual({
+      query: 'djangoql query',
+      search: 'quick search',
+      order: 'created_dt'
     });
   });
 
-  it('should call loadFlaws on search', async () => {
+  it('should join filters with existing ones', async () => {
+    vi.mocked(useSearchParams, {
+      partial: true
+    }).mockReturnValue({
+      getSearchParams: vi.fn().mockReturnValue({
+        query: 'some advanced query',
+        order: 'cve_id'
+      }),
+      facets: ref([])
+    });
+    const wrapper = mountFlawSearchView();
+
+    wrapper.vm.setTableFilters!(ref({
+      order: 'updated_dt'
+    }));
     await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
-    await selectDropdown.trigger('change');
-    const inputField = wrapper.find('input.form-control');
-    await inputField.setValue('test');
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test' } });
+
+    expect(wrapper.vm.params).toEqual({
+      query: 'some advanced query',
+      order: 'cve_id,updated_dt'
+    });
   });
 
-  it('should call saveFilter on save filter button click', async () => {
-    (useRoute as Mock).mockReturnValue({
-      'query': {
-        query: 'search',
-        'affects__ps_component': 'test'
-      },
+  it('should call loadMoreFlaws when fetchMoreFlaws is called', async () => {
+    const wrapper = mountFlawSearchView();
+    const { loadMoreFlaws } = useFlawsFetching();
+
+    wrapper.vm.fetchMoreFlaws!();
+    await flushPromises();
+
+    expect(loadMoreFlaws).toHaveBeenCalledTimes(1);
+  });
+
+  it('should save filters to store', async () => {
+    vi.mocked(useSearchParams, {
+      partial: true
+    }).mockReturnValue({
+      getSearchParams: vi.fn().mockReturnValue({}),
+      facets: ref([{ field:'cve_id', value: 'CVE-2024-1234' }]),
+      query: ref('django query'),
     });
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: true,
-    });
-    wrapper = mount(FlawSearchView, {
-      props,
-      global: {
-        mocks: { useRoute },
-        plugins:[pinia]
-      }
-    });
+    const wrapper = mountFlawSearchView();
     const searchStore = useSearchStore();
     const toastStore = useToastStore();
-    const saveButton = wrapper.find('button[type="button"].btn-primary.me-2');
-    expect(saveButton.exists()).toBeTruthy();
-    expect(saveButton.text()).toBe('Save as Default');
-    await saveButton.trigger('click');
-    await flushPromises();
-    expect(searchStore.saveFilter).toHaveBeenCalledOnce();
-    expect(searchStore.saveFilter.mock.calls[0][0]).toStrictEqual({ 'affects__ps_component': 'test' });
-    expect(toastStore.addToast).toHaveBeenCalledOnce();
-  });
 
-  it('should call with correct filters from route on mounted', async () => {
-    (useRoute as Mock).mockReturnValue({
-      'query': {
-        query: 'search',
-        'affects__ps_component': 'test'
-      },
-    });
+    wrapper.vm.saveFilter!();
     await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({ 'affects__ps_component': 'test',
-      'order': '-created_dt',
-      'query': 'search',
-    });
-  });
 
-  it('should call loadFlaws with requires_cve_description on search', async () => {
-    await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const requiresDescriptionOption = selectDropdown
-      .findAll('option')
-      .filter(option => option.element.value === 'requires_cve_description')[0];
-    await selectDropdown.setValue(requiresDescriptionOption.element.value);
-    await selectDropdown.trigger('change');
-    const valueDropdown = wrapper.findAll('select.form-select')[1];
-    await valueDropdown.setValue(valueDropdown.findAll('option')[1].element.value);
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'search', requires_cve_description: 'REQUESTED' } });
-  });
-
-  it('should call loadFlaws with major_incident_state on search', async () => {
-    await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const dropdownOption = selectDropdown
-      .findAll('option')
-      .filter(option => option.element.value === 'major_incident_state')[0];
-    await selectDropdown.setValue(dropdownOption.element.value);
-    await selectDropdown.trigger('change');
-    const valueDropdown = wrapper.findAll('select.form-select')[1];
-    await valueDropdown.setValue(valueDropdown.findAll('option')[1].element.value);
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'search', major_incident_state: 'REQUESTED' } });
-  });
-
-  it('should call loadFlaws with affectedness on search', async () => {
-    await flushPromises();
-    expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const dropdownOption = selectDropdown
-      .findAll('option')
-      .filter(option => option.element.value === 'affects__affectedness')[0];
-    await selectDropdown.setValue(dropdownOption.element.value);
-    await selectDropdown.trigger('change');
-    const valueDropdown = wrapper.findAll('select.form-select')[1];
-    await valueDropdown.setValue(valueDropdown.findAll('option')[1].element.value);
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'search', affects__affectedness: 'NEW' } });
+    expect(searchStore.saveFilter).toHaveBeenNthCalledWith(1, { cve_id: 'CVE-2024-1234' }, 'django query');
+    expect(toastStore.addToast).toHaveBeenCalledTimes(1);
   });
 });
