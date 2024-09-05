@@ -1,18 +1,11 @@
-import { flawSources } from '@/types/zodFlaw';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
-import { osimFullFlawTest } from './test-suite-helpers';
-import {
-  Source521Enum,
-} from '@/generated-client';
 import { useRouter } from 'vue-router';
 import { DateTime } from 'luxon';
-
-import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import { useToastStore } from '@/stores/ToastStore';
+
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import IssueFieldState from '@/components/IssueFieldState.vue';
 import FlawForm from '@/components/FlawForm.vue';
@@ -22,10 +15,19 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
-import { blankFlaw } from '@/composables/useFlawModel';
-import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
 
+import { blankFlaw } from '@/composables/useFlawModel';
+
+import { useToastStore } from '@/stores/ToastStore';
+import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
+import {
+  Source521Enum,
+} from '@/generated-client';
+import { flawSources } from '@/types/zodFlaw';
+
+import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
+import { osimFullFlawTest } from './test-suite-helpers';
 
 const FLAW_BASE_URI = '/osidb/api/v1/flaws';
 const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
@@ -70,7 +72,7 @@ vi.mock('@/composables/useTrackers', () => {
   };
 });
 
-describe('FlawForm', () => {
+describe('flawForm', () => {
   function mountWithProps(props: typeof FlawForm.$props) {
     subject = mount(FlawForm, {
       plugins: [useToastStore()],
@@ -140,22 +142,22 @@ describe('FlawForm', () => {
 
     const titleField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Title');
+      .find(component => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find((component) => component.props().label === 'Components');
+      .find(component => component.props().label === 'Components');
     expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'CVE ID');
+      .find(component => component.props().label === 'CVE ID');
     expect(cveIdField?.exists()).toBe(true);
 
     const impactField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Impact');
+      .find(component => component.props().label === 'Impact');
     expect(impactField?.exists()).toBe(true);
     const impactOptions = impactField.findAll('option').map(item => item.text());
     expect(impactOptions).toEqual([
@@ -168,22 +170,22 @@ describe('FlawForm', () => {
 
     const cvssV3Field = subject
       .findAllComponents(CvssCalculator)
-      .find((component) => component.text().includes('CVSSv3'));
+      .find(component => component.text().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'NVD CVSSv3');
+      .find(component => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
     const cweIdField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'CWE ID');
+      .find(component => component.props().label === 'CWE ID');
     expect(cweIdField?.exists()).toBe(true);
 
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'CVE Source');
+      .find(component => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
     const sourceOptionEls = sourceField.findAll('option');
     const sourceOptionCount = Object.keys(Source521Enum).length + 1;
@@ -191,27 +193,27 @@ describe('FlawForm', () => {
 
     const workflowStateField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'State');
+      .find(component => component.props().label === 'State');
     expect(workflowStateField?.exists()).toBe(true);
 
     const incidentStateField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Incident State');
+      .find(component => component.props().label === 'Incident State');
     expect(incidentStateField?.exists()).toBe(true);
 
     const reportedDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Reported Date');
+      .find(component => component.props().label === 'Reported Date');
     expect(reportedDateField?.exists()).toBe(true);
 
     const publicDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Public Date');
+      .find(component => component.props().label === 'Public Date');
     expect(publicDateField?.exists()).toBe(true);
 
     const embargoedField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'Embargoed');
+      .find(component => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
     const assigneeField = subject.findComponent(FlawFormOwner);
@@ -219,7 +221,7 @@ describe('FlawForm', () => {
 
     const comment0Field = subject
       .findAllComponents(LabelTextarea)
-      .find((component) => component.props().label === 'Comment#0');
+      .find(component => component.props().label === 'Comment#0');
     expect(comment0Field?.exists()).toBe(true);
     expect(comment0Field?.props().disabled).toBe(true);
   });
@@ -229,67 +231,67 @@ describe('FlawForm', () => {
 
     const titleField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Title');
+      .find(component => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find((component) => component.props().label === 'Components');
+      .find(component => component.props().label === 'Components');
     expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'CVE ID');
+      .find(component => component.props().label === 'CVE ID');
     expect(cveIdField?.exists()).toBe(true);
 
     const impactField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Impact');
+      .find(component => component.props().label === 'Impact');
     expect(impactField?.exists()).toBe(true);
 
     const cvssV3Field = subject
       .findAllComponents(CvssCalculator)
-      .find((component) => component.html().includes('CVSSv3'));
+      .find(component => component.html().includes('CVSSv3'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'NVD CVSSv3');
+      .find(component => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
 
     const cweIdField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'CWE ID');
+      .find(component => component.props().label === 'CWE ID');
     expect(cweIdField?.exists()).toBe(true);
 
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'CVE Source');
+      .find(component => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
 
     const incidentStateField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Incident State');
+      .find(component => component.props().label === 'Incident State');
     expect(incidentStateField?.exists()).toBe(true);
 
     const reportedDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Reported Date');
+      .find(component => component.props().label === 'Reported Date');
     expect(reportedDateField?.exists()).toBe(true);
 
     const publicDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Public Date');
+      .find(component => component.props().label === 'Public Date');
     expect(publicDateField?.exists()).toBe(true);
 
     const embargoedField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'Embargoed');
+      .find(component => component.props().label === 'Embargoed');
     expect(embargoedField?.exists()).toBe(true);
 
     const comment0Field = subject
       .findAllComponents(LabelTextarea)
-      .find((component) => component.props().label === 'Comment#0');
+      .find(component => component.props().label === 'Comment#0');
     expect(comment0Field?.exists()).toBe(true);
     expect(comment0Field?.props().disabled).toBe(false);
   });
@@ -299,7 +301,7 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'edit' });
     const descriptionField = subject
       .findAllComponents(LabelTextarea)
-      .find((component) => component.props().label === 'Description');
+      .find(component => component.props().label === 'Description');
     expect(descriptionField?.exists()).toBe(true);
   });
 
@@ -315,44 +317,44 @@ describe('FlawForm', () => {
 
     const titleField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Title')
+      .find(component => component.props().label === 'Title')
       ?.find('.is-invalid');
     expect(titleField?.exists()).toBe(true);
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find((component) => component.props().label === 'Components')
+      .find(component => component.props().label === 'Components')
       ?.find('.is-invalid');
     expect(componentsField?.exists()).toBe(true);
 
     const invalidImpactField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'Impact')
+      .find(component => component.props().label === 'Impact')
       ?.find('.is-invalid');
     expect(invalidImpactField?.exists()).toBe(true);
 
     const invalidSourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'CVE Source')
+      .find(component => component.props().label === 'CVE Source')
       ?.find('.is-invalid');
     expect(invalidSourceField?.exists()).toBe(true);
 
     vm.reported_dt = '';
     const invalidReportedDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Reported Date')
+      .find(component => component.props().label === 'Reported Date')
       ?.find('.is-invalid');
     expect(invalidReportedDateField?.exists()).toBe(false);
 
     const invalidPublicDateField = subject
       .findAllComponents(LabelEditable)
-      .find((component) => component.props().label === 'Public Date')
+      .find(component => component.props().label === 'Public Date')
       ?.find('.is-invalid');
     expect(invalidPublicDateField?.exists()).toBe(true);
 
     const invalidComment0Field = subject
       .findAllComponents(LabelTextarea)
-      .find((component) => component.props().label === 'Comment#0')
+      .find(component => component.props().label === 'Comment#0')
       ?.find('.is-invalid');
     expect(invalidComment0Field?.exists()).toBe(true);
   });
@@ -362,7 +364,7 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'edit' });
     const descriptionField = subject
       .findAllComponents(LabelTextarea)
-      .find((component) => component.props().label === 'Description');
+      .find(component => component.props().label === 'Description');
     expect(descriptionField?.exists()).toBe(true);
     const vm = subject.findComponent(FlawForm).vm as any;
     vm.flaw.requires_cve_description = 'REQUESTED';
@@ -392,17 +394,17 @@ describe('FlawForm', () => {
   it('displays promote and reject buttons for state', async () => {
     const workflowStateField = subject
       .findAllComponents(IssueFieldState)
-      .find((component) => component.text().includes('State'));
+      .find(component => component.text().includes('State'));
     expect(
       workflowStateField
         ?.findAll('button')
-        ?.find((el) => el.text() === 'Reject')
+        ?.find(el => el.text() === 'Reject')
         ?.text(),
     ).toBe('Reject');
     expect(
       workflowStateField
         ?.findAll('button')
-        ?.find((el) => el.text().includes('Promote to'))
+        ?.find(el => el.text().includes('Promote to'))
         ?.text(),
     ).toBe('Promote to Triage');
   });
@@ -410,8 +412,8 @@ describe('FlawForm', () => {
   it('shows a modal for reject button clicks', async () => {
     const workflowStateField = subject
       .findAllComponents(IssueFieldState)
-      .find((component) => component.text().includes('State'));
-    const rejectButton = workflowStateField?.findAll('button')?.find((el) => el.text() === 'Reject');
+      .find(component => component.text().includes('State'));
+    const rejectButton = workflowStateField?.findAll('button')?.find(el => el.text() === 'Reject');
     await rejectButton?.trigger('click');
     expect(subject.find('.modal-dialog').exists()).toBe(true);
   });
@@ -431,7 +433,7 @@ describe('FlawForm', () => {
   it('shows a highlighted nvdCvssField value when nvd score and Rh score mismatch', async () => {
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
-      .find((component) => component.props().label === 'NVD CVSSv3');
+      .find(component => component.props().label === 'NVD CVSSv3');
     expect(nvdCvssField?.exists()).toBe(true);
     const spanWithClass = nvdCvssField?.find('span.text-primary');
     const allHighlightedSpan = nvdCvssField?.findAll('span.text-primary');
@@ -509,7 +511,7 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'edit' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'CVE Source');
+      .find(component => component.props().label === 'CVE Source');
     const options = sourceField.findAll('option');
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
@@ -520,7 +522,7 @@ describe('FlawForm', () => {
     mountWithProps({ flaw, mode: 'create' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
-      .find((component) => component.props().label === 'CVE Source');
+      .find(component => component.props().label === 'CVE Source');
     const options = sourceField.findAll('option');
     expect(options.length).toBe(flawSources.length);
     const disabledOptions = sourceField.findAll('option[hidden]');
@@ -536,17 +538,17 @@ describe('FlawForm', () => {
 
   osimFullFlawTest('should not show a link to bugzilla if ID does not exists', async ({ flaw }) => {
     flaw.meta_attr = {};
-    mountWithProps({ flaw, mode:'edit' });
+    mountWithProps({ flaw, mode: 'edit' });
 
     const bugzillaLink = subject.find('.osim-bugzilla-link');
     expect(bugzillaLink.exists()).toBe(false);
   });
 
   osimFullFlawTest('should show CreatedDate on Flaw Edit', async ({ flaw }) => {
-    mountWithProps({ flaw, mode:'edit' });
+    mountWithProps({ flaw, mode: 'edit' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
-      .find((component) => component.props().label === 'Created Date');
+      .find(component => component.props().label === 'Created Date');
     expect(createdAtField?.exists()).toBeTruthy();
     const formEL = createdAtField.find('span.form-control');
     expect(formEL?.exists()).toBeTruthy();
@@ -554,26 +556,24 @@ describe('FlawForm', () => {
   });
 
   osimFullFlawTest('should not show CreatedDate on Flaw Creation', async ({ flaw }) => {
-    mountWithProps({ flaw, mode:'new' });
+    mountWithProps({ flaw, mode: 'new' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
-      .find((component) => component.props().label === 'Created Date');
+      .find(component => component.props().label === 'Created Date');
     expect(createdAtField?.exists()).toBeFalsy();
   });
 
   osimFullFlawTest('should show border when flaw is embargoed', async ({ flaw }) => {
     flaw.embargoed = true;
-    mountWithProps({ flaw, mode:'edit' });
+    mountWithProps({ flaw, mode: 'edit' });
     let flawForm = subject.find('div.osim-flaw-form-embargoed');
     expect(flawForm?.exists()).toBeTruthy();
     flaw.embargoed = false;
-    mountWithProps({ flaw, mode:'edit' });
+    mountWithProps({ flaw, mode: 'edit' });
     flawForm = subject.find('div.osim-flaw-form-embargoed');
     expect(flawForm?.exists()).toBeFalsy();
   });
 });
-
-
 
 function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
   return fetch(`${FLAW_BASE_URI}/${uuid}`, {
@@ -589,5 +589,5 @@ function mockedPutFlaw(uuid: string, flawObject: Record<any, any>) {
       }
       return response.json();
     })
-    .catch((e) => console.error('🚨 Mocked PUT failed due to', e.message));
+    .catch(e => console.error('🚨 Mocked PUT failed due to', e.message));
 }

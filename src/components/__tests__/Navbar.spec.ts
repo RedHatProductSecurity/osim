@@ -1,17 +1,16 @@
 import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-import router from '@/router';
 import { createTestingPinia } from '@pinia/testing';
 
+import router from '@/router';
 import { useToastStore } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
 import Navbar from '../Navbar.vue';
 
-describe('Navbar', async () => {
+describe('navbar', () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;
   beforeEach(() => {
-
     vi.mock('@vueuse/core', () => ({
       useLocalStorage: vi.fn((key: string, defaults) => {
         return {
@@ -71,7 +70,7 @@ describe('Navbar', async () => {
       return {
         osimRuntime: {
           ...osimRuntimeValue,
-        }
+        },
       };
     });
     subject = mount(Navbar, {
@@ -79,8 +78,8 @@ describe('Navbar', async () => {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const listItems = subject.findAll('.dropdown-item');
     let widgetTestOptionExists = false;
@@ -107,15 +106,15 @@ describe('Navbar', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: true,
-      }
+      },
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const button = subject.find('.osim-notification-button');
     expect(button.exists()).toBeTruthy();
@@ -132,23 +131,23 @@ describe('Navbar', async () => {
     });
     const toastStore = useToastStore(pinia);
     toastStore.$state = {
-      //@ts-expect-error missing properties
+      // @ts-expect-error missing properties
       toasts: [{}, {}],
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
         ...settingStore.$state.settings,
-        showNotifications: true
-      }
+        showNotifications: true,
+      },
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const button = subject.find('.osim-notification-button');
     expect(button.exists()).toBeTruthy();
@@ -178,15 +177,15 @@ describe('Navbar', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: false,
-      }
+      },
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const button = subject.find('.osim-notification-button');
     expect(button.exists()).toBeTruthy();
@@ -202,7 +201,7 @@ describe('Navbar', async () => {
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
-    const newToasts = new Array(1000);
+    const newToasts = Array.from({ length: 1000 });
     toastStore.$state = {
       toasts: newToasts,
     };
@@ -211,15 +210,15 @@ describe('Navbar', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: false,
-      }
+      },
     };
     subject = mount(Navbar, {
       global: {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const button = subject.find('.osim-notification-button');
     expect(button.exists()).toBeTruthy();

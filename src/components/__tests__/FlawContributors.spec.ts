@@ -1,36 +1,40 @@
-import { flushPromises, mount } from '@vue/test-utils';
-import FlawContributors from '../FlawContributors.vue';
-import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective';
 import { ref, type ExtractPublicPropTypes } from 'vue';
+
+import { flushPromises, mount } from '@vue/test-utils';
+
+import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective';
 import type { ZodJiraContributorType } from '@/types/zodJira';
+
+import FlawContributors from '../FlawContributors.vue';
 
 const useJiraContributors = {
   contributors: ref<Partial<ZodJiraContributorType>[]>([]),
   isLoadingContributors: false,
   loadJiraContributors: vi.fn(),
   searchContributors: vi.fn(),
-  saveContributors: vi.fn()
+  saveContributors: vi.fn(),
 
 };
 
 vi.mock('@/composables/useJiraContributors', () => ({
-  default: () => useJiraContributors
+  default: () => useJiraContributors,
 }));
 
-describe('FlawContributors', () => {
-  const contributor = { name: 'test', html: '<b>test</b> user', displayName: 'test user' };
-  const mountComponent = (props?: ExtractPublicPropTypes<typeof FlawContributors>) =>
-    mount(FlawContributors, {
-      props: {
-        taskKey: 'TASK-123',
-        ...props
+const mountComponent = (props?: ExtractPublicPropTypes<typeof FlawContributors>) =>
+  mount(FlawContributors, {
+    props: {
+      taskKey: 'TASK-123',
+      ...props,
+    },
+    global: {
+      directives: {
+        'osim-loading': LoadingAnimationDirective,
       },
-      global: {
-        directives: {
-          'osim-loading': LoadingAnimationDirective
-        }
-      }
-    });
+    },
+  });
+
+describe('flawContributors', () => {
+  const contributor = { name: 'test', html: '<b>test</b> user', displayName: 'test user' };
 
   beforeEach(() => {
     vi.useFakeTimers();

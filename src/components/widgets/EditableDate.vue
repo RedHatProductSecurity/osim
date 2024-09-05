@@ -5,22 +5,24 @@
 // Blurring focus or clicking the save button commits the change
 // Pressing escape or clicking the abort button aborts the change
 
-import { DateTime } from 'luxon';
 import { ref, nextTick, reactive, watch } from 'vue';
+
+import { DateTime } from 'luxon';
 import { IMask } from 'vue-imask';
+
 import { formatDate } from '@/utils/helpers';
 
 const props = defineProps<{
-  modelValue: string | undefined,
-  includesTime?: boolean,
-  readOnly?: boolean,
-  editing?: boolean,
-  error?: string | null,
+  editing?: boolean;
+  error?: null | string;
+  includesTime?: boolean;
+  modelValue: string | undefined;
+  readOnly?: boolean;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | undefined],
-  'update:editing': [value: boolean],
+  'update:editing': [value: boolean];
+  'update:modelValue': [value: string | undefined];
 }>();
 
 const elInput = ref<HTMLInputElement>();
@@ -172,10 +174,10 @@ function isValidDate(d: Date | string): boolean {
   if (typeof d === 'string') {
     d = parseDate(d);
   }
-  return !isNaN(d.getTime());
+  return !Number.isNaN(d.getTime());
 }
 
-function osimFormatDate(date?: string | null): string {
+function osimFormatDate(date?: null | string): string {
   if (date == null) {
     return '[No date selected]';
   }
@@ -191,7 +193,6 @@ function osimFormatDate(date?: string | null): string {
 watch(() => props.modelValue, () => {
   maskState.masked = props.modelValue || '';
 });
-
 </script>
 
 <template>
@@ -259,16 +260,15 @@ watch(() => props.modelValue, () => {
 </template>
 
 <style lang="scss">
-
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/variables-dark";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
 
 //@import "bootstrap/scss/maps";
-@import "bootstrap/scss/mixins";
+@import 'bootstrap/scss/mixins';
 
 //@import "bootstrap/scss/utilities";
-@import "bootstrap/scss/forms";
+@import 'bootstrap/scss/forms';
 
 //@import "bootstrap/scss/bootstrap";
 
@@ -292,7 +292,9 @@ watch(() => props.modelValue, () => {
     background-color: #f00;
   }
 
-  .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
+  .flash-bg-leave-from,
+  .flash-bg-leave-active,
+  .flash-bg-leave-to {
     transition: none !important;
     display: none !important;
   }

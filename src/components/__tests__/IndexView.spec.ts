@@ -1,7 +1,9 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
+
 import IndexView from '@/views/IndexView.vue';
+
 import { useFlawsFetching } from '../../composables/useFlawsFetching';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
@@ -21,9 +23,9 @@ vi.mock('@vueuse/core', () => ({
       },
       SearchStore: {
         value: {
-          searchFilters: { 'affects__ps_component':'test' }
-        }
-      }
+          searchFilters: { affects__ps_component: 'test' },
+        },
+      },
     }[key];
   }),
   useStorage: vi.fn((key: string, defaults) => {
@@ -57,7 +59,7 @@ vi.mock('../../composables/useFlawsFetching', () => ({
   })),
 }));
 
-describe('IndexView', () => {
+describe('indexView', () => {
   let wrapper: VueWrapper<any>;
   const props: typeof IndexView.props = {};
 
@@ -76,8 +78,8 @@ describe('IndexView', () => {
     wrapper = mount(IndexView, {
       props,
       global: {
-        plugins:[pinia]
-      }
+        plugins: [pinia],
+      },
     });
   });
 
@@ -93,18 +95,18 @@ describe('IndexView', () => {
     await flushPromises();
     expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
-      'order': '-created_dt',
-      'affects__ps_component': 'test',
-      'query': '',
+      order: '-created_dt',
+      affects__ps_component: 'test',
+      query: '',
     });
   });
 
   it('shoud call without default filter when checkbox off', async () => {
     expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
-      'order': '-created_dt',
-      'affects__ps_component': 'test',
-      'query': '',
+      order: '-created_dt',
+      affects__ps_component: 'test',
+      query: '',
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
@@ -113,7 +115,7 @@ describe('IndexView', () => {
     await defaultFilterCheckbox.setValue(false);
     await wrapper.vm.$nextTick();
     expect(useFlawsFetching().loadFlaws.mock.calls[1][0]._value).toStrictEqual({
-      'order': '-created_dt',
+      order: '-created_dt',
     });
   });
 });

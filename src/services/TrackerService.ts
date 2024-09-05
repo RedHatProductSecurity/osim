@@ -1,25 +1,25 @@
+import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 export async function getTracker(uuid: string) {
   return osidbFetch({
     method: 'get',
     url: `/osidb/api/v1/trackers/${uuid}`,
-  }).then((response) => response.data);
+  }).then(response => response.data);
 }
 
 export type TrackersPost = {
   affects: string[];
+  embargoed: boolean;
   ps_update_stream: string;
   resolution: string;
-  embargoed: boolean;
-  updated_dt: string;
   sync_to_bz?: boolean;
+  updated_dt: string;
 };
 
-export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost) {
-
+export async function fileTrackingFor(trackerData: TrackersPost | TrackersPost[]) {
   if (!Array.isArray(trackerData) || trackerData.length === 1) {
     const tracker = !Array.isArray(trackerData) ? trackerData : trackerData[0];
     return postTracker(tracker)
@@ -62,7 +62,6 @@ export async function fileTrackingFor(trackerData: TrackersPost[] | TrackersPost
 }
 
 export async function postTracker(requestBody: TrackersPost, shouldSyncToBz: boolean = true) {
-
   if (!shouldSyncToBz) {
     requestBody.sync_to_bz = false;
     // Setting this flag to false is used when a series of trackers are being created to avoid the
@@ -82,7 +81,6 @@ export type TrackersFilePost = {
 };
 
 export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
-
   return osidbFetch({
     method: 'post',
     url: '/trackers/api/v1/file',
@@ -94,11 +92,11 @@ export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
 
 export function trackerUrl(type: string, id: string): string {
   switch (type) {
-  case 'JIRA':
-    return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
-  case 'BUGZILLA':
-    return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla)).href;
-  default:
-    return '#';
+    case 'BUGZILLA':
+      return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla)).href;
+    case 'JIRA':
+      return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
+    default:
+      return '#';
   }
 }

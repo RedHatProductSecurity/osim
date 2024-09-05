@@ -9,8 +9,8 @@ const footerTop = ref<number>(0);
 const footerHeight = ref<number>(0);
 
 export {
-  navbarHeight,
-  navbarBottom,
-  footerTop,
   footerHeight,
+  footerTop,
+  navbarBottom,
+  navbarHeight,
 };

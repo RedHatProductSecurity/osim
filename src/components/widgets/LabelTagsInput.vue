@@ -2,15 +2,14 @@
 import TagsInput from './TagsInput.vue';
 
 withDefaults(defineProps<{
-  label?: string;
   error?: string | string[];
+  label?: string;
 }>(), {
   label: '',
   error: undefined,
 });
 
 const modelValue = defineModel<string[]>({ required: true });
-
 </script>
 
 <template>
@@ -28,11 +27,8 @@ const modelValue = defineModel<string[]>({ required: true });
   </label>
 </template>
 
-
 <style scoped>
-
 .osim-input {
   display: block;
 }
-
 </style>

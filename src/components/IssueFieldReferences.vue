@@ -5,19 +5,26 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import EditableList from '@/components/widgets/EditableList.vue';
+
 import type { ZodFlawReferenceType } from '@/types/zodFlaw';
 import { flawReferenceTypeValues } from '@/types/zodFlaw';
 
-const references = defineModel<ZodFlawReferenceType[]>({ default: null });
-
 defineProps<{
+  error: null | Record<string, any>[];
   mode: 'create' | 'edit';
-  error: Record<string, any>[] | null;
 }>();
 
+const references = defineModel<ZodFlawReferenceType[]>({ default: null });
+
+const emit = defineEmits<{
+  'reference:cancel-new': [value: ZodFlawReferenceType];
+  'reference:delete': [value: string];
+  'reference:new': [];
+  'reference:update': [value: any[]];
+}>();
 const excludedReferenceTypes = ['SOURCE'];
 const allowedReferenceTypes = flawReferenceTypeValues.filter(
-  (referenceType) => !excludedReferenceTypes.includes(referenceType),
+  referenceType => !excludedReferenceTypes.includes(referenceType),
 );
 
 const referenceTypeLabel = (label: string) =>
@@ -25,13 +32,6 @@ const referenceTypeLabel = (label: string) =>
     ARTICLE: 'Red Hat Security Bulletin (RHSB)',
     EXTERNAL: 'External',
   })[label] || null;
-
-const emit = defineEmits<{
-  'reference:update': [value: any[]];
-  'reference:new': [];
-  'reference:cancel-new': [value: ZodFlawReferenceType];
-  'reference:delete': [value: string];
-}>();
 
 function handleDelete(uuid: string, closeModal: () => void) {
   emit('reference:delete', uuid);
@@ -41,7 +41,6 @@ function handleDelete(uuid: string, closeModal: () => void) {
 const editableListComp = ref<InstanceType<typeof EditableList> | null>(null);
 
 defineExpose({ editableListComp });
-
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 // Named with camelCase instead of PascalCase to differentiate from Pinia stores.
 
 import { computed, readonly, ref } from 'vue';
+
 import { z } from 'zod';
 
 // export enum OsimRuntimeDev {
@@ -81,7 +82,6 @@ export async function setup() {
         status.value = OsimRuntimeStatus.READY;
       }
     });
-
 }
 
 async function fetchOsimVersionFallback() {
@@ -90,7 +90,7 @@ async function fetchOsimVersionFallback() {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then((response) => response.json())
+    .then(response => response.json())
     .then((json) => {
       runtime.value.osimVersion.rev = json.sha.substring(0, 7);
       runtime.value.osimVersion.tag = '[fetched from Github]';
@@ -103,7 +103,7 @@ function fetchRuntime() {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then((response) => response.json())
+    .then(response => response.json())
     .then((json: OsimRuntime) => {
       console.debug('OsimRuntime', json);
       try {
@@ -113,13 +113,13 @@ function fetchRuntime() {
           e,
           OsimRuntime.safeParse(json).error?.issues.map(
           // Provides additional helpful context for zod parsing errors
-            issue => issue.path.join('/') + ': ' + issue.message
+            issue => issue.path.join('/') + ': ' + issue.message,
           ));
         runtime.value.error = 'Backends are not correctly configured. Please try again later.';
         status.value = OsimRuntimeStatus.ERROR;
       }
       if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z'
-          || runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
+        || runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
         // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
         runtime.value.osimVersion.timestamp = new Date().toISOString();
       }
@@ -141,7 +141,7 @@ function fetchOsidbHealthy() {
     method: 'GET',
     cache: 'no-cache',
   })
-    .then((response) => response.json())
+    .then(response => response.json())
     .then((json: OsidbHealthy) => {
       console.debug('OsidbHealthy', json);
       try {

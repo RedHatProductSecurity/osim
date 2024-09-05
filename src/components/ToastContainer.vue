@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import Toast from '../components/widgets/Toast.vue';
-import { useToastStore } from '../stores/ToastStore';
 import { computed } from 'vue';
+
 import { navbarBottom, footerTop, footerHeight } from '@/stores/responsive';
 import { useSettingsStore } from '@/stores/SettingsStore';
+
+import { useToastStore } from '../stores/ToastStore';
+import Toast from '../components/widgets/Toast.vue';
 
 // const props = defineProps<{
 //   // timestamp: moment.Moment,
@@ -32,7 +34,6 @@ function clearAll() {
   //   toasts.shift();
   // }
 }
-
 </script>
 
 <template>

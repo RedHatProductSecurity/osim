@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils';
+
 import JiraUser from '../JiraUser.vue';
 
-describe('JiraUser', () => {
+describe('jiraUser', () => {
   it('renders correctly with only displayName', () => {
     const wrapper = mount(JiraUser, {
       props: { displayName: 'John Doe' },

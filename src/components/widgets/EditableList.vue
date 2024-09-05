@@ -1,25 +1,29 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
-import { deepCopyFromRaw } from '@/utils/helpers';
-import Modal from '@/components/widgets/Modal.vue';
-import { useModal } from '@/composables/useModal';
-import LabelCollapsible from './LabelCollapsible.vue';
+
 import { equals } from 'ramda';
 
-const items = defineModel<any[]>({ default: [] });
+import Modal from '@/components/widgets/Modal.vue';
+
+import { useModal } from '@/composables/useModal';
+
+import { deepCopyFromRaw } from '@/utils/helpers';
+
+import LabelCollapsible from './LabelCollapsible.vue';
+
 const props = defineProps<{
-  mode: 'create' | 'edit';
-  entityName: string;
   entitiesName?: string;
+  entityName: string;
+  mode: 'create' | 'edit';
 }>();
-
+const items = defineModel<any[]>({ default: [] });
 const emit = defineEmits<{
-  'item:save': [value: any[]];
-  'item:new': [];
   'item:delete': [value: string];
+  'item:new': [];
+  'item:save': [value: any[]];
 }>();
 
-const modals = computed(() => Object.fromEntries(items.value.map((item) => [item.uuid, useModal()])));
+const modals = computed(() => Object.fromEntries(items.value.map(item => [item.uuid, useModal()])));
 
 function useModalForItem(uuid: string) {
   return modals.value[uuid];
@@ -34,7 +38,7 @@ onMounted(() => {
   priorValues.value = deepCopyFromRaw(items.value);
 });
 
-const indexBeingEdited = ref<number | null>(null);
+const indexBeingEdited = ref<null | number>(null);
 const isBeingEdited = (index: number) => indexBeingEdited.value === index;
 const priorValues = ref<any[]>([]);
 const savedValues = ref<any[]>([]);

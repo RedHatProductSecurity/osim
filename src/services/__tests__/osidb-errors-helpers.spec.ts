@@ -3,7 +3,7 @@ import {
   parseOsidbErrors,
 } from '../osidb-errors-helpers';
 
-describe('OSIDB Error helpers', () => {
+describe('oSIDB Error helpers', () => {
   // JSDom lacks an innerText implementation since it does not use a layout engine, so we need to mock it
   // Source: https://github.com/jsdom/jsdom/issues/1245
   beforeAll(() => {
@@ -15,7 +15,6 @@ describe('OSIDB Error helpers', () => {
   });
 
   describe('getDisplayedOsidbError', () => {
-
     it('should return a string with the error message', () => {
       const error = {
         response: {
@@ -25,7 +24,7 @@ describe('OSIDB Error helpers', () => {
         },
       };
       expect(getDisplayedOsidbError(error)).toBe(
-        'OSIDB responded with error 500 (Internal Server Error). \nInternal Server Error'
+        'OSIDB responded with error 500 (Internal Server Error). \nInternal Server Error',
       );
     });
 
@@ -38,7 +37,7 @@ describe('OSIDB Error helpers', () => {
         },
       };
       expect(getDisplayedOsidbError(error)).toBe(
-        'OSIDB responded with error 500 (Internal Server Error). \nerror: Internal Server Error'
+        'OSIDB responded with error 500 (Internal Server Error). \nerror: Internal Server Error',
       );
     });
 
@@ -65,7 +64,7 @@ describe('OSIDB Error helpers', () => {
           'content-type': 'text/html',
         },
         data: '<div class="exception_value">Some error on line 1</div>',
-      }
+      },
     };
     expect(getDisplayedOsidbError(error)).toBe('Likely error between OSIDB and database:\nSome error on line 1');
   });
@@ -77,7 +76,7 @@ describe('OSIDB Error helpers', () => {
           'content-type': 'text/html',
         },
         data: '<h1>Server Error (500)</h1><p></p>',
-      }
+      },
     };
 
     expect(getDisplayedOsidbError(error))
@@ -104,8 +103,8 @@ describe('OSIDB Error helpers', () => {
       ];
       expect(parseOsidbErrors(errors)).toBe(
         'OSIDB responded with error 500 (Internal Server Error). \n'
-          + 'Internal Server Error\n\nOSIDB responded with error 500 (Internal Server Error). \n'
-          + 'Internal Server Error'
+        + 'Internal Server Error\n\nOSIDB responded with error 500 (Internal Server Error). \n'
+        + 'Internal Server Error',
       );
     });
   });

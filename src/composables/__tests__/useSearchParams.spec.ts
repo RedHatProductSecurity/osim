@@ -1,5 +1,6 @@
-import { useSearchParams } from '../useSearchParams';
 import { useRoute, useRouter } from 'vue-router';
+
+import { useSearchParams } from '../useSearchParams';
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
@@ -11,15 +12,15 @@ vi.mock('vue-router', async () => {
     useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock,
-      push: pushMock
-    }))
+      push: pushMock,
+    })),
   };
 });
 
 describe('useSearchParams', () => {
   beforeEach(() => {
     (useRoute as Mock).mockReturnValue({
-      'query': { query: 'search' },
+      query: { query: 'search' },
     });
   });
 
@@ -45,48 +46,48 @@ describe('useSearchParams', () => {
   });
 
   it('update facets on addFacet', () => {
-    const { facets, addFacet } = useSearchParams();
+    const { addFacet, facets } = useSearchParams();
     expect(facets.value.length).toBe(0);
     addFacet();
     expect(facets.value.length).toBe(1);
   });
 
-  it('update facets on addFacet', () => {
+  it('update facets on removeFacet', () => {
     const { facets, removeFacet } = useSearchParams();
     facets.value = [
-      { field:'test', value:'test' },
-      { field:'test', value:'test' }
+      { field: 'test', value: 'test' },
+      { field: 'test', value: 'test' },
     ];
     removeFacet();
     expect(facets.value.length).toBe(1);
     removeFacet();
     expect(facets.value.length).toBe(1);
     expect(facets.value[0]).toStrictEqual({
-      field:'', value:''
+      field: '', value: '',
     });
   });
 
   it('getSearchParams', () => {
     (useRoute as Mock).mockReturnValue({
-      'query': {
+      query: {
         query: 'search',
-        'affects__ps_component': 'test'
+        affects__ps_component: 'test',
       },
     });
     const { getSearchParams } = useSearchParams();
     const searchParams = getSearchParams();
     expect(searchParams).toStrictEqual({
-      'query': 'search',
-      'affects__ps_component': 'test'
+      query: 'search',
+      affects__ps_component: 'test',
     });
   });
 
   it('populatedFacets from route', () => {
     (useRoute as Mock).mockReturnValue({
-      'query': {
+      query: {
         query: 'search',
-        'affects__ps_component': 'test',
-        'acknowledgments__name': 'test'
+        affects__ps_component: 'test',
+        acknowledgments__name: 'test',
       },
     });
     const { populateFacets } = useSearchParams();
@@ -94,8 +95,7 @@ describe('useSearchParams', () => {
     expect(facets).toEqual([
       { field: 'affects__ps_component', value: 'test' },
       { field: 'acknowledgments__name', value: 'test' },
-      { field: '', value: '' }
+      { field: '', value: '' },
     ]);
   });
-
 });

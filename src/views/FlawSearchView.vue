@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import { computed, ref, watch, type Ref } from 'vue';
+
+import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import IssueQueue from '@/components/IssueQueue.vue';
+
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 import { useSearchParams } from '@/composables/useSearchParams';
+
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { allowedEmptyFieldMapping } from '@/constants/flawFields';
 
-const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
-const { getSearchParams, facets, query } = useSearchParams();
+const { isFinalPageFetched, isLoading, issues, loadFlaws, loadMoreFlaws, total } = useFlawsFetching();
+const { facets, getSearchParams, query } = useSearchParams();
 
 const searchStore = useSearchStore();
 const { addToast } = useToastStore();
@@ -32,7 +35,7 @@ const params = computed(() => {
 watch(() => params, () => {
   loadFlaws(params);
 }, {
-  deep: true
+  deep: true,
 });
 
 function fetchMoreFlaws() {
@@ -41,19 +44,19 @@ function fetchMoreFlaws() {
 
 function setTableFilters(newFilters: Ref<Record<string, string>>) {
   tableFilters.value = {
-    ...newFilters.value
+    ...newFilters.value,
   };
 }
 
 function saveFilter() {
   const filters = facets.value.reduce(
     (fields, { field, value }) => {
-      if (field && value || allowedEmptyFieldMapping[field]) {
+      if (field && (value || allowedEmptyFieldMapping[field])) {
         fields[field] = value;
       }
       return fields;
     },
-      {} as Record<string, string>,
+    {} as Record<string, string>,
   );
   if (query?.value) {
     searchStore.saveFilter(filters, query.value);
@@ -63,7 +66,6 @@ function saveFilter() {
     body: 'User\'s default filter saved',
   });
 }
-
 </script>
 
 <template>

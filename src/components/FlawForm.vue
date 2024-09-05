@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
-import { deepCopyFromRaw } from '@/utils/helpers';
+
+import { DateTime } from 'luxon';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
@@ -10,21 +10,24 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
-import IssueFieldState from './IssueFieldState.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
-import IssueFieldReferences from './IssueFieldReferences.vue';
-import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
+import FlawContributors from '@/components/FlawContributors.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
+
+import { type ZodFlawType, descriptionRequiredStates, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
+import { deepCopyFromRaw } from '@/utils/helpers';
+
 import CvssExplainForm from './CvssExplainForm.vue';
-import FlawContributors from '@/components/FlawContributors.vue';
+import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
+import IssueFieldReferences from './IssueFieldReferences.vue';
+import IssueFieldState from './IssueFieldState.vue';
 import FlawAffects from './FlawAffects.vue';
 
 const props = defineProps<{
@@ -41,50 +44,48 @@ function onSaveSuccess() {
 }
 
 const {
+  addAffect,
+  addBlankAcknowledgment,
+  addBlankReference,
+  addFlawComment,
+  affectCvssToDelete,
+  affectsToDelete,
+  bugzillaLink,
+  cancelAddAcknowledgment,
+  cancelAddReference,
+  createFlaw,
+  deleteAcknowledgment,
+  deleteReference,
+  errors,
   flaw,
-  flawSources,
+  flawAcknowledgments,
   flawImpacts,
   flawIncidentStates,
-  osimLink,
-  bugzillaLink,
-  flawRhCvss3,
-  nvdCvss3String,
   flawReferences,
-  flawAcknowledgments,
-  affectsToDelete,
-  affectCvssToDelete,
-  rhCvss3String,
+  flawRhCvss3,
   highlightedNvdCvss3String,
-  shouldDisplayEmailNistForm,
-  shouldCreateJiraTask,
-  toggleShouldCreateJiraTask,
-  addBlankReference,
-  addBlankAcknowledgment,
-  addAffect,
-  removeAffect,
-  recoverAffect,
-  updateFlaw,
-  createFlaw,
-  addFlawComment,
-  saveReferences,
-  deleteReference,
-  cancelAddReference,
-  cancelAddAcknowledgment,
-  saveAcknowledgments,
-  deleteAcknowledgment,
-  publicComments,
-  privateComments,
   internalComments,
-  systemComments,
-  loadInternalComments,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
   isValid,
-  errors,
+  loadInternalComments,
+  nvdCvss3String,
+  osimLink,
+  privateComments,
+  publicComments,
+  recoverAffect,
   refreshAffects,
+  removeAffect,
+  rhCvss3String,
+  saveAcknowledgments,
+  saveReferences,
+  shouldCreateJiraTask,
+  shouldDisplayEmailNistForm,
+  systemComments,
+  toggleShouldCreateJiraTask,
+  updateFlaw,
 } = useFlawModel(props.flaw, onSaveSuccess);
-
 
 const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;
@@ -173,7 +174,6 @@ const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(nul
 const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
 
 const expandFocusedComponent = (parent_uuid: string) => {
-
   // Expand Flaw References section
   const reference = flawReferences.value.find(refer => refer.uuid === parent_uuid);
   if (reference !== undefined) {
@@ -603,7 +603,7 @@ div.osim-content {
   max-width: 80ch;
 }
 
-.cvss-score-error{
+.cvss-score-error {
   margin-top: -15px;
 }
 

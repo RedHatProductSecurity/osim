@@ -1,32 +1,33 @@
 import { computed, type Ref } from 'vue';
+
+import { groupBy, mergeDeepWith, prop, concat } from 'ramda';
+
 import { type ZodFlawType } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { type ZodAlertType, ZodAlertSchema } from '@/types/zodShared';
-import { groupBy, mergeDeepWith, prop, concat } from 'ramda';
+
+function groupAlertsByType(alerts: ZodAlertType[]) {
+  return mergeDeepWith(
+    concat, groupBy(prop('alert_type'), alerts), { ERROR: [], WARNING: [] },
+  );
+}
+
+function joinAlerts(modelsWithAlerts: any[]): ZodAlertType[] {
+  return modelsWithAlerts.reduce((acc, obj) => acc.concat(obj.alerts), [] as ZodAlertType[]);
+}
+
+function joinGroupedAlerts(groupedAlerts: Record<string, ZodAlertType[]>[]) {
+  return groupedAlerts.reduce((acc, obj) => mergeDeepWith(concat, acc, obj), { ERROR: [], WARNING: [] });
+}
 
 export function useAlertsModel(flaw: Ref<ZodFlawType>) {
-
-  function groupAlertsByType(alerts: ZodAlertType[]) {
-    return mergeDeepWith(
-      concat, groupBy(prop('alert_type'), alerts), { 'ERROR': [], 'WARNING': [] }
-    );
-  }
-
-  function joinAlerts(modelsWithAlerts: any[]): ZodAlertType[] {
-    return modelsWithAlerts.reduce((acc, obj) => acc.concat(obj.alerts), [] as ZodAlertType[]);
-  }
-
-  function joinGroupedAlerts(groupedAlerts: Record<string, ZodAlertType[]>[]) {
-    return groupedAlerts.reduce((acc, obj) => mergeDeepWith(concat, acc, obj), { 'ERROR': [], 'WARNING': [] });
-  }
-
   const baseFlawAlerts = computed(() => {
     return groupAlertsByType(flaw.value.alerts);
   });
 
   const flawCVSSAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.cvss_scores)
+      joinAlerts(flaw.value.cvss_scores),
     );
   });
 
@@ -35,37 +36,37 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
       [
         baseFlawAlerts.value,
         flawCVSSAlerts.value,
-      ]
+      ],
     );
   });
 
   const flawAcknowledgmentsAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.acknowledgments)
+      joinAlerts(flaw.value.acknowledgments),
     );
   });
 
   const flawCommentsAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.comments)
+      joinAlerts(flaw.value.comments),
     );
   });
 
   const flawReferenceAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.references)
+      joinAlerts(flaw.value.references),
     );
   });
 
   const baseAffectsAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.affects)
+      joinAlerts(flaw.value.affects),
     );
   });
 
   const affectsCVSSAlerts = computed(() => {
     const cvssScores = flaw.value.affects.reduce(
-      (acc: ZodAffectCVSSType[], obj) => acc.concat(obj.cvss_scores), [] as ZodAffectCVSSType[]
+      (acc: ZodAffectCVSSType[], obj) => acc.concat(obj.cvss_scores), [] as ZodAffectCVSSType[],
     );
     return groupAlertsByType(joinAlerts(cvssScores));
   });
@@ -75,13 +76,13 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
       [
         baseAffectsAlerts.value,
         affectsCVSSAlerts.value,
-      ]
+      ],
     );
   });
 
   const trackersAlerts = computed(() => {
     const trackers = flaw.value.affects.reduce(
-      (acc: ZodTrackerType[], obj) => acc.concat(obj.trackers), [] as ZodTrackerType[]
+      (acc: ZodTrackerType[], obj) => acc.concat(obj.trackers), [] as ZodTrackerType[],
     );
     return groupAlertsByType(joinAlerts(trackers));
   });
@@ -102,10 +103,9 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
         }
         return acc;
       },
-      Object.fromEntries(ZodAlertSchema.shape.alert_type.options.map(key => [key, 0]))
+      Object.fromEntries(ZodAlertSchema.shape.alert_type.options.map(key => [key, 0])),
     );
   });
-
 
   return {
     alertsCount,

@@ -1,14 +1,15 @@
 import { VueWrapper, mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-import router from '@/router';
 import { createTestingPinia } from '@pinia/testing';
 
-import ToastContainer from '../ToastContainer.vue';
+import router from '@/router';
 import { useToastStore } from '@/stores/ToastStore';
-import Toast from '../widgets/Toast.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
-describe('ToastContainer', async () => {
+import ToastContainer from '../ToastContainer.vue';
+import Toast from '../widgets/Toast.vue';
+
+describe('toastContainer', () => {
   let subject: VueWrapper<InstanceType<typeof ToastContainer>>;
   beforeEach(() => {
     vi.useFakeTimers();
@@ -29,7 +30,7 @@ describe('ToastContainer', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: true,
-      }
+      },
     };
     const toastStore = useToastStore(pinia);
     toastStore.addToast({
@@ -45,9 +46,9 @@ describe('ToastContainer', async () => {
       global: {
         plugins: [
           pinia,
-          router
-        ]
-      }
+          router,
+        ],
+      },
     });
     const toastElements = subject.findAllComponents(Toast);
     expect(toastElements.length).toBe(2);
@@ -68,15 +69,15 @@ describe('ToastContainer', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: true,
-      }
+      },
     };
     subject = mount(ToastContainer, {
       global: {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const toastElements = subject.findAllComponents(Toast);
     expect(toastElements.length).toBe(0);
@@ -94,7 +95,7 @@ describe('ToastContainer', async () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: false,
-      }
+      },
     };
     const toastStore = useToastStore(pinia);
     toastStore.addToast({
@@ -106,8 +107,8 @@ describe('ToastContainer', async () => {
         plugins: [
           pinia,
           router,
-        ]
-      }
+        ],
+      },
     });
     const toastElements = subject.findAllComponents(Toast);
     expect(toastElements.length).toBe(1);
@@ -129,7 +130,7 @@ describe('ToastContainer', async () => {
         settings: {
           ...settingStore.$state.settings,
           showNotifications: false,
-        }
+        },
       };
       const toastStore = useToastStore(pinia);
       toastStore.addToast({
@@ -142,8 +143,8 @@ describe('ToastContainer', async () => {
           plugins: [
             pinia,
             router,
-          ]
-        }
+          ],
+        },
       });
       const toastElements = subject.findAllComponents(Toast);
       expect(toastElements.length).toBe(1);
@@ -152,4 +153,3 @@ describe('ToastContainer', async () => {
       expect(toastStore.toasts.length).toBe(0);
     });
 });
-

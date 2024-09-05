@@ -1,24 +1,27 @@
 import { computed, ref } from 'vue';
-import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
+
 import { useRouter } from 'vue-router';
+import { modifyPath } from 'ramda';
+import type { ZodIssue } from 'zod';
+
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
-import { createSuccessHandler, createCatchHandler } from './service-helpers';
+
 import {
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
-
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { flawSources, flawImpacts, flawIncidentStates } from '@/types/zodFlaw';
-import { modifyPath } from 'ramda';
 import { deepMap } from '@/utils/helpers';
-import type { ZodIssue } from 'zod';
+import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
+
+import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useNetworkQueue } from './useNetworkQueue';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void) {
@@ -29,24 +32,24 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const cvssScoresModel = useFlawCvssScores(flaw);
   const flawAffectsModel = useFlawAffectsModel(flaw);
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { wasCvssModified, saveCvssScores } = cvssScoresModel;
+  const { saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
-    didAffectsChange,
-    saveAffects,
-    removeAffects,
     affectsToDelete,
+    didAffectsChange,
     initialAffects,
+    removeAffects,
+    saveAffects,
   } = flawAffectsModel;
 
   const router = useRouter();
-  const committedFlaw = ref<ZodFlawType | null>(null);
+  const committedFlaw = ref<null | ZodFlawType>(null);
   const { saveDraftFlaw } = useDraftFlawStore();
 
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
   const isInTriageWithoutAffects = computed(
-    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.length === 0
+    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.length === 0,
   );
 
   function isValid() {
@@ -63,7 +66,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     }
     // Remove any empty fields before request
     const flawForPost: any = Object.fromEntries(
-      Object.entries(validatedFlaw.data).filter(([, value]) => value !== '')
+      Object.entries(validatedFlaw.data).filter(([, value]) => value !== ''),
     );
     try {
       // TODO: Refactor promise chain
@@ -101,7 +104,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   function validate() {
     const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
     if (!validatedFlaw.success) {
-
       const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
 
       addToast({
@@ -230,8 +232,8 @@ function flawErrors(flaw: ZodFlawType) {
   }
 
   parsedFlaw.error.errors
-    .map(({ path, message }) => ({ path, message }))
-    .forEach(({ path, message }) => {
+    .map(({ message, path }) => ({ path, message }))
+    .forEach(({ message, path }) => {
       mirroredFlaw = modifyPath(path, () => message, mirroredFlaw);
     });
 

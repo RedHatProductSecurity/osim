@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, onUnmounted, watch } from 'vue';
+
 import { DateTime } from 'luxon';
+
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+
 import { useUserStore } from '@/stores/UserStore';
 import { useSearchStore } from '@/stores/SearchStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import { useToastStore } from '@/stores/ToastStore';
 
+const props = defineProps<{
+  defaultFilters?: Record<string, string>;
+  isFinalPageFetched: boolean;
+  isLoading: boolean;
+  issues: any[];
+  showFilter?: boolean;
+  total: number;
+}>();
+const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
+const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 const userStore = useUserStore();
 const searchStore = useSearchStore();
 const { addToast } = useToastStore();
-
-const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 
 type FilteredIssue = {
   issue: any;
@@ -22,18 +33,7 @@ type FilteredIssue = {
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 // type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
-type ColumnField = 'id' | 'impact' | 'created_dt' | 'title' | 'state' | 'owner';
-
-const props = defineProps<{
-  issues: any[];
-  isLoading: boolean;
-  isFinalPageFetched: boolean;
-  showFilter?: boolean
-  total: number
-  defaultFilters?: Record<string, string>
-}>();
-
-const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
+type ColumnField = 'created_dt' | 'id' | 'impact' | 'owner' | 'state' | 'title';
 
 const issues = computed<any[]>(() => props.issues.map(relevantFields));
 const selectedSortField = ref<ColumnField | null>('created_dt');
@@ -46,7 +46,7 @@ const filteredStates = computed(() => {
   const allStates = Object.values(FlawClassificationStateEnum);
   return allStates
     .filter(
-      (state) =>
+      state =>
         state !== FlawClassificationStateEnum.Done
         && state !== FlawClassificationStateEnum.Rejected
         && state !== FlawClassificationStateEnum.Empty,
@@ -57,10 +57,8 @@ const filteredStates = computed(() => {
 const params = computed(() => {
   const paramsObj: Record<string, any> = {};
 
-  if (isMyIssuesSelected.value) {
-    if (userStore.jiraUsername !== '') {
-      paramsObj.owner = userStore.jiraUsername;
-    }
+  if (isMyIssuesSelected.value && userStore.jiraUsername !== '') {
+    paramsObj.owner = userStore.jiraUsername;
   }
 
   if (isOpenIssuesSelected.value) {
@@ -91,7 +89,7 @@ const columnsFieldsMap: Record<string, ColumnField> = {
 
 const relevantIssues = computed<FilteredIssue[]>(() => {
   return issues.value
-    .map((issue) => reactive({ issue, selected: false }));
+    .map(issue => reactive({ issue, selected: false }));
 });
 
 function selectSortField(field: ColumnField) {
@@ -171,7 +169,7 @@ const nameForOption = (fieldName: string) => {
   };
   let name =
     mappings[fieldName]
-    || fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+    || fieldName.replace(/__[a-z]/g, label => `: ${label.charAt(2).toUpperCase()}`);
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
@@ -308,7 +306,7 @@ function clearDefaultFilter() {
     margin-left: -0.5rem;
   }
 
-  .osim-default-filter{
+  .osim-default-filter {
     padding-left: 0.75rem;
     user-select: none;
   }
@@ -328,7 +326,6 @@ function clearDefaultFilter() {
       cursor: pointer;
       user-select: none;
     }
-
 
     tr td,
     tr th {

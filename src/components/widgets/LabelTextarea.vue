@@ -1,28 +1,27 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-defineEmits<{
-  'update:modelValue': [value: string | undefined],
-}>();
 withDefaults(defineProps<{
-  modelValue: string | null | undefined;
-  label: string;
-  error?: string;
   disabled?: boolean;
+  error?: string;
+  label: string;
   loading?: boolean;
+  modelValue: null | string | undefined;
 }>(), {
   error: '',
-  disabled: false
+  disabled: false,
+});
+defineEmits<{
+  'update:modelValue': [value: string | undefined];
+}>();
+defineOptions({
+  inheritAttrs: false,
 });
 
 const elTextArea = ref<HTMLTextAreaElement | null>(null);
 
 defineExpose({
-  elTextArea
-});
-
-defineOptions({
-  inheritAttrs: false
+  elTextArea,
 });
 
 // onMounted(() => {

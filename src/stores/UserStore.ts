@@ -1,4 +1,5 @@
 import { computed, ref, watch } from 'vue';
+
 import { defineStore } from 'pinia';
 import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
@@ -8,9 +9,9 @@ import { DateTime } from 'luxon';
 
 // const router = useRouter();
 import router from '@/router';
-
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getJiraUsername } from '@/services/JiraService';
+
 import { useSettingsStore } from './SettingsStore';
 
 export const queryRedirect = z.object({
@@ -18,7 +19,6 @@ export const queryRedirect = z.object({
     redirect: z.string(),
   }),
 });
-
 
 const _userStoreKey = 'UserStore';
 
@@ -48,11 +48,30 @@ const userStoreLocalStorage = z.object({
 export type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 const _userStoreSession = useLocalStorage(
-  _userStoreKey, { refresh: '', env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage
+  _userStoreKey, { refresh: '', env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage,
 );
 
-export const useUserStore = defineStore('UserStore', () => {
+async function updateJiraUsername() {
+  if (_userStoreSession.value.jiraUsername === '') {
+    const name = await getJiraUsername();
+    if (name) {
+      _userStoreSession.value.jiraUsername = name;
+    }
+  }
+}
 
+function setTokens(refresh_: string, env_: string) {
+  _userStoreSession.value.refresh = refresh_;
+  _userStoreSession.value.env = env_;
+}
+
+function $reset() {
+  setTokens('', '');
+  _userStoreSession.value.whoami = null;
+  _userStoreSession.value.jiraUsername = '';
+}
+
+export const useUserStore = defineStore('UserStore', () => {
   const settingsStore = useSettingsStore();
 
   const refresh = computed<string>(() => {
@@ -82,7 +101,7 @@ export const useUserStore = defineStore('UserStore', () => {
     }
   };
 
-  const whoami = computed<WhoamiType | null>(() => {
+  const whoami = computed<null | WhoamiType>(() => {
     return _userStoreSession.value.whoami || null;
   });
   const userName = computed(() => {
@@ -113,27 +132,12 @@ export const useUserStore = defineStore('UserStore', () => {
     return _userStoreSession.value.jiraUsername ?? '';
   });
 
-  async function updateJiraUsername() {
-    if (_userStoreSession.value.jiraUsername === '') {
-      const name = await getJiraUsername();
-      if (name) {
-        _userStoreSession.value.jiraUsername = name;
-      }
-    }
-  }
-
   watch(
     () => settingsStore.settings.jiraApiKey,
     async () => {
       await updateJiraUsername();
-    }
+    },
   );
-
-
-  function setTokens(refresh_: string, env_: string) {
-    _userStoreSession.value.refresh = refresh_;
-    _userStoreSession.value.env = env_;
-  }
 
   async function login(username: string = '', password: string = '') {
     const requestMetadata: { [key: string]: any } = {};
@@ -143,7 +147,7 @@ export const useUserStore = defineStore('UserStore', () => {
       requestMetadata['method'] = 'POST';
       requestMetadata['body'] = JSON.stringify({ username: username, password: password });
       requestMetadata['headers'] = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       };
     }
 
@@ -153,7 +157,7 @@ export const useUserStore = defineStore('UserStore', () => {
       cache: 'no-cache',
       ...requestMetadata,
     })
-      .then(async response => {
+      .then(async (response) => {
         if (!response.ok) {
           const text = await response.text();
           // console.log('UserStore: login not ok', response.status, text);
@@ -173,18 +177,18 @@ export const useUserStore = defineStore('UserStore', () => {
           credentials: 'include',
           cache: 'no-cache',
           headers: {
-            Authorization: `Bearer ${access}`
+            Authorization: `Bearer ${access}`,
           },
         });
       })
       .then(response => response.json())
-      .then(json => {
+      .then((json) => {
         const parsedWhoamiResponse = whoamiResponse.parse(json);
         _userStoreSession.value.whoami = parsedWhoamiResponse;
       }).then(async () => {
         await updateJiraUsername();
       })
-      .catch(e => {
+      .catch((e) => {
         $reset();
         console.error('UserStore::login() unsuccessful login request', e);
         throw e;
@@ -255,12 +259,6 @@ export const useUserStore = defineStore('UserStore', () => {
     }
   });
 
-  function $reset() {
-    setTokens('', '');
-    _userStoreSession.value.whoami = null;
-    _userStoreSession.value.jiraUsername = '';
-  }
-
   return {
     refresh,
     accessToken,
@@ -278,4 +276,3 @@ export const useUserStore = defineStore('UserStore', () => {
     $reset,
   };
 });
-

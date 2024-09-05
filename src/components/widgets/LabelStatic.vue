@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-  modelValue: string | number | null | undefined;
-  label: string;
   error?: string;
   hasTopLabelStyle?: boolean;
+  label: string;
+  modelValue: null | number | string | undefined;
 }>();
 
 const emptyModel = computed(() => {
@@ -50,10 +50,10 @@ span.form-control.alert {
 
 .osim-static-label .osim-static-label-top-style .top-label {
   display: inline-block;
-  background-color: #DEE2E6;
-  border-top-left-radius: .5rem;
-  border-top-right-radius: .5rem;
-  padding: .375rem 1rem .25rem;
+  background-color: #dee2e6;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  padding: 0.375rem 1rem 0.25rem;
 }
 
 .top-left-corner {

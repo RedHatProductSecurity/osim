@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref, toRef, type Ref } from 'vue';
-import { type ZodFlawType } from '@/types/zodFlaw';
-import { useAlertsModel } from '@/composables/useAlertsModel';
+
 import FlawAlertsSection from '@/components/FlawAlertsSection.vue';
+
+import { useAlertsModel } from '@/composables/useAlertsModel';
+
+import { type ZodFlawType } from '@/types/zodFlaw';
+
 import LabelCollapsible from './widgets/LabelCollapsible.vue';
 
 const props = defineProps<{
@@ -10,7 +14,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'expandFocusedComponent': [value: string];
+  expandFocusedComponent: [value: string];
 }>();
 
 const emitExpandFocusedComponent = (parent_uuid: string) => {
@@ -20,17 +24,16 @@ const emitExpandFocusedComponent = (parent_uuid: string) => {
 const flaw: Ref<ZodFlawType> = toRef(props, 'flaw');
 
 const {
+  affectsAlerts,
   alertsCount,
-  flawAlerts,
   flawAcknowledgmentsAlerts,
+  flawAlerts,
   flawCommentsAlerts,
   flawReferenceAlerts,
-  affectsAlerts,
   trackersAlerts,
 } = useAlertsModel(flaw);
 
 const alertsExpanded = ref(false);
-
 </script>
 
 <template>

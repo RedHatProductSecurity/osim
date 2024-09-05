@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed, onDeactivated, ref, watch, type Ref } from 'vue';
+
+import { useSearchStore } from '@/stores/SearchStore';
+
 import IssueQueue from '../components/IssueQueue.vue';
 import { useFlawsFetching } from '../composables/useFlawsFetching';
-import { useSearchStore } from '@/stores/SearchStore';
 
 const searchStore = useSearchStore();
 
-const { issues, isLoading, isFinalPageFetched, total, loadFlaws, loadMoreFlaws } = useFlawsFetching();
+const { isFinalPageFetched, isLoading, issues, loadFlaws, loadMoreFlaws, total } = useFlawsFetching();
 
 const tableFilters = ref<Record<string, string>>({});
 
 const showFilter = computed(() =>
-  Object.keys(searchStore.searchFilters).length > 0 || searchStore.queryFilter !== ''
+  Object.keys(searchStore.searchFilters).length > 0 || searchStore.queryFilter !== '',
 );
 
 const isDefaultFilterSelected = ref<boolean>(showFilter.value);
@@ -29,7 +31,7 @@ const params = computed(() => {
 watch(() => params, () => {
   loadFlaws(params);
 }, {
-  deep: true
+  deep: true,
 });
 
 function fetchMoreFlaws() {
@@ -38,7 +40,7 @@ function fetchMoreFlaws() {
 
 function setTableFilters(newFilters: Ref<Record<string, string>>) {
   tableFilters.value = {
-    ...newFilters.value
+    ...newFilters.value,
   };
 }
 
@@ -52,7 +54,6 @@ const defaultFilters = computed(() => {
     ...searchStore.searchFilters,
   };
 });
-
 </script>
 
 <template>

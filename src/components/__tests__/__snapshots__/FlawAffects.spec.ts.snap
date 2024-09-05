@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`FlawAffects > Correctly renders the component when there are affects to display 1`] = `
+exports[`flawAffects > Correctly renders the component when there are affects to display 1`] = `
 "<div data-v-0fd8a3c0="" class="osim-affects-section">
   <h4 data-v-0fd8a3c0="">Affected Offerings</h4>
   <div data-v-0fd8a3c0="" class="affect-modules-selection mb-4">
@@ -326,7 +326,7 @@ exports[`FlawAffects > Correctly renders the component when there are affects to
 </transition-stub>"
 `;
 
-exports[`FlawAffects > Correctly renders the component when there are not affects to display 1`] = `
+exports[`flawAffects > Correctly renders the component when there are not affects to display 1`] = `
 "<div data-v-0fd8a3c0="" class="osim-affects-section">
   <h4 data-v-0fd8a3c0="">Affected Offerings</h4>
   <div data-v-0fd8a3c0="" class="affect-modules-selection">
@@ -449,7 +449,7 @@ exports[`FlawAffects > Correctly renders the component when there are not affect
 </transition-stub>"
 `;
 
-exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] = `
+exports[`flawAffects > Displays tracker manager for a selection of affects 1`] = `
 "<div data-v-0fd8a3c0="" class="osim-affects-section">
   <h4 data-v-0fd8a3c0="">Affected Offerings</h4>
   <div data-v-0fd8a3c0="" class="affect-modules-selection mb-4">
@@ -828,7 +828,7 @@ exports[`FlawAffects > Displays tracker manager for a selection of affects 1`] =
 </transition-stub>"
 `;
 
-exports[`FlawAffects > Displays tracker manager for individual affect 1`] = `
+exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
 "<div data-v-0fd8a3c0="" class="osim-affects-section">
   <h4 data-v-0fd8a3c0="">Affected Offerings</h4>
   <div data-v-0fd8a3c0="" class="affect-modules-selection mb-4">

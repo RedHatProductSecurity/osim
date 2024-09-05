@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { type ZodAffectType } from '@/types/zodAffect';
-import { useTrackers } from '@/composables/useTrackers';
 import { computed, toRef } from 'vue';
 
+import { useTrackers } from '@/composables/useTrackers';
+
+import { type ZodAffectType } from '@/types/zodAffect';
+
 const props = defineProps<{
-  flawId: string;
   affects: ZodAffectType[];
-  mode: 'modal' | 'embedded';
+  flawId: string;
+  mode: 'embedded' | 'modal';
 }>();
 
 const emit = defineEmits<{
@@ -14,17 +16,17 @@ const emit = defineEmits<{
 }>();
 const {
 
-  trackerSelections,
-  trackersToFile,
+  alreadyFiledTrackers,
   fileTrackers,
-  updateTrackerSelections,
-  unselectedStreams,
-  selectedStreams,
   filterString,
   isFilingTrackers,
-  alreadyFiledTrackers,
-  untrackableAffects,
   isLoadingTrackers,
+  selectedStreams,
+  trackerSelections,
+  trackersToFile,
+  unselectedStreams,
+  untrackableAffects,
+  updateTrackerSelections,
 } = useTrackers(props.flawId, toRef(props, 'affects'));
 
 const availableAffectStreams = computed(() => {
@@ -32,8 +34,8 @@ const availableAffectStreams = computed(() => {
   return unselectedStreams?.value.filter((tracker) => {
     return referenceAffect.some((refAffect) => {
       return refAffect.ps_component === tracker.ps_component
-      && refAffect.ps_module === tracker.ps_module;
-    }
+        && refAffect.ps_module === tracker.ps_module;
+    },
     );
   });
 });
@@ -43,8 +45,8 @@ const selectedAffectStreams = computed(() => {
   return selectedStreams?.value.filter((tracker) => {
     return referenceAffect.some((refAffect) => {
       return refAffect.ps_component === tracker.ps_component
-      && refAffect.ps_module === tracker.ps_module;
-    }
+        && refAffect.ps_module === tracker.ps_module;
+    },
     );
   });
 });
@@ -253,7 +255,6 @@ function handleFileTrackers() {
 </template>
 
 <style lang="scss" scoped>
-
 .trackers-manager {
   display: flex;
   flex-direction: column;
@@ -261,8 +262,8 @@ function handleFileTrackers() {
   &.embedded {
     border-top: 0 !important;
     border: 10px solid #212529;
-    border-bottom-right-radius: .375rem;
-    border-bottom-left-radius: .375rem;
+    border-bottom-right-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
   }
 
   .trackers-search-bar {
@@ -294,12 +295,14 @@ function handleFileTrackers() {
 
 button.osim-file-trackers:disabled {
   cursor: not-allowed;
-  opacity: .3;
+  opacity: 0.3;
 }
 
 .btn-black {
   background-color: #212529;
-  transition: background-color .25s, outline-color .25s;
+  transition:
+    background-color 0.25s,
+    outline-color 0.25s;
 
   &:hover {
     background-color: #212529;

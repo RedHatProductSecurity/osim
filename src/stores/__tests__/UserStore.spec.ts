@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { useUserStore } from '../UserStore';
 import { createPinia, setActivePinia } from 'pinia';
-import { getJiraUsername } from '@/services/JiraService';
-import { encodeJWT } from '@/__tests__/helpers';
 import { DateTime } from 'luxon';
 
-describe('UserStore', () => {
+import { getJiraUsername } from '@/services/JiraService';
+import { encodeJWT } from '@/__tests__/helpers';
+
+import { useUserStore } from '../UserStore';
+
+describe('userStore', () => {
   let userStore: ReturnType<typeof useUserStore>;
 
   beforeEach(() => {
@@ -58,11 +60,11 @@ describe('UserStore', () => {
 
   it('should set `isAccessTokenExpired` to true when access token is about to expire', () => {
     userStore.accessToken = encodeJWT({
-      'token_type': 'access',
-      'exp': Math.floor(DateTime.now().minus({ minutes: 1 }).toSeconds()),
-      'iat': Math.floor(DateTime.now().toSeconds()),
-      'jti': '0000',
-      'user_id': 1337
+      token_type: 'access',
+      exp: Math.floor(DateTime.now().minus({ minutes: 1 }).toSeconds()),
+      iat: Math.floor(DateTime.now().toSeconds()),
+      jti: '0000',
+      user_id: 1337,
     });
 
     expect(userStore.isAccessTokenExpired()).toBe(true);
@@ -70,11 +72,11 @@ describe('UserStore', () => {
 
   it('should set `isAccessTokenExpired` to false when access token is active', () => {
     userStore.accessToken = encodeJWT({
-      'token_type': 'access',
-      'exp': Math.floor(DateTime.now().plus({ minutes: 5 }).toSeconds()),
-      'iat': Math.floor(DateTime.now().toSeconds()),
-      'jti': '0000',
-      'user_id': 1337
+      token_type: 'access',
+      exp: Math.floor(DateTime.now().plus({ minutes: 5 }).toSeconds()),
+      iat: Math.floor(DateTime.now().toSeconds()),
+      jti: '0000',
+      user_id: 1337,
     });
 
     expect(userStore.isAccessTokenExpired()).toBe(false);

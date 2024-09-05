@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
-import { RouterLink } from 'vue-router';
-import { useUserStore } from '@/stores/UserStore';
 import { computed, ref, watchEffect } from 'vue';
+
+import { RouterLink } from 'vue-router';
+import { useElementBounding } from '@vueuse/core';
+
+import { useSearchParams } from '@/composables/useSearchParams';
+
+import { useUserStore } from '@/stores/UserStore';
 import router from '@/router';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
-import { useElementBounding } from '@vueuse/core';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { cveRegex } from '@/utils/helpers';
-import { useSearchParams } from '@/composables/useSearchParams';
+
+import RedHatIconSvg from '../assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
@@ -22,12 +26,11 @@ const { submitQuickSearch } = useSearchParams();
 //   elHeader, {width: 0, height: 0},
 //   {box: 'border-box'}
 // );
-const { height: headerHeight, bottom: headerBottom } = useElementBounding(elHeader);
+const { bottom: headerBottom, height: headerHeight } = useElementBounding(elHeader);
 watchEffect(() => {
   navbarHeight.value = headerHeight.value;
   navbarBottom.value = headerBottom.value;
 });
-
 
 function quickMatchCVE(query: string) {
   // Match `CVE-`, 4 digits, a hyphen, then 4-7 digits,
@@ -59,7 +62,6 @@ const usernameDisplay = computed(() => {
   }
   return username;
 });
-
 </script>
 
 <template>
@@ -190,7 +192,6 @@ const usernameDisplay = computed(() => {
   /* outline: 1px solid deeppink !important; */
 }
 
-
 .osim-navbar {
   background: black;
 }
@@ -242,11 +243,14 @@ filter:
 
   padding: var(--vertical-padding) 11px var(--vertical-padding) 0;
   border-right: 1px solid white;
-  border-image: linear-gradient(to bottom,
+  border-image: linear-gradient(
+      to bottom,
       transparent var(--vertical-padding),
       rgb(255 255 255 / 100%) var(--vertical-padding),
       rgb(255 255 255 / 100%) calc(100% - var(--vertical-padding)),
-      transparent calc(100% - var(--vertical-padding))) 1;
+      transparent calc(100% - var(--vertical-padding))
+    )
+    1;
 }
 
 .osim-home-text {
@@ -263,7 +267,7 @@ filter:
   align-items: center;
 }
 
-.osim-env>.osim-env-label {
+.osim-env > .osim-env-label {
   min-height: 50%;
   display: flex;
   align-items: center;
@@ -277,7 +281,7 @@ filter:
   height: 64px;
 }
 
-.notification-icon{
+.notification-icon {
   pointer-events: all !important;
   cursor: pointer;
 }

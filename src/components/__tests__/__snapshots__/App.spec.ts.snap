@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`App > Renders the App component when OSIDB is NOT READY 1`] = `"<div class="osim-backend-error">OSIDB is not ready</div>"`;
+exports[`app > renders the App component when OSIDB is NOT READY 1`] = `"<div class="osim-backend-error">OSIDB is not ready</div>"`;
 
-exports[`App > Renders the App component when OSIDB is READY 1`] = `
+exports[`app > renders the App component when OSIDB is READY 1`] = `
 "<header>
   <navbar-stub></navbar-stub>
 </header>

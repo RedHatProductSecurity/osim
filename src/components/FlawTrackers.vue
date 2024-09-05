@@ -1,24 +1,28 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from 'vue';
-import { formatDate } from '@/utils/helpers';
-import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+
 import { ascend, descend, sortWith } from 'ramda';
+
 import TrackerManager from '@/components/TrackerManager.vue';
-import { useSettingsStore } from '@/stores/SettingsStore';
+
 import { usePagination } from '@/composables/usePagination';
 
-type TrackerWithModule = ZodTrackerType & { ps_module: string };
+import { formatDate } from '@/utils/helpers';
+import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import { useSettingsStore } from '@/stores/SettingsStore';
+
+type TrackerWithModule = { ps_module: string } & ZodTrackerType;
 
 const props = defineProps<{
-  flawId: string;
-  displayedTrackers: TrackerWithModule[];
   affectsNotBeingDeleted: ZodAffectType[];
   allTrackersCount: number;
+  displayedTrackers: TrackerWithModule[];
+  flawId: string;
 }>();
 
 const emit = defineEmits<{
-  'file-tracker': [value: object];
   'affects:refresh': [];
+  'file-tracker': [value: object];
 }>();
 
 const settingsStore = useSettingsStore();
@@ -30,7 +34,7 @@ const hasTrackers = computed(() => props.allTrackersCount > 0);
 
 // Sorting
 const sortedTrackers = computed(() =>
-  sortTrackers(filteredTrackers.value)
+  sortTrackers(filteredTrackers.value),
 );
 
 type sortKeys = keyof Pick<ZodTrackerType,
@@ -63,7 +67,7 @@ function sortTrackers(trackers: TrackerWithModule[]): TrackerWithModule[] {
 
 // Trackers filters by field
 const filteredTrackers = computed(() => {
-  return props.displayedTrackers.filter(tracker => {
+  return props.displayedTrackers.filter((tracker) => {
     const matchesStatusFilter =
       statusFilter.value.length === 0 || statusFilter.value.includes(tracker.status ?? 'EMPTY');
     return matchesStatusFilter;
@@ -93,15 +97,15 @@ function toggleStatusFilter(status: string) {
 
 // Trackers pagination
 const totalPages = computed(() =>
-  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage)
+  Math.ceil(sortedTrackers.value.length / settings.value.trackersPerPage),
 );
 
 const minItemsPerPage = 5;
 const maxItemsPerPage = 20;
 const {
-  pages,
-  currentPage,
   changePage,
+  currentPage,
+  pages,
 } = usePagination(totalPages, settings.value.trackersPerPage);
 
 const paginatedTrackers = computed(() => {
@@ -345,7 +349,7 @@ function increaseItemsPerPage() {
 
   .osim-tracker-card {
     div {
-      padding: .5rem;
+      padding: 0.5rem;
       background-color: $light-teal;
     }
   }
@@ -366,7 +370,7 @@ function increaseItemsPerPage() {
     .tracker-badges {
       display: flex;
       margin-block: 0;
-      gap: .25rem;
+      gap: 0.25rem;
 
       .per-page-btn {
         display: flex;
@@ -376,14 +380,14 @@ function increaseItemsPerPage() {
 
       .badge {
         height: 28px;
-        border-radius: .25rem;
+        border-radius: 0.25rem;
         background-color: $light-teal;
         color: black;
         margin-block: auto;
         user-select: none;
 
         span {
-          font-size: .75rem;
+          font-size: 0.75rem;
           vertical-align: middle;
           text-align: center;
         }
@@ -392,7 +396,7 @@ function increaseItemsPerPage() {
 
     .affects-table-actions {
       button {
-        margin-inline: .1rem;
+        margin-inline: 0.1rem;
       }
     }
   }
@@ -445,8 +449,8 @@ function increaseItemsPerPage() {
     }
 
     td {
-      padding: .25rem;
-      padding-left: .5rem;
+      padding: 0.25rem;
+      padding-left: 0.5rem;
     }
 
     tbody {
@@ -459,5 +463,4 @@ function increaseItemsPerPage() {
     }
   }
 }
-
 </style>

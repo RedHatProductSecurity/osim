@@ -5,9 +5,8 @@ export const JiraUserAssignableSchema = z.object({
   displayName: z.string(),
   name: z.string(),
   emailAddress: z.string().email().optional(),
-  avatarUrl: z.string().url()
+  avatarUrl: z.string().url(),
 });
-
 
 export type ZodJiraContributorType = z.infer<typeof JiraContributorSchema>;
 export const JiraContributorSchema = z.object({
@@ -23,7 +22,7 @@ export const JiraIssueSchema = z.object({
   id: z.string(),
   self: z.string().url(),
   key: z.string(),
-  fields:z.object({
+  fields: z.object({
     customfield_12315950: z.array(JiraContributorSchema),
-  }).passthrough()
+  }).passthrough(),
 });

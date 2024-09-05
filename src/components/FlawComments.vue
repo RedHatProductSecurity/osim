@@ -1,46 +1,51 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue';
+
 import { isDefined, watchDebounced } from '@vueuse/core';
-import type { ZodJiraUserAssignableType } from '@/types/zodJira';
-import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import sanitizeHtml from 'sanitize-html';
-import { osimRuntime } from '@/stores/osimRuntime';
-import { useUserStore } from '@/stores/UserStore';
 import { DateTime } from 'luxon';
+
+import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import Tabs from '@/components/widgets/Tabs.vue';
 import DropDown from '@/components/widgets/DropDown.vue';
+
 import { createCatchHandler } from '@/composables/service-helpers';
+
+import { useUserStore } from '@/stores/UserStore';
+import { osimRuntime } from '@/stores/osimRuntime';
+import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import { searchJiraUsers, jiraTaskUrl, jiraUserUrl } from '@/services/JiraService';
-import JiraUser from './widgets/JiraUser.vue';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { CommentType } from '@/constants';
 
-const userStore = useUserStore();
+import JiraUser from './widgets/JiraUser.vue';
 
 const props = defineProps<{
-  publicComments: ZodFlawCommentType[];
-  privateComments: ZodFlawCommentType[];
+  bugzillaLink: string;
   internalComments: ZodFlawCommentType[];
   internalCommentsAvailable: boolean;
   isLoadingInternalComments: boolean;
-  systemComments: ZodFlawCommentType[];
-  taskKey: string | null | undefined;
-  bugzillaLink: string;
   isSaving: boolean;
+  privateComments: ZodFlawCommentType[];
+  publicComments: ZodFlawCommentType[];
+  systemComments: ZodFlawCommentType[];
+  taskKey: null | string | undefined;
 }>();
-
-const newComment = ref('');
-const isAddingNewComment = ref(false);
 
 const emit = defineEmits<{
   'comment:addFlawComment': [comment: string, creator: string, type: string];
   'loadInternalComments': [];
 }>();
 
+const userStore = useUserStore();
+
+const newComment = ref('');
+const isAddingNewComment = ref(false);
+
 const commentLabels = computed(() => {
   return Object.keys(CommentType)
-    .filter((key) => isNaN(Number(key)))
-    .map((key) => `${key} Comments`);
+    .filter(key => Number.isNaN(Number(key)))
+    .map(key => `${key} Comments`);
 });
 
 const commentTooltips: Record<CommentType, string> = {
@@ -57,16 +62,16 @@ const handleTabChange = (index: number) => {
 
 const displayedComments = computed(() => {
   switch (selectedTab.value) {
-  case CommentType.Public:
-    return props.publicComments;
-  case CommentType.Private:
-    return props.privateComments;
-  case CommentType.Internal:
-    return props.internalComments;
-  case CommentType.System:
-    return props.systemComments;
-  default:
-    return [];
+    case CommentType.Public:
+      return props.publicComments;
+    case CommentType.Private:
+      return props.privateComments;
+    case CommentType.Internal:
+      return props.internalComments;
+    case CommentType.System:
+      return props.systemComments;
+    default:
+      return [];
   }
 });
 
@@ -140,7 +145,6 @@ watchDebounced(newComment, async () => {
   nextTick(() => {
     suggestions.value = users.data?.users;
   });
-
 }, { debounce: 500 });
 
 const calculateDropdownPosition = (lastWord: string) => {
@@ -186,7 +190,7 @@ const getLastWord = () => {
 
 const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
   if (event instanceof KeyboardEvent
-    && ['Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab']
+    && ['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab']
       .includes(event.key)) {
     suggestions.value = [];
     return;
@@ -197,13 +201,11 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
     return;
   }
 
-  if (event instanceof FocusEvent) {
-    if (
-      event.relatedTarget !== event.currentTarget
-      && !(event.currentTarget as Node)?.contains(event.relatedTarget as Node)
-    ) {
-      suggestions.value = [];
-    }
+  if (event instanceof FocusEvent
+    && event.relatedTarget !== event.currentTarget
+    && !(event.currentTarget as Node)?.contains(event.relatedTarget as Node)
+  ) {
+    suggestions.value = [];
   }
 };
 </script>

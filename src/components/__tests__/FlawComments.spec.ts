@@ -1,7 +1,9 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
+
 import FlawComments from '@/components/FlawComments.vue';
+
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { searchJiraUsers } from '@/services/JiraService';
 
@@ -18,7 +20,7 @@ vi.mock('@/stores/osimRuntime', async () => {
       jiraDisplay: 'http://jira-backend',
     },
     osimVersion: {
-      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true
+      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true,
     },
     error: '',
   };
@@ -46,7 +48,7 @@ vi.mock('@/services/JiraService', () => ({
   jiraUserUrl: vi.fn(),
 }));
 
-describe('FlawComments', () => {
+describe('flawComments', () => {
   let subject: any;
   const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
@@ -72,7 +74,7 @@ describe('FlawComments', () => {
     vi.useRealTimers();
   });
 
-  it('Shows 3 correct tabs on comments section', () => {
+  it('shows 3 correct tabs on comments section', () => {
     const navLinks = subject.findAll('.nav-link');
     expect(navLinks.length).toBe(4);
     expect(navLinks[0].text()).toBe('Public Comments');
@@ -81,7 +83,7 @@ describe('FlawComments', () => {
     expect(navLinks[3].text()).toBe('System Comments');
   });
 
-  it('Tab navigation changes correctly', async () => {
+  it('tab navigation changes correctly', async () => {
     const navLinks = subject.findAll('.nav-link');
     // Public comments tab (default)
     let activeTab = subject.find('.nav-link.active');
@@ -100,7 +102,7 @@ describe('FlawComments', () => {
     expect(activeTab.text()).toContain('System');
   });
 
-  it('Show a functional add comment button', async () => {
+  it('show a functional add comment button', async () => {
     let addCommentButton = subject.find('.tab-actions button');
     expect(addCommentButton.exists()).toBeTruthy();
     expect(addCommentButton.text()).toBe('Add Public Comment');
@@ -112,14 +114,14 @@ describe('FlawComments', () => {
     expect(addCommentButton.exists()).toBeFalsy();
   });
 
-  it('Show message if no comments', () => {
+  it('show message if no comments', () => {
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(0);
     const noCommentsMessage = subject.find('.info-message div');
     expect(noCommentsMessage.text()).toBe('No public comments');
   });
 
-  it('Correctly display public comments', () => {
+  it('correctly display public comments', () => {
     subject = mount(FlawComments, {
       props: {
         publicComments: [
@@ -151,7 +153,7 @@ describe('FlawComments', () => {
     expect(secondBody.text()).toBe('Second public comment');
   });
 
-  it('Correctly display private comments', async () => {
+  it('correctly display private comments', async () => {
     subject = mount(FlawComments, {
       props: {
         publicComments: [],
@@ -174,7 +176,7 @@ describe('FlawComments', () => {
     expect(subject.html()).toMatchSnapshot();
   });
 
-  it('Show Jira link button on internal comments', async () => {
+  it('show Jira link button on internal comments', async () => {
     const navLinks = subject.findAll('.nav-link');
     await navLinks[2].trigger('click');
     const actionButtons = subject.findAll('.tab-actions > *');
@@ -183,7 +185,7 @@ describe('FlawComments', () => {
     expect(actionButtons[1].text()).toContain('Jira');
   });
 
-  it('Correctly display internal comments', async () => {
+  it('correctly display internal comments', async () => {
     subject = mount(FlawComments, {
       props: {
         publicComments: [],
@@ -216,14 +218,14 @@ describe('FlawComments', () => {
     expect(secondBody.text()).toBe('Second internal comment');
   });
 
-  it('Don\'Show any action button on system comments', async () => {
+  it('don\'Show any action button on system comments', async () => {
     const navLinks = subject.findAll('.nav-link');
     await navLinks[3].trigger('click');
     const actionButtons = subject.findAll('.tab-actions > *');
     expect(actionButtons.length).toBe(0);
   });
 
-  it('Show message if no system comments', async () => {
+  it('show message if no system comments', async () => {
     const navLinks = subject.findAll('.nav-link');
     await navLinks[3].trigger('click');
     const commentElements = subject.findAll('ul.comments li');
@@ -232,7 +234,7 @@ describe('FlawComments', () => {
     expect(noCommentsMessage.text()).toBe('No system comments');
   });
 
-  it('Correctly display system comments', async () => {
+  it('correctly display system comments', async () => {
     subject = mount(FlawComments, {
       props: {
         publicComments: [],
@@ -266,32 +268,11 @@ describe('FlawComments', () => {
     expect(secondBody.text()).toBe('Second system comment');
   });
 
-  it('Should call `searchJiraUsers` on internal comments', async () => {
+  it('should call `searchJiraUsers` on internal comments', async () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
       data: {
-        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
-      }
-    });
-
-    const navLinks = subject.findAll('.nav-link');
-    await navLinks[2].trigger('click');
-    const addCommentButton = subject.find('.tab-actions button');
-    await addCommentButton.trigger('click');
-
-    const newCommentInput = subject.find('.tab-content textarea ');
-    await newCommentInput.setValue('test @user');
-
-    vi.runAllTimers();
-    await flushPromises();
-
-    expect(searchJiraUsers).toHaveBeenCalledWith('user', 'sampleKey');
-  });
-
-  it('Should call `searchJiraUsers` on internal comments', async () => {
-    vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
-      data: {
-        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
-      }
+        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }],
+      },
     });
 
     const navLinks = subject.findAll('.nav-link');

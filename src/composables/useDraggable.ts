@@ -4,8 +4,8 @@ import { ref, type Ref, nextTick, watchEffect } from 'vue';
 declare global {
   interface Element {
     dataset: {
-      index: string
-    }
+      index: string;
+    };
   }
 }
 
@@ -16,7 +16,6 @@ export function useDraggable<K>(elDragZone: Ref<HTMLElement | null>,
   const draggableClass = ref<string | undefined>();
   const elDraggable = ref();
   const destKey = ref();
-
 
   watchEffect(() => {
     draggableItems.value = items.value;
@@ -46,7 +45,7 @@ export function useDraggable<K>(elDragZone: Ref<HTMLElement | null>,
         draggableClass.value = undefined;
 
         if (!elDragZone.value) return;
-        Array.from(elDragZone.value.children).forEach((child) => child.classList.remove('ms-5'));
+        Array.from(elDragZone.value.children).forEach(child => child.classList.remove('ms-5'));
       });
     });
   }
@@ -55,8 +54,7 @@ export function useDraggable<K>(elDragZone: Ref<HTMLElement | null>,
     if (!elDragZone.value) return;
 
     const childs = Array.from(elDragZone.value.children)
-      .filter((child) => ['no-drag'].every((c) => !child.classList.contains(c)));
-
+      .filter(child => ['no-drag'].every(c => !child.classList.contains(c)));
 
     const predecesor = childs.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
@@ -68,12 +66,11 @@ export function useDraggable<K>(elDragZone: Ref<HTMLElement | null>,
       } else {
         return closest;
       }
-    }, { offset: Number.NEGATIVE_INFINITY, element: null } as { offset: number, element: Element | null }).element;
-
+    }, { offset: Number.NEGATIVE_INFINITY, element: null } as { element: Element | null; offset: number }).element;
 
     if (predecesor) {
       destKey.value = predecesor.dataset.index;
-      childs.forEach((child) => child.classList.remove('ms-5'));
+      childs.forEach(child => child.classList.remove('ms-5'));
       if (!predecesor.classList.contains('dragging')) {
         predecesor.classList.add('ms-5');
       }
@@ -86,7 +83,6 @@ export function useDraggable<K>(elDragZone: Ref<HTMLElement | null>,
     draggableClass,
     dragStart,
     dragEnd,
-    dragOver
+    dragOver,
   };
-
 }

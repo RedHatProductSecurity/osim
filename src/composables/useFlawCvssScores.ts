@@ -1,28 +1,31 @@
-import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import { computed, ref, watch, type Ref } from 'vue';
-import type { ZodFlawType } from '@/types/zodFlaw';
+
 import { groupWith, equals } from 'ramda';
+
+import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
+import type { ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
+
+const formatScore = (score: any) => score?.toFixed(1);
 
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
 export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
-
   function getCvssData(issuer: string, version: string) {
     return flaw.value.cvss_scores.find(
-      (assessment) => assessment.issuer === issuer && assessment.cvss_version === version
+      assessment => assessment.issuer === issuer && assessment.cvss_version === version,
     );
   }
 
-  function getRHCvssData () {
+  function getRHCvssData() {
     return getCvssData('RH', 'V3')
-    || {
-      score: null,
-      vector: null,
-      comment: '',
-      created_dt: null,
-      uuid: null,
-    };
+      || {
+        score: null,
+        vector: null,
+        comment: '',
+        created_dt: null,
+        uuid: null,
+      };
   }
 
   const wasCvssModified = ref(false);
@@ -31,7 +34,8 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   const initialFlawRhCvss3 = deepCopyFromRaw(flawRhCvss3.value);
 
   watch(flawRhCvss3, () => {
-    wasCvssModified.value = !equals(initialFlawRhCvss3, flawRhCvss3.value); }, { deep: true });
+    wasCvssModified.value = !equals(initialFlawRhCvss3, flawRhCvss3.value);
+  }, { deep: true });
 
   watch(() => flaw.value, () => {
     flawRhCvss3.value = getRHCvssData();
@@ -40,7 +44,6 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
 
   const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
 
-  const formatScore = (score: any) => score?.toFixed(1);
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
     return values.join(' ') || '-';
@@ -59,7 +62,6 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   });
 
   const highlightedNvdCvss3String = computed(() => {
-
     if (!flawNvdCvss3.value?.vector
       || flawNvdCvss3.value?.vector === '-'
       || !flawRhCvss3.value?.vector) {
@@ -74,7 +76,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     if (formatScore(flawNvdCvss3.value?.score) !== formatScore(flawRhCvss3.value?.score)) {
       result.push(
         { char: formatScore(flawNvdCvss3.value?.score), isHighlighted: true },
-        { char: ' ', isHighlighted: false }
+        { char: ' ', isHighlighted: false },
       );
     }
 

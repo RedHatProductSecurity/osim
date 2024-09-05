@@ -1,8 +1,11 @@
 import { ref } from 'vue';
+
+import { useMemoize, watchIgnorable } from '@vueuse/core';
+
 import type { ZodJiraContributorType } from '@/types/zodJira';
 import { getJiraIssue, putJiraIssue, searchJiraUsers } from '@/services/JiraService';
+
 import { createCatchHandler } from './service-helpers';
-import { useMemoize, watchIgnorable } from '@vueuse/core';
 
 export default function useJiraContributors(task_key: string) {
   const contributors = ref<Partial<ZodJiraContributorType>[]>([]);
@@ -45,7 +48,7 @@ export default function useJiraContributors(task_key: string) {
       data: {
         fields: {
           customfield_12315950: contributors.value,
-        }
+        },
       },
     });
   };

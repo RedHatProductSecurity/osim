@@ -3,9 +3,9 @@ import { watchedPropRef } from '@/utils/helpers';
 
 const props = withDefaults(
   defineProps<{
-    label?: string;
-    isExpanded?: boolean | undefined;
     isExpandable?: boolean | undefined;
+    isExpanded?: boolean | undefined;
+    label?: string;
   }>(),
   {
     isExpandable: true,
@@ -14,17 +14,21 @@ const props = withDefaults(
   },
 );
 
-const isExpanded = watchedPropRef(props, 'isExpanded', false);
-
 const emit = defineEmits<{
   setExpanded: [value: boolean];
 }>();
 
-const emitToggle = () => emit('setExpanded', !props.isExpanded);
-const localToggle = () => (isExpanded.value = !isExpanded.value);
+const isExpanded = watchedPropRef(props, 'isExpanded', false);
+
+const emitToggle = () => { emit('setExpanded', !props.isExpanded); };
+const localToggle = () => { (isExpanded.value = !isExpanded.value); };
 
 function handleClick() {
-  props.isExpanded === undefined ? localToggle() : emitToggle();
+  if (props.isExpanded) {
+    return emitToggle();
+  }
+
+  localToggle();
 }
 </script>
 

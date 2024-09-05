@@ -1,13 +1,14 @@
 import { describe, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
-import FlawAffects from '@/components/FlawAffects.vue';
-import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 import { mount } from '@vue/test-utils';
 
+import FlawAffects from '@/components/FlawAffects.vue';
+
+import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 
 createTestingPinia();
 
-describe('FlawAffects', () => {
+describe('flawAffects', () => {
   let subject;
 
   osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
@@ -16,7 +17,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -29,7 +30,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -42,7 +43,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -65,7 +66,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -94,7 +95,7 @@ describe('FlawAffects', () => {
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
-    expect(rowCount).toBe(6);itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
+    expect(rowCount).toBe(6); itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
@@ -104,7 +105,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -125,7 +126,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -147,7 +148,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -170,7 +171,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -202,7 +203,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -233,7 +234,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -266,7 +267,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -299,7 +300,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -332,7 +333,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -362,7 +363,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -395,7 +396,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -428,7 +429,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -461,7 +462,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });
@@ -484,7 +485,7 @@ describe('FlawAffects', () => {
         flawId: flaw.uuid,
         embargoed: flaw.embargoed,
         affects: flaw.affects,
-        affectsToDelete:[],
+        affectsToDelete: [],
         error: [],
       },
     });

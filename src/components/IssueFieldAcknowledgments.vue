@@ -2,21 +2,23 @@
 import { ref } from 'vue';
 
 import EditableList from '@/components/widgets/EditableList.vue';
-import LabelInput from './widgets/LabelInput.vue';
+
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
 
+import LabelInput from './widgets/LabelInput.vue';
+
 defineProps<{
+  error: null | Record<string, any>[];
   mode: 'create' | 'edit';
-  error: Record<string, any>[] | null;
 }>();
 
 const acknowledgments = defineModel<ZodFlawAcknowledgmentType[]>();
 
 const emit = defineEmits<{
-  'acknowledgment:update': [value: any[]];
-  'acknowledgment:new': [];
   'acknowledgment:cancel-new': [value: ZodFlawAcknowledgmentType];
   'acknowledgment:delete': [value: string];
+  'acknowledgment:new': [];
+  'acknowledgment:update': [value: any[]];
 }>();
 
 function handleDelete(uuid: string, closeModal: () => void) {

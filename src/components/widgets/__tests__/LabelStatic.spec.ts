@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import LabelStatic from '../LabelStatic.vue';
 import { mount } from '@vue/test-utils';
 
-describe('LabelStatic', () => {
+import LabelStatic from '../LabelStatic.vue';
+
+describe('labelStatic', () => {
   it('renders properly', () => {
     const subject = mount(LabelStatic, {
       props: {

@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
 
 import CveRequestForm from '../CveRequestForm.vue';
-import { createTestingPinia } from '@pinia/testing';
 
 createTestingPinia();
 
-describe('CveRequestForm', () => {
+describe('cveRequestForm', () => {
   it('renders a form', () => {
     const wrapper = mount(CveRequestForm, {
       props: {

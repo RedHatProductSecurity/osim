@@ -5,10 +5,10 @@ import CvssCalculator from '../CvssCalculator.vue';
 
 function activateFactorButton(subject: any, factor: string, value: string) {
   const factorButtonGroup = subject.findAll('.btn-group-vertical')
-    .filter((node: { text: () => string | string[]; }) => node.text().includes(factor))[0];
+    .filter((node: { text: () => string | string[] }) => node.text().includes(factor))[0];
   const factorButton = factorButtonGroup
     .findAll('.btn')
-    .filter((node: { text: () => string; }) => node.text() === value)[0];
+    .filter((node: { text: () => string }) => node.text() === value)[0];
   factorButton.trigger('click');
 }
 
@@ -18,38 +18,37 @@ function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, 
   }
 }
 
-describe('CvssCalculator', () => {
-
+describe('cvssCalculator', () => {
   let subject: any;
 
   beforeEach(() => {
     subject = mount(CvssCalculator, {
       props: {
         'cvssScore': null,
-        'onUpdate:cvssScore': (e: any) => subject.setProps({ 'cvssScore': e }),
+        'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
         'cvssVector': '',
-        'onUpdate:cvssVector': (e: any) => subject.setProps({ 'cvssVector': e }),
+        'onUpdate:cvssVector': (e: any) => subject.setProps({ cvssVector: e }),
       },
     });
   });
 
-  it('Shows calculator on input focus', async () => {
+  it('shows calculator on input focus', async () => {
     await subject.find('.vector-input').trigger('focus');
     expect(subject.find('.cvss-calculator').classes('visually-hidden')).toBe(false);
   });
 
-  it('Hides calculator on input blur', async () => {
+  it('hides calculator on input blur', async () => {
     await subject.find('.vector-input');
     expect(subject.find('.cvss-calculator').classes('visually-hidden')).toBe(true);
   });
 
   // Validations
-  it('Doesn\'t show validation on empty vector', async () => {
+  it('doesn\'t show validation on empty vector', async () => {
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.classes().includes('is-invalid')).toBe(false);
   });
 
-  it('Doesn\'t show validation on complete vector', async () => {
+  it('doesn\'t show validation on complete vector', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Network'],
       ['Attack Complexity', 'Low'],
@@ -58,16 +57,16 @@ describe('CvssCalculator', () => {
       ['Scope', 'Changed'],
       ['Confidentiality', 'High'],
       ['Integrity', 'High'],
-      ['Availability', 'High']
+      ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.classes().includes('is-invalid')).toBe(false);
   });
 
-  it('Shows validation on incomplete vector', async () => {
+  it('shows validation on incomplete vector', async () => {
     const factorValuePairs: [string, string][] = [
-      ['Availability', 'High']
+      ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -76,7 +75,7 @@ describe('CvssCalculator', () => {
 
   // Score Calculation Test Cases
   // Critical score
-  it('Calculates critical score correctly', async () => {
+  it('calculates critical score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Network'],
       ['Attack Complexity', 'Low'],
@@ -85,7 +84,7 @@ describe('CvssCalculator', () => {
       ['Scope', 'Changed'],
       ['Confidentiality', 'High'],
       ['Integrity', 'High'],
-      ['Availability', 'High']
+      ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -93,7 +92,7 @@ describe('CvssCalculator', () => {
   });
 
   // High score
-  it('Calculates high score correctly', async () => {
+  it('calculates high score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Adjacent'],
       ['Attack Complexity', 'High'],
@@ -102,7 +101,7 @@ describe('CvssCalculator', () => {
       ['Scope', 'Changed'],
       ['Confidentiality', 'Low'],
       ['Integrity', 'High'],
-      ['Availability', 'High']
+      ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -110,7 +109,7 @@ describe('CvssCalculator', () => {
   });
 
   // Medium score
-  it('Calculates medium score correctly', async () => {
+  it('calculates medium score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Adjacent'],
       ['Attack Complexity', 'High'],
@@ -119,7 +118,7 @@ describe('CvssCalculator', () => {
       ['Scope', 'Unchanged'],
       ['Confidentiality', 'Low'],
       ['Integrity', 'Low'],
-      ['Availability', 'Low']
+      ['Availability', 'Low'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -127,7 +126,7 @@ describe('CvssCalculator', () => {
   });
 
   // Low score
-  it('Calculates low score correctly', async () => {
+  it('calculates low score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Local'],
       ['Attack Complexity', 'High'],
@@ -136,7 +135,7 @@ describe('CvssCalculator', () => {
       ['Scope', 'Unchanged'],
       ['Confidentiality', 'None'],
       ['Integrity', 'Low'],
-      ['Availability', 'Low']
+      ['Availability', 'Low'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -144,7 +143,7 @@ describe('CvssCalculator', () => {
   });
 
   // Zero score
-  it('Calculates zero score correctly', async () => {
+  it('calculates zero score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Physical'],
       ['Attack Complexity', 'High'],
@@ -153,7 +152,7 @@ describe('CvssCalculator', () => {
       ['Scope', 'Unchanged'],
       ['Confidentiality', 'None'],
       ['Integrity', 'None'],
-      ['Availability', 'None']
+      ['Availability', 'None'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
@@ -163,7 +162,7 @@ describe('CvssCalculator', () => {
   // Calculator Buttons Test Cases
   // Attack Vector
   // Network button
-  it('Attack vector\'s network button updates vector input field correctly', async () => {
+  it('attack vector\'s network button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Vector', 'Network');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AV:N');
@@ -173,7 +172,7 @@ describe('CvssCalculator', () => {
   });
 
   // Adjacent button
-  it('Attack vector\'s adjacent button updates vector input field correctly', async () => {
+  it('attack vector\'s adjacent button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Vector', 'Adjacent');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AV:A');
@@ -183,7 +182,7 @@ describe('CvssCalculator', () => {
   });
 
   // Local button
-  it('Attack vector\'s local button updates vector input field correctly', async () => {
+  it('attack vector\'s local button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Vector', 'Local');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AV:L');
@@ -193,7 +192,7 @@ describe('CvssCalculator', () => {
   });
 
   // Physical button
-  it('Attack vector\'s physical button updates vector input field correctly', async () => {
+  it('attack vector\'s physical button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Vector', 'Physical');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AV:P');
@@ -204,7 +203,7 @@ describe('CvssCalculator', () => {
 
   // Attack Complexity
   // Low button
-  it('Attack complexity\'s low button updates vector input field correctly', async () => {
+  it('attack complexity\'s low button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Complexity', 'Low');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AC:L');
@@ -214,7 +213,7 @@ describe('CvssCalculator', () => {
   });
 
   // High button
-  it('Attack complexity\'s high button updates vector input field correctly', async () => {
+  it('attack complexity\'s high button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Attack Complexity', 'High');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('AC:H');
@@ -225,7 +224,7 @@ describe('CvssCalculator', () => {
 
   // Privileges Required
   // None button
-  it('Privileges required\'s none button updates vector input field correctly', async () => {
+  it('privileges required\'s none button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Privileges Required', 'None');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('PR:N');
@@ -235,7 +234,7 @@ describe('CvssCalculator', () => {
   });
 
   // Low button
-  it('Privileges required\'s low button updates vector input field correctly', async () => {
+  it('privileges required\'s low button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Privileges Required', 'Low');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('PR:L');
@@ -245,7 +244,7 @@ describe('CvssCalculator', () => {
   });
 
   // High button
-  it('Privileges required\'s high button updates vector input field correctly', async () => {
+  it('privileges required\'s high button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Privileges Required', 'High');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('PR:H');
@@ -256,7 +255,7 @@ describe('CvssCalculator', () => {
 
   // User Interaction
   // None button
-  it('User Interaction\'s none button updates vector input field correctly', async () => {
+  it('user Interaction\'s none button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'User Interaction', 'None');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('UI:N');
@@ -266,7 +265,7 @@ describe('CvssCalculator', () => {
   });
 
   // Required button
-  it('User Interaction\'s required button updates vector input field correctly', async () => {
+  it('user Interaction\'s required button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'User Interaction', 'Required');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('UI:R');
@@ -277,7 +276,7 @@ describe('CvssCalculator', () => {
 
   // Scope
   // Unchanged button
-  it('Scope\'s unchanged button updates vector input field correctly', async () => {
+  it('scope\'s unchanged button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Scope', 'Unchanged');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('S:U');
@@ -287,7 +286,7 @@ describe('CvssCalculator', () => {
   });
 
   // Changed button
-  it('Scope\'s changed button updates vector input field correctly', async () => {
+  it('scope\'s changed button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Scope', 'Changed');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('S:C');
@@ -298,7 +297,7 @@ describe('CvssCalculator', () => {
 
   // Confidentiality
   // None button
-  it('Confidentiality\'s none button updates vector input field correctly', async () => {
+  it('confidentiality\'s none button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Confidentiality', 'None');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('C:N');
@@ -308,7 +307,7 @@ describe('CvssCalculator', () => {
   });
 
   // Low button
-  it('Confidentiality\'s low button updates vector input field correctly', async () => {
+  it('confidentiality\'s low button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Confidentiality', 'Low');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('C:L');
@@ -318,7 +317,7 @@ describe('CvssCalculator', () => {
   });
 
   // High button
-  it('Confidentiality\'s high button updates vector input field correctly', async () => {
+  it('confidentiality\'s high button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Confidentiality', 'High');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('C:H');
@@ -329,7 +328,7 @@ describe('CvssCalculator', () => {
 
   // Integrity
   // None button
-  it('Integrity\'s none button updates vector input field correctly', async () => {
+  it('integrity\'s none button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Integrity', 'None');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('I:N');
@@ -339,7 +338,7 @@ describe('CvssCalculator', () => {
   });
 
   // Low button
-  it('Integrity\'s low button updates vector input field correctly', async () => {
+  it('integrity\'s low button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Integrity', 'Low');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('I:L');
@@ -349,7 +348,7 @@ describe('CvssCalculator', () => {
   });
 
   // High button
-  it('Integrity\'s high button updates vector input field correctly', async () => {
+  it('integrity\'s high button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Integrity', 'High');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('I:H');
@@ -360,7 +359,7 @@ describe('CvssCalculator', () => {
 
   // Availability
   // None button
-  it('Availability\'s none button updates vector input field correctly', async () => {
+  it('availability\'s none button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Availability', 'None');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('A:N');
@@ -370,7 +369,7 @@ describe('CvssCalculator', () => {
   });
 
   // Low button
-  it('Availability\'s low button updates vector input field correctly', async () => {
+  it('availability\'s low button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Availability', 'Low');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('A:L');
@@ -380,7 +379,7 @@ describe('CvssCalculator', () => {
   });
 
   // High button
-  it('Availability\'s high button updates vector input field correctly', async () => {
+  it('availability\'s high button updates vector input field correctly', async () => {
     await activateFactorButton(subject, 'Availability', 'High');
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toContain('A:H');

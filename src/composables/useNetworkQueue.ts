@@ -8,9 +8,7 @@ const unsuccessfulCalls = ref(0);
 type QueueTask = () => Promise<any>;
 
 export function useNetworkQueue() {
-
   async function execute(...queue: QueueTask[]) {
-
     let lastResult;
     let remainingTasks = queue.length;
     pendingCalls.value += remainingTasks;

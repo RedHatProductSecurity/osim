@@ -1,11 +1,11 @@
 import { ref } from 'vue';
+
 import { defineStore } from 'pinia';
 
-
 export interface OsimBackends {
-  osidb: string | unknown;
-  isReady: () => boolean;
   error: boolean | string;
+  isReady: () => boolean;
+  osidb: string | unknown;
 }
 
 export const useBackendStore = defineStore('BackendStore', () => {

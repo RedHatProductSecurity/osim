@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import sanitizeHtml from 'sanitize-html';
 import { ref } from 'vue';
+
+import sanitizeHtml from 'sanitize-html';
 import * as marked from 'marked';
+
 import Modal from '@/components/widgets/Modal.vue';
+
 import { useModal } from '@/composables/useModal';
 
-const { isModalOpen, openModal, closeModal } = useModal();
+const { closeModal, isModalOpen, openModal } = useModal();
 
-const html = ref({ header:'', body: '' });
+const html = ref({ header: '', body: '' });
 
 function fetchChangeLog() {
   return fetch('/CHANGELOG.md')
-    .then((response) => response.text())
+    .then(response => response.text())
     .then(async (text) => {
       const parsedCleanHtml = await marked.parse(sanitizeHtml(text));
       const htmlAsDom = new DOMParser().parseFromString(parsedCleanHtml, 'text/html');
@@ -64,11 +67,13 @@ fetchChangeLog();
   :deep(.modal-dialog) {
     max-width: 80ch;
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       font-family: 'Red Hat Mono', monospace;
     }
 
-    .modal-body{
+    .modal-body {
       max-height: 80vh;
       overflow-y: auto;
     }

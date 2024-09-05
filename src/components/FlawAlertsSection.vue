@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { type ZodAlertType } from '@/types/zodShared';
 import FlawAlert from '@/components/FlawAlert.vue';
+
+import { type ZodAlertType } from '@/types/zodShared';
+
 import LabelCollapsible from './widgets/LabelCollapsible.vue';
 
 const props = defineProps<{
@@ -11,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'expandFocusedComponent': [value: string];
+  expandFocusedComponent: [value: string];
 }>();
 
 const isExpanded = ref(false);
@@ -19,7 +21,6 @@ const isExpanded = ref(false);
 const emitExpandFocusedComponent = (parent_uuid: string) => {
   emit('expandFocusedComponent', parent_uuid);
 };
-
 </script>
 
 <template>

@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import { useDraggable } from '@/composables/useDraggable';
 import { ref, computed } from 'vue';
 
-
-const modelValue = defineModel<string[]>({ required: true });
+import { useDraggable } from '@/composables/useDraggable';
 
 const props = withDefaults(defineProps<{
-  error?: string | string[],
-  readOnly?: boolean,
+  error?: string | string[];
+  readOnly?: boolean;
 }>(), {
   error: '',
   readOnly: false,
 });
 
+const modelValue = defineModel<string[]>({ required: true });
+
 const elInput = ref<HTMLInputElement | null>(null);
 const elDragZone = ref<HTMLElement | null>(null);
 const newItem = ref('');
 
-const { draggableItems, draggableClass, dragStart, dragEnd, dragOver } = useDraggable(elDragZone, modelValue);
-
+const { dragEnd, draggableClass, draggableItems, dragOver, dragStart } = useDraggable(elDragZone, modelValue);
 
 const normalizedError = computed(() => {
   if (props.error == null) {
@@ -57,12 +56,11 @@ function makeEditable(event: Event) {
 function edit(index: number, event: Event) {
   const target = event.target as HTMLElement;
 
-  if (target.innerText.trim().length > 0) {
-    modelValue.value[index] = target.innerText.trim();
+  if (target.textContent && target.textContent.trim().length > 0) {
+    modelValue.value[index] = target.textContent.trim();
     target.removeAttribute('contenteditable');
   }
 }
-
 </script>
 
 <template>
@@ -117,7 +115,6 @@ function edit(index: number, event: Event) {
     />
     <div v-if="!readOnly && normalizedError" class="invalid-tooltip no-drag">{{ normalizedError }}</div>
   </div>
-
 </template>
 
 <style scoped lang="scss">
@@ -138,16 +135,12 @@ function edit(index: number, event: Event) {
 
 .osim-pill-list:focus-within {
   outline: 0;
-  box-shadow:
-    var(--bs-focus-ring-x, 0)
-    var(--bs-focus-ring-y, 0)
-    var(--bs-focus-ring-blur, 0)
-    var(--bs-focus-ring-width)
-    var(--bs-focus-ring-color);
+  box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0) var(--bs-focus-ring-blur, 0)
+    var(--bs-focus-ring-width) var(--bs-focus-ring-color);
 }
 
 .osim-pill-list-item {
-  font-size: .85rem;
+  font-size: 0.85rem;
   padding-block: 0.1rem;
 }
 

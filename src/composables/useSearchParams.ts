@@ -1,5 +1,8 @@
-import { ref, onMounted, watch, watchEffect } from 'vue';import { z } from 'zod';
+import { ref, onMounted, watch, watchEffect } from 'vue';
+
+import { z } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
+
 import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
 
 type Facet = {
@@ -19,7 +22,6 @@ const searchQuery = z.object({
 });
 
 export function useSearchParams() {
-
   const route = useRoute();
 
   const router = useRouter();
@@ -29,7 +31,7 @@ export function useSearchParams() {
     const facets: Facet[] = [];
 
     if (route.query && Object.keys(route.query).length > 0) {
-      Object.keys(route.query).forEach(key => {
+      Object.keys(route.query).forEach((key) => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
           facets.push({ field: key, value: route.query[key] as string });
         }
@@ -53,7 +55,7 @@ export function useSearchParams() {
       params.query = parsedRoute.query.query;
     }
     if (route.query && Object.keys(route.query).length > 0) {
-      Object.keys(route.query).forEach(key => {
+      Object.keys(route.query).forEach((key) => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
           params[key] = route.query[key] as string;
         }
@@ -83,7 +85,7 @@ export function useSearchParams() {
     facets.value.push({ field: '', value: '' });
   }
 
-  function removeFacet(index: number) {
+  function removeFacet(index: number = 0) {
     facets.value.splice(index, 1);
     if (!facets.value.length) {
       addFacet();
@@ -98,7 +100,7 @@ export function useSearchParams() {
   function submitAdvancedSearch() {
     let params = facets.value.reduce(
       (fields, { field, value }) => {
-        if (field && value || allowedEmptyFieldMapping[field]) {
+        if (field && (value || allowedEmptyFieldMapping[field])) {
           fields[field] = value;
         }
         return fields;
@@ -113,9 +115,9 @@ export function useSearchParams() {
       ? { ...params, search: search.value }
       : params;
     router.replace({
-      query:{
+      query: {
         ...params,
-      }
+      },
     });
   }
 

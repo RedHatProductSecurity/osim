@@ -1,10 +1,23 @@
 import type { Ref } from 'vue';
+
 import { shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
+
 import App from '@/App.vue';
 import { OsimRuntimeStatus, osimRuntimeStatus } from '@/stores/osimRuntime';
 
-describe('App', async () => {
+const mountApp = () => shallowMount(App, {
+  global: {
+    plugins: [createTestingPinia()],
+    mocks: {
+      $route: {
+        meta: {},
+      },
+    },
+  },
+});
+
+describe('app', () => {
   vi.mock('@/stores/osimRuntime', async (importOriginal) => {
     const { ref } = await import('vue');
     const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
@@ -18,27 +31,16 @@ describe('App', async () => {
         env: 'dev',
         osimVersion: { rev: '1', tag: '1.0.0', timestamp: '2024-08-29' },
         error: 'OSIDB is not ready',
-        backends: {}
+        backends: {},
       }),
     };
-  });
-
-  const mountApp = () => shallowMount(App, {
-    global: {
-      plugins: [createTestingPinia()],
-      mocks: {
-        $route: {
-          meta: {}
-        }
-      },
-    }
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  it('Renders the App component when OSIDB is READY', () => {
+  it('renders the App component when OSIDB is READY', () => {
     const wrapper = mountApp();
 
     expect(wrapper.find('.osim-content-layered').exists()).toBe(true);
@@ -47,7 +49,7 @@ describe('App', async () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('Renders the App component when OSIDB is NOT READY', () => {
+  it('renders the App component when OSIDB is NOT READY', () => {
     (osimRuntimeStatus as Ref<OsimRuntimeStatus>).value = OsimRuntimeStatus.ERROR;
     const wrapper = mountApp();
 

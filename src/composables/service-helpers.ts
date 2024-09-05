@@ -1,7 +1,6 @@
 import { getDisplayedOsidbError, parseOsidbErrors } from '@/services/osidb-errors-helpers';
 import { useToastStore } from '@/stores/ToastStore';
 
-
 export function createCatchHandler(title: string = 'Error', shouldThrow: boolean = true) {
   return (error: any) => {
     const displayedError = Array.isArray(error)
@@ -22,8 +21,8 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
 }
 
 export function createSuccessHandler({
-  title = 'Operation Successful',
   body,
+  title = 'Operation Successful',
 }: Record<string, string>) {
   return (response: { data: any }) => {
     const { addToast } = useToastStore();

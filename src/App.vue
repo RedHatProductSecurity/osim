@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 
 import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
-import Navbar from './components/Navbar.vue';
+import { useElementBounding } from '@vueuse/core';
+
+import ToastContainer from '@/components/ToastContainer.vue';
+import ChangeLog from '@/components/ChangeLog.vue';
+
 import {
   setup,
   osidbHealth,
@@ -10,12 +15,9 @@ import {
   osimRuntimeStatus,
   OsimRuntimeStatus,
 } from '@/stores/osimRuntime';
-
-import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
-import ToastContainer from '@/components/ToastContainer.vue';
-import ChangeLog from '@/components/ChangeLog.vue';
-import { useElementBounding } from '@vueuse/core';
 import { footerHeight, footerTop } from '@/stores/responsive';
+
+import Navbar from './components/Navbar.vue';
 
 setup();
 
@@ -26,7 +28,7 @@ watch(osimRuntimeStatus, () => {
 });
 
 const elFooter = ref<HTMLElement | null>(null);
-const { top: footerTop_, height: footerHeight_ } = useElementBounding(elFooter);
+const { height: footerHeight_, top: footerTop_ } = useElementBounding(elFooter);
 watchEffect(() => {
   footerTop.value = footerTop_.value;
   footerHeight.value = footerHeight_.value;

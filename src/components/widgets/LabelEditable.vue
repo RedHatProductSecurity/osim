@@ -1,18 +1,17 @@
 <script setup lang="ts">
-
 import EditableText from './EditableText.vue';
 import EditableDate from './EditableDate.vue';
 
 const props = withDefaults(defineProps<{
-  label?: string;
-  type: 'text' | 'date' | 'datetime';
   error?: null | string;
+  label?: string;
+  type: 'date' | 'datetime' | 'text';
 }>(), {
   label: '',
   error: undefined,
 });
 
-const modelValue = defineModel<string | undefined | null | number | Date>();
+const modelValue = defineModel<Date | null | number | string | undefined>();
 </script>
 
 <template>
@@ -38,13 +37,10 @@ const modelValue = defineModel<string | undefined | null | number | Date>();
       />
     </div>
   </label>
-
 </template>
 
 <style scoped>
-
 .osim-input {
   display: block;
 }
-
 </style>

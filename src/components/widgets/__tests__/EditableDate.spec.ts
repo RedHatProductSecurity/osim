@@ -1,10 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { VueWrapper, mount } from '@vue/test-utils';
-import EditableDate from '../EditableDate.vue';
-import { IMaskDirective } from 'vue-imask';
 import { type Directive } from 'vue';
 
-describe('EditableDate', () => {
+import { describe, it, expect } from 'vitest';
+import { VueWrapper, mount } from '@vue/test-utils';
+import { IMaskDirective } from 'vue-imask';
+
+import EditableDate from '../EditableDate.vue';
+
+describe('editableDate', () => {
   const testDateString = '2024-04-16T20:08:31.831Z';
   let subject: VueWrapper<InstanceType<typeof EditableDate>>;
 
@@ -20,7 +22,6 @@ describe('EditableDate', () => {
   });
 
   it('renders properly', () => {
-
     expect(subject.exists()).toBeTruthy();
   });
 

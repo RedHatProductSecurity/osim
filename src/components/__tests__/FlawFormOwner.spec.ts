@@ -1,15 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
-import FlawFormOwner from '../FlawFormOwner.vue';
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
+
 import { useUserStore } from '@/stores/UserStore';
 import { searchJiraUsers } from '@/services/JiraService';
+
+import FlawFormOwner from '../FlawFormOwner.vue';
 
 const pinia = createTestingPinia();
 const userStore = useUserStore();
 
-vi.mock('@vueuse/core', async (originalImport) => ({
-  ... (await originalImport<typeof import('@vueuse/core')>()),
+vi.mock('@vueuse/core', async originalImport => ({
+  ...(await originalImport<typeof import('@vueuse/core')>()),
   useLocalStorage: vi.fn((key: string) => {
     return {
       UserStore: {
@@ -50,8 +52,7 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-
-describe('Owner field', () => {
+describe('owner field', () => {
   let subject: VueWrapper<InstanceType<typeof FlawFormOwner>>;
   beforeEach(() => {
     vi.useFakeTimers();
@@ -60,9 +61,9 @@ describe('Owner field', () => {
       global: {
         plugins: [pinia],
       },
-      props:{
-        taskKey: 'OSIM-1234'
-      }
+      props: {
+        taskKey: 'OSIM-1234',
+      },
     });
   });
 
@@ -94,8 +95,8 @@ describe('Owner field', () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
       data: {
         users:
-          [{ name: 'test', displayName: 'Test User', avatarUrl: '' }]
-      }
+          [{ name: 'test', displayName: 'Test User', avatarUrl: '' }],
+      },
     });
     const input = subject.find('input');
     await input.setValue('test');

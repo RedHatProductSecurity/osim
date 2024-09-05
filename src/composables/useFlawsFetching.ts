@@ -1,6 +1,19 @@
 import { ref } from 'vue';
+
 import { getFlaws } from '@/services/FlawService';
 import { allowedEmptyFieldMapping } from '@/constants/flawFields';
+
+function finializeRequestParams(params: any = {}) {
+  const requestParams: Record<string, any> = {};
+  for (const key in params) {
+    if (['', 'nonempty'].includes(params[key]) && allowedEmptyFieldMapping[key]) {
+      requestParams[allowedEmptyFieldMapping[key]] = params[key] === '' ? 1 : 0;
+    } else {
+      requestParams[key] = params[key];
+    }
+  }
+  return requestParams;
+}
 
 export function useFlawsFetching() {
   const isFinalPageFetched = ref(false);
@@ -9,18 +22,6 @@ export function useFlawsFetching() {
   const offset = ref(0);
   const pagesize = 20;
   const total = ref(0);
-
-  function finializeRequestParams(params: any = {}){
-    const requestParams: Record<string, any> = {};
-    for (const key in params) {
-      if (['', 'nonempty'].includes(params[key]) && allowedEmptyFieldMapping[key]) {
-        requestParams[allowedEmptyFieldMapping[key]] = params[key] === '' ? 1 : 0;
-      } else {
-        requestParams[key] = params[key];
-      }
-    }
-    return requestParams;
-  }
 
   function loadFlaws(params: any = {}) {
     offset.value = 0;
@@ -87,6 +88,6 @@ export function useFlawsFetching() {
     pagesize,
     total,
     loadFlaws,
-    loadMoreFlaws
+    loadMoreFlaws,
   };
 }

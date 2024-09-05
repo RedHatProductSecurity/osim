@@ -1,20 +1,11 @@
 <script setup lang="ts">
-
 import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
+
 import { DateTime } from 'luxon';
+
 import ProgressRing from '@/components/widgets/ProgressRing.vue';
+
 import { useSettingsStore } from '@/stores/SettingsStore';
-
-const { settings } = useSettingsStore();
-
-export interface ToastProps {
-  title?: string,
-  body: string,
-  timestamp: DateTime,
-  bodyHtml?: boolean,
-  timeoutMs?: number,
-  css?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark',
-}
 
 const props = withDefaults(defineProps<ToastProps>(), {
   css: 'light',
@@ -23,11 +14,22 @@ const props = withDefaults(defineProps<ToastProps>(), {
 });
 
 const emit = defineEmits<{
-  close: [],
+  close: [];
   // Called when the toast is no longer fresh and
   // visibility should be controlled by showNotifications
-  stale: [],
+  stale: [];
 }>();
+
+const { settings } = useSettingsStore();
+
+export interface ToastProps {
+  body: string;
+  bodyHtml?: boolean;
+  css?: 'danger' | 'dark' | 'info' | 'light' | 'primary' | 'secondary' | 'success' | 'warning';
+  timeoutMs?: number;
+  timestamp: DateTime;
+  title?: string;
+}
 
 const cssMapping: Record<NonNullable<ToastProps['css']>, string> = {
   primary: 'text-bg-primary',
@@ -54,7 +56,7 @@ const percentFreshTimeRemaining = ref<number>(100);
 const freshAndBecomingStaleStart = ref(true);
 
 // Use NaN to check if the id has been assigned before clearInterval
-let freshCountdownId: number = NaN;
+let freshCountdownId: number = Number.NaN;
 onMounted(() => {
   freshCountdownId = setInterval(() => {
     if (settings.showNotifications) {
@@ -86,7 +88,7 @@ onBeforeUnmount(() => {
 });
 
 if (props.timeoutMs) {
-  const countdownId: number = NaN;
+  const countdownId: number = Number.NaN;
   onMounted(() => {
     const countdownId: number = setInterval(() => {
       if (active.value || props.timeoutMs == null) {
@@ -159,7 +161,6 @@ const toastClasses = computed(() => {
 
 const timeoutRingDiameter = ref(22);
 const timeoutRingDiameterPx = computed(() => timeoutRingDiameter.value + 'px');
-
 </script>
 
 <template>

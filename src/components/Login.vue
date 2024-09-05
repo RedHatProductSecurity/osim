@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+
 import { useUserStore } from '@/stores/UserStore';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { computed, ref } from 'vue';
 
 // const router = useRouter();
 const userStore = useUserStore();
@@ -21,20 +22,19 @@ const working = ref(false);
 const isPasswordRevelead = ref(false);
 const loginMsg = computed(() => {
   switch (osimRuntime.value.backends.osidbAuth) {
-  case 'credentials': {
-    return 'Login with credentials';
-  }
-  case 'kerberos': {
-    return 'Login with System GSSAPI';
-  }
-  default: {
-    return 'Login disabled';
-  }
+    case 'credentials': {
+      return 'Login with credentials';
+    }
+    case 'kerberos': {
+      return 'Login with System GSSAPI';
+    }
+    default: {
+      return 'Login disabled';
+    }
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function login(event: Event) {
+function login() {
   // userStore.login(username.value)
   Promise.resolve()
   // Promise.reject('fake error')
@@ -63,7 +63,7 @@ function login(event: Event) {
   //     name: 'index'
   //   });
   // })
-    .catch(e => {
+    .catch((e) => {
       console.error('Login::login() Error logging in', e);
       if (osimRuntime.value.backends.osidbAuth === 'kerberos') {
         error.value = [

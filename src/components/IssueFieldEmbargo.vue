@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { useModal } from '@/composables/useModal';
-import LabelInput from './widgets/LabelInput.vue';
+
 import Modal from '@/components/widgets/Modal.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
+import { useModal } from '@/composables/useModal';
+
+import LabelInput from './widgets/LabelInput.vue';
+
 const props = defineProps<{
-  flawId: string | null | undefined;
-  isFlawNew: boolean;
+  flawId: null | string | undefined;
   isEmbargoed: boolean;
+  isFlawNew: boolean;
 }>();
 
 const modelValue = defineModel<boolean | undefined>();
@@ -21,7 +24,7 @@ const emit = defineEmits<{
   (e: 'updateFlaw'): void;
 }>();
 
-const { isModalOpen, openModal, closeModal } = useModal();
+const { closeModal, isModalOpen, openModal } = useModal();
 const confirmationId = ref('');
 const isFlawIdConfirmed = computed(() => confirmationId.value === props.flawId);
 
@@ -142,11 +145,11 @@ watch(() => showModal.value, () => {
   .has-warning {
     background-color: #fff5d1;
     display: flex;
-    border-color: #F5C000;
+    border-color: #f5c000;
 
     .bi-exclamation-circle {
       display: inline !important;
-      color: #F5C000;
+      color: #f5c000;
       margin-left: auto;
     }
   }
@@ -162,7 +165,7 @@ watch(() => showModal.value, () => {
     margin-top: 0.1rem;
     padding: 0.25rem 0.5rem;
     z-index: 5;
-    background-color: #F5C000;
+    background-color: #f5c000;
     border-radius: 0.375rem;
     font-size: 0.875rem;
   }

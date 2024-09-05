@@ -1,55 +1,57 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, type Ref } from 'vue';
+
+import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
+
+import FlawTrackers from '@/components/FlawTrackers.vue';
+import TrackerManager from '@/components/TrackerManager.vue';
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+import Modal from '@/components/widgets/Modal.vue';
+
+import { useModal } from '@/composables/useModal';
+import { usePagination } from '@/composables/usePagination';
+
+import { useSettingsStore } from '@/stores/SettingsStore';
+import { uniques } from '@/utils/helpers';
+import { type ZodAffectType } from '@/types/zodAffect';
 import {
   affectImpacts,
   affectAffectedness,
   affectResolutions,
   possibleAffectResolutions,
 } from '@/types/zodAffect';
-import { type ZodAffectType } from '@/types/zodAffect';
-import { uniques } from '@/utils/helpers';
-import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
-import FlawTrackers from '@/components/FlawTrackers.vue';
-import TrackerManager from '@/components/TrackerManager.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
-import Modal from '@/components/widgets/Modal.vue';
-import { useModal } from '@/composables/useModal';
-import { useSettingsStore } from '@/stores/SettingsStore';
-import { usePagination } from '@/composables/usePagination';
-
-const settingsStore = useSettingsStore();
-const settings = ref(settingsStore.settings);
-const { isModalOpen, openModal, closeModal } = useModal();
 
 const props = defineProps<{
-  flawId: string;
-  embargoed: boolean;
+  affectCvssToDelete: Record<string, string>;
   affects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
-  affectCvssToDelete: Record<string, string>;
-  error: Record<string, any>[] | null;
+  embargoed: boolean;
+  error: null | Record<string, any>[];
+  flawId: string;
 }>();
-
 const emit = defineEmits<{
-  'file-tracker': [value: object];
-  'affect:remove': [value: ZodAffectType];
-  'affect:recover': [value: ZodAffectType];
   'affect:add': [value: ZodAffectType];
+  'affect:recover': [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
   'affects:refresh': [];
+  'file-tracker': [value: object];
 }>();
+const settingsStore = useSettingsStore();
+const settings = ref(settingsStore.settings);
+const { closeModal, isModalOpen, openModal } = useModal();
 
-const { affects, affectsToDelete, affectCvssToDelete } = toRefs(props);
+const { affectCvssToDelete, affects, affectsToDelete } = toRefs(props);
 const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 const savedAffects = clone(affects.value) as ZodAffectType[];
 
 // Sorting
 type sortKeys = keyof Pick<ZodAffectType,
-  'ps_module' | 'ps_component' | 'trackers' | 'affectedness' | 'resolution' | 'impact' | 'cvss_scores'
+  'affectedness' | 'cvss_scores' | 'impact' | 'ps_component' | 'ps_module' | 'resolution' | 'trackers'
 >;
 
 const sortedAffects = computed(() =>
-  sortAffects(filteredAffects.value, false)
+  sortAffects(filteredAffects.value, false),
 );
 
 const sortKey = ref<sortKeys>('ps_module');
@@ -72,8 +74,7 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
     const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
     if (customSortKey === 'trackers') {
       return affectToSort.trackers.length;
-    }
-    else if (customSortKey === 'cvss_scores') {
+    } else if (customSortKey === 'cvss_scores') {
       return affectToSort[customSortKey].length;
     }
     return affectToSort[customSortKey] || 0;
@@ -82,40 +83,40 @@ function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType
   const comparator = standard
     ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
     : [order<ZodAffectType>(customSortFn),
-      order<ZodAffectType>(customSortKey === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
+        order<ZodAffectType>(customSortKey === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
 
   return sortWith([
     ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-    ...comparator
+    ...comparator,
   ])(affects);
 }
 
 // Display Modes
 enum displayModes {
   ALL = 'All',
-  SELECTED = 'Selected',
+  CREATED = 'Created',
+  DELETED = 'Deleted',
   EDITING = 'Editing',
   MODIFIED = 'Modified',
-  DELETED = 'Deleted',
-  CREATED = 'Created',
+  SELECTED = 'Selected',
 }
 
 const displayMode = ref(displayModes.ALL);
 
 const displayedAffects = computed(() => {
   switch (displayMode.value) {
-  case displayModes.SELECTED:
-    return selectedAffects.value;
-  case displayModes.EDITING:
-    return affectsBeingEdited.value;
-  case displayModes.MODIFIED:
-    return modifiedAffects.value;
-  case displayModes.DELETED:
-    return affectsToDelete.value;
-  case displayModes.CREATED:
-    return newAffects.value;
-  default:
-    return allAffects.value;
+    case displayModes.SELECTED:
+      return selectedAffects.value;
+    case displayModes.EDITING:
+      return affectsBeingEdited.value;
+    case displayModes.MODIFIED:
+      return modifiedAffects.value;
+    case displayModes.DELETED:
+      return affectsToDelete.value;
+    case displayModes.CREATED:
+      return newAffects.value;
+    default:
+      return allAffects.value;
   }
 });
 
@@ -131,7 +132,7 @@ const filteredAffects = computed(() => {
   if (displayedAffects.value.length <= 0) {
     toggleDisplayMode(displayModes.ALL);
   }
-  return displayedAffects.value.filter(affect => {
+  return displayedAffects.value.filter((affect) => {
     const matchesSelectedModules =
       selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
     const matchesAffectednessFilter =
@@ -152,7 +153,7 @@ function toggleModulesCollapse() {
 }
 
 const affectedModules = computed(() =>
-  uniques(sortAffects(allAffects.value, true).map((affect) => affect.ps_module)));
+  uniques(sortAffects(allAffects.value, true).map(affect => affect.ps_module)));
 const selectedModules = ref<string[]>([]);
 
 function moduleTrackersCount(moduleName: string) {
@@ -223,7 +224,7 @@ function editAffect(affect: ZodAffectType) {
 }
 
 function editSelectedAffects() {
-  selectedAffects.value.forEach(affect => {
+  selectedAffects.value.forEach((affect) => {
     editAffect(affect);
   });
 }
@@ -251,14 +252,14 @@ function cancelChanges(affect: ZodAffectType) {
 
 function commitAllChanges() {
   const affectsToCommit = [...affectsBeingEdited.value];
-  affectsToCommit.forEach(affect => {
+  affectsToCommit.forEach((affect) => {
     commitChanges(affect);
   });
 }
 
 function cancelAllChanges() {
   const affectsToCancel = [...affectsBeingEdited.value];
-  affectsToCancel.forEach(affect => {
+  affectsToCancel.forEach((affect) => {
     cancelChanges(affect);
   });
 }
@@ -273,19 +274,18 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 
 // Modified affects
 const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { [key]: omitted, ...rest } = obj;
+  const { [key]: _, ...rest } = obj;
   return rest;
 };
 
 const modifiedAffects = computed(() =>
-  affects.value.filter(affect => {
+  affects.value.filter((affect) => {
     const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
     return savedAffect
       && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
       && !affectsBeingEdited.value.includes(affect)
       && !newAffects.value.includes(affect);
-  })
+  }),
 );
 
 function isModified(affect: ZodAffectType) {
@@ -305,7 +305,7 @@ function restoreSavedAffect(affect: ZodAffectType) {
 
 function restoreAllSavedAffects() {
   const affectsToRestore = [...modifiedAffects.value];
-  affectsToRestore.forEach(affect => {
+  affectsToRestore.forEach((affect) => {
     if (!affectsBeingEdited.value.includes(affect)) {
       restoreSavedAffect(affect);
     }
@@ -362,7 +362,7 @@ function isRemoved(affect: ZodAffectType) {
 }
 
 function removeSelectedAffects() {
-  selectedAffects.value.forEach(affect => {
+  selectedAffects.value.forEach((affect) => {
     removeAffect(affect);
   });
 }
@@ -373,7 +373,7 @@ function recoverAffect(affect: ZodAffectType) {
 
 function recoverAllAffects() {
   const affectsToRecover = [...affectsToDelete.value];
-  affectsToRecover.forEach(affect => {
+  affectsToRecover.forEach((affect) => {
     recoverAffect(affect);
   });
 }
@@ -427,7 +427,7 @@ function selectAffects(event: Event) {
 
 // Affects Fields
 function affectCvss(affect: ZodAffectType) {
-  return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
+  return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === 'V3');
 }
 
 function affectCvssDisplay(affect: ZodAffectType) {
@@ -486,15 +486,15 @@ function affectRowTooltip(affect: ZodAffectType) {
 
 // Affects Pagination
 const totalPages = computed(() =>
-  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
+  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage),
 );
 
 const minItemsPerPage = 5;
 const maxItemsPerPage = 20;
 const {
-  pages,
-  currentPage,
   changePage,
+  currentPage,
+  pages,
 } = usePagination(totalPages, settings.value.affectsPerPage);
 
 const paginatedAffects = computed(() => {
@@ -505,13 +505,13 @@ const paginatedAffects = computed(() => {
 
 function reduceItemsPerPage() {
   if (settings.value.affectsPerPage > minItemsPerPage) {
-    settings.value.affectsPerPage --;
+    settings.value.affectsPerPage--;
   }
 }
 
 function increaseItemsPerPage() {
   if (settings.value.affectsPerPage < maxItemsPerPage) {
-    settings.value.affectsPerPage ++;
+    settings.value.affectsPerPage++;
   }
 }
 
@@ -525,8 +525,8 @@ const displayedTrackers = computed(() => {
     .flatMap(affect =>
       affect.trackers.map(tracker => ({
         ...tracker,
-        ps_module: affect.ps_module
-      }))
+        ps_module: affect.ps_module,
+      })),
     );
 });
 
@@ -1247,7 +1247,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     button {
       height: 2rem;
       padding-block: 0;
-      margin: .15rem;
+      margin: 0.15rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1259,7 +1259,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
     }
 
     .module-btn {
-      transition: color .15s background-color .15s;
+      transition: color 0.15s background-color 0.15s;
 
       i {
         margin-inline: -3.5px;
@@ -1316,10 +1316,13 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
 
         > :not(:first-child).badge {
           user-select: none;
-          transition: filter .25s, background-color .25s, border-color .25s;
+          transition:
+            filter 0.25s,
+            background-color 0.25s,
+            border-color 0.25s;
 
           &:hover {
-            filter: brightness(.9);
+            filter: brightness(0.9);
           }
         }
       }
@@ -1329,7 +1332,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           height: 32px;
           background-color: #212529;
           border-color: #212529;
-          margin-inline: .1rem;
+          margin-inline: 0.1rem;
 
           &.icon-btn {
             width: 38px;
@@ -1415,12 +1418,15 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       tbody {
         tr {
           position: relative;
-          transition: filter .25s;
+          transition: filter 0.25s;
 
           td {
-            transition: background-color .5s, color .5s, border-color .25s;
-            padding-block: .2rem;
-            border-block: .2ch solid #e0e0e0;
+            transition:
+              background-color 0.5s,
+              color 0.5s,
+              border-color 0.25s;
+            padding-block: 0.2rem;
+            border-block: 0.2ch solid #e0e0e0;
             background-color: #e0e0e0;
             white-space: nowrap;
             overflow: hidden;
@@ -1435,32 +1441,39 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               left: -42px;
             }
 
-            .row-left-indicator, .row-right-indicator {
+            .row-left-indicator,
+            .row-right-indicator {
               position: absolute;
               opacity: 0;
-              transition: opacity .5s, right .5s, left .5s;
+              transition:
+                opacity 0.5s,
+                right 0.5s,
+                left 0.5s;
               top: 0;
             }
 
             .btn {
               display: inline;
-              margin-inline: .1rem;
+              margin-inline: 0.1rem;
               width: 28px;
               height: 25px;
-              padding: 0 .1rem;
-              transition: background-color .5s, color .5s;
+              padding: 0 0.1rem;
+              transition:
+                background-color 0.5s,
+                color 0.5s;
               border: none;
               background-color: #212529;
               color: white;
 
               .bi {
                 line-height: 0;
-                font-size: .938rem;
+                font-size: 0.938rem;
               }
             }
 
-            input, select {
-              padding: .15rem .5rem;
+            input,
+            select {
+              padding: 0.15rem 0.5rem;
             }
 
             .affect-tracker-cell {
@@ -1482,7 +1495,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           }
 
           &:hover {
-            filter: brightness(.9);
+            filter: brightness(0.9);
 
             td {
               border-color: #707070bf;
@@ -1491,7 +1504,8 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         }
 
         tr.selected td {
-          .row-left-indicator, .row-right-indicator {
+          .row-left-indicator,
+          .row-right-indicator {
             opacity: 100;
           }
 
@@ -1548,7 +1562,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           border-color: #73470a80 !important;
         }
 
-        tr.modified:hover td{
+        tr.modified:hover td {
           border-color: #204d0080 !important;
         }
 

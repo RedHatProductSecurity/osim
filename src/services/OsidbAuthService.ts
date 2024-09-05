@@ -1,8 +1,10 @@
 import { z } from 'zod';
+
 import { osimRuntime } from '@/stores/osimRuntime';
-import { useUserStore } from '../stores/UserStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+
+import { useUserStore } from '../stores/UserStore';
 
 const RefreshResponse = z.object({
   access: z.string(),
@@ -14,33 +16,32 @@ export type OsidbFetchCallbacks = {
 };
 
 export type OsidbGetFetchOptions = {
-  url: string;
+  data?: never;
   method: 'GET' | 'get';
   params?: Record<string, any>;
-  data?: never;
+  url: string;
 };
 
 export type OsidbPutPostFetchOptions = {
-  url: string;
-  method: 'POST' | 'PUT' | 'post' | 'put';
   data?: Record<string, any>;
+  method: 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
+  url: string;
 };
 
 export type OsidbDeleteFetchOptions = {
-  url: string;
+  data?: Record<string, any> | Record<string, any>[] | string[];
   method: 'DELETE' | 'delete';
-  data?: Record<string, any> | string[] | Record<string, any>[];
   params?: never;
+  url: string;
 };
 
 export type OsidbFetchOptions =
+  | OsidbDeleteFetchOptions
   | OsidbGetFetchOptions
-  | OsidbPutPostFetchOptions
-  | OsidbDeleteFetchOptions;
+  | OsidbPutPostFetchOptions;
 
 export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: OsidbFetchCallbacks) {
-
   if (factoryOptions?.beforeFetch) {
     await factoryOptions.beforeFetch(config);
   }

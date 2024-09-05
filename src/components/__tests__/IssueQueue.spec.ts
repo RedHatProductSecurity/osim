@@ -1,9 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-import router from '@/router';
 import { createTestingPinia } from '@pinia/testing';
-import IssueQueue from '../IssueQueue.vue';
+
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
+
+import router from '@/router';
+
+import IssueQueue from '../IssueQueue.vue';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
@@ -44,7 +47,7 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-describe('IssueQueue', () => {
+describe('issueQueue', () => {
   const mockData = [
     {
       uuid: '709e9ea1-ed0f-49b8-a7ad-9164d4034849',
@@ -88,7 +91,7 @@ describe('IssueQueue', () => {
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
     expect(fetchEvents[0][0]._value).toEqual({
-      order: '-created_dt'
+      order: '-created_dt',
     });
     const issues = wrapper.findAllComponents(IssueQueueItem);
     expect(issues.length).toBe(1);
@@ -136,7 +139,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
-        total:10,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -168,7 +171,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
-        total:10,
+        total: 10,
       },
       global: {
         plugins: [pinia, router],
@@ -205,7 +208,7 @@ describe('IssueQueue', () => {
         issues: [],
         isLoading: true,
         isFinalPageFetched: false,
-        total: 100
+        total: 100,
       },
       global: {
         plugins: [pinia, router],
@@ -224,10 +227,10 @@ describe('IssueQueue', () => {
     });
     const wrapper = mount(IssueQueue, {
       props: {
-        issues: new Array(50).fill(mockData[0]),
+        issues: Array.from({ length: 50 }).fill(mockData[0]),
         isLoading: false,
         isFinalPageFetched: false,
-        total: 100
+        total: 100,
       },
       global: {
         plugins: [pinia, router],
@@ -247,10 +250,10 @@ describe('IssueQueue', () => {
     });
     const wrapper = mount(IssueQueue, {
       props: {
-        issues: new Array(25).fill(mockData[0]),
+        issues: Array.from({ length: 25 }).fill(mockData[0]),
         isLoading: true,
         isFinalPageFetched: false,
-        total: 100
+        total: 100,
       },
       global: {
         plugins: [pinia, router],
@@ -272,7 +275,7 @@ describe('IssueQueue', () => {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
-        showFilter: false
+        showFilter: false,
       },
       global: {
         plugins: [pinia, router],
@@ -295,7 +298,7 @@ describe('IssueQueue', () => {
         isLoading: false,
         isFinalPageFetched: false,
         showFilter: true,
-        defaultFilters: { 'affects__ps_component':'test' }
+        defaultFilters: { affects__ps_component: 'test' },
       },
       global: {
         plugins: [pinia, router],

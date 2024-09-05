@@ -1,11 +1,12 @@
-import { describe, it, expect } from 'vitest';
-
-import { mount } from '@vue/test-utils';
-import ExampleForm from '../ExampleForm.vue';
-import { IMaskDirective } from 'vue-imask';
 import { type Directive } from 'vue';
 
-describe('ExampleForm', () => {
+import { describe, it, expect } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { IMaskDirective } from 'vue-imask';
+
+import ExampleForm from '../ExampleForm.vue';
+
+describe('exampleForm', () => {
   it('renders properly', () => {
     const wrapper = mount(ExampleForm, {
       props: {

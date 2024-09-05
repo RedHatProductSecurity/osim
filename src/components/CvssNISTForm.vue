@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import Modal from '@/components/widgets/Modal.vue';
 
+import Modal from '@/components/widgets/Modal.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import { useUserStore } from '@/stores/UserStore';
+
 import { useModal } from '@/composables/useModal';
 
+import { useUserStore } from '@/stores/UserStore';
+
 const props = defineProps<{
-  cveid?: string | null;
-  summary?: string | null;
   bugzilla?: string;
+  cveid?: null | string;
   cvss?: string;
   nistcvss?: string;
+  summary?: null | string;
 }>();
 
 const userStore = useUserStore();
-const { isModalOpen, openModal, closeModal } = useModal();
+const { closeModal, isModalOpen, openModal } = useModal();
 
 const toEmail = 'nvd@nist.gov';
 const ccEmail = 'secalert@redhat.com';
@@ -109,5 +111,4 @@ function openMailto() {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
-
 </style>

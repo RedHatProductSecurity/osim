@@ -6,16 +6,18 @@
 // Pressing escape or clicking the abort button aborts the change
 
 import { nextTick, ref, unref, watch } from 'vue';
-import DropDown from './DropDown.vue';
+
 import { isDefined, watchDebounced } from '@vueuse/core';
 
+import DropDown from './DropDown.vue';
+
 const props = withDefaults(defineProps<{
-  modelValue: string | null,
-  readOnly?: boolean,
-  editing?: boolean,
-  placeholder?: string,
-  error?: string | null,
-  debounce?: number,
+  debounce?: number;
+  editing?: boolean;
+  error?: null | string;
+  modelValue: null | string;
+  placeholder?: string;
+  readOnly?: boolean;
 }>(), {
   debounce: 500,
   error: undefined,
@@ -23,14 +25,14 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | null],
-  'update:query': [query: string],
+  'update:modelValue': [value: null | string];
+  'update:query': [query: string];
 }>();
 
 const elInput = ref<HTMLInputElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-const editedModelValue = ref<string | null>(unref(props.modelValue));
+const editedModelValue = ref<null | string>(unref(props.modelValue));
 
 watch(() => props.modelValue, () => {
   editedModelValue.value = props.modelValue;
@@ -75,7 +77,6 @@ function onBlur(e: FocusEvent | null) {
   ) {
     commit();
   }
-
 }
 </script>
 
@@ -145,11 +146,11 @@ function onBlur(e: FocusEvent | null) {
 </template>
 
 <style lang="scss">
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/variables-dark";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/forms";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/forms';
 
 .osim-editable-field {
   &:hover .invalid-tooltip {
@@ -182,7 +183,6 @@ function onBlur(e: FocusEvent | null) {
     @extend .input-group; // Use pure CSS instead of JS for hover
     // Nest these for specificity
     white-space: nowrap;
-
 
     .osim-editable-text-value {
       @extend .form-control;

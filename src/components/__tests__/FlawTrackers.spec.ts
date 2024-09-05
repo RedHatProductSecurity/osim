@@ -1,13 +1,14 @@
 import { describe, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
-import FlawTrackers from '@/components/FlawTrackers.vue';
-import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 import { mount } from '@vue/test-utils';
 
+import FlawTrackers from '@/components/FlawTrackers.vue';
+
+import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 
 createTestingPinia();
 
-describe('FlawTrackers', () => {
+describe('flawTrackers', () => {
   let subject;
 
   osimRequiredFlawTest('Correctly renders the component when there are not trackers to display', async ({ flaw }) => {
@@ -28,7 +29,7 @@ describe('FlawTrackers', () => {
         flawId: flaw.uuid,
         displayedTrackers: flaw.affects
           .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
           ),
         affectsNotBeingDeleted: [],
         allTrackersCount: 0,
@@ -43,7 +44,7 @@ describe('FlawTrackers', () => {
         flawId: flaw.uuid,
         displayedTrackers: flaw.affects
           .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
           ),
         affectsNotBeingDeleted: [],
         allTrackersCount: 0,
@@ -85,7 +86,7 @@ describe('FlawTrackers', () => {
         flawId: flaw.uuid,
         displayedTrackers: flaw.affects
           .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
           ),
         affectsNotBeingDeleted: [],
         allTrackersCount: 0,
@@ -112,7 +113,7 @@ describe('FlawTrackers', () => {
         flawId: flaw.uuid,
         displayedTrackers: flaw.affects
           .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module }))
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
           ),
         affectsNotBeingDeleted: [],
         allTrackersCount: 0,

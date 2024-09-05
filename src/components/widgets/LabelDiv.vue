@@ -1,10 +1,9 @@
 <script setup lang="ts">
 defineProps<{
-  label: string,
-  error?: string,
-  loading?: boolean,
+  error?: string;
+  label: string;
+  loading?: boolean;
 }>();
-
 </script>
 
 <template>

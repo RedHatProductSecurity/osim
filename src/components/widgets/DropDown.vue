@@ -30,7 +30,7 @@
     clear: both;
     white-space: nowrap;
     cursor: pointer;
-    font-size: .85rem;
+    font-size: 0.85rem;
 
     &:hover {
       background-color: #dee2e6;
