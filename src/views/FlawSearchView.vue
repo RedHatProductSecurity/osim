@@ -69,12 +69,10 @@ function saveFilter() {
 
 <template>
   <main class="mt-3">
-    <div>
-      <IssueSearchAdvanced
-        :isLoading="isLoading"
-        @filter:save="saveFilter"
-      />
-    </div>
+    <IssueSearchAdvanced
+      :isLoading="isLoading"
+      @filter:save="saveFilter"
+    />
     <IssueQueue
       :issues="issues"
       :isLoading="isLoading"
