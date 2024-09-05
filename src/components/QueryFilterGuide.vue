@@ -70,9 +70,6 @@
           feature that pops up automatically and suggests all available options.
           If you're not sure what the field name is, then pick one of the options displayed.
         </p>
-        <p>
-          <strong>TODO: OSIDB Fields Table?</strong>
-        </p>
       </div>
       <div class="module">
         <h2 id="related-models">Related models</h2>
