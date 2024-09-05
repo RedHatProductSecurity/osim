@@ -104,7 +104,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
-    flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
+    flaw_detail_page.check_text_exist(context.acknowledgement_value)
 
 
 @when('I update the dropdown field values')
@@ -147,7 +147,7 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_acknowledgments_dropdown_btn()
-    flaw_detail_page.check_acknowledgement_exist(context.acknowledgement_value)
+    flaw_detail_page.check_text_exist(context.acknowledgement_value)
 
 
 @when("I delete an acknowledgement from acknowledgement list")
@@ -200,8 +200,11 @@ def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.firstContributorText.visibility_of_element_located()
-    for value in context.field_values:
-        flaw_detail_page.check_text_exist(value)
+    for index, value in enumerate(context.field_values):
+        if index == 2:
+            flaw_detail_page.check_owner_value_exist(value)
+        else:
+            flaw_detail_page.check_text_exist(value)
 
 
 @when("I update the CVE ID with a valid data")
@@ -274,11 +277,12 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     cur_value = flaw_detail_page.get_current_value_of_field("owner")
     if cur_value:
-        flaw_detail_page.set_field_value('owner', '')
+        flaw_detail_page.set_input_field('owner', '')
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
+        flaw_detail_page.close_all_toast_msg()
     go_to_specific_flaw_detail_page(context.browser)
-    flaw_detail_page.click_btn('selfAssignBtn')
+    flaw_detail_page.click_button_with_js('selfAssignBtn')
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
 
@@ -507,7 +511,7 @@ def step_impl(context):
     for item in context.value_dict.items():
         field = 'affects__' + item[0]
         if field in ['affects__ps_module', 'affects__ps_component', 'affects__cvss3_score']:
-            flaw_detail_page.set_field_value(field, item[1])
+            flaw_detail_page.set_input_value(field, item[1])
         else:
             flaw_detail_page.set_select_specific_value(field, item[1])
 

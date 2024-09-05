@@ -30,6 +30,10 @@ class FlawDetailPage(BasePage):
         self.timeout = 60
 
     locators = {
+        "createFlawLink": ("LINK_TEXT", "Create Flaw"),
+        "createNewFlawBtn": ("XPATH", '//button[contains(text(), "Create New Flaw")]'),
+        "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
+
         "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
         "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
@@ -275,12 +279,6 @@ class FlawDetailPage(BasePage):
     def click_save_acknowledgment_btn(self):
         self.driver.execute_script("arguments[0].click();", self.saveAcknowledgmentBtn)
 
-    def check_acknowledgement_exist(self, value):
-        e = self.driver.find_element(By.XPATH, f'//div[text()="{value}"]')
-        return WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of(e)
-        )
-
     def check_acknowledgement_not_exist(self, value):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, f'//div[text()="{value}"]'))
@@ -466,15 +464,16 @@ class FlawDetailPage(BasePage):
         else:
             # delete all reference
             reference_count = len(reference_list)
-            for _ in range(1, reference_count+1):
-                self.click_reference_dropdown_button()
+            for i in range(reference_count):
+                if i == 0:
+                    self.click_reference_dropdown_button()
                 del_btn_xpath = f"(//div[@class='ps-3 border-start'])[6]/div/div[1]/div/div/div[3]/button[2]"
                 del_btn = self.driver.find_element(By.XPATH, del_btn_xpath)
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", del_btn)
                 self.driver.execute_script("arguments[0].click();", del_btn)
                 self.referenceDelConfirmBtn.click_button()
                 self.wait_msg("referenceDeletedMsg")
-                self.toastMsgCloseBtn.click_button()
+                self.close_all_toast_msg()
                 time.sleep(2)
 
     def add_reference_select_external_type(self):
@@ -524,8 +523,7 @@ class FlawDetailPage(BasePage):
     def click_reference_dropdown_button(self):
         v = self.referenceCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
-        if (reference_count > 0 and
-                not self.is_element_exists(By.XPATH, "//i[@class='bi bi-dash-square-dotted me-1']")):
+        if reference_count > 0:
             reference_dropdown_btn = self.driver.find_elements(
                 locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
                 near(self.referenceCountLabel))[0]
@@ -541,26 +539,25 @@ class FlawDetailPage(BasePage):
     def click_acknowledgments_dropdown_btn(self):
         v = self.acknowledgmentCountLabel.get_text()
         reference_count = int(v.split(": ")[1])
-        if (reference_count > 0 and
-                not self.is_element_exists(By.XPATH, "//i[@class='bi bi-dash-square-dotted me-1']")):
+        if reference_count > 0:
             reference_dropdown_btn = self.driver.find_elements(
                 locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_new_affect_inputs(self, external_system = 'jira', affectedness_value = 'NEW'):
+    def set_new_affect_inputs(self, external_system='jira', affectedness_value='NEW'):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
         self.click_plusdropdown_btn('affectNotSave')
 
         # Set new affect inputs: PS module, PS component, CVSSv3
         if external_system == 'jira':
-            self.set_field_value('affects__ps_module', AFFECTED_MODULE_JR)
+            self.set_input_value('affects__ps_module', AFFECTED_MODULE_JR)
         else:
-            self.set_field_value('affects__ps_module', AFFECTED_MODULE_BZ)
+            self.set_input_value('affects__ps_module', AFFECTED_MODULE_BZ)
         ps_component_value = generate_random_text()
-        self.set_field_value('affects__ps_component', ps_component_value)
-        self.set_field_value('affects__cvss3_score', '4.3')
+        self.set_input_value('affects__ps_component', ps_component_value)
+        self.set_input_value('affects__cvss3_score', '4.3')
 
         # Set select value for Affectedness, Resolution and Impact
         selects = find_elements_in_page_factory(self, 'selects')
@@ -609,11 +606,7 @@ class FlawDetailPage(BasePage):
         if not field.endswith('Select'):
             select_element = self.driver.find_elements(
                 locate_with(By.XPATH, "//select[@class='form-select']").near(select_element))[0]
-        try:
-            if find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
-                self.toastMsgCloseBtn.click_button()
-        except ElementNotVisibleException:
-            pass
+        self.close_all_toast_msg()
 
         bottom_footer = find_elements_in_page_factory(self, 'bottomFooter')[0]
         bottom_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
@@ -688,27 +681,6 @@ class FlawDetailPage(BasePage):
             locate_with(By.XPATH, "//span[@class='osim-editable-text-value form-control']").near(field_element))[0]
         current_value = input_element.get_text()
         return current_value
-
-    def set_field_value(self, field, value):
-        field_element = getattr(self, field)
-        # Get the pen element of the field and click it
-        pen_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='osim-editable-text-pen input-group-text']").to_right_of(field_element))[0]
-        self.driver.execute_script("arguments[0].click();", pen_element)
-        # Get the input field and set the value
-        input_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//input[@class='form-control']").near(field_element))[0]
-        if value:
-            self.driver.execute_script("arguments[0].value = '';", input_element)
-            input_element.send_keys(value)
-        else:
-            input_element.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
-        # In affects, if we won't click the CheckMark for module and go to
-        # component, the affects will be hidden
-        if "affects" in field:
-            field_savebtn = self.driver.find_elements(
-                locate_with(By.XPATH, "//i[@class='bi bi-check']").near(input_element))[0]
-            self.driver.execute_script("arguments[0].click();", field_savebtn)
 
     def delete_affect(self, field):
         affect_affectedness_element = getattr(self, field)
@@ -835,4 +807,11 @@ class FlawDetailPage(BasePage):
             _, value = self.get_select_value('reviewStatusSelect')
             return value
         if field == "embargoed":
-           return self.get_field_value('embargoedText', "//span[@class='form-control']")
+            return self.get_field_value('embargoedText', "//span[@class='form-control']")
+
+    def check_owner_value_exist(self, value):
+        return self.driver.find_element(By.XPATH, f"//span[text()='{value}']")
+
+    def close_all_toast_msg(self):
+        for toast_msg in find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
+            toast_msg.click()
