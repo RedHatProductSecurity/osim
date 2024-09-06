@@ -95,3 +95,12 @@ export async function postAffectCvssScore(affectId: string, cvssScoreObject: unk
     .then((response) => response.data)
     .catch(createCatchHandler('Problem updating affect CVSS scores:'));
 }
+
+export async function deleteAffectCvssScore(affectId: string, cvssScoresId: string) {
+  return osidbFetch({
+    method: 'delete',
+    url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
+  })
+    .then((response) => response.data)
+    .catch(createCatchHandler('Problem deleting affect CVSS scores:'));
+}

@@ -26,6 +26,7 @@ const props = defineProps<{
   embargoed: boolean;
   affects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
+  affectCvssToDelete: Record<string, string>;
   error: Record<string, any>[] | null;
 }>();
 
@@ -37,7 +38,7 @@ const emit = defineEmits<{
   'affects:refresh': [];
 }>();
 
-const { affects, affectsToDelete } = toRefs(props);
+const { affects, affectsToDelete, affectCvssToDelete } = toRefs(props);
 const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 const savedAffects = clone(affects.value) as ZodAffectType[];
@@ -430,42 +431,39 @@ function affectCvss(affect: ZodAffectType) {
 }
 
 function affectCvssDisplay(affect: ZodAffectType) {
-  const cvssScore = affectCvss(affect)?.score;
-  const cvssVector = useAffectCvss3Vector(affect).value;
+  const cvssScore = affectCvss(affect)?.score || '';
+  const cvssVector = affectCvss(affect)?.vector || '';
   if (cvssScore && cvssVector) {
-    return `${affectCvss(affect)?.score || ''} ${useAffectCvss3Vector(affect).value}`;
+    return `${cvssScore} ${cvssVector}`;
   } else {
-    return useAffectCvss3Vector(affect).value;
+    return cvssVector;
   }
 }
 
-function useAffectCvss3Vector(affect: ZodAffectType) {
-  return computed({
-    get() {
-      return affectCvss(affect)?.vector || '';
-    },
-    set(newValue: string) {
-      const cvssScoreIndex = affect.cvss_scores.findIndex(
-        ({ issuer, cvss_version }) =>
-          issuer === 'RH' && cvss_version === 'V3'
-      );
-      if (newValue === '' && cvssScoreIndex !== -1) {
-        // affect.cvss_scores.splice(cvssScoreIndex, 1);
-      } else if (cvssScoreIndex !== -1) {
-        affect.cvss_scores[cvssScoreIndex].vector = newValue;
-      } else if (newValue !== '') {
-        affect.cvss_scores.push({
-          issuer: 'RH',
-          cvss_version: 'V3',
-          comment: '',
-          score: null,
-          vector: newValue,
-          embargoed: props.embargoed,
-          alerts: [],
-        });
-      }
-    },
-  });
+function updateAffectCvss(affect: ZodAffectType, newValue: string) {
+  const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
+  const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
+  if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+    affect.cvss_scores[cvssScoreIndex].vector = '';
+    affectCvssToDelete.value[affect.uuid] = cvssId;
+  } else {
+    if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
+      delete affectCvssToDelete.value[affect.uuid];
+    }
+    if (cvssScoreIndex !== -1) {
+      affect.cvss_scores[cvssScoreIndex].vector = newValue;
+    } else if (newValue !== '') {
+      affect.cvss_scores.push({
+        issuer: 'RH',
+        cvss_version: 'V3',
+        comment: '',
+        score: null,
+        vector: newValue,
+        embargoed: props.embargoed,
+        alerts: [],
+      });
+    }
+  }
 }
 
 function resolutionOptions(affect: ZodAffectType) {
@@ -1110,8 +1108,9 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               <td>
                 <input
                   v-if="isBeingEdited(affect)"
-                  v-model="useAffectCvss3Vector(affect).value"
                   class="form-control"
+                  :value="affectCvss(affect)?.vector"
+                  @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>

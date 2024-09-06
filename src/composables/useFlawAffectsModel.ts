@@ -5,6 +5,7 @@ import {
   deleteAffects,
   putAffectCvssScore,
   postAffectCvssScore,
+  deleteAffectCvssScore,
 } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
@@ -19,6 +20,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectsWithChangedCvss = ref<ZodAffectType[]>([]);
   const affectIdsForPutRequest = ref<string[]>([]);
   const affectsToDelete = ref<ZodAffectType[]>([]);
+  const affectCvssToDelete = ref<Record<string, string>>({});
   const initialAffects = deepCopyFromRaw(flaw.value.affects);
 
   function refreshAffects() {
@@ -114,7 +116,9 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       .filter(
         (affect) => !affectsToDelete.value.includes(affect),
       );
-    return affectsForMainEndpoint.length > 0 || affectsWithChangedCvss.value.length > 0;
+    return affectsForMainEndpoint.length > 0
+    || affectsWithChangedCvss.value.length > 0
+    || Object.keys(affectCvssToDelete.value).length > 0;
   });
 
   const { addToast } = useToastStore();
@@ -254,7 +258,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           ++affectWithChangedCvssCount;
           resetAffectCvssChanges();
         } catch (error) {
-          console.error('useFlawAffectsModel::saveAffects() Error following affect save:', error);
+          console.error('useFlawAffectsModel::saveAffects() Error updating CVSS score(s):', error);
         }
       }
 
@@ -262,6 +266,34 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         addToast({
           title: 'Success!',
           body: `${cvssScoresSavedCount} CVSS score(s) saved on ${affectWithChangedCvssCount} affect(s).`,
+          css: 'success',
+        });
+      }
+    }
+
+    if (Object.keys(affectCvssToDelete.value).length > 0) {
+      let cvssScoresRemovedCount = 0;
+      let affectWithRemovedCvssCount = 0;
+      try {
+        for (const affectId of Object.keys(affectCvssToDelete.value)) {
+          const affect = flaw.value.affects.find(affect => affect.uuid === affectId);
+          if (affect) {
+            const cvssId = affectCvssToDelete.value[affectId];
+            if (cvssId) {
+              await deleteAffectCvssScore(affect.uuid as string, cvssId);
+              cvssScoresRemovedCount++;
+            }
+          }
+        }
+        affectWithRemovedCvssCount++;
+      } catch (error) {
+        console.error('useFlawAffectsModel::saveAffects() Error removing CVSS score(s):', error);
+      }
+
+      if (cvssScoresRemovedCount) {
+        addToast({
+          title: 'Success!',
+          body: `${cvssScoresRemovedCount} CVSS score(s) removed on ${affectWithRemovedCvssCount} affect(s).`,
           css: 'success',
         });
       }
@@ -276,6 +308,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     removeAffects,
     wereAffectsModified,
     affectsToDelete,
+    affectCvssToDelete,
     didAffectsChange,
     initialAffects,
     refreshAffects,
