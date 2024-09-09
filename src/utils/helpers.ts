@@ -3,6 +3,7 @@ import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue
 import { DateTime } from 'luxon';
 import * as R from 'ramda';
 import { CVSS_V3 } from '@/constants';
+import type { ZodAffectType } from '@/types';
 
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
@@ -81,8 +82,19 @@ export function getRhCvss3 (scores: any[]) {
 type WithModuleComponent = {
   ps_component: string;
   ps_module: string;
+  uuid?: string | null;
 };
 
 export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
   return first.ps_component === second.ps_component && first.ps_module === second.ps_module;
+}
+
+export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType){
+  return (first.uuid === second.uuid) || matchModuleComponent(first, second);
+}
+
+export function isAffectIn (affect: ZodAffectType, affects: ZodAffectType[]) {
+  return Boolean(
+    affects.find((affectToMatch) => doAffectsMatch(affect, affectToMatch))
+  );
 }

@@ -27,6 +27,10 @@ function isCvssNew(cvssScore: ZodAffectCVSSType) {
 
 import { CVSS_V3 } from '@/constants';
 
+const affectsWithChangedCvss = ref<ZodAffectType[]>([]);
+const affectIdsForPutRequest = ref<string[]>([]);
+const affectsToDelete = ref<ZodAffectType[]>([]);
+
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   // CVSS modifications are not counted
   const wereAffectsModified = computed(() => affectIdsForPutRequest.value.length > 0);
@@ -143,6 +147,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function removeAffect(affect: ZodAffectType, isRecoverable = true) {
     const affectIndex = flaw.value.affects.findIndex((affectToMatch) => affectToMatch === affect);
+    console.log('affectIndex', affectIndex);
     if (affectIndex === -1) return;
     const deletedAffect = flaw.value.affects.splice(affectIndex, 1)[0];
     if (isRecoverable) affectsToDelete.value.push(deletedAffect);
