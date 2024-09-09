@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, toRefs, ref } from 'vue';
+import { computed, toRefs, ref, watch } from 'vue';
 
-import { equals, clone, prop, ascend, sortWith } from 'ramda';
+import { equals, clone } from 'ramda';
 
 import FlawTrackers from '@/components/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager.vue';
@@ -18,7 +18,9 @@ import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
 
-import { type affectSortKeys, displayModes } from './';
+import { displayModes } from './';
+import { useAffectSelections } from './useAffectSelections';
+import { useFilterSortAffects } from './useFilterSortAffects';
 
 // const props = defineProps<{
 //   affects: ZodAffectType[];
@@ -50,10 +52,8 @@ const settings = ref(settingsStore.settings);
 const {
   closeModal: closeManagersTrackersModal,
   isModalOpen: isManageTrackersModalOpen,
-  openModal: openManagersTrackersModal,
+  openModal: openManageTrackersModal,
 } = useModal();
-
-// const { affectCvssToDelete, affects, affectsToDelete } = toRefs(props);
 
 const { flaw } = toRefs(props);
 const {
@@ -66,89 +66,28 @@ const {
   removeAffect,
 } = useFlawAffectsModel(flaw);
 
-// const savedAffects = clone<ZodAffectType[]>(flaw.value.affects); // Duplicates initial affects in useFlawAffectsModel
+const {
+  filterAffects,
+  selectedModules,
+  sortAffects,
+} = useFilterSortAffects();
 
 const displayMode = ref(displayModes.ALL);
 
-const selectedModules = ref<string[]>([]);
-const modulesExpanded = ref(true);
-
-const affectednessFilter = ref<string[]>([]);
-const resolutionFilter = ref<string[]>([]);
-const impactFilter = ref<string[]>([]);
-
-const sortKey = ref<affectSortKeys>('ps_module');
-const sortOrder = ref(ascend);
-
 const affectsEdited = ref<ZodAffectType[]>([]);
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
+
+const modulesExpanded = ref(true);
 
 const affectedModules = computed(() => uniques(sortAffects(allAffects.value, true).map(affect => affect.ps_module)));
 const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(flaw.value.affects));
 
-const filteredAffects = computed(() => {
-  if (displayedAffects.value.length <= 0) {
-    setDisplayMode(displayModes.ALL); // TODO: Remove side effect in computed
+watch(flaw.value.affects, (newAffects) => {
+  if (newAffects.length <= 0) {
+    setDisplayMode(displayModes.ALL);
   }
-  return displayedAffects.value.filter((affect) => {
-    const matchesSelectedModules =
-      selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
-    const matchesAffectednessFilter =
-      affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
-    const matchesResolutionFilter =
-      resolutionFilter.value.length === 0 || resolutionFilter.value.includes(affect.resolution ?? '');
-    const matchesImpactsFilter =
-      impactFilter.value.length === 0 || impactFilter.value.includes(affect.impact ?? '');
-    return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
-  });
 });
-const sortedAffects = computed(() => sortAffects(filteredAffects.value, false));
-
-const {
-  changePage,
-  currentPage,
-  decreaseItemsPerPage,
-  increaseItemsPerPage,
-  maxItemsPerPage,
-  minItemsPerPage,
-  pages,
-  paginatedItems: paginatedAffects,
-  totalPages,
-} = usePaginationWithSettings(sortedAffects, { setting: 'affectsPerPage' });
-
-// const setSort = (key: affectSortKeys) => {
-//   if (sortKey.value === key) {
-//     sortOrder.value = sortOrder.value === ascend ? descend : ascend;
-//   } else {
-//     sortKey.value = key;
-//     sortOrder.value = ascend;
-//   }
-// };
-
-function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
-  const order = sortOrder.value;
-
-  const customSortFn = (affect: ZodAffectType) => {
-    const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
-    if (sortKey.value === 'trackers') {
-      return affectToSort.trackers.length;
-    } else if (sortKey.value === 'cvss_scores') {
-      return affectToSort[sortKey.value].length;
-    }
-    return affectToSort[sortKey.value] || 0;
-  };
-
-  const comparators = standard
-    ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
-    : [order<ZodAffectType>(customSortFn),
-        order<ZodAffectType>(sortKey.value === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
-
-  return sortWith([
-    ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-    ...comparators,
-  ])(affects);
-}
 
 const displayedAffects = computed(() => {
   switch (displayMode.value) {
@@ -166,6 +105,41 @@ const displayedAffects = computed(() => {
       return allAffects.value;
   }
 });
+
+// const filteredAffects = computed(() => filterAffects(displayedAffects.value));
+
+// const preEditAffects = computed(() =>
+//   filteredAffects.value.map(affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect)
+// );
+
+const sortedAffects = computed(() => {
+  const filteredAffects = filterAffects(displayedAffects.value);
+  const uneditedFilteredAffects = filteredAffects.map(
+    affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect,
+  );
+  return sortAffects(uneditedFilteredAffects, false);
+});
+
+const {
+  changePage,
+  currentPage,
+  decreaseItemsPerPage,
+  increaseItemsPerPage,
+  maxItemsPerPage,
+  minItemsPerPage,
+  pages,
+  paginatedItems: paginatedAffects,
+  totalPages,
+} = usePaginationWithSettings(sortedAffects, { setting: 'affectsPerPage' });
+
+const {
+  isAffectSelected,
+  selectedAffects,
+  toggleAffectSelection,
+} = useAffectSelections(
+  computed(() => flaw.value.affects),
+  affect => !isRemoved(affect) && !isBeingEdited(affect),
+);
 
 function setDisplayMode(mode: displayModes) {
   if (displayMode.value === mode) {
@@ -204,31 +178,6 @@ function moduleBtnTooltip(moduleName: string) {
       : '');
 }
 
-// Affect Field Specific Filters
-
-// function toggleFilter(filterArray: Ref<string[]>, item: string) {
-//   const index = filterArray.value.indexOf(item);
-//   if (index > -1) {
-//     filterArray.value.splice(index, 1);
-//   } else {
-//     filterArray.value.push(item);
-//   }
-// }
-
-// function toggleAffectednessFilter(affectedness: string) {
-//   toggleFilter(affectednessFilter, affectedness);
-// }
-
-// function toggleResolutionFilter(resolution: string) {
-//   toggleFilter(resolutionFilter, resolution);
-// }
-
-// function toggleImpactFilter(impact: string) {
-//   toggleFilter(impactFilter, impact);
-// }
-
-// Edit Affects
-
 function isBeingEdited(affect: ZodAffectType) {
   return affectsEdited.value.includes(affect);
 }
@@ -249,9 +198,7 @@ function editAffect(affect: ZodAffectType) {
 }
 
 function editSelectedAffects() {
-  selectedAffects.value.forEach((affect) => {
-    editAffect(affect);
-  });
+  selectedAffects.value.forEach(editAffect);
 }
 
 function commitChanges(affect: ZodAffectType) {
@@ -372,27 +319,6 @@ function removeSelectedAffects() {
 function recoverAllAffects() {
   const affectsToRecover = [...affectsToDelete.value];
   affectsToRecover.forEach(recoverAffect);
-}
-
-// Select Affects
-const selectedAffects = ref<ZodAffectType[]>([]);
-
-function isSelectable(affect: ZodAffectType) {
-  return !isBeingEdited(affect) && !isRemoved(affect);
-}
-
-function isAffectSelected(affect: any) {
-  return selectedAffects.value.includes(affect);
-}
-
-function toggleAffectSelection(affect: ZodAffectType) {
-  if (!isSelectable(affect)) return;
-
-  if (!isAffectSelected(affect)) {
-    selectedAffects.value.push(affect);
-  } else {
-    selectedAffects.value = selectedAffects.value.filter(a => a !== affect);
-  }
 }
 
 // Trackers
@@ -653,11 +579,12 @@ const displayedTrackers = computed(() => {
       </div>
       <FlawAffectsTable
         v-model:affects="paginatedAffects"
-        v-model:affectsEdited="affectsEdited"
+        :affectsEdited="affectsEdited"
         :error="error"
         :affectsToDelete="affectsToDelete"
         :selectedModules="selectedModules"
         :selectedAffects="selectedAffects"
+        :totalPages="totalPages"
         @affects:display-mode="setDisplayMode"
         @affect:edit="editAffect"
         @affect:cancel="cancelChanges"
@@ -665,6 +592,7 @@ const displayedTrackers = computed(() => {
         @affect:recover="recoverAffect"
         @affect:revert="revertAffect"
         @affect:remove="handleRemove"
+        @affect:toggle-selection="toggleAffectSelection"
       />
       <span v-if="!hasAffects" class="my-2 p-2 d-flex">
         This flaw has no affects
@@ -683,33 +611,49 @@ const displayedTrackers = computed(() => {
       @affects:refresh="emit('affects:refresh')"
     />
   </div>
-  <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManagersTrackersModal">
-    <template #header>
-      <div class="d-flex w-100">
-        <h4 class="m-0">Tracker Manager</h4>
+  <div class="osim-tracker-manager-modal-container">
+    <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManagersTrackersModal">
+      <template #body>
         <button
           type="button"
           class="btn btn-close ms-auto"
           aria-label="Close"
           @click="closeManagersTrackersModal"
         />
-      </div>
-    </template>
-    <template #body>
-      <TrackerManager
-        :relatedFlaws="relatedFlaws"
-        :flaw="flaw"
-        @affects-trackers:refresh="refreshAffects"
-      />
-    </template>
-    <template #footer>
-      <div></div>
-    </template>
-  </Modal>
+        <TrackerManager
+          :relatedFlaws="relatedFlaws"
+          :flaw="flaw"
+          @affects-trackers:refresh="refreshAffects"
+        />
+      </template>
+    </Modal>
+  </div>
 </template>
 
 <style scoped lang="scss">
 @import '@/scss/bootstrap-overrides';
+
+.osim-tracker-manager-modal-container {
+  &:deep(.modal-header),
+  &:deep(.modal-footer) {
+    display: none;
+  }
+
+  &:deep(.modal-body) {
+    position: relative;
+    padding: 0;
+
+    .osim-affect-trackers-container {
+      margin: 0 !important;
+    }
+  }
+
+  :deep(.btn-close) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+}
 
 .osim-affects-section {
   margin-block: 1rem;

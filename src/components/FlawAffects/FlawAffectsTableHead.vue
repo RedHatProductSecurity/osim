@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue';
-import { prop, descend, ascend, sortWith } from 'ramda';
+import { descend } from 'ramda';
 
 import {
   affectImpacts,
@@ -10,187 +9,41 @@ import {
   type ZodAffectType,
 } from '@/types/zodAffect';
 
-import { type affectSortKeys, displayModes } from './';
 
-import { useSettingsStore } from '@/stores/SettingsStore';
-import { usePagination } from '@/composables/usePagination';
+import { useFilterSortAffects } from './useFilterSortAffects';
+import { useAffectSelections } from './useAffectSelections';
 
-
-const emit = defineEmits<{
-//   'affect:recover': [value: ZodAffectType];
-'affects:display-mode': [value: string];
-}>();
+const {
+  setSort,
+  affectednessFilter,
+  resolutionFilter,
+  impactFilter,
+  setAffectednessFilter,
+  setResolutionFilter,
+  setImpactFilter,
+  sortKey,
+  sortOrder,
+} = useFilterSortAffects();
 
 const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
 const props = defineProps<{
   affectsToDelete: ZodAffectType[];
+  affectsEdited: ZodAffectType[];
   selectedModules: string[];
 }>();
 
-const settings = ref(useSettingsStore().settings);
-
-// // Edit Affects
-const affectsEdited = ref<ZodAffectType[]>([]);
-const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
-// Affect Field Specific Filters
-const affectednessFilter = ref<string[]>([]);
-const resolutionFilter = ref<string[]>([]);
-const impactFilter = ref<string[]>([]);
-
-const filteredAffects = computed(() => {
-  if (affects.value.length <= 0) {
-    emit('affects:display-mode', displayModes.ALL);
-  }
-  return affects.value.filter(affect => {
-    const matchesSelectedModules =
-      props.selectedModules.length === 0 || props.selectedModules.includes(affect.ps_module);
-    const matchesAffectednessFilter =
-      affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
-    const matchesResolutionFilter =
-      resolutionFilter.value.length === 0 || resolutionFilter.value.includes(affect.resolution ?? '');
-    const matchesImpactsFilter =
-      impactFilter.value.length === 0 || impactFilter.value.includes(affect.impact ?? '');
-    return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
-  });
-});
-
-const sortedAffects = computed(() =>
-  sortAffects(filteredAffects.value, false)
-);
-
-const sortKey = ref<affectSortKeys>('ps_module');
-const sortOrder = ref(ascend);
-// // Affects Pagination
-const totalPages = computed(() =>
-  Math.ceil(sortedAffects.value.length / settings.value.affectsPerPage)
-);
-
-// // const minItemsPerPage = 5;
-// // const maxItemsPerPage = 20;
-const {
-  // pages,
-  currentPage,
-  // changePage,
-} = usePagination(totalPages, settings.value.affectsPerPage);
-
-const paginatedAffects = computed(() => {
-  const start = (currentPage.value - 1) * settings.value.affectsPerPage;
-  const end = start + settings.value.affectsPerPage;
-  return sortedAffects.value.slice(start, end);
-});
-
-function toggleFilter(filterArray: Ref<string[]>, sortValue: string) {
-  const index = filterArray.value.indexOf(sortValue);
-  if (index > -1) {
-    filterArray.value.splice(index, 1);
-  } else {
-    filterArray.value.push(sortValue);
-  }
-}
-
-function toggleAffectednessFilter(affectedness: string) {
-  toggleFilter(affectednessFilter, affectedness);
-}
-
-function toggleResolutionFilter(resolution: string) {
-  toggleFilter(resolutionFilter, resolution);
-}
-
-function toggleImpactFilter(impact: string) {
-  toggleFilter(impactFilter, impact);
-}
-
-
+// Edit Affects
 
 function isBeingEdited(affect: ZodAffectType) {
-  return affectsEdited.value.includes(affect);
+  return props.affectsEdited.includes(affect);
 }
 
-function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid) || affect;
-}
-
-// Select Affects
-const selectedAffects = ref<ZodAffectType[]>([]);
-
-const areAllAffectsSelected = computed(() => {
-  return paginatedAffects.value.filter(affect => isSelectable(affect)).every(affect =>
-    isAffectSelected(affect));
-});
-
-const indeterminateSelection = computed(() => {
-  return !areAllAffectsSelected.value && paginatedAffects.value.filter(affect => isSelectable(affect)).some(affect =>
-    isAffectSelected(affect));
-});
-
-function isSelectable(affect: ZodAffectType) {
-  return !isBeingEdited(affect) && !isRemoved(affect);
-}
-
-function isAllNotSelectable() {
-  return paginatedAffects.value.every(affect => !isSelectable(affect));
-}
-
-function isAffectSelected(affect: any) {
-  return selectedAffects.value.includes(affect);
-}
-
-function toggleAffectSelection(affect: ZodAffectType) {
-  if (!isSelectable(affect)) {
-    return;
-  }
-  if (!isAffectSelected(affect)) {
-    selectedAffects.value.push(affect);
-  } else {
-    selectedAffects.value = selectedAffects.value.filter(a => a !== affect);
-  }
-}
-
-function selectAffects(event: Event) {
-  if (areAllAffectsSelected.value) {
-    paginatedAffects.value.forEach(affect => toggleAffectSelection(affect));
-  } else if (selectedAffects.value.length === 0) {
-    paginatedAffects.value.filter(affect => !isAffectSelected(affect)).forEach(affect => toggleAffectSelection(affect));
-  } else {
-    paginatedAffects.value.filter(affect => isAffectSelected(affect)).forEach(affect => toggleAffectSelection(affect));
-    (event.target as HTMLInputElement).checked = false;
-  }
-}
-
-function setSort(key: affectSortKeys) {
-  if (sortKey.value === key) {
-    sortOrder.value = sortOrder.value === ascend ? descend : ascend;
-  } else {
-    sortKey.value = key;
-    sortOrder.value = ascend;
-  }
-}
-
-function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
-  const customSortKey = sortKey.value;
-  const order = sortOrder.value;
-
-  const customSortFn = (affect: ZodAffectType) => {
-    const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
-    if (customSortKey === 'trackers') {
-      return affectToSort.trackers.length;
-    }
-    else if (customSortKey === 'cvss_scores') {
-      return affectToSort[customSortKey].length;
-    }
-    return affectToSort[customSortKey] || 0;
-  };
-
-  const comparator = standard
-    ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
-    : [order<ZodAffectType>(customSortFn),
-      order<ZodAffectType>(customSortKey === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
-
-  return sortWith([
-    ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-    ...comparator
-  ])(affects);
-}
+const {
+  isIndeterminateSelection,
+  areAllAffectsSelected,
+  areAllAffectsSelectable,
+  toggleMultipleAffectSelections,
+} = useAffectSelections(affects, (affect) => !isRemoved(affect) && !isBeingEdited(affect));
 
 function isRemoved(affect: ZodAffectType) {
   return props.affectsToDelete.includes(affect);
@@ -205,10 +58,10 @@ function isRemoved(affect: ZodAffectType) {
           type="checkbox"
           class="form-check-input"
           aria-label="Select All affects in Table"
-          :disabled="isAllNotSelectable()"
-          :indeterminate="indeterminateSelection"
-          :checked="areAllAffectsSelected && !isAllNotSelectable()"
-          @change="selectAffects($event)"
+          :disabled="!areAllAffectsSelectable"
+          :indeterminate="isIndeterminateSelection"
+          :checked="areAllAffectsSelected && areAllAffectsSelectable"
+          @change="toggleMultipleAffectSelections"
         />
       </th>
       <th>
@@ -259,13 +112,13 @@ function isRemoved(affect: ZodAffectType) {
             <li><a
               href="#"
               class="btn py-0 dropdown-item"
-              @click.prevent.stop="toggleAffectednessFilter(affectedness)"
+              @click.prevent.stop="setAffectednessFilter(affectedness)"
             >
               <input
                 type="checkbox"
                 class="form-check-input me-2"
                 :checked="affectednessFilter.includes(affectedness)"
-                @click.stop="toggleAffectednessFilter(affectedness)"
+                @click.stop="setAffectednessFilter(affectedness)"
               />
               <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
             </a></li>
@@ -303,13 +156,13 @@ function isRemoved(affect: ZodAffectType) {
             <li><a
               href="#"
               class="btn py-0 dropdown-item"
-              @click.prevent.stop="toggleResolutionFilter(resolution)"
+              @click.prevent.stop="setResolutionFilter(resolution)"
             >
               <input
                 type="checkbox"
                 class="form-check-input me-2"
                 :checked="resolutionFilter.includes(resolution)"
-                @click.stop="toggleResolutionFilter(resolution)"
+                @click.stop="setResolutionFilter(resolution)"
               />
               <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
             </a></li>
@@ -347,13 +200,13 @@ function isRemoved(affect: ZodAffectType) {
             <li><a
               href="#"
               class="btn py-0 dropdown-item"
-              @click.prevent.stop="toggleImpactFilter(impact)"
+              @click.prevent.stop="setImpactFilter(impact)"
             >
               <input
                 type="checkbox"
                 class="form-check-input me-2"
                 :checked="impactFilter.includes(impact)"
-                @click.stop="toggleImpactFilter(impact)"
+                @click.stop="setImpactFilter(impact)"
               />
               <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
             </a></li>

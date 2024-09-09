@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import {
   affectImpacts,
   affectAffectedness,
@@ -16,6 +16,7 @@ const emit = defineEmits<{
   'affect:commit': [value: ZodAffectType];
   'affect:cancel': [value: ZodAffectType];
   'affect:edit': [value: ZodAffectType];
+  'affect:toggle-selection': [value: ZodAffectType];
 }>();
 
 const affect = defineModel<ZodAffectType>('affect');
@@ -29,13 +30,6 @@ const props = defineProps<{
   error: Record<string, any>[] | null;
 }>();
 
-// Edit Affects
-// const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
-
-// function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-//   return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid) || affect;
-// }
-
 const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
     emit('affect:cancel', affect);
@@ -45,25 +39,17 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 };
 
 // Select Affects
-const selectedAffects = ref<ZodAffectType[]>([]);
 
 const isSelectable = computed(() => !props.isBeingEdited && !props.isRemoved);
 
-function toggleAffectSelection(affect: ZodAffectType) {
-  if (!isSelectable.value) {
-    return;
-  }
-  if (!props.isSelected) {
-    selectedAffects.value.push(affect);
-  } else {
-    selectedAffects.value = selectedAffects.value.filter(a => a !== affect);
-  }
+function handleToggle(affect: ZodAffectType) {
+  emit('affect:toggle-selection', affect);
 }
 
 function revertChanges(affect: ZodAffectType) {
   emit('affect:revert', affect);
   if (props.isSelected) {
-    toggleAffectSelection(affect);
+    handleToggle(affect);
   }
 }
 
@@ -105,7 +91,7 @@ const affectRowTooltip = computed(() => {
       'selected': props.isSelected }"
     :style="isSelectable ? 'cursor: pointer' : ''"
     :title="affectRowTooltip"
-    @click.prevent="toggleAffectSelection(affect)"
+    @click.prevent="handleToggle(affect)"
   >
     <td>
       <i class="row-left-indicator bi bi-caret-right-fill fs-4" />
@@ -114,7 +100,7 @@ const affectRowTooltip = computed(() => {
         class="form-check-input"
         :checked="props.isSelected"
         :disabled="isBeingEdited || isRemoved"
-        @click.stop="toggleAffectSelection(affect)"
+        @click.stop="handleToggle(affect)"
       />
     </td>
     <td>
