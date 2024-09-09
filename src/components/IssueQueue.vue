@@ -4,9 +4,13 @@ import { DateTime } from 'luxon';
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
+import { useSearchStore } from '@/stores/SearchStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
+import { useToastStore } from '@/stores/ToastStore';
 
 const userStore = useUserStore();
+const searchStore = useSearchStore();
+const { addToast } = useToastStore();
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 
@@ -171,6 +175,14 @@ const nameForOption = (fieldName: string) => {
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
+
+function clearDefaultFilter() {
+  searchStore.resetFilter();
+  addToast({
+    title: 'Default Filter',
+    body: 'User\'s default filter cleared',
+  });
+}
 </script>
 
 <template>
@@ -199,18 +211,23 @@ const nameForOption = (fieldName: string) => {
         :class="{'text-secondary': isLoading}"
       > Loaded {{ issues.length }} of {{ total }}</span>
     </div>
-    <details v-if="showFilter" class="osim-default-filter">
-      <summary>Default Filters</summary>
-      <div class="my-2">
-        <span
-          v-for="(value, key) in defaultFilters"
-          :key="key"
-          class="badge bg-secondary me-1"
-        >
-          {{ nameForOption(key) }} : {{ value }}
-        </span>
-      </div>
-    </details>
+    <div v-if="showFilter" class="d-flex gap-2">
+      <details class="osim-default-filter">
+        <summary>Default Filters
+          <button class="btn btn-sm btn-primary lh-0 py-0" @click="clearDefaultFilter()">
+            clear
+          </button></summary>
+        <div class="my-2">
+          <span
+            v-for="(value, key) in defaultFilters"
+            :key="key"
+            class="badge bg-secondary me-1"
+          >
+            {{ nameForOption(key) }} : {{ value }}
+          </span>
+        </div>
+      </details>
+    </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">
         <thead class="sticky-top">
