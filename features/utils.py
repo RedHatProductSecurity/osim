@@ -103,11 +103,11 @@ def go_to_home_page(browser):
     home_page.flaw_list_exist()
 
 
-def go_to_specific_flaw_detail_page(browser):
+def go_to_specific_flaw_detail_page(browser, flaw_id=None):
     """
     Go to a specific flaw detail page
     """
-    cve_id = get_flaw_id()
+    cve_id = flaw_id if flaw_id else get_flaw_id()
 
     if cve_id.startswith("CVE-"):
         go_to_home_page(browser)

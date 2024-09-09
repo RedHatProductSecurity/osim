@@ -171,3 +171,13 @@ Feature: Flaw detail testing on public flaw
         # |            SECONDARY_ASSESSMENT |
         # Below state can only work after tracker(s) filed
         # |                            DONE |
+
+    Scenario Outline: Update CVSS score explanation
+      When I {action} the CVSS score explanation
+      Then The CVSS score explanation is updated
+
+      Examples:
+        |         action |
+        |         update |
+        |         delete |
+        |            add |
