@@ -62,6 +62,7 @@ class FlawDetailPage(BasePage):
         "saveBtn": ("XPATH", '//button[text()=" Save Changes "]'),
         "flawSavedMsg": ("XPATH", "//div[text()='Flaw saved']"),
         "flawCreatedMsg": ("XPATH", "//div[text()='Flaw created']"),
+        "cvssScoreSavedMsg": ("XPATH", "//div[text()='Saved CVSS Scores']"),
 
         "addAcknowledgmentBtn": ("XPATH", "//button[contains(text(), 'Add Acknowledgment')]"),
         "acknowledgmentCountLabel": ("XPATH", "//label[contains(text(), 'Acknowledgments:')]"),
@@ -110,6 +111,9 @@ class FlawDetailPage(BasePage):
         "rejectFlawBtn":  ("XPATH", "//button[contains(text(), 'Reject Flaw')]"),
         "rejectReasonText": ("XPATH", "//span[text()='Please provide a reason for rejecting the flaw']"),
         "flawRejectedMsg": ("XPATH", "//strong[text()='Flaw Rejected']"),
+
+        "cvssCommentLabel": ("XPATH", "//label[contains(text(), 'Explain non-obvious CVSSv3 score metrics')]"),
+
         "referenceCountLabel": ("XPATH", '//label[contains(text(), "References:")]'),
         "addReferenceBtn": ("XPATH", "//button[contains(text(), 'Add Reference')]"),
         "saveReferenceBtn": ("XPATH", "//button[contains(text(), 'Save Changes to References')]"),
@@ -815,3 +819,24 @@ class FlawDetailPage(BasePage):
     def close_all_toast_msg(self):
         for toast_msg in find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
             toast_msg.click()
+
+    def set_cvss_score_explanation(self, value):
+        cvss_comment_dropdown  = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "i").near(self.cvssCommentLabel))[0]
+        self.click_button_with_js(cvss_comment_dropdown)
+        cvss_comment_textarea  = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").near(self.cvssCommentLabel))[0]
+        if value:
+            self.driver.execute_script("arguments[0].value = '';", cvss_comment_textarea)
+            cvss_comment_textarea.send_keys(value)
+        else:
+            cvss_comment_textarea.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+
+    def get_cvss_score_explanation(self):
+        cvss_comment_dropdown  = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "i").near(self.cvssCommentLabel))[0]
+        self.click_button_with_js(cvss_comment_dropdown)
+        cvss_comment_textarea  = self.driver.find_elements(
+            locate_with(By.TAG_NAME, "textarea").near(self.cvssCommentLabel))[0]
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", cvss_comment_textarea)
+        return cvss_comment_textarea.getAttribute("value")
