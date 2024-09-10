@@ -1,99 +1,118 @@
-import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-import { useRoute, useRouter } from 'vue-router';
-import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
-import { flawFields } from '@/constants/flawFields';
+import { useRouter } from 'vue-router';
+import { type ExtractPublicPropTypes } from 'vue';
+// @ts-expect-error missing types
+import DjangoQLCompletion from 'djangoql-completion';
 
-vi.mock('vue-router', async () => {
-  const actual = await vi.importActual('vue-router');
-  const replaceMock = vi.fn();
-
-  return {
-    ...actual,
-    useRoute: vi.fn(() => ({ query: { query: 'search' } })),
-    useRouter: vi.fn(() => ({
-      replace: replaceMock
-    }))
-  };
-});
 
 
 describe('IssueSearchAdvanced', () => {
-  let wrapper: VueWrapper<any>;
+  let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
 
-  beforeEach(() => {
-    const props: typeof IssueSearchAdvanced.props = { isLoading: false };
-    wrapper = mount(IssueSearchAdvanced, {
-      props,
-      global: {
-        mocks: { useRoute, useRouter },
+  vi.mock('djangoql-completion');
+  vi.mock('vue-router', () => ({
+    useRoute: vi.fn().mockReturnValue({
+      query: {}
+    }),
+    useRouter: vi.fn().mockReturnValue({
+      replace: vi.fn(),
+    }),
+  }));
+
+  const mountIssueSearchAdvanced = async (props?: ExtractPublicPropTypes<typeof IssueSearchAdvanced>) => {
+    const wrapper = mount(IssueSearchAdvanced, {
+      props: {
+        isLoading: false,
+        ...props
       }
     });
+    await flushPromises();
+    return wrapper;
+  };
+
+  beforeEach(async () => {
+    IssueSearchAdvanced = (await import('@/components/IssueSearchAdvanced.vue')).default;
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
-  it('should render', () => {
-    expect(wrapper.exists()).toBe(true);
+  it.each([true, false])('should render when `isLoading` is %s', async (isLoading) => {
+    const wrapper = await mountIssueSearchAdvanced({ isLoading });
+
+    expect(wrapper.html()).toMatchSnapshot();
+    expect(wrapper.find('summary').text()).toEqual('Advanced Search');
+    expect(wrapper.find('form').isVisible).toBeTruthy();
   });
 
-  it('should show advanced search', async () => {
-    const content = wrapper.find('details');
-    expect(content.exists()).toBe(true);
+  it('should instantiate djangoql-completion on mount', async () => {
+    await mountIssueSearchAdvanced();
+
+    expect(vi.mocked(DjangoQLCompletion)).toHaveBeenCalledTimes(1);
   });
 
-  it('should update router with filters on search button click', async () => {
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    await selectDropdown.setValue(selectDropdown.findAll('option')[1].element.value);
-    await selectDropdown.trigger('change');
-    const inputField = wrapper.find('input.form-control');
-    await inputField.setValue('test');
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test' } });
+  it('should show modal when query label is clicked', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+    await wrapper.find('[aria-label="hide query filter"]').trigger('click');
+
+    expect(wrapper.find('.modal').isVisible()).toBeTruthy();
+    expect(wrapper.find('h1').text()).toEqual('Query Filter Guide');
   });
 
-  it('shouldn\'t render duplicate options on dropdown', () => {
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const allOptionsEL = selectDropdown.findAll('option');
-    expect(allOptionsEL.length).toBe(flawFields.length + 1);
-    const allValues = allOptionsEL.map(item => item.element.value);
-    const uniqueValues = [...new Set(allValues)];
-    expect(allValues).toStrictEqual(uniqueValues);
+  it('should update query params when form is submitted', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+    const router = vi.mocked(useRouter());
+
+    await wrapper.find('textarea').setValue('djangoql query');
+    await wrapper.find('form').trigger('submit');
+
+
+    expect(router.replace).toHaveBeenNthCalledWith(1, { query: { query: 'djangoql query' } });
   });
 
-  it('should render save filter button', async () => {
-    let filterSaveEvents = wrapper.emitted('filter:save');
-    expect(filterSaveEvents).toBeFalsy();
-    const saveButton = wrapper.find('button[type="button"].btn-primary.me-2');
-    expect(saveButton.exists()).toBeTruthy();
-    expect(saveButton.text()).toBe('Save as Default');
-    await saveButton.trigger('click');
-    filterSaveEvents = wrapper.emitted('filter:save');
-    expect(filterSaveEvents.length).toBe(1);
+  it('should set facets when populated', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+    const router = vi.mocked(useRouter());
+
+    await wrapper.find('select').setValue('cve_description');
+    await wrapper.find('.input-group input').setValue('some value');
+    await wrapper.findAll('select').at(1)!.setValue('impact');
+    await wrapper.find('select+select').setValue('CRITICAL');
+    await wrapper.find('form').trigger('submit');
+
+    expect(router.replace).toHaveBeenNthCalledWith(1, { query: { cve_description: 'some value', impact: 'CRITICAL' } });
   });
 
-  it('should update router when passing empty for CVE ID', async () => {
-    const selectDropdown = wrapper.find('select.form-select.search-facet-field');
-    const cveIdOption = selectDropdown
-      .findAll('option')
-      .filter(option => option.element.value === 'cve_id')[0];
-    await selectDropdown.setValue(cveIdOption.element.value);
-    await selectDropdown.trigger('change');
-    const inputField = wrapper.find('input.form-control');
-    await inputField.setValue('');
-    const searchButton = wrapper.find('button[type="submit"]');
-    expect(searchButton.exists()).toBeTruthy();
-    await searchButton.trigger('submit');
-    await flushPromises();
-    expect(useRouter().replace).toHaveBeenCalled();
-    expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { cve_id: '' } });
+  it('should add new facet when last facet is populated', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+
+    await wrapper.find('select').setValue('cve_description');
+    await wrapper.find('.input-group input').setValue('some value');
+
+    expect(wrapper.findAll('select').length).toEqual(2);
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  it('should search for nonempty cve description', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+    const router = vi.mocked(useRouter());
+
+    await wrapper.find('input[type="checkbox"]').setValue(true);
+    await wrapper.find('form').trigger('submit');
+
+    expect(router.replace).toHaveBeenNthCalledWith(1, { query: { cve_description: 'nonempty' } });
+  });
+
+  it('should save search as default', async () => {
+    const wrapper = await mountIssueSearchAdvanced();
+
+    await wrapper.find('select').setValue('cve_description');
+    await wrapper.find('.input-group input').setValue('some value');
+    await wrapper.findAll('form div button[type="button"]').at(4)!.trigger('click');
+
+    expect(wrapper.emitted()).toHaveProperty('filter:save');
   });
 });

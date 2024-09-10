@@ -1,0 +1,23 @@
+.djangoql-completion {
+  position: absolute;
+  z-index: 1100;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid rgb(0 0 0 / 15%);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  border-radius: 0.25rem;
+
+  ul {
+    max-height: 320px;
+  }
+
+  li {
+    font-size: 1rem;
+  }
+
+  .active,
+  li:hover {
+    background-color: #ffe3d9;
+    color: #212529;
+  }
+}

@@ -15,18 +15,15 @@ const searchStore = useSearchStore();
 const { addToast } = useToastStore();
 const tableFilters = ref<Record<string, string>>({});
 
-defineEmits<{
-  'issues:load': [any[]];
-}>();
-
 const params = computed(() => {
   const searchParams = getSearchParams();
-  if (searchParams.order) {
-    searchParams.order += ',' + tableFilters.value.order;
-  }
+  const order = [searchParams.order, tableFilters.value.order]
+    .filter(Boolean).join(',');
+
   const paramsObj = {
     ...tableFilters.value,
     ...searchParams,
+    order,
   };
 
   return paramsObj;
@@ -58,7 +55,9 @@ function saveFilter() {
     },
       {} as Record<string, string>,
   );
-  searchStore.saveFilter(filters, query.value);
+  if (query?.value) {
+    searchStore.saveFilter(filters, query.value);
+  }
   addToast({
     title: 'Default Filter',
     body: 'User\'s default filter saved',
