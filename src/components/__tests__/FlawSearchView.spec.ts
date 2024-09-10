@@ -134,7 +134,7 @@ describe('FlawSearchView', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test', search: 'search' } });
+      .toStrictEqual({ query: { query: 'test' } });
   });
 
   it('should call saveFilter on save filter button click', async () => {
@@ -199,7 +199,7 @@ describe('FlawSearchView', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test', requires_cve_description: 'REQUESTED', search: 'search' } });
+      .toStrictEqual({ query: { query: 'search', requires_cve_description: 'REQUESTED' } });
   });
 
   it('should call loadFlaws with major_incident_state on search', async () => {
@@ -219,7 +219,7 @@ describe('FlawSearchView', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test', major_incident_state: 'REQUESTED', search: 'search' } });
+      .toStrictEqual({ query: { query: 'search', major_incident_state: 'REQUESTED' } });
   });
 
   it('should call loadFlaws with affectedness on search', async () => {
@@ -239,6 +239,6 @@ describe('FlawSearchView', () => {
     await flushPromises();
     expect(useRouter().replace).toHaveBeenCalled();
     expect(useRouter().replace.mock.calls[0][0])
-      .toStrictEqual({ query: { query: 'test', affects__affectedness: 'NEW', search: 'search' } });
+      .toStrictEqual({ query: { query: 'search', affects__affectedness: 'NEW' } });
   });
 });

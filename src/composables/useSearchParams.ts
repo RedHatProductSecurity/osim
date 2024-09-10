@@ -48,7 +48,7 @@ export function useSearchParams() {
     if (parsedRoute.query.search) {
       params.search = parsedRoute.query.search;
     }
-    search.value = parsedRoute.query.query || '';
+    query.value = parsedRoute.query.query || '';
     if (parsedRoute.query.query) {
       params.query = parsedRoute.query.query;
     }

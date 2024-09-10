@@ -94,7 +94,8 @@ describe('IndexView', () => {
     expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
       'order': '-created_dt',
-      'affects__ps_component': 'test'
+      'affects__ps_component': 'test',
+      'query': '',
     });
   });
 
@@ -102,7 +103,8 @@ describe('IndexView', () => {
     expect(useFlawsFetching().loadFlaws).toHaveBeenCalledOnce();
     expect(useFlawsFetching().loadFlaws.mock.calls[0][0]._value).toStrictEqual({
       'order': '-created_dt',
-      'affects__ps_component': 'test'
+      'affects__ps_component': 'test',
+      'query': '',
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
