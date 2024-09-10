@@ -1,3 +1,5 @@
+import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
+
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
@@ -5,32 +7,30 @@ import {
   osimRuntime,
 } from '@/stores/osimRuntime';
 import type { ZodJiraUserAssignableType, ZodJiraIssueType } from '@/types/zodJira';
-import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
 };
 
 type JiraGetFetchOptions = {
-  url: string;
+  data?: never;
   method: 'GET' | 'get';
   params?: Record<string, any>;
-  data?: never;
+  url: string;
 };
 
 type JiraPutPostFetchOptions = {
-  url: string;
-  method: 'POST' | 'PUT' | 'post' | 'put';
   data?: Record<string, any>;
+  method: 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
+  url: string;
 };
 
 type JiraFetchOptions =
   | JiraGetFetchOptions
-  | JiraPutPostFetchOptions
+  | JiraPutPostFetchOptions;
 
 async function jiraFetch<T = any>(config: JiraFetchOptions, factoryOptions?: JiraFetchCallbacks) {
-
   if (factoryOptions?.beforeFetch) {
     await factoryOptions.beforeFetch(config);
   }
@@ -110,28 +110,27 @@ export async function getJiraIssue(taskId: string) {
 }
 
 type putIssueOptions<T, U> = {
-  params?: {
-    notifyUsers?: boolean;
-    returnIssue?: boolean;
-  },
   data: {
     fields?: keyof T extends keyof U ? never : T;
     update?: keyof U extends keyof T ? never : U;
-  }
-}
+  };
+  params?: {
+    notifyUsers?: boolean;
+    returnIssue?: boolean;
+  };
+};
 
 type putIssueUpdate = Record<string, Array<{
-  [K in 'set' | 'add' | 'remove' | 'edit' | 'copy']?: any;
-}>>
+  [_ in 'add' | 'copy' | 'edit' | 'remove' | 'set']?: any;
+}>>;
 
 export async function putJiraIssue<T extends object | undefined,
   U extends putIssueUpdate | undefined>(taskId: string, opts: putIssueOptions<T, U>) {
   return jiraFetch({
     method: 'put',
     url: `/rest/api/2/issue/${taskId}`,
-    ...opts
+    ...opts,
   });
-
 }
 
 export async function postJiraComment(taskId: string, comment: string) {
@@ -139,11 +138,11 @@ export async function postJiraComment(taskId: string, comment: string) {
     method: 'post',
     url: `/rest/api/2/issue/${taskId}/comment`,
     data: {
-      body: comment
+      body: comment,
     },
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Internal comment saved' }))
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Error saving internal Jira comment'));
 }
 
@@ -158,11 +157,11 @@ export async function getJiraUsername() {
   }).catch((error) => {
     console.error('JiraService::getJiraUsername() Error getting your username from jira', error);
     useToastStore().addToast({
-      'title': 'Jira Error',
-      'body': `Error getting your username from <a href="${osimRuntime.value.backends.jiraDisplay}">Jira</a>. ` +
+      title: 'Jira Error',
+      body: `Error getting your username from <a href="${osimRuntime.value.backends.jiraDisplay}">Jira</a>. ` +
       'Is your Jira Access Token valid?',
-      'bodyHtml': true,
-      'css': 'warning',
+      bodyHtml: true,
+      css: 'warning',
     });
     return '';
   });

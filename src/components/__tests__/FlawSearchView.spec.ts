@@ -1,19 +1,22 @@
+import { ref, type ComponentPublicInstance, type Ref } from 'vue';
+
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
+
+import { useSearchParams } from '@/composables/useSearchParams';
+import { useFlawsFetching } from '@/composables/useFlawsFetching';
+
 import FlawSearchView from '@/views/FlawSearchView.vue';
-import { useFlawsFetching } from '../../composables/useFlawsFetching';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
-import { useSearchParams } from '@/composables/useSearchParams';
-import { ref, type ComponentPublicInstance, type Ref } from 'vue';
 
 const mountFlawSearchView = (): VueWrapper<ComponentPublicInstance
   & Partial<{
-    params: Record<string, string>,
-    setTableFilters: (filters: Ref<Record<string, string>>) => void,
-    fetchMoreFlaws: () => void,
-    saveFilter: () => void,
+    fetchMoreFlaws: () => void;
+    params: Record<string, string>;
+    saveFilter: () => void;
+    setTableFilters: (filters: Ref<Record<string, string>>) => void;
   }>> => mount(FlawSearchView, {
   global: {
     plugins: [createTestingPinia()],
@@ -31,7 +34,7 @@ describe('flawSearchView', () => {
           search: 'quick search',
         }),
         facets: ref([]),
-      })
+      }),
     });
   });
 
@@ -44,11 +47,10 @@ describe('flawSearchView', () => {
         isFinalPageFetched: ref(false),
         total: 1337,
         loadFlaws: vi.fn(),
-        loadMoreFlaws: vi.fn()
-      })
+        loadMoreFlaws: vi.fn(),
+      }),
     });
   });
-
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -65,7 +67,7 @@ describe('flawSearchView', () => {
     const { loadFlaws } = useFlawsFetching();
 
     wrapper.vm.setTableFilters!(ref({
-      order: 'created_dt'
+      order: 'created_dt',
     }));
     await flushPromises();
 
@@ -73,30 +75,30 @@ describe('flawSearchView', () => {
     expect(wrapper.vm.params).toEqual({
       query: 'djangoql query',
       search: 'quick search',
-      order: 'created_dt'
+      order: 'created_dt',
     });
   });
 
   it('should join filters with existing ones', async () => {
     vi.mocked(useSearchParams, {
-      partial: true
+      partial: true,
     }).mockReturnValue({
       getSearchParams: vi.fn().mockReturnValue({
         query: 'some advanced query',
-        order: 'cve_id'
+        order: 'cve_id',
       }),
-      facets: ref([])
+      facets: ref([]),
     });
     const wrapper = mountFlawSearchView();
 
     wrapper.vm.setTableFilters!(ref({
-      order: 'updated_dt'
+      order: 'updated_dt',
     }));
     await flushPromises();
 
     expect(wrapper.vm.params).toEqual({
       query: 'some advanced query',
-      order: 'cve_id,updated_dt'
+      order: 'cve_id,updated_dt',
     });
   });
 
@@ -112,10 +114,10 @@ describe('flawSearchView', () => {
 
   it('should save filters to store', async () => {
     vi.mocked(useSearchParams, {
-      partial: true
+      partial: true,
     }).mockReturnValue({
       getSearchParams: vi.fn().mockReturnValue({}),
-      facets: ref([{ field:'cve_id', value: 'CVE-2024-1234' }]),
+      facets: ref([{ field: 'cve_id', value: 'CVE-2024-1234' }]),
       query: ref('django query'),
     });
     const wrapper = mountFlawSearchView();

@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-defineEmits<{
-  'update:modelValue': [value: string | undefined],
-}>();
 const props = withDefaults(
   defineProps<{
-    modelValue: any;
+    error?: null | string;
     label: string;
-    error?: string | null;
+    modelValue: any;
     type?:
-      | 'text'
-      | 'date'
-      | 'reset'
       | 'button'
       | 'checkbox'
       | 'color'
+      | 'date'
       | 'datetime-local'
       | 'email'
       | 'file'
@@ -26,9 +21,11 @@ const props = withDefaults(
       | 'password'
       | 'radio'
       | 'range'
+      | 'reset'
       | 'search'
       | 'submit'
       | 'tel'
+      | 'text'
       | 'time'
       | 'url'
       | 'week';
@@ -39,7 +36,9 @@ const props = withDefaults(
     error: undefined,
   },
 );
-
+defineEmits<{
+  'update:modelValue': [value: string | undefined];
+}>();
 const type = computed<string>(() => props.type ?? 'text');
 </script>
 

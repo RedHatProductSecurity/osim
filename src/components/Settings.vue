@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+
 import { useSettingsStore } from '@/stores/SettingsStore';
 import type { SettingsType } from '@/stores/SettingsStore';
+
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
@@ -24,7 +26,6 @@ watch(settings, () => {
     jiraApiKey: Boolean(settings.value.jiraApiKey),
   };
 }, { deep: true });
-
 </script>
 
 <template>
@@ -144,10 +145,8 @@ watch(settings, () => {
 </template>
 
 <style scoped>
-
 .osim-settings {
   max-width: 45rem;
   margin: auto;
 }
-
 </style>

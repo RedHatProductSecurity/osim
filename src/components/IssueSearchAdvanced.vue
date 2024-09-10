@@ -1,27 +1,28 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
-import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
-import Modal from '@/components/widgets/Modal.vue';
-import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
-import { useModal } from '@/composables/useModal';
-import { flawFields } from '@/constants/flawFields';
-import { useSearchParams } from '@/composables/useSearchParams';
-import { descriptionRequiredStates } from '@/types/zodFlaw';
-import { affectAffectedness } from '@/types/zodAffect';
+
 import { sort } from 'ramda';
 // @ts-expect-error missing types
 import DjangoQL from 'djangoql-completion';
-import { osimRuntime } from '@/stores/osimRuntime';
 
-const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
-const { isModalOpen, openModal, closeModal } = useModal();
+import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import Modal from '@/components/widgets/Modal.vue';
+import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
+
+import { useModal } from '@/composables/useModal';
+import { useSearchParams } from '@/composables/useSearchParams';
+
+import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
+import { flawFields } from '@/constants/flawFields';
+import { affectAffectedness } from '@/types/zodAffect';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   isLoading: boolean;
 }>();
-
 const emit = defineEmits(['filter:save']);
+const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
+const { closeModal, isModalOpen, openModal } = useModal();
 
 const isNonEmptyDescriptionSelected = ref(false);
 
@@ -75,19 +76,19 @@ const nameForOption = (fieldName: string) => {
   };
   let name =
     mappings[fieldName]
-    || fieldName.replace(/__[a-z]/g, (label) => `: ${label.charAt(2).toUpperCase()}`);
+    || fieldName.replace(/__[a-z]/g, label => `: ${label.charAt(2).toUpperCase()}`);
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
 const sortFieldNames = sort((fieldA: string, fieldB: string) =>
-  nameForOption(fieldA).localeCompare(nameForOption(fieldB))
+  nameForOption(fieldA).localeCompare(nameForOption(fieldB)),
 );
 
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
-  sortFieldNames(flawFields.filter((field) => !chosenFields.value.includes(field) || field === chosenField));
+  sortFieldNames(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
 
 const optionsFor = (field: string) =>
   ({
@@ -122,7 +123,7 @@ onMounted(() => {
     selector: 'textarea#query',
     autoResize: true,
     syntaxHelp: null,
-    onSubmit: function(value: string) {
+    onSubmit: function (value: string) {
       query.value = value;
       submitAdvancedSearch();
     },

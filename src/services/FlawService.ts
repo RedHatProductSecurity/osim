@@ -1,10 +1,11 @@
+import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
-import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
@@ -60,7 +61,7 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
     params: {
       include_meta_attr: 'bz_id',
     },
-  }).then((response) => response.data);
+  }).then(response => response.data);
 }
 
 export async function getUpdatedDt(url: string): Promise<string> {
@@ -70,7 +71,7 @@ export async function getUpdatedDt(url: string): Promise<string> {
     params: {
       include_fields: 'updated_dt',
     },
-  }).then((response) => response.data.updated_dt);
+  }).then(response => response.data.updated_dt);
 }
 
 export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false) {
@@ -82,7 +83,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
       ...(createJiraTask && { create_jira_task: true }),
     },
   }, { beforeFetch })
-    .then((response) => response.data)
+    .then(response => response.data)
     .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
     .catch(createCatchHandler('Could not update Flaw'));
 }
@@ -111,7 +112,7 @@ export async function putFlawCvssScores(
     data: putObject,
   }, { beforeFetch })
     .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('CVSS Scores Update Error'));
 }
 
@@ -143,12 +144,12 @@ export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknow
     data: postObject,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('CVSS scores Update Error'));
 }
 
 export async function postFlawComment(
-  flawId: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean
+  flawId: string, comment: string, creator: string, isPrivate: boolean, embargoed: boolean,
 ) {
   const type = isPrivate ? 'Private' : 'Public';
   return osidbFetch({
@@ -161,7 +162,7 @@ export async function postFlawComment(
       embargoed,
     },
   }).then(createSuccessHandler({ title: 'Success!', body: `${type} comment saved.` }))
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler(`Error saving ${type} comment`));
 }
 
@@ -230,7 +231,7 @@ export async function searchFlaws(query: string) {
       search: query,
     },
   })
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Problem searching flaws:'));
 }
 
@@ -243,7 +244,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
       include_fields: FLAW_LIST_FIELDS.join(','),
     },
   })
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Problem searching flaws:'));
 }
 
@@ -289,9 +290,9 @@ export function getFlawBugzillaLink(flaw: any) {
 
 type FlawReferencePost = {
   description: string;
+  embargoed: boolean;
   type: string;
   url: string;
-  embargoed: boolean;
 };
 
 export function postFlawReference(flawId: string, requestBody: FlawReferencePost) {
@@ -304,9 +305,9 @@ export function postFlawReference(flawId: string, requestBody: FlawReferencePost
     .catch(createCatchHandler('Error creating Reference:'));
 }
 
-type FlawReferencePut = FlawReferencePost & {
+type FlawReferencePut = {
   updated_dt: string;
-};
+} & FlawReferencePost;
 
 export function putFlawReference(
   flawId: string,
@@ -322,7 +323,6 @@ export function putFlawReference(
     .catch(createCatchHandler('Error updating Reference:'));
 }
 
-
 export async function deleteFlawReference(
   flawId: string,
   referenceId: string,
@@ -336,10 +336,10 @@ export async function deleteFlawReference(
 }
 
 export type FlawAcknowledgmentPost = {
-  name: string;
   affiliation: string;
-  from_upstream: boolean;
   embargoed: boolean;
+  from_upstream: boolean;
+  name: string;
 };
 
 export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAcknowledgmentPost) {
@@ -352,9 +352,9 @@ export async function postFlawAcknowledgment(flawId: string, requestBody: FlawAc
     .catch(createCatchHandler('Error creating Acknowledgment:'));
 }
 
-export type FlawAcknowledgmentPut = FlawAcknowledgmentPost & {
+export type FlawAcknowledgmentPut = {
   updated_dt: string;
-};
+} & FlawAcknowledgmentPost;
 
 export async function putFlawAcknowledgment(
   flawId: string,

@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue';
+
 import { defineStore } from 'pinia';
 import { z } from 'zod';
 import { useStorage } from '@vueuse/core';
@@ -32,7 +33,6 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   const validatedSettings = SettingsSchema.safeParse(settings.value);
   if (validatedSettings.success) {
     if (JSON.stringify(validatedSettings.data) !== JSON.stringify(settings.value)) {
-
       settings.value = validatedSettings.data;
     }
   } else {
@@ -57,4 +57,3 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     settings,
   };
 });
-

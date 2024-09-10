@@ -1,12 +1,13 @@
 import { mount } from '@vue/test-utils';
+
 import { osimFullFlawTest } from './test-suite-helpers';
 import CvssExplainForm from '../CvssExplainForm.vue';
 
-describe('CVSS Explain Form', () => {
+describe('cVSS Explain Form', () => {
   osimFullFlawTest('renders correctly', ({ flaw }) => {
     const wrapper = mount(CvssExplainForm, {
       props: {
-        modelValue: flaw
+        modelValue: flaw,
       },
     });
 
@@ -23,7 +24,7 @@ describe('CVSS Explain Form', () => {
 
     const wrapper = mount(CvssExplainForm, {
       props: {
-        modelValue: flaw
+        modelValue: flaw,
       },
     });
 

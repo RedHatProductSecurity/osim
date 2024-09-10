@@ -1,19 +1,18 @@
+import { type ExtractPublicPropTypes } from 'vue';
+
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
-import { type ExtractPublicPropTypes } from 'vue';
 // @ts-expect-error missing types
 import DjangoQLCompletion from 'djangoql-completion';
 
-
-
-describe('IssueSearchAdvanced', () => {
+describe('issueSearchAdvanced', () => {
   let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
 
   vi.mock('djangoql-completion');
   vi.mock('vue-router', () => ({
     useRoute: vi.fn().mockReturnValue({
-      query: {}
+      query: {},
     }),
     useRouter: vi.fn().mockReturnValue({
       replace: vi.fn(),
@@ -24,8 +23,8 @@ describe('IssueSearchAdvanced', () => {
     const wrapper = mount(IssueSearchAdvanced, {
       props: {
         isLoading: false,
-        ...props
-      }
+        ...props,
+      },
     });
     await flushPromises();
     return wrapper;
@@ -68,7 +67,6 @@ describe('IssueSearchAdvanced', () => {
 
     await wrapper.find('textarea').setValue('djangoql query');
     await wrapper.find('form').trigger('submit');
-
 
     expect(router.replace).toHaveBeenNthCalledWith(1, { query: { query: 'djangoql query' } });
   });

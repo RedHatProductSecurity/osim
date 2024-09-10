@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { isStringArray } from '@/utils/guards';
 
-defineEmits<{
-  'update:modelValue': [value: string | undefined],
-}>();
 withDefaults(
   defineProps<{
-    modelValue: string | null;
-    options: string[] | Record<string, string>;
-    optionsHidden?: string[] | null;
+    error: null | string;
     label: string;
-    error: string | null;
+    modelValue: null | string;
+    options: Record<string, string> | string[];
+    optionsHidden?: null | string[];
   }>(),
   {
     modelValue: '',
-    optionsHidden: null
+    optionsHidden: null,
   },
 );
+defineEmits<{
+  'update:modelValue': [value: string | undefined];
+}>();
 </script>
 
 <template>

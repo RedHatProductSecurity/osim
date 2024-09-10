@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`FlawTrackers > Correctly renders the component when there are not trackers to display 1`] = `
+exports[`flawTrackers > Correctly renders the component when there are not trackers to display 1`] = `
 "<div data-v-7006d35c="">
   <div data-v-7006d35c="" class="affects-trackers">
     <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -40,7 +40,7 @@ exports[`FlawTrackers > Correctly renders the component when there are not track
 </div>"
 `;
 
-exports[`FlawTrackers > Correctly renders the component when there are trackers to display 1`] = `
+exports[`flawTrackers > Correctly renders the component when there are trackers to display 1`] = `
 "<div data-v-7006d35c="">
   <div data-v-7006d35c="" class="affects-trackers">
     <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -150,7 +150,7 @@ exports[`FlawTrackers > Correctly renders the component when there are trackers 
 </div>"
 `;
 
-exports[`FlawTrackers > Displays embedded trackers manager 1`] = `
+exports[`flawTrackers > Displays embedded trackers manager 1`] = `
 "<div data-v-7006d35c="">
   <div data-v-7006d35c="" class="affects-trackers">
     <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">

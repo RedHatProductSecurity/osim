@@ -1,11 +1,10 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
+import { createTestingPinia } from '@pinia/testing';
 
 import CvssNISTForm from '../CvssNISTForm.vue';
 
-import { createTestingPinia } from '@pinia/testing';
-
-describe('CvssNISTForm', () => {
+describe('cvssNISTForm', () => {
   it('renders a button', () => {
     const pinia = createTestingPinia({
       createSpy: vitest.fn,
@@ -24,9 +23,9 @@ describe('CvssNISTForm', () => {
       },
       global: {
         plugins: [
-          pinia
-        ]
-      }
+          pinia,
+        ],
+      },
     });
     const button = wrapper.find('button');
     expect(button.exists()).toBeTruthy();
@@ -52,8 +51,8 @@ describe('CvssNISTForm', () => {
       global: {
         plugins: [
           pinia,
-        ]
-      }
+        ],
+      },
     });
     const button = wrapper.find('button');
     expect(button.exists()).toBeTruthy();
@@ -79,8 +78,8 @@ describe('CvssNISTForm', () => {
       global: {
         plugins: [
           pinia,
-        ]
-      }
+        ],
+      },
     });
     const button = wrapper.find('button');
     await button.trigger('click');
@@ -116,8 +115,8 @@ describe('CvssNISTForm', () => {
       global: {
         plugins: [
           pinia,
-        ]
-      }
+        ],
+      },
     });
     const button = wrapper.find('button');
     await button.trigger('click');
@@ -151,8 +150,8 @@ describe('CvssNISTForm', () => {
       global: {
         plugins: [
           pinia,
-        ]
-      }
+        ],
+      },
     });
     const button = wrapper.find('button');
     await button.trigger('click');

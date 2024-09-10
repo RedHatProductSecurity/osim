@@ -1,6 +1,8 @@
 import { ref, type Ref } from 'vue';
-import { useDraggable } from '../useDraggable';
+
 import { flushPromises, mount } from '@vue/test-utils';
+
+import { useDraggable } from '../useDraggable';
 
 describe('useDraggable', () => {
   let items: Ref<string[]>;
@@ -32,7 +34,7 @@ describe('useDraggable', () => {
   });
 
   it('should update draggableClass for transition', async () => {
-    const { draggableClass, dragStart, dragEnd } = useDraggable(elDragZone, items);
+    const { dragEnd, draggableClass, dragStart } = useDraggable(elDragZone, items);
 
     elDragZone.value.addEventListener('dragstart', dragStart);
     elDragZone.value.addEventListener('dragend', dragEnd);
@@ -48,11 +50,10 @@ describe('useDraggable', () => {
     await flushPromises();
     // Once the transition is done, draggableClass should be undefined
     expect(draggableClass.value).toBe(undefined);
-
   });
 
   it('should update draggable items after drag n drop', async () => {
-    const { dragStart, dragEnd } = useDraggable(elDragZone, items);
+    const { dragEnd, dragStart } = useDraggable(elDragZone, items);
 
     elDragZone.value.addEventListener('dragstart', dragStart);
     elDragZone.value.addEventListener('dragend', dragEnd);
@@ -64,7 +65,6 @@ describe('useDraggable', () => {
     await secondChild?.trigger('dragstart');
     await firstChild?.trigger('dragover');
     await secondChild?.trigger('dragend');
-
 
     expect(items.value).toEqual(['test2', 'test1', 'test3']);
   });

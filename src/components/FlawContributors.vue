@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
+
 import { isDefined, watchDebounced } from '@vueuse/core';
+
+import useJiraContributors from '@/composables/useJiraContributors';
+import { createCatchHandler } from '@/composables/service-helpers';
+
+import type { ZodJiraUserAssignableType } from '@/types/zodJira';
+
 import LabelDiv from './widgets/LabelDiv.vue';
 import DropDown from './widgets/DropDown.vue';
 import JiraUser from './widgets/JiraUser.vue';
-import useJiraContributors from '@/composables/useJiraContributors';
-import type { ZodJiraUserAssignableType } from '@/types/zodJira';
-import { createCatchHandler } from '@/composables/service-helpers';
 
 const props = defineProps<{
-  taskKey: string,
+  taskKey: string;
 }>();
 
 const inputRef = ref<HTMLInputElement | null>(null);
@@ -19,9 +23,9 @@ const results = ref<ZodJiraUserAssignableType[]>([]);
 const {
   contributors,
   isLoadingContributors,
-  searchContributors,
   loadJiraContributors,
   saveContributors,
+  searchContributors,
 } = useJiraContributors(props.taskKey);
 
 onBeforeMount(loadJiraContributors);
@@ -33,7 +37,6 @@ watchDebounced(query, async () => {
   const users = await searchContributors(query.value);
   results.value = users ?? [];
 }, { debounce: 500 });
-
 
 const onFocus = () => {
   inputRef.value?.focus();
@@ -60,7 +63,6 @@ const add = (contributor: ZodJiraUserAssignableType) => {
 const remove = (index: number) => {
   contributors.value.splice(index, 1);
 };
-
 </script>
 
 <template>

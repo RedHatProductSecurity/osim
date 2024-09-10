@@ -1,5 +1,7 @@
-import type { ZodAffectType } from '@/types/zodAffect';
 import { test } from 'vitest';
+
+import type { ZodAffectType } from '@/types/zodAffect';
+
 import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';
 import sampleFlawFull from './__fixtures__/sampleFlawFull.json';
@@ -16,12 +18,12 @@ export const osimFullFlawTest = test.extend({
   flaw: sampleFlawFull,
 });
 
-export function mockAffect ({ ps_module, ps_component }: { ps_module: string, ps_component: string }): ZodAffectType {
+export function mockAffect({ ps_component, ps_module }: { ps_component: string; ps_module: string }): ZodAffectType {
   return {
     ps_module,
     ps_component,
-    embargoed:false,
-    trackers:[],
+    embargoed: false,
+    trackers: [],
     alerts: [],
     cvss_scores: [{
       comment: 'hardcoded comment',

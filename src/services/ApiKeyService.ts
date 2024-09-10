@@ -11,7 +11,6 @@ import { useToastStore } from '@/stores/ToastStore';
 // import { useRouter } from 'vue-router';
 
 export function notifyApiKeyUnset() {
-
   const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
   const unsetKeys: string[] = [];
 
@@ -25,7 +24,7 @@ export function notifyApiKeyUnset() {
 
   if (!bugzillaApiKey || !jiraApiKey) {
     const { addToast } = useToastStore();
-    const lis = unsetKeys.map((key) => `<li>${key}</li>`).join('');
+    const lis = unsetKeys.map(key => `<li>${key}</li>`).join('');
 
     addToast({
       css: 'warning',
@@ -33,7 +32,7 @@ export function notifyApiKeyUnset() {
       bodyHtml: true,
       body: `You have not set the following keys in this tab: <ul>${lis}</ul>` +
       'Flaw creation requires your Bugzilla API or JIRA key to be set. ' +
-      'Visit Settings to set any required keys.'
+      'Visit Settings to set any required keys.',
     });
     // maybeRedirectToSettings();
   }
@@ -45,4 +44,3 @@ export function notifyApiKeyUnset() {
 //     router.push({path: '/settings'});
 //   }
 // }
-

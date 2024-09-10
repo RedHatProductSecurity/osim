@@ -1,10 +1,11 @@
 import { getJiraIssue, searchJiraUsers } from '@/services/JiraService';
-import useJiraContributors from '../useJiraContributors';
 import type { ZodJiraContributorType, ZodJiraUserAssignableType } from '@/types/zodJira';
+
+import useJiraContributors from '../useJiraContributors';
 
 vi.mock('@/services/JiraService', () => ({
   getJiraIssue: vi.fn().mockResolvedValue({}),
-  searchJiraUsers: vi.fn().mockResolvedValue({})
+  searchJiraUsers: vi.fn().mockResolvedValue({}),
 }));
 
 describe('useJiraContributors', () => {
@@ -13,13 +14,13 @@ describe('useJiraContributors', () => {
       displayName: 'Alvaro Tinoco',
       name: 'atinoco',
       emailAddress: '',
-      avatarUrl: ''
+      avatarUrl: '',
     },
     {
       displayName: 'John Doe',
       name: 'jdoe',
       emailAddress: '',
-      avatarUrl: ''
+      avatarUrl: '',
     },
   ];
 
@@ -55,8 +56,8 @@ describe('useJiraContributors', () => {
         key: 'key',
         fields: {
           customfield_12315950: mockContributors,
-        }
-      }
+        },
+      },
     });
     const { contributors, loadJiraContributors } = useJiraContributors('task_key');
 
@@ -71,7 +72,7 @@ describe('useJiraContributors', () => {
       vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValue({
         data: {
           users: mockUsers,
-        }
+        },
       });
     });
 
@@ -102,5 +103,4 @@ describe('useJiraContributors', () => {
       expect(searchJiraUsers).toHaveBeenCalledTimes(1);
     });
   });
-
 });

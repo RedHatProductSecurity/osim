@@ -305,45 +305,49 @@
 <style scoped lang="scss">
 @import '@/scss/bootstrap-overrides';
 
-h1, h2, h3, h4, h5 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 p {
-    margin-block: 0.75rem;
-    margin-bottom: 0.25rem !important;
+  margin-block: 0.75rem;
+  margin-bottom: 0.25rem !important;
 }
 
 pre {
-    background-color: $redhat-gray-30;
-    padding: 1ch;
-    margin-bottom: 0.25rem !important;
-    border-radius: 0.25rem;
+  background-color: $redhat-gray-30;
+  padding: 1ch;
+  margin-bottom: 0.25rem !important;
+  border-radius: 0.25rem;
 }
 
 code {
-    font-size: 1.5ch;
+  font-size: 1.5ch;
 }
 
-p.info, p.warn {
-    border: 0.1rem solid $redhat-teal-30;
-    border-radius: 0.25rem;
-    padding: 0.75ch;
+p.info,
+p.warn {
+  border: 0.1rem solid $redhat-teal-30;
+  border-radius: 0.25rem;
+  padding: 0.75ch;
 }
 
 p.info {
-    background-color: $redhat-teal-10;
-    border: 0.1rem solid $redhat-teal-30;
+  background-color: $redhat-teal-10;
+  border: 0.1rem solid $redhat-teal-30;
 }
 
 p.warn {
-    background-color: $redhat-yellow-10;
-    border: 0.1rem solid $redhat-yellow-30;
+  background-color: $redhat-yellow-10;
+  border: 0.1rem solid $redhat-yellow-30;
 }
 
-
 #search-conditions {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 </style>

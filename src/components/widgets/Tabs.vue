@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 
 const props = withDefaults(defineProps<{
-  labels: string[],
-  default?: number,
-  disabled?: number[],
-  tooltips?: string[],
+  default?: number;
+  disabled?: number[];
+  labels: string[];
+  tooltips?: string[];
 }>(), {
   default: 0,
   disabled: () => [],

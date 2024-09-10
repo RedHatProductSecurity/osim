@@ -1,9 +1,3 @@
-<template>
-  <div :class="cssClass" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-</template>
-
 <script lang="ts">
 export default {
   name: 'LoadingSpinner',
@@ -26,3 +20,9 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div :class="cssClass" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</template>

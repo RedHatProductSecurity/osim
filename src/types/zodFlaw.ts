@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { DateTime } from 'luxon';
+
+import { cveRegex } from '@/utils/helpers';
+
 import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
@@ -7,8 +11,6 @@ import {
   IssuerEnum,
   FlawReferenceType,
 } from '../generated-client';
-import { DateTime } from 'luxon';
-import { cveRegex } from '@/utils/helpers';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
@@ -98,7 +100,7 @@ export const FlawCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export type ZodFlawCommentType = z.infer<typeof ZodFlawCommentSchema>
+export type ZodFlawCommentType = z.infer<typeof ZodFlawCommentSchema>;
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
@@ -107,7 +109,7 @@ export const ZodFlawCommentSchema = z.object({
   creator: z.string().nullish(),
   is_private: z
     .string()
-    .transform((booleanString) => booleanString === 'True')
+    .transform(booleanString => booleanString === 'True')
     .or(z.boolean())
     .nullish(),
   created_dt: zodOsimDateTime().nullish(),
@@ -121,13 +123,13 @@ export type FlawSchemaType = typeof ZodFlawSchema;
 export const ZodFlawSchema = z.object({
   uuid: z.string().default(''),
   cve_id: z.string().nullable().refine(
-    (cve) => !cve || cveRegex.test(cve),
+    cve => !cve || cveRegex.test(cve),
     {
       message: 'The CVE ID is invalid: It must begin with "CVE-", ' +
-        'have a year between 1999-2999, and have an identifier at least ' +
-        '4 digits long (e.g. use 0001 for 1). Please also check for ' +
-        'unexpected characters like spaces.'
-    }
+      'have a year between 1999-2999, and have an identifier at least ' +
+      '4 digits long (e.g. use 0001 for 1). Please also check for ' +
+      'unexpected characters like spaces.',
+    },
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
   components: z.array(z.string().min(1).max(100)),
@@ -138,7 +140,7 @@ export const ZodFlawSchema = z.object({
   classification: ZodFlawClassification.nullish(),
   comment_zero: z.string().refine(
     comment_zero => comment_zero.trim().length > 0,
-    { message: 'Comment#0 cannot be empty.' }
+    { message: 'Comment#0 cannot be empty.' },
   ),
   cve_description: z.string().nullish(),
   requires_cve_description: z.nativeEnum(RequiresDescriptionEnumWithBlank).nullish(),
@@ -148,7 +150,7 @@ export const ZodFlawSchema = z.object({
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
   source: z.nativeEnum(Source521EnumWithBlank).refine(
     Boolean,
-    { message: 'You must specify a source for this Flaw before saving.' }
+    { message: 'You must specify a source for this Flaw before saving.' },
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
   mitigation: z.string().nullish(),
@@ -165,7 +167,6 @@ export const ZodFlawSchema = z.object({
   task_key: z.string().max(60).nullish(),
   created_dt: zodOsimDateTime().nullish(),
 }).superRefine((zodFlaw, zodContext) => {
-
   const raiseIssue = (message: string, path: string[]) => {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
@@ -174,24 +175,9 @@ export const ZodFlawSchema = z.object({
     });
   };
 
-  const duplicatedAffects = (affects: ZodAffectType[]) => {
-    const map: Record<string, boolean> = {};
-    for (let i = 0; i < affects.length; i++) {
-      const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
-      if (map[key]) {
-        return {
-          index: i,
-        };
-      } else {
-        map[key] = true;
-      }
-    }
-    return null;
-  };
-
   if (
     zodFlaw.requires_cve_description
-    && ['REQUESTED', 'APPROVED'].includes(zodFlaw.requires_cve_description)
+    && ['APPROVED', 'REQUESTED'].includes(zodFlaw.requires_cve_description)
     && zodFlaw.cve_description === ''
   ) {
     raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
@@ -251,3 +237,18 @@ export const ZodFlawSchema = z.object({
     );
   }
 });
+
+const duplicatedAffects = (affects: ZodAffectType[]) => {
+  const map: Record<string, boolean> = {};
+  for (let i = 0; i < affects.length; i++) {
+    const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
+    if (map[key]) {
+      return {
+        index: i,
+      };
+    } else {
+      map[key] = true;
+    }
+  }
+  return null;
+};

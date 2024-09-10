@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`FlawComments > Correctly display private comments 1`] = `
+exports[`flawComments > correctly display private comments 1`] = `
 "<section data-v-bb90633e="" class="osim-comments my-2">
   <h4 data-v-bb90633e="" class="mb-4">Comments</h4>
   <div data-v-8cd9b350="" data-v-bb90633e="">

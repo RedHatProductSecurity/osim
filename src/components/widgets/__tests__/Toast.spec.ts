@@ -1,10 +1,10 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-
-import Toast, { type ToastProps } from '../Toast.vue';
 import { DateTime } from 'luxon';
 
-describe('Toast', () => {
+import Toast, { type ToastProps } from '../Toast.vue';
+
+describe('toast', () => {
   const mountToast = (props?: Partial<ToastProps>) => {
     return mount(Toast, {
       props: {
@@ -13,8 +13,8 @@ describe('Toast', () => {
         ...props,
       },
       global: {
-        plugins: [createTestingPinia()]
-      }
+        plugins: [createTestingPinia()],
+      },
     });
   };
 
@@ -28,19 +28,18 @@ describe('Toast', () => {
     vi.useRealTimers();
   });
 
-
-  it.each<{ title: string, body: string, css: ToastProps['css'] }>([
+  it.each<{ body: string; css: ToastProps['css']; title: string }>([
     { title: 'Success', body: 'Test body', css: 'success' },
     { title: 'Error', body: 'Test body', css: 'danger' },
     { title: 'Warn', body: 'Test body', css: 'warning' },
     { title: 'Default', body: 'Test body', css: undefined },
-  ])('Should render component with title $title, body $body and $css style', ({ title, body, css }) => {
+  ])('should render component with title $title, body $body and $css style', ({ body, css, title }) => {
     const wrapper = mountToast({ title, body, css });
 
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('Should close toast when close button is clicked', async () => {
+  it('should close toast when close button is clicked', async () => {
     const wrapper = mountToast();
 
     await wrapper.find('.btn-close').trigger('click');
@@ -48,7 +47,7 @@ describe('Toast', () => {
     expect(wrapper.emitted('close')).toBeTruthy();
   });
 
-  it('Should close toast after timeoutMs', async () => {
+  it('should close toast after timeoutMs', async () => {
     const wrapper = mountToast({ timeoutMs: 500 });
 
     vi.advanceTimersByTime(1000);
@@ -58,7 +57,7 @@ describe('Toast', () => {
     expect(wrapper.emitted('stale')).toBeFalsy();
   });
 
-  it('Should emit stale event after freshMs', async () => {
+  it('should emit stale event after freshMs', async () => {
     const wrapper = mountToast({ timeoutMs: 50000 });
 
     vi.advanceTimersByTime(11000);

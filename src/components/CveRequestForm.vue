@@ -1,29 +1,27 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { useToastStore } from '@/stores/ToastStore';
-import { postFlawComment } from '@/services/FlawService';
-import { useUserStore } from '@/stores/UserStore';
-
 import Modal from '@/components/widgets/Modal.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
+
+import { useToastStore } from '@/stores/ToastStore';
+import { postFlawComment } from '@/services/FlawService';
+import { useUserStore } from '@/stores/UserStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
-const { addToast } = useToastStore();
-const userStore = useUserStore();
-
 const props = defineProps<{
-  subject: string;
-  description: string;
-  osimLink: string;
   bugzillaLink: string;
+  description: string;
   embargoed: boolean;
+  osimLink: string;
+  subject: string;
 }>();
-
 const emit = defineEmits<{
   'refresh:flaw': [];
 }>();
+const { addToast } = useToastStore();
+const userStore = useUserStore();
 
 const modalShown = ref(false);
 
@@ -44,7 +42,7 @@ const mailto = computed<string>(() => {
     'Description:\n' +
     description.value + '\n\n' +
     'Appendix:\n' +
-    (appendixEl.value?.innerText ?? '')
+    (appendixEl.value?.textContent ?? '')
   );
   const encodedBody = encodeURIComponent(body);
 

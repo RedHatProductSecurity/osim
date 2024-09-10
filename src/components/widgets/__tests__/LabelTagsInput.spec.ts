@@ -1,7 +1,8 @@
-import LabelTagsInput from '../LabelTagsInput.vue';
 import { mount } from '@vue/test-utils';
 
-describe('LabelTagsInput', () => {
+import LabelTagsInput from '../LabelTagsInput.vue';
+
+describe('labelTagsInput', () => {
   it('renders properly', () => {
     const subject = mount(LabelTagsInput, {
       props: {

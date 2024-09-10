@@ -4,7 +4,7 @@ export const cvssVectorSchema = z.union([
   z.string().length(44, { message: 'Incomplete Cvss Vector. There are factors missing.' }),
   z.string().length(0).nullable()]);
 
-export function validateCvssVector(cvssVector: string | undefined | null) {
+export function validateCvssVector(cvssVector: null | string | undefined) {
   const parseResult = cvssVectorSchema.safeParse(cvssVector);
   if (parseResult.success === false) {
     return parseResult.error.errors[0].message;
@@ -29,7 +29,7 @@ export function formatFactors(factors: Record<string, string>) {
 }
 
 // Get factor values from vector
-export function getFactors(cvssVector: string){
+export function getFactors(cvssVector: string) {
   const factors: Record<string, string> = {};
   if (!cvssVector) {
     for (const key in factorPatterns) {
@@ -50,7 +50,7 @@ export function getFactors(cvssVector: string){
 // Calculates score
 export function calculateScore(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
-  return isNaN(score) || Object.values(factors).includes('') ? null : score;
+  return Number.isNaN(score) || Object.values(factors).includes('') ? null : score;
 }
 
 // Calculates base score
@@ -99,7 +99,7 @@ export const weights: { [factor: string]: { [value: string]: number } } = {
   C: { N: 0.0, L: 0.22, H: 0.56 },
   I: { N: 0.0, L: 0.22, H: 0.56 },
   A: { N: 0.0, L: 0.22, H: 0.56 },
-  S: { U: .5, C: 1 },
+  S: { U: 0.5, C: 1 },
   PR: { N: 0.85, L: 0.62, H: 0.33 },
 
 };
@@ -115,7 +115,6 @@ export const factorSeverities: { [factor: string]: { [value: string]: string } }
   A: { H: 'Worst', L: 'Bad', N: 'Good' },
 };
 
-
 // Factor regex patterns
 const factorPatterns: { [id: string]: RegExp } = {
   CVSS: /(?<=^|\/)CVSS:(?<CVSS>[^/]+)/,
@@ -126,7 +125,7 @@ const factorPatterns: { [id: string]: RegExp } = {
   S: /(?<=^|\/)S:(?<S>[UC])/,
   C: /(?<=^|\/)C:(?<C>[NLH])/,
   I: /(?<=^|\/)I:(?<I>[NLH])/,
-  A: /(?<=^|\/)A:(?<A>[NLH])/
+  A: /(?<=^|\/)A:(?<A>[NLH])/,
 };
 
 /* eslint-disable max-len */
@@ -143,26 +142,26 @@ export const calculatorButtons = {
             {
               key: 'N',
               name: 'Network',
-              value:'Network Attack Vector',
-              info: 'The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet. Such a vulnerability is often termed “remotely exploitable” and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers).'
+              value: 'Network Attack Vector',
+              info: 'The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet. Such a vulnerability is often termed “remotely exploitable” and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers).',
             },
             {
               key: 'A',
               name: 'Adjacent',
-              value:'Adjacent Attack Vector',
-              info: 'The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone). One example of an Adjacent attack would be an ARP (IPv4) or neighbor discovery (IPv6) flood leading to a denial of service on the local LAN segment.'
+              value: 'Adjacent Attack Vector',
+              info: 'The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone). One example of an Adjacent attack would be an ARP (IPv4) or neighbor discovery (IPv6) flood leading to a denial of service on the local LAN segment.',
             },
             {
               key: 'L',
               name: 'Local',
-              value:'Local Attack Vector',
-              info: 'The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: 1.the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); 2.or the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., using social engineering techniques to trick a legitimate user into opening a malicious document).'
+              value: 'Local Attack Vector',
+              info: 'The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: 1.the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); 2.or the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., using social engineering techniques to trick a legitimate user into opening a malicious document).',
             },
             {
               key: 'P',
               name: 'Physical',
-              value:'Physical Attack Vector',
-              info: 'The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief (e.g., evil maid attack) or persistent. An example of such an attack is a cold boot attack in which an attacker gains access to disk encryption keys after physically accessing the target system. Other examples include peripheral attacks via FireWire/USB Direct Memory Access (DMA).'
+              value: 'Physical Attack Vector',
+              info: 'The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief (e.g., evil maid attack) or persistent. An example of such an attack is a cold boot attack in which an attacker gains access to disk encryption keys after physically accessing the target system. Other examples include peripheral attacks via FireWire/USB Direct Memory Access (DMA).',
             },
           ],
         },
@@ -173,14 +172,14 @@ export const calculatorButtons = {
             {
               key: 'L',
               name: 'Low',
-              value:'Low Attack Complexity',
-              info: 'Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.'
+              value: 'Low Attack Complexity',
+              info: 'Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.',
             },
             {
               key: 'H',
               name: 'High',
-              value:'High Attack Complexity',
-              info: 'A successful attack depends on conditions beyond the attacker\'s control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.'
+              value: 'High Attack Complexity',
+              info: 'A successful attack depends on conditions beyond the attacker\'s control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.',
             },
           ],
         },
@@ -191,20 +190,20 @@ export const calculatorButtons = {
             {
               key: 'N',
               name: 'None',
-              value:'None Privileges Required',
-              info: 'The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the the vulnerable system to carry out an attack.'
+              value: 'None Privileges Required',
+              info: 'The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the the vulnerable system to carry out an attack.',
             },
             {
               key: 'L',
               name: 'Low',
-              value:'Low Privileges Required',
-              info: 'The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.'
+              value: 'Low Privileges Required',
+              info: 'The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.',
             },
             {
               key: 'H',
               name: 'High',
-              value:'High Privileges Required',
-              info: 'The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.'
+              value: 'High Privileges Required',
+              info: 'The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.',
             },
           ],
         },
@@ -215,14 +214,14 @@ export const calculatorButtons = {
             {
               key: 'N',
               name: 'None',
-              value:'User Interaction None',
-              info: 'The vulnerable system can be exploited without interaction from any user.'
+              value: 'User Interaction None',
+              info: 'The vulnerable system can be exploited without interaction from any user.',
             },
             {
               key: 'R',
               name: 'Required',
-              value:'User Interaction Required',
-              info: 'Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.'
+              value: 'User Interaction Required',
+              info: 'Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.',
             },
           ],
         },
@@ -237,14 +236,14 @@ export const calculatorButtons = {
             {
               key: 'C',
               name: 'Changed',
-              value:'Changed Scope',
-              info: 'An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.'
+              value: 'Changed Scope',
+              info: 'An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.',
             },
             {
               key: 'U',
               name: 'Unchanged',
-              value:'Unchanged Scope',
-              info: 'An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.'
+              value: 'Unchanged Scope',
+              info: 'An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.',
             },
           ],
         },
@@ -255,20 +254,20 @@ export const calculatorButtons = {
             {
               key: 'H',
               name: 'High',
-              value:'High Confidentiality',
-              info: 'There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator\'s password, or private encryption keys of a web server.'
+              value: 'High Confidentiality',
+              info: 'There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator\'s password, or private encryption keys of a web server.',
             },
             {
               key: 'L',
               name: 'Low',
-              value:'Low Confidentiality',
-              info: 'There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.'
+              value: 'Low Confidentiality',
+              info: 'There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.',
             },
             {
               key: 'N',
               name: 'None',
-              value:'None Confidentiality',
-              info: 'There is no loss of confidentiality within the impacted component.'
+              value: 'None Confidentiality',
+              info: 'There is no loss of confidentiality within the impacted component.',
             },
           ],
         },
@@ -279,20 +278,20 @@ export const calculatorButtons = {
             {
               key: 'H',
               name: 'High',
-              value:'High Integrity',
-              info: 'There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.'
+              value: 'High Integrity',
+              info: 'There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.',
             },
             {
               key: 'L',
               name: 'Low',
-              value:'Low Integrity',
-              info: 'Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.'
+              value: 'Low Integrity',
+              info: 'Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.',
             },
             {
               key: 'N',
               name: 'None',
-              value:'None Integrity',
-              info: 'There is no loss of integrity within the impacted component.'
+              value: 'None Integrity',
+              info: 'There is no loss of integrity within the impacted component.',
             },
           ],
         },
@@ -303,24 +302,24 @@ export const calculatorButtons = {
             {
               key: 'H',
               name: 'High',
-              value:'High Availability',
-              info: 'There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).'
+              value: 'High Availability',
+              info: 'There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).',
             },
             {
               key: 'L',
               name: 'Low',
-              value:'Low Availability',
-              info: 'Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.'
+              value: 'Low Availability',
+              info: 'Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.',
             },
             {
               key: 'N',
               name: 'None',
-              value:'None Availability',
-              info: 'There is no impact to availability within the impacted component.'
+              value: 'None Availability',
+              info: 'There is no impact to availability within the impacted component.',
             },
           ],
         },
       ],
-    }
-  ]
+    },
+  ],
 };

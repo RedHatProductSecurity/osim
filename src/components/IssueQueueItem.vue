@@ -63,7 +63,7 @@ tr:hover {
   }
 }
 
-tr.osim-issue-queue-item:has(+tr.osim-badge-lane:hover) td {
+tr.osim-issue-queue-item:has(+ tr.osim-badge-lane:hover) td {
   background-color: #ffe3d9;
 }
 </style>

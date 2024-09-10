@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
+
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import Modal from '@/components/widgets/Modal.vue';
+
+import { promoteFlaw, rejectFlaw } from '@/services/FlawService';
 import { ZodFlawClassification } from '@/types/zodShared';
 
 const props = defineProps<{
-  flawId: string;
   classification: any;
+  flawId: string;
   shouldCreateJiraTask: boolean;
 }>();
 
-const emit = defineEmits<{ 'refresh:flaw': [], 'create:jiraTask': [] }>();
+const emit = defineEmits<{ 'create:jiraTask': []; 'refresh:flaw': [] }>();
 
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
@@ -25,7 +27,7 @@ const REJECTED_STATE = workflowStates.Rejected as string;
 const EMPTY_STATE = workflowStates.Empty as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATE, REJECTED_STATE, EMPTY_STATE].includes(props.classification.state),
+  () => ![DONE_STATE, EMPTY_STATE, REJECTED_STATE].includes(props.classification.state),
 );
 
 const shouldShowCreateJiraTaskButton = computed(

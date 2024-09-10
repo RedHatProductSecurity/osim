@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+
 import {
   calculatorButtons,
   getFactors,
@@ -11,20 +12,20 @@ import {
   weights,
 } from '@/composables/useCvssCalculator';
 
-const cvssVector = defineModel<string | undefined | null>('cvssVector');
-const cvssScore = defineModel<number | undefined | null>('cvssScore');
+const cvssVector = defineModel<null | string | undefined>('cvssVector');
+const cvssScore = defineModel<null | number | undefined>('cvssScore');
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
-const highlightedFactor = ref<string | null>(null);
-const highlightedFactorValue = ref<string | null>(null);
+const highlightedFactor = ref<null | string>(null);
+const highlightedFactorValue = ref<null | string>(null);
 
 const cvssDiv = ref();
 const cvssVectorInput = ref();
 
-function updateFactors(newCvssVector: string | undefined | null) {
+function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
     cvssVector.value = newCvssVector;
   }
@@ -65,7 +66,7 @@ function reset() {
   cvssFactors.value = {};
 }
 
-const getFactorColor = computed(() => (weight: number, isHovered: boolean = false) => {
+const getFactorColor = (weight: number, isHovered: boolean = false) => {
   const hue = isHovered ? 200 : (1 - weight) * 80; // red being 0, 80 being green
   const alpha = highlightedFactor.value === null
     ? 1
@@ -78,13 +79,13 @@ const getFactorColor = computed(() => (weight: number, isHovered: boolean = fals
     'color': hslForText,
     'background-color': hslForBackground,
   };
-});
+};
 
-function highlightFactor(factor: string | null) {
+function highlightFactor(factor: null | string) {
   highlightedFactor.value = factor;
 }
 
-function highlightFactorValue(factor: string | null) {
+function highlightFactorValue(factor: null | string) {
   highlightedFactorValue.value = factor;
 }
 
@@ -102,7 +103,6 @@ function handlePaste(e: ClipboardEvent) {
   updateFactors(formatFactors(cvssFactors.value));
   cvssScore.value = calculateScore(cvssFactors.value);
 }
-
 </script>
 
 <template>
@@ -273,7 +273,6 @@ function handlePaste(e: ClipboardEvent) {
     .vector-input.alert {
       padding-block: 10px;
     }
-
   }
 
   .erase-button {
@@ -304,7 +303,7 @@ function handlePaste(e: ClipboardEvent) {
       width: 100%;
 
       .btn-group-header {
-        background-color: #1F1F1F !important;
+        background-color: #1f1f1f !important;
         color: white;
         border: 0;
         padding-block: 7.5px;
@@ -316,15 +315,16 @@ function handlePaste(e: ClipboardEvent) {
         }
       }
 
-      .btn, .btn:hover {
+      .btn,
+      .btn:hover {
         border: 1px;
         margin: auto;
       }
 
       &:hover .osim-factor-highlight {
-          background-color: hsl(200deg 100% 95%) !important;
-          color: hsl(200deg 100% 35%) !important;
-        }
+        background-color: hsl(200deg 100% 95%) !important;
+        color: hsl(200deg 100% 35%) !important;
+      }
     }
   }
 }

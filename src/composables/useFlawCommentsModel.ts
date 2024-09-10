@@ -1,11 +1,11 @@
 import { computed, ref, type Ref } from 'vue';
+
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 import { postFlawComment } from '@/services/FlawService';
 import { CommentType, SYSTEM_EMAIL } from '@/constants';
 
-
-type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>
+type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>;
 type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
 
 const filterFunctions: OsidbCommentFilterFunctions = {
@@ -104,4 +104,3 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
     internalCommentsAvailable,
   };
 }
-

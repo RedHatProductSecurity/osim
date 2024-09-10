@@ -1,16 +1,17 @@
 <script setup lang="ts">
-
 import { toRefs, watch } from 'vue';
 
 const props = defineProps<{
-  show: boolean,
+  show: boolean;
 }>();
 
 const emit = defineEmits<{
-  'close': [value: any],
+  close: [value: any];
 }>();
 
-
+defineOptions({
+  inheritAttrs: false,
+});
 const { show } = toRefs(props);
 watch(show, () => {
   if (show.value) {
@@ -23,10 +24,6 @@ watch(show, () => {
     document.body.style.padding = '';
   }
 }, { immediate: true });
-
-defineOptions({
-  inheritAttrs: false
-});
 </script>
 
 <template>
@@ -90,7 +87,6 @@ defineOptions({
 .modal-bg-enter-from,
 .modal-bg-leave-to {
   background-color: transparent;
-
 }
 
 .modal-bg-enter-active,

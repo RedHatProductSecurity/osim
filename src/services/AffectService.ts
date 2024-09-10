@@ -1,5 +1,7 @@
-import { osidbFetch } from '@/services/OsidbAuthService';
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+
+import { osidbFetch } from '@/services/OsidbAuthService';
+
 import { beforeFetch } from './FlawService';
 // export async function putAffect(uuid: string, affectObject: ZodAffectType) {
 export async function putAffect(uuid: string, affectObject: any) {
@@ -50,8 +52,6 @@ export async function deleteAffects(affectUuids: string[]) {
     .catch(createCatchHandler('Error deleting Affect:'));
 }
 
-
-
 // {
 // "comment": "string",
 // "cvss_version": "V2",
@@ -74,7 +74,7 @@ export async function putAffectCvssScore(
     url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
     data: putObject,
   }, { beforeFetch })
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Problem updating affect CVSS scores:'));
 }
 
@@ -92,7 +92,7 @@ export async function postAffectCvssScore(affectId: string, cvssScoreObject: unk
     url: `/osidb/api/v1/affects/${affectId}/cvss_scores`,
     data: postObject,
   })
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Problem updating affect CVSS scores:'));
 }
 
@@ -101,6 +101,6 @@ export async function deleteAffectCvssScore(affectId: string, cvssScoresId: stri
     method: 'delete',
     url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
   })
-    .then((response) => response.data)
+    .then(response => response.data)
     .catch(createCatchHandler('Problem deleting affect CVSS scores:'));
 }

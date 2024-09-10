@@ -1,7 +1,8 @@
-import TagsInput from '../TagsInput.vue';
 import { mount } from '@vue/test-utils';
 
-describe('TagsInput', () => {
+import TagsInput from '../TagsInput.vue';
+
+describe('tagsInput', () => {
   it('renders properly', () => {
     const subject = mount(TagsInput, {
       props: {

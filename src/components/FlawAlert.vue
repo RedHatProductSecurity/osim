@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { type ZodAlertType } from '@/types/zodShared';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 import { computed, nextTick } from 'vue';
+
+import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+
+import { type ZodAlertType } from '@/types/zodShared';
 
 const props = defineProps<{
   alert: ZodAlertType;
 }>();
 
 const emit = defineEmits<{
-  'expandFocusedComponent': [value: string];
+  expandFocusedComponent: [value: string];
 }>();
 
 const isWarning = computed(() => {
@@ -28,8 +30,6 @@ function scrollToComponent(parent_uuid: string) {
     }
   });
 }
-
-
 </script>
 
 <template>
@@ -74,7 +74,8 @@ function scrollToComponent(parent_uuid: string) {
 
 <style scoped lang="scss">
 .osim-flaw-alert-info {
-  strong, span {
+  strong,
+  span {
     font-size: 14px;
   }
 }

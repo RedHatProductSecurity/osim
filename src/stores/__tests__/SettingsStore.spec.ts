@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { useSettingsStore } from '../SettingsStore';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
+
+import { useSettingsStore } from '../SettingsStore';
 
 const initialState = {
   bugzillaApiKey: '',
@@ -13,10 +14,10 @@ const initialState = {
 
 // While not used in this file, store below depends on global pinia test instance
 export const mockSettingsStore = createTestingPinia({
-  initialState
+  initialState,
 });
 
-describe('SettingsStore', () => {
+describe('settingsStore', () => {
   let settingsStore: ReturnType<typeof useSettingsStore>;
 
   beforeEach(() => {
@@ -36,13 +37,13 @@ describe('SettingsStore', () => {
       trackersPerPage: 10,
     });
     expect(
-      settingsStore.settings.bugzillaApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
+      settingsStore.settings.bugzillaApiKey === 'beep-beep-who-got-the-keys-to-the-jeep',
     ).toBe(true);
     expect(
-      settingsStore.settings.jiraApiKey === 'beep-beep-who-got-the-keys-to-the-jeep'
+      settingsStore.settings.jiraApiKey === 'beep-beep-who-got-the-keys-to-the-jeep',
     ).toBe(true);
     expect(
-      settingsStore.settings.showNotifications
+      settingsStore.settings.showNotifications,
     ).toBe(true);
   });
   it('reset', () => {

@@ -1,15 +1,15 @@
 import { z } from 'zod';
+import { omit, pick } from 'ramda';
+
 import {
   AffectednessEnum,
   ResolutionEnum,
   IssuerEnum,
 } from '../generated-client';
-
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
-import { omit, pick } from 'ramda';
 
-const AffectednessEnumWithBlank = { 'Empty': '', ...AffectednessEnum } as const;
-const ResolutionEnumWithBlank = { 'Empty': '', ...ResolutionEnum } as const;
+const AffectednessEnumWithBlank = { Empty: '', ...AffectednessEnum } as const;
+const ResolutionEnumWithBlank = { Empty: '', ...ResolutionEnum } as const;
 
 export const affectImpacts = { ...omit([''], ImpactEnumWithBlank), Empty: '' } as const;
 export const affectResolutions = ResolutionEnumWithBlank;

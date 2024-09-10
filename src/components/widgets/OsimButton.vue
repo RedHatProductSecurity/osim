@@ -1,11 +1,3 @@
-<template>
-  <button ref="osimButton" class="osim-button" :style="backgroundColorRule">
-    <p class="osim-button-face" :class="$attrs.class">
-      <slot />
-    </p>
-  </button>
-</template>
-
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
@@ -15,9 +7,8 @@ const backgroundColor = computed(() =>
     const adjustedValue = Number(rbgValue) - 50;
     const darkenedValue = adjustedValue < 0 ? 0 : adjustedValue;
     return darkenedValue.toString();
-  })
+  }),
 );
-
 
 const backgroundColorRule = computed(() => {
   return `background-color: ${backgroundColor.value};`;
@@ -27,37 +18,41 @@ const foregroundColor = ref<string>('');
 
 onMounted(() => {
   const computedStyle = osimButton.value ? window.getComputedStyle(osimButton.value) : null;
-  if (computedStyle?.backgroundColor){
+  if (computedStyle?.backgroundColor) {
     foregroundColor.value = computedStyle.backgroundColor;
   }
 });
 </script>
 
+<template>
+  <button ref="osimButton" class="osim-button" :style="backgroundColorRule">
+    <p class="osim-button-face" :class="$attrs.class">
+      <slot />
+    </p>
+  </button>
+</template>
+
 <style scoped lang="scss">
+.osim-button {
+  border-radius: 12px;
+  border: none;
+  padding: 0;
+  outline-offset: 4px;
+}
 
-  .osim-button {
-    border-radius: 12px;
-    border: none;
-    padding: 0;
-    outline-offset: 4px;
-  }
+.osim-button-face {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: white;
+  transform: translateY(-3px);
+  text-shadow: 1px 1px 0 v-bind(backgroundColor);
 
-  .osim-button-face {
-    cursor: pointer;
-    padding: .75rem 1rem;
-    border-radius: .75rem;
-    color: white;
-    transform: translateY(-3px);
-    text-shadow: 1px 1px 0 v-bind(backgroundColor);
+  // :slotted(.bi) {
+  // }
+}
 
-    // :slotted(.bi) {
-    // }
-  }
-
-  .pushable:active .front {
-    transform: translateY(-2px);
-  }
-
-
-
+.pushable:active .front {
+  transform: translateY(-2px);
+}
 </style>

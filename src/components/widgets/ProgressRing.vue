@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+
 const props = defineProps<{
-  diameter: number,
-  progress: number,
-  stroke: number,
-  color: string,
-  direction?: 'up' | 'down',
-  transitionDurationMs?: number,
+  color: string;
+  diameter: number;
+  direction?: 'down' | 'up';
+  progress: number;
+  stroke: number;
+  transitionDurationMs?: number;
 }>();
 const transitionDuration = computed(() => (props.transitionDurationMs ?? 16) + 'ms');
 const radius = computed(() => props.diameter / 2);

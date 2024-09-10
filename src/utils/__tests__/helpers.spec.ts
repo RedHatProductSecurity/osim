@@ -1,7 +1,8 @@
-import { deepCopyFromRaw, unwrap } from '../helpers';
 import { ref, computed } from 'vue';
 
-describe('The unwrap function', () => {
+import { deepCopyFromRaw, unwrap } from '../helpers';
+
+describe('the unwrap function', () => {
   it('should unwrap refs', () => {
     const refValue: any = ref('test');
     const unwrappedRef = unwrap(refValue);
@@ -13,13 +14,9 @@ describe('The unwrap function', () => {
     // expect(unwrappedReactive).toEqual({ prop: 'test' });
     // expect(unwrappedProxy).toEqual({ prop: 'test' });
   });
-  // it('should copy refs', () => {
-
-  // })
 });
 
-
-describe('The deepCopyFromRaw function', () => {
+describe('the deepCopyFromRaw function', () => {
   it('make deep copies of arrays of refs', () => {
     const testArray = [ref('test1'), ref(ref('test2'))];
     const hopefullyADeepCopy = deepCopyFromRaw(testArray);
@@ -43,8 +40,8 @@ describe('The deepCopyFromRaw function', () => {
       ],
       children: [
         ref('test1'),
-        ref({ property: 'test2' })
-      ]
+        ref({ property: 'test2' }),
+      ],
     });
     const hopefullyADeepCopy = deepCopyFromRaw(testObject);
     expect(hopefullyADeepCopy).not.toBe(testObject);
@@ -57,13 +54,8 @@ describe('The deepCopyFromRaw function', () => {
       ],
       children: [
         'test1',
-        { property: 'test2' }
-      ]
+        { property: 'test2' },
+      ],
     });
-
   });
-  // it('should copy refs', () => {
-
-  // })
 });
-

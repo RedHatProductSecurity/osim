@@ -1,13 +1,12 @@
+import { nextTick as vueNextTick } from 'vue';
+
 import {
   createRouter,
   createWebHistory,
   type NavigationGuardNext,
   type RouteLocationNormalized,
 } from 'vue-router';
-import { nextTick as vueNextTick } from 'vue';
-import IndexView from '../views/IndexView.vue';
-import LoginView from '../views/LoginView.vue';
-import FlawEditView from '../views/FlawEditView.vue';
+
 import { useUserStore } from '@/stores/UserStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { notifyApiKeyUnset } from '@/services/ApiKeyService';
@@ -19,12 +18,16 @@ import LogoutView from '@/views/LogoutView.vue';
 import WidgetTestView from '@/views/WidgetTestView.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 
+import FlawEditView from '../views/FlawEditView.vue';
+import IndexView from '../views/IndexView.vue';
+import LoginView from '../views/LoginView.vue';
+
 // FIXME: Fix URL handling when clicking logout, then pressing the back button.
 //        The URL should remain at /login while not logged-in.
 //        Vue doesn't seem to care (??? / !!!) but it's only a cosmetic issue...
 //        Something like this snippet was reported to work, but I haven't figured it out yet.
 let popStateDetected = false;
-let popStateEvent: PopStateEvent | null = null;
+let popStateEvent: null | PopStateEvent = null;
 window.addEventListener('popstate', (e) => {
   popStateEvent = e;
   popStateDetected = true;
@@ -105,7 +108,7 @@ const router = createRouter({
         if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
           notifyApiKeyUnset();
         }
-      }
+      },
     },
     {
       path: '/widget-test',
@@ -116,10 +119,10 @@ const router = createRouter({
         title: 'Sample',
       },
       beforeEnter() {
-        if (osimRuntime.value.env !== 'dev'){
+        if (osimRuntime.value.env !== 'dev') {
           return { name: 'not-found' };
         }
-      }
+      },
     },
     {
       path: '/:pathMatch(.*)*',
@@ -144,7 +147,7 @@ function apiKeysGuard(shouldRedirectToSettings = false) {
   return (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardNext
+    next: NavigationGuardNext,
   ) => {
     const noKeysAreSet = areApiKeysNotSet();
 
@@ -202,4 +205,3 @@ router.afterEach((to) => {
 });
 
 export default router;
-

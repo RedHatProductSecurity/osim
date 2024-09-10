@@ -1,15 +1,12 @@
-import { useToastStore, type ToastNew } from '@/stores/ToastStore';
-
 import { createPinia, setActivePinia } from 'pinia';
+
+import { useToastStore, type ToastNew } from '@/stores/ToastStore';
 
 import { useSettingsStore } from '../SettingsStore';
 
-
-describe('ToastStore', () => {
-
+describe('toastStore', () => {
   let toastStore: ReturnType<typeof useToastStore>;
   let settingsStore: ReturnType<typeof useSettingsStore>;
-
 
   beforeEach(() => {
     setActivePinia(createPinia());

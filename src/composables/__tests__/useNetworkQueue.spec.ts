@@ -30,7 +30,7 @@ describe('useNetworkQueue', () => {
     const task3 = vi.fn().mockResolvedValue('Result 3');
 
     await expect(networkQueue.execute(task1, task2, task3)).rejects.toThrow(
-      'Failed to execute all tasks queue on action'
+      'Failed to execute all tasks queue on action',
     );
 
     expect(task1).toHaveBeenCalled();

@@ -8,23 +8,23 @@
 import { nextTick, ref, unref, watch } from 'vue';
 
 const props = defineProps<{
-  modelValue: string | null,
-  readOnly?: boolean,
-  editing?: boolean,
-  placeholder?: string,
-  error?: string | null,
+  editing?: boolean;
+  error?: null | string;
+  modelValue: null | string;
+  placeholder?: string;
+  readOnly?: boolean;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | null],
-  'update:editing': [value: string],
+  'update:editing': [value: string];
+  'update:modelValue': [value: null | string];
 }>();
 
 const elInput = ref<HTMLInputElement>();
 const elDiv = ref<HTMLDivElement>();
 const editing = ref<boolean>(props.editing ?? false);
 
-const editedModelValue = ref<string | null>(unref(props.modelValue));
+const editedModelValue = ref<null | string>(unref(props.modelValue));
 
 watch(() => props.modelValue, () => {
   editedModelValue.value = props.modelValue;
@@ -35,7 +35,6 @@ function beginEdit() {
   nextTick(() => {
     elInput.value?.focus();
   });
-
 }
 function commit() {
   editing.value = false;
@@ -77,7 +76,6 @@ function onBlur(e: FocusEvent | null) {
   //   }
   // }
 }
-
 </script>
 
 <template>
@@ -149,12 +147,11 @@ function onBlur(e: FocusEvent | null) {
 </template>
 
 <style lang="scss">
-
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/variables-dark";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/forms";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/forms';
 
 .osim-editable-field {
   &:hover .invalid-tooltip {
@@ -176,7 +173,9 @@ function onBlur(e: FocusEvent | null) {
     background-color: #f00;
   }
 
-  .flash-bg-leave-from, .flash-bg-leave-active, .flash-bg-leave-to {
+  .flash-bg-leave-from,
+  .flash-bg-leave-active,
+  .flash-bg-leave-to {
     transition: none !important;
     display: none !important;
   }
@@ -185,7 +184,6 @@ function onBlur(e: FocusEvent | null) {
     @extend .input-group; // Use pure CSS instead of JS for hover
     // Nest these for specificity
     white-space: nowrap;
-
 
     .osim-editable-text-value {
       @extend .form-control;

@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { nextTick, computed, ref, toValue } from 'vue';
+
 import { useMemoize } from '@vueuse/core';
+
 import { createCatchHandler } from '@/composables/service-helpers';
+
 import { searchJiraUsers } from '@/services/JiraService';
 import { useUserStore } from '@/stores/UserStore';
 import type { ZodJiraUserAssignableType } from '@/types/zodJira';
+
 import LabelDiv from './widgets/LabelDiv.vue';
 import EditableTextWithSuggestions from './widgets/EditableTextWithSuggestions.vue';
 import JiraUser from './widgets/JiraUser.vue';
 
-const owner = defineModel<string | null>({ default: null });
 const props = defineProps<{
-  taskKey?: string | null;
+  taskKey?: null | string;
 }>();
+const owner = defineModel<null | string>({ default: null });
 const userStore = useUserStore();
 
 async function selfAssign() {
@@ -32,7 +36,7 @@ async function handleClick(fn: (arg?: any) => any) {
 }
 
 const isAssignedToMe = computed(() =>
-  owner.value === userStore.jiraUsername && userStore.jiraUsername !== ''
+  owner.value === userStore.jiraUsername && userStore.jiraUsername !== '',
 );
 
 const isLoading = ref(false);
@@ -49,7 +53,6 @@ const cacheJiraUsers = useMemoize(async (query: string) => {
   isLoading.value = false;
   return users?.data?.users ?? [];
 });
-
 
 const onQueryChange = async (query: string) => {
   const users = await cacheJiraUsers(query);

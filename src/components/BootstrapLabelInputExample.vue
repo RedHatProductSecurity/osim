@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+
 import { useSettingsStore } from '@/stores/SettingsStore';
 import type { SettingsType } from '@/stores/SettingsStore';
 
@@ -10,7 +11,6 @@ const inputLabels = ref<{ [name: string]: string }>({});
 const revealSensitive = ref('hide');
 
 const settings = reactive<SettingsType>(settingsStore.settings);
-
 </script>
 
 <template>
@@ -18,7 +18,6 @@ const settings = reactive<SettingsType>(settingsStore.settings);
     <h1 class="mb-3">Settings</h1>
 
     <form @submit.prevent="settingsStore.save(settings)">
-
 
       <div class="form-check">
         <input

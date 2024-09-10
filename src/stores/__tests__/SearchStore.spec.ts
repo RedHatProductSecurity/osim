@@ -1,15 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
-import { useSearchStore } from '../SearchStore';
 import { useLocalStorage } from '@vueuse/core';
 
+import { useSearchStore } from '../SearchStore';
+
 const initialState = {
-  searchFilters: {}
+  searchFilters: {},
 };
 
 export const mockSearchStore = createTestingPinia({
-  initialState
+  initialState,
 });
 
 vi.mock('@vueuse/core', () => ({
@@ -17,21 +18,20 @@ vi.mock('@vueuse/core', () => ({
     return {
       SearchStore: {
         value: defaults || {
-          searchFilters: { 'test':'test' }
-        }
-      }
+          searchFilters: { test: 'test' },
+        },
+      },
     }[key];
   }),
 }));
 
-describe('SettingsStore', () => {
+describe('settingsStore', () => {
   let searchStore: ReturnType<typeof useSearchStore>;
 
   beforeEach(() => {
     setActivePinia(createPinia());
     searchStore = useSearchStore();
   });
-
 
   it('initializes', () => {
     expect(searchStore.searchFilters).toEqual({});
@@ -41,21 +41,21 @@ describe('SettingsStore', () => {
     (useLocalStorage as Mock).mockReturnValue({
       SearchStore: {
         value: {
-          searchFilters: { 'test':'test' }
-        }
-      }
+          searchFilters: { test: 'test' },
+        },
+      },
     });
-    searchStore.saveFilter({ 'component':'test' });
-    expect(searchStore.searchFilters).toEqual({ 'component':'test' });
+    searchStore.saveFilter({ component: 'test' });
+    expect(searchStore.searchFilters).toEqual({ component: 'test' });
   });
 
   it('resetFilter', () => {
     (useLocalStorage as Mock).mockReturnValue({
       SearchStore: {
         value: {
-          searchFilters: { 'test':'test' }
-        }
-      }
+          searchFilters: { test: 'test' },
+        },
+      },
     });
     searchStore.resetFilter();
     expect(searchStore.searchFilters).toEqual({});

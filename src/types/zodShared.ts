@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { DateTime } from 'luxon';
+
+import { ImpactEnum } from '@/generated-client';
+
 import type {
   FlawCVSSSchemaType,
   FlawSchemaType,
@@ -10,11 +13,8 @@ import type {
   ErratumSchemaType,
   AffectCVSSSchemaType,
 } from './zodAffect';
-
-import { ImpactEnum } from '@/generated-client';
-
 import {
-  FlawClassificationStateEnum
+  FlawClassificationStateEnum,
 } from '../generated-client';
 
 export const ZodFlawClassification = z.object({
@@ -27,7 +27,7 @@ export const ImpactEnumWithBlank = { '': '', ...ImpactEnum } as const;
 export const zodOsimDateTime = () =>
   z
     .date()
-    .transform((val) => DateTime.fromJSDate(val).toUTC().toISO())
+    .transform(val => DateTime.fromJSDate(val).toUTC().toISO())
     .or(z.string().superRefine((dateString, zodContext) => {
       if (!z.string().datetime().safeParse(dateString).success) {
         zodContext.addIssue({
@@ -39,14 +39,14 @@ export const zodOsimDateTime = () =>
     }));
 
 type SchemaType =
-  | FlawCVSSSchemaType
   | AffectCVSSSchemaType
-  | ErratumSchemaType
-  | TrackerSchemaType
   | AffectSchemaType
+  | ErratumSchemaType
+  | FlawCVSSSchemaType
+  | TrackerSchemaType
   | typeof ZodFlawClassification;
 
-type SchemaTypeWithEffect = SchemaType | FlawSchemaType;
+type SchemaTypeWithEffect = FlawSchemaType | SchemaType;
 
 export type ZodAlertType = z.infer<typeof ZodAlertSchema>;
 export const ZodAlertSchema = z.object({

@@ -1,5 +1,7 @@
 import { ref } from 'vue';
+
 import { describe, it, expect } from 'vitest';
+
 import { usePagination } from '../usePagination';
 
 describe('usePagination', () => {
@@ -12,7 +14,7 @@ describe('usePagination', () => {
 
   it('should handle the case where currentPage is in the middle of a large pagination range', () => {
     const totalPages = ref(10);
-    const { pages, currentPage, changePage } = usePagination(totalPages, 7);
+    const { changePage, currentPage, pages } = usePagination(totalPages, 7);
 
     changePage(5);
 
@@ -22,7 +24,7 @@ describe('usePagination', () => {
 
   it('should handle the case where currentPage is at the beginning', () => {
     const totalPages = ref(10);
-    const { pages, currentPage, changePage } = usePagination(totalPages, 7);
+    const { changePage, currentPage, pages } = usePagination(totalPages, 7);
 
     changePage(1);
 
@@ -32,7 +34,7 @@ describe('usePagination', () => {
 
   it('should handle the case where currentPage is at the end', () => {
     const totalPages = ref(10);
-    const { pages, currentPage, changePage } = usePagination(totalPages, 7);
+    const { changePage, currentPage, pages } = usePagination(totalPages, 7);
 
     changePage(9);
 
@@ -42,7 +44,7 @@ describe('usePagination', () => {
 
   it('should not change the currentPage if changePage is called with an invalid page number', () => {
     const totalPages = ref(5);
-    const { currentPage, changePage } = usePagination(totalPages, 7);
+    const { changePage, currentPage } = usePagination(totalPages, 7);
 
     changePage(6);
 
@@ -51,7 +53,7 @@ describe('usePagination', () => {
 
   it('should correctly compute pages where currentPage is in the middle range of a very large totalPages', () => {
     const totalPages = ref(100);
-    const { pages, changePage } = usePagination(totalPages, 7);
+    const { changePage, pages } = usePagination(totalPages, 7);
 
     changePage(50);
 
@@ -60,7 +62,7 @@ describe('usePagination', () => {
 
   it('should correctly handle a totalPages value of 1', () => {
     const totalPages = ref(1);
-    const { pages, currentPage } = usePagination(totalPages, 7);
+    const { currentPage, pages } = usePagination(totalPages, 7);
 
     expect(pages.value).toEqual([1]);
     expect(currentPage.value).toBe(1);

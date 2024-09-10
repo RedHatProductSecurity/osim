@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { DateTime } from 'luxon';
 
 import Toast from '@/components/widgets/Toast.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import ProgressRing from '@/components/widgets/ProgressRing.vue';
+
 import { useToastStore } from '@/stores/ToastStore';
 
 const { addToast } = useToastStore();
@@ -18,7 +20,6 @@ const modalComponentShown = ref(false);
 // }
 
 const progress = ref(60);
-
 </script>
 
 <template>
