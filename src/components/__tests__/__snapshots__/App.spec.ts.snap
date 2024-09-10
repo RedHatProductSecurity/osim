@@ -14,8 +14,8 @@ exports[`app > renders the App component when OSIDB is READY 1`] = `
   <!--TODO add active request count-->
   <!--<div>[ Requests: {{ activeRequestCount }} ]</div>-->
   <change-log-stub></change-log-stub>
-  <div> [ OSIM | env: dev | <span title="1"> tag: 1.0.0</span> | ts : () ] </div>
-  <div> [ OSIDB | env: | <span title="">ver: </span> ] </div>
+  <div> [ OSIM | env: test | <span title="1"> tag: 1.0.0</span> | ts : 2024-08-29 () ] </div>
+  <div> [ OSIDB | env: test | <span title="1">ver: 1.0.0</span> ] </div>
   <div class="osim-status-osidb-err"> [err: OSIDB is not ready] </div>
 </footer>"
 `;

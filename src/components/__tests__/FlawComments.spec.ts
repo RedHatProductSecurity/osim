@@ -9,39 +9,6 @@ import { searchJiraUsers } from '@/services/JiraService';
 
 createTestingPinia();
 
-vi.mock('@/stores/osimRuntime', async () => {
-  const osimRuntimeValue = {
-    env: 'unittest',
-    backends: {
-      osidb: 'http://osidb-backend',
-      bugzilla: 'http://bugzilla-backend',
-      jira: 'http://jira-backend',
-      errata: 'http://errata',
-      jiraDisplay: 'http://jira-backend',
-    },
-    osimVersion: {
-      rev: 'osimrev', tag: 'osimtag', timestamp: '1970-01-01T00:00:00Z', dirty: true,
-    },
-    error: '',
-  };
-  return {
-    setup: vi.fn(() => { }),
-    osimRuntimeStatus: 1,
-    osidbHealth: {
-      revision: '',
-    },
-    osimRuntime: {
-      value: osimRuntimeValue,
-      ...osimRuntimeValue,
-    },
-    OsimRuntimeStatus: {
-      INIT: 0,
-      READY: 1,
-      ERROR: 2,
-    },
-  };
-});
-
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),
   jiraTaskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
