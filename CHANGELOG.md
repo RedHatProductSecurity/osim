@@ -12,6 +12,9 @@
 * Provide Bug ID information for trackers display (`OSIDB-2818`)
 * In the event of saving multiple trackers with some failing, the affect 
 trackers will be refreshed (`OSIDB-3402`)
+* Add query filter support on advance search (`OSIDB-3088`)
+* Display score on affect's CVSS column (`OSIDB-3397`)
+* Allow removing CVSS on affects (`OSIDB-3397`)
 
 ### Changed
 * Improved performance by reusing access token until is expired (`OSIDB-3373`)
@@ -23,6 +26,7 @@ trackers will be refreshed (`OSIDB-3402`)
 
 ### Fixed
 * Correct `affected module` information source on trackers display (`OSIDB-2818`)
+* Allow setting and modifying affect's CVSS (`OSIDB-3397`)
 
 ### Removed
 * Removed `type` information for trackers display (`OSIDB-2818`)

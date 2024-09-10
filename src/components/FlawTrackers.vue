@@ -448,6 +448,15 @@ function increaseItemsPerPage() {
       padding: .25rem;
       padding-left: .5rem;
     }
+
+    tbody {
+      tr td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+      }
+    }
   }
 }
 

@@ -26,6 +26,7 @@ const props = defineProps<{
   embargoed: boolean;
   affects: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
+  affectCvssToDelete: Record<string, string>;
   error: Record<string, any>[] | null;
 }>();
 
@@ -37,7 +38,7 @@ const emit = defineEmits<{
   'affects:refresh': [];
 }>();
 
-const { affects, affectsToDelete } = toRefs(props);
+const { affects, affectsToDelete, affectCvssToDelete } = toRefs(props);
 const hasAffects = computed(() => allAffects.value.length > 0);
 const allAffects = computed(() => affectsToDelete.value.concat(affects.value));
 const savedAffects = clone(affects.value) as ZodAffectType[];
@@ -334,6 +335,7 @@ function addNewAffect() {
       comment: '',
       score: null,
       vector: '',
+      embargoed: props.embargoed,
       alerts: [],
     }],
     trackers: [{ errata: [] }],
@@ -424,10 +426,44 @@ function selectAffects(event: Event) {
 }
 
 // Affects Fields
-function affectCvss3Vector(affect: ZodAffectType) {
-  affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3')
-    ?.vector
-    || null;
+function affectCvss(affect: ZodAffectType) {
+  return affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === 'V3');
+}
+
+function affectCvssDisplay(affect: ZodAffectType) {
+  const cvssScore = affectCvss(affect)?.score || '';
+  const cvssVector = affectCvss(affect)?.vector || '';
+  if (cvssScore && cvssVector) {
+    return `${cvssScore} ${cvssVector}`;
+  } else {
+    return cvssVector;
+  }
+}
+
+function updateAffectCvss(affect: ZodAffectType, newValue: string) {
+  const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
+  const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
+  if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+    affect.cvss_scores[cvssScoreIndex].vector = '';
+    affectCvssToDelete.value[affect.uuid] = cvssId;
+  } else {
+    if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
+      delete affectCvssToDelete.value[affect.uuid];
+    }
+    if (cvssScoreIndex !== -1) {
+      affect.cvss_scores[cvssScoreIndex].vector = newValue;
+    } else if (newValue !== '') {
+      affect.cvss_scores.push({
+        issuer: 'RH',
+        cvss_version: 'V3',
+        comment: '',
+        score: null,
+        vector: newValue,
+        embargoed: props.embargoed,
+        alerts: [],
+      });
+    }
+  }
 }
 
 function resolutionOptions(affect: ZodAffectType) {
@@ -444,7 +480,7 @@ function affectRowTooltip(affect: ZodAffectType) {
   } else if (isModified(affect)) {
     return 'This affect will be updated on save changes';
   } else {
-    '';
+    return '';
   }
 }
 
@@ -1069,7 +1105,18 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   {{ affect.impact }}
                 </span>
               </td>
-              <td>{{ affectCvss3Vector(affect) }}</td>
+              <td>
+                <input
+                  v-if="isBeingEdited(affect)"
+                  class="form-control"
+                  :value="affectCvss(affect)?.vector"
+                  @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
+                  @keydown="handleEdit($event, affect)"
+                />
+                <span v-else>
+                  {{ affectCvssDisplay(affect) }}
+                </span>
+              </td>
               <td>
                 <div class="affect-tracker-cell">
                   <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
@@ -1201,6 +1248,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       height: 2rem;
       padding-block: 0;
       margin: .15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
     }
 
     .clear-modules-btn {
@@ -1317,11 +1368,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(3) {
-              width: 20%;
+              width: 10%;
             }
 
             &:nth-of-type(4) {
-              width: 20%;
+              width: 14%;
             }
 
             &:nth-of-type(5) {
@@ -1337,7 +1388,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(8) {
-              width: 8%;
+              width: 28%;
             }
 
             &:nth-of-type(9) {
@@ -1345,7 +1396,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(10) {
-              width: 8%;
+              width: 6%;
             }
 
             &:nth-of-type(11) {
@@ -1371,6 +1422,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             padding-block: .2rem;
             border-block: .2ch solid #e0e0e0;
             background-color: #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
 
             .row-right-indicator {
               right: -42px;

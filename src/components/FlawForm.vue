@@ -52,6 +52,7 @@ const {
   flawReferences,
   flawAcknowledgments,
   affectsToDelete,
+  affectCvssToDelete,
   rhCvss3String,
   highlightedNvdCvss3String,
   shouldDisplayEmailNistForm,
@@ -435,6 +436,7 @@ const createdDate = computed(() => {
             v-if="mode === 'edit'"
             :affects="flaw.affects"
             :affectsToDelete="affectsToDelete"
+            :affectCvssToDelete="affectCvssToDelete"
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
