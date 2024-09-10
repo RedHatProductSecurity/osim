@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.9.0]
 ### Added
 * Allow using default ordering in flaw list page (`OSIDB-3187`)
 * Support operations for a selection of affects (`OSIDB-2818`)
@@ -303,7 +303,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.8.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.0...HEAD
+[2024.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.8.0...v2024.9.0
 [2024.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.2...v2024.8.0
 [2024.7.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.1...v2024.7.2
 [2024.7.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.0...v2024.7.1
