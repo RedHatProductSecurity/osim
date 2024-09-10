@@ -1,3 +1,6 @@
+import type { App } from 'vue';
+import { createApp } from 'vue';
+
 import { createHmac } from 'node:crypto';
 
 const encoding = (str: string) =>
@@ -21,3 +24,15 @@ export const encodeJWT = (payload: unknown) => {
 
   return segments.concat(signature).join('.');
 };
+
+export function withSetup<T>(composable: () => T): [T, App] {
+  let result: T;
+  const app = createApp({
+    setup() {
+      result = composable();
+      return () => { };
+    },
+  });
+  app.mount(document.createElement('div'));
+  return [result!, app];
+}
