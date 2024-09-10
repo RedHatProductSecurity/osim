@@ -274,17 +274,20 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     if (Object.keys(affectCvssToDelete.value).length > 0) {
       let cvssScoresRemovedCount = 0;
       let affectWithRemovedCvssCount = 0;
+      const cvssScoresToDelete = [];
       try {
         for (const affectId of Object.keys(affectCvssToDelete.value)) {
           const affect = flaw.value.affects.find(affect => affect.uuid === affectId);
           if (affect) {
             const cvssId = affectCvssToDelete.value[affectId];
             if (cvssId) {
-              await deleteAffectCvssScore(affect.uuid as string, cvssId);
+              cvssScoresToDelete.push(deleteAffectCvssScore(affect.uuid as string, cvssId));
               cvssScoresRemovedCount++;
             }
           }
         }
+        cvssScoresRemovedCount = (await Promise.allSettled(cvssScoresToDelete))
+          .filter(({ status }) => status === 'fulfilled').length;
         affectWithRemovedCvssCount++;
       } catch (error) {
         console.error('useFlawAffectsModel::saveAffects() Error removing CVSS score(s):', error);
