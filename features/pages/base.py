@@ -39,8 +39,9 @@ class BasePage(PageFactory):
             element = getattr(self, element_name)
         else:
             element = element_name
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].value = '';")
+
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.driver.execute_script("arguments[0].value = '';", element)
 
     def wait_msg(self, msg_element):
         element = getattr(self, msg_element)

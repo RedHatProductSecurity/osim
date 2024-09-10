@@ -312,6 +312,7 @@ def step_impl(context):
 @then("The review status is updated")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
+    flaw_page.reviewStatusSelect.element_to_be_clickable()
     _, review_status = flaw_page.get_select_value('reviewStatusSelect')
     assert review_status == context.review_status, f'Review status update failed'
 
@@ -544,18 +545,14 @@ def step_impl(context):
 
 @when("I add a new affect with valid data")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.ps_component = flaw_detail_page.set_new_affect_inputs('bugzilla', 'NEW')
+    context.ps_component = flaw_detail_page.add_new_affect('bugzilla', "NEW")
 
 
 @then("The affect is added")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.display_affect_detail()
-    component_xpath = f"//span[contains(text(), '{context.ps_component}')]"
-    flaw_detail_page.check_element_exists(By.XPATH, component_xpath)
+    flaw_detail_page.check_text_exist(context.ps_component)
 
 
 @when("I delete an affect of the flaw")
@@ -653,7 +650,7 @@ def step_impl(context):
 def step_imp(context, external_system, affectedness_value):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.set_new_affect_inputs(external_system, affectedness_value)
+    flaw_detail_page.add_new_affect(external_system, affectedness_value)
 
 
 @then("I can't file a tracker")
@@ -697,7 +694,7 @@ def step_impl(context):
     flaw_detail_page.click_button_with_js("ManageTrackers")
     context.trackersCurrentCount = flaw_detail_page.trackers_list_count("trackersList")
     # Add one more affect and get the trackers count of the new affect
-    context.ps_component = flaw_detail_page.set_new_affect_inputs('jira', 'AFFECTED')
+    context.ps_component = flaw_detail_page.add_new_affect('jira', 'AFFECTED')
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page.click_button_with_js("ManageTrackers")
     context.trackersTotalCount = flaw_detail_page.trackers_list_count("trackersList")
