@@ -98,7 +98,8 @@ describe('issueSearchAdvanced', () => {
     const wrapper = await mountIssueSearchAdvanced();
     const router = vi.mocked(useRouter());
 
-    await wrapper.find('input[type="checkbox"]').setValue(true);
+    await wrapper.find('select').setValue('cve_description');
+    await wrapper.findAll('.input-group .btn-group .btn')[1].trigger('click');
     await wrapper.find('form').trigger('submit');
 
     expect(router.replace).toHaveBeenNthCalledWith(1, { query: { cve_description: 'nonempty' } });
@@ -109,7 +110,7 @@ describe('issueSearchAdvanced', () => {
 
     await wrapper.find('select').setValue('cve_description');
     await wrapper.find('.input-group input').setValue('some value');
-    await wrapper.findAll('form div button[type="button"]').at(4)!.trigger('click');
+    await wrapper.find('.save-default-btn').trigger('click');
 
     expect(wrapper.emitted()).toHaveProperty('filter:save');
   });
