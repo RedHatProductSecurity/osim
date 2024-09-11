@@ -5,8 +5,9 @@ import { DateTime } from 'luxon';
 import { RouterView } from 'vue-router';
 import { useElementBounding } from '@vueuse/core';
 
-import ToastContainer from '@/components/ToastContainer.vue';
-import ChangeLog from '@/components/ChangeLog.vue';
+import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
+import ChangeLog from '@/components/ChangeLog/ChangeLog.vue';
+import Navbar from '@/components/Navbar/Navbar.vue';
 
 import {
   setup,
@@ -16,8 +17,6 @@ import {
   OsimRuntimeStatus,
 } from '@/stores/osimRuntime';
 import { footerHeight, footerTop } from '@/stores/responsive';
-
-import Navbar from './components/Navbar.vue';
 
 setup();
 

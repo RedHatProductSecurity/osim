@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
-import CveRequestForm from '../CveRequestForm.vue';
+import CveRequestForm from '@/components/CveRequestForm/CveRequestForm.vue';
 
 createTestingPinia();
 

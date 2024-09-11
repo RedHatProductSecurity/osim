@@ -2,10 +2,10 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
-import IndexView from '@/views/IndexView.vue';
+import { useFlawsFetching } from '@/composables/useFlawsFetching';
 
-import { useFlawsFetching } from '../../composables/useFlawsFetching';
-import LabelCheckbox from '../widgets/LabelCheckbox.vue';
+import IndexView from '@/views/IndexView.vue';
+import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
   useLocalStorage: vi.fn((key: string, defaults) => {
@@ -49,7 +49,7 @@ vi.mock('jwt-decode', () => ({
   })),
 }));
 
-vi.mock('../../composables/useFlawsFetching', () => ({
+vi.mock('@/composables/useFlawsFetching', () => ({
   useFlawsFetching: vi.fn(() => ({
     issues: [],
     isLoading: false,
