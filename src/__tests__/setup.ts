@@ -1,3 +1,5 @@
+import { setupServer } from 'msw/node';
+
 vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   const { ref } = await import('vue');
   const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
@@ -28,6 +30,28 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   });
 });
 
+// By default, MSW will log a warning for unhandled requests.
+// This way we can catch them and fail the test.
+const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
+  console.error(`Network request for "${req.url.toString()}" was not handled.`);
+});
+export const server = setupServer();
+
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest,
+  });
+});
+
 afterEach(() => {
+  // Ensure that there are no unhandled requests
+  expect(onUnhandledRequest).toHaveBeenCalledTimes(0);
+
+  // Reset any runtime handlers tests may setup
+  server.resetHandlers();
   vi.clearAllMocks();
+});
+
+afterAll(() => {
+  server.close();
 });
