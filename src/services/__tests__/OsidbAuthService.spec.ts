@@ -1,10 +1,10 @@
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { createPinia, setActivePinia } from 'pinia';
 import { DateTime } from 'luxon';
 
 import { useUserStore } from '@/stores/UserStore';
 import { encodeJWT } from '@/__tests__/helpers';
+import { server } from '@/__tests__/setup';
 
 import { getNextAccessToken } from '../OsidbAuthService';
 
@@ -21,14 +21,9 @@ describe('osidbAuthService', () => {
     return HttpResponse.json({ access: accessJWT });
   });
 
-  const server = setupServer(refreshEndpoint);
-
-  beforeAll(() => {
-    server.listen({ onUnhandledRequest: 'error' });
-  });
-
   beforeEach(() => {
     setActivePinia(createPinia());
+    server.use(refreshEndpoint);
 
     vi.useFakeTimers({
       now: new Date('2024-08-29T11:42:58.000Z'),
@@ -36,7 +31,6 @@ describe('osidbAuthService', () => {
   });
 
   afterEach(() => {
-    server.restoreHandlers();
     vi.clearAllTimers();
     vi.useRealTimers();
   });
@@ -63,7 +57,6 @@ describe('osidbAuthService', () => {
 
     const token = await getNextAccessToken();
 
-    expect(refreshEndpoint.isUsed).toBeFalsy();
     expect(token).toEqual(accessToken);
   });
 

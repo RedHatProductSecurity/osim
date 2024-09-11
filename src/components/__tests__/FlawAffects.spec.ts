@@ -8,6 +8,11 @@ import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 
 createTestingPinia();
 
+vi.mock('@/composables/useTrackers', () => ({
+  useTrackers: vi.fn().mockReturnValue({
+    trackersToFile: [],
+  }),
+}));
 describe('flawAffects', () => {
   let subject;
 

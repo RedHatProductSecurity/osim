@@ -7,6 +7,11 @@ import FlawTrackers from '@/components/FlawTrackers.vue';
 import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 
 createTestingPinia();
+vi.mock('@/composables/useTrackers', () => ({
+  useTrackers: vi.fn().mockReturnValue({
+    trackersToFile: [],
+  }),
+}));
 
 describe('flawTrackers', () => {
   let subject;

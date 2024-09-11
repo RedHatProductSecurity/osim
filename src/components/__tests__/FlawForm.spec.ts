@@ -1,4 +1,3 @@
-import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import { useRouter } from 'vue-router';
@@ -19,12 +18,13 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 
 import { blankFlaw } from '@/composables/useFlawModel';
 
+import { server } from '@/__tests__/setup';
+import { flawSources } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import {
   Source521Enum,
 } from '@/generated-client';
-import { flawSources } from '@/types/zodFlaw';
 
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import { osimFullFlawTest } from './test-suite-helpers';
@@ -47,8 +47,6 @@ const putHandler = http.put(`${FLAW_BASE_URI}/:id`, async ({ request }) => {
   const requestBody = decoder.decode(result.value);
   return HttpResponse.json(JSON.parse(requestBody));
 });
-
-const server = setupServer(putHandler);
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router');
@@ -99,8 +97,6 @@ describe('flawForm', () => {
       },
     });
 
-    server.listen({ onUnhandledRequest: 'error' });
-
     (useRouter as Mock).mockReturnValue({
       currentRoute: { value: { fullPath: '/flaws/uuiddddd' } },
     });
@@ -129,8 +125,9 @@ describe('flawForm', () => {
     });
   });
 
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  beforeEach(() => {
+    server.use(putHandler);
+  });
 
   it('mounts and renders', async () => {
     expect(subject.exists()).toBe(true);

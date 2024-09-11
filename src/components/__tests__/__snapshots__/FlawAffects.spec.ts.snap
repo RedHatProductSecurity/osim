@@ -776,7 +776,7 @@ exports[`flawAffects > Displays tracker manager for a selection of affects 1`] =
         <div data-v-a347fd2c="" class="modal-body">
           <div data-v-4977998e="" data-v-0fd8a3c0="" class="trackers-manager py-3 px-4">
             <!--v-if-->
-            <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
+            <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
             <div class="row mt-3" data-v-4977998e="">
               <div class="col" data-v-4977998e="">
                 <h5 class="d-inline-block fs-5" data-v-4977998e="">Available Trackers</h5><span class="fst-italic" data-v-4977998e=""> (<i class="bi bi-box-arrow-in-right" data-v-4977998e=""></i> indicates a Suggested Tracker) </span>
@@ -788,27 +788,27 @@ exports[`flawAffects > Displays tracker manager for a selection of affects 1`] =
             <div data-v-4977998e="" class="row">
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="" class="mb-2">
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                   <!--v-if-->
+                  <div data-v-4977998e="" class="osim-tracker-list"></div>
                 </div>
               </div>
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="" class="mb-2">
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                   <!--v-if-->
+                  <div data-v-4977998e="" class="osim-tracker-list"></div>
                 </div>
               </div>
             </div>
             <div data-v-4977998e="" class="row mt-4">
               <div data-v-4977998e="" class="col mb-2">
                 <h5 data-v-4977998e="">Already Filed</h5>
-                <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                 <!--v-if-->
+                <div data-v-4977998e="" class="osim-tracker-list"></div>
               </div>
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="">
                   <h5 data-v-4977998e="">Untrackable Affects <i data-v-4977998e="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
+                  <!--v-if-->
                   <!--v-if-->
                   <!--v-if-->
                 </div>
@@ -1158,7 +1158,7 @@ exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
         <div data-v-a347fd2c="" class="modal-body">
           <div data-v-4977998e="" data-v-0fd8a3c0="" class="trackers-manager py-3 px-4">
             <!--v-if-->
-            <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" disabled="" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
+            <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
             <div class="row mt-3" data-v-4977998e="">
               <div class="col" data-v-4977998e="">
                 <h5 class="d-inline-block fs-5" data-v-4977998e="">Available Trackers</h5><span class="fst-italic" data-v-4977998e=""> (<i class="bi bi-box-arrow-in-right" data-v-4977998e=""></i> indicates a Suggested Tracker) </span>
@@ -1170,27 +1170,27 @@ exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
             <div data-v-4977998e="" class="row">
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="" class="mb-2">
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                   <!--v-if-->
+                  <div data-v-4977998e="" class="osim-tracker-list"></div>
                 </div>
               </div>
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="" class="mb-2">
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                   <!--v-if-->
+                  <div data-v-4977998e="" class="osim-tracker-list"></div>
                 </div>
               </div>
             </div>
             <div data-v-4977998e="" class="row mt-4">
               <div data-v-4977998e="" class="col mb-2">
                 <h5 data-v-4977998e="">Already Filed</h5>
-                <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
                 <!--v-if-->
+                <div data-v-4977998e="" class="osim-tracker-list"></div>
               </div>
               <div data-v-4977998e="" class="col">
                 <div data-v-4977998e="">
                   <h5 data-v-4977998e="">Untrackable Affects <i data-v-4977998e="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
-                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
+                  <!--v-if-->
                   <!--v-if-->
                   <!--v-if-->
                 </div>
