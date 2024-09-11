@@ -212,7 +212,7 @@ onUnmounted(() => {
           Search
         </button>
         <button
-          class="btn btn-primary me-2"
+          class="save-default-btn btn btn-primary me-2"
           type="button"
           :disabled="isLoading"
           @click="emit('filter:save')"
