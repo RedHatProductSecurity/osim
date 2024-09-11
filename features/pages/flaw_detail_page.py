@@ -137,7 +137,16 @@ class FlawDetailPage(BasePage):
         "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "selects": ("XPATH", "//select[@class='form-select']"),
         "affectCreatedMsg": ("XPATH", "//div[text()='Affects Created.']"),
+
         # Affects locators
+        "newAddAffectEditBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Edit affect']"),
+        "newAddAffectModuleInput": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/input"),
+        "newAddAffectComponentInput": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/input"),
+        "newAddAffectAffectednessSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/select"),
+        "newAddAffectResolutionSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/select"),
+        "newAddAffectImpactInput": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
+        "commitAllAffectChangesBtn": ("XPATH", "//button[@title='Commit changes on all affects being edited']"),
+
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[last()]"),
         "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[last()]"),
@@ -154,7 +163,6 @@ class FlawDetailPage(BasePage):
         "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
         "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All Affects')]"),
         "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
-        "affectNotSave": ("XPATH", "//span[contains(text(), 'Not Saved in OSIDB')]"),
         "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
         "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "affectUpstreamCheckbox": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']/label)[1]"),
@@ -549,42 +557,40 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_new_affect_inputs(self, external_system='jira', affectedness_value='NEW'):
+    def add_new_affect(self, external_system='jira', affectedness_value='NEW'):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
-        self.click_plusdropdown_btn('affectNotSave')
+        self.click_button_with_js("newAddAffectEditBtn")
 
         # Set new affect inputs: PS module, PS component, CVSSv3
+        self.clear_text_with_js(self.newAddAffectModuleInput)
         if external_system == 'jira':
-            self.set_input_value('affects__ps_module', AFFECTED_MODULE_JR)
+            self.newAddAffectModuleInput.set_text(AFFECTED_MODULE_JR)
         else:
-            self.set_input_value('affects__ps_module', AFFECTED_MODULE_BZ)
+            self.newAddAffectModuleInput.set_text(AFFECTED_MODULE_BZ)
+
         ps_component_value = generate_random_text()
-        self.set_input_value('affects__ps_component', ps_component_value)
-        self.set_input_value('affects__cvss3_score', '4.3')
+        self.clear_text_with_js(self.newAddAffectComponentInput)
+        self.newAddAffectComponentInput.set_text(ps_component_value)
 
         # Set select value for Affectedness, Resolution and Impact
-        selects = find_elements_in_page_factory(self, 'selects')
-        (affectedness, resolution, impact) = selects[-3:]
-        affectedness_select = Select(affectedness)
-        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
-            affectedness_select.select_by_value(affectedness_value)
-            resolution_select = Select(resolution)
-            resolution_select.select_by_value('')
-        else:
-            affectedness_select.select_by_value('AFFECTED')
-            resolution_select = Select(resolution)
-            resolution_select.select_by_value('DELEGATED')
-        impact.execute_script("arguments[0].scrollIntoView(true);")
+        self.newAddAffectAffectednessSelect.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});")
 
-        hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
-        self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_bar)
-        impact_select = Select(impact)
-        impact_select.select_by_value('LOW')
-        self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
+        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
+            self.newAddAffectAffectednessSelect.select_element_by_value(affectedness_value)
+            self.newAddAffectResolutionSelect.select_element_by_value('')
+        else:
+            self.newAddAffectAffectednessSelect.select_element_by_value('AFFECTED')
+            self.newAddAffectResolutionSelect.select_element_by_value('DELEGATED')
+
+        available_values, current_value = self.get_select_value(self.newAddAffectImpactInput)
+        available_values.remove(current_value)
+        self.newAddAffectImpactInput.select_element_by_value(random.choice(available_values))
+
         self.click_btn('saveBtn')
-        self.wait_msg('affectCreatedMsg')
         self.wait_msg('flawSavedMsg')
+        self.wait_msg('affectCreatedMsg')
         return ps_component_value
 
     def get_an_available_ps_module(self, affect_module):
@@ -765,7 +771,7 @@ class FlawDetailPage(BasePage):
             locate_with(By.TAG_NAME, "textarea").below(element))[0]
         reason_text_area.send_keys(value)
 
-    def get_selected_value(self, field):
+    def get_select_element_value(self, field):
         element = getattr(self, field)
         field_select = self.driver.find_elements(
             locate_with(By.XPATH, "//select[@class='form-select']").near(element))[0]
@@ -789,7 +795,7 @@ class FlawDetailPage(BasePage):
             elif field in ['title', 'owner']:
                 result[field] = self.get_current_value_of_field(field+'Text')
             elif field in ["impact", "source"]:
-                result[field] = self.get_selected_value(field+'Text')
+                result[field] = self.get_select_element_value(field + 'Text')
             elif field == "workflow_state":
                 result[field] = self.get_field_value('stateText', "//span[@class='form-control rounded-0']")
             elif field == "cve_description":
@@ -804,7 +810,7 @@ class FlawDetailPage(BasePage):
         if field == "cwe_id":
             return self.get_current_value_of_field("cweidText")
         elif field == "source":
-            return self.get_selected_value(field+'Text')
+            return self.get_select_element_value(field + 'Text')
         elif field == "cve_description":
             return self.get_document_text_field('description')
         elif field == "requires_cve_description":

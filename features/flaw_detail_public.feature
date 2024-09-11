@@ -91,7 +91,6 @@ Feature: Flaw detail testing on public flaw
       When I update the flaw and click 'Reset Changes' button
       Then All changes are reset
 
-    @skip
     Scenario: Add new affect for a public flaw
       When I add a new affect with valid data
       Then The affect is added
@@ -166,9 +165,8 @@ Feature: Flaw detail testing on public flaw
       Examples:
         |                       new_state |
         |                          TRIAGE |
-        # Below state can only work after affect(s) attached
-        # |        PRE_SECONDARY_ASSESSMENT |
-        # |            SECONDARY_ASSESSMENT |
+        |        PRE_SECONDARY_ASSESSMENT |
+        |            SECONDARY_ASSESSMENT |
         # Below state can only work after tracker(s) filed
         # |                            DONE |
 
