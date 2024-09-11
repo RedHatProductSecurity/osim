@@ -13,7 +13,6 @@ Feature: Flaw detail testing on embargo flaw
       When I update the embargoed flaw with a future public date
       Then The embargoed flaw is updated
 
-    @skip
     Scenario: Add new affect for an embargoed flaw
       When I add a new affect with valid data
       Then The affect is added

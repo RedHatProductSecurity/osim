@@ -13,7 +13,7 @@ class AdvancedSearchPage(BasePage):
         "firstFlaw": ("XPATH", "//div[@class='osim-incident-list']/table/tbody/tr[1]"),
         "selectKeyList": ("XPATH", "//select[@class='form-select search-facet-field']"),
         "selectValueList": ("XPATH", "//select[@class='form-select']"),
-        "inputTextWindow": ("XPATH", "//details/form/div/input[@class='form-control']"),
+        "inputTextWindow": ("XPATH", "(//details/form/div/input[@class='form-control'])[last()]"),
         "selectKeyList2": ("XPATH", "(//select[@class='form-select search-facet-field'])[2]"),
         "selectValueList2": ("XPATH", "(//select[@class='form-select'])[2]"),
         "cve_idText": ("XPATH", "//tr[1]/td[1]/a"),
@@ -37,8 +37,7 @@ class AdvancedSearchPage(BasePage):
         self.selectKeyList.click_button()
         self.selectKeyList.select_element_by_value(item_key)
         try:
-            if self.driver.find_element(By.XPATH, "//details/form/div/input[@class='form-control']"):
-                self.inputTextWindow.set_text(item_value)
+            self.inputTextWindow.set_text(item_value)
         except:
             self.selectValueList.click_button()
             self.selectValueList.select_element_by_value(item_value)
