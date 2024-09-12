@@ -24,6 +24,9 @@ export default defineConfig(configEnv =>
         root: fileURLToPath(new URL('./', import.meta.url)),
         globals: true,
         onConsoleLog: (_, type) => type === 'stderr',
+        setupFiles: [
+          './src/__tests__/setup.ts',
+        ],
         globalSetup: [
           // './src/__tests__/global-setup.ts',
         ],

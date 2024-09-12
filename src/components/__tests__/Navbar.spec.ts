@@ -65,14 +65,6 @@ describe('navbar', () => {
       createSpy: vitest.fn,
       stubActions: false,
     });
-    vi.mock('@/stores/osimRuntime', async () => {
-      const osimRuntimeValue = { env: 'unittest' };
-      return {
-        osimRuntime: {
-          ...osimRuntimeValue,
-        },
-      };
-    });
     subject = mount(Navbar, {
       global: {
         plugins: [

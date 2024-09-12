@@ -18,24 +18,6 @@ const mountApp = () => shallowMount(App, {
 });
 
 describe('app', () => {
-  vi.mock('@/stores/osimRuntime', async (importOriginal) => {
-    const { ref } = await import('vue');
-    const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
-
-    return {
-      ...osimRuntime,
-      setup: vi.fn(),
-      osimRuntimeStatus: ref(osimRuntime.OsimRuntimeStatus.READY),
-      osimRuntime: ref({
-        readOnly: false,
-        env: 'dev',
-        osimVersion: { rev: '1', tag: '1.0.0', timestamp: '2024-08-29' },
-        error: 'OSIDB is not ready',
-        backends: {},
-      }),
-    };
-  });
-
   afterEach(() => {
     vi.resetAllMocks();
   });
