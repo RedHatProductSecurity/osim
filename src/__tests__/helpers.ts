@@ -1,7 +1,11 @@
-import type { App } from 'vue';
-import { createApp } from 'vue';
+import { createApp, type App } from 'vue';
 
 import { createHmac } from 'node:crypto';
+
+import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+
+import { routes } from '@/router';
 
 const encoding = (str: string) =>
   str.replace(/=/g, '')
@@ -36,3 +40,20 @@ export function withSetup<T>(composable: () => T): [T, App] {
   app.mount(document.createElement('div'));
   return [result!, app];
 }
+
+const { createRouter, createWebHistory } = await vi.importActual<typeof import('vue-router')>('vue-router');
+export const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+export const mountWithConfig: typeof mount = (originalComponent, options) => mount(originalComponent, {
+  ...options,
+  global: {
+    directives: {
+      osimLoading: vi.fn(),
+      imask: vi.fn(),
+      ...options?.global?.directives,
+    },
+    plugins: [createTestingPinia(), router],
+  },
+});
