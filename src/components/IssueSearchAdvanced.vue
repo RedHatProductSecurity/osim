@@ -134,6 +134,7 @@ onUnmounted(() => {
           class="form-control"
         />
         <button
+          :disabled="!query"
           class="btn btn-sm btn-secondary rounded-0 py-0"
           title="Clear query"
           type="button"
@@ -195,6 +196,8 @@ onUnmounted(() => {
           </button>
         </div>
         <button
+          v-if="facet.field"
+          :disabled="!facet.value"
           class="btn btn-sm btn-primary rounded-0 py-0"
           title="Clear field"
           type="button"
