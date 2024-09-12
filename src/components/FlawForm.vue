@@ -23,6 +23,7 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import type { ZodAffectType } from '@/types/zodAffect';
 
 import CvssExplainForm from './CvssExplainForm.vue';
 import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
@@ -440,9 +441,9 @@ const createdDate = computed(() => {
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
-            @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
-            @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects"
+            @affect:recover="(affect: ZodAffectType) => recoverAffect(affectsToDelete.indexOf(affect))"
+            @affect:remove="(affect: ZodAffectType) => removeAffect(flaw.affects.indexOf(affect))"
+            @affects:refresh="refreshAffects()"
             @affect:add="addAffect"
           />
         </div>

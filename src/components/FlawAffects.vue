@@ -1209,6 +1209,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       :displayedTrackers="displayedTrackers"
       :affectsNotBeingDeleted="affects"
       :allTrackersCount="allTrackers.length"
+      @affects:refresh="emit('affects:refresh')"
     />
   </div>
   <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal">
