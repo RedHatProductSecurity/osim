@@ -1,4 +1,4 @@
-import { ref, onMounted, watch, watchEffect } from 'vue';
+import { ref, onMounted, watch, watchEffect, computed } from 'vue';
 
 import { z } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
@@ -10,16 +10,26 @@ type Facet = {
   value: string;
 };
 
+type orderMode = 'asc' | 'desc';
+
 const searchQuery = z.object({
   query: z.object({
     search: z.string().nullish(),
     query: z.string().nullish(),
+    order: z.string().nullish(),
   }),
 });
 
 const facets = ref<Facet[]>([]);
 const query = ref<string>('');
+const order = computed(() => orderMode.value === 'asc' && orderField.value ? `-${orderField.value}` : orderField.value);
+const orderField = ref<string>('');
+const orderMode = ref<orderMode>('asc');
 const search = ref('');
+
+function toggleSortOrder() {
+  orderMode.value = orderMode.value === 'desc' ? 'asc' : 'desc';
+}
 
 export function useSearchParams() {
   const route = useRoute();
@@ -53,6 +63,16 @@ export function useSearchParams() {
     if (parsedRoute.query.query) {
       params.query = parsedRoute.query.query;
     }
+    if (parsedRoute.query.order) {
+      params.order = parsedRoute.query.order;
+      if ((route.query.order as string).startsWith('-')) {
+        orderMode.value = 'asc';
+        orderField.value = (route.query.order as string).slice(1);
+      } else {
+        orderMode.value = 'desc';
+        orderField.value = route.query.order as string;
+      }
+    }
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach((key) => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
@@ -80,6 +100,14 @@ export function useSearchParams() {
     // repopulate facets after quick query changed
     search.value = `${route.query.search || ''}`;
     facets.value = populateFacets();
+    query.value = route.query.query as string;
+    if ((route.query.order as string).startsWith('-')) {
+      orderMode.value = 'asc';
+      orderField.value = (route.query.order as string).slice(1);
+    } else {
+      orderField.value = route.query.order as string;
+      orderField.value = 'desc';
+    }
   });
 
   function addFacet() {
@@ -115,6 +143,9 @@ export function useSearchParams() {
     params = search.value
       ? { ...params, search: search.value }
       : params;
+    params = order.value
+      ? { ...params, order: order.value }
+      : params;
     router.replace({
       query: {
         ...params,
@@ -125,6 +156,10 @@ export function useSearchParams() {
   return {
     facets,
     query,
+    order,
+    orderField,
+    orderMode,
+    toggleSortOrder,
     search,
     removeFacet,
     addFacet,

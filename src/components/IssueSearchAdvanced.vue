@@ -20,7 +20,15 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 const emit = defineEmits(['filter:save']);
-const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
+const {
+  facets,
+  orderField,
+  orderMode,
+  query,
+  removeFacet,
+  submitAdvancedSearch,
+  toggleSortOrder,
+} = useSearchParams();
 const { closeModal, isModalOpen, openModal } = useModal();
 
 const queryFilterVisible = ref(true);
@@ -56,14 +64,24 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-const sortFieldNames = sort((fieldA: string, fieldB: string) =>
+const customSortingFields = [
+  'cve_description',
+  'cvss_scores__score',
+  'cwe_id',
+  'major_incident_state',
+  'mitigation',
+  'source',
+  'statement',
+];
+
+const fieldNamesSorted = sort((fieldA: string, fieldB: string) =>
   nameForOption(fieldA).localeCompare(nameForOption(fieldB)),
 );
 
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
-  sortFieldNames(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
+  fieldNamesSorted(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
 
 const optionsFor = (field: string) =>
   ({
@@ -209,7 +227,7 @@ onUnmounted(() => {
           <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
       </div>
-      <div class="mt-2">
+      <div class="d-flex mt-2">
         <button
           class="btn btn-primary me-2"
           type="submit"
@@ -230,24 +248,36 @@ onUnmounted(() => {
         </button>
         <button
           v-if="!queryFilterVisible"
-          class="btn btn-secondary"
+          class="btn btn-secondary me-2"
           type="button"
           @click="() => queryFilterVisible = true"
         >
           Show Query Filter
         </button>
-        <select class="sort-by-search form-select search-facet-field d-inline-block" @submit.prevent>
-          <option
-            selected
-            value="Sort By"
-            disabled
-          >
-            Sort By
-          </option>
-          <option v-for="field in facets.keys" :key="field" :value="field">
+        <select
+          v-model="orderField"
+          class="sort-by-select form-select search-facet-field"
+          :class="{ 'active': orderField }"
+          :title="'When using this sorting with active table column sort,'
+            +' the table column field will be used as secondary sorting key'"
+          @submit.prevent
+        >
+          <option selected disabled label="Sort By..." />
+          <option :hidden="!orderField" label="" value="" />
+          <option v-for="field in customSortingFields" :key="field" :value="field">
             {{ nameForOption(field) }}
           </option>
         </select>
+        <button v-if="orderField" class="sort-by-order btn btn-sm" @click.prevent="toggleSortOrder()">
+          <i
+            :class="{
+              'bi-caret-up-fill': orderMode === 'asc',
+              'bi-caret-down-fill': orderMode === 'desc',
+            }"
+            :title="orderMode === 'asc' ? 'Ascending order' : 'Descending order'"
+            class="bi fs-5"
+          />
+        </button>
       </div>
     </form>
   </details>
@@ -296,6 +326,24 @@ onUnmounted(() => {
       margin-block: auto;
       pointer-events: auto;
       border: 0;
+    }
+  }
+
+  .sort-by-select.active {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .sort-by-order {
+    border: 1px solid #dee2e6;
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &:hover {
+      color: red;
+      border: 1px solid #dee2e6;
+      border-left: 0;
     }
   }
 
