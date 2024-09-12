@@ -10,10 +10,6 @@ type Facet = {
   value: string;
 };
 
-const facets = ref<Facet[]>([]);
-const query = ref<string>('');
-const search = ref('');
-
 const searchQuery = z.object({
   query: z.object({
     search: z.string().nullish(),
@@ -21,9 +17,12 @@ const searchQuery = z.object({
   }),
 });
 
+const facets = ref<Facet[]>([]);
+const query = ref<string>('');
+const search = ref('');
+
 export function useSearchParams() {
   const route = useRoute();
-
   const router = useRouter();
 
   const populateFacets = (): Facet[] => {
@@ -66,6 +65,8 @@ export function useSearchParams() {
 
   onMounted(() => {
     facets.value = populateFacets();
+    search.value = `${route.query.search || ''}`;
+    query.value = `${route.query.query || ''}`;
   });
 
   watchEffect(() => {

@@ -1,14 +1,18 @@
+import type { App } from 'vue';
+
+import { randomInt } from 'node:crypto';
+
 import { useRoute, useRouter } from 'vue-router';
+
+import { withSetup } from '@/__tests__/helpers';
 
 import { useSearchParams } from '../useSearchParams';
 
 vi.mock('vue-router', async () => {
-  const actual = await vi.importActual('vue-router');
   const replaceMock = vi.fn();
   const pushMock = vi.fn();
 
   return {
-    ...actual,
     useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock,
@@ -18,80 +22,111 @@ vi.mock('vue-router', async () => {
 });
 
 describe('useSearchParams', () => {
-  beforeEach(() => {
-    (useRoute as Mock).mockReturnValue({
-      query: { query: 'search' },
-    });
-  });
+  let app: App;
+
+  const mountSearchParams = () => {
+    const [result, _app] = withSetup(useSearchParams);
+    app = _app;
+    return result;
+  };
 
   afterEach(() => {
     vi.clearAllMocks();
+    app?.unmount();
   });
 
-  it('initialized correctly', () => {
-    const { facets, search } = useSearchParams();
-    expect(search.value).toBe('');
-    expect(facets.value.length).toBe(0);
+  it.each<{ query: string; search: string }>([
+    { query: '', search: '' },
+    { query: 'some text', search: 'some text' },
+    { query: '', search: 'some text' },
+    { query: 'some text', search: '' },
+  ])('should initialize params %s', (params) => {
+    vi.mocked(useRoute, { partial: true }).mockReturnValueOnce({
+      query: params,
+    });
+    const { facets, query, search } = mountSearchParams();
+
+    expect(search.value).toBe(params.search);
+    expect(query.value).toBe(params.query);
+    expect(facets.value).toEqual([{ field: '', value: '' }]);
   });
 
-  it('update search value on submitQuickSearch', () => {
-    const { facets, search, submitQuickSearch } = useSearchParams();
-    expect(search.value).toBe('');
-    expect(facets.value.length).toBe(0);
-    submitQuickSearch('search');
-    expect(search.value).toBe('search');
-    expect(useRouter().push).toHaveBeenCalled();
-    expect(useRouter().push.mock.calls[0][0])
-      .toStrictEqual({ name: 'search', query: { search: 'search' } });
+  it.each(['cve_id', 'embargoed', 'affects__affectedness'])('should initialize facet %s', (field) => {
+    const randomValue = `test${randomInt(100)}`;
+    vi.mocked(useRoute, { partial: true }).mockReturnValueOnce({
+      query: {
+        [field]: randomValue,
+      },
+    });
+    const { facets } = mountSearchParams();
+
+    expect(facets.value).toEqual([
+      { field, value: randomValue },
+      { field: '', value: '' },
+    ]);
   });
 
-  it('update facets on addFacet', () => {
-    const { addFacet, facets } = useSearchParams();
-    expect(facets.value.length).toBe(0);
+  it('should update search value on submitQuickSearch', () => {
+    const searchString = 'test search';
+    const { search, submitQuickSearch } = mountSearchParams();
+
+    submitQuickSearch(searchString);
+
+    expect(search.value).toBe(searchString);
+    expect(useRouter().push).toHaveBeenNthCalledWith(1, { name: 'search', query: { search: searchString } });
+  });
+
+  it('should update facets on addFacet', () => {
+    const { addFacet, facets } = mountSearchParams();
+
     addFacet();
-    expect(facets.value.length).toBe(1);
+
+    expect(facets.value.length).toBe(2);
   });
 
-  it('update facets on removeFacet', () => {
-    const { facets, removeFacet } = useSearchParams();
+  it('should update facets on removeFacet', () => {
+    const { facets, removeFacet } = mountSearchParams();
     facets.value = [
-      { field: 'test', value: 'test' },
-      { field: 'test', value: 'test' },
+      { field: 'testA', value: 'testA' },
+      { field: 'testB', value: 'testB' },
     ];
-    removeFacet();
-    expect(facets.value.length).toBe(1);
-    removeFacet();
-    expect(facets.value.length).toBe(1);
+
+    removeFacet(0);
+
     expect(facets.value[0]).toStrictEqual({
-      field: '', value: '',
+      field: 'testB', value: 'testB',
     });
   });
 
-  it('getSearchParams', () => {
-    (useRoute as Mock).mockReturnValue({
+  it('should return search params when calling "getSearchParams"', () => {
+    vi.mocked(useRoute, { partial: true }).mockReturnValue({
       query: {
         query: 'search',
         affects__ps_component: 'test',
       },
     });
-    const { getSearchParams } = useSearchParams();
+    const { getSearchParams } = mountSearchParams();
+
     const searchParams = getSearchParams();
+
     expect(searchParams).toStrictEqual({
       query: 'search',
       affects__ps_component: 'test',
     });
   });
 
-  it('populatedFacets from route', () => {
-    (useRoute as Mock).mockReturnValue({
+  it('should return facets when calling "populatedFacets"', () => {
+    vi.mocked(useRoute, { partial: true }).mockReturnValue({
       query: {
         query: 'search',
         affects__ps_component: 'test',
         acknowledgments__name: 'test',
       },
     });
-    const { populateFacets } = useSearchParams();
+    const { populateFacets } = mountSearchParams();
+
     const facets = populateFacets();
+
     expect(facets).toEqual([
       { field: 'affects__ps_component', value: 'test' },
       { field: 'acknowledgments__name', value: 'test' },
