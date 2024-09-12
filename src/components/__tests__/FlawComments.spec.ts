@@ -1,13 +1,11 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
 
 import FlawComments from '@/components/FlawComments.vue';
 
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { searchJiraUsers } from '@/services/JiraService';
-
-createTestingPinia();
+import { mountWithConfig } from '@/__tests__/helpers';
 
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),
@@ -21,7 +19,7 @@ describe('flawComments', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    subject = mount(FlawComments, {
+    subject = mountWithConfig(FlawComments, {
       props: {
         publicComments: [],
         privateComments: [],

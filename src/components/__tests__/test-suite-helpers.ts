@@ -1,21 +1,22 @@
 import { test } from 'vitest';
 
 import type { ZodAffectType } from '@/types/zodAffect';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
 import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';
 import sampleFlawFull from './__fixtures__/sampleFlawFull.json';
 
 export const osimEmptyFlawTest = test.extend({
-  flaw: sampleFlawEmpty,
+  flaw: sampleFlawEmpty as ZodFlawType,
 });
 
 export const osimRequiredFlawTest = test.extend({
-  flaw: sampleFlawRequired,
+  flaw: sampleFlawRequired as ZodFlawType,
 });
 
 export const osimFullFlawTest = test.extend({
-  flaw: sampleFlawFull,
+  flaw: sampleFlawFull as ZodFlawType,
 });
 
 export function mockAffect({ ps_component, ps_module }: { ps_component: string; ps_module: string }): ZodAffectType {

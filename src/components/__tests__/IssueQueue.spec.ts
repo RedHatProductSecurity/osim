@@ -1,10 +1,8 @@
-import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-import { createTestingPinia } from '@pinia/testing';
 
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 
-import router from '@/router';
+import { mountWithConfig } from '@/__tests__/helpers';
 
 import IssueQueue from '../IssueQueue.vue';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
@@ -73,20 +71,14 @@ describe('issueQueue', () => {
   });
 
   it('should fetch data from API', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
         total: 10,
       },
-      global: {
-        plugins: [pinia, router],
-      },
+
     });
 
     const fetchEvents = wrapper.emitted('flaws:fetch');
@@ -98,19 +90,12 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on MyFlaws', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
         total: 10,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
 
@@ -130,19 +115,12 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on OpenFlaws', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
         total: 10,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
 
@@ -162,19 +140,12 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on sort', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: [],
         isLoading: false,
         isFinalPageFetched: false,
         total: 10,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
     const idColumn = wrapper.findAll('th').at(0);
@@ -199,19 +170,12 @@ describe('issueQueue', () => {
   });
 
   it('shouldn\'t render total count when no issues', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: [],
         isLoading: true,
         isFinalPageFetched: false,
         total: 100,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
@@ -221,19 +185,12 @@ describe('issueQueue', () => {
   });
 
   it('should render total count', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: Array.from({ length: 50 }).fill(mockData[0]),
         isLoading: false,
         isFinalPageFetched: false,
         total: 100,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
@@ -244,19 +201,12 @@ describe('issueQueue', () => {
   });
 
   it('should render loader when loading flaws', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: Array.from({ length: 25 }).fill(mockData[0]),
         isLoading: true,
         isFinalPageFetched: false,
         total: 100,
-      },
-      global: {
-        plugins: [pinia, router],
       },
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
@@ -266,19 +216,13 @@ describe('issueQueue', () => {
   });
 
   it('shouldn\'t render useDefault filter button', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
         showFilter: false,
-      },
-      global: {
-        plugins: [pinia, router],
+        total: 10,
       },
     });
     const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];
@@ -288,20 +232,14 @@ describe('issueQueue', () => {
   });
 
   it('should render useDefault filter button', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(IssueQueue, {
+    const wrapper = mountWithConfig(IssueQueue, {
       props: {
         issues: mockData,
         isLoading: false,
         isFinalPageFetched: false,
         showFilter: true,
         defaultFilters: { affects__ps_component: 'test' },
-      },
-      global: {
-        plugins: [pinia, router],
+        total: 10,
       },
     });
     const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];

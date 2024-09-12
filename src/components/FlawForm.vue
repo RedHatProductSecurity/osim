@@ -32,7 +32,7 @@ import IssueFieldState from './IssueFieldState.vue';
 import FlawAffects from './FlawAffects.vue';
 
 const props = defineProps<{
-  flaw: any;
+  flaw: ZodFlawType;
   mode: 'create' | 'edit';
 }>();
 
@@ -106,7 +106,7 @@ watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any 
   onReset();
 });
 
-const isEmbargoed = ref();
+const isEmbargoed = ref<boolean>(false);
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 

@@ -1,59 +1,57 @@
 import { describe, expect } from 'vitest';
-import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
 
 import FlawTrackers from '@/components/FlawTrackers.vue';
 
+import { mountWithConfig } from '@/__tests__/helpers';
+
 import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 
-createTestingPinia();
 vi.mock('@/composables/useTrackers', () => ({
   useTrackers: vi.fn().mockReturnValue({
     trackersToFile: [],
+    isLoadingTrackers: false,
   }),
 }));
 
-describe('flawTrackers', () => {
-  let subject;
+const mountFlawTrackers = (props: InstanceType<typeof FlawTrackers>['$props']) => mountWithConfig(FlawTrackers, {
+  props,
+});
 
+describe('flawTrackers', () => {
   osimRequiredFlawTest('Correctly renders the component when there are not trackers to display', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: [],
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: [],
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
     });
     expect(subject.html()).toMatchSnapshot();
   });
 
   osimFullFlawTest('Correctly renders the component when there are trackers to display', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: flaw.affects
-          .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
-          ),
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
+
     });
     expect(subject.html()).toMatchSnapshot();
   });
 
   osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: flaw.affects
-          .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
-          ),
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
     });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
@@ -86,16 +84,14 @@ describe('flawTrackers', () => {
   });
 
   osimFullFlawTest('Trackers can be sorted by clicking on the date field columns', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: flaw.affects
-          .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
-          ),
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
     });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
@@ -133,16 +129,14 @@ describe('flawTrackers', () => {
   });
 
   osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: flaw.affects
-          .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
-          ),
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
     });
 
     let trackerManagerElement = subject.find('.trackers-manager');
