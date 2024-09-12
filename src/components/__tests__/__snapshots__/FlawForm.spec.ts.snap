@@ -577,7 +577,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-1">openshift-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-1-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -598,7 +598,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-2">openshift-2</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-2-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -619,7 +619,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-3">openshift-3</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-3-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -640,7 +640,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-4">openshift-4</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-4-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -661,7 +661,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-5</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-5">openshift-5</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-5-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -682,7 +682,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <td data-v-0fd8a3c0="">
                 <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
-              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-6</span></td>
+              <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-6">openshift-6</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">openshift-6-1</span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0=""></span></td>
               <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">WONTFIX</span></td>
@@ -737,54 +737,54 @@ exports[`flawForm > mounts and renders 1`] = `
               </thead>
               <tbody data-v-7006d35c="">
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/62e7b08b-0e06-47dc-9a0c-c39c3c818fb2" class="">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-006</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-5</td>
+                  <td data-v-7006d35c="">xxxx-0-006</td>
                   <td data-v-7006d35c="">CLOSED</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
                   <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/22563242-36b3-46dd-99e7-c337cd675fce" class="">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-005</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-5</td>
+                  <td data-v-7006d35c="">xxxx-0-005</td>
                   <td data-v-7006d35c="">NEW</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
                   <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/8a63211f-8e0b-4709-94e1-c4bb1ebb2620" class="">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-004</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-1</td>
+                  <td data-v-7006d35c="">xxxx-0-004</td>
                   <td data-v-7006d35c="">CLOSED</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
                   <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/56f0eb75-c565-4d2e-ad73-da995607f191" class="">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-003</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-1</td>
+                  <td data-v-7006d35c="">xxxx-0-003</td>
                   <td data-v-7006d35c="">NEW</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
                   <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/cf1d329b-5ddc-48e2-a8ae-5e2f01411424" class="">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-002</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-1</td>
+                  <td data-v-7006d35c="">xxxx-0-002</td>
                   <td data-v-7006d35c="">CLOSED</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
                   <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="/tracker/71c60db4-0d33-4a86-b912-3d8f5c8b8658" class="">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="">xxxx-0-001</td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="">openshift-1</td>
+                  <td data-v-7006d35c="">xxxx-0-001</td>
                   <td data-v-7006d35c="">NEW</td>
                   <td data-v-7006d35c=""></td>
                   <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>

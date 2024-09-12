@@ -109,16 +109,14 @@ describe('flawTrackers', () => {
   });
 
   osimFullFlawTest('Trackers display functional external links', async ({ flaw }) => {
-    subject = mount(FlawTrackers, {
-      props: {
-        flawId: flaw.uuid,
-        displayedTrackers: flaw.affects
-          .flatMap(affect => affect.trackers
-            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
-          ),
-        affectsNotBeingDeleted: [],
-        allTrackersCount: 0,
-      },
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
     });
 
     const trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
