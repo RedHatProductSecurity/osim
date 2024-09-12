@@ -22,7 +22,6 @@ Feature: Flaw detail testing on embargo flaw
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved
 
-    @skip
     Scenario: Delete an affect from a flaw
       When I delete an affect of the flaw
       Then The affect is deleted

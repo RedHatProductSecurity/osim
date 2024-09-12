@@ -557,24 +557,22 @@ def step_impl(context):
 
 @when("I delete an affect of the flaw")
 def step_impl(context):
-    flaw_detail_page = FlawDetailPage(context.browser)
-    context.module, context.component = \
-        flaw_detail_page.click_affect_delete_btn()
-    warning = flaw_detail_page.affectDeleteTips.get_text()
-    assert warning == "Affected Offerings To Be Deleted"
-    flaw_detail_page.click_btn('saveBtn')
-    flaw_detail_page.wait_msg('affectDeleteMsg')
-    flaw_detail_page.click_button_with_js('msgClose')
-    flaw_detail_page.wait_msg('flawSavedMsg')
-    flaw_detail_page.click_button_with_js('msgClose')
+    flaw_page = FlawDetailPage(context.browser)
+    context.ps_module, context.ps_component = flaw_page.get_first_affect_data()
+    flaw_page.click_button_with_js("removeAffectBtn")
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+    flaw_page.click_button_with_js('msgClose')
+    flaw_page.wait_msg('affectDeleteMsg')
+    flaw_page.click_button_with_js('msgClose')
+
 
 @then("The affect is deleted")
 def step_impl(context):
-    token = get_osidb_token()
-    flaw_detail_page = FlawDetailPage(context.browser)
-    module_component_list = flaw_detail_page.get_affect_module_component_values(
-                    token, context.component)
-    assert (context.module, context.component) not in module_component_list
+    flaw_page = FlawDetailPage(context.browser)
+    if flaw_page.has_affects():
+        ps_module, ps_component = flaw_page.get_first_affect_data()
+        assert (context.ps_module, context.ps_component) != (ps_module, ps_component)
 
 
 @when("I click 'delete' button of an affect")
