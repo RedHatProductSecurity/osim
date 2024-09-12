@@ -1,3 +1,4 @@
+import { enableAutoUnmount } from '@vue/test-utils';
 import { setupServer } from 'msw/node';
 
 vi.mock('@/stores/osimRuntime', async (importOriginal) => {
@@ -30,6 +31,9 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   });
 });
 
+// Automatically unmount components after each test
+enableAutoUnmount(afterEach);
+
 // By default, MSW will log a warning for unhandled requests.
 // This way we can catch them and fail the test.
 const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
@@ -54,4 +58,6 @@ afterEach(() => {
 
 afterAll(() => {
   server.close();
+  vi.restoreAllMocks();
+  vi.resetModules();
 });
