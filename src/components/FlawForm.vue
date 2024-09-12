@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon';
 import { computed, ref, watch, onMounted } from 'vue';
-import { deepCopyFromRaw } from '@/utils/helpers';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
@@ -23,6 +22,9 @@ import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { type ZodFlawType, descriptionRequiredStates } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
+import { deepCopyFromRaw } from '@/utils/helpers';
+import type { ZodAffectType } from '@/types/zodAffect';
+
 import CvssExplainForm from './CvssExplainForm.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
 import FlawAffects from './FlawAffects.vue';
@@ -440,9 +442,9 @@ const createdDate = computed(() => {
             :error="errors.affects"
             :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
-            @affect:recover="(affect) => recoverAffect(affectsToDelete.indexOf(affect))"
-            @affect:remove="(affect) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects"
+            @affect:recover="(affect: ZodAffectType) => recoverAffect(affectsToDelete.indexOf(affect))"
+            @affect:remove="(affect: ZodAffectType) => removeAffect(flaw.affects.indexOf(affect))"
+            @affects:refresh="refreshAffects()"
             @affect:add="addAffect"
           />
         </div>
