@@ -16,7 +16,7 @@
     "test:unit": "vitest",
     "test:unit:nowatch": "vitest run",
     "test:e2e": "behave features",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "vibe-check": "npx vite-bundle-visualizer",
     "generate-openapi-client": "openapi-generator-cli generate -i openapi.yml --output src/generated-client -g typescript-axios",
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json",
