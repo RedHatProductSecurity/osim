@@ -8,7 +8,7 @@ import TrackerManager from '@/components/TrackerManager.vue';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 
 import { formatDate } from '@/utils/helpers';
-import type { ZodAffectType, ZodTrackerType } from '@/types/zodAffect';
+import type { ZodTrackerType } from '@/types/zodAffect';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { trackerUrl } from '@/services/TrackerService';
@@ -16,11 +16,9 @@ import { trackerUrl } from '@/services/TrackerService';
 type TrackerWithModule = { ps_module: string } & ZodTrackerType;
 
 const props = defineProps<{
-  affectsNotBeingDeleted: ZodAffectType[]; // ???
   allTrackersCount: number;
   displayedTrackers: TrackerWithModule[];
   flaw: ZodFlawType;
-  flawId: string;
   relatedFlaws: ZodFlawType[];
 }>();
 
@@ -312,7 +310,6 @@ const {
           v-if="showTrackerManager"
           :relatedFlaws="relatedFlaws"
           :flaw="flaw"
-          :affects="affectsNotBeingDeleted"
           @affects-trackers:refresh="emit('affects:refresh')"
         />
       </div>

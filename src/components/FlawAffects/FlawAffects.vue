@@ -22,18 +22,7 @@ import { displayModes } from './';
 import { useAffectSelections } from './useAffectSelections';
 import { useFilterSortAffects } from './useFilterSortAffects';
 
-// const props = defineProps<{
-//   affects: ZodAffectType[];
-//   affectsToDelete: ZodAffectType[];
-//   embargoed: boolean;
-//   error: null | Record<string, any>[];
-//   flaw: ZodFlawType;
-//   flawId: string;
-//   relatedFlaws: ZodFlawType[];
-// }>();
-
 const props = defineProps<{
-  affectCvssToDelete: Record<string, string>;
   embargoed: boolean;
   error: null | Record<string, any>[];
   flaw: ZodFlawType;
@@ -645,6 +634,10 @@ const displayedTrackers = computed(() => {
 
     .osim-affect-trackers-container {
       margin: 0 !important;
+
+      h4 button {
+        display: none;
+      }
     }
   }
 

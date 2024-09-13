@@ -2,6 +2,7 @@ import { type Ref, ref, computed, watch } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
+import { affectRhCvss3, deepCopyFromRaw, isScoreRhIssuedCvss3 } from '@/utils/helpers';
 import {
   postAffects,
   putAffects,
@@ -14,8 +15,6 @@ import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
-import { deepCopyFromRaw } from '@/utils/helpers';
-import { CVSS_V3 } from '@/constants';
 
 const affectsWithChangedCvss = ref<ZodAffectType[]>([]);
 const affectIdsForPutRequest = ref<string[]>([]);
@@ -38,13 +37,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     const affect = flaw.value.affects.find(matchAffectTo);
 
     if ( // affect is new and has cvss scores
-      affect && !affect.uuid && affect.cvss_scores.length && affectCvssData(affect, 'RH', CVSS_V3)?.vector
+      affect && !affect.uuid && affect.cvss_scores.length && affectRhCvss3(affect)?.vector
     ) {
       return true;
     }
 
     if ( // affect has no relevant cvss scores to check
-      !affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', CVSS_V3)?.vector
+      !affect || !affect.cvss_scores.length || !affectRhCvss3(affect)?.vector
     ) {
       return false;
     }
@@ -67,7 +66,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       || matchAffectTo(affect),
     );
 
-    if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', CVSS_V3)?.vector) {
+    if (!affect || !affect.cvss_scores.length || !affectRhCvss3(affect)?.vector) {
       return [];
     }
 
@@ -273,6 +272,32 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
   }
 
+  function updateAffectCvss(affect: ZodAffectType, newValue: string) {
+    const cvssScoreIndex = affect.cvss_scores.findIndex(isScoreRhIssuedCvss3);
+    const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
+    if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+      affect.cvss_scores[cvssScoreIndex].vector = '';
+      affectCvssToDelete.value[affect.uuid] = cvssId;
+    } else {
+      if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
+        delete affectCvssToDelete.value[affect.uuid];
+      }
+      if (cvssScoreIndex !== -1) {
+        affect.cvss_scores[cvssScoreIndex].vector = newValue;
+      } else if (newValue !== '') {
+        affect.cvss_scores.push({
+          issuer: 'RH',
+          cvss_version: 'V3',
+          comment: '',
+          score: null,
+          vector: newValue,
+          embargoed: affect.embargoed,
+          alerts: [],
+        });
+      }
+    }
+  }
+
   return {
     addAffect,
     removeAffect,
@@ -285,13 +310,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     didAffectsChange,
     initialAffects,
     refreshAffects,
+    updateAffectCvss,
   };
-}
-
-function affectCvssData(affect: ZodAffectType, issuer: string, version: string) {
-  return affect.cvss_scores.find(
-    assessment => assessment.issuer === issuer && assessment.cvss_version === version,
-  );
 }
 
 function affectsMatcherFor(affect: ZodAffectType) {

@@ -1,33 +1,34 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+
 import {
   affectImpacts,
   affectAffectedness,
   possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-
 import { CVSS_V3 } from '@/constants';
 
-const emit = defineEmits<{
-  'affect:recover': [value: ZodAffectType];
-  'affect:revert': [value: ZodAffectType];
-  'affect:remove': [value: ZodAffectType];
-  'affect:commit': [value: ZodAffectType];
-  'affect:cancel': [value: ZodAffectType];
-  'affect:edit': [value: ZodAffectType];
-  'affect:toggle-selection': [value: ZodAffectType];
+const props = defineProps<{
+  error: null | Record<string, any>[];
+  isBeingEdited: boolean;
+  isLast: boolean;
+  isModified: boolean;
+  isNew: boolean;
+  isRemoved: boolean;
+  isSelected: boolean;
 }>();
 
 const affect = defineModel<ZodAffectType>('affect');
-const props = defineProps<{
-  isRemoved: boolean;
-  isBeingEdited: boolean;
-  isModified: boolean;
-  isLast: boolean;
-  isNew: boolean;
-  isSelected: boolean;
-  error: Record<string, any>[] | null;
+
+const emit = defineEmits<{
+  'affect:cancel': [value: ZodAffectType];
+  'affect:commit': [value: ZodAffectType];
+  'affect:edit': [value: ZodAffectType];
+  'affect:recover': [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
+  'affect:revert': [value: ZodAffectType];
+  'affect:toggle-selection': [value: ZodAffectType];
 }>();
 
 const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
@@ -55,9 +56,9 @@ function revertChanges(affect: ZodAffectType) {
 
 // Affects Fields
 function affectCvss3Vector(affect: ZodAffectType) {
-  affect.cvss_scores.find(({ issuer, cvss_version }) => issuer === 'RH' && cvss_version === CVSS_V3)
-    ?.vector
-    || null;
+  return affect.cvss_scores.find(
+    ({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === CVSS_V3,
+  )?.vector || null;
 }
 
 function resolutionOptions(affect: ZodAffectType) {
@@ -77,6 +78,15 @@ const affectRowTooltip = computed(() => {
   }
 });
 
+// function affectCvssDisplay(affect: ZodAffectType) {
+//   const cvssScore = affectRhCvss3(affect)?.score || '';
+//   const cvssVector = affectRhCvss3(affect)?.vector || '';
+//   if (cvssScore && cvssVector) {
+//     return `${cvssScore} ${cvssVector}`;
+//   } else {
+//     return cvssVector;
+//   }
+// }
 </script>
 
 <template>
@@ -210,7 +220,18 @@ const affectRowTooltip = computed(() => {
         {{ affect.impact }}
       </span>
     </td>
-    <td>{{ affectCvss3Vector(affect) }}</td>
+    <td>
+      <input
+        v-if="isBeingEdited"
+        class="form-control"
+        :value="affectCvss3Vector(affect)"
+        @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
+        @keydown="handleEdit($event, affect)"
+      />
+      <span v-else>
+        {{ affectCvss3Vector(affect) }}
+      </span>
+    </td>
     <td>
       <div class="affect-tracker-cell">
         <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
@@ -296,12 +317,15 @@ const affectRowTooltip = computed(() => {
 tr {
   height: 39.2px;
   position: relative;
-  transition: filter .25s;
+  transition: filter 0.25s;
 
   td {
-    transition: background-color .5s, color .5s, border-color .25s;
-    padding-block: .2rem;
-    border-block: .2ch solid #e0e0e0;
+    transition:
+      background-color 0.5s,
+      color 0.5s,
+      border-color 0.25s;
+    padding-block: 0.2rem;
+    border-block: 0.2ch solid #e0e0e0;
     background-color: #e0e0e0;
 
     .row-right-indicator {
@@ -312,32 +336,39 @@ tr {
       left: -42px;
     }
 
-    .row-left-indicator, .row-right-indicator {
+    .row-left-indicator,
+    .row-right-indicator {
       position: absolute;
       opacity: 0;
-      transition: opacity .5s, right .5s, left .5s;
+      transition:
+        opacity 0.5s,
+        right 0.5s,
+        left 0.5s;
       top: 0;
     }
 
     .btn {
       display: inline;
-      margin-inline: .1rem;
+      margin-inline: 0.1rem;
       width: 28px;
       height: 25px;
-      padding: 0 .1rem;
-      transition: background-color .5s, color .5s;
+      padding: 0 0.1rem;
+      transition:
+        background-color 0.5s,
+        color 0.5s;
       border: none;
       background-color: #212529;
       color: white;
 
       .bi {
         line-height: 0;
-        font-size: .938rem;
+        font-size: 0.938rem;
       }
     }
 
-    input, select {
-      padding: .15rem .5rem;
+    input,
+    select {
+      padding: 0.15rem 0.5rem;
     }
 
     .affect-tracker-cell {
@@ -359,7 +390,7 @@ tr {
   }
 
   &:hover {
-    filter: brightness(.9);
+    filter: brightness(0.9);
 
     td {
       border-color: #707070bf;
@@ -368,7 +399,8 @@ tr {
 }
 
 tr.selected td {
-  .row-left-indicator, .row-right-indicator {
+  .row-left-indicator,
+  .row-right-indicator {
     opacity: 100;
   }
 
@@ -425,7 +457,7 @@ tr.editing:hover td {
   border-color: #73470a80 !important;
 }
 
-tr.modified:hover td{
+tr.modified:hover td {
   border-color: #204d0080 !important;
 }
 
@@ -436,5 +468,4 @@ tr.new:hover td {
 tr.removed:hover td {
   border-color: #731f0080 !important;
 }
-
 </style>

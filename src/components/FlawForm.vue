@@ -399,11 +399,7 @@ const createdDate = computed(() => {
         <div class="osim-flaw-form-section">
           <FlawAffects
             v-if="mode === 'edit'"
-            :affects="flaw.affects"
-            :affectsToDelete="affectsToDelete"
-            :affectCvssToDelete="affectCvssToDelete"
             :error="errors.affects"
-            :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
             :flaw="flaw"
             :relatedFlaws="relatedFlaws"

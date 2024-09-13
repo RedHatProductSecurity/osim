@@ -28,40 +28,16 @@ const {
   fileTrackers,
   filterString,
   isFilingTrackers,
-  // isLoadingTrackers, // TODO: Resolve in merge
+  isLoadingTrackers,
   multiFlawTrackers,
-  selectedStreams, // TODO: Resolve in merge
   shouldFileAsMultiFlaw,
   synchronizeTrackerSelections,
   trackersToFile,
-  unselectedStreams, // TODO: Resolve in merge
 } = useTrackersForRelatedFlaws(props.flaw, relatedFlaws);
 
 const selectedRelatedFlawIds = computed(() => Object.keys(affectsBySelectedFlawId.value));
 
 const hasRelatedFlawSelections = computed(() => selectedRelatedFlawIds.value.length > 1);
-
-const availableAffectStreams = computed(() => {
-  const referenceAffect = props.flaw.affects;
-  return unselectedStreams?.value.filter((tracker: UpdateStreamOsim) => {
-    return referenceAffect.some((refAffect) => {
-      return refAffect.ps_component === tracker.ps_component
-        && refAffect.ps_module === tracker.ps_module;
-    },
-    );
-  });
-});
-
-const selectedAffectStreams = computed(() => {
-  const referenceAffect = props.flaw.affects;
-  return selectedStreams?.value.filter((tracker: UpdateStreamOsim) => {
-    return referenceAffect.some((refAffect) => {
-      return refAffect.ps_component === tracker.ps_component
-        && refAffect.ps_module === tracker.ps_module;
-    },
-    );
-  });
-});
 
 const relatedFlawIds = computed(() =>
   relatedFlaws.value.map(flaw => flaw.cve_id || flaw.uuid)
@@ -91,12 +67,18 @@ async function handleFileTrackers() {
   await fileTrackers();
   emit('affects-trackers:refresh');
 }
+
+//  TASKS
+// TODO: where are sortedFilteredTrackers and availableUpdateStreams missing from?
+// TODO: place isLoading in the correct place
+// TODO: try to preserve carlos' formatting
+
 </script>
 
 <template>
-  <div class="mt-3 mb-2 osim-affect-trackers-container py-1 px-3">
+  <div class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
     <h4 class="mb-2">
-      Manage Trackers
+      Tracker Manager
       <button
         type="button"
         class="btn btn-lightest-info btn-outline-dark-teal btn-sm"
@@ -122,26 +104,6 @@ async function handleFileTrackers() {
           @click="clearFilter"
         >
           <i class="bi bi-x"></i>
-        </button>
-        <button
-          type="button"
-          :disabled="isLoadingTrackers || availableAffectStreams?.length === 0"
-          class="btn btn-sm btn-black"
-          @click="updateTrackerSelections(availableAffectStreams)"
-        >
-          <i class="bi bi-check-all" />
-          Select All
-          {{ filterString ? 'Filtered' : '' }}
-        </button>
-        <button
-          type="button"
-          :disabled="isLoadingTrackers || selectedAffectStreams?.length === 0"
-          class="btn btn-sm btn-black"
-          @click="updateTrackerSelections(selectedAffectStreams)"
-        >
-          <i class="bi bi-x-square" />
-          Deselect All
-          {{ filterString ? 'Filtered' : '' }}
         </button>
         <label
           v-if="hasRelatedFlawSelections"
@@ -218,7 +180,6 @@ async function handleFileTrackers() {
                   </div>
                 </div>
                 <div class="ms-3 mt-2 pb-3">
-
                   <div v-if="tabProps.unselectedStreams?.length" class="osim-tracker-list my-2">
                     <label
                       v-for="(tracker, index) in tabProps.unselectedStreams"
@@ -302,44 +263,56 @@ async function handleFileTrackers() {
                   </label>
                 </div>
               </div>
-              <div class="col-6">
-                <h5 class="pt-3 mb-2 pb-2">Filed</h5>
-                <div
-                  v-if="tabProps.alreadyFiledTrackers?.length"
-                  class="osim-tracker-list my-2"
+              <div v-if="isLoadingTrackers" class="ms-2 mb-1">
+                <span
+                  class="spinner-border spinner-border-sm me-1"
+                  role="status"
                 >
-                  <label
-                    v-for="(tracker, index) in tabProps.alreadyFiledTrackers"
-                    :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
-                  >
-                    <input
-                      checked
-                      disabled
-                      type="checkbox"
-                      class="osim-tracker form-check-input"
-                    />
-                    <span
-                      class="osim-tracker-label"
-                      :class="{'osim-suggested-tracker': tracker.selected}"
-                    >
-                      <span>{{ `${tracker.ps_update_stream}` }}</span>
-                      <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
-                      <span
-                        v-if="tracker.selected"
-                        title="Suggested Tracker"
-                        class="ps-1"
+                  <span class="visually-hidden">Loading...</span>
+                </span>
+                <span>Loading trackers&hellip;</span>
+              </div>
+              <div v-if="!isLoadingTrackers">
+                <div v-if="tabProps.alreadyFiledTrackers?.length === 0" class="ms-2">
+                  <span> No filed trackers&hellip; </span>
+                </div>
+                <div v-if="tabProps.alreadyFiledTrackers?.length > 0" class="osim-tracker-list">
+                  <div class="col-6">
+                    <h5 class="pt-3 mb-2 pb-2">Filed</h5>
+                    <div class="osim-tracker-list my-2">
+                      <label
+                        v-for="(tracker, index) in tabProps.alreadyFiledTrackers"
+                        :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                       >
-                        <i class="bi bi-box-arrow-in-right">
-                          <span class="visually-hidden"> Suggested Tracker </span>
-                        </i>
-                      </span>
-                    </span>
-                  </label>
+                        <input
+                          checked
+                          disabled
+                          type="checkbox"
+                          class="osim-tracker form-check-input"
+                        />
+                        <span
+                          class="osim-tracker-label"
+                          :class="{'osim-suggested-tracker': tracker.selected}"
+                        >
+                          <span>{{ `${tracker.ps_update_stream}` }}</span>
+                          <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                          <span
+                            v-if="tracker.selected"
+                            title="Suggested Tracker"
+                            class="ps-1"
+                          >
+                            <i class="bi bi-box-arrow-in-right">
+                              <span class="visually-hidden"> Suggested Tracker </span>
+                            </i>
+                          </span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </template>
+          </div></template>
       </TabsDynamic>
     </div>
   </div>
@@ -472,7 +445,7 @@ label {
   overflow: hidden;
 }
 
-.osim-affect-trackers-container {
+.osimtracker-manageraffect-trackers-container {
   border-left: 5px solid $info;
   background-color: $light-info;
   border-radius: 5px;

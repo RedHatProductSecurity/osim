@@ -1,38 +1,38 @@
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue';
+
 import { equals, clone } from 'ramda';
-
-import type { ZodAffectType } from '@/types';
-import { isAffectIn } from '@/utils/helpers';
-import { displayModes } from './';
-
-// import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
-import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
 
-const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
+import type { ZodAffectType } from '@/types';
+import { isAffectIn } from '@/utils/helpers';
+
+import { displayModes } from './';
+// import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
+import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
+
 // const affectsEdited = defineModel<ZodAffectType[]>('affectsEdited', { default: [] });
 const props = defineProps<{
-  selectedAffects: ZodAffectType[];
   affectsEdited: ZodAffectType[];
-  error: Record<string, any>[] | null;
   affectsToDelete: ZodAffectType[];
+  error: null | Record<string, any>[];
+  selectedAffects: ZodAffectType[];
   totalPages: number;
 }>();
-
-const { affectsEdited, selectedAffects } = toRefs(props);
-
+const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
 const emit = defineEmits<{
-  'affect:remove': [value: ZodAffectType];
-  'affect:revert': [value: ZodAffectType];
-  'affect:recover': [value: ZodAffectType];
-  'affect:edit': [value: ZodAffectType];
   'affect:cancel': [value: ZodAffectType];
   'affect:commit': [value: ZodAffectType];
+  'affect:edit': [value: ZodAffectType];
+  'affect:recover': [value: ZodAffectType];
+  'affect:remove': [value: ZodAffectType];
+  'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
   'affects:display-mode': [value: displayModes];
 }>();
+
+const { affectsEdited, selectedAffects } = toRefs(props);
 
 const selectedModules = ref<string[]>([]);
 
@@ -41,19 +41,18 @@ const savedAffects = clone(affects.value) as ZodAffectType[];
 const newAffects = computed(() => affects.value?.filter(affect => !affect.uuid) ?? []);
 // Modified affects
 const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { [key]: omitted, ...rest } = obj;
+  const { [key]: _, ...rest } = obj;
   return rest;
 };
 
 const modifiedAffects = computed(() =>
-  affects.value?.filter(affect => {
+  affects.value?.filter((affect) => {
     const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
     return savedAffect
       && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
       && !affectsEdited.value.includes(affect)
       && !newAffects.value.includes(affect);
-  }) ?? []
+  }) ?? [],
 );
 
 function isRemoved(affect: ZodAffectType) {
@@ -72,7 +71,6 @@ function isBeingEdited(affect: ZodAffectType) {
   // Note: affectsEdited.value.includes(affect) returns false unexpectedly here;
   return isAffectIn(affect, affectsEdited.value);
 }
-
 </script>
 
 <template>
@@ -113,5 +111,4 @@ function isBeingEdited(affect: ZodAffectType) {
 table {
   border-collapse: separate;
 }
-
 </style>

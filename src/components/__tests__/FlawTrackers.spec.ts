@@ -1,57 +1,84 @@
 import { describe, expect } from 'vitest';
 
 import FlawTrackers from '@/components/FlawTrackers.vue';
+import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
+import { getTrackersForFlaws } from '@/services/TrackerService';
+import type { ZodFlawType } from '@/types';
 import { mountWithConfig } from '@/__tests__/helpers';
 
 import { osimFullFlawTest, osimRequiredFlawTest } from './test-suite-helpers';
 
-vi.mock('@/composables/useTrackers', () => ({
-  useTrackers: vi.fn().mockReturnValue({
-    trackersToFile: [],
-    isLoadingTrackers: false,
-  }),
-}));
+// vi.mock('@/composables/useTrackers', () => ({
+//   useTrackers: vi.fn().mockReturnValue({
+//     trackersToFile: [],
+//     isLoadingTrackers: false,
+//   }),
+// }));
 
 const mountFlawTrackers = (props: InstanceType<typeof FlawTrackers>['$props']) => mountWithConfig(FlawTrackers, {
   props,
 });
+// createTestingPinia();
+
+vi.mock('@/services/TrackerService');
+
+// const globalOptions = {
+//   global: {
+//     stubs: {
+//       RouterLink: true,
+//     },
+//     directives: {
+//       'osim-loading': LoadingAnimationDirective,
+//     },
+//   },
+// };
 
 describe('flawTrackers', () => {
+  beforeEach(() => {
+    vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
+  });
   osimRequiredFlawTest('Correctly renders the component when there are not trackers to display', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      // ...globalOptions,
+      // props: {
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: [],
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
+      // },
     });
     expect(subject.html()).toMatchSnapshot();
   });
 
   osimFullFlawTest('Correctly renders the component when there are trackers to display', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-
-      flawId: flaw.uuid,
+      // ...globalOptions,
+      // props: {
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
-
+      // },
     });
     expect(subject.html()).toMatchSnapshot();
   });
 
   osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      // ...globalOptions,
+      // props: {
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
+      // },
     });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
@@ -85,13 +112,16 @@ describe('flawTrackers', () => {
 
   osimFullFlawTest('Trackers can be sorted by clicking on the date field columns', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      // ...globalOptions,
+      // props: {
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
+      // },
     });
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
@@ -110,12 +140,12 @@ describe('flawTrackers', () => {
 
   osimFullFlawTest('Trackers display functional external links', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      flaw,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
     });
 
@@ -128,12 +158,12 @@ describe('flawTrackers', () => {
 
   osimFullFlawTest('Tracker modules table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      flaw,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
     });
     const trackerRow = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr')[1];
@@ -143,12 +173,12 @@ describe('flawTrackers', () => {
 
   osimFullFlawTest('Tracker ps_stream table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      flaw,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
     });
     const trackerRow = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr')[0];
@@ -158,23 +188,26 @@ describe('flawTrackers', () => {
 
   osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
     const subject = mountFlawTrackers({
-      flawId: flaw.uuid,
+      // ...globalOptions,
+      // props: {
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
-      affectsNotBeingDeleted: [],
       allTrackersCount: 0,
+      // },
     });
 
-    let trackerManagerElement = subject.find('.trackers-manager');
+    let trackerManagerElement = subject.find('.osim-tracker-manager');
     expect(trackerManagerElement.exists()).toBe(false);
 
     let toggleTrackerManagerView = subject.find('.trackers-toolbar .btn-info');
     expect(toggleTrackerManagerView.text()).toBe('Show Trackers Manager');
     await toggleTrackerManagerView.trigger('click');
 
-    trackerManagerElement = subject.find('.trackers-manager');
+    trackerManagerElement = subject.find('.osim-tracker-manager');
     expect(trackerManagerElement.exists()).toBe(true);
 
     toggleTrackerManagerView = subject.find('.trackers-toolbar .btn-info');
