@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
-import { useLocalStorage } from '@vueuse/core';
 
 import { useSearchStore } from '../SearchStore';
 
@@ -38,25 +37,13 @@ describe('settingsStore', () => {
   });
 
   it('saveFilter', () => {
-    (useLocalStorage as Mock).mockReturnValue({
-      SearchStore: {
-        value: {
-          searchFilters: { test: 'test' },
-        },
-      },
-    });
-    searchStore.saveFilter({ component: 'test' });
+    searchStore.saveFilter({ component: 'test' }, 'test');
+
     expect(searchStore.searchFilters).toEqual({ component: 'test' });
+    expect(searchStore.queryFilter).toBe('test');
   });
 
   it('resetFilter', () => {
-    (useLocalStorage as Mock).mockReturnValue({
-      SearchStore: {
-        value: {
-          searchFilters: { test: 'test' },
-        },
-      },
-    });
     searchStore.resetFilter();
     expect(searchStore.searchFilters).toEqual({});
   });

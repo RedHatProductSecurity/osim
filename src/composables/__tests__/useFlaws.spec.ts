@@ -15,7 +15,7 @@ describe('useFlawsFetching', () => {
   });
 
   it('loads flaws', async () => {
-    vi.mocked(getFlaws).mockResolvedValue({
+    vi.mocked(getFlaws, { partial: true }).mockResolvedValue({
       data: { results: mockIusses.slice(0, 20), total: 30, next: null },
     });
 
@@ -35,7 +35,7 @@ describe('useFlawsFetching', () => {
   });
 
   it('loading more flaws', async () => {
-    vi.mocked(getFlaws).mockResolvedValueOnce({
+    vi.mocked(getFlaws, { partial: true }).mockResolvedValueOnce({
       data:
       {
         results: mockIusses.slice(0, 20),
@@ -66,7 +66,7 @@ describe('useFlawsFetching', () => {
   });
 
   it('should not loading more flaws', async () => {
-    vi.mocked(getFlaws).mockResolvedValueOnce({
+    vi.mocked(getFlaws, { partial: true }).mockResolvedValueOnce({
       data: {
         results: mockIusses.slice(0, 10),
         count: 10,

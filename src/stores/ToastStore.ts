@@ -13,7 +13,7 @@ export interface ToastNew {
   title?: string;
 }
 
-interface ToastAdded extends ToastNew {
+export interface ToastAdded extends ToastNew {
   id: number;
   isFresh: boolean;
   timestamp: DateTime;

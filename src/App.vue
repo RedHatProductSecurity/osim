@@ -38,7 +38,7 @@ const updateRelativeOsimBuildDate = () => {
   relativeOsimBuildDate.value =
     DateTime.fromISO(osimRuntime.value.osimVersion.timestamp).toRelative() || '';
 };
-let buildDateIntervalId: number = -1;
+let buildDateIntervalId: ReturnType<typeof setInterval>;
 onMounted(() => {
   const ms15Minutes = 15 * 60 * 60 * 1000;
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
