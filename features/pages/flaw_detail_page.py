@@ -147,6 +147,11 @@ class FlawDetailPage(BasePage):
         "newAddAffectImpactInput": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
         "commitAllAffectChangesBtn": ("XPATH", "//button[@title='Commit changes on all affects being edited']"),
 
+        "removeAffectBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Remove affect']"),
+        "affectRows": ("XPATH", "(//tbody)[1]/tr"),
+        "firstAffectModuleText": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/span"),
+        "firstAffectComponentText": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/span"),
+
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[last()]"),
         "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[last()]"),
@@ -692,28 +697,14 @@ class FlawDetailPage(BasePage):
         current_value = input_element.get_text()
         return current_value
 
-    def delete_affect(self, field):
-        affect_affectedness_element = getattr(self, field)
-        # Get the delete element via the affectedness element and click it
-        delete_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='btn btn-white btn-outline-black btn-sm']").to_right_of(affect_affectedness_element))[0]
-        self.driver.execute_script("arguments[0].click();", delete_element)
-
-    def click_affect_delete_btn(self):
-        """
-        Go to a affect detail, delete the affect and return the current module
-        and component value.
-        """
-        # Click the first affect component dropdown button
-        self.click_button_with_js("affectExpandall")
-        # Click the second affect component dropdown button
-        self.click_button_with_js("affectDropdownBtn")
-        # Get the current value of the affect ps_component
-        ps_component = self.get_current_value_of_field('affects__ps_component')
-        ps_module = self.get_current_value_of_field('affects__ps_module')
-        # Click the delete button of the affect
-        self.delete_affect('affectAffectednessText')
+    def get_first_affect_data(self):
+        ps_module = self.firstAffectModuleText.get_text()
+        ps_component = self.firstAffectComponentText.get_text()
         return ps_module, ps_component
+
+    def has_affects(self):
+        affect_rows = find_elements_in_page_factory(self, "affectRows")
+        return len(affect_rows) > 0
 
     def get_affect_module_component_values(self, token, component_value):
         osidb_token = token
