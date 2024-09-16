@@ -59,6 +59,7 @@ vi.mock('vue-router', async () => {
 vi.mock('@/services/TrackerService', () => {
   return {
     getSuggestedTrackers: vi.fn(() => Promise.resolve([])),
+    trackerUrl: vi.fn(),
   };
 });
 

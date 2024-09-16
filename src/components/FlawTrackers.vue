@@ -6,6 +6,7 @@ import { ascend, descend, sortWith } from 'ramda';
 import TrackerManager from '@/components/TrackerManager.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { usePagination } from '@/composables/usePagination';
+import { trackerUrl } from '@/services/TrackerService';
 
 type TrackerWithModule = ZodTrackerType & { ps_module: string };
 
@@ -298,9 +299,16 @@ function increaseItemsPerPage() {
               :key="trackerIndex"
             >
               <td>
-                <RouterLink :to="{ path: `/tracker/${tracker.uuid}` }">
+                <a
+                  v-if="tracker.external_system_id"
+                  :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                  target="_blank"
+                >
                   {{ `${tracker.external_system_id} ` }}<i class="bi-box-arrow-up-right" />
-                </RouterLink>
+                </a>
+                <span v-else title="This tracker doesn't have External ID">
+                  None
+                </span>
               </td>
               <td>{{ tracker.ps_update_stream }}</td>
               <td>{{ tracker.ps_module }}</td>

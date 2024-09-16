@@ -94,11 +94,11 @@ export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
 
 export function trackerUrl(type: string, id: string): string {
   switch (type) {
-  case 'JIRA':
-    return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
-  case 'BUGZILLA':
-    return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla)).href;
-  default:
-    return '#';
+    case 'BUGZILLA':
+      return (new URL(`/${id}`, osimRuntime.value.backends.bugzilla || 'http://bugzilla-service:8001')).href;
+    case 'JIRA':
+      return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay || 'http://jira-service:8002')).href;
+    default:
+      return '#';
   }
 }
