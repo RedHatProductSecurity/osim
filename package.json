@@ -18,7 +18,7 @@
     "test:e2e": "behave features",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "vibe-check": "npx vite-bundle-visualizer",
-    "generate-openapi-client": "openapi-generator-cli generate -i openapi.yml --output src/generated-client -g typescript-axios",
+    "generate-openapi-client": "openapi-generator-cli generate -i openapi.yml --output src/generated-client -g typescript-axios --global-property models,supportingFiles",
     "mock-osidb-server": "prism mock osidb-3.0.0.oas3.json",
     "lint": "yarn lint-style && yarn lint-ts-vue",
     "lint-ts-vue": "eslint .",
