@@ -5,6 +5,9 @@
 * Add query filter support on advance search (`OSIDB-3088`)
 * Support saving query filter on default user search (`OSIDB-3387`)
 
+### Fixed
+* Fix wrong tracker links (`OSIDB-3443`)
+
 ## [2024.9.0]
 ### Added
 * Allow using default ordering in flaw list page (`OSIDB-3187`)
