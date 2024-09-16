@@ -44,10 +44,17 @@ const OsimRuntime = z.object({
 type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
-  env: '',
-  backends: { osidb: '', osidbAuth: '', bugzilla: '', jira: '', errata: '', jiraDisplay: '' },
-  osimVersion: { rev: '', tag: '', timestamp: '' },
-  error: '',
+  env: 'dev',
+  backends: {
+    osidb: 'http://osidb-service:8000',
+    osidbAuth: 'kerberos',
+    bugzilla: 'http://bugzilla-service:8001',
+    jira: 'http://jira-service:8002',
+    errata: 'http://errata-service:8003',
+    jiraDisplay: 'http://jira-service:8002',
+  },
+  osimVersion: { rev: 'dev', tag: 'dev', timestamp: '1970-01-01T00:00:00Z' },
+  error: 'error',
   readOnly: false,
 });
 export const osimRuntime = readonly(runtime);
