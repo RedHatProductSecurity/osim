@@ -109,7 +109,27 @@ describe('flawTrackers', () => {
 
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     firstTracker = trackersTableRows[0];
-    expect(firstTracker.find('td:nth-of-type(2)').text()).toBe('xxxx-0-001');
+    expect(firstTracker.find('td:nth-of-type(3)').text()).toBe('xxxx-0-001');
+  });
+
+  osimFullFlawTest('Trackers display functional external links', async ({ flaw }) => {
+    subject = mount(FlawTrackers, {
+      props: {
+        flawId: flaw.uuid,
+        displayedTrackers: flaw.affects
+          .flatMap(affect => affect.trackers
+            .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+          ),
+        affectsNotBeingDeleted: [],
+        allTrackersCount: 0,
+      },
+    });
+
+    const trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
+    const firstTracker = trackersTableRows[0];
+
+    const trackerLink = firstTracker.find('td:nth-child(1) > a');
+    expect(trackerLink.attributes('href')).toBe('http://jira-service:8002/browse/XXXX-0006');
   });
 
   osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
