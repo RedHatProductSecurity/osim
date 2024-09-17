@@ -77,8 +77,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
         <tbody data-v-7006d35c="">
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-5</td>
+            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -86,8 +86,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-5</td>
+            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -95,8 +95,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
@@ -104,8 +104,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -113,8 +113,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
@@ -122,8 +122,8 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
@@ -175,8 +175,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
         <tbody data-v-7006d35c="">
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">openshift-5</td>
+            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -184,8 +184,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">openshift-5</td>
+            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -193,8 +193,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
@@ -202,8 +202,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -211,8 +211,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
@@ -220,8 +220,8 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
           </tr>
           <tr data-v-7006d35c="">
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">openshift-1</td>
+            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
