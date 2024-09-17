@@ -1030,7 +1030,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="form-control"
                   @keydown="handleEdit($event, affect)"
                 />
-                <span v-else>
+                <span v-else :title="affect.ps_module">
                   {{ affect.ps_module }}
                 </span>
               </td>
