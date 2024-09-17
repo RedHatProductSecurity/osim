@@ -12,7 +12,7 @@ import { useModal } from '@/composables/useModal';
 import { useSearchParams } from '@/composables/useSearchParams';
 
 import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
-import { flawFields } from '@/constants/flawFields';
+import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -25,7 +25,7 @@ const { closeModal, isModalOpen, openModal } = useModal();
 
 const queryFilterVisible = ref(true);
 
-const emptinessSupportedFields = ['cve_id', 'cve_description', 'statement', 'mitigation', 'owner', 'cwe_id'];
+const emptinessSupportedFields = Object.keys(allowedEmptyFieldMapping);
 
 const djangoCompletion = ref();
 
