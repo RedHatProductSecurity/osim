@@ -63,7 +63,7 @@ const {
 
 const displayMode = ref(displayModes.ALL);
 
-const affectsEdited = ref<ZodAffectType[]>([]);
+const affectsBeingEdited = ref<ZodAffectType[]>([]);
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
 
 const modulesExpanded = ref(true);

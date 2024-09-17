@@ -8,7 +8,7 @@ import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vu
 import type { ZodAffectType } from '@/types';
 import { isAffectIn } from '@/utils/helpers';
 
-import { displayModes } from './';
+import { displayModes } from './flawAffectConstants';
 // import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 

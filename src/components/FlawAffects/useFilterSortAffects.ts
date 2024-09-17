@@ -6,6 +6,7 @@ import {
 } from '@/types/zodAffect';
 import { type affectSortKeys } from './';
 
+import { type affectSortKeys } from './flawAffectConstants';
 
 const selectedModules = ref<string[]>([]);
 
