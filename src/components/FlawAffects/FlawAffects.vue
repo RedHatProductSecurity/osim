@@ -18,7 +18,7 @@ import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
 
-import { displayModes } from './';
+import { displayModes } from './flawAffectConstants';
 import { useAffectSelections } from './useAffectSelections';
 import { useFilterSortAffects } from './useFilterSortAffects';
 
