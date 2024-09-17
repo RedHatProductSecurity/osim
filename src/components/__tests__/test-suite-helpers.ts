@@ -1,8 +1,7 @@
 import { test } from 'vitest';
 
-import type { ZodAffectType } from '@/types/zodAffect';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import { CVSS_V3 } from '@/constants';
+import type { ZodFlawType, ZodAffectType } from '@/types';
 
 import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';

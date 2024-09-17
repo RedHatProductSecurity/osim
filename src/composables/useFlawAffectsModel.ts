@@ -2,7 +2,7 @@ import { type Ref, ref, computed, watch } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
-import { affectRhCvss3, deepCopyFromRaw, isScoreRhIssuedCvss3 } from '@/utils/helpers';
+import { affectRhCvss3, deepCopyFromRaw, isScoreRhIssuedCvss3, affectsMatcherFor } from '@/utils/helpers';
 import {
   postAffects,
   putAffects,
@@ -312,15 +312,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     refreshAffects,
     updateAffectCvss,
   };
-}
-
-function affectsMatcherFor(affect: ZodAffectType) {
-  return (affectToMatch: ZodAffectType) =>
-    affectToMatch.uuid === affect.uuid
-    || (
-      (affect.ps_component && affectToMatch.ps_component === affect.ps_component)
-      && (affect.ps_component && affectToMatch.ps_module === affect.ps_module)
-    );
 }
 
 function isCvssNew(cvssScore: ZodAffectCVSSType) {
