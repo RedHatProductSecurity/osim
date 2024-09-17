@@ -12,9 +12,9 @@ import { displayModes } from './flawAffectConstants';
 // import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
-// const affectsEdited = defineModel<ZodAffectType[]>('affectsEdited', { default: [] });
+// const affectsBeingEdited = defineModel<ZodAffectType[]>('affectsBeingEdited', { default: [] });
 const props = defineProps<{
-  affectsEdited: ZodAffectType[];
+  affectsBeingEdited: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: null | Record<string, any>[];
   selectedAffects: ZodAffectType[];
@@ -32,7 +32,7 @@ const emit = defineEmits<{
   'affects:display-mode': [value: displayModes];
 }>();
 
-const { affectsEdited, selectedAffects } = toRefs(props);
+const { affectsBeingEdited, selectedAffects } = toRefs(props);
 
 const selectedModules = ref<string[]>([]);
 
@@ -50,7 +50,7 @@ const modifiedAffects = computed(() =>
     const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
     return savedAffect
       && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
-      && !affectsEdited.value.includes(affect)
+      && !affectsBeingEdited.value.includes(affect)
       && !newAffects.value.includes(affect);
   }) ?? [],
 );
@@ -68,8 +68,8 @@ function isNewAffect(affect: ZodAffectType) {
 }
 
 function isBeingEdited(affect: ZodAffectType) {
-  // Note: affectsEdited.value.includes(affect) returns false unexpectedly here;
-  return isAffectIn(affect, affectsEdited.value);
+  // Note: affectsBeingEdited.value.includes(affect) returns false unexpectedly here;
+  return isAffectIn(affect, affectsBeingEdited.value);
 }
 </script>
 
@@ -79,7 +79,7 @@ function isBeingEdited(affect: ZodAffectType) {
       v-model:affects="affects"
       :selectedModules="selectedModules"
       :affectsToDelete="affectsToDelete"
-      :affectsEdited="affectsEdited"
+      :affectsBeingEdited="affectsBeingEdited"
     />
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">

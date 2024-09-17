@@ -9,41 +9,41 @@ import {
   type ZodAffectType,
 } from '@/types/zodAffect';
 
-
 import { useFilterSortAffects } from './useFilterSortAffects';
 import { useAffectSelections } from './useAffectSelections';
 
+const props = defineProps<{
+  affectsBeingEdited: ZodAffectType[];
+  affectsToDelete: ZodAffectType[];
+  selectedModules: string[];
+}>();
+
+const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
+
 const {
-  setSort,
   affectednessFilter,
-  resolutionFilter,
   impactFilter,
+  resolutionFilter,
   setAffectednessFilter,
-  setResolutionFilter,
   setImpactFilter,
+  setResolutionFilter,
+  setSort,
   sortKey,
   sortOrder,
 } = useFilterSortAffects();
 
-const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
-const props = defineProps<{
-  affectsToDelete: ZodAffectType[];
-  affectsEdited: ZodAffectType[];
-  selectedModules: string[];
-}>();
-
 // Edit Affects
 
 function isBeingEdited(affect: ZodAffectType) {
-  return props.affectsEdited.includes(affect);
+  return props.affectsBeingEdited.includes(affect);
 }
 
 const {
-  isIndeterminateSelection,
-  areAllAffectsSelected,
   areAllAffectsSelectable,
+  areAllAffectsSelected,
+  isIndeterminateSelection,
   toggleMultipleAffectSelections,
-} = useAffectSelections(affects, (affect) => !isRemoved(affect) && !isBeingEdited(affect));
+} = useAffectSelections(affects, affect => !isRemoved(affect) && !isBeingEdited(affect));
 
 function isRemoved(affect: ZodAffectType) {
   return props.affectsToDelete.includes(affect);

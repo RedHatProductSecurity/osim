@@ -83,7 +83,7 @@ const displayedAffects = computed(() => {
     case displayModes.SELECTED:
       return selectedAffects.value;
     case displayModes.EDITING:
-      return affectsEdited.value;
+      return affectsBeingEdited.value;
     case displayModes.MODIFIED:
       return modifiedAffects.value;
     case displayModes.DELETED:
@@ -168,11 +168,12 @@ function moduleBtnTooltip(moduleName: string) {
 }
 
 function isBeingEdited(affect: ZodAffectType) {
-  return affectsEdited.value.includes(affect);
+  return affectsBeingEdited.value.includes(affect);
 }
 
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid) || affect;
+  return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid)
+    || affect; // this is a bug to return the affect itself
 }
 
 function editAffect(affect: ZodAffectType) {
@@ -180,7 +181,7 @@ function editAffect(affect: ZodAffectType) {
     toggleAffectSelection(affect);
   }
   if (!isBeingEdited(affect)) {
-    affectsEdited.value.push(affect);
+    affectsBeingEdited.value.push(affect);
     const affectCopy = clone(affect) as ZodAffectType;
     affectValuesPriorEdit.value.push(affectCopy);
   }
@@ -189,9 +190,11 @@ function editAffect(affect: ZodAffectType) {
 function editSelectedAffects() {
   selectedAffects.value.forEach(editAffect);
 }
-
 function commitChanges(affect: ZodAffectType) {
-  affectsEdited.value.splice(affectsEdited.value.indexOf(affect), 1);
+  console.log(affectsBeingEdited.value.indexOf(affect))
+  console.log(affectValuesPriorEdit.value.indexOf(affect))
+
+  affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
@@ -204,20 +207,43 @@ function cancelChanges(affect: ZodAffectType) {
   if (index !== -1 && priorAffect) {
     flaw.value.affects[index] = { ...priorAffect };
   }
-  affectsEdited.value.splice(affectsEdited.value.indexOf(affect), 1);
+  affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
   }
 }
+// function commitChanges(affect: ZodAffectType) {
+//   const matchAffect = affectsMatcherFor(affect);
+//   const index = affectsBeingEdited.value.findIndex(matchAffect);
+//   console.log(index, affectValuesPriorEdit.value.findIndex(matchAffect));
+//   affectsBeingEdited.value.splice(index, 1);
+//   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
+//   if (isAffectSelected(affect)) {
+//     toggleAffectSelection(affect);
+//   }
+// }
+
+// function cancelChanges(affect: ZodAffectType) {
+//   const priorAffect = getAffectPriorEdit(affect);
+//   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
+//   if (index !== -1 && priorAffect) {
+//     flaw.value.affects[index] = { ...priorAffect };
+//   }
+//   affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
+//   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
+//   if (isAffectSelected(affect)) {
+//     toggleAffectSelection(affect);
+//   }
+// }
 
 function commitAllChanges() {
-  const affectsToCommit = [...affectsEdited.value];
+  const affectsToCommit = [...affectsBeingEdited.value];
   affectsToCommit.forEach(commitChanges);
 }
 
 function cancelAllChanges() {
-  const affectsToCancel = [...affectsEdited.value];
+  const affectsToCancel = [...affectsBeingEdited.value];
   affectsToCancel.forEach(cancelChanges);
 }
 
@@ -239,7 +265,7 @@ const modifiedAffects = computed(() =>
   flaw.value.affects.filter((affect) => {
     const savedAffect = initialAffects.find(a => a.uuid === affect.uuid);
     return didSavedAffectChange(savedAffect)
-      && !affectsEdited.value.includes(affect)
+      && !affectsBeingEdited.value.includes(affect)
       && !newAffects.value.includes(affect);
   }),
 );
@@ -258,7 +284,7 @@ function revertAffect(affect: ZodAffectType) {
 function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
   affectsToRestore.forEach((affect) => {
-    if (!affectsEdited.value.includes(affect)) {
+    if (!affectsBeingEdited.value.includes(affect)) {
       revertAffect(affect);
     }
   });
@@ -450,7 +476,7 @@ const displayedTrackers = computed(() => {
             <span>Selected {{ selectedAffects.length }}</span>
           </div>
           <div
-            v-if="affectsEdited.length > 0"
+            v-if="affectsBeingEdited.length > 0"
             class="badge-btn btn btn-sm bg-light-yellow"
             style="border-color: #73480b !important; color: #73480b;"
             :style="displayMode === displayModes.EDITING
@@ -459,7 +485,7 @@ const displayedTrackers = computed(() => {
             @click.stop="setDisplayMode(displayModes.EDITING)"
           >
             <i class="bi bi-pencil me-1 h-fit" />
-            <span>Editing {{ affectsEdited.length }}</span>
+            <span>Editing {{ affectsBeingEdited.length }}</span>
           </div>
           <div
             v-if="modifiedAffects.length > 0"
@@ -500,7 +526,7 @@ const displayedTrackers = computed(() => {
         </div>
         <div class="affects-table-actions ms-auto">
           <button
-            v-if="affectsEdited.length > 0"
+            v-if="affectsBeingEdited.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white"
             title="Commit changes on all affects being edited"
@@ -509,7 +535,7 @@ const displayedTrackers = computed(() => {
             <i class="bi bi-check2-all fs-5 lh-sm" />
           </button>
           <button
-            v-if="affectsEdited.length > 0"
+            v-if="affectsBeingEdited.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white px-1"
             title="Cancel changes on all affects being edited"
@@ -568,7 +594,7 @@ const displayedTrackers = computed(() => {
       </div>
       <FlawAffectsTable
         v-model:affects="paginatedAffects"
-        :affectsEdited="affectsEdited"
+        :affectsBeingEdited="affectsBeingEdited"
         :error="error"
         :affectsToDelete="affectsToDelete"
         :selectedModules="selectedModules"
