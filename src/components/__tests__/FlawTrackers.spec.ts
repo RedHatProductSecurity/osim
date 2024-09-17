@@ -100,7 +100,7 @@ describe('flawTrackers', () => {
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let firstTracker = trackersTableRows[0];
-    expect(firstTracker.find('td:nth-of-type(2)').text()).toBe('xxxx-0-006');
+    expect(firstTracker.find('td:nth-of-type(3)').text()).toBe('xxxx-0-006');
 
     const componentHeader = subject.find('.affects-trackers table thead tr th:nth-of-type(6)');
     expect(componentHeader.exists()).toBe(true);
