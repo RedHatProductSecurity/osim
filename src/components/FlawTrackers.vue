@@ -314,8 +314,8 @@ function increaseItemsPerPage() {
                   None
                 </span>
               </td>
-              <td>{{ tracker.ps_update_stream }}</td>
               <td>{{ tracker.ps_module }}</td>
+              <td>{{ tracker.ps_update_stream }}</td>
               <td>{{ tracker.status?.toUpperCase() || 'EMPTY' }}</td>
               <td>{{ tracker.resolution?.toUpperCase() }}</td>
               <td>{{ formatDate(tracker.created_dt ?? '', true) }}</td>
