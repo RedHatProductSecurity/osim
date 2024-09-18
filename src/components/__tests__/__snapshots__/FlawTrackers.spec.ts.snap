@@ -34,9 +34,9 @@ exports[`flawTrackers > Correctly renders the component when there are not track
         <tbody data-v-7006d35c=""></tbody>
       </table>
       <div data-v-7006d35c=""> No trackers to display </div>
+      <!--v-if-->
     </div>
   </div>
-  <!--v-if-->
 </div>"
 `;
 
@@ -81,7 +81,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-5</td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -93,7 +92,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-5</td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -105,7 +103,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
@@ -117,7 +114,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -129,7 +125,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
@@ -141,7 +136,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
             <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
@@ -150,9 +144,9 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
         </tbody>
       </table>
       <!--v-if-->
+      <!--v-if-->
     </div>
   </div>
-  <!--v-if-->
 </div>"
 `;
 
@@ -197,7 +191,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-5</td>
-            <td data-v-7006d35c="">xxxx-0-006</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
@@ -209,7 +202,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-5</td>
-            <td data-v-7006d35c="">xxxx-0-005</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
@@ -221,7 +213,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-004</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
@@ -233,7 +224,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-003</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
@@ -245,7 +235,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-002</td>
             <td data-v-7006d35c="">CLOSED</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
@@ -257,7 +246,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
             <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
             <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
             <td data-v-7006d35c="">openshift-1</td>
-            <td data-v-7006d35c="">xxxx-0-001</td>
             <td data-v-7006d35c="">NEW</td>
             <td data-v-7006d35c=""></td>
             <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
@@ -266,48 +254,41 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
         </tbody>
       </table>
       <!--v-if-->
-    </div>
-  </div>
-  <div data-v-4977998e="" data-v-7006d35c="" class="trackers-manager py-3 px-4 embedded">
-    <h4 data-v-4977998e="" class="mb-2 d-flex"> Trackers Manager </h4>
-    <div data-v-4977998e="" class="trackers-search-bar gap-2"><input data-v-4977998e="" type="text" class="form-control form-control-sm" placeholder="Filter by stream or component name"><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All </button><button data-v-4977998e="" type="button" class="btn btn-sm btn-black"><i data-v-4977998e="" class="bi bi-x-square"></i> Deselect All </button></div>
-    <div class="row mt-3" data-v-4977998e="">
-      <div class="col" data-v-4977998e="">
-        <h5 class="d-inline-block fs-5" data-v-4977998e="">Available Trackers</h5><span class="fst-italic" data-v-4977998e=""> (<i class="bi bi-box-arrow-in-right" data-v-4977998e=""></i> indicates a Suggested Tracker) </span>
-      </div>
-      <div class="col" data-v-4977998e="">
-        <h6 class="fs-5" data-v-4977998e="">Selected To File</h6>
-      </div>
-    </div>
-    <div data-v-4977998e="" class="row">
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="" class="mb-2">
-          <!--v-if-->
-          <div data-v-4977998e="" class="osim-tracker-list"></div>
+      <div data-v-4977998e="" data-v-7006d35c="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
+        <h4 data-v-4977998e="" class="mb-2"> Tracker Manager <button data-v-4977998e="" type="button" class="btn btn-lightest-info btn-outline-dark-teal btn-sm"><i data-v-4977998e="" class="bi bi-eye-slash-fill"></i> Hide </button></h4>
+        <div data-v-4977998e="" class="osim-trackers-filing mb-2">
+          <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="p-1 ps-2 mt-2 mb-3 border border-info" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-teal border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button>
+            <!--v-if-->
+          </div>
+          <div data-v-db8a18da="" data-v-4977998e="">
+            <ul data-v-db8a18da="" class="nav nav-tabs">
+              <li data-v-db8a18da="" class="nav-item"><button data-v-db8a18da="" type="button" class="nav-link active">CVE-0000-0000</button></li>
+              <!--v-if-->
+            </ul>
+            <div data-v-db8a18da="" class="">
+              <div data-v-4977998e="" class="osim-tracker-tabs">
+                <!--v-if-->
+                <div data-v-4977998e="" class="row">
+                  <div data-v-4977998e="" class="col-6">
+                    <div data-v-4977998e="" class="d-flex justify-content-between">
+                      <h5 data-v-4977998e="" class="pt-3"> Unfiled </h5>
+                      <div data-v-4977998e="" class="pt-3 pe-2"><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-teal btn-sm me-2"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All</button><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-teal btn-sm me-2"><i data-v-4977998e="" class="bi bi-eraser"></i> Deselect All</button></div>
+                    </div>
+                    <div data-v-4977998e="" class="ms-3 mt-2 pb-3">
+                      <!--v-if-->
+                      <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-teal text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
+                      <!--v-if-->
+                    </div>
+                  </div>
+                  <div data-v-4977998e="" class="ms-2 mb-1"><span data-v-4977998e="" class="spinner-border spinner-border-sm me-1" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="">Loading trackers…</span></div>
+                  <!--v-if-->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="" class="mb-2">
-          <!--v-if-->
-          <div data-v-4977998e="" class="osim-tracker-list"></div>
-        </div>
-      </div>
     </div>
-    <div data-v-4977998e="" class="row mt-4">
-      <div data-v-4977998e="" class="col mb-2">
-        <h5 data-v-4977998e="">Already Filed</h5>
-        <!--v-if-->
-        <div data-v-4977998e="" class="osim-tracker-list"></div>
-      </div>
-      <div data-v-4977998e="" class="col">
-        <div data-v-4977998e="">
-          <h5 data-v-4977998e="">Untrackable Affects <i data-v-4977998e="" class="bi bi-exclamation-circle text-danger" title="These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance."></i></h5>
-          <!--v-if-->
-          <!--v-if-->
-          <!--v-if-->
-        </div>
-      </div>
-    </div><button data-v-4977998e="" type="button" class="btn btn-sm btn-black osim-file-trackers mt-4" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
   </div>
 </div>"
 `;
