@@ -1,9 +1,10 @@
 import json
 import random
 import time
+import urllib.parse
+from collections import namedtuple
 
 import requests
-import urllib.parse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from seleniumpagefactory.Pagefactory import ElementNotVisibleException, ElementNotFoundException
 from selenium.webdriver.remote.webelement import WebElement
+
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory, find_element_in_page_factory
 from features.constants import (
@@ -20,7 +22,12 @@ from features.constants import (
     AFFECTED_MODULE_BZ,
     AFFECTED_MODULE_JR
 )
-from features.utils import get_flaw_id
+from features.common_utils import get_flaw_id, generate_cvss3_vector_string
+
+
+Affect = namedtuple(
+    'Affect',
+    ["module", "component", "affectedness", "resolution", "impact", "cvss"])
 
 
 class FlawDetailPage(BasePage):
@@ -144,21 +151,20 @@ class FlawDetailPage(BasePage):
         "newAddAffectComponentInput": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/input"),
         "newAddAffectAffectednessSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/select"),
         "newAddAffectResolutionSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/select"),
-        "newAddAffectImpactInput": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
+        "newAddAffectImpactSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
+        "newAddAffectCVSSInput": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/input"),
+        "firstAffectModuleSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/span"),
+        "firstAffectComponentSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/span"),
+        "firstAffectAffectednessSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/span"),
+        "firstAffectResolutionSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/span"),
+        "firstAffectImpactSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/span"),
+        "firstAffectCVSSSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/span"),
         "commitAllAffectChangesBtn": ("XPATH", "//button[@title='Commit changes on all affects being edited']"),
-
-        "removeAffectBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Remove affect']"),
+        "firstAffectRemoveBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Remove affect']"),
+        "firstAffectRecoverBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Recover affect']"),
         "affectRows": ("XPATH", "(//tbody)[1]/tr"),
-        "firstAffectModuleText": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/span"),
-        "firstAffectComponentText": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/span"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
-        "affects__ps_module": ("XPATH", "(//span[text()='Affected Module'])[last()]"),
-        "affects__ps_component": ("XPATH", "(//span[text()='Affected Component'])[last()]"),
-        "affects__cvss3_score": ("XPATH", "(//span[text()='CVSSv3'])[last()]"),
-        "affects__affectedness": ("XPATH", "(//span[text()='Affectedness'])[last()]"),
-        "affects__resolution": ("XPATH", "(//span[text()='Resolution'])[last()]"),
-        "affects__impact": ("XPATH", "(//span[text()='Impact'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
         "affectScoreSaveMsg": ("XPATH", "//div[text()='Affects CVSS scores saved.']"),
         "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
@@ -562,41 +568,79 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def add_new_affect(self, external_system='jira', affectedness_value='NEW'):
+    def set_first_affect_fields(self, module, component, affectedness, resolution, cvss_vector):
         from features.utils import generate_random_text
-        self.click_button_with_js('addNewAffectBtn')
         self.click_button_with_js("newAddAffectEditBtn")
 
         # Set new affect inputs: PS module, PS component, CVSSv3
-        self.clear_text_with_js(self.newAddAffectModuleInput)
-        if external_system == 'jira':
-            self.newAddAffectModuleInput.set_text(AFFECTED_MODULE_JR)
-        else:
-            self.newAddAffectModuleInput.set_text(AFFECTED_MODULE_BZ)
+        self.clear_text_with_js("newAddAffectModuleInput")
+        self.newAddAffectModuleInput.set_text(module)
 
-        ps_component_value = generate_random_text()
-        self.clear_text_with_js(self.newAddAffectComponentInput)
-        self.newAddAffectComponentInput.set_text(ps_component_value)
+        self.clear_text_with_js("newAddAffectComponentInput")
+        self.newAddAffectComponentInput.set_text(component)
 
         # Set select value for Affectedness, Resolution and Impact
         self.newAddAffectAffectednessSelect.execute_script(
             "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});")
 
-        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
-            self.newAddAffectAffectednessSelect.select_element_by_value(affectedness_value)
-            self.newAddAffectResolutionSelect.select_element_by_value('')
-        else:
-            self.newAddAffectAffectednessSelect.select_element_by_value('AFFECTED')
-            self.newAddAffectResolutionSelect.select_element_by_value('DELEGATED')
+        self.newAddAffectAffectednessSelect.select_element_by_value(affectedness)
+        self.newAddAffectResolutionSelect.select_element_by_value(resolution)
 
-        available_values, current_value = self.get_select_value(self.newAddAffectImpactInput)
+        available_values, current_value = self.get_select_value(self.newAddAffectImpactSelect)
         available_values.remove(current_value)
-        self.newAddAffectImpactInput.select_element_by_value(random.choice(available_values))
+        self.newAddAffectImpactSelect.select_element_by_value(random.choice(available_values))
 
+        # set CVSS field
+        self.newAddAffectCVSSInput.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+        self.newAddAffectCVSSInput.set_text(cvss_vector)
+
+        # Save all the updates
         self.click_btn('saveBtn')
         self.wait_msg('flawSavedMsg')
-        self.wait_msg('affectCreatedMsg')
-        return ps_component_value
+
+    def get_affect_value(self, row=1):
+        module = f"(//tbody)[1]/tr[{row}]/td[3]/span"
+        component = f"(//tbody)[1]/tr[{row}]/td[4]/span"
+        affectedness = f"(//tbody)[1]/tr[{row}]/td[5]/span"
+        resolution = f"(//tbody)[1]/tr[{row}]/td[6]/span"
+        impact = f"(//tbody)[1]/tr[{row}]/td[7]/span"
+        cvss = f"(//tbody)[1]/tr[{row}]/td[8]/span"
+
+        affect = Affect(
+            module=self.driver.find_element(By.XPATH, module).get_text(),
+            component=self.driver.find_element(By.XPATH, component).get_text(),
+            affectedness=self.driver.find_element(By.XPATH, affectedness).get_text(),
+            resolution=self.driver.find_element(By.XPATH, resolution).get_text(),
+            impact=self.driver.find_element(By.XPATH, impact).get_text(),
+            cvss=self.driver.find_element(By.XPATH, cvss).get_text()
+        )
+
+        return affect
+
+    def add_new_affect(self, external_system='jira', affectedness_value='NEW'):
+        from features.utils import generate_random_text
+        self.click_button_with_js('addNewAffectBtn')
+
+        module = AFFECTED_MODULE_JR if external_system == 'jira' else AFFECTED_MODULE_BZ
+        component = generate_random_text()
+
+        if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
+            resolution = ''
+        else:
+            affectedness_value = 'AFFECTED'
+            resolution = 'DELEGATED'
+
+        cvss_vector = generate_cvss3_vector_string()
+
+        self.set_first_affect_fields(
+            module=module, component=component, affectedness=affectedness_value,
+            resolution=resolution, cvss_vector=cvss_vector
+        )
+
+        self.wait_msg('flawSavedMsg')
+        self.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
+
+        return component
 
     def get_an_available_ps_module(self, affect_module):
         # Get the suitable ps_modules for update
@@ -697,25 +741,9 @@ class FlawDetailPage(BasePage):
         current_value = input_element.get_text()
         return current_value
 
-    def get_first_affect_data(self):
-        ps_module = self.firstAffectModuleText.get_text()
-        ps_component = self.firstAffectComponentText.get_text()
-        return ps_module, ps_component
-
     def has_affects(self):
         affect_rows = find_elements_in_page_factory(self, "affectRows")
         return len(affect_rows) > 0
-
-    def get_affect_module_component_values(self, token, component_value):
-        osidb_token = token
-        flaw_info = self.load_affects_results_from_osidb(osidb_token)
-        # Get the module values according to the component_value
-        module_component = []
-        for affect in flaw_info.get('affects'):
-            if affect.get('ps_component') == component_value:
-                module_value = affect.get('ps_module')
-                module_component.append((module_value, component_value))
-        return module_component
 
     def get_flaw_id_from_unembargo_warning(self):
         text = self.unembargoWarningText.get_text()

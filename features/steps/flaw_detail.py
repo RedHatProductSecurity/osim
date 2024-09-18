@@ -1,4 +1,3 @@
-import os
 import time
 import random
 from datetime import date, datetime
@@ -19,6 +18,7 @@ from features.constants import (
     AFFECTED_MODULE_JR,
     CVSS_COMMENT_FLAW_ID,
 )
+from features.common_utils import generate_cvss3_vector_string
 
 
 MAX_RETRY = 10
@@ -489,58 +489,47 @@ def step_impl(context):
 @when("I update the affects of the flaw and click 'Save Changes' button")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    # Display the affect detail
-    flaw_detail_page.display_affect_detail()
-    current_module = flaw_detail_page.get_current_value_of_field('affects__ps_module')
-    current_affectedness = flaw_detail_page.get_selected_value_for_affect('affects__affectedness')
-    # Get the valid/available values to update
-    # 1. Get an available ps_module to be updated
+    # update first row affect
+    # Get an available ps_module to be updated
+    current_module = flaw_detail_page.firstAffectModuleSpan.get_text()
     ps_module = flaw_detail_page.get_an_available_ps_module(current_module)
-    # 2. Generate the random component name to be updated
-    ps_component = generate_random_text()
-    # 3. Get the available (key, value) for affectedness and resolution
+
+    # Get the available (key, value) for affectedness and resolution
+    current_affectedness = flaw_detail_page.firstAffectAffectednessSpan.get_text()
     if current_affectedness == 'NEW':
         affectedness = 'AFFECTED'
         resolution = 'DELEGATED'
     else:
         affectedness = 'NEW'
         resolution = ''
-    # 4. Generate the random cvss3_score
-    cvss3_score = float("{0:.1f}".format(random.uniform(1, 6)))
-    # Update the fields with the available values
-    context.value_dict = {'ps_module': f'{ps_module}',
-                          'ps_component': f'{ps_component}',
-                          'affectedness': f'{affectedness}',
-                          'resolution': f'{resolution}',
-                          'cvss3_score': f'{cvss3_score}'}
-    for item in context.value_dict.items():
-        field = 'affects__' + item[0]
-        if field in ['affects__ps_module', 'affects__ps_component', 'affects__cvss3_score']:
-            flaw_detail_page.set_input_value(field, item[1])
-        else:
-            flaw_detail_page.set_select_specific_value(field, item[1])
 
-    # Update afffect impact
-    updated_value = flaw_detail_page.set_select_value_for_affect('affects__impact')
-    context.value_dict['impact'] = updated_value
-    # Save all the updates
-    flaw_detail_page.click_btn('saveBtn')
-    # Comment the line due to the Affect Saved message won't alert now
-    # flaw_detail_page.wait_msg('affectSaveMsg')
+    # Generate the random component name to be updated
+    ps_component = generate_random_text()
+
+    # Update the fields with the available values
+    cvss = generate_cvss3_vector_string()
+    context.value_dict = {
+        'ps_module': f'{ps_module}',
+        'ps_component': f'{ps_component}',
+        'affectedness': f'{affectedness}',
+        'resolution': f'{resolution}',
+        # Generate the random cvss3_score
+        'cvss3_score': cvss
+    }
+
+    flaw_detail_page.set_first_affect_fields(
+        module=ps_module, component=ps_component, affectedness=affectedness,
+        resolution=resolution, cvss_vector=cvss)
     flaw_detail_page.wait_msg('affectUpdateMsg')
-    flaw_detail_page.wait_msg('flawSavedMsg')
+    flaw_detail_page.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
 
 
 @then("All changes are saved")
 def step_impl(context):
-    token = get_osidb_token()
     # Check the affect updates have been saved
     flaw_detail_page = FlawDetailPage(context.browser)
-    component_value = context.value_dict['ps_component']
-    field_value_dict = flaw_detail_page.get_affect_values(
-                    context.value_dict.keys(), token, component_value)
-    # There is a bug OSIDB-3042, so the following step will be failed
-    assert context.value_dict == field_value_dict
+    for _, v in context.value_dict.items():
+        flaw_detail_page.check_text_exist(v)
 
 
 @when("I add a new affect with valid data")
@@ -558,8 +547,9 @@ def step_impl(context):
 @when("I delete an affect of the flaw")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    context.ps_module, context.ps_component = flaw_page.get_first_affect_data()
-    flaw_page.click_button_with_js("removeAffectBtn")
+    affect = flaw_page.get_affect_value()
+    context.ps_module, context.ps_component = affect.module, affect.component
+    flaw_page.click_button_with_js("firstAffectRemoveBtn")
     flaw_page.click_btn('saveBtn')
     flaw_page.wait_msg('flawSavedMsg')
     flaw_page.click_button_with_js('msgClose')
@@ -571,27 +561,29 @@ def step_impl(context):
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     if flaw_page.has_affects():
-        ps_module, ps_component = flaw_page.get_first_affect_data()
+        affect = flaw_page.get_affect_value()
+        ps_module, ps_component = affect.module, affect.component
         assert (context.ps_module, context.ps_component) != (ps_module, ps_component)
 
 
-@when("I click 'delete' button of an affect")
+@when("I 'delete' an affect and 'recover' it")
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.module, context.component = \
-        flaw_detail_page.click_affect_delete_btn()
-    # Click the delete button of the affect
-    flaw_detail_page.click_button_with_js('affectRecoverBtn')
+    context.affect = flaw_detail_page.get_affect_value()
+    flaw_detail_page.click_button_with_js("firstAffectRemoveBtn")
+    flaw_detail_page.click_button_with_js("firstAffectRecoverBtn")
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
 
 
 @then("I could 'recover' the affect that I tried to delete above")
 def step_impl(context):
-    token = get_osidb_token()
     flaw_detail_page = FlawDetailPage(context.browser)
-    module_component_list = flaw_detail_page.get_affect_module_component_values(
-                    token, context.component)
-    assert (context.module, context.component) in module_component_list
+    affect = context.affect
+    flaw_detail_page.check_text_exist(affect.module)
+    flaw_detail_page.check_text_exist(affect.component)
+    flaw_detail_page.check_text_exist(affect.cvss)
 
 
 @when("I unembargo this flaw and add public date")

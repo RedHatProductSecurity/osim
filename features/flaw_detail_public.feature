@@ -95,14 +95,12 @@ Feature: Flaw detail testing on public flaw
       When I add a new affect with valid data
       Then The affect is added
 
-    @skip
     Scenario: Update affect for a public flaw
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved
 
-    @skip
     Scenario: Recover an affect for the deleting
-      When I click 'delete' button of an affect
+      When I 'delete' an affect and 'recover' it
       Then I could 'recover' the affect that I tried to delete above
 
     @skip
