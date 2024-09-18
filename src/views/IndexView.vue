@@ -50,7 +50,7 @@ onDeactivated(() => {
 
 const defaultFilters = computed(() => {
   return {
-    query: searchStore.queryFilter,
+    ...(searchStore.queryFilter ? { query: searchStore.queryFilter } : {}),
     ...searchStore.searchFilters,
   };
 });

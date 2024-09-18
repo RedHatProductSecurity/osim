@@ -58,9 +58,7 @@ function saveFilter() {
     },
     {} as Record<string, string>,
   );
-  if (query?.value) {
-    searchStore.saveFilter(filters, query.value);
-  }
+  searchStore.saveFilter(filters, query.value);
   addToast({
     title: 'Default Filter',
     body: 'User\'s default filter saved',
