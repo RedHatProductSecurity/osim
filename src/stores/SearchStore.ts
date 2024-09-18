@@ -12,7 +12,7 @@ const defaultValues: SearchSchema = { searchFilters: {}, queryFilter: '' };
 
 const _searchStoreKey = 'SearchStore';
 const search = useLocalStorage(_searchStoreKey, defaultValues);
-function saveFilter(filters: Record<string, string>, query: string = '') {
+function saveFilter(filters: Record<string, string>, query: string) {
   search.value.searchFilters = filters;
   search.value.queryFilter = query;
 }

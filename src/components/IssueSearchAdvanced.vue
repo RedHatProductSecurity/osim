@@ -5,7 +5,6 @@ import { sort } from 'ramda';
 // @ts-expect-error missing types
 import DjangoQL from 'djangoql-completion';
 
-import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 import Modal from '@/components/widgets/Modal.vue';
 import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
 
@@ -13,7 +12,7 @@ import { useModal } from '@/composables/useModal';
 import { useSearchParams } from '@/composables/useSearchParams';
 
 import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
-import { flawFields } from '@/constants/flawFields';
+import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -24,35 +23,11 @@ const emit = defineEmits(['filter:save']);
 const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
 const { closeModal, isModalOpen, openModal } = useModal();
 
-const isNonEmptyDescriptionSelected = ref(false);
-
-const descriptionParamValue = computed(() => facets.value.find(facet => facet.field === 'cve_description')?.value);
-
 const queryFilterVisible = ref(true);
 
+const emptinessSupportedFields = Object.keys(allowedEmptyFieldMapping);
+
 const djangoCompletion = ref();
-
-watch(isNonEmptyDescriptionSelected, () => {
-  const facet = facets.value.find(facet => facet.field === 'cve_description');
-  if (isNonEmptyDescriptionSelected.value) {
-    if (!facet) {
-      facets.value.push({ field: 'cve_description', value: 'nonempty' });
-    } else {
-      facet.value = 'nonempty';
-    }
-  } else if (facet && descriptionParamValue.value === 'nonempty') {
-    facet.value = '';
-  }
-});
-
-watch(descriptionParamValue, (value) => {
-  if (value !== 'nonempty' && isNonEmptyDescriptionSelected.value) {
-    isNonEmptyDescriptionSelected.value = false;
-  }
-  if (value === 'nonempty' && !isNonEmptyDescriptionSelected.value) {
-    isNonEmptyDescriptionSelected.value = true;
-  }
-});
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -158,6 +133,14 @@ onUnmounted(() => {
           type="text"
           class="form-control"
         />
+        <button
+          class="btn btn-sm btn-secondary rounded-0 py-0"
+          title="Clear query"
+          type="button"
+          @click="query = ''"
+        >
+          <i class="bi bi-eraser fs-5"></i>
+        </button>
         <button class="btn btn-secondary py-0" type="button" @click="() => queryFilterVisible = false">
           <i class="bi bi-x fs-5" aria-label="hide query filter" />
         </button>
@@ -191,17 +174,51 @@ onUnmounted(() => {
           class="form-control"
           :disabled="!facet.field"
         />
+        <div v-if="emptinessSupportedFields.includes(facet.field)" class="btn-group">
+          <button
+            class="btn btn-sm btn-primary rounded-0 py-0"
+            title="Non empty field search"
+            type="button"
+            :disabled="facet.value === 'isempty'"
+            @click="facet.value = 'isempty'"
+          >
+            <i class="bi bi-circle fs-5" />
+          </button>
+          <button
+            class="btn btn-sm btn-primary rounded-0 py-0"
+            title="Empty field search"
+            type="button"
+            :disabled="facet.value === 'nonempty'"
+            @click="facet.value = 'nonempty'"
+          >
+            <i class="bi bi-slash-circle fs-5" />
+          </button>
+        </div>
+        <button
+          class="btn btn-sm btn-primary rounded-0 py-0"
+          title="Clear field"
+          type="button"
+          @click="facet.value = ''"
+        >
+          <i class="bi bi-eraser fs-5"></i>
+        </button>
         <button class="btn btn-primary py-0" type="button" @click="removeFacet(index)">
           <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
       </div>
       <div class="mt-2">
-        <button class="btn btn-primary me-2" type="submit" :disabled="props.isLoading">
+        <button
+          class="btn btn-primary me-2"
+          type="submit"
+          :disabled="props.isLoading"
+          aria-label="Advance search button"
+        >
           <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
           Search
         </button>
         <button
           class="btn btn-primary me-2"
+          aria-label="Save filters as default"
           type="button"
           :disabled="isLoading"
           @click="emit('filter:save')"
@@ -216,11 +233,6 @@ onUnmounted(() => {
         >
           Show Query Filter
         </button>
-        <LabelCheckbox
-          v-model="isNonEmptyDescriptionSelected"
-          label="Non Empty CVE Description"
-          class="d-inline-block"
-        />
       </div>
     </form>
   </details>

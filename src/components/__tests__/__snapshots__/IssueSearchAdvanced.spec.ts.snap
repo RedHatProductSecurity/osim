@@ -5,7 +5,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <!--v-if-->
@@ -32,7 +32,9 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-21c9158a="" value="title">Title</option>
         <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
         <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control"><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button></div>
+      </select><input data-v-21c9158a="" type="text" class="form-control">
+      <div data-v-21c9158a="" class="btn-group"><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Non empty field search" type="button"><i data-v-21c9158a="" class="bi bi-circle fs-5"></i></button><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Empty field search" type="button"><i data-v-21c9158a="" class="bi bi-slash-circle fs-5"></i></button></div><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+    </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
         <option data-v-21c9158a="" value="acknowledgments__name">Acknowledgment Author</option>
@@ -57,12 +59,13 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-21c9158a="" value="title">Title</option>
         <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
         <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled=""><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button></div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit">
+      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+      <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+    </div>
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" type="button"> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
       <!--v-if-->
-      <div data-v-5fd32c51="" data-v-21c9158a="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" class="d-inline-block form-check-input" type="checkbox"><span data-v-5fd32c51="" class="form-check-label">Non Empty CVE Description</span></label></div>
     </div>
   </form>
 </details>
@@ -79,7 +82,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
@@ -106,12 +109,13 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-21c9158a="" value="title">Title</option>
         <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
         <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled=""><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button></div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit">
+      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+      <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+    </div>
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" type="button"> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
       <!--v-if-->
-      <div data-v-5fd32c51="" data-v-21c9158a="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" class="d-inline-block form-check-input" type="checkbox"><span data-v-5fd32c51="" class="form-check-label">Non Empty CVE Description</span></label></div>
     </div>
   </form>
 </details>
@@ -128,7 +132,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" id="query" type="text" class="form-control"></textarea><button data-v-21c9158a="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
@@ -155,12 +159,13 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-21c9158a="" value="title">Title</option>
         <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
         <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled=""><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button></div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" disabled="">
+      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+      <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+    </div>
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" disabled="" aria-label="Advance search button">
         <div data-v-21c9158a="" class="spinner-border spinner-border-sm"></div> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" type="button" disabled=""> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button" disabled=""> Save as Default </button>
       <!--v-if-->
-      <div data-v-5fd32c51="" data-v-21c9158a="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" class="d-inline-block form-check-input" type="checkbox"><span data-v-5fd32c51="" class="form-check-label">Non Empty CVE Description</span></label></div>
     </div>
   </form>
 </details>
