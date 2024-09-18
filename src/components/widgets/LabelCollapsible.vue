@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isExpandable?: boolean | undefined;
     isExpanded?: boolean | undefined;
@@ -13,7 +13,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  setExpanded: [value: boolean];
+  toggleExpanded: [];
 }>();
 </script>
 
@@ -24,7 +24,7 @@ const emit = defineEmits<{
       type="button"
       class="me-2 osim-collapsible-toggle"
       :class="{ 'pe-none': !isExpandable }"
-      @click="emit('setExpanded', !props.isExpanded)"
+      @click="emit('toggleExpanded')"
     >
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>

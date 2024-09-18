@@ -41,7 +41,7 @@ const isExpanded = ref(false);
     :class="{'alert-warning': isWarning, 'alert-danger': isError}"
     role="alert"
   >
-    <LabelCollapsible :isExpanded="isExpanded" @setExpanded="isExpanded = !isExpanded">
+    <LabelCollapsible :isExpanded="isExpanded" @toggleExpanded="isExpanded = !isExpanded">
       <template #label>
         <span class="badge mx-2" :class="{'text-bg-warning': isWarning, 'text-bg-danger': isError}">
           <i class="bi" :class="{'bi-exclamation-triangle-fill': isWarning, 'bi-x-circle-fill': isError}" />

@@ -20,7 +20,7 @@ const isExpanded = ref(false);
     :isExpanded="isExpanded"
     label="Explain non-obvious CVSSv3 score metrics"
     class="ms-2 cvss-score-mismatch"
-    @setExpanded="isExpanded = !isExpanded"
+    @toggleExpanded="isExpanded = !isExpanded"
   >
     <textarea
       v-model="modelValue.cvss_scores[rhCvss].comment"

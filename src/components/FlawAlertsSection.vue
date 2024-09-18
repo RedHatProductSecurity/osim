@@ -27,7 +27,7 @@ const emitExpandFocusedComponent = (parent_uuid: string) => {
   <LabelCollapsible
     v-if="Object.values(alertSet).reduce((acc, alertType) => acc + alertType.length, 0) !== 0"
     :isExpanded="isExpanded"
-    @setExpanded="isExpanded = !isExpanded"
+    @toggleExpanded="isExpanded = !isExpanded"
   >
     <template #label>
       <span>
