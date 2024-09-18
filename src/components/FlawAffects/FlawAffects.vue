@@ -16,7 +16,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { uniques } from '@/utils/helpers';
+import { uniques, affectsMatcherFor } from '@/utils/helpers';
 
 import { displayModes } from './flawAffectConstants';
 import { useAffectSelections } from './useAffectSelections';
@@ -190,52 +190,27 @@ function editAffect(affect: ZodAffectType) {
 function editSelectedAffects() {
   selectedAffects.value.forEach(editAffect);
 }
-function commitChanges(affect: ZodAffectType) {
-  console.log(affectsBeingEdited.value.indexOf(affect))
-  console.log(affectValuesPriorEdit.value.indexOf(affect))
 
-  affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
-  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
-  if (isAffectSelected(affect)) {
-    toggleAffectSelection(affect);
-  }
+function commitChanges(affect: ZodAffectType) {
+  const matchAffect = affectsMatcherFor(affect);
+  const updateIndex = flaw.value.affects.findIndex(matchAffect);
+  flaw.value.affects.splice(updateIndex, 1, affect);
+  resetStagedAffectEdit(affect);
 }
 
 function cancelChanges(affect: ZodAffectType) {
-  const priorAffect = getAffectPriorEdit(affect);
-  const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
-  if (index !== -1 && priorAffect) {
-    flaw.value.affects[index] = { ...priorAffect };
-  }
-  affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
-  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
+  resetStagedAffectEdit(affect);
+}
+
+function resetStagedAffectEdit(affect: ZodAffectType) {
+  const matchAffect = affectsMatcherFor(affect);
+  const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
+  affectsBeingEdited.value.splice(editingIndex, 1);
+  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
   }
 }
-// function commitChanges(affect: ZodAffectType) {
-//   const matchAffect = affectsMatcherFor(affect);
-//   const index = affectsBeingEdited.value.findIndex(matchAffect);
-//   console.log(index, affectValuesPriorEdit.value.findIndex(matchAffect));
-//   affectsBeingEdited.value.splice(index, 1);
-//   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
-//   if (isAffectSelected(affect)) {
-//     toggleAffectSelection(affect);
-//   }
-// }
-
-// function cancelChanges(affect: ZodAffectType) {
-//   const priorAffect = getAffectPriorEdit(affect);
-//   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
-//   if (index !== -1 && priorAffect) {
-//     flaw.value.affects[index] = { ...priorAffect };
-//   }
-//   affectsBeingEdited.value.splice(affectsBeingEdited.value.indexOf(affect), 1);
-//   affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.indexOf(affect), 1);
-//   if (isAffectSelected(affect)) {
-//     toggleAffectSelection(affect);
-//   }
-// }
 
 function commitAllChanges() {
   const affectsToCommit = [...affectsBeingEdited.value];
@@ -648,32 +623,6 @@ const displayedTrackers = computed(() => {
 <style scoped lang="scss">
 @import '@/scss/bootstrap-overrides';
 
-.osim-tracker-manager-modal-container {
-  &:deep(.modal-header),
-  &:deep(.modal-footer) {
-    display: none;
-  }
-
-  &:deep(.modal-body) {
-    position: relative;
-    padding: 0;
-
-    .osim-affect-trackers-container {
-      margin: 0 !important;
-
-      h4 button {
-        display: none;
-      }
-    }
-  }
-
-  :deep(.btn-close) {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-}
-
 .osim-affects-section {
   margin-block: 1rem;
 
@@ -789,6 +738,32 @@ const displayedTrackers = computed(() => {
   #resolution-filter > .bi,
   #affectedness-filter > .bi {
     font-size: 1rem;
+  }
+
+  .osim-tracker-manager-modal-container {
+    &:deep(.modal-header),
+    &:deep(.modal-footer) {
+      display: none;
+    }
+
+    &:deep(.modal-body) {
+      position: relative;
+      padding: 0;
+
+      .osim-affect-trackers-container {
+        margin: 0 !important;
+
+        h4 button {
+          display: none;
+        }
+      }
+    }
+
+    :deep(.btn-close) {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
   }
 }
 </style>
