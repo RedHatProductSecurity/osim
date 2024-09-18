@@ -33,15 +33,15 @@ const emit = defineEmits<{
   'affect:add': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'affect:remove': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
   'affects:refresh': [];
-  'file-tracker': [value: object];
 }>();
 const settingsStore = useSettingsStore();
 const settings = ref(settingsStore.settings);
 const {
-  closeModal: closeManagersTrackersModal,
+  closeModal,
   isModalOpen: isManageTrackersModalOpen,
-  openModal: openManageTrackersModal,
+  openModal,
 } = useModal();
 
 const { flaw } = toRefs(props);
@@ -65,6 +65,8 @@ const displayMode = ref(displayModes.ALL);
 
 const affectsBeingEdited = ref<ZodAffectType[]>([]);
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
+
+const specificAffectsToTrack = ref<ZodAffectType[]>([]);
 
 const modulesExpanded = ref(true);
 
@@ -312,6 +314,22 @@ function recoverAllAffects() {
 }
 
 // Trackers
+function trackSpecificAffect(affect: ZodAffectType) {
+  console.log('trackSpecificAffect', affect);
+  specificAffectsToTrack.value = [affect];
+  openModal();
+}
+
+function openManageTrackersModal() {
+  specificAffectsToTrack.value = selectedAffects.value;
+  openModal();
+}
+
+function closeManageTrackersModal() {
+  specificAffectsToTrack.value = [];
+  closeModal();
+}
+
 const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.trackers));
 
 const displayedTrackers = computed(() => {
@@ -583,6 +601,7 @@ const displayedTrackers = computed(() => {
         @affect:revert="revertAffect"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
+        @affect:track="trackSpecificAffect"
       />
       <span v-if="!hasAffects" class="my-2 p-2 d-flex">
         This flaw has no affects
@@ -600,23 +619,24 @@ const displayedTrackers = computed(() => {
       :allTrackersCount="allTrackers.length"
       @affects:refresh="emit('affects:refresh')"
     />
-  </div>
-  <div class="osim-tracker-manager-modal-container">
-    <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManagersTrackersModal">
-      <template #body>
-        <button
-          type="button"
-          class="btn btn-close ms-auto"
-          aria-label="Close"
-          @click="closeManagersTrackersModal"
-        />
-        <TrackerManager
-          :relatedFlaws="relatedFlaws"
-          :flaw="flaw"
-          @affects-trackers:refresh="refreshAffects"
-        />
-      </template>
-    </Modal>
+    <div class="osim-tracker-manager-modal-container">
+      <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">
+        <template #body>
+          <button
+            type="button"
+            class="btn btn-close ms-auto"
+            aria-label="Close"
+            @click="closeManageTrackersModal"
+          />
+          <TrackerManager
+            :relatedFlaws="relatedFlaws"
+            :flaw="flaw"
+            :specificAffectsToTrack="specificAffectsToTrack"
+            @affects-trackers:refresh="refreshAffects"
+          />
+        </template>
+      </Modal>
+    </div>
   </div>
 </template>
 

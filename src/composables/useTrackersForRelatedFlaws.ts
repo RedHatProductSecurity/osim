@@ -12,6 +12,7 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import type { TrackersPost } from '@/services/TrackerService';
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
 import { getFlaw } from '@/services/FlawService';
+import { isAffectIn } from '@/utils/helpers';
 
 import { createCatchHandler } from './service-helpers';
 
@@ -40,20 +41,31 @@ function useState(flaw: ZodFlawType) {
   };
 }
 
-function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaws: Ref<ZodFlawType[]>) {
+function useComputedState(
+  multiFlawTrackers: Ref<MultiFlawTrackers>,
+  relatedFlaws: Ref<ZodFlawType[]>,
+  specificAffectsToTrack: ZodAffectType[],
+) {
   const flawUuids = computed(() => relatedFlaws.value.map(flaw => flaw.uuid));
+
+  const shouldIncludeAffect = (affect: ZodAffectType) =>
+    specificAffectsToTrack.length === 0 || isAffectIn(affect, specificAffectsToTrack);
 
   const affectsBySelectedFlawId = computed(() => relatedFlaws.value.reduce(
     (affectsBook: Record<string, ZodAffectType[]>, flaw) => {
-      affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects;
+      affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects.filter(shouldIncludeAffect);
       return affectsBook;
     }, {}));
+
+    console.log(affectsBySelectedFlawId)
 
   const isFilingTrackers = computed(
     () => Object.entries(multiFlawTrackers.value).some(([, { isFilingTrackers }]) => isFilingTrackers),
   );
 
-  const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap(flaw => flaw.affects));
+  const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap(
+    flaw => flaw.affects.filter(shouldIncludeAffect),
+  ));
 
   const affectsByUuid = computed((): Record<string, ZodAffectType> => allRelatedAffects.value
     .reduce((dictionary: Record<string, ZodAffectType>, affect: ZodAffectType) => {
@@ -102,7 +114,11 @@ function useComputedState(multiFlawTrackers: Ref<MultiFlawTrackers>, relatedFlaw
   };
 }
 
-export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<ZodFlawType[]>) {
+export function useTrackersForRelatedFlaws(
+  flaw: ZodFlawType,
+  relatedFlaws: Ref<ZodFlawType[]>,
+  specificAffectsToTrack: ZodAffectType[] = [],
+) {
   const {
     filterString,
     isLoadingTrackers,
@@ -119,7 +135,7 @@ export function useTrackersForRelatedFlaws(flaw: ZodFlawType, relatedFlaws: Ref<
     selectedStreams,
     trackersToFile,
     unselectedStreams,
-  } = useComputedState(multiFlawTrackers, selectedRelatedFlaws);
+  } = useComputedState(multiFlawTrackers, selectedRelatedFlaws, specificAffectsToTrack);
 
   watch(filterString, (newFilterString) => {
     for (const tracker of Object.values(multiFlawTrackers.value)) {

@@ -6,11 +6,12 @@ import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useTrackersForSingleFlaw';
 import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
 
-import type { ZodFlawType } from '@/types/zodFlaw';
+import type { ZodAffectType, ZodFlawType } from '@/types';
 
 const props = defineProps<{
   flaw: ZodFlawType;
   relatedFlaws: ZodFlawType[];
+  specificAffectsToTrack?: ZodAffectType[];
 }>();
 
 const emit = defineEmits<{
@@ -33,7 +34,7 @@ const {
   shouldFileAsMultiFlaw,
   synchronizeTrackerSelections,
   trackersToFile,
-} = useTrackersForRelatedFlaws(props.flaw, relatedFlaws);
+} = useTrackersForRelatedFlaws(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
 
 const selectedRelatedFlawIds = computed(() => Object.keys(affectsBySelectedFlawId.value));
 
@@ -52,10 +53,10 @@ function updateSelection(trackerSelections: UpdateStreamSelections, tracker: Upd
   }
 }
 
-function handleSetAll(tabProps: any, isSelected: boolean) {
-  tabProps.setAllTrackerSelections(isSelected);
+function handleSetAll(singleFlawTrackerSlotProps: any, isSelected: boolean) {
+  singleFlawTrackerSlotProps.setAllTrackerSelections(isSelected);
   if (shouldApplyToRelated.value) {
-    synchronizeTrackerSelections(tabProps.trackerSelections);
+    synchronizeTrackerSelections(singleFlawTrackerSlotProps.trackerSelections);
   }
 }
 
@@ -128,10 +129,10 @@ async function handleFileTrackers() {
         <template
           v-for="(relatedFlawAffects, flawCveOrId) in affectsBySelectedFlawId"
           :key="flawCveOrId"
-          #[flawCveOrId]="tabProps"
+          #[flawCveOrId]="singleFlawTrackerSlotProps"
         >
           <div class="osim-tracker-tabs">
-            <div v-if="tabProps.untrackableAffects?.length > 0" class="pt-5 p-3">
+            <div v-if="singleFlawTrackerSlotProps.untrackableAffects?.length > 0" class="pt-5 p-3">
               <div class="alert alert-danger">
                 <h5>Untrackable Affects</h5>
                 <p>
@@ -140,7 +141,7 @@ async function handleFileTrackers() {
                 </p>
                 <div class="osim-tracker-list">
                   <span
-                    v-for="affect in tabProps.untrackableAffects"
+                    v-for="affect in singleFlawTrackerSlotProps.untrackableAffects"
                     :key="`${affect.ps_module}-${affect.ps_component}`"
                   >
                     <span class="ps-1 text-danger">
@@ -162,34 +163,34 @@ async function handleFileTrackers() {
                     <button
                       type="button"
                       class="btn btn-white btn-outline-dark-teal btn-sm me-2"
-                      @click="handleSetAll(tabProps, true)"
+                      @click="handleSetAll(singleFlawTrackerSlotProps, true)"
                     >
                       <i class="bi bi-check-all"></i>
                       Select
-                      {{ tabProps.filterString ? 'Filtered' : 'All' }}
+                      {{ singleFlawTrackerSlotProps.filterString ? 'Filtered' : 'All' }}
                     </button>
                     <button
                       type="button"
                       class="btn btn-white btn-outline-dark-teal btn-sm me-2"
-                      @click="handleSetAll(tabProps, false)"
+                      @click="handleSetAll(singleFlawTrackerSlotProps, false)"
                     >
                       <i class="bi bi-eraser"></i>
                       Deselect
-                      {{ tabProps.filterString ? 'Filtered' : 'All' }}
+                      {{ singleFlawTrackerSlotProps.filterString ? 'Filtered' : 'All' }}
                     </button>
                   </div>
                 </div>
                 <div class="ms-3 mt-2 pb-3">
-                  <div v-if="tabProps.unselectedStreams?.length" class="osim-tracker-list my-2">
+                  <div v-if="singleFlawTrackerSlotProps.unselectedStreams?.length" class="osim-tracker-list my-2">
                     <label
-                      v-for="(tracker, index) in tabProps.unselectedStreams"
+                      v-for="(tracker, index) in singleFlawTrackerSlotProps.unselectedStreams"
                       :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                     >
                       <input
-                        :checked="tabProps.trackerSelections.get(tracker)"
+                        :checked="singleFlawTrackerSlotProps.trackerSelections.get(tracker)"
                         type="checkbox"
                         class="osim-tracker form-check-input"
-                        @input="updateSelection(tabProps.trackerSelections, tracker)"
+                        @input="updateSelection(singleFlawTrackerSlotProps.trackerSelections, tracker)"
                       />
                       <span
                         class="osim-tracker-label"
@@ -209,16 +210,16 @@ async function handleFileTrackers() {
                       </span>
                     </label>
                   </div>
-                  <div v-if="tabProps.selectedStreams?.length" class="osim-tracker-list my-2">
+                  <div v-if="singleFlawTrackerSlotProps.selectedStreams?.length" class="osim-tracker-list my-2">
                     <label
-                      v-for="(tracker, index) in tabProps.selectedStreams"
+                      v-for="(tracker, index) in singleFlawTrackerSlotProps.selectedStreams"
                       :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                     >
                       <input
-                        :checked="tabProps.trackerSelections.get(tracker)"
+                        :checked="singleFlawTrackerSlotProps.trackerSelections.get(tracker)"
                         type="checkbox"
                         class="osim-tracker form-check-input"
-                        @input="updateSelection(tabProps.trackerSelections, tracker)"
+                        @input="updateSelection(singleFlawTrackerSlotProps.trackerSelections, tracker)"
                       />
                       <span
                         class="osim-tracker-label"
@@ -273,15 +274,15 @@ async function handleFileTrackers() {
                 <span>Loading trackers&hellip;</span>
               </div>
               <div v-if="!isLoadingTrackers">
-                <div v-if="tabProps.alreadyFiledTrackers?.length === 0" class="ms-2">
+                <div v-if="singleFlawTrackerSlotProps.alreadyFiledTrackers?.length === 0" class="ms-2">
                   <span> No filed trackers&hellip; </span>
                 </div>
-                <div v-if="tabProps.alreadyFiledTrackers?.length > 0" class="osim-tracker-list">
+                <div v-if="singleFlawTrackerSlotProps.alreadyFiledTrackers?.length > 0" class="osim-tracker-list">
                   <div class="col-6">
                     <h5 class="pt-3 mb-2 pb-2">Filed</h5>
                     <div class="osim-tracker-list my-2">
                       <label
-                        v-for="(tracker, index) in tabProps.alreadyFiledTrackers"
+                        v-for="(tracker, index) in singleFlawTrackerSlotProps.alreadyFiledTrackers"
                         :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                       >
                         <input

@@ -27,6 +27,7 @@ function fetchFlaw() {
       flaw.value = Object.assign({}, theFlaw);
       getRelatedFlaws(theFlaw.affects)
         .then((flaws) => {
+          console.log(flaws);
           relatedFlaws.value = flaws;
         })
         .catch(console.error)

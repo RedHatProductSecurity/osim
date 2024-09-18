@@ -2,12 +2,13 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types/zodFlaw';
-import type { ZodAffectType } from './../types/zodAffect';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
+
+import type { ZodAffectType } from './../types/zodAffect';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
@@ -55,15 +56,14 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
   });
 }
 
-export async function getRelatedFlaws (affects: ZodAffectType[]): Promise<ZodFlawType[]> {
-
+export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlawType[]> {
   let relatedFlaws: ZodFlawType[] = [];
 
-  if (!affects || !affects[0]) {
+  if (!affects?.[0]) {
     return relatedFlaws;
   }
 
-  const { ps_module: firstAffectPsModule, ps_component: firstAffectPsComponent } = affects[0];
+  const { ps_component: firstAffectPsComponent, ps_module: firstAffectPsModule } = affects[0];
 
   try {
     const response = await osidbFetch({
@@ -74,12 +74,11 @@ export async function getRelatedFlaws (affects: ZodAffectType[]): Promise<ZodFla
         affects__ps_component: firstAffectPsComponent,
       },
     });
-    console.log(response.data);
     relatedFlaws.push(...response.data.results);
     for (const affect of affects.slice(1)) {
-      relatedFlaws = relatedFlaws.filter((flaw) => flaw.affects.some(
-        (matchingAffect) =>
-          affect.ps_module === matchingAffect.ps_module && affect.ps_component === matchingAffect.ps_component
+      relatedFlaws = relatedFlaws.filter(flaw => flaw.affects.some(
+        matchingAffect =>
+          affect.ps_module === matchingAffect.ps_module && affect.ps_component === matchingAffect.ps_component,
       ));
     }
   } catch (error) {

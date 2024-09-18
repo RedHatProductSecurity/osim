@@ -8,8 +8,7 @@ import TrackerManager from '@/components/TrackerManager.vue';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 
 import { formatDate } from '@/utils/helpers';
-import type { ZodTrackerType } from '@/types/zodAffect';
-import type { ZodFlawType } from '@/types/zodFlaw';
+import type { ZodTrackerType, ZodFlawType, ZodAffectType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { trackerUrl } from '@/services/TrackerService';
 
@@ -23,8 +22,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  'affect:track-selected': [value: ZodAffectType[]];
+  'affect:track-single': [value: ZodAffectType];
   'affects:refresh': [];
-  'file-tracker': [value: object];
 }>();
 
 const settingsStore = useSettingsStore();

@@ -1,13 +1,13 @@
 import { type Ref, ref, computed } from 'vue';
+
 import type { ZodAffectType } from '@/types/zodAffect';
 
 const selectedAffects = ref<ZodAffectType[]>([]);
 
 export function useAffectSelections(
   affects: Ref<ZodAffectType[]>,
-  isSelectableFn: (affect: ZodAffectType) => boolean
+  isSelectableFn: (affect: ZodAffectType) => boolean,
 ) {
-
   const areAllAffectsSelected = computed(() => {
     return affects.value.every(isAffectSelected);
   });

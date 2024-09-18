@@ -9,10 +9,8 @@ import type { ZodAffectType } from '@/types';
 import { isAffectIn } from '@/utils/helpers';
 
 import { displayModes } from './flawAffectConstants';
-// import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
-// const affectsBeingEdited = defineModel<ZodAffectType[]>('affectsBeingEdited', { default: [] });
 const props = defineProps<{
   affectsBeingEdited: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
@@ -29,6 +27,7 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
   'affects:display-mode': [value: displayModes];
 }>();
 
@@ -84,7 +83,7 @@ function isBeingEdited(affect: ZodAffectType) {
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
         <FlawAffectsTableRow
-          v-model:affect="affects[affectIndex]"
+          :affect="affects[affectIndex]"
           :error="props.error"
           :isRemoved="isRemoved(affect)"
           :isModified="isModified(affect)"
@@ -99,6 +98,7 @@ function isBeingEdited(affect: ZodAffectType) {
           @affect:revert="emit('affect:revert', affect)"
           @affect:remove="emit('affect:remove', affect)"
           @affect:toggle-selection="emit('affect:toggle-selection', affect)"
+          @affect:track="emit('affect:track', affect)"
         />
       </template>
     </tbody>

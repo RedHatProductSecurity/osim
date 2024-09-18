@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, toRefs } from 'vue';
 
 import {
   affectImpacts,
@@ -10,6 +10,7 @@ import {
 import { CVSS_V3 } from '@/constants';
 
 const props = defineProps<{
+  affect: ZodAffectType;
   error: null | Record<string, any>[];
   isBeingEdited: boolean;
   isLast: boolean;
@@ -19,8 +20,6 @@ const props = defineProps<{
   isSelected: boolean;
 }>();
 
-const affect = defineModel<ZodAffectType>('affect');
-
 const emit = defineEmits<{
   'affect:cancel': [value: ZodAffectType];
   'affect:commit': [value: ZodAffectType];
@@ -29,7 +28,10 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
 }>();
+
+const { affect } = toRefs(props);
 
 const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
@@ -239,8 +241,8 @@ const affectRowTooltip = computed(() => {
           type="button"
           :disabled="isBeingEdited || isRemoved"
           class="btn btn-sm px-1 py-0 d-flex rounded-circle"
+          @click.prevent.stop="emit('affect:track', affect)"
         >
-          <!-- @click.prevent.stop="fileTrackersForAffects([affect])" -->
           <i class="bi bi-plus lh-sm m-auto" />
         </button>
       </div>
