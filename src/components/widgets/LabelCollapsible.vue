@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { watchedPropRef } from '@/utils/helpers';
-
 const props = withDefaults(
   defineProps<{
     isExpandable?: boolean | undefined;
@@ -17,19 +15,6 @@ const props = withDefaults(
 const emit = defineEmits<{
   setExpanded: [value: boolean];
 }>();
-
-const isExpanded = watchedPropRef(props, 'isExpanded', false);
-
-const emitToggle = () => { emit('setExpanded', !props.isExpanded); };
-const localToggle = () => { (isExpanded.value = !isExpanded.value); };
-
-function handleClick() {
-  if (props.isExpanded) {
-    return emitToggle();
-  }
-
-  localToggle();
-}
 </script>
 
 <template>
@@ -39,7 +24,7 @@ function handleClick() {
       type="button"
       class="me-2 osim-collapsible-toggle"
       :class="{ 'pe-none': !isExpandable }"
-      @click="handleClick"
+      @click="emit('setExpanded', !props.isExpanded)"
     >
       <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
       <i v-else class="bi bi-plus-square-dotted me-1"></i>
