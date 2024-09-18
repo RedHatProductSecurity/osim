@@ -41,7 +41,7 @@ const alertsExpanded = ref(false);
     v-if="Object.values(alertsCount).reduce((acc, alertTypeCount) => acc + alertTypeCount, 0) !== 0"
     class="my-2"
     :isExpanded="alertsExpanded"
-    @setExpanded="alertsExpanded = !alertsExpanded"
+    @toggleExpanded="alertsExpanded = !alertsExpanded"
   >
     <template #label>
       <label class="mx-2 mb-0 form-label">

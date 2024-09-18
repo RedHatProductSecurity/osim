@@ -91,7 +91,7 @@ defineExpose({ isExpanded });
       :label="`${entityNamePlural}: ${items.length}`"
       :isExpandable="items.length > 0"
       :isExpanded="isExpanded"
-      @setExpanded="isExpanded = !isExpanded"
+      @toggleExpanded="isExpanded = !isExpanded"
     >
       <div
         v-for="(item, itemIndex) in items"

@@ -543,7 +543,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       <LabelCollapsible
         :isExpanded="modulesExpanded"
         :isExpandable="hasAffects"
-        @setExpanded="toggleModulesCollapse"
+        @toggleExpanded="toggleModulesCollapse"
       >
         <template #label>
           <label class="form-label m-2">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
 
@@ -30,6 +30,8 @@ function scrollToComponent(parent_uuid: string) {
     }
   });
 }
+
+const isExpanded = ref(false);
 </script>
 
 <template>
@@ -39,7 +41,7 @@ function scrollToComponent(parent_uuid: string) {
     :class="{'alert-warning': isWarning, 'alert-danger': isError}"
     role="alert"
   >
-    <LabelCollapsible>
+    <LabelCollapsible :isExpanded="isExpanded" @toggleExpanded="isExpanded = !isExpanded">
       <template #label>
         <span class="badge mx-2" :class="{'text-bg-warning': isWarning, 'text-bg-danger': isError}">
           <i class="bi" :class="{'bi-exclamation-triangle-fill': isWarning, 'bi-x-circle-fill': isError}" />
