@@ -27,9 +27,7 @@ function fetchFlaw() {
     .then((theFlaw) => {
       flaw.value = Object.assign({}, theFlaw);
       getRelatedFlaws(theFlaw.affects)
-        .then((flaws) => {
-          relatedFlaws.value = flaws;
-        })
+        .then(flaws => relatedFlaws.value = flaws)
         .catch(console.error)
         .finally(() => {
           history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
 
-import { equals, clone } from 'ramda';
+import { clone } from 'ramda';
 
 import FlawTrackers from '@/components/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager.vue';
@@ -33,23 +33,25 @@ const emit = defineEmits<{
   'affect:add': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'affect:remove': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
   'affects:refresh': [];
-  'file-tracker': [value: object];
 }>();
 const settingsStore = useSettingsStore();
 const settings = ref(settingsStore.settings);
 const {
-  closeModal: closeManagersTrackersModal,
+  closeModal,
   isModalOpen: isManageTrackersModalOpen,
-  openModal: openManageTrackersModal,
+  openModal,
 } = useModal();
 
 const { flaw } = toRefs(props);
+
 const {
   addAffect,
   affectsToDelete,
-  // affectCvssToDelete, // TODO: Fix/resolve post-rebase
   initialAffects,
+  // affectCvssToDelete, // TODO: Fix/resolve post-rebase
+  modifiedAffects,
   recoverAffect,
   refreshAffects,
   removeAffect,
@@ -65,6 +67,8 @@ const displayMode = ref(displayModes.ALL);
 
 const affectsBeingEdited = ref<ZodAffectType[]>([]);
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
+
+const specificAffectsToTrack = ref<ZodAffectType[]>([]);
 
 const modulesExpanded = ref(true);
 
@@ -94,12 +98,6 @@ const displayedAffects = computed(() => {
       return allAffects.value;
   }
 });
-
-// const filteredAffects = computed(() => filterAffects(displayedAffects.value));
-
-// const preEditAffects = computed(() =>
-//   filteredAffects.value.map(affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect)
-// );
 
 const sortedAffects = computed(() => {
   const filteredAffects = filterAffects(displayedAffects.value);
@@ -222,31 +220,8 @@ function cancelAllChanges() {
   affectsToCancel.forEach(cancelChanges);
 }
 
-// Modified affects
-const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  const { [key]: _, ...rest } = obj;
-  return rest;
-};
-
-function didSavedAffectChange(affect?: ZodAffectType) {
-  const savedAffect = initialAffects.find(savedAffect => savedAffect.uuid === affect?.uuid);
-  if (!affect || !savedAffect) {
-    return false;
-  }
-  return !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'));
-}
-
-const modifiedAffects = computed(() =>
-  flaw.value.affects.filter((affect) => {
-    const savedAffect = initialAffects.find(a => a.uuid === affect.uuid);
-    return didSavedAffectChange(savedAffect)
-      && !affectsBeingEdited.value.includes(affect)
-      && !newAffects.value.includes(affect);
-  }),
-);
-
 function revertAffect(affect: ZodAffectType) {
-  const saved = initialAffects.find(a => a.uuid === affect.uuid);
+  const saved = initialAffects.value.find(a => a.uuid === affect.uuid);
   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
   if (index !== -1 && saved) {
     flaw.value.affects[index] = { ...saved };
@@ -312,11 +287,26 @@ function recoverAllAffects() {
 }
 
 // Trackers
+function trackSpecificAffect(affect: ZodAffectType) {
+  specificAffectsToTrack.value = [affect];
+  openModal();
+}
+
+function openManageTrackersModal() {
+  specificAffectsToTrack.value = selectedAffects.value;
+  openModal();
+}
+
+function closeManageTrackersModal() {
+  specificAffectsToTrack.value = [];
+  closeModal();
+}
+
 const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.trackers));
 
 const displayedTrackers = computed(() => {
   return sortedAffects.value
-    .filter(affect => !isRemoved(affect) && !isNewAffect(affect))
+    .filter(affect => !isRemoved(affect) && affect.uuid)
     .flatMap(affect =>
       affect.trackers.map(tracker => ({
         ...tracker,
@@ -571,6 +561,7 @@ const displayedTrackers = computed(() => {
         v-model:affects="paginatedAffects"
         :affectsBeingEdited="affectsBeingEdited"
         :error="error"
+        :modifiedAffects="modifiedAffects"
         :affectsToDelete="affectsToDelete"
         :selectedModules="selectedModules"
         :selectedAffects="selectedAffects"
@@ -583,6 +574,7 @@ const displayedTrackers = computed(() => {
         @affect:revert="revertAffect"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
+        @affect:track="trackSpecificAffect"
       />
       <span v-if="!hasAffects" class="my-2 p-2 d-flex">
         This flaw has no affects
@@ -600,23 +592,24 @@ const displayedTrackers = computed(() => {
       :allTrackersCount="allTrackers.length"
       @affects:refresh="emit('affects:refresh')"
     />
-  </div>
-  <div class="osim-tracker-manager-modal-container">
-    <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManagersTrackersModal">
-      <template #body>
-        <button
-          type="button"
-          class="btn btn-close ms-auto"
-          aria-label="Close"
-          @click="closeManagersTrackersModal"
-        />
-        <TrackerManager
-          :relatedFlaws="relatedFlaws"
-          :flaw="flaw"
-          @affects-trackers:refresh="refreshAffects"
-        />
-      </template>
-    </Modal>
+    <div class="osim-tracker-manager-modal-container">
+      <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">
+        <template #body>
+          <button
+            type="button"
+            class="btn btn-close ms-auto"
+            aria-label="Close"
+            @click="closeManageTrackersModal"
+          />
+          <TrackerManager
+            :relatedFlaws="relatedFlaws"
+            :flaw="flaw"
+            :specificAffectsToTrack="specificAffectsToTrack"
+            @affects-trackers:refresh="refreshAffects"
+          />
+        </template>
+      </Modal>
+    </div>
   </div>
 </template>
 

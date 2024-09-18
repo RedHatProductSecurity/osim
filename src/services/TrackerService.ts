@@ -3,13 +3,6 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
 
-export async function getTracker(uuid: string) {
-  return osidbFetch({
-    method: 'get',
-    url: `/osidb/api/v1/trackers/${uuid}`,
-  }).then(response => response.data);
-}
-
 export type TrackersPost = {
   affects: string[];
   embargoed: boolean;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, toRefs } from 'vue';
 
 import {
   affectImpacts,
@@ -7,9 +7,10 @@ import {
   possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-import { CVSS_V3 } from '@/constants';
+import { isCVSS3issuedByRH } from '@/utils/helpers';
 
 const props = defineProps<{
+  affect: ZodAffectType;
   error: null | Record<string, any>[];
   isBeingEdited: boolean;
   isLast: boolean;
@@ -19,8 +20,6 @@ const props = defineProps<{
   isSelected: boolean;
 }>();
 
-const affect = defineModel<ZodAffectType>('affect');
-
 const emit = defineEmits<{
   'affect:cancel': [value: ZodAffectType];
   'affect:commit': [value: ZodAffectType];
@@ -29,7 +28,10 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
 }>();
+
+const { affect } = toRefs(props);
 
 const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
@@ -54,12 +56,28 @@ function revertChanges(affect: ZodAffectType) {
   }
 }
 
-// Affects Fields
-function affectCvss3Vector(affect: ZodAffectType) {
-  return affect.cvss_scores.find(
-    ({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === CVSS_V3,
-  )?.vector || null;
-}
+const rhCvss3 = computed(() => props.affect.cvss_scores.find(isCVSS3issuedByRH) || null);
+
+const affectCvss3Vector = computed({
+  get() {
+    return rhCvss3.value?.vector || '';
+  },
+  set(value: string) {
+    if (!rhCvss3.value) {
+      affect.value.cvss_scores.push({
+        issuer: 'RH',
+        cvss_version: 'V3',
+        comment: '',
+        score: null,
+        vector: value,
+        embargoed: affect.value.embargoed,
+        alerts: [],
+      });
+    } else {
+      rhCvss3.value.vector = value;
+    }
+  },
+});
 
 function resolutionOptions(affect: ZodAffectType) {
   return affect?.affectedness
@@ -96,9 +114,9 @@ const affectRowTooltip = computed(() => {
       'border-bottom border-gray': isLast,
       'editing': isBeingEdited,
       'modified': isModified && !isBeingEdited,
-      'new': props.isNew && !isBeingEdited,
+      'new': isNew && !isBeingEdited,
       'removed': isRemoved,
-      'selected': props.isSelected }"
+      'selected': isSelected }"
     :style="isSelectable ? 'cursor: pointer' : ''"
     :title="affectRowTooltip"
     @click.prevent="handleToggle(affect)"
@@ -108,7 +126,7 @@ const affectRowTooltip = computed(() => {
       <input
         type="checkbox"
         class="form-check-input"
-        :checked="props.isSelected"
+        :checked="isSelected"
         :disabled="isBeingEdited || isRemoved"
         @click.stop="handleToggle(affect)"
       />
@@ -121,7 +139,7 @@ const affectRowTooltip = computed(() => {
           title="This affect is currently being edited"
         />
         <i
-          v-else-if="props.isNew"
+          v-else-if="isNew"
           class="bi bi-plus-lg"
           title="This affect is set for creation on save"
         />
@@ -145,7 +163,7 @@ const affectRowTooltip = computed(() => {
         class="form-control"
         @keydown="handleEdit($event, affect)"
       />
-      <span v-else>
+      <span v-else :title="affect.ps_module">
         {{ affect.ps_module }}
       </span>
     </td>
@@ -156,7 +174,7 @@ const affectRowTooltip = computed(() => {
         class="form-control"
         @keydown="handleEdit($event, affect)"
       />
-      <span v-else>
+      <span v-else :title="affect.ps_component">
         {{ affect.ps_component }}
       </span>
     </td>
@@ -223,13 +241,12 @@ const affectRowTooltip = computed(() => {
     <td>
       <input
         v-if="isBeingEdited"
+        v-model="affectCvss3Vector"
         class="form-control"
-        :value="affectCvss3Vector(affect)"
-        @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
         @keydown="handleEdit($event, affect)"
       />
       <span v-else>
-        {{ affectCvss3Vector(affect) }}
+        {{ affectCvss3Vector }}
       </span>
     </td>
     <td>
@@ -239,8 +256,8 @@ const affectRowTooltip = computed(() => {
           type="button"
           :disabled="isBeingEdited || isRemoved"
           class="btn btn-sm px-1 py-0 d-flex rounded-circle"
+          @click.prevent.stop="emit('affect:track', affect)"
         >
-          <!-- @click.prevent.stop="fileTrackersForAffects([affect])" -->
           <i class="bi bi-plus lh-sm m-auto" />
         </button>
       </div>

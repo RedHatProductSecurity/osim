@@ -1,22 +1,19 @@
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue';
 
-import { equals, clone } from 'ramda';
-
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
 
 import type { ZodAffectType } from '@/types';
 import { isAffectIn } from '@/utils/helpers';
 
 import { displayModes } from './flawAffectConstants';
-// import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
-// const affectsBeingEdited = defineModel<ZodAffectType[]>('affectsBeingEdited', { default: [] });
 const props = defineProps<{
   affectsBeingEdited: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: null | Record<string, any>[];
+  modifiedAffects: ZodAffectType[];
   selectedAffects: ZodAffectType[];
   totalPages: number;
 }>();
@@ -29,31 +26,17 @@ const emit = defineEmits<{
   'affect:remove': [value: ZodAffectType];
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
+  'affect:track': [value: ZodAffectType];
   'affects:display-mode': [value: displayModes];
 }>();
 
-const { affectsBeingEdited, selectedAffects } = toRefs(props);
+const { affectsBeingEdited, modifiedAffects, selectedAffects } = toRefs(props);
 
 const selectedModules = ref<string[]>([]);
 
-const savedAffects = clone(affects.value) as ZodAffectType[];
+// const savedAffects = clone(affects.value) as ZodAffectType[];
 
 const newAffects = computed(() => affects.value?.filter(affect => !affect.uuid) ?? []);
-// Modified affects
-const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  const { [key]: _, ...rest } = obj;
-  return rest;
-};
-
-const modifiedAffects = computed(() =>
-  affects.value?.filter((affect) => {
-    const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
-    return savedAffect
-      && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
-      && !affectsBeingEdited.value.includes(affect)
-      && !newAffects.value.includes(affect);
-  }) ?? [],
-);
 
 function isRemoved(affect: ZodAffectType) {
   return props.affectsToDelete.includes(affect);
@@ -84,7 +67,7 @@ function isBeingEdited(affect: ZodAffectType) {
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
         <FlawAffectsTableRow
-          v-model:affect="affects[affectIndex]"
+          :affect="affects[affectIndex]"
           :error="props.error"
           :isRemoved="isRemoved(affect)"
           :isModified="isModified(affect)"
@@ -99,6 +82,7 @@ function isBeingEdited(affect: ZodAffectType) {
           @affect:revert="emit('affect:revert', affect)"
           @affect:remove="emit('affect:remove', affect)"
           @affect:toggle-selection="emit('affect:toggle-selection', affect)"
+          @affect:track="emit('affect:track', affect)"
         />
       </template>
     </tbody>

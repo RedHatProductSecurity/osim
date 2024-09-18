@@ -24,29 +24,6 @@ $font-family-code: $font-family-monospace;
 //  you could import your custom-variables.scss before the bootstrap/scss/bootstrap;
 $redhat-primary: $redhat-red-50;
 $redhat-secondary: $redhat-gray-50;
-$primary: $redhat-primary;
-$secondary: $redhat-secondary;
-$danger: $redhat-danger-50;
-$success: $redhat-success-40;
-$black: $redhat-gray-95;
-$info: $redhat-teal-40;
-$dark-teal: $redhat-teal-60;
-$light-teal: $redhat-teal-10;
-$light-info: $redhat-teal-10;
-$lightish-info: $redhat-teal-30;
-$lighter-info: #e3f8f8;
-$lightest-info: #f5fdfd;
-$warning: $redhat-yellow-30;
-$gray: $redhat-gray-20;
-$blue: $redhat-blue-40;
-$link-color: $blue;
-$light-gray: $redhat-gray-10;
-$light-light-gray: #fcfcfc;
-$light-light-orange: #fffaf3;
-$light-purple: $redhat-purple-10;
-$light-green: $redhat-success-10;
-$light-yellow: $redhat-yellow-10;
-$light-orange: $redhat-orange-10;
 
 // Bootstrap color overrides
 $primary: $redhat-primary;
@@ -59,3 +36,15 @@ $warning: $redhat-yellow-30;
 $gray: $redhat-gray-20;
 $blue: $redhat-blue-40;
 $link-color: $blue;
+
+// Supplemental Colors
+$dark-info: $redhat-teal-60;
+$light-info: $redhat-teal-10;
+$lighter-info: #e3f8f8;
+$lightest-info: #f5fdfd;
+$light-gray: $redhat-gray-10;
+$lighter-gray: #fcfcfc;
+$light-purple: $redhat-purple-10;
+$light-green: $redhat-success-10;
+$light-yellow: $redhat-yellow-10;
+$light-orange: $redhat-orange-10;

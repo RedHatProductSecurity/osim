@@ -45,12 +45,9 @@ function onSaveSuccess() {
 }
 
 const {
-  addAffect,
   addBlankAcknowledgment,
   addBlankReference,
   addFlawComment,
-  affectCvssToDelete,
-  affectsToDelete,
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
@@ -399,9 +396,9 @@ const createdDate = computed(() => {
         <div class="osim-flaw-form-section">
           <FlawAffects
             v-if="mode === 'edit'"
+            v-model:flaw="flaw"
             :error="errors.affects"
             :embargoed="flaw.embargoed"
-            :flaw="flaw"
             :relatedFlaws="relatedFlaws"
           />
         </div>
