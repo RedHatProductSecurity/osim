@@ -207,12 +207,18 @@ onUnmounted(() => {
         </button>
       </div>
       <div class="mt-2">
-        <button class="btn btn-primary me-2" type="submit" :disabled="props.isLoading">
+        <button
+          class="btn btn-primary me-2"
+          type="submit"
+          :disabled="props.isLoading"
+          aria-label="Advance search button"
+        >
           <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
           Search
         </button>
         <button
-          class="save-default-btn btn btn-primary me-2"
+          class="btn btn-primary me-2"
+          aria-label="Save filters as default"
           type="button"
           :disabled="isLoading"
           @click="emit('filter:save')"

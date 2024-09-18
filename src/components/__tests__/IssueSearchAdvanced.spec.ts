@@ -110,7 +110,7 @@ describe('issueSearchAdvanced', () => {
 
     await wrapper.find('select').setValue('cve_description');
     await wrapper.find('.input-group input').setValue('some value');
-    await wrapper.find('.save-default-btn').trigger('click');
+    await wrapper.find('button[aria-label="Save filters as default"]').trigger('click');
 
     expect(wrapper.emitted()).toHaveProperty('filter:save');
   });

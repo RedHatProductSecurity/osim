@@ -62,9 +62,9 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
       </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
       <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit">
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="save-default-btn btn btn-primary me-2" type="button"> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
       <!--v-if-->
     </div>
   </form>
@@ -112,9 +112,9 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
       </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
       <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit">
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="save-default-btn btn btn-primary me-2" type="button"> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
       <!--v-if-->
     </div>
   </form>
@@ -162,9 +162,9 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
       </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
       <!--v-if--><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" disabled="">
+    <div data-v-21c9158a="" class="mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" disabled="" aria-label="Advance search button">
         <div data-v-21c9158a="" class="spinner-border spinner-border-sm"></div> Search
-      </button><button data-v-21c9158a="" class="save-default-btn btn btn-primary me-2" type="button" disabled=""> Save as Default </button>
+      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button" disabled=""> Save as Default </button>
       <!--v-if-->
     </div>
   </form>
