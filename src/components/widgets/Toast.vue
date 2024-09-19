@@ -56,7 +56,7 @@ const percentFreshTimeRemaining = ref<number>(100);
 const freshAndBecomingStaleStart = ref(true);
 
 // Use NaN to check if the id has been assigned before clearInterval
-let freshCountdownId: number = Number.NaN;
+let freshCountdownId: ReturnType<typeof setInterval>;
 onMounted(() => {
   freshCountdownId = setInterval(() => {
     if (settings.showNotifications) {
@@ -88,9 +88,9 @@ onBeforeUnmount(() => {
 });
 
 if (props.timeoutMs) {
-  const countdownId: number = Number.NaN;
+  let countdownId: ReturnType<typeof setInterval>;
   onMounted(() => {
-    const countdownId: number = setInterval(() => {
+    countdownId = setInterval(() => {
       if (active.value || props.timeoutMs == null) {
         percentTimeRemaining.value = 100;
         return;
@@ -127,7 +127,7 @@ const updateTimestampSecond = (updatesRemaining: number = 60) => {
   }
 };
 
-let relativeTimeInterval: number;
+let relativeTimeInterval: ReturnType<typeof setInterval>;
 const updateTimestampMinute = (updatesRemaining: number = 60) => {
   updateTimestamp();
   if (updatesRemaining > 0) {

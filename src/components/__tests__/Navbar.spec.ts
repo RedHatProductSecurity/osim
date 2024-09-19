@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
 import router from '@/router';
-import { useToastStore } from '@/stores/ToastStore';
+import { useToastStore, type ToastAdded } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
 import Navbar from '../Navbar.vue';
@@ -193,7 +193,7 @@ describe('navbar', () => {
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
-    const newToasts = Array.from({ length: 1000 });
+    const newToasts: ToastAdded[] = Array.from({ length: 1000 });
     toastStore.$state = {
       toasts: newToasts,
     };

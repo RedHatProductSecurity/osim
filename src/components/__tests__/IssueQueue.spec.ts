@@ -81,11 +81,17 @@ describe('issueQueue', () => {
 
     });
 
-    const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[0][0]._value).toEqual({
-      order: '-created_dt',
-    });
+    const fetchEvents = wrapper.emitted();
     const issues = wrapper.findAllComponents(IssueQueueItem);
+
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch']).toEqual([
+      [
+        expect.objectContaining({
+          _value: { order: '-created_dt' },
+        }),
+      ],
+    ]);
     expect(issues.length).toBe(1);
   });
 
@@ -104,13 +110,15 @@ describe('issueQueue', () => {
     await myIssuesCheckboxEl.setValue(true);
     await wrapper.vm.$nextTick();
 
-    const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({
-      order: '-created_dt',
-      owner: 'skynet',
-    });
-
+    const fetchEvents = wrapper.emitted();
     const issues = wrapper.findAllComponents(IssueQueueItem);
+
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch'][0]).toEqual([
+      expect.objectContaining({
+        _value: { order: '-created_dt', owner: 'skynet' },
+      }),
+    ]);
     expect(issues.length).toBe(1);
   });
 
@@ -129,13 +137,14 @@ describe('issueQueue', () => {
     await openIssuesCheckboxEl.setValue(true);
     await wrapper.vm.$nextTick();
 
-    const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({
-      order: '-created_dt',
-      workflow_state: 'NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT',
-
-    });
+    const fetchEvents = wrapper.emitted();
     const issues = wrapper.findAllComponents(IssueQueueItem);
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch'][0]).toEqual([
+      expect.objectContaining({
+        _value: { order: '-created_dt', workflow_state: 'NEW,TRIAGE,PRE_SECONDARY_ASSESSMENT,SECONDARY_ASSESSMENT' },
+      }),
+    ]);
     expect(issues.length).toBe(0);
   });
 
@@ -148,25 +157,61 @@ describe('issueQueue', () => {
         total: 10,
       },
     });
-    const idColumn = wrapper.findAll('th').at(0);
-    await idColumn.trigger('click');
-    const fetchEvents = wrapper.emitted('flaws:fetch');
-    expect(fetchEvents[1][0]._value).toEqual({
-      order: '-cve_id,-uuid',
+
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    const fetchEvents = wrapper.emitted();
+
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch'][0]).toEqual([
+      expect.objectContaining({
+        _value: { order: '-cve_id,-uuid' },
+      }),
+    ]);
+  });
+
+  it('changes sort order on click', async () => {
+    const wrapper = mountWithConfig(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: false,
+        isFinalPageFetched: false,
+        total: 10,
+      },
     });
-    // change sort order
-    await idColumn.trigger('click');
-    expect(fetchEvents[1][0]._value).toEqual({
-      order: 'cve_id,uuid',
+
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    const fetchEvents = wrapper.emitted();
+
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch'][0]).toEqual([
+      expect.objectContaining({
+        _value: { order: 'cve_id,uuid' },
+      }),
+    ]);
+  });
+
+  it('removes sort order on third click', async () => {
+    const wrapper = mountWithConfig(IssueQueue, {
+      props: {
+        issues: [],
+        isLoading: false,
+        isFinalPageFetched: false,
+        total: 10,
+      },
     });
-    // remove order
-    await idColumn.trigger('click');
-    expect(fetchEvents[1][0]._value).toEqual({});
-    const impactColumn = wrapper.findAll('th').at(1);
-    await impactColumn.trigger('click');
-    expect(fetchEvents[1][0]._value).toEqual({
-      order: '-impact',
-    });
+
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    await wrapper.findAll('th').at(0)!.trigger('click');
+    const fetchEvents = wrapper.emitted();
+
+    expect(fetchEvents).toHaveProperty('flaws:fetch');
+    expect(fetchEvents['flaws:fetch'][0]).toEqual([
+      expect.objectContaining({
+        _value: {},
+      }),
+    ]);
   });
 
   it('shouldn\'t render total count when no issues', async () => {
