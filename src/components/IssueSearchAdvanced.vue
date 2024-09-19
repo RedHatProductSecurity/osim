@@ -109,6 +109,11 @@ watch(queryFilterVisible, () => {
   }
 });
 
+function handleToggleOrder() {
+  toggleSortOrder();
+  submitAdvancedSearch();
+}
+
 onMounted(() => {
   const djangoQL = new DjangoQL({
     completionEnabled: true,
@@ -261,6 +266,7 @@ onUnmounted(() => {
           :title="'When using this sorting with active table column sort,'
             +' the table column field will be used as secondary sorting key'"
           @submit.prevent
+          @change="submitAdvancedSearch()"
         >
           <option selected disabled label="Sort By..." />
           <option :hidden="!orderField" label="" value="" />
@@ -268,7 +274,11 @@ onUnmounted(() => {
             {{ nameForOption(field) }}
           </option>
         </select>
-        <button v-if="orderField" class="sort-by-order btn btn-sm" @click.prevent="toggleSortOrder()">
+        <button
+          v-if="orderField"
+          class="sort-by-order btn btn-sm"
+          @click.prevent="handleToggleOrder()"
+        >
           <i
             :class="{
               'bi-caret-up-fill': orderMode === 'asc',
