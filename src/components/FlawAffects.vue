@@ -571,7 +571,10 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               'border-gray': !isModuleSelected(moduleName),
               'fw-bold': moduleTrackersCount(moduleName) === 0,
             }"
-            :title="moduleTrackersCount(moduleName) === 0 ? 'This module has no trackers associated' : ''"
+            :title="moduleName
+              + (moduleTrackersCount(moduleName) === 0
+                ? '\nThis module has no trackers associated'
+                : '')"
             @click="handleModuleSelection(moduleName)"
           >
             <i
@@ -1041,7 +1044,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   class="form-control"
                   @keydown="handleEdit($event, affect)"
                 />
-                <span v-else>
+                <span v-else :title="affect.ps_component">
                   {{ affect.ps_component }}
                 </span>
               </td>
