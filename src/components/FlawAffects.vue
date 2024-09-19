@@ -174,6 +174,13 @@ function handleModuleSelection(moduleName: string) {
   }
 }
 
+function moduleBtnTooltip(moduleName: string) {
+  return moduleName
+    + (moduleTrackersCount(moduleName) === 0
+      ? '\nThis module has no trackers associated'
+      : '');
+}
+
 // Affect Field Specific Filters
 const affectednessFilter = ref<string[]>([]);
 const resolutionFilter = ref<string[]>([]);
@@ -571,10 +578,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
               'border-gray': !isModuleSelected(moduleName),
               'fw-bold': moduleTrackersCount(moduleName) === 0,
             }"
-            :title="moduleName
-              + (moduleTrackersCount(moduleName) === 0
-                ? '\nThis module has no trackers associated'
-                : '')"
+            :title="moduleBtnTooltip(moduleName)"
             @click="handleModuleSelection(moduleName)"
           >
             <i
