@@ -2,8 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 import { sort } from 'ramda';
-// @ts-expect-error missing types
-import DjangoQL from 'djangoql-completion';
+import DjangoQL from '@mrmarble/djangoql-completion';
 
 import Modal from '@/components/widgets/Modal.vue';
 import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
@@ -97,7 +96,6 @@ onMounted(() => {
     introspections: `${osimRuntime.value.backends.osidb}/osidb/api/v1/introspection`,
     selector: 'textarea#query',
     autoResize: true,
-    syntaxHelp: null,
     onSubmit: function (value: string) {
       query.value = value;
       submitAdvancedSearch();
@@ -279,5 +277,5 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import '@/scss/djangoql';
-@import 'djangoql-completion/dist/completion.css';
+@import '@mrmarble/djangoql-completion/dist/index.css';
 </style>
