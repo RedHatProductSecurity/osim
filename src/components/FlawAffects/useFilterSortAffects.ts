@@ -11,9 +11,9 @@ import { type affectSortKeys } from './flawAffectConstants';
 const selectedModules = ref<string[]>([]);
 
 // Affect Field Specific Filters
-const affectednessFilter = ref<string[]>([]);
-const resolutionFilter = ref<string[]>([]);
-const impactFilter = ref<string[]>([]);
+const affectednessFilters = ref<string[]>([]);
+const resolutionFilters = ref<string[]>([]);
+const impactFilters = ref<string[]>([]);
 
 const sortKey = ref<affectSortKeys>('ps_module');
 const sortOrder = ref(ascend);
@@ -38,17 +38,22 @@ export function useFilterSortAffects() {
   }
 
   function filterAffects(affects: ZodAffectType[]): ZodAffectType[] {
-    return affects.filter((affect) => {
-      const matchesSelectedModules =
-        selectedModules.value.length === 0 || selectedModules.value.includes(affect.ps_module);
-      const matchesAffectednessFilter =
-        affectednessFilter.value.length === 0 || affectednessFilter.value.includes(affect.affectedness ?? '');
-      const matchesResolutionFilter =
-        resolutionFilter.value.length === 0 || resolutionFilter.value.includes(affect.resolution ?? '');
-      const matchesImpactsFilter =
-        impactFilter.value.length === 0 || impactFilter.value.includes(affect.impact ?? '');
-      return matchesSelectedModules && matchesAffectednessFilter && matchesResolutionFilter && matchesImpactsFilter;
-    });
+    const includeInFilter = (affectFieldFilters: Ref<string[]>, affectFieldValue: string): boolean =>
+      affectFieldFilters.value.length === 0 || affectFieldFilters.value.includes(affectFieldValue);
+
+    const filtersByFieldGetters: [Ref<string[]>, (affect: ZodAffectType) => string][] = [
+      [selectedModules, affect => affect.ps_module ?? ''],
+      [affectednessFilters, affect => affect.affectedness ?? ''],
+      [resolutionFilters, affect => affect.resolution ?? ''],
+      [impactFilters, affect => affect.impact ?? ''],
+    ];
+
+    const appliedFilters = (affect: ZodAffectType) => filtersByFieldGetters.reduce(
+      (shouldInclude, [filters, getFieldValue]) => shouldInclude && includeInFilter(filters, getFieldValue(affect)),
+      true,
+    );
+
+    return affects.filter(appliedFilters);
   }
 
   function sortAffects(affects: ZodAffectType[], standard: boolean): ZodAffectType[] {
@@ -76,15 +81,15 @@ export function useFilterSortAffects() {
   }
 
   function setAffectednessFilter(affectedness: string) {
-    setFilter(affectednessFilter, affectedness);
+    setFilter(affectednessFilters, affectedness);
   }
 
   function setResolutionFilter(resolution: string) {
-    setFilter(resolutionFilter, resolution);
+    setFilter(resolutionFilters, resolution);
   }
 
   function setImpactFilter(impact: string) {
-    setFilter(impactFilter, impact);
+    setFilter(impactFilters, impact);
   }
 
   return {
@@ -94,9 +99,9 @@ export function useFilterSortAffects() {
     sortAffects,
     filterAffects,
     selectedModules,
-    affectednessFilter,
-    resolutionFilter,
-    impactFilter,
+    affectednessFilter: affectednessFilters,
+    resolutionFilter: resolutionFilters,
+    impactFilter: impactFilters,
     setAffectednessFilter,
     setResolutionFilter,
     setImpactFilter,
