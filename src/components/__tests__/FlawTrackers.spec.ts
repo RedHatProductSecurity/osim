@@ -126,7 +126,7 @@ describe('flawTrackers', () => {
     expect(trackerLink.attributes('href')).toBe('http://jira-service:8002/browse/XXXX-0006');
   });
 
-  osimFullFlawTest('Tracker modules table cell have correct tootltip', async ({ flaw }) => {
+  osimFullFlawTest('Tracker modules table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flawId: flaw.uuid,
       displayedTrackers: flaw.affects
