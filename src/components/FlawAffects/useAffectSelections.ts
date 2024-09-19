@@ -6,7 +6,7 @@ const selectedAffects = ref<ZodAffectType[]>([]);
 
 export function useAffectSelections(
   affects: Ref<ZodAffectType[]>,
-  isSelectableFn: (affect: ZodAffectType) => boolean,
+  isSelectable: (affect: ZodAffectType) => boolean,
 ) {
   const areAllAffectsSelected = computed(() => {
     return affects.value.every(isAffectSelected);
@@ -15,11 +15,6 @@ export function useAffectSelections(
   const isIndeterminateSelection = computed(() => {
     return !areAllAffectsSelected.value && affects.value.some(isAffectSelected);
   });
-
-  function isSelectable(affect: ZodAffectType) {
-    // return !isBeingEdited(affect) && !isRemoved(affect);
-    return isSelectableFn(affect);
-  }
 
   const areAllAffectsSelectable = computed(() => affects.value.every(isSelectable));
 
