@@ -2,7 +2,7 @@ import { type Ref, ref, computed, watch } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
-import { affectRhCvss3, deepCopyFromRaw, isScoreRhIssuedCvss3, affectsMatcherFor } from '@/utils/helpers';
+import { affectRhCvss3, deepCopyFromRaw, isCVSS3issuedByRH, affectsMatcherFor } from '@/utils/helpers';
 import {
   postAffects,
   putAffects,
@@ -110,8 +110,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   function removeAffect(affect: ZodAffectType, isRecoverable = true) {
     const affectIndex = flaw.value.affects.findIndex(affectToMatch => affectToMatch === affect);
-    console.log('affectIndex', affectIndex);
-    if (affectIndex === -1) return;
+    if (affectIndex === -1) {
+      console.error('useFlawAffectsModel::removeAffect() Could not find affect to remove:', affect);
+      return;
+    }
     const deletedAffect = flaw.value.affects.splice(affectIndex, 1)[0];
     if (isRecoverable) affectsToDelete.value.push(deletedAffect);
   }
@@ -273,7 +275,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function updateAffectCvss(affect: ZodAffectType, newValue: string) {
-    const cvssScoreIndex = affect.cvss_scores.findIndex(isScoreRhIssuedCvss3);
+    const cvssScoreIndex = affect.cvss_scores.findIndex(isCVSS3issuedByRH);
     const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
     if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
       affect.cvss_scores[cvssScoreIndex].vector = '';
