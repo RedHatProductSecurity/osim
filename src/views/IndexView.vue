@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onDeactivated, ref, watch, type Ref } from 'vue';
 
-import { useSearchStore } from '@/stores/SearchStore';
+import IssueQueue from '@/components/IssueQueue.vue';
 
-import IssueQueue from '../components/IssueQueue.vue';
-import { useFlawsFetching } from '../composables/useFlawsFetching';
+import { useFlawsFetching } from '@/composables/useFlawsFetching';
+
+import { useSearchStore } from '@/stores/SearchStore';
 
 const searchStore = useSearchStore();
 

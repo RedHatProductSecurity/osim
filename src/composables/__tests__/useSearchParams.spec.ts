@@ -8,11 +8,12 @@ import { withSetup } from '@/__tests__/helpers';
 
 import { useSearchParams } from '../useSearchParams';
 
-vi.mock('vue-router', async () => {
+vi.mock('vue-router', async (importOriginal) => {
   const replaceMock = vi.fn();
   const pushMock = vi.fn();
-
+  const original = await importOriginal<typeof import('vue-router')>();
   return {
+    ...original,
     useRoute: vi.fn(() => ({ query: { query: 'search' } })),
     useRouter: vi.fn(() => ({
       replace: replaceMock,
@@ -31,7 +32,6 @@ describe('useSearchParams', () => {
   };
 
   afterEach(() => {
-    vi.clearAllMocks();
     app?.unmount();
   });
 

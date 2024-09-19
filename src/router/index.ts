@@ -33,107 +33,109 @@ window.addEventListener('popstate', (e) => {
   popStateDetected = true;
 });
 
+export const routes = [
+  {
+    path: '/',
+    name: 'index',
+    component: IndexView,
+    meta: {
+      title: 'Index',
+    },
+  },
+  {
+    path: '/flaws/new', // must be above /flaws/:id
+    name: 'flaw-create',
+    component: FlawCreateView,
+    meta: {
+      title: 'Create Flaw',
+    },
+    beforeEnter: apiKeysGuard(true),
+  },
+  {
+    path: '/flaws/:id',
+    name: 'flaw-details',
+    component: FlawEditView,
+    props: true,
+    meta: {
+      title: 'Flaw Details',
+    },
+    beforeEnter: apiKeysGuard(),
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: FlawSearchView,
+    props: true,
+    meta: {
+      title: 'Flaw Search',
+    },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    meta: {
+      canVisitWithoutAuth: true,
+      title: 'Login',
+      hideNavbar: true,
+    },
+    beforeEnter() {
+      const userStore = useUserStore();
+      if (userStore.isAuthenticated) {
+        return { name: 'index' };
+      }
+    },
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    component: LogoutView,
+    meta: {
+      title: 'Logout',
+      hideNavbar: true,
+    },
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsView,
+    meta: {
+      title: 'Settings',
+    },
+    beforeEnter() {
+      if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
+        notifyApiKeyUnset();
+      }
+    },
+  },
+  {
+    path: '/widget-test',
+    name: 'widget-test',
+    component: WidgetTestView,
+    meta: {
+      canVisitWithoutAuth: true,
+      title: 'Sample',
+    },
+    beforeEnter() {
+      if (osimRuntime.value.env !== 'dev') {
+        return { name: 'not-found' };
+      }
+    },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFoundView,
+    meta: {
+      canVisitWithoutAuth: true,
+      title: 'Page Not Found',
+    },
+  },
+];
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'index',
-      component: IndexView,
-      meta: {
-        title: 'Index',
-      },
-    },
-    {
-      path: '/flaws/new', // must be above /flaws/:id
-      name: 'flaw-create',
-      component: FlawCreateView,
-      meta: {
-        title: 'Create Flaw',
-      },
-      beforeEnter: apiKeysGuard(true),
-    },
-    {
-      path: '/flaws/:id',
-      name: 'flaw-details',
-      component: FlawEditView,
-      props: true,
-      meta: {
-        title: 'Flaw Details',
-      },
-      beforeEnter: apiKeysGuard(),
-    },
-    {
-      path: '/search',
-      name: 'search',
-      component: FlawSearchView,
-      props: true,
-      meta: {
-        title: 'Flaw Search',
-      },
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
-      meta: {
-        canVisitWithoutAuth: true,
-        title: 'Login',
-        hideNavbar: true,
-      },
-      beforeEnter() {
-        const userStore = useUserStore();
-        if (userStore.isAuthenticated) {
-          return { name: 'index' };
-        }
-      },
-    },
-    {
-      path: '/logout',
-      name: 'logout',
-      component: LogoutView,
-      meta: {
-        title: 'Logout',
-        hideNavbar: true,
-      },
-    },
-    {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
-      meta: {
-        title: 'Settings',
-      },
-      beforeEnter() {
-        if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
-          notifyApiKeyUnset();
-        }
-      },
-    },
-    {
-      path: '/widget-test',
-      name: 'widget-test',
-      component: WidgetTestView,
-      meta: {
-        canVisitWithoutAuth: true,
-        title: 'Sample',
-      },
-      beforeEnter() {
-        if (osimRuntime.value.env !== 'dev') {
-          return { name: 'not-found' };
-        }
-      },
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      name: 'not-found',
-      component: NotFoundView,
-      meta: {
-        canVisitWithoutAuth: true,
-        title: 'Page Not Found',
-      },
-    },
-  ],
+  routes,
 });
 
 function areApiKeysNotSet(): boolean {

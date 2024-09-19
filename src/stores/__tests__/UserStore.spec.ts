@@ -8,15 +8,11 @@ import { encodeJWT } from '@/__tests__/helpers';
 import { useUserStore } from '../UserStore';
 
 describe('userStore', () => {
-  let userStore: ReturnType<typeof useUserStore>;
-
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.useFakeTimers({
       now: new Date('2024-01-01T00:00:00Z'),
     });
-
-    userStore = useUserStore();
   });
 
   afterEach(() => {
@@ -24,6 +20,7 @@ describe('userStore', () => {
   });
 
   it('initializes', () => {
+    const userStore = useUserStore();
     expect(userStore.refresh === '').toBe(true);
     expect(userStore.env === '').toBe(true);
     expect(userStore.whoami === null).toBe(true);
@@ -31,6 +28,7 @@ describe('userStore', () => {
   });
 
   it('fetches Jira username from Jira API when missing in store', async () => {
+    const userStore = useUserStore();
     vi.mock('@/services/JiraService', () => ({
       getJiraUsername: vi.fn(() => {
         return new Promise<string>((resolve) => {
@@ -47,6 +45,7 @@ describe('userStore', () => {
   });
 
   it('gets Jira username from userstore preferably', async () => {
+    const userStore = useUserStore();
     expect(getJiraUsername).toHaveBeenCalledTimes(0);
     await userStore.updateJiraUsername();
     expect(getJiraUsername).toHaveBeenCalledTimes(0);
@@ -54,11 +53,13 @@ describe('userStore', () => {
   });
 
   it('should set `isAccessTokenExpired` to true when access token is undefined', () => {
+    const userStore = useUserStore();
     userStore.accessToken = undefined;
     expect(userStore.isAccessTokenExpired()).toBe(true);
   });
 
   it('should set `isAccessTokenExpired` to true when access token is about to expire', () => {
+    const userStore = useUserStore();
     userStore.accessToken = encodeJWT({
       token_type: 'access',
       exp: Math.floor(DateTime.now().minus({ minutes: 1 }).toSeconds()),
@@ -71,6 +72,7 @@ describe('userStore', () => {
   });
 
   it('should set `isAccessTokenExpired` to false when access token is active', () => {
+    const userStore = useUserStore();
     userStore.accessToken = encodeJWT({
       token_type: 'access',
       exp: Math.floor(DateTime.now().plus({ minutes: 5 }).toSeconds()),
@@ -83,6 +85,9 @@ describe('userStore', () => {
   });
 
   it('should not throw when access token is invalid', () => {
+    vi.spyOn(console, 'debug').mockImplementation(() => void 0);
+    const userStore = useUserStore();
+
     expect(() => {
       userStore.accessToken = 'invalid';
 

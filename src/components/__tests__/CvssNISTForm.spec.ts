@@ -1,86 +1,45 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-import { createTestingPinia } from '@pinia/testing';
+
+import { mountWithConfig } from '@/__tests__/helpers';
 
 import CvssNISTForm from '../CvssNISTForm.vue';
 
+const mountCvssNISTForm = () => mountWithConfig(CvssNISTForm, {
+  props: {
+    flaw: 'any',
+    cveid: 'string',
+    summary: 'string',
+    bugzilla: 'string',
+    nvdpage: 'string',
+    cvss: 'string',
+    nistcvss: 'string',
+    cvssjustification: 'string',
+  },
+});
+
 describe('cvssNISTForm', () => {
+  vi.stubGlobal('open', vi.fn());
+
   it('renders a button', () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(CvssNISTForm, {
-      props: {
-        flaw: 'any',
-        cveid: 'string',
-        summary: 'string',
-        bugzilla: 'string',
-        nvdpage: 'string',
-        cvss: 'string',
-        nistcvss: 'string',
-        cvssjustification: 'string',
-      },
-      global: {
-        plugins: [
-          pinia,
-        ],
-      },
-    });
+    const wrapper = mountCvssNISTForm();
+
     const button = wrapper.find('button');
+
     expect(button.exists()).toBeTruthy();
     expect(button.text()).toBe('Email NIST');
+    expect(wrapper.html()).toMatchSnapshot();
   });
 
   it('does not render modal before clicking the button', () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(CvssNISTForm, {
-      props: {
-        flaw: 'any',
-        cveid: 'string',
-        summary: 'string',
-        bugzilla: 'string',
-        nvdpage: 'string',
-        cvss: 'string',
-        nistcvss: 'string',
-        cvssjustification: 'string',
-      },
-      global: {
-        plugins: [
-          pinia,
-        ],
-      },
-    });
-    const button = wrapper.find('button');
-    expect(button.exists()).toBeTruthy();
+    const wrapper = mountCvssNISTForm();
+
     expect(wrapper.find('div.modal-content').exists()).toBe(false);
   });
 
   it('renders a modal when clicking the button', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(CvssNISTForm, {
-      props: {
-        flaw: 'any',
-        cveid: 'string',
-        summary: 'string',
-        bugzilla: 'string',
-        nvdpage: 'string',
-        cvss: 'string',
-        nistcvss: 'string',
-        cvssjustification: 'string',
-      },
-      global: {
-        plugins: [
-          pinia,
-        ],
-      },
-    });
+    const wrapper = mountCvssNISTForm();
+
     const button = wrapper.find('button');
     await button.trigger('click');
     await flushPromises();
@@ -94,30 +53,12 @@ describe('cvssNISTForm', () => {
     expect(wrapper.find('span.to-email').text()).toBe('nvd@nist.gov');
     expect(wrapper.find('span.cc-email').text()).toBe('secalert@redhat.com');
     expect(wrapper.find('p.from-email').exists()).toBeTruthy();
+    expect(wrapper.html()).toMatchSnapshot();
   });
 
   it('close modal by clicking cancel button', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(CvssNISTForm, {
-      props: {
-        flaw: 'any',
-        cveid: 'string',
-        summary: 'string',
-        bugzilla: 'string',
-        nvdpage: 'string',
-        cvss: 'string',
-        nistcvss: 'string',
-        cvssjustification: 'string',
-      },
-      global: {
-        plugins: [
-          pinia,
-        ],
-      },
-    });
+    const wrapper = mountCvssNISTForm();
+
     const button = wrapper.find('button');
     await button.trigger('click');
     await flushPromises();
@@ -132,27 +73,7 @@ describe('cvssNISTForm', () => {
   });
 
   it('open new window by clicking send button', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const wrapper = mount(CvssNISTForm, {
-      props: {
-        flaw: 'any',
-        cveid: 'string',
-        summary: 'string',
-        bugzilla: 'string',
-        nvdpage: 'string',
-        cvss: 'string',
-        nistcvss: 'string',
-        cvssjustification: 'string',
-      },
-      global: {
-        plugins: [
-          pinia,
-        ],
-      },
-    });
+    const wrapper = mountCvssNISTForm();
     const button = wrapper.find('button');
     await button.trigger('click');
     await flushPromises();

@@ -7,6 +7,10 @@ describe('useNetworkQueue', () => {
     networkQueue = useNetworkQueue();
   });
 
+  afterAll(() => {
+    vi.resetAllMocks();
+  });
+
   it('should execute all tasks in the queue successfully', async () => {
     const task1 = vi.fn().mockResolvedValue('Result 1');
     const task2 = vi.fn().mockResolvedValue('Result 2');
@@ -25,6 +29,8 @@ describe('useNetworkQueue', () => {
   });
 
   it('should handle errors in the queue and throw an error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
     const task1 = vi.fn().mockResolvedValue('Result 1');
     const task2 = vi.fn().mockRejectedValue(new Error('Task 2 failed'));
     const task3 = vi.fn().mockResolvedValue('Result 3');

@@ -1,15 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
+
+import { mountWithConfig } from '@/__tests__/helpers';
 
 import CveRequestForm from '../CveRequestForm.vue';
 
-createTestingPinia();
-
 describe('cveRequestForm', () => {
   it('renders a form', () => {
-    const wrapper = mount(CveRequestForm, {
+    const wrapper = mountWithConfig(CveRequestForm, {
       props: {
+        embargoed: false,
         subject: 'string',
         description: 'string',
         osimLink: 'string',
@@ -20,8 +19,9 @@ describe('cveRequestForm', () => {
     expect(s).toContain('Request CVE');
   });
   it('renders a button', () => {
-    const wrapper = mount(CveRequestForm, {
+    const wrapper = mountWithConfig(CveRequestForm, {
       props: {
+        embargoed: false,
         subject: 'string',
         description: 'string',
         osimLink: 'string',
@@ -32,8 +32,9 @@ describe('cveRequestForm', () => {
     expect(button.text()).toBe('Request CVE');
   });
   it('does not render before clicking the button', () => {
-    const wrapper = mount(CveRequestForm, {
+    const wrapper = mountWithConfig(CveRequestForm, {
       props: {
+        embargoed: false,
         subject: 'string',
         description: 'string',
         osimLink: 'string',
@@ -44,8 +45,9 @@ describe('cveRequestForm', () => {
     expect(wrapper.find('div.modal-content').exists()).toBe(false);
   });
   it('renders a modal when clicking the button', async () => {
-    const wrapper = mount(CveRequestForm, {
+    const wrapper = mountWithConfig(CveRequestForm, {
       props: {
+        embargoed: false,
         subject: 'string',
         description: 'string',
         osimLink: 'string',

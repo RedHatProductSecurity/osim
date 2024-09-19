@@ -320,17 +320,15 @@
     ],
     "references": [
         {
-            "0": {
-                "description": "Reference details",
-                "flaw": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
-                "type": "EXTERNAL",
-                "url": "HTTPS://EXAMPLE.COM",
-                "uuid": "1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e",
-                "embargoed": false,
-                "alerts": [],
-                "created_dt": "2024-08-29T09:07:24.851625Z",
-                "updated_dt": "2024-08-29T09:07:24Z"
-            }
+            "description": "Reference details",
+            "flaw": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
+            "type": "EXTERNAL",
+            "url": "HTTPS://EXAMPLE.COM",
+            "uuid": "1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e",
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2024-08-29T09:07:24.851625Z",
+            "updated_dt": "2024-08-29T09:07:24Z"
         }
     ],
     "cvss_scores": [
