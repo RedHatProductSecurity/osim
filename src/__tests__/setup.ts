@@ -41,6 +41,9 @@ const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
 });
 export const server = setupServer();
 
+vi.spyOn(console, 'warn').mockImplementation((msg) => { assert.fail(msg); });
+vi.spyOn(console, 'error').mockImplementation((msg) => { assert.fail(msg); });
+
 beforeAll(() => {
   server.listen({
     onUnhandledRequest,
