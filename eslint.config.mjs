@@ -36,6 +36,7 @@ export default tseslint.config(
       '**/selenium',
       '**/postcss.config.cjs',
       '**/generated-client/**',
+      '**/mock-server/**',
       '**/*.snap',
     ],
   },

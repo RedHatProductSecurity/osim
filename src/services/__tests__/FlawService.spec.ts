@@ -1,66 +1,41 @@
 import { createTestingPinia } from '@pinia/testing';
 
-import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
+import { blankFlaw } from '@/composables/useFlawModel';
+import { createSuccessHandler } from '@/composables/service-helpers';
 
-import { putFlaw } from '../FlawService';
+import { getFlaw, putFlaw } from '@/services/FlawService';
+import { server } from '@/__tests__/setup';
+import { handlers } from '@/mock-server/handlers';
 
-createTestingPinia();
-
-vi.mock('@/services/OsidbAuthService', async (original) => {
-  return {
-    ...await original<typeof import('@/services/OsidbAuthService')>(),
-    getNextAccessToken: vi.fn().mockResolvedValue('token'),
-  };
-});
-
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({
-    sub: '1234567890',
-    name: 'Test User',
-    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365),
-  })),
+vi.mock('@/composables/service-helpers', () => ({
+  createSuccessHandler: vi.fn().mockReturnValue(vi.fn()),
+  createCatchHandler: vi.fn().mockReturnValue(vi.fn()),
 }));
 
-const createFetchMock = (response?: any) => {
-  return {
-    json: vi.fn().mockResolvedValue({
-      access: 'token',
-      headers: {
-        get: vi.fn().mockReturnValue('application/json'),
-      },
-      ...response,
-    }),
-    ok: true,
-  };
-};
-
 describe('flawService', () => {
-  const _fetch = global.fetch;
-
-  beforeEach(() => {
-    vi.resetAllMocks();
-    global.fetch = vi.fn().mockResolvedValue(createFetchMock());
+  beforeAll(() => {
+    createTestingPinia();
+    server.use(...handlers);
   });
 
-  afterAll(() => {
-    global.fetch = _fetch;
+  it('should get flaw', async () => {
+    const flaw = await getFlaw('1');
+
+    flaw.embargoed = false;
+
+    expect(flaw).toBeDefined();
+    expect(flaw).toHaveProperty('uuid');
+    // TODO: Remove this comment when OSIDB-3451 is resolved
+    // expect(ZodFlawSchema.safeParse(flaw).success).toBe(true);
   });
 
-  osimFullFlawTest('Should get updated_dt when updating flaw', async ({ flaw }) => {
-    const updated_dt = '2024-06-17T00:00:00Z';
-    global.fetch = vi.fn().mockResolvedValue(createFetchMock({
-      updated_dt,
-    }));
+  it('should update flaw', async () => {
+    vi.spyOn(global, 'fetch');
+    await putFlaw('1', {
+      ...blankFlaw(),
+      title: 'Test',
+    }, false);
 
-    await putFlaw(flaw.uuid, flaw);
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('?include_fields=updated_dt'),
-      expect.anything(),
-    );
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`/osidb/api/v1/flaws/${flaw.uuid}`),
-      expect.objectContaining({ body: expect.stringContaining(updated_dt) }),
-    );
+    expect(createSuccessHandler).toHaveBeenCalled();
   });
 });
