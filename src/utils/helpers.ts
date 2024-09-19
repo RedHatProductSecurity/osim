@@ -70,12 +70,12 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
   return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
 }
 
-export function isScoreRhIssuedCvss3(score: ZodAffectCVSSType) {
+export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
   return score.issuer === 'RH' && score.cvss_version === CVSS_V3;
 }
 
 export function affectRhCvss3(affect: ZodAffectType) {
-  return affect.cvss_scores.find(score => isScoreRhIssuedCvss3(score));
+  return affect.cvss_scores.find(score => isCVSS3issuedByRH(score));
 }
 
 type WithModuleComponent = {
