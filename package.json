@@ -19,7 +19,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "vibe-check": "npx vite-bundle-visualizer",
     "generate-openapi-client": "openapi-generator-cli generate -i openapi.yml --output src/generated-client -g typescript-axios --global-property models,supportingFiles",
-    "generate-osidb-mock": "msw-auto-mock ./openapi.yml -o src/mock-server --regex -t flaws --base-url http://localhost:3000",
+    "generate-osidb-mock": "msw-auto-mock ./openapi.yml -o src/mock-server --regex -t flaws,trackers,auth --base-url http://localhost:3000",
     "generate-mock-worker": "msw init",
     "lint": "yarn lint-style && yarn lint-ts-vue",
     "lint-ts-vue": "eslint .",
