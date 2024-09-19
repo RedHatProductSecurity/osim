@@ -19,7 +19,15 @@ const props = defineProps<{
   isLoading: boolean;
 }>();
 const emit = defineEmits(['filter:save']);
-const { facets, query, removeFacet, submitAdvancedSearch } = useSearchParams();
+const {
+  facets,
+  orderField,
+  orderMode,
+  query,
+  removeFacet,
+  submitAdvancedSearch,
+  toggleSortOrder,
+} = useSearchParams();
 const { closeModal, isModalOpen, openModal } = useModal();
 
 const queryFilterVisible = ref(true);
@@ -55,14 +63,24 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-const sortFieldNames = sort((fieldA: string, fieldB: string) =>
+const customSortingFields = [
+  'cve_description',
+  'cvss_scores__score',
+  'cwe_id',
+  'major_incident_state',
+  'mitigation',
+  'source',
+  'statement',
+];
+
+const fieldNamesSorted = sort((fieldA: string, fieldB: string) =>
   nameForOption(fieldA).localeCompare(nameForOption(fieldB)),
 );
 
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
-  sortFieldNames(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
+  fieldNamesSorted(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
 
 const optionsFor = (field: string) =>
   ({
@@ -89,6 +107,11 @@ watch(queryFilterVisible, () => {
     query.value = '';
   }
 });
+
+function handleToggleOrder() {
+  toggleSortOrder();
+  submitAdvancedSearch();
+}
 
 onMounted(() => {
   const djangoQL = new DjangoQL({
@@ -119,9 +142,9 @@ onUnmounted(() => {
     <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div v-if="queryFilterVisible" class="input-group my-1">
-        <div type="button" class="form-control bg-secondary text-white pe-none py-0 d-flex" style="max-width: 13.125%;">
+        <div type="button" class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
-          <button class="btn btn-sm p-0 ms-auto my-auto text-white pe-auto border-0" type="button" @click="openModal()">
+          <button class="btn btn-sm text-white" type="button" @click="openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
@@ -132,6 +155,7 @@ onUnmounted(() => {
           class="form-control"
         />
         <button
+          :disabled="!query"
           class="btn btn-sm btn-secondary rounded-0 py-0"
           title="Clear query"
           type="button"
@@ -193,6 +217,8 @@ onUnmounted(() => {
           </button>
         </div>
         <button
+          v-if="facet.field"
+          :disabled="!facet.value"
           class="btn btn-sm btn-primary rounded-0 py-0"
           title="Clear field"
           type="button"
@@ -204,7 +230,7 @@ onUnmounted(() => {
           <i class="bi-x fs-5" aria-label="remove field"></i>
         </button>
       </div>
-      <div class="mt-2">
+      <div class="d-flex mt-2">
         <button
           class="btn btn-primary me-2"
           type="submit"
@@ -225,11 +251,40 @@ onUnmounted(() => {
         </button>
         <button
           v-if="!queryFilterVisible"
-          class="btn btn-secondary"
+          class="btn btn-secondary me-2"
           type="button"
           @click="() => queryFilterVisible = true"
         >
           Show Query Filter
+        </button>
+        <select
+          v-model="orderField"
+          class="sort-by-select form-select search-facet-field"
+          :class="{ 'active': orderField }"
+          :title="'When using this sorting with active table column sort,'
+            +' the table column field will be used as secondary sorting key'"
+          @submit.prevent
+          @change="submitAdvancedSearch()"
+        >
+          <option selected disabled label="Sort By..." />
+          <option :hidden="!orderField" label="" value="" />
+          <option v-for="field in customSortingFields" :key="field" :value="field">
+            {{ nameForOption(field) }}
+          </option>
+        </select>
+        <button
+          v-if="orderField"
+          class="sort-by-order btn btn-sm"
+          @click.prevent="handleToggleOrder()"
+        >
+          <i
+            :class="{
+              'bi-caret-up-fill': orderMode === 'asc',
+              'bi-caret-down-fill': orderMode === 'desc',
+            }"
+            :title="orderMode === 'asc' ? 'Ascending order' : 'Descending order'"
+            class="bi fs-5"
+          />
         </button>
       </div>
     </form>
@@ -267,10 +322,51 @@ onUnmounted(() => {
     cursor: pointer;
   }
 
+  .query-input {
+    display: flex;
+    max-width: 241.5px;
+    pointer-events: none;
+    padding-block: 0;
+
+    button {
+      padding: 0;
+      margin-left: auto;
+      margin-block: auto;
+      pointer-events: auto;
+      border: 0;
+    }
+  }
+
+  .sort-by-select.active {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .sort-by-order {
+    border: 1px solid #dee2e6;
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &:hover {
+      color: red;
+      border: 1px solid #dee2e6;
+      border-left: 0;
+    }
+  }
+
   select.search-facet-field {
     display: flex;
     width: auto;
     flex-grow: 0;
+  }
+
+  select.sort-by-search {
+    min-width: 160.75px;
+  }
+
+  .search-btn {
+    width: 241.5px;
   }
 }
 </style>

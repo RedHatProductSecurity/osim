@@ -89,7 +89,7 @@ describe('issueSearchAdvanced', () => {
     await wrapper.find('select').setValue('cve_description');
     await wrapper.find('.input-group input').setValue('some value');
 
-    expect(wrapper.findAll('select').length).toEqual(2);
+    expect(wrapper.findAll('select').length).toEqual(3);
     expect(wrapper.html()).toMatchSnapshot();
   });
 

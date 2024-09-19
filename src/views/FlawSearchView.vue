@@ -23,6 +23,9 @@ const params = computed(() => {
   const order = [searchParams.order, tableFilters.value.order]
     .filter(Boolean).join(',');
 
+  if (searchParams.order && tableFilters.value.order) {
+    searchParams.order += ',' + tableFilters.value.order;
+  }
   const paramsObj = {
     ...tableFilters.value,
     ...searchParams,
