@@ -54,8 +54,8 @@ afterEach(() => {
   // Ensure that there are no unhandled requests
   expect(onUnhandledRequest).toHaveBeenCalledTimes(0);
 
-  // Reset any runtime handlers tests may setup
-  server.resetHandlers();
+  // Restore any runtime handlers tests may setup
+  server.restoreHandlers();
   vi.clearAllMocks();
 });
 
