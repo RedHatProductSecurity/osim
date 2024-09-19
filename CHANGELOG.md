@@ -6,6 +6,7 @@
 * Support saving query filter on default user search (`OSIDB-3387`)
 * Allow emptiness advanced search on supported fields (`OSIDB-3389`)
 * Add additional sortable fields for advance search results (`OSIDB-3388`)
+* Added tootlips with full string value on affect/tracker fields that can be truncated (`OSIDB-3453`)
 
 ### Fixed
 * Fix swapped values on trackers `Modules` and `Stream` values (`OSIDB-3443`)
