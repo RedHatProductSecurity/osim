@@ -669,6 +669,14 @@
   resolved "https://registry.yarnpkg.com/@lukeed/csprng/-/csprng-1.1.0.tgz#1e3e4bd05c1cc7a0b2ddbd8a03f39f6e4b5e6cfe"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
+"@mrmarble/djangoql-completion@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@mrmarble/djangoql-completion/-/djangoql-completion-0.8.1.tgz#ded11ee27c4114747f82b074dd24d1c4316f5552"
+  integrity sha512-SH182m6qYDZrVERIsOvm6XxFxnNSV4xm9afy1ZsAnlWSk80s3zZTaaOQV77BD4VsxLH04JVSaXd9sE6KvzbbWg==
+  dependencies:
+    lex "1.7.9"
+    lodash "4.17.21"
+
 "@mswjs/cookies@^1.1.0":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@mswjs/cookies/-/cookies-1.1.1.tgz#8b519e2bd8f1577c530beed44a25578eb9a6e72c"
@@ -2221,14 +2229,6 @@ dir-glob@^3.0.1:
   integrity sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==
   dependencies:
     path-type "^4.0.0"
-
-djangoql-completion@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/djangoql-completion/-/djangoql-completion-0.5.0.tgz#984fcef2cf25499b44722b3ef36d5e63e210749f"
-  integrity sha512-07P9Ksyb9Urnb/I/DfSIIw41xXdps9mTcIXR7PYbz/vryBUQSEc4tYC3CZ3dHJXQVk665kzseNxXBxqOvpzxSQ==
-  dependencies:
-    lex "1.7.9"
-    lodash "4.17.21"
 
 doctrine@^3.0.0:
   version "3.0.0"
