@@ -337,7 +337,7 @@ const {
   .osim-tracker-card {
     div {
       padding: 0.5rem;
-      background-color: $light-teal;
+      background-color: $light-info;
     }
   }
 
@@ -368,7 +368,7 @@ const {
       .badge {
         height: 28px;
         border-radius: 0.25rem;
-        background-color: $light-teal;
+        background-color: $light-info;
         color: black;
         margin-block: auto;
         user-select: none;

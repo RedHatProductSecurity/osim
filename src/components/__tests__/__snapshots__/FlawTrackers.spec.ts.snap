@@ -255,9 +255,9 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
       </table>
       <!--v-if-->
       <div data-v-4977998e="" data-v-7006d35c="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
-        <h4 data-v-4977998e="" class="mb-2"> Tracker Manager <button data-v-4977998e="" type="button" class="btn btn-lightest-info btn-outline-dark-teal btn-sm"><i data-v-4977998e="" class="bi bi-eye-slash-fill"></i> Hide </button></h4>
+        <h4 data-v-4977998e="" class="mb-2"> Tracker Manager <button data-v-4977998e="" type="button" class="btn btn-lightest-info btn-outline-dark-info btn-sm"><i data-v-4977998e="" class="bi bi-eye-slash-fill"></i> Hide </button></h4>
         <div data-v-4977998e="" class="osim-trackers-filing mb-2">
-          <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="p-1 ps-2 mt-2 mb-3 border border-info" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-teal border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button>
+          <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="p-1 ps-2 mt-2 mb-3 border border-info" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button>
             <!--v-if-->
           </div>
           <div data-v-db8a18da="" data-v-4977998e="">
@@ -272,11 +272,11 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
                   <div data-v-4977998e="" class="col-6">
                     <div data-v-4977998e="" class="d-flex justify-content-between">
                       <h5 data-v-4977998e="" class="pt-3"> Unfiled </h5>
-                      <div data-v-4977998e="" class="pt-3 pe-2"><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-teal btn-sm me-2"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All</button><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-teal btn-sm me-2"><i data-v-4977998e="" class="bi bi-eraser"></i> Deselect All</button></div>
+                      <div data-v-4977998e="" class="pt-3 pe-2"><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-4977998e="" class="bi bi-check-all"></i> Select All</button><button data-v-4977998e="" type="button" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-4977998e="" class="bi bi-eraser"></i> Deselect All</button></div>
                     </div>
                     <div data-v-4977998e="" class="ms-3 mt-2 pb-3">
                       <!--v-if-->
-                      <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-teal text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
+                      <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
                       <!--v-if-->
                     </div>
                   </div>

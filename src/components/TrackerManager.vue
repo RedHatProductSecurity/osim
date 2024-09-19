@@ -82,7 +82,7 @@ async function handleFileTrackers() {
       Tracker Manager
       <button
         type="button"
-        class="btn btn-lightest-info btn-outline-dark-teal btn-sm"
+        class="btn btn-lightest-info btn-outline-dark-info btn-sm"
         @click="emit('affects-trackers:hide')"
       >
         <i class="bi bi-eye-slash-fill"></i>
@@ -101,7 +101,7 @@ async function handleFileTrackers() {
         <button
           v-show="filterString"
           type="button"
-          class="btn btn-sm btn-white btn-outline-dark-teal border-0 my-2 ms-1"
+          class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1"
           @click="clearFilter"
         >
           <i class="bi bi-x"></i>
@@ -162,7 +162,7 @@ async function handleFileTrackers() {
                   <div class="pt-3 pe-2">
                     <button
                       type="button"
-                      class="btn btn-white btn-outline-dark-teal btn-sm me-2"
+                      class="btn btn-white btn-outline-dark-info btn-sm me-2"
                       @click="handleSetAll(singleFlawTrackerSlotProps, true)"
                     >
                       <i class="bi bi-check-all"></i>
@@ -171,7 +171,7 @@ async function handleFileTrackers() {
                     </button>
                     <button
                       type="button"
-                      class="btn btn-white btn-outline-dark-teal btn-sm me-2"
+                      class="btn btn-white btn-outline-dark-info btn-sm me-2"
                       @click="handleSetAll(singleFlawTrackerSlotProps, false)"
                     >
                       <i class="bi bi-eraser"></i>
@@ -241,7 +241,7 @@ async function handleFileTrackers() {
                   </div>
                   <button
                     type="button"
-                    class="btn btn-sm btn-dark-teal text-white osim-file-trackers mt-2"
+                    class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2"
                     :disabled="!trackersToFile.length || isFilingTrackers"
                     @click="handleFileTrackers"
                   >
@@ -351,11 +351,11 @@ label {
   input[type='checkbox'].osim-tracker {
     margin-top: 0.1875rem;
     margin-right: 0.375rem;
-    border-color: $dark-teal;
+    border-color: $dark-info;
 
     &:checked {
-      background-color: $dark-teal;
-      border-color: $dark-teal;
+      background-color: $dark-info;
+      border-color: $dark-info;
     }
 
     &:active {
@@ -395,7 +395,7 @@ label {
 
     &.active {
       background-color: $lightest-info;
-      color: $dark-teal;
+      color: $dark-info;
       border-top: 1px solid $info;
       border-left: 1px solid $info;
       border-right: 1px solid $info;
@@ -453,7 +453,7 @@ label {
 
   .btn-white:not(:hover) {
     background-color: #fff;
-    color: dark-teal;
+    color: dark-info;
   }
 }
 
