@@ -141,7 +141,7 @@ describe('flawTrackers', () => {
     expect(trackerModuleCell.attributes('title')).toBe('openshift-5');
   });
 
-  osimFullFlawTest('Tracker ps_stream table cell have correct tootltip', async ({ flaw }) => {
+  osimFullFlawTest('Tracker ps_stream table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flawId: flaw.uuid,
       displayedTrackers: flaw.affects
