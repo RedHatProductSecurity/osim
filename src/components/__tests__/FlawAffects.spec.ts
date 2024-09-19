@@ -42,6 +42,18 @@ describe('flawAffects', () => {
     expect(subject.html()).toMatchSnapshot();
   });
 
+  osimFullFlawTest('Filter button for module with trackers have correct tootltip', async ({ flaw }) => {
+    const subject = mountFlawAffects(flaw);
+    const moduleFilterBtn = subject.findAll('.module-btn')[0];
+    expect(moduleFilterBtn.attributes('title')).toBe('openshift-1');
+  });
+
+  osimFullFlawTest('Filter button for module without trackers have correct tootltip', async ({ flaw }) => {
+    const subject = mountFlawAffects(flaw);
+    const moduleFilterBtn = subject.findAll('.module-btn')[1];
+    expect(moduleFilterBtn.attributes('title')).toBe('openshift-2\nThis module has no trackers associated');
+  });
+
   osimFullFlawTest('Filter tables when affected modules are selected', async ({ flaw }) => {
     const subject = mountFlawAffects(flaw);
 
@@ -347,6 +359,20 @@ describe('flawAffects', () => {
 
     impactFilterBtn = subject.find('#impact-filter');
     expect(impactFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
+  });
+
+  osimFullFlawTest('Affect modules table cell have correct tootltip', async ({ flaw }) => {
+    const subject = mountFlawAffects(flaw);
+    const affectRow = subject.findAll('.affects-management table tbody tr')[1];
+    const affectModuleDisplay = affectRow.find('td:nth-of-type(3) > span');
+    expect(affectModuleDisplay.attributes('title')).toBe('openshift-2');
+  });
+
+  osimFullFlawTest('Affect components table cell have correct tootltip', async ({ flaw }) => {
+    const subject = mountFlawAffects(flaw);
+    const affectRow = subject.findAll('.affects-management table tbody tr')[1];
+    const affectComponentDisplay = affectRow.find('td:nth-of-type(4) > span');
+    expect(affectComponentDisplay.attributes('title')).toBe('openshift-2-1');
   });
 
   osimFullFlawTest('Displays tracker manager for individual affect', async ({ flaw }) => {

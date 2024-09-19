@@ -126,6 +126,36 @@ describe('flawTrackers', () => {
     expect(trackerLink.attributes('href')).toBe('http://jira-service:8002/browse/XXXX-0006');
   });
 
+  osimFullFlawTest('Tracker modules table cell have correct tooltip', async ({ flaw }) => {
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
+    });
+    const trackerRow = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr')[1];
+    const trackerModuleCell = trackerRow.find('td:nth-of-type(2)');
+    expect(trackerModuleCell.attributes('title')).toBe('openshift-5');
+  });
+
+  osimFullFlawTest('Tracker ps_stream table cell have correct tooltip', async ({ flaw }) => {
+    const subject = mountFlawTrackers({
+      flawId: flaw.uuid,
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      affectsNotBeingDeleted: [],
+      allTrackersCount: 0,
+    });
+    const trackerRow = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr')[0];
+    const trackerModuleCell = trackerRow.find('td:nth-of-type(3)');
+    expect(trackerModuleCell.attributes('title')).toBe('xxxx-0-006');
+  });
+
   osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flawId: flaw.uuid,
