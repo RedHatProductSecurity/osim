@@ -3,13 +3,12 @@ import { type ExtractPublicPropTypes } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
-// @ts-expect-error missing types
-import DjangoQLCompletion from 'djangoql-completion';
+import DjangoQLCompletion from '@mrmarble/djangoql-completion';
 
 describe('issueSearchAdvanced', () => {
   let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
 
-  vi.mock('djangoql-completion');
+  vi.mock('@mrmarble/djangoql-completion');
   vi.mock('vue-router', () => ({
     useRoute: vi.fn().mockReturnValue({
       query: {},
