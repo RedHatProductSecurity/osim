@@ -73,7 +73,6 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
         <option data-v-21c9158a="" value="statement">Statement</option>
       </select>
@@ -135,7 +134,6 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
         <option data-v-21c9158a="" value="statement">Statement</option>
       </select>
@@ -197,7 +195,6 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
         <option data-v-21c9158a="" value="statement">Statement</option>
       </select>

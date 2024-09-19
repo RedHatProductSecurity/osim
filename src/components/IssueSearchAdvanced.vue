@@ -68,7 +68,6 @@ const customSortingFields = [
   'cvss_scores__score',
   'cwe_id',
   'major_incident_state',
-  'mitigation',
   'source',
   'statement',
 ];
