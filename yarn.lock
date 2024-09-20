@@ -799,10 +799,10 @@
   resolved "https://registry.yarnpkg.com/@lukeed/csprng/-/csprng-1.1.0.tgz#1e3e4bd05c1cc7a0b2ddbd8a03f39f6e4b5e6cfe"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
-"@mrmarble/djangoql-completion@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@mrmarble/djangoql-completion/-/djangoql-completion-0.8.1.tgz#ded11ee27c4114747f82b074dd24d1c4316f5552"
-  integrity sha512-SH182m6qYDZrVERIsOvm6XxFxnNSV4xm9afy1ZsAnlWSk80s3zZTaaOQV77BD4VsxLH04JVSaXd9sE6KvzbbWg==
+"@mrmarble/djangoql-completion@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@mrmarble/djangoql-completion/-/djangoql-completion-0.8.3.tgz#e5e41ce375d5b678c69a033f441bff8b0f8a2b65"
+  integrity sha512-wYctvF0gQs48wL9jLQ+H2g2B0yJj7CrUSNi4ec5gcSuICIRqD/QSt6G+3zDdeW1LlI/4uj/FByJvg8k4TAAnVg==
   dependencies:
     lex "1.7.9"
     lodash "4.17.21"
