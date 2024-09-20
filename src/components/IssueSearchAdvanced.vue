@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { sort } from 'ramda';
-import DjangoQL from '@mrmarble/djangoql-completion';
 
 import Modal from '@/components/widgets/Modal.vue';
 import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
+import DjangoQLInput from '@/components/DjangoQLInput.vue';
 
 import { useModal } from '@/composables/useModal';
 import { useSearchParams } from '@/composables/useSearchParams';
@@ -13,7 +13,6 @@ import { useSearchParams } from '@/composables/useSearchParams';
 import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
 import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   isLoading: boolean;
@@ -33,8 +32,6 @@ const { closeModal, isModalOpen, openModal } = useModal();
 const queryFilterVisible = ref(true);
 
 const emptinessSupportedFields = Object.keys(allowedEmptyFieldMapping);
-
-const djangoCompletion = ref();
 
 const nameForOption = (fieldName: string) => {
   const mappings: Record<string, string> = {
@@ -111,48 +108,20 @@ function handleToggleOrder() {
   toggleSortOrder();
   submitAdvancedSearch();
 }
-
-onMounted(() => {
-  const djangoQL = new DjangoQL({
-    completionEnabled: true,
-    introspections: `${osimRuntime.value.backends.osidb}/osidb/api/v1/introspection`,
-    selector: 'textarea#query',
-    autoResize: true,
-    onSubmit: function (value: string) {
-      query.value = value;
-      submitAdvancedSearch();
-    },
-  });
-
-  djangoQL.popupCompletion();
-
-  djangoCompletion.value = djangoQL;
-});
-
-onUnmounted(() => {
-  if (djangoCompletion.value) {
-    djangoCompletion.value.destroyCompletionElement();
-  }
-});
 </script>
 
 <template>
   <details :open="shouldShowAdvanced" class="osim-advanced-search-container container-fluid">
     <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
-      <div v-if="queryFilterVisible" class="input-group my-1">
+      <div v-show="queryFilterVisible" class="input-group my-1">
         <div type="button" class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
           <button class="btn btn-sm text-white" type="button" @click="openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
-        <textarea
-          id="query"
-          v-model="query"
-          type="text"
-          class="form-control"
-        />
+        <DjangoQLInput v-model="query" @submit="submitAdvancedSearch()" />
         <button
           :disabled="!query"
           class="btn btn-sm btn-secondary rounded-0 py-0"
