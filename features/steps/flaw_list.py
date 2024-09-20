@@ -1,13 +1,11 @@
 import time
 from behave import given, when, then
-from selenium.common.exceptions import NoSuchElementException
 
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
 from features.utils import (
         is_sorted,
-        skip_step_when_needed,
         go_to_advanced_search_page,
         go_to_home_page,
         go_to_specific_flaw_detail_page

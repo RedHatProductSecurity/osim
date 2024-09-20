@@ -17,7 +17,6 @@ Feature: Flaw detail testing on embargo flaw
       When I add a new affect with valid data
       Then The affect is added
 
-    @skip
     Scenario: Update affects for an embargoed flaw
       When I update the affects of the flaw and click 'Save Changes' button
       Then All changes are saved

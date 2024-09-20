@@ -2,11 +2,9 @@ import json
 import os
 import re
 import rstr
-import requests
 import random
 import string
 import urllib.parse
-from functools import wraps
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -26,21 +24,6 @@ from pages.flaw_detail_page import FlawDetailPage
 from pages.advanced_search_page import AdvancedSearchPage
 
 
-def server_is_ready(url):
-    try:
-        response = requests.get(url, verify=False)
-        print("Status Code:", response.status_code)
-        if response.status_code == 200:
-            return True
-    except ConnectionError as e:
-        print("Connection error:", e)
-        return False
-    except Exception as e:  # This will catch other exceptions that may occur.
-        print("An error occurred:", e)
-        return False
-    return False
-
-
 def init_remote_firefox_browser():
     """
     Init a remote firefox driver which we can use to test
@@ -55,6 +38,7 @@ def init_remote_firefox_browser():
         op.add_argument("-headless")
     return webdriver.Remote(command_executor=SELENIUM_URL, options=op)
 
+
 def osim_login_page():
     """
     This function is used to get the index page of OSIM
@@ -62,6 +46,7 @@ def osim_login_page():
     browser = init_remote_firefox_browser()
     browser.get(OSIM_URL)
     return browser
+
 
 def login_with_valid_account():
     """
@@ -71,21 +56,6 @@ def login_with_valid_account():
     login_page = LoginPage(browser)
     login_page.login()
     return browser
-
-
-def skip_step_when_needed(func):
-    """
-    Decorator used for cucumber steps. When context.skip is True,
-    skip current step
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if hasattr(args[0], "skip") and args[0].skip:
-            return
-
-        return func(*args, **kwargs)
-
-    return wrapper
 
 
 def set_api_keys(browser):
