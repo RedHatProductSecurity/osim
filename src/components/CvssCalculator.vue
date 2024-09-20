@@ -167,7 +167,7 @@ function handlePaste(e: ClipboardEvent) {
         :disabled="!cvssVector"
         class="erase-button input-group-text"
         @click="reset()"
-        @mousedown="event => event.preventDefault()"
+        @mousedown="(event: MouseEvent) => event.preventDefault()"
       >
         <i class="bi bi-eraser"></i>
       </button>
@@ -221,7 +221,7 @@ function handlePaste(e: ClipboardEvent) {
                             : 'inherit'
                         }"
                     @click="factorButton(col.id, button.key)"
-                    @mousedown="event => event.preventDefault()"
+                    @mousedown="(event: MouseEvent) => event.preventDefault()"
                     @mouseover="highlightFactorValue(`${rowIndex}${colIndex}${btnIndex}`)"
                     @mouseout="highlightFactorValue(null)"
                   >
