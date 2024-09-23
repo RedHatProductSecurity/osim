@@ -75,7 +75,7 @@ export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
 }
 
 export function affectRhCvss3(affect: ZodAffectType) {
-  return affect.cvss_scores.find(score => isCVSS3issuedByRH(score));
+  return affect.cvss_scores.find(isCVSS3issuedByRH);
 }
 
 type WithModuleComponent = {
