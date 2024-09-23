@@ -2,7 +2,7 @@ import { type Ref, ref, computed, watch } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
-import { affectRhCvss3, deepCopyFromRaw, isCVSS3issuedByRH, affectsMatcherFor } from '@/utils/helpers';
+import { affectRhCvss3, deepCopyFromRaw, affectsMatcherFor } from '@/utils/helpers';
 import {
   postAffects,
   putAffects,
@@ -19,16 +19,29 @@ import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 const affectsWithChangedCvss = ref<ZodAffectType[]>([]);
 const affectIdsForPutRequest = ref<string[]>([]);
 const affectsToDelete = ref<ZodAffectType[]>([]);
-const affectCvssToDelete = ref<Record<string, string>>({});
+// const affectCvssToDelete = ref<Record<string, string>>({});
+const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   // CVSS modifications are not counted
   const wereAffectsModified = computed(() => affectIdsForPutRequest.value.length > 0);
-  const initialAffects = deepCopyFromRaw(flaw.value.affects);
+
+  const affectCvssToDelete = computed(() => flaw.value.affects.reduce((mappings, affect) => {
+    const rhCvss3 = affectRhCvss3(affect);
+    if (affect.uuid && rhCvss3?.uuid && rhCvss3?.vector === '') {
+      mappings[affect.uuid] = rhCvss3.uuid;
+    }
+    return mappings;
+  }, {} as Record<string, string>));
+
+  if (!initialAffects.value.length) {
+    initialAffects.value = deepCopyFromRaw(flaw.value.affects);
+  }
 
   function refreshAffects() {
     return getFlaw(flaw.value.uuid).then((response) => {
-      flaw.value.affects = response.affects;
+      flaw.value.affects = [...response.affects];
+      initialAffects.value = [...response.affects];
     });
   }
 
@@ -49,7 +62,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
 
     // Check affect's CVSS data to see if at least one cvss score has been modified
-    const originalAffect: Record<string, any> | undefined = initialAffects.find(matchAffectTo);
+    const originalAffect: Record<string, any> | undefined = initialAffects.value.find(matchAffectTo);
     return affect.cvss_scores.some((cvssScore, index) =>
       Object.entries(cvssScore).some(
         ([key, value]) => originalAffect && originalAffect.cvss_scores[index]?.[key] !== value,
@@ -61,7 +74,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     const matchAffectTo = affectsMatcherFor(anAffect);
     const affect = flaw.value.affects.find(matchAffectTo);
 
-    const originalAffect: Record<string, any> | undefined = initialAffects.find(
+    const originalAffect: Record<string, any> | undefined = initialAffects.value.find(
       affect => affect.uuid === anAffect.uuid
       || matchAffectTo(affect),
     );
@@ -80,6 +93,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       ),
     );
   }
+
+  const modifiedAffects = computed(() =>
+    flaw.value.affects.filter(shouldAffectUpdate).concat(affectsWithChangedCvss.value),
+  );
 
   const affectsToUpdate = computed(() =>
     flaw.value.affects.filter(affect => affect.uuid && affectIdsForPutRequest.value.includes(affect.uuid)),
@@ -125,20 +142,27 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     flaw.value.affects.push(recoveredAffect);
   }
 
-  function doesAffectHaveChangedValues(affect: ZodAffectType) {
-    const originalAffect = initialAffects.find(maybeMatch => maybeMatch.uuid === affect.uuid);
+  function shouldAffectUpdate(affect: ZodAffectType) {
+    const originalAffect = initialAffects.value.find(maybeMatch => maybeMatch.uuid === affect.uuid);
 
+    if (!affect.uuid && !originalAffect) return false;
+
+    const excludedFields = ['cvss_scores', 'trackers'];
     // Changes to CVSS scores are tracked separately
-    const excludingCvssScores = pickBy((_, key) => key !== 'cvss_scores');
+    const excludingFields = pickBy((_, key) => !excludedFields.includes(key));
     return !equals(
-      excludingCvssScores(originalAffect), excludingCvssScores(affect),
+      excludingFields(originalAffect), excludingFields(affect),
     );
   }
 
   function trackAffectChange(affect: ZodAffectType) {
-    if (affect.uuid && doesAffectHaveChangedValues(affect)) {
+    if (!affect.uuid) return;
+
+    if (shouldAffectUpdate(affect) && !affectIdsForPutRequest.value.includes(affect.uuid)) {
       affectIdsForPutRequest.value.push(affect.uuid);
-    } else {
+    }
+
+    if (!shouldAffectUpdate(affect) && affectIdsForPutRequest.value.includes(affect.uuid)) {
       // if tracked, remove affect if it has reverted to original state
       affectIdsForPutRequest.value = affectIdsForPutRequest.value.filter(id => id !== affect.uuid);
     }
@@ -150,10 +174,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
   }
 
-  let watchers: (() => void)[] = [];
+  // const watchAffect = (affect: ZodAffectType) => watch(affect, trackAffectChange, { deep: true });
+  // let watchers: (() => void)[] = [];
   watch(flaw.value.affects, (affects) => {
-    watchers.forEach((unwatch: () => void) => unwatch());
-    watchers = affects.map(affect => watch(affect, trackAffectChange, { deep: true }));
+    // console.log('🔎🔎🔎 useFlawAffectsModel::watch() Watching flaw affects:', affects);
+    // watchers.forEach((unwatch: () => void) => unwatch());
+    // watchers = affects.map(watchAffect);
+    affects.forEach(trackAffectChange);
   }, { immediate: true, deep: false });
 
   async function removeAffects() {
@@ -189,7 +216,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       try {
         const response: any = await putAffects(affectsToUpdate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
-        resetModifiedAffects();
+        resetUpdatedAffectIds();
+        refreshAffects();
       } catch (error) {
         console.error('useFlawAffectsModel::saveAffects() Error occurred while updating affect(s):', error);
       }
@@ -245,19 +273,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     if (Object.keys(affectCvssToDelete.value).length > 0) {
       let cvssScoresRemovedCount = 0;
       let affectWithRemovedCvssCount = 0;
-      const cvssScoresToDelete = [];
+      const deletionQueue = [];
       try {
-        for (const affectId of Object.keys(affectCvssToDelete.value)) {
-          const affect = flaw.value.affects.find(affect => affect.uuid === affectId);
-          if (affect) {
-            const cvssId = affectCvssToDelete.value[affectId];
-            if (cvssId) {
-              cvssScoresToDelete.push(deleteAffectCvssScore(affect.uuid as string, cvssId));
-              cvssScoresRemovedCount++;
-            }
-          }
+        for (const [affectId, cvssId] of Object.entries(affectCvssToDelete.value)) {
+          deletionQueue.push(deleteAffectCvssScore(affectId, cvssId));
+          cvssScoresRemovedCount++;
         }
-        cvssScoresRemovedCount = (await Promise.allSettled(cvssScoresToDelete))
+        cvssScoresRemovedCount = (await Promise.allSettled(deletionQueue))
           .filter(({ status }) => status === 'fulfilled').length;
         affectWithRemovedCvssCount++;
       } catch (error) {
@@ -269,32 +291,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           title: 'Success!',
           body: `${cvssScoresRemovedCount} CVSS score(s) removed on ${affectWithRemovedCvssCount} affect(s).`,
           css: 'success',
-        });
-      }
-    }
-  }
-
-  function updateAffectCvss(affect: ZodAffectType, newValue: string) {
-    const cvssScoreIndex = affect.cvss_scores.findIndex(isCVSS3issuedByRH);
-    const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
-    if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
-      affect.cvss_scores[cvssScoreIndex].vector = '';
-      affectCvssToDelete.value[affect.uuid] = cvssId;
-    } else {
-      if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
-        delete affectCvssToDelete.value[affect.uuid];
-      }
-      if (cvssScoreIndex !== -1) {
-        affect.cvss_scores[cvssScoreIndex].vector = newValue;
-      } else if (newValue !== '') {
-        affect.cvss_scores.push({
-          issuer: 'RH',
-          cvss_version: 'V3',
-          comment: '',
-          score: null,
-          vector: newValue,
-          embargoed: affect.embargoed,
-          alerts: [],
         });
       }
     }
@@ -312,7 +308,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     didAffectsChange,
     initialAffects,
     refreshAffects,
-    updateAffectCvss,
+    modifiedAffects,
   };
 }
 
@@ -326,7 +322,7 @@ function isCvssNew(cvssScore: ZodAffectCVSSType) {
   return !cvssScore.uuid && !cvssScore.affect;
 }
 
-function resetModifiedAffects() {
+function resetUpdatedAffectIds() {
   affectIdsForPutRequest.value = [];
 }
 

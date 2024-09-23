@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRefs, ref, watch } from 'vue';
 
-import { equals, clone } from 'ramda';
+import { clone } from 'ramda';
 
 import FlawTrackers from '@/components/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager.vue';
@@ -45,11 +45,13 @@ const {
 } = useModal();
 
 const { flaw } = toRefs(props);
+
 const {
   addAffect,
   affectsToDelete,
-  // affectCvssToDelete, // TODO: Fix/resolve post-rebase
   initialAffects,
+  // affectCvssToDelete, // TODO: Fix/resolve post-rebase
+  modifiedAffects,
   recoverAffect,
   refreshAffects,
   removeAffect,
@@ -96,12 +98,6 @@ const displayedAffects = computed(() => {
       return allAffects.value;
   }
 });
-
-// const filteredAffects = computed(() => filterAffects(displayedAffects.value));
-
-// const preEditAffects = computed(() =>
-//   filteredAffects.value.map(affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect)
-// );
 
 const sortedAffects = computed(() => {
   const filteredAffects = filterAffects(displayedAffects.value);
@@ -224,31 +220,9 @@ function cancelAllChanges() {
   affectsToCancel.forEach(cancelChanges);
 }
 
-// Modified affects
-const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  const { [key]: _, ...rest } = obj;
-  return rest;
-};
-
-function didSavedAffectChange(affect?: ZodAffectType) {
-  const savedAffect = initialAffects.find(savedAffect => savedAffect.uuid === affect?.uuid);
-  if (!affect || !savedAffect) {
-    return false;
-  }
-  return !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'));
-}
-
-const modifiedAffects = computed(() =>
-  flaw.value.affects.filter((affect) => {
-    const savedAffect = initialAffects.find(a => a.uuid === affect.uuid);
-    return didSavedAffectChange(savedAffect)
-      && !affectsBeingEdited.value.includes(affect)
-      && !newAffects.value.includes(affect);
-  }),
-);
 
 function revertAffect(affect: ZodAffectType) {
-  const saved = initialAffects.find(a => a.uuid === affect.uuid);
+  const saved = initialAffects.value.find(a => a.uuid === affect.uuid);
   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
   if (index !== -1 && saved) {
     flaw.value.affects[index] = { ...saved };
@@ -589,6 +563,7 @@ const displayedTrackers = computed(() => {
         v-model:affects="paginatedAffects"
         :affectsBeingEdited="affectsBeingEdited"
         :error="error"
+        :modifiedAffects="modifiedAffects"
         :affectsToDelete="affectsToDelete"
         :selectedModules="selectedModules"
         :selectedAffects="selectedAffects"

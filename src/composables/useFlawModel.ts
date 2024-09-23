@@ -49,7 +49,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
   const isInTriageWithoutAffects = computed(
-    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.length === 0,
+    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.value.length === 0,
   );
 
   function isValid() {
@@ -127,6 +127,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       return;
     }
 
+    // If the flaw is in triage and has no affects, we need to save the affects first
     if (isInTriageWithoutAffects.value && didAffectsChange.value) {
       queue.push(saveAffects);
     }

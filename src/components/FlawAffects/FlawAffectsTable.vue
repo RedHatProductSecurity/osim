@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue';
 
-import { equals, clone } from 'ramda';
-
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
 
 import type { ZodAffectType } from '@/types';
@@ -15,6 +13,7 @@ const props = defineProps<{
   affectsBeingEdited: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
   error: null | Record<string, any>[];
+  modifiedAffects: ZodAffectType[];
   selectedAffects: ZodAffectType[];
   totalPages: number;
 }>();
@@ -31,28 +30,13 @@ const emit = defineEmits<{
   'affects:display-mode': [value: displayModes];
 }>();
 
-const { affectsBeingEdited, selectedAffects } = toRefs(props);
+const { affectsBeingEdited, modifiedAffects, selectedAffects } = toRefs(props);
 
 const selectedModules = ref<string[]>([]);
 
-const savedAffects = clone(affects.value) as ZodAffectType[];
+// const savedAffects = clone(affects.value) as ZodAffectType[];
 
 const newAffects = computed(() => affects.value?.filter(affect => !affect.uuid) ?? []);
-// Modified affects
-const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
-  const { [key]: _, ...rest } = obj;
-  return rest;
-};
-
-const modifiedAffects = computed(() =>
-  affects.value?.filter((affect) => {
-    const savedAffect = savedAffects.find(a => a.uuid === affect.uuid);
-    return savedAffect
-      && !equals(omitAffectAttribute(savedAffect, 'trackers'), omitAffectAttribute(affect, 'trackers'))
-      && !affectsBeingEdited.value.includes(affect)
-      && !newAffects.value.includes(affect);
-  }) ?? [],
-);
 
 function isRemoved(affect: ZodAffectType) {
   return props.affectsToDelete.includes(affect);
