@@ -163,6 +163,8 @@ class FlawDetailPage(BasePage):
         "firstAffectRemoveBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Remove affect']"),
         "firstAffectRecoverBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Recover affect']"),
         "affectRows": ("XPATH", "(//tbody)[1]/tr"),
+        "allAffectsCheckBox": ("XPATH", "(//thead)[1]/tr[1]/th[1]/input"),
+        "bulkRemoveAffectBtn": ("XPATH", "//button[@title='Remove all selected affects']"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -865,3 +867,8 @@ class FlawDetailPage(BasePage):
             locate_with(By.TAG_NAME, "textarea").near(self.cvssCommentLabel))[0]
         self.driver.execute_script("arguments[0].scrollIntoView(true);", cvss_comment_textarea)
         return cvss_comment_textarea.getAttribute("value")
+
+    def bulk_delete_affects(self):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", self.newAddAffectEditBtn)
+        self.click_button_with_js('allAffectsCheckBox')
+        self.click_button_with_js('bulkRemoveAffectBtn')

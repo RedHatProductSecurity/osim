@@ -552,9 +552,9 @@ def step_impl(context):
     flaw_page.click_button_with_js("firstAffectRemoveBtn")
     flaw_page.click_btn('saveBtn')
     flaw_page.wait_msg('flawSavedMsg')
+    time.sleep(1)
     flaw_page.click_button_with_js('msgClose')
     flaw_page.wait_msg('affectDeleteMsg')
-    flaw_page.click_button_with_js('msgClose')
 
 
 @then("The affect is deleted")
@@ -584,6 +584,23 @@ def step_impl(context):
     flaw_detail_page.check_text_exist(affect.module)
     flaw_detail_page.check_text_exist(affect.component)
     flaw_detail_page.check_text_exist(affect.cvss)
+
+
+@when("I bulk delete selected affects of the flaw")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    context.ps_component1 = flaw_page.add_new_affect('bugzilla', "NEW")
+    flaw_page.bulk_delete_affects()
+    flaw_page.click_btn('saveBtn')
+    flaw_page.wait_msg('flawSavedMsg')
+    flaw_page.click_button_with_js('msgClose')
+    flaw_page.wait_msg('affectDeleteMsg')
+
+
+@then("The selected affects are deleted")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    assert flaw_page.has_affects() is False
 
 
 @when("I unembargo this flaw and add public date")
