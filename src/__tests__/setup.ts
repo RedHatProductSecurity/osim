@@ -20,7 +20,7 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
       osimVersion: { rev: '1', tag: '1.0.0', timestamp: new Date('2024-08-29T14:00:00Z').toISOString() },
       error: 'OSIDB is not ready',
       backends: {
-        osidb: '',
+        osidb: 'http://localhost:3000',
         osidbAuth: 'credentials',
         bugzilla: '',
         jira: '',
@@ -37,7 +37,7 @@ enableAutoUnmount(afterEach);
 // By default, MSW will log a warning for unhandled requests.
 // This way we can catch them and fail the test.
 const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
-  console.log(`Network request for "${req.url.toString()}" was not handled.`);
+  console.log(`Network request for "${req.method}: ${req.url.toString()}" was not handled.`);
 });
 export const server = setupServer();
 

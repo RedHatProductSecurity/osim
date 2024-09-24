@@ -1,11 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { DateTime } from 'luxon';
+import { http, HttpResponse } from 'msw';
 
 import { getJiraUsername } from '@/services/JiraService';
 import { encodeJWT } from '@/__tests__/helpers';
+import { server } from '@/__tests__/setup';
 
 import { useUserStore } from '../UserStore';
+import { osimRuntime } from '../osimRuntime';
 
 describe('userStore', () => {
   beforeEach(() => {
@@ -93,5 +96,37 @@ describe('userStore', () => {
 
       expect(userStore.isAccessTokenExpired()).toBe(true);
     }).not.toThrow();
+  });
+
+  it('should store token in local storage', async () => {
+    const jwt = encodeJWT({
+      token_type: 'access',
+      exp: Math.floor(DateTime.fromISO('2024-08-29T11:45:58.000Z').toSeconds()),
+      iat: Math.floor(DateTime.fromISO('2024-08-29T11:41:58.000Z').toSeconds()),
+      jti: '0000',
+      user_id: 1337,
+    });
+    const whoami = {
+      email: 'test@redhat.com',
+      groups: ['test'],
+      username: 'skynet',
+    };
+    server.use(
+      http.post(`${osimRuntime.value.backends.osidb}/auth/token`, () => HttpResponse.json({
+        access: jwt,
+        refresh: jwt,
+        env: 'unit',
+      })),
+      http.get(`${osimRuntime.value.backends.osidb}/osidb/whoami`, () => HttpResponse.json(whoami)),
+    );
+
+    const userStore = useUserStore();
+    await userStore.login('skynet', 'terminator');
+
+    const storage = JSON.parse(localStorage.getItem('UserStore') || '');
+    expect(storage).toBeInstanceOf(Object);
+    expect(storage).toHaveProperty('refresh', jwt);
+    expect(storage).toHaveProperty('env', 'unit');
+    expect(storage).toHaveProperty('whoami', whoami);
   });
 });
