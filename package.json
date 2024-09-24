@@ -27,7 +27,7 @@
     "lint-style": "stylelint '**/*.{vue,css,scss}'"
   },
   "dependencies": {
-    "@mrmarble/djangoql-completion": "^0.8.1",
+    "@mrmarble/djangoql-completion": "^0.8.3",
     "@popperjs/core": "^2.11.8",
     "@rollup/plugin-inject": "^5.0.5",
     "@vueuse/core": "^10.4.1",

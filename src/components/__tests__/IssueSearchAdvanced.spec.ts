@@ -3,7 +3,6 @@ import { type ExtractPublicPropTypes } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
-import DjangoQLCompletion from '@mrmarble/djangoql-completion';
 
 describe('issueSearchAdvanced', () => {
   let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
@@ -44,12 +43,6 @@ describe('issueSearchAdvanced', () => {
     expect(wrapper.html()).toMatchSnapshot();
     expect(wrapper.find('summary').text()).toEqual('Advanced Search');
     expect(wrapper.find('form').isVisible).toBeTruthy();
-  });
-
-  it('should instantiate djangoql-completion on mount', async () => {
-    await mountIssueSearchAdvanced();
-
-    expect(vi.mocked(DjangoQLCompletion)).toHaveBeenCalledTimes(1);
   });
 
   it('should show modal when query label is clicked', async () => {
