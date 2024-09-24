@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`logoutView > should render 1`] = `"<main data-v-3a03162a=""> Logging out... </main>"`;
