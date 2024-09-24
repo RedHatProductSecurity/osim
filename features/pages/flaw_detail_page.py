@@ -165,6 +165,8 @@ class FlawDetailPage(BasePage):
         "affectRows": ("XPATH", "(//tbody)[1]/tr"),
         "allAffectsCheckBox": ("XPATH", "(//thead)[1]/tr[1]/th[1]/input"),
         "bulkRemoveAffectBtn": ("XPATH", "//button[@title='Remove all selected affects']"),
+        "affectModuleWithTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray']"),
+        "affectModuleWithoutTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray fw-bold']"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -872,3 +874,25 @@ class FlawDetailPage(BasePage):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", self.newAddAffectEditBtn)
         self.click_button_with_js('allAffectsCheckBox')
         self.click_button_with_js('bulkRemoveAffectBtn')
+
+    def select_affect_module(self):
+        module_buttons1 = find_elements_in_page_factory(self, 'affectModuleWithTrackerBtn')
+        module_buttons2 = find_elements_in_page_factory(self, 'affectModuleWithoutTrackerBtn')
+        if module_buttons1:
+            self.click_button_with_js(module_buttons1[0])
+            return self.driver.find_element(
+                locate_with(By.TAG_NAME, "span").near(module_buttons1[0])).get_text()
+        elif module_buttons2:
+            self.click_button_with_js(module_buttons2[0])
+            return self.driver.find_element(
+                locate_with(By.TAG_NAME, "span").near(module_buttons2[0])).get_text()
+        else:
+            return None
+
+    def get_affect_filter_result(self, filter):
+        affect_rows = find_elements_in_page_factory(self, "affectRows")
+        filter_result = []
+        for row_index in range(1, len(affect_rows) + 1):
+            affect = self.get_affect_value(row_index)
+            filter_result.append(getattr(affect, filter))
+        return filter_result

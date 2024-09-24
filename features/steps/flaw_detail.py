@@ -804,3 +804,19 @@ def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     updated_value = flaw_page.get_cvss_score_explanation()
     assert context.value == updated_value, "Failed to update CVSS score explanation."
+
+
+@when('I click an affect module listed in affected offerings')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_page = FlawDetailPage(context.browser)
+    context.module_name = flaw_page.select_affect_module()
+
+
+@then('Only affects with this module are listed in affects table')
+def step_impl(context):
+    if context.module_name:
+        flaw_page = FlawDetailPage(context.browser)
+        modules = flaw_page.get_affect_filter_result('module')
+        assert len(modules) == 1
+        assert modules[0] == context.module_name
