@@ -107,6 +107,10 @@ Feature: Flaw detail testing on public flaw
       When I click an affect module listed in affected offerings
       Then Only affects with this module are listed in affects table
 
+    Scenario: Bulk update affects
+      When I bulk update affects
+      Then All affects are updated
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw

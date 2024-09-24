@@ -165,6 +165,7 @@ class FlawDetailPage(BasePage):
         "affectRows": ("XPATH", "(//tbody)[1]/tr"),
         "allAffectsCheckBox": ("XPATH", "(//thead)[1]/tr[1]/th[1]/input"),
         "bulkRemoveAffectBtn": ("XPATH", "//button[@title='Remove all selected affects']"),
+        "bulkEditAffectBtn": ("XPATH", "//button[@title='Edit all selected affects']"),
         "affectModuleWithTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray']"),
         "affectModuleWithoutTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray fw-bold']"),
 
@@ -193,13 +194,14 @@ class FlawDetailPage(BasePage):
         "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
         "FilterTrackers": ("XPATH", "//input[@placeholder='Filter by stream or component name']"),
         "trackerZstream": ("XPATH", "(//label[contains(text(), '.z')])[1]"),
+
         "msgClose": ("XPATH", "(//button[@class='osim-toast-close-btn btn-close'])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
         "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]"),
         'stateText': ("XPATH", "(//span[contains(text(), 'State')])[1]"),
-        'embargoedText': ("XPATH", "//span[contains(text(), 'Embargo')]")
+        'embargoedText': ("XPATH", "//span[contains(text(), 'Embargo')]"),
     }
 
     # Data is from OSIDB allowed sources:
@@ -572,35 +574,51 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_first_affect_fields(self, module, component, affectedness, resolution, cvss_vector):
-        from features.utils import generate_random_text
-        self.click_button_with_js("newAddAffectEditBtn")
+    def set_affect_fields(self, module, component, affectedness, resolution, cvss_vector, row=1):
+        """
+        set specified affect field value
+        """
+        # find specified affect field elements
+        try:
+            affect_edit_btn = self.driver.find_element(
+                By.XPATH, f"(//tbody)[1]/tr[{row}]/td[last()]/button[@title='Edit affect']")
+        except NoSuchElementException:
+            pass
+        else:
+            self.click_button_with_js(affect_edit_btn)
+
+        module_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[3]/input")
+        component_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[4]/input")
+        affectedness_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[5]/select")
+        resolution_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[6]/select")
+        impact_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[7]/select")
+        cvss_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/input")
 
         # Set new affect inputs: PS module, PS component, CVSSv3
-        self.clear_text_with_js("newAddAffectModuleInput")
-        self.newAddAffectModuleInput.set_text(module)
+        self.clear_text_with_js(module_input)
+        module_input.send_keys(module)
 
-        self.clear_text_with_js("newAddAffectComponentInput")
-        self.newAddAffectComponentInput.set_text(component)
+        self.clear_text_with_js(component_input)
+        component_input.send_keys(component)
 
         # Set select value for Affectedness, Resolution and Impact
-        self.newAddAffectAffectednessSelect.execute_script(
-            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});")
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});", affectedness_select)
 
-        self.newAddAffectAffectednessSelect.select_element_by_value(affectedness)
-        self.newAddAffectResolutionSelect.select_element_by_value(resolution)
+        affectedness_select_element = Select(affectedness_select)
+        affectedness_select_element.select_by_value(affectedness)
 
-        available_values, current_value = self.get_select_value(self.newAddAffectImpactSelect)
-        available_values.remove(current_value)
-        self.newAddAffectImpactSelect.select_element_by_value(random.choice(available_values))
+        resolution_select_element = Select(resolution_select)
+        resolution_select_element.select_by_value(resolution)
+
+        impact_select_element = Select(impact_select)
+        select_items = [item.text for item in impact_select_element.all_selected_options]
+        list_item = [item.text for item in impact_select_element.options if item.text not in select_items]
+        impact_select_element.select_by_value(random.choice(list_item))
 
         # set CVSS field
-        self.newAddAffectCVSSInput.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
-        self.newAddAffectCVSSInput.set_text(cvss_vector)
-
-        # Save all the updates
-        self.click_btn('saveBtn')
-        self.wait_msg('flawSavedMsg')
+        cvss_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+        cvss_input.send_keys(cvss_vector)
 
     def get_affect_value(self, row=1):
         module = f"(//tbody)[1]/tr[{row}]/td[3]/span"
@@ -636,12 +654,15 @@ class FlawDetailPage(BasePage):
 
         cvss_vector = generate_cvss3_vector_string()
 
-        self.set_first_affect_fields(
+        self.set_affect_fields(
             module=module, component=component, affectedness=affectedness_value,
             resolution=resolution, cvss_vector=cvss_vector
         )
 
+        # Save all the updates
+        self.click_btn('saveBtn')
         self.wait_msg('flawSavedMsg')
+        self.wait_msg("affectCreatedMsg")
         self.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
 
         return component
@@ -847,7 +868,7 @@ class FlawDetailPage(BasePage):
 
     def close_all_toast_msg(self):
         for toast_msg in find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
-            toast_msg.click()
+            self.click_button_with_js(toast_msg)
 
     def set_cvss_score_explanation(self, value):
         cvss_comment_dropdown  = self.driver.find_elements(
@@ -862,10 +883,10 @@ class FlawDetailPage(BasePage):
             cvss_comment_textarea.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
 
     def get_cvss_score_explanation(self):
-        cvss_comment_dropdown  = self.driver.find_elements(
+        cvss_comment_dropdown = self.driver.find_elements(
             locate_with(By.TAG_NAME, "i").near(self.cvssCommentLabel))[0]
         self.click_button_with_js(cvss_comment_dropdown)
-        cvss_comment_textarea  = self.driver.find_elements(
+        cvss_comment_textarea = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").near(self.cvssCommentLabel))[0]
         self.driver.execute_script("arguments[0].scrollIntoView(true);", cvss_comment_textarea)
         return cvss_comment_textarea.getAttribute("value")
@@ -896,3 +917,48 @@ class FlawDetailPage(BasePage):
             affect = self.get_affect_value(row_index)
             filter_result.append(getattr(affect, filter))
         return filter_result
+
+    def bulk_update_affects(self):
+        from features.utils import generate_random_text
+        # get all affect
+        affects = find_elements_in_page_factory(self, "affectRows")
+
+        # get current module and affectedness
+        affectedness_list = []
+        for i in range(len(affects)):
+            current_affectedness = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[5]/span").text
+            affectedness_list.append(current_affectedness)
+
+        self.click_button_with_js('allAffectsCheckBox')
+        self.click_button_with_js("bulkEditAffectBtn")
+
+        check_result = []
+
+        for i in range(len(affects)):
+            # Get the available (key, value) for affectedness and resolution
+            if affectedness_list[i] == 'NEW':
+                affectedness = 'AFFECTED'
+                resolution = 'DELEGATED'
+            else:
+                affectedness = 'NEW'
+                resolution = ''
+
+            # Generate the random component name to be updated
+            ps_component = str(i) + generate_random_text()
+            check_result.append(ps_component)
+
+            # Update the fields with the available values
+            cvss = generate_cvss3_vector_string()
+            check_result.append(cvss)
+
+            self.set_affect_fields(
+                module=AFFECTED_MODULE_JR, component=ps_component, affectedness=affectedness,
+                resolution=resolution, cvss_vector=cvss, row=i+1)
+
+        self.click_btn('saveBtn')
+        self.wait_msg('flawSavedMsg')
+        self.wait_msg('affectUpdateMsg')
+        self.check_element_exists(
+            By.XPATH, f"//div[text()='{len(affects)} CVSS score(s) saved on {len(affects)} affect(s).']")
+
+        return check_result
