@@ -7,9 +7,11 @@
 * Allow emptiness advanced search on supported fields (`OSIDB-3389`)
 * Add additional sortable fields for advance search results (`OSIDB-3388`)
 * Added tootlips with full string value on affect/tracker fields that can be truncated (`OSIDB-3453`)
+* Disable file tracking button for non saved new affects (`OSIDB-3474`)
 
 ### Fixed
 * Fix swapped values on trackers `Modules` and `Stream` values (`OSIDB-3443`)
+* Adding new trackers temporary populate trackers table (`OSIDB-3474`)
 
 ## [2024.9.1]
 ### Fixed
