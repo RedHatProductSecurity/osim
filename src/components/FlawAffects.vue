@@ -528,7 +528,7 @@ const affectsManaging = ref<ZodAffectType[]>();
 
 const displayedTrackers = computed(() => {
   return sortedAffects.value
-    .filter(affect => !affectsToDelete.value.includes(affect))
+    .filter(affect => !isRemoved(affect) && !isNewAffect(affect))
     .flatMap(affect =>
       affect.trackers.map(tracker => ({
         ...tracker,
