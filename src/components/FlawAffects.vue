@@ -1129,7 +1129,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
                   <button
                     type="button"
-                    :disabled="isBeingEdited(affect) || isRemoved(affect)"
+                    :disabled="isBeingEdited(affect) || isRemoved(affect) || isNewAffect(affect)"
                     class="btn btn-sm px-1 py-0 d-flex rounded-circle"
                     @click.prevent.stop="fileTrackersForAffects([affect])"
                   >
