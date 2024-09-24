@@ -69,12 +69,10 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
       </select>
       <!--v-if-->
     </div>
@@ -130,12 +128,10 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
       </select>
       <!--v-if-->
     </div>
@@ -191,12 +187,10 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
         <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
         <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
         <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
         <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
       </select>
       <!--v-if-->
     </div>

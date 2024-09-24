@@ -61,12 +61,10 @@ const nameForOption = (fieldName: string) => {
 };
 
 const customSortingFields = [
-  'cve_description',
   'cvss_scores__score',
   'cwe_id',
   'major_incident_state',
   'source',
-  'statement',
 ];
 
 const fieldNamesSorted = sort((fieldA: string, fieldB: string) =>
