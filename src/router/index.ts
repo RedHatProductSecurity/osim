@@ -15,7 +15,6 @@ import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
-import WidgetTestView from '@/views/WidgetTestView.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 import FlawEditView from '../views/FlawEditView.vue';
@@ -105,20 +104,6 @@ export const routes = [
     beforeEnter() {
       if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
         notifyApiKeyUnset();
-      }
-    },
-  },
-  {
-    path: '/widget-test',
-    name: 'widget-test',
-    component: WidgetTestView,
-    meta: {
-      canVisitWithoutAuth: true,
-      title: 'Sample',
-    },
-    beforeEnter() {
-      if (osimRuntime.value.env !== 'dev') {
-        return { name: 'not-found' };
       }
     },
   },
