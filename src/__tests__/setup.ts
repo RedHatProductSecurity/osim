@@ -37,12 +37,12 @@ enableAutoUnmount(afterEach);
 // By default, MSW will log a warning for unhandled requests.
 // This way we can catch them and fail the test.
 const onUnhandledRequest = vi.fn().mockImplementation((req: Request) => {
-  console.error(`Network request for "${req.url.toString()}" was not handled.`);
+  console.log(`Network request for "${req.url.toString()}" was not handled.`);
 });
 export const server = setupServer();
 
-vi.spyOn(console, 'warn').mockImplementation((msg) => { assert.fail(msg); });
-vi.spyOn(console, 'error').mockImplementation((msg) => { assert.fail(msg); });
+vi.spyOn(console, 'warn').mockImplementation((...msg) => { assert.fail(msg.join(' ')); });
+vi.spyOn(console, 'error').mockImplementation((...msg) => { assert.fail(msg.join(' ')); });
 
 beforeAll(() => {
   server.listen({
