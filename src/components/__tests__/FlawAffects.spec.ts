@@ -1,7 +1,5 @@
 import { describe, expect } from 'vitest';
 
-import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective';
-
 import { mountWithConfig } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -9,12 +7,14 @@ import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 
 const mountFlawAffects = (flaw: ZodFlawType) => mountWithConfig(FlawAffects, {
   props: {
-    flawId: flaw.uuid,
+    // flawId: flaw.uuid,
     embargoed: flaw.embargoed,
-    affects: flaw.affects,
-    affectsToDelete: [],
+    // affects: flaw.affects,
+    // affectsToDelete: [],
+    flaw,
+    relatedFlaws: [flaw],
     error: [],
-    affectCvssToDelete: {},
+    // affectCvssToDelete: {},
   },
 });
 
@@ -25,18 +25,12 @@ vi.mock('@/composables/useTrackers', () => ({
   }),
 }));
 
-const globalOptions = {
-  global: {
-    stubs: {
-      RouterLink: true,
-    },
-    directives: {
-      'osim-loading': LoadingAnimationDirective,
-    },
-  },
-};
-
+let FlawAffects: typeof import('@/components/FlawAffects/FlawAffects.vue').default;
 describe('flawAffects', () => {
+  beforeEach(async () => {
+    const importedComponent = await import('@/components/FlawAffects/FlawAffects.vue');
+    FlawAffects = importedComponent.default;
+  });
   osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
     const subject = mountFlawAffects(flaw);
 

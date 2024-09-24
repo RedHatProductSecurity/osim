@@ -308,7 +308,7 @@ const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.tra
 
 const displayedTrackers = computed(() => {
   return sortedAffects.value
-    .filter(affect => !isRemoved(affect) && !isNewAffect(affect))
+    .filter(affect => !isRemoved(affect) && affect.uuid)
     .flatMap(affect =>
       affect.trackers.map(tracker => ({
         ...tracker,
