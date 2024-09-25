@@ -103,6 +103,10 @@ Feature: Flaw detail testing on public flaw
       When I 'delete' an affect and 'recover' it
       Then I could 'recover' the affect that I tried to delete above
 
+    Scenario: Filter on affects modules
+      When I click an affect module listed in affected offerings
+      Then Only affects with this module are listed in affects table
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
