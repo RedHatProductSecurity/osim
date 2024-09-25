@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.9.2]
 ### Added
 * Add query filter support on advance search (`OSIDB-3088`)
 * Support saving query filter on default user search (`OSIDB-3387`)
@@ -318,7 +318,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.2...HEAD
+[2024.9.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.1...v2024.9.2
 [2024.9.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.0...v2024.9.1
 [2024.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.8.0...v2024.9.0
 [2024.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.7.2...v2024.8.0
