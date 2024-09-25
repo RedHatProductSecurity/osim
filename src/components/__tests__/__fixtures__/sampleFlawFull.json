@@ -1,6 +1,6 @@
 {
     "uuid": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
-    "cve_id": "CVE-0000-0000",
+    "cve_id": "CVE-2024-1234",
     "impact": "MODERATE",
     "components": [
         "kernel"
@@ -323,7 +323,7 @@
             "description": "Reference details",
             "flaw": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
             "type": "EXTERNAL",
-            "url": "HTTPS://EXAMPLE.COM",
+            "url": "https://example.com",
             "uuid": "1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e",
             "embargoed": false,
             "alerts": [],

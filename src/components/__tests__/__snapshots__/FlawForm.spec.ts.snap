@@ -105,12 +105,12 @@ exports[`flawForm > mounts and renders 1`] = `
             <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
               <!--<Transition name="flash-bg" :duration="2000">-->
               <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control is-invalid">CVE-0000-0000</span>
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span>
                   <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
                 </div>
               </transition-stub>
-              <div class="input-group" style="display: none;"><input class="form-control is-invalid" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
-              <div class="invalid-tooltip">The CVE ID is invalid: It must begin with "CVE-", have a year between 1999-2999, and have an identifier at least 4 digits long (e.g. use 0001 for 1). Please also check for unexpected characters like spaces.</div>
+              <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+              <!--v-if-->
             </div>
           </div>
         </label></div>
@@ -434,7 +434,7 @@ exports[`flawForm > mounts and renders 1`] = `
                 <div data-v-876c20ac="" id="1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-light-light-gray bg-light-yellow">
                   <div data-v-876c20ac="">
                     <div data-v-876c20ac="" class="osim-list-edit">
-                      <div data-v-4357d2eb="" class="info-group"><span data-v-4357d2eb="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-4357d2eb="" class="m-1 mb-3" href="HTTPS://EXAMPLE.COM" target="_blank">HTTPS://EXAMPLE.COM</a></div>
+                      <div data-v-4357d2eb="" class="info-group"><span data-v-4357d2eb="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-4357d2eb="" class="m-1 mb-3" href="https://example.com" target="_blank">https://example.com</a></div>
                       <div data-v-4357d2eb="" class="form-group">
                         <div data-v-633aa8fd="" data-v-4357d2eb="" class="osim-static-label osim-input mb-2 ps-3">
                           <div data-v-633aa8fd="" class="osim-static-label-top-style"><span data-v-633aa8fd="" class="top-label">Description</span>

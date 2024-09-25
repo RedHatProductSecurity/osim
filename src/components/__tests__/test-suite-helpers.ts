@@ -7,16 +7,36 @@ import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';
 import sampleFlawFull from './__fixtures__/sampleFlawFull.json';
 
-export const osimEmptyFlawTest = test.extend({
-  flaw: sampleFlawEmpty as ZodFlawType,
-});
+let flaw: null | ZodFlawType = null;
+export const osimEmptyFlawTest = test.extend<{ flaw: ZodFlawType }>({
+  // eslint-disable-next-line no-empty-pattern
+  flaw: async ({}, use) => {
+    flaw = structuredClone(sampleFlawEmpty) as ZodFlawType;
 
-export const osimRequiredFlawTest = test.extend({
-  flaw: sampleFlawRequired as ZodFlawType,
-});
+    await use(flaw);
 
-export const osimFullFlawTest = test.extend({
-  flaw: sampleFlawFull as ZodFlawType,
+    flaw = null;
+  } });
+
+export const osimRequiredFlawTest = test.extend<{ flaw: ZodFlawType }>({
+  // eslint-disable-next-line no-empty-pattern
+  flaw: async ({}, use) => {
+    flaw = structuredClone(sampleFlawRequired) as ZodFlawType;
+
+    await use(flaw);
+
+    flaw = null;
+  } });
+
+export const osimFullFlawTest = test.extend<{ flaw: ZodFlawType }>({
+  // eslint-disable-next-line no-empty-pattern
+  flaw: async ({}, use) => {
+    flaw = structuredClone(sampleFlawFull) as ZodFlawType;
+
+    await use(flaw);
+
+    flaw = null;
+  },
 });
 
 export function mockAffect({ ps_component, ps_module }: { ps_component: string; ps_module: string }): ZodAffectType {

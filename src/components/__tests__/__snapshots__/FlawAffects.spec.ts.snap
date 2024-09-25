@@ -447,8 +447,8 @@ exports[`flawAffects > Displays tracker manager for a selection of affects 1`] =
   <div data-v-0fd8a3c0="" class="affect-modules-selection mb-4">
     <div data-v-357e30d7="" data-v-0fd8a3c0="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-dash-square-dotted me-1"></i><label data-v-0fd8a3c0="" class="form-label m-2"> Affected Modules </label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class=""><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="-test">
-            <!--v-if--><span data-v-0fd8a3c0="">-test</span>
+        <div data-v-357e30d7="" class=""><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
+            <!--v-if--><span data-v-0fd8a3c0="">openshift-1</span>
           </button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-2
 This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-exclamation-lg"></i><span data-v-0fd8a3c0="">openshift-2</span></button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-3
 This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-exclamation-lg"></i><span data-v-0fd8a3c0="">openshift-3</span></button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-4
@@ -527,7 +527,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="-test">-test</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-1">openshift-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-1-1">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -706,7 +706,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
               <td data-v-7006d35c="">CLOSED</td>
               <td data-v-7006d35c=""></td>
@@ -715,7 +715,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
               <td data-v-7006d35c="">NEW</td>
               <td data-v-7006d35c=""></td>
@@ -724,7 +724,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
               <td data-v-7006d35c="">CLOSED</td>
               <td data-v-7006d35c=""></td>
@@ -733,7 +733,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
               <td data-v-7006d35c="">NEW</td>
               <td data-v-7006d35c=""></td>
@@ -818,8 +818,8 @@ exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
   <div data-v-0fd8a3c0="" class="affect-modules-selection mb-4">
     <div data-v-357e30d7="" data-v-0fd8a3c0="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-dash-square-dotted me-1"></i><label data-v-0fd8a3c0="" class="form-label m-2"> Affected Modules </label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class=""><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="-test">
-            <!--v-if--><span data-v-0fd8a3c0="">-test</span>
+        <div data-v-357e30d7="" class=""><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
+            <!--v-if--><span data-v-0fd8a3c0="">openshift-1</span>
           </button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-2
 This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-exclamation-lg"></i><span data-v-0fd8a3c0="">openshift-2</span></button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-3
 This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-exclamation-lg"></i><span data-v-0fd8a3c0="">openshift-3</span></button><button data-v-0fd8a3c0="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-4
@@ -901,7 +901,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
           <td data-v-0fd8a3c0="">
             <div data-v-0fd8a3c0="" class="ps-3"><i data-v-0fd8a3c0="" class="bi bi-database-check" title="This affect is saved"></i></div>
           </td>
-          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="-test">-test</span></td>
+          <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-1">openshift-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="" title="openshift-1-1">openshift-1-1</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">AFFECTED</span></td>
           <td data-v-0fd8a3c0=""><span data-v-0fd8a3c0="">FIX</span></td>
@@ -1080,7 +1080,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
               <td data-v-7006d35c="">CLOSED</td>
               <td data-v-7006d35c=""></td>
@@ -1089,7 +1089,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
               <td data-v-7006d35c="">NEW</td>
               <td data-v-7006d35c=""></td>
@@ -1098,7 +1098,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
               <td data-v-7006d35c="">CLOSED</td>
               <td data-v-7006d35c=""></td>
@@ -1107,7 +1107,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
             </tr>
             <tr data-v-7006d35c="">
               <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-              <td data-v-7006d35c="" title="-test">-test</td>
+              <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
               <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
               <td data-v-7006d35c="">NEW</td>
               <td data-v-7006d35c=""></td>
