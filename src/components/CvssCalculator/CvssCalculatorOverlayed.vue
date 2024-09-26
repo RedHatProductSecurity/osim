@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssCalculator from '@/components/CvssCalculator/CvssFactorButtons.vue';
+import CvssFactorButtons from '@/components/CvssCalculator/CvssFactorButtons.vue';
 
 import {
   getFactors,
@@ -14,6 +14,10 @@ import {
 const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
 
+const emit = defineEmits<{
+  updateAffectCvss: [vector: string, score: null | number];
+}>();
+
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
@@ -23,7 +27,7 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
+    emit('updateAffectCvss', newCvssVector || '', calculateScore(cvssFactors.value) || null);
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
@@ -32,6 +36,7 @@ updateFactors(cvssVector.value);
 
 watch(() => cvssVector.value, () => {
   updateFactors(cvssVector.value);
+  emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
 });
 
 function onInputFocus(event: FocusEvent) {
@@ -49,7 +54,7 @@ function onInputBlur(event: FocusEvent) {
 
 function reset() {
   cvssScore.value = null;
-  cvssVector.value = null;
+  emit('updateAffectCvss', '', null);
   cvssFactors.value = {};
 }
 
@@ -87,11 +92,20 @@ function highlightFactorValue(factor: null | string) {
     @focus="onInputFocus"
     @paste="handlePaste"
   >
-    <div class="osim-input mb-2">
-      <label class="label-group row">
-        <span class="form-label col-3">
-          RH CVSSv3
-        </span>
+    <span>{{ cvssScore }}</span>
+    <i class="bi bi-calculator-fill p-2" />
+    <CvssFactorButtons
+      v-model:cvssVector="cvssVector"
+      v-model:cvssScore="cvssScore"
+      v-model:cvssFactors="cvssFactors"
+      :highlightedFactor="highlightedFactor"
+      :highlightedFactorValue="highlightedFactorValue"
+      :isFocused="isFocused"
+      class="overlayed"
+      @highlightFactor="highlightFactor"
+      @highlightFactorValue="highlightFactorValue"
+    >
+      <div class="osim-input">
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
@@ -102,40 +116,25 @@ function highlightFactorValue(factor: null | string) {
             :highlightedFactor="highlightedFactor"
             :error="error"
             class="vector-input"
+            style="height: 30.8px;"
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
             @updateFactors="updateFactors(cvssVector)"
           />
         </div>
-        <div
-          v-if="error"
-          class="invalid-tooltip"
+        <button
+          tabindex="-1"
+          type="button"
+          :disabled="!cvssVector"
+          class="erase-button input-group-text"
+          @click="reset()"
+          @mousedown="(event: MouseEvent) => event.preventDefault()"
         >
-          {{ error }}
-        </div>
-      </label>
-      <button
-        tabindex="-1"
-        type="button"
-        :disabled="!cvssVector"
-        class="erase-button input-group-text"
-        @click="reset()"
-        @mousedown="(event: MouseEvent) => event.preventDefault()"
-      >
-        <i class="bi bi-eraser"></i>
-      </button>
-    </div>
-    <CvssCalculator
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
-      v-model:cvssFactors="cvssFactors"
-      :highlightedFactor="highlightedFactor"
-      :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused"
-      @highlightFactor="highlightFactor"
-      @highlightFactorValue="highlightFactorValue"
-    />
+          <i class="bi bi-eraser"></i>
+        </button>
+      </div>
+    </CvssFactorButtons>
   </div>
 </template>
 
@@ -144,32 +143,19 @@ function highlightFactorValue(factor: null | string) {
   display: inline-flex;
   width: 100%;
 
-  .label-group {
-    width: 100%;
-    position: relative;
-    min-height: 38px;
+  .input-wrapper {
+    padding-inline: 0;
     margin-inline: 0;
-    padding-left: 0.25rem;
-    height: 100%;
 
-    .form-label {
-      min-width: 14.375rem;
+    .vector-input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      padding: 0.15rem 0.5rem;
     }
-
-    .input-wrapper {
-      z-index: 15;
-      padding-inline: 0;
-      margin-inline: 0;
-    }
-  }
-
-  .vector-input {
-    height: 100%;
-    border-radius: 0;
-    padding-left: 0.75rem;
   }
 
   .erase-button {
+    height: 30.8px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-left: 0;

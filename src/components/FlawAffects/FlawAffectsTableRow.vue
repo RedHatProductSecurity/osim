@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { computed, toRefs } from 'vue';
 
+import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
+
 import {
   affectImpacts,
   affectAffectedness,
   possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
-import { isCVSS3issuedByRH } from '@/utils/helpers';
+import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
 
 const props = defineProps<{
   affect: ZodAffectType;
@@ -29,6 +32,7 @@ const emit = defineEmits<{
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
   'affect:track': [value: ZodAffectType];
+  'affect:updateCvss': [affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number];
 }>();
 
 const { affect } = toRefs(props);
@@ -42,7 +46,6 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 };
 
 // Select Affects
-
 const isSelectable = computed(() => !props.isBeingEdited && !props.isRemoved);
 
 function handleToggle(affect: ZodAffectType) {
@@ -58,28 +61,9 @@ function revertChanges(affect: ZodAffectType) {
   }
 }
 
-const rhCvss3 = computed(() => props.affect.cvss_scores.find(isCVSS3issuedByRH) || null);
-
-const affectCvss3Vector = computed({
-  get() {
-    return rhCvss3.value?.vector || '';
-  },
-  set(value: string) {
-    if (!rhCvss3.value) {
-      affect.value.cvss_scores.push({
-        issuer: 'RH',
-        cvss_version: 'V3',
-        comment: '',
-        score: null,
-        vector: value,
-        embargoed: affect.value.embargoed,
-        alerts: [],
-      });
-    } else {
-      rhCvss3.value.vector = value;
-    }
-  },
-});
+function affectCvss(affect: ZodAffectType) {
+  return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === IssuerEnum.Rh && cvss_version === CVSS_V3);
+}
 
 function resolutionOptions(affect: ZodAffectType) {
   return affect?.affectedness
@@ -241,14 +225,22 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       </span>
     </td>
     <td>
-      <input
+      <CvssCalculatorOverlayed
         v-if="isBeingEdited"
-        v-model="affectCvss3Vector"
-        class="form-control"
+        :id="affectCvss(affect)?.uuid"
+        :cvssVector="affectCvss(affect)?.vector"
+        :cvssScore="affectCvss(affect)?.score"
+        @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )"
         @keydown="handleEdit($event, affect)"
       />
-      <span v-else>
-        {{ affectCvss3Vector }}
+      <span v-else :title="affectCvss(affect)?.vector || ''">
+        {{ affectCvss(affect)?.score || '' }}
       </span>
     </td>
     <td>

@@ -205,7 +205,7 @@ const {
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
         <table class="table table-striped table-info mb-0">
-          <thead class="sticky-top">
+          <thead>
             <tr>
               <th>Bug ID</th>
               <th>Module</th>

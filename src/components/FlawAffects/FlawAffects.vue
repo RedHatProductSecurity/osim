@@ -17,6 +17,7 @@ import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques, matcherForAffect } from '@/utils/helpers';
+import { IssuerEnum } from '@/generated-client';
 
 import { displayModes } from './flawAffectConstants';
 import { useAffectSelections } from './useAffectSelections';
@@ -46,6 +47,7 @@ const {
   recoverAffect,
   refreshAffects,
   removeAffect,
+  updateAffectCvss,
 } = useFlawAffectsModel(flaw);
 
 const {
@@ -253,7 +255,7 @@ function addNewAffect() {
     cvss_scores: [{
       // affect: z.string().uuid(),
       cvss_version: CVSS_V3,
-      issuer: 'RH',
+      issuer: IssuerEnum.Rh,
       comment: '',
       score: null,
       vector: '',
@@ -582,6 +584,7 @@ const displayedTrackers = computed(() => {
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
         @affect:track="trackSpecificAffect"
+        @affect:updateCvss="updateAffectCvss"
       />
       <span v-if="!hasAffects" class="my-2 p-2 d-flex">
         This flaw has no affects
@@ -623,6 +626,7 @@ const displayedTrackers = computed(() => {
 @import '@/scss/bootstrap-overrides';
 
 .osim-affects-section {
+  padding-bottom: 100px;
   margin-block: 1rem;
 
   .affect-modules-selection {

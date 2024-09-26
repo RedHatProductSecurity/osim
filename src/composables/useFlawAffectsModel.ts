@@ -14,6 +14,8 @@ import {
 import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodAffectType, ZodFlawType } from '@/types';
+import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
 
 const initialAffects = ref<ZodAffectType[]>([]);
 
@@ -95,6 +97,39 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   async function removeAffects() {
     await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string));
     resetInitialAffects();
+  }
+
+  function updateAffectCvss(
+    affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number,
+  ) {
+    const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
+    // Handle affect CVSS removal when saving an empty value
+    if (newVector === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+      affect.cvss_scores[cvssScoreIndex].vector = '';
+      affect.cvss_scores[cvssScoreIndex].score = null;
+      affectCvssToDelete.value[affect.uuid] = cvssId;
+      return;
+    }
+    // Remove CVSS from deletion array when saving a non empty value
+    if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
+      delete affectCvssToDelete.value[affect.uuid];
+    }
+    // Handle saving new CVSS value
+    if (cvssScoreIndex !== -1) {
+      affect.cvss_scores[cvssScoreIndex].vector = newVector;
+      affect.cvss_scores[cvssScoreIndex].score = newScore;
+    // Handle updating existing CVSS value
+    } else if (newVector !== '') {
+      affect.cvss_scores.push({
+        issuer: IssuerEnum.Rh,
+        cvss_version: CVSS_V3,
+        comment: '',
+        score: newScore,
+        vector: newVector,
+        embargoed: affect.embargoed,
+        alerts: [],
+      });
+    }
   }
 
   async function saveAffects() {
@@ -212,6 +247,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     recoverAffect,
     saveAffects,
     removeAffects,
+    updateAffectCvss,
     affectsToDelete,
     affectCvssToDelete,
     initialAffects,

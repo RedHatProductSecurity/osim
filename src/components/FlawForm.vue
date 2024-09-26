@@ -16,7 +16,7 @@ import IssueFieldState from '@/components/IssueFieldState.vue';
 import IssueFieldReferences from '@/components/IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from '@/components/IssueFieldAcknowledgments.vue';
 import FlawComments from '@/components/FlawComments.vue';
-import CvssCalculator from '@/components/CvssCalculator.vue';
+import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawHistory from '@/components/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors.vue';

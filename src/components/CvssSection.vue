@@ -8,6 +8,7 @@ import { issuerLabels } from '@/composables/useFlawCvssScores';
 
 import type { ZodFlawCVSSType } from '@/types/zodFlaw';
 import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
 
 const props = defineProps<{
   allCvss: ZodFlawCVSSType[];
@@ -23,7 +24,9 @@ const props = defineProps<{
 const showAllCvss = ref(false);
 
 const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
-  (!(cvssItem.cvss_version === 'V3' && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist)))));
+  (
+    !(cvssItem.cvss_version === CVSS_V3 && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist))
+  )));
 </script>
 
 <template>
