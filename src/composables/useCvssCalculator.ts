@@ -47,6 +47,22 @@ export function getFactors(cvssVector: string) {
   return factors;
 }
 
+// Get factor color
+export const getFactorColor = (weight: number, isHovered: boolean = false, highlightedFactor: null | string) => {
+  const hue = isHovered ? 200 : (1 - weight) * 80; // red being 0, 80 being green
+  const alpha = highlightedFactor === null
+    ? 1
+    : isHovered
+      ? 1
+      : 0.75;
+  const hslForText = `hsla(${hue}, 100%, 35%, ${alpha})`;
+  const hslForBackground = `hsla(${hue}, 100%, 95%, ${alpha})`;
+  return {
+    'color': hslForText,
+    'background-color': hslForBackground,
+  };
+};
+
 // Calculates score
 export function calculateScore(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
