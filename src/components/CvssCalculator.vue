@@ -177,8 +177,7 @@ function handlePaste(e: ClipboardEvent) {
       :class="{ 'visually-hidden': !isFocused }"
     >
       <div
-        class="osim-input"
-        mx-0nd="$attrs"
+        class="osim-input mx-0"
       >
         <div class="ps-4 mx-auto">
           <div
