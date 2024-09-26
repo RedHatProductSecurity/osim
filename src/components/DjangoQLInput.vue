@@ -22,7 +22,7 @@ onMounted(() => {
     completionEnabled: true,
     introspections: `${osimRuntime.value.backends.osidb}/osidb/api/v1/introspection`,
     selector: textArea.value,
-    autoResize: true,
+    autoResize: false,
     onSubmit: function (value: string) {
       model.value = value;
       emit('submit', value);
