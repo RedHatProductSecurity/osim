@@ -6,6 +6,7 @@ import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
 import Modal from '@/components/widgets/Modal.vue';
 
 import { useModal } from '@/composables/useModal';
@@ -785,7 +786,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         </div>
       </div>
       <table class="table align-middle table-striped mt-1" :class="{'mb-0': totalPages === 0}">
-        <thead class="sticky-top table-dark">
+        <thead class="table-dark">
           <tr>
             <th>
               <input
@@ -1113,10 +1114,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 </span>
               </td>
               <td>
-                <input
+                <CvssCalculatorOverlayed
                   v-if="isBeingEdited(affect)"
-                  class="form-control"
-                  :value="affectCvss(affect)?.vector"
+                  :id="affectCvss(affect)?.uuid"
+                  :value:cvss-vector="affectCvss(affect)?.vector"
+                  :value:cvss-score="affectCvss(affect)?.score"
                   @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
                   @keydown="handleEdit($event, affect)"
                 />
@@ -1375,7 +1377,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(2) {
-              width: 4%;
+              width: 3%;
             }
 
             &:nth-of-type(3) {
@@ -1399,11 +1401,11 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             }
 
             &:nth-of-type(8) {
-              width: 28%;
+              width: 30%;
             }
 
             &:nth-of-type(9) {
-              width: 8%;
+              width: 7%;
             }
 
             &:nth-of-type(10) {
