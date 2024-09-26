@@ -517,9 +517,11 @@ def step_impl(context):
         'cvss3_score': cvss
     }
 
-    flaw_detail_page.set_first_affect_fields(
+    flaw_detail_page.set_affect_fields(
         module=ps_module, component=ps_component, affectedness=affectedness,
         resolution=resolution, cvss_vector=cvss)
+    flaw_detail_page.click_btn('saveBtn')
+    flaw_detail_page.wait_msg('flawSavedMsg')
     flaw_detail_page.wait_msg('affectUpdateMsg')
     flaw_detail_page.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
 
@@ -820,3 +822,20 @@ def step_impl(context):
         modules = flaw_page.get_affect_filter_result('module')
         assert len(modules) == 1
         assert modules[0] == context.module_name
+
+
+@when("I bulk update affects")
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    flaw_page.add_new_affect('bugzilla', "NEW")
+    flaw_page.close_all_toast_msg()
+    go_to_specific_flaw_detail_page(context.browser)
+    context.check_result = flaw_page.bulk_update_affects()
+
+
+@then("All affects are updated")
+def step_impl(context):
+    # Check the affect updates have been saved
+    flaw_detail_page = FlawDetailPage(context.browser)
+    for v in context.check_result:
+        flaw_detail_page.check_text_exist(v)

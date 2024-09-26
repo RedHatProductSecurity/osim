@@ -23,8 +23,8 @@ class BasePage(PageFactory):
             element = getattr(self, btn_element)
         else:
             element = btn_element
-        element.execute_script("arguments[0].scrollIntoView(true);")
-        element.execute_script("arguments[0].click();")
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.driver.execute_script("arguments[0].click();", element)
 
     def click_btn(self, btn_element):
         if not isinstance(btn_element, WebElement):
