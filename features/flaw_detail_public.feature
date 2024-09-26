@@ -111,6 +111,10 @@ Feature: Flaw detail testing on public flaw
       When I bulk update affects
       Then All affects are updated
 
+    Scenario: Filter on affects table headers
+      When I click a filterable field in affects table
+      Then I could get the correct data filtered by the field value
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
