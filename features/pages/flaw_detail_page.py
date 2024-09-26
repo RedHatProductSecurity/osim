@@ -168,6 +168,9 @@ class FlawDetailPage(BasePage):
         "bulkEditAffectBtn": ("XPATH", "//button[@title='Edit all selected affects']"),
         "affectModuleWithTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray']"),
         "affectModuleWithoutTrackerBtn": ("XPATH", "//button[@class='module-btn btn btn-sm border-gray fw-bold']"),
+        "affectAffectednessFilterBtn": ("ID", "affectedness-filter"),
+        "affectResolutionFilterBtn": ("ID", "resolution-filter"),
+        "affectImpactFilterBtn": ("ID", "impact-filter"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -962,3 +965,19 @@ class FlawDetailPage(BasePage):
             By.XPATH, f"//div[text()='{len(affects)} CVSS score(s) saved on {len(affects)} affect(s).']")
 
         return check_result
+
+    def collect_affect_filter_data(self, filter, value):
+        filter_btn = 'affect' + filter + 'FilterBtn'
+        self.click_button_with_js(filter_btn)
+        if value == '':
+            value = 'EMPTY'
+        filter_items = self.driver.find_elements(
+            locate_with(By.XPATH, "//ul[@class='dropdown-menu show']/li/a/span[text()='" + value + "']").below(
+               getattr(self, filter_btn)))
+        result = []
+        if filter_items:
+            self.click_button_with_js(filter_items[0])
+            result = self.get_affect_filter_result(filter.lower())
+            self.click_button_with_js(filter_items[0])
+        self.click_button_with_js(filter_btn)
+        return result

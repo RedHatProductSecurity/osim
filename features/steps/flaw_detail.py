@@ -820,7 +820,7 @@ def step_impl(context):
     if context.module_name:
         flaw_page = FlawDetailPage(context.browser)
         modules = flaw_page.get_affect_filter_result('module')
-        assert len(modules) == 1
+        assert len(list(set(modules))) == 1
         assert modules[0] == context.module_name
 
 
@@ -839,3 +839,25 @@ def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     for v in context.check_result:
         flaw_detail_page.check_text_exist(v)
+
+
+@when('I click a filterable field in affects table')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    context.affect = flaw_page.get_affect_value()
+    context.affectedness = flaw_page.collect_affect_filter_data(
+            'Affectedness', context.affect.affectedness)
+    context.resolutions = flaw_page.collect_affect_filter_data(
+            'Resolution', context.affect.resolution)
+    context.impacts = flaw_page.collect_affect_filter_data(
+            'Impact', context.affect.impact)
+
+
+@then('I could get the correct data filtered by the field value')
+def step_impl(context):
+    assert len(list(set(context.affectedness))) == 1
+    assert context.affectedness[0] == context.affect.affectedness
+    assert len(list(set(context.resolutions))) == 1
+    assert context.resolutions[0] == context.affect.resolution
+    assert len(list(set(context.impacts))) == 1
+    assert context.impacts[0] == context.affect.impact
