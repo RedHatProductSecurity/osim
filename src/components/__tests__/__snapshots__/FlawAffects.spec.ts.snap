@@ -235,7 +235,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
         <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-          <thead data-v-7006d35c="" class="sticky-top">
+          <thead data-v-7006d35c="">
             <tr data-v-7006d35c="">
               <th data-v-7006d35c="">Bug ID</th>
               <th data-v-7006d35c="">Module</th>
@@ -414,7 +414,7 @@ exports[`flawAffects > Correctly renders the component when there are not affect
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
         <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-          <thead data-v-7006d35c="" class="sticky-top">
+          <thead data-v-7006d35c="">
             <tr data-v-7006d35c="">
               <th data-v-7006d35c="">Bug ID</th>
               <th data-v-7006d35c="">Module</th>
@@ -679,7 +679,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
         <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-          <thead data-v-7006d35c="" class="sticky-top">
+          <thead data-v-7006d35c="">
             <tr data-v-7006d35c="">
               <th data-v-7006d35c="">Bug ID</th>
               <th data-v-7006d35c="">Module</th>
@@ -1064,7 +1064,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </div>
       <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
         <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-          <thead data-v-7006d35c="" class="sticky-top">
+          <thead data-v-7006d35c="">
             <tr data-v-7006d35c="">
               <th data-v-7006d35c="">Bug ID</th>
               <th data-v-7006d35c="">Module</th>
