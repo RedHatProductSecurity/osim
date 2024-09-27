@@ -6,6 +6,7 @@ from behave import when, then
 from selenium.webdriver.common.by import By
 
 from features.utils import (
+    is_sorted,
     generate_cve,
     generate_cwe,
     generate_random_text,
@@ -33,6 +34,7 @@ DOCUMENT_TEXT_ACTION_FIELD_DICT = {
 DROPDOWN_FIELDS = ['impact', 'source']
 INPUT_FIELDS = ['title', 'components', 'owner', 'contributors', 'cvssV3']
 COMMENT_TYPES = ['Public', 'Private', 'Internal']
+AFFECT_SORTABLE_FIELDS = ['Module', 'Component', 'Affectedness']
 
 
 @when("I add new comments to the flaw")
@@ -889,3 +891,26 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     assert flaw_detail_page.get_displayed_affects_number() == 5
+
+
+@when('I click a sortable field in affects table')
+def step_impl(context):
+    flaw_page = FlawDetailPage(context.browser)
+    sort_fields = ['Module', 'Component', 'Affectedness']
+    value_dict = {}
+    for field in sort_fields:
+        field_header = 'affect' + field + 'Header'
+        if field != 'Module':
+            flaw_page.click_button_with_js(field_header)
+        asce_values = flaw_page.get_sorted_affects(field.lower())
+        flaw_page.click_button_with_js(field_header)
+        desc_values = flaw_page.get_sorted_affects(field.lower())
+        value_dict[field] = {'desc': desc_values, 'asce': asce_values}
+    context.value_dict = value_dict
+
+
+@then('The affects table is sorted by the field')
+def step_impl(context):
+    for k, v in context.value_dict.items():
+        for order, values in v.items():
+            assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."

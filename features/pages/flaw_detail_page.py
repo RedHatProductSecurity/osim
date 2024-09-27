@@ -176,6 +176,9 @@ class FlawDetailPage(BasePage):
         "reduceAffectPerPage": ("XPATH", "//i[@title='Reduce affects per page']"),
         "increaseAffectPerPage": ("XPATH", "//i[@title='Increase affects per page']"),
         "allAffectNumberSpan": ("XPATH", "//span[contains(text(), 'All affects')]"),
+        "affectModuleHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th[contains(text(), 'Module')]"),
+        "affectComponentHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th[contains(text(), 'Component')]"),
+        "affectAffectednessHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th/span[contains(text(), 'Affectedness')]"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -1004,3 +1007,10 @@ class FlawDetailPage(BasePage):
                 self.click_button_with_js("reduceAffectPerPage")
             else:
                 self.click_button_with_js("increaseAffectPerPage")
+
+    def get_sorted_affects(self, field):
+        affect_rows = find_elements_in_page_factory(self, "affectRows")
+        affects = []
+        for row_index in range(1, len(affect_rows) + 1):
+            affects.append(self.get_affect_value(row_index))
+        return [getattr(affect, field) for affect in affects]
