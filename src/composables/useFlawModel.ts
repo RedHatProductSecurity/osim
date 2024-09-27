@@ -35,10 +35,10 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const { saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
     affectsToDelete,
-    didAffectsChange,
     initialAffects,
     removeAffects,
     saveAffects,
+    wereAffectsEditedOrAdded,
   } = useFlawAffectsModel(flaw);
 
   const router = useRouter();
@@ -128,7 +128,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     }
 
     // If the flaw is in triage and has no affects, we need to save the affects first
-    if (isInTriageWithoutAffects.value && didAffectsChange.value) {
+    if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(saveAffects);
     }
 
@@ -142,7 +142,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       queue.push(removeAffects);
     }
 
-    if (!isInTriageWithoutAffects.value && didAffectsChange.value) {
+    if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(saveAffects);
     }
 

@@ -104,13 +104,12 @@ export function matchModuleComponent(first: WithModuleComponent, second: WithMod
 }
 
 export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
-  return (first.uuid === second.uuid) || matchModuleComponent(first, second);
+  const doIdsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
+  return doIdsMatch || matchModuleComponent(first, second);
 }
 
 export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
-  return Boolean(
-    affects.find(affectToMatch => doAffectsMatch(affect, affectToMatch)),
-  );
+  return Boolean(affects.find(affectToMatch => doAffectsMatch(affect, affectToMatch)));
 }
 
 export function affectsMatcherFor(affect: ZodAffectType) {

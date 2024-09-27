@@ -12,7 +12,7 @@ import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 const props = defineProps<{
   affectsBeingEdited: ZodAffectType[];
   affectsToDelete: ZodAffectType[];
-  error: null | Record<string, any>[];
+  error: null | Record<string, any>;
   modifiedAffects: ZodAffectType[];
   selectedAffects: ZodAffectType[];
   totalPages: number;
@@ -51,7 +51,6 @@ function isNewAffect(affect: ZodAffectType) {
 }
 
 function isBeingEdited(affect: ZodAffectType) {
-  // Note: affectsBeingEdited.value.includes(affect) returns false unexpectedly here;
   return isAffectIn(affect, affectsBeingEdited.value);
 }
 </script>
@@ -67,7 +66,7 @@ function isBeingEdited(affect: ZodAffectType) {
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
         <FlawAffectsTableRow
-          :affect="affects[affectIndex]"
+          :affect="affect"
           :error="props.error"
           :isRemoved="isRemoved(affect)"
           :isModified="isModified(affect)"

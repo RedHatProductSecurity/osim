@@ -24,7 +24,7 @@ import { useFilterSortAffects } from './useFilterSortAffects';
 
 const props = defineProps<{
   embargoed: boolean;
-  error: null | Record<string, any>[];
+  error: null | Record<string, any>;
   flaw: ZodFlawType;
   relatedFlaws: ZodFlawType[];
 }>();
@@ -50,7 +50,6 @@ const {
   addAffect,
   affectsToDelete,
   initialAffects,
-  // affectCvssToDelete, // TODO: Fix/resolve post-rebase
   modifiedAffects,
   recoverAffect,
   refreshAffects,
@@ -63,18 +62,15 @@ const {
   sortAffects,
 } = useFilterSortAffects();
 
-const displayMode = ref(displayModes.ALL);
-
 const affectsBeingEdited = ref<ZodAffectType[]>([]);
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
-
+const displayMode = ref(displayModes.ALL);
+const modulesExpanded = ref(true);
 const specificAffectsToTrack = ref<ZodAffectType[]>([]);
 
-const modulesExpanded = ref(true);
-
+const allAffects = computed(() => affectsToDelete.value.concat(flaw.value.affects));
 const affectedModules = computed(() => uniques(sortAffects(allAffects.value, true).map(affect => affect.ps_module)));
 const hasAffects = computed(() => allAffects.value.length > 0);
-const allAffects = computed(() => affectsToDelete.value.concat(flaw.value.affects));
 
 watch(flaw.value.affects, (newAffects) => {
   if (newAffects.length <= 0) {
@@ -170,8 +166,7 @@ function isBeingEdited(affect: ZodAffectType) {
 }
 
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  return affectValuesPriorEdit.value.find(a => a.uuid === affect.uuid)
-    || affect; // this is a bug to return the affect itself
+  return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
 }
 
 function editAffect(affect: ZodAffectType) {
@@ -220,7 +215,7 @@ function cancelAllChanges() {
   affectsToCancel.forEach(cancelChanges);
 }
 
-function revertAffect(affect: ZodAffectType) {
+function revertAffectToLastSaved(affect: ZodAffectType) {
   const saved = initialAffects.value.find(a => a.uuid === affect.uuid);
   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
   if (index !== -1 && saved) {
@@ -235,7 +230,7 @@ function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
   affectsToRestore.forEach((affect) => {
     if (!affectsBeingEdited.value.includes(affect)) {
-      revertAffect(affect);
+      revertAffectToLastSaved(affect);
     }
   });
 }
@@ -270,7 +265,7 @@ function addNewAffect() {
 // Remove affects
 function handleRemove(affect: ZodAffectType) {
   if (isAffectSelected(affect)) toggleAffectSelection(affect);
-  removeAffect(affect, Boolean(affect.uuid));
+  removeAffect(affect);
 }
 
 function isRemoved(affect: ZodAffectType) {
@@ -571,7 +566,7 @@ const displayedTrackers = computed(() => {
         @affect:cancel="cancelChanges"
         @affect:commit="commitChanges"
         @affect:recover="recoverAffect"
-        @affect:revert="revertAffect"
+        @affect:revert="revertAffectToLastSaved"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
         @affect:track="trackSpecificAffect"
