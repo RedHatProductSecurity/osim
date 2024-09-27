@@ -11,7 +11,7 @@ import { isCVSS3issuedByRH } from '@/utils/helpers';
 
 const props = defineProps<{
   affect: ZodAffectType;
-  error: null | Record<string, any>[];
+  error: null | Record<string, any>;
   isBeingEdited: boolean;
   isLast: boolean;
   isModified: boolean;

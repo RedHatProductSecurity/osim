@@ -1,4 +1,4 @@
-import { type Ref, ref, computed, watch } from 'vue';
+import { type Ref, ref, computed } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
@@ -14,17 +14,14 @@ import {
 import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
-import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
+import type { ZodAffectType } from '@/types/zodAffect';
 
-const affectsWithChangedCvss = ref<ZodAffectType[]>([]);
-const affectIdsForPutRequest = ref<string[]>([]);
-const affectsToDelete = ref<ZodAffectType[]>([]);
-// const affectCvssToDelete = ref<Record<string, string>>({});
 const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
-  // CVSS modifications are not counted
-  const wereAffectsModified = computed(() => affectIdsForPutRequest.value.length > 0);
+  const affectsToDelete = computed(() => initialAffects.value.filter(
+    initialAffect => !flaw.value.affects.find(affectsMatcherFor(initialAffect)),
+  ));
 
   const affectCvssToDelete = computed(() => flaw.value.affects.reduce((mappings, affect) => {
     const rhCvss3 = affectRhCvss3(affect);
@@ -45,151 +42,65 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     });
   }
 
-  function hasAffectCvssChanged(anAffect: ZodAffectType) {
-    const matchAffectTo = affectsMatcherFor(anAffect);
-    const affect = flaw.value.affects.find(matchAffectTo);
+  const affectsToUpdate = computed(() => flaw.value.affects.filter(shouldUpdateAffect));
 
-    if ( // affect is new and has cvss scores
-      affect && !affect.uuid && affect.cvss_scores.length && affectRhCvss3(affect)?.vector
-    ) {
-      return true;
-    }
-
-    if ( // affect has no relevant cvss scores to check
-      !affect || !affect.cvss_scores.length || !affectRhCvss3(affect)?.vector
-    ) {
-      return false;
-    }
-
-    // Check affect's CVSS data to see if at least one cvss score has been modified
-    const originalAffect: Record<string, any> | undefined = initialAffects.value.find(matchAffectTo);
-    return affect.cvss_scores.some((cvssScore, index) =>
-      Object.entries(cvssScore).some(
-        ([key, value]) => originalAffect && originalAffect.cvss_scores[index]?.[key] !== value,
-      ),
-    );  // affect has been modified
-  }
-
-  function cvssScoresToSave(anAffect: ZodAffectType) {
-    const matchAffectTo = affectsMatcherFor(anAffect);
-    const affect = flaw.value.affects.find(matchAffectTo);
-
-    const originalAffect: Record<string, any> | undefined = initialAffects.value.find(
-      affect => affect.uuid === anAffect.uuid
-      || matchAffectTo(affect),
-    );
-
-    if (!affect || !affect.cvss_scores.length || !affectRhCvss3(affect)?.vector) {
-      return [];
-    }
-
-    if (!originalAffect) {
-      return affect.cvss_scores.filter(isCvssNew);
-    }
-
-    return affect.cvss_scores.filter((cvssScore, index) =>
-      Object.entries(cvssScore).some(
-        ([key, value]) => originalAffect.cvss_scores[index]?.[key] !== value,
-      ),
-    );
-  }
-
-  const modifiedAffects = computed(() =>
-    flaw.value.affects.filter(shouldAffectUpdate).concat(affectsWithChangedCvss.value),
-  );
-
-  const affectsToUpdate = computed(() =>
-    flaw.value.affects.filter(affect => affect.uuid && affectIdsForPutRequest.value.includes(affect.uuid)),
-  );
+  const affectCvssToUpsert = computed(() => flaw.value.affects.filter(shouldUpsertAffectCvss));
 
   const affectsToCreate = computed(() => flaw.value.affects.filter(affect => !affect.uuid));
 
-  const didAffectsChange = computed(() => {
-    const affectsForMainEndpoint = [...affectsToUpdate.value, ...affectsToCreate.value]
-      .filter(
-        affect => !affectsToDelete.value.includes(affect),
-      );
-    return affectsForMainEndpoint.length > 0
-      || affectsWithChangedCvss.value.length > 0
-      || Object.keys(affectCvssToDelete.value).length > 0;
-  });
+  const modifiedAffects = computed(() => [
+    ...affectsToUpdate.value,
+    ...affectCvssToUpsert.value.filter(({ uuid }) => uuid),
+  ]);
+
+  const wereAffectsEditedOrAdded = computed(() => modifiedAffects.value.length > 0 || affectsToCreate.value.length > 0);
 
   const { addToast } = useToastStore();
-
-  function resetAffectsForDeletion() {
-    affectsToDelete.value = [];
-  }
 
   function addAffect(newAffect: ZodAffectType) {
     newAffect.embargoed = flaw.value.embargoed;
     flaw.value.affects.unshift(newAffect);
   }
 
-  function removeAffect(affect: ZodAffectType, isRecoverable = true) {
+  function removeAffect(affect: ZodAffectType) {
     const affectIndex = flaw.value.affects.findIndex(affectToMatch => affectToMatch === affect);
     if (affectIndex === -1) {
       console.error('useFlawAffectsModel::removeAffect() Could not find affect to remove:', affect);
       return;
     }
-    const deletedAffect = flaw.value.affects.splice(affectIndex, 1)[0];
-    if (isRecoverable) affectsToDelete.value.push(deletedAffect);
+    flaw.value.affects.splice(affectIndex, 1);
   }
 
   function recoverAffect(affect: ZodAffectType) {
-    const affectIndex = affectsToDelete.value.findIndex(affectToMatch => affectToMatch === affect);
-    if (affectIndex === -1) return;
-    const recoveredAffect = affectsToDelete.value.splice(affectIndex, 1)[0];
-    flaw.value.affects.push(recoveredAffect);
+    const affectToRecover = initialAffects.value.find(affectsMatcherFor(affect));
+    if (!affectToRecover) return; // Affect is new and has no initial state to recover
+    flaw.value.affects.push(affectToRecover);
   }
 
-  function shouldAffectUpdate(affect: ZodAffectType) {
+  function didAffectChange(affect: ZodAffectType, shouldExcludeCvss = false, shouldExcludeNew = true) {
     const originalAffect = initialAffects.value.find(maybeMatch => maybeMatch.uuid === affect.uuid);
 
-    if (!affect.uuid && !originalAffect) return false;
+    if (!originalAffect && shouldExcludeNew) return false;
 
-    const excludedFields = ['cvss_scores', 'trackers'];
-    // Changes to CVSS scores are tracked separately
-    const excludingFields = pickBy((_, key) => !excludedFields.includes(key));
-    return !equals(
-      excludingFields(originalAffect), excludingFields(affect),
-    );
+    return !areAffectsEqual(affect, originalAffect, shouldExcludeCvss);
   }
 
-  function trackAffectChange(affect: ZodAffectType) {
-    if (!affect.uuid) return;
-
-    if (shouldAffectUpdate(affect) && !affectIdsForPutRequest.value.includes(affect.uuid)) {
-      affectIdsForPutRequest.value.push(affect.uuid);
-    }
-
-    if (!shouldAffectUpdate(affect) && affectIdsForPutRequest.value.includes(affect.uuid)) {
-      // if tracked, remove affect if it has reverted to original state
-      affectIdsForPutRequest.value = affectIdsForPutRequest.value.filter(id => id !== affect.uuid);
-    }
-
-    if (hasAffectCvssChanged(affect) && !affectsWithChangedCvss.value.includes(affect)) {
-      affectsWithChangedCvss.value.push(affect);
-    } else {
-      affectsWithChangedCvss.value = affectsWithChangedCvss.value.filter(affectToMatch => affectToMatch !== affect);
-    }
+  function shouldUpdateAffect(affect: ZodAffectType) {
+    return affect.uuid && didAffectChange(affect, true);
   }
 
-  // const watchAffect = (affect: ZodAffectType) => watch(affect, trackAffectChange, { deep: true });
-  // let watchers: (() => void)[] = [];
-  watch(flaw.value.affects, (affects) => {
-    // console.log('🔎🔎🔎 useFlawAffectsModel::watch() Watching flaw affects:', affects);
-    // watchers.forEach((unwatch: () => void) => unwatch());
-    // watchers = affects.map(watchAffect);
-    affects.forEach(trackAffectChange);
-  }, { immediate: true, deep: false });
+  function shouldUpsertAffectCvss(affect: ZodAffectType) {
+    return didAffectChange(affect, false, false);
+  }
 
   async function removeAffects() {
-    await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string).filter(Boolean));
-    resetAffectsForDeletion();
+    await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string));
+    resetInitialAffects();
   }
 
   async function saveAffects() {
     const savedAffects: ZodAffectType[] = [];
+    const saveErrors: unknown[] = [];
     const requestBodyFromAffect = (affect: ZodAffectType) => ({
       flaw: flaw.value?.uuid,
       uuid: affect.uuid,
@@ -208,55 +119,55 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         const response: any = await postAffects(affectsToCreate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
       } catch (error) {
+        saveErrors.push(error);
         console.error('useFlawAffectsModel::saveAffects() Error occurred while creating affect(s):', error);
       }
     }
 
-    if (wereAffectsModified.value) {
+    if (affectsToUpdate.value.length) {
       try {
         const response: any = await putAffects(affectsToUpdate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
-        resetUpdatedAffectIds();
-        refreshAffects();
+        // refreshAffects();
       } catch (error) {
+        saveErrors.push(error);
         console.error('useFlawAffectsModel::saveAffects() Error occurred while updating affect(s):', error);
       }
     }
 
-    if (affectsWithChangedCvss.value.length) {
+    if (affectCvssToUpsert.value.length) {
+      console.log('affectsWithChangedCvss.value', affectCvssToUpsert.value);
       let cvssScoresSavedCount = 0;
-      let affectWithChangedCvssCount = 0;
 
-      for (const affect of affectsWithChangedCvss.value) {
+      for (const affect of affectCvssToUpsert.value) {
+        // For any new affects that have just been saved, we need to update the affect's
         if (!affect.uuid) {
           const savedAffect = savedAffects.find(affectsMatcherFor(affect));
 
           if (!savedAffect) {
-            console.error('useFlawAffectsModel::saveAffects() Could not find saved affect for:', affect);
+            const affectIdentifier = `{affect.ps_module}/${affect.ps_component}`;
+            const error = `useFlawAffectsModel::saveAffects() Could not find saved affect for: ${affectIdentifier}`;
+            console.error(error);
+            saveErrors.push(error);
             continue;
           }
 
           affect.uuid = savedAffect.uuid;
         }
 
-        const cvssScores = cvssScoresToSave(affect);
+        const cvssScore = affectRhCvss3(affect);
+        console.log('cvssScore', cvssScore, affect);
 
         try {
-          for (const cvssScore of cvssScores) {
-            if (isCvssNew(cvssScore)) {
-              await postAffectCvssScore(affect.uuid as string, cvssScore);
-              ++cvssScoresSavedCount;
-            } else if (cvssScore.uuid) {
-              await putAffectCvssScore(affect.uuid as string, cvssScore.uuid, cvssScore);
-              ++cvssScoresSavedCount;
-            }
-            affectsWithChangedCvss.value = affectsWithChangedCvss.value.filter(
-              affectToMatch => affectToMatch !== affect,
-            );
+          if (cvssScore && !cvssScore.uuid) {
+            await postAffectCvssScore(affect.uuid as string, cvssScore);
+            ++cvssScoresSavedCount;
+          } else if (cvssScore?.uuid) {
+            await putAffectCvssScore(affect.uuid as string, cvssScore.uuid, cvssScore);
+            ++cvssScoresSavedCount;
           }
-          ++affectWithChangedCvssCount;
-          resetAffectCvssChanges();
         } catch (error) {
+          saveErrors.push(error);
           console.error('useFlawAffectsModel::saveAffects() Error updating CVSS score(s):', error);
         }
       }
@@ -264,9 +175,10 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       if (cvssScoresSavedCount) {
         addToast({
           title: 'Success!',
-          body: `${cvssScoresSavedCount} CVSS score(s) saved on ${affectWithChangedCvssCount} affect(s).`,
+          body: `${cvssScoresSavedCount} CVSS score(s) saved on ${cvssScoresSavedCount} affect(s).`,
           css: 'success',
         });
+        // resetAffectCvssChanges();
       }
     }
 
@@ -284,6 +196,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         affectWithRemovedCvssCount++;
       } catch (error) {
         console.error('useFlawAffectsModel::saveAffects() Error removing CVSS score(s):', error);
+        saveErrors.push(error);
       }
 
       if (cvssScoresRemovedCount) {
@@ -294,6 +207,9 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         });
       }
     }
+    if (saveErrors.length === 0) {
+      refreshAffects();
+    }
   }
 
   return {
@@ -302,30 +218,22 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     recoverAffect,
     saveAffects,
     removeAffects,
-    wereAffectsModified,
     affectsToDelete,
     affectCvssToDelete,
-    didAffectsChange,
     initialAffects,
     refreshAffects,
     modifiedAffects,
+    wereAffectsEditedOrAdded,
   };
 }
 
-function isCvssNew(cvssScore: ZodAffectCVSSType) {
-  if (
-    (cvssScore.uuid && !cvssScore.affect)
-    || (!cvssScore.uuid && cvssScore.affect)
-  ) {
-    console.error('useFlawAffectsModel::isCvssNew() CVSS score is missing either uuid or affect', cvssScore);
-  }
-  return !cvssScore.uuid && !cvssScore.affect;
+function resetInitialAffects() {
+  initialAffects.value = [];
 }
 
-function resetUpdatedAffectIds() {
-  affectIdsForPutRequest.value = [];
-}
-
-function resetAffectCvssChanges() {
-  affectsWithChangedCvss.value = [];
+function areAffectsEqual(affect: ZodAffectType, otherAffect?: ZodAffectType, shouldExcludeCvss = false) {
+  if (!otherAffect) return false;
+  const fieldsToExclude = shouldExcludeCvss ? ['trackers', 'cvss_scores'] : ['trackers'];
+  const excludeFields = pickBy((_, key) => !fieldsToExclude.includes(key));
+  return equals(excludeFields(affect), excludeFields(otherAffect));
 }
