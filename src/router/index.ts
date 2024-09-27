@@ -187,8 +187,15 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to) => {
   vueNextTick(() => {
-    document.title = 'OSIM | ' + to.meta.title;
+    document.title = `OSIM ${environmentString()}| ${to.meta.title}`;
   });
 });
+
+function environmentString() {
+  if (window.location.hostname.includes('localhost')) return 'Local ';
+  if (window.location.hostname.includes('stage')) return 'Stage ';
+  if (window.location.hostname.includes('uat')) return 'UAT ';
+  return '';
+}
 
 export default router;
