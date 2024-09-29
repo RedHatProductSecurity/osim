@@ -562,7 +562,7 @@ def step_impl(context):
 @then("The affect is deleted")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    if flaw_page.has_affects():
+    if flaw_page.get_displayed_affects_number() > 0:
         affect = flaw_page.get_affect_value()
         ps_module, ps_component = affect.module, affect.component
         assert (context.ps_module, context.ps_component) != (ps_module, ps_component)
@@ -602,7 +602,7 @@ def step_impl(context):
 @then("The selected affects are deleted")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    assert flaw_page.has_affects() is False
+    assert flaw_page.get_displayed_affects_number() == 0
 
 
 @when("I unembargo this flaw and add public date")
@@ -861,3 +861,31 @@ def step_impl(context):
     assert context.resolutions[0] == context.affect.resolution
     assert len(list(set(context.impacts))) == 1
     assert context.impacts[0] == context.affect.impact
+
+
+@when("I set affects pagination number to 5")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # add affect number to 6
+    all_affects_number = flaw_detail_page.get_all_affects_number()
+
+    if all_affects_number < 6:
+        diff = 6 - all_affects_number
+        for _ in range(diff):
+            flaw_detail_page.add_new_affect('bugzilla', "NEW", False)
+            flaw_detail_page.click_btn("newAddAffectCommitBtn")
+
+        flaw_detail_page.click_btn('saveBtn')
+        flaw_detail_page.wait_msg('flawSavedMsg')
+        flaw_detail_page.wait_msg("affectCreatedMsg")
+        flaw_detail_page.check_element_exists(
+            By.XPATH, f"//div[text()='{diff} CVSS score(s) saved on {diff} affect(s).']")
+
+    # change affect pagination to 5
+    flaw_detail_page.change_affect_pagination(5)
+
+
+@then("Only 5 affects shown in affect section")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    assert flaw_detail_page.get_displayed_affects_number() == 5

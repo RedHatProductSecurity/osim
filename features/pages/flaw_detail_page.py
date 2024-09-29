@@ -147,6 +147,7 @@ class FlawDetailPage(BasePage):
 
         # Affects locators
         "newAddAffectEditBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Edit affect']"),
+        "newAddAffectCommitBtn": ("XPATH", "//button[@title='Commit edit']"),
         "newAddAffectModuleInput": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/input"),
         "newAddAffectComponentInput": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/input"),
         "newAddAffectAffectednessSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/select"),
@@ -171,6 +172,10 @@ class FlawDetailPage(BasePage):
         "affectAffectednessFilterBtn": ("ID", "affectedness-filter"),
         "affectResolutionFilterBtn": ("ID", "resolution-filter"),
         "affectImpactFilterBtn": ("ID", "impact-filter"),
+        "affectPaginationNumberSpan": ("XPATH", "//div[@class='per-page-btn btn btn-sm btn-secondary']/span"),
+        "reduceAffectPerPage": ("XPATH", "//i[@title='Reduce affects per page']"),
+        "increaseAffectPerPage": ("XPATH", "//i[@title='Increase affects per page']"),
+        "allAffectNumberSpan": ("XPATH", "//span[contains(text(), 'All affects')]"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -642,7 +647,7 @@ class FlawDetailPage(BasePage):
 
         return affect
 
-    def add_new_affect(self, external_system='jira', affectedness_value='NEW'):
+    def add_new_affect(self, external_system='jira', affectedness_value='NEW', save=True):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
 
@@ -663,10 +668,11 @@ class FlawDetailPage(BasePage):
         )
 
         # Save all the updates
-        self.click_btn('saveBtn')
-        self.wait_msg('flawSavedMsg')
-        self.wait_msg("affectCreatedMsg")
-        self.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
+        if save:
+            self.click_btn('saveBtn')
+            self.wait_msg('flawSavedMsg')
+            self.wait_msg("affectCreatedMsg")
+            self.check_element_exists(By.XPATH, "//div[text()='1 CVSS score(s) saved on 1 affect(s).']")
 
         return component
 
@@ -769,9 +775,15 @@ class FlawDetailPage(BasePage):
         current_value = input_element.get_text()
         return current_value
 
-    def has_affects(self):
+    def get_displayed_affects_number(self):
         affect_rows = find_elements_in_page_factory(self, "affectRows")
-        return len(affect_rows) > 0
+        return len(affect_rows)
+
+    def get_all_affects_number(self):
+        try:
+            return int(self.allAffectNumberSpan.get_text().lstrip("All affects "))
+        except ElementNotFoundException:
+            return 0
 
     def get_flaw_id_from_unembargo_warning(self):
         text = self.unembargoWarningText.get_text()
@@ -981,3 +993,14 @@ class FlawDetailPage(BasePage):
             self.click_button_with_js(filter_items[0])
         self.click_button_with_js(filter_btn)
         return result
+
+    def change_affect_pagination(self, page_number):
+        current_page_number = int(self.affectPaginationNumberSpan.get_text().lstrip("Per page: "))
+        if page_number == current_page_number:
+            return
+
+        for _ in range(abs(current_page_number - page_number)):
+            if page_number < current_page_number:
+                self.click_button_with_js("reduceAffectPerPage")
+            else:
+                self.click_button_with_js("increaseAffectPerPage")

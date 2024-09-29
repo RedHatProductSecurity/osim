@@ -115,6 +115,10 @@ Feature: Flaw detail testing on public flaw
       When I click a filterable field in affects table
       Then I could get the correct data filtered by the field value
 
+    Scenario: Customize affects pagination number
+      When I set affects pagination number to 5
+      Then Only 5 affects shown in affect section
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
