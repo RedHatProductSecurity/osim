@@ -119,6 +119,10 @@ Feature: Flaw detail testing on public flaw
       When I set affects pagination number to 5
       Then Only 5 affects shown in affect section
 
+    Scenario: Sort affects by affects sortable fields
+      When I click a sortable field in affects table
+      Then The affects table is sorted by the field
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw
