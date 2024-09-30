@@ -448,7 +448,7 @@ function affectCvssDisplay(affect: ZodAffectType) {
   }
 }
 
-function updateAffectCvss(affect: ZodAffectType, newValue: string) {
+function updateAffectCvss(affect: ZodAffectType, newValue: null | string | undefined) {
   const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
   const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
   if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
@@ -1117,9 +1117,9 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 <CvssCalculatorOverlayed
                   v-if="isBeingEdited(affect)"
                   :id="affectCvss(affect)?.uuid"
-                  :value:cvss-vector="affectCvss(affect)?.vector"
-                  :value:cvss-score="affectCvss(affect)?.score"
-                  @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
+                  :cvssVector="affectCvss(affect)?.vector"
+                  :cvssScore="affectCvss(affect)?.score"
+                  @updateAffectCvss="(vectorValue) => updateAffectCvss(affect, vectorValue)"
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>

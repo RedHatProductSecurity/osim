@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssCalculator from '@/components/CvssCalculator/CvssFactorBtns.vue';
+import CvssFactorBtns from '@/components/CvssCalculator/CvssFactorBtns.vue';
 
 import {
   getFactors,
@@ -13,6 +13,10 @@ import {
 
 const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
+
+const emit = defineEmits<{
+  updateAffectCvss: [value: null | string | undefined];
+}>();
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
@@ -78,6 +82,10 @@ function highlightFactor(factor: null | string) {
 function highlightFactorValue(factor: null | string) {
   highlightedFactorValue.value = factor;
 }
+
+watch(cvssVector, () => {
+  emit('updateAffectCvss', cvssVector.value);
+});
 </script>
 
 <template>
@@ -117,7 +125,7 @@ function highlightFactorValue(factor: null | string) {
         <i class="bi bi-eraser"></i>
       </button>
     </div>
-    <CvssCalculator
+    <CvssFactorBtns
       v-model:cvssVector="cvssVector"
       v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
