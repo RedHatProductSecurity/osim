@@ -27,8 +27,8 @@ type ModuleComponentStreamOsidb = {
 
 type ModuleComponentStreamMeta = {
   affectUuid?: null | string;
-  ps_component?: string;
-  ps_module?: string;
+  ps_component: string;
+  ps_module: string;
 };
 
 type ZodTrackerTypeWithAffect = ZodAffectType & ZodTrackerType;
