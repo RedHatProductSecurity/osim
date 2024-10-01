@@ -171,7 +171,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     if (hasAffectCvssChanged(affect) && !affectsWithChangedCvss.value.includes(affect)) {
       affectsWithChangedCvss.value.push(affect);
     } else {
-      affectsWithChangedCvss.value = affectsWithChangedCvss.value.filter(affectToMatch => affectToMatch !== affect);
+      affectsWithChangedCvss.value = affectsWithChangedCvss.value.filter(affectToMatch => affectToMatch === affect);
     }
   }
 
