@@ -20,7 +20,7 @@ $font-family-monospace: 'Red Hat Mono', monospace;
 $font-family-code: $font-family-monospace;
 
 // A variable with !default flag will default to the previously set value of
-//  this variable (if any available). As all bootstrap variables have this flag, 
+//  this variable (if any available). As all bootstrap variables have this flag,
 //  you could import your custom-variables.scss before the bootstrap/scss/bootstrap;
 $redhat-primary: $redhat-red-50;
 $redhat-secondary: $redhat-gray-50;
