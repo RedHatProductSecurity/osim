@@ -24,6 +24,6 @@ export type {
   ZodJiraUserAssignableType,
 } from '@/types/zodJira';
 
-export type { 
-  ZodAlertType
- } from '@/types/zodShared';
+export type {
+  ZodAlertType,
+} from '@/types/zodShared';

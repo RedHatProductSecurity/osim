@@ -1,23 +1,26 @@
-import { useSettingsStore, type SettingsType } from '@/stores/SettingsStore';
 import { type Ref, computed } from 'vue';
+
 import { storeToRefs } from 'pinia';
+
+import { useSettingsStore, type SettingsType } from '@/stores/SettingsStore';
+
 import { usePagination } from './usePagination';
 
 type PaginationSetting = keyof Pick<SettingsType, 'affectsPerPage' | 'trackersPerPage'>;
 type PaginationOptions = {
+  maxItemsPerPage?: number;
   maxPagesToShow?: number;
   minItemsPerPage?: number;
-  maxItemsPerPage?: number;
   setting: PaginationSetting;
 };
 
 export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: PaginationOptions) {
   const { settings } = storeToRefs(useSettingsStore());
   const {
-    setting,
+    maxItemsPerPage = 20,
     maxPagesToShow = 7,
     minItemsPerPage = 5,
-    maxItemsPerPage = 20,
+    setting,
   } = options;
 
   function decreaseItemsPerPage() {
@@ -33,13 +36,13 @@ export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: 
   }
 
   const totalPages = computed(() =>
-    Math.ceil(itemsToPaginate.value.length / settings.value[setting])
+    Math.ceil(itemsToPaginate.value.length / settings.value[setting]),
   );
 
   const {
-    pages,
+    changePage,
     currentPage,
-    changePage
+    pages,
   } = usePagination(totalPages, maxPagesToShow);
 
   const paginatedItems = computed(() => {
