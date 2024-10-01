@@ -144,7 +144,6 @@ function highlightFactorValue(factor: null | string) {
   .input-wrapper {
     padding-inline: 0;
     margin-inline: 0;
-    z-index: 15;
 
     .vector-input {
       border-top-right-radius: 0;
