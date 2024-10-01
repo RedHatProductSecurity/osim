@@ -131,7 +131,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       />
     </td>
     <td>
-      <div class="ps-3">
+      <div class="ps-1">
         <i
           v-if="isBeingEdited"
           class="bi bi-pencil"
@@ -380,6 +380,19 @@ tr {
       .bi {
         line-height: 0;
         font-size: 0.938rem;
+      }
+    }
+
+    &:nth-of-type(1) {
+      padding-right: 0;
+    }
+
+    &:nth-of-type(2) {
+      padding: 0;
+      padding-left: 0.5rem;
+
+      & > div {
+        text-align: right;
       }
     }
 
