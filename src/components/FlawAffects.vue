@@ -1431,7 +1431,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       tbody {
         tr {
           position: relative;
-          transition: filter 0.25s;
 
           td {
             transition:
@@ -1507,12 +1506,9 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             user-select: none;
           }
 
-          &:hover {
-            filter: brightness(0.9);
-
-            td {
-              border-color: #707070bf;
-            }
+          &:hover td {
+            background-color: #c1c1c1;
+            border-color: #707070bf;
           }
         }
 
@@ -1572,18 +1568,22 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         }
 
         tr.editing:hover td {
+          background-color: #dbd2af;
           border-color: #73470a80 !important;
         }
 
         tr.modified:hover td {
+          background-color: #d2dec9;
           border-color: #204d0080 !important;
         }
 
         tr.new:hover td {
+          background-color: #c1cedb;
           border-color: #00336680 !important;
         }
 
         tr.removed:hover td {
+          background-color: #e5ccc3;
           border-color: #731f0080 !important;
         }
       }
