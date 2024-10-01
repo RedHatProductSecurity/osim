@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+
 import { isCveValid } from '@/utils/helpers';
 
 const props = defineProps<{
+  addableItems?: any[];
   labels: string[];
   slotProps: Record<string, any>;
-  addableItems?: any[];
 }>();
 
 const emit = defineEmits<{
@@ -14,16 +15,13 @@ const emit = defineEmits<{
 
 const activeTabIndex = ref(0);
 
-const selectTab = (index: number) => {
-  activeTabIndex.value = index;
-};
+const selectTab = (index: number) => activeTabIndex.value = index;
 
 const searchFilter = ref('');
 const filteredItems = computed(() => props.addableItems?.filter((item: string) => searchFilter.value
   ? item.toLowerCase().includes(searchFilter.value.toLowerCase())
-  : item
+  : item,
 ));
-
 </script>
 
 <template>
