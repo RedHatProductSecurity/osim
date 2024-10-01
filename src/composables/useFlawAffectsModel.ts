@@ -15,7 +15,7 @@ import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 
-const initialAffects = ref<ZodAffectType[]>([]);
+export const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectsToDelete = computed(() => initialAffects.value.filter(
@@ -127,7 +127,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       try {
         const response: any = await putAffects(affectsToUpdate.value.map(requestBodyFromAffect));
         savedAffects.push(...response.data.results);
-        // refreshAffects();
       } catch (error) {
         saveErrors.push(error);
         console.error('useFlawAffectsModel::saveAffects() Error occurred while updating affect(s):', error);
@@ -135,9 +134,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
 
     if (affectCvssToUpsert.value.length) {
-      console.log('affectsWithChangedCvss.value', affectCvssToUpsert.value);
       let cvssScoresSavedCount = 0;
-
       for (const affect of affectCvssToUpsert.value) {
         // For any new affects that have just been saved, we need to update the affect's
         if (!affect.uuid) {
@@ -155,7 +152,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
         }
 
         const cvssScore = affectRhCvss3(affect);
-        console.log('cvssScore', cvssScore, affect);
 
         try {
           if (cvssScore && !cvssScore.uuid) {
@@ -177,7 +173,6 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
           body: `${cvssScoresSavedCount} CVSS score(s) saved on ${cvssScoresSavedCount} affect(s).`,
           css: 'success',
         });
-        // resetAffectCvssChanges();
       }
     }
 

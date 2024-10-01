@@ -17,6 +17,7 @@ import { isAffectIn } from '@/utils/helpers';
 import { createCatchHandler } from './service-helpers';
 
 type UseTrackersReturnType = ReturnType<typeof useTrackersForSingleFlaw>;
+type FlawCveOrId = string;
 
 // For use with reactive values rather than refs (calls from template tags)
 type UnrefUseTrackersReturnType = UnwrapNestedRefs<UseTrackersReturnType>;
@@ -82,22 +83,21 @@ function useComputedState(
 
   const trackersToFile = computed(
     (): TrackersPost[] => Object.values(
-      selectedStreams.value.reduce((trackers: Record<string, TrackersPost>, tracker) => {
-        const key = `${tracker.ps_module}-${tracker.ps_component}`;
-        const affect = affectsByUuid.value[tracker.affectUuid];
-        if (key in trackers) {
-          trackers[key].affects.push(tracker.affectUuid);
-          return trackers;
+      selectedStreams.value.reduce((streamsToFile: Record<FlawCveOrId, TrackersPost>, affectWithStream) => {
+        const updateStream = affectWithStream.ps_update_stream;
+        const selectedAffectToTrack = affectsByUuid.value[affectWithStream.affectUuid];
+        if (updateStream in streamsToFile) {
+          streamsToFile[updateStream].affects.push(affectWithStream.affectUuid);
+          return streamsToFile;
         }
-        trackers[key] = {
-          affects: [tracker.affectUuid],
-          ps_update_stream: tracker.ps_update_stream,
-          // TODO: validate that affects in mutliflaw all share the same values for the following 3 fields
-          resolution: affect?.resolution,
-          embargoed: affect?.embargoed,
-          updated_dt: affect?.updated_dt,
+        streamsToFile[updateStream] = {
+          affects: [affectWithStream.affectUuid],
+          ps_update_stream: affectWithStream.ps_update_stream,
+          resolution: selectedAffectToTrack?.resolution,
+          embargoed: selectedAffectToTrack?.embargoed,
+          updated_dt: selectedAffectToTrack?.updated_dt,
         } as TrackersPost;
-        return trackers;
+        return streamsToFile;
       }, {}),
     ),
   );
@@ -117,6 +117,7 @@ export function useTrackersForRelatedFlaws(
   relatedFlaws: Ref<ZodFlawType[]>,
   specificAffectsToTrack: ZodAffectType[] = [],
 ) {
+  let trackerFetchProgress: Promise<void> | undefined;
   const {
     filterString,
     isLoadingTrackers,
@@ -141,9 +142,10 @@ export function useTrackersForRelatedFlaws(
     }
   });
 
+  // Logic for isLoadingTrackers could be moved to useTrackersForSingleFlaw as an improvement
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
     isLoadingTrackers.value = true;
-    getTrackersForFlaws({ flaw_uuids: flawUuids.value })
+    trackerFetchProgress = getTrackersForFlaws({ flaw_uuids: flawUuids.value })
       .then((response: any) => {
         relatedFlawModuleComponents.value = response.modules_components;
 
@@ -248,5 +250,6 @@ export function useTrackersForRelatedFlaws(
     isLoadingTrackers,
     selectedStreams,
     unselectedStreams,
+    trackerFetchProgress,
   };
 }

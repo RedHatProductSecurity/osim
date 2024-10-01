@@ -42,7 +42,7 @@ export function useTrackersForSingleFlaw(
   const isLoadingTrackers = ref(false);
   const filterString = ref('');
   const moduleComponents = ref<ModuleComponent[]>([]);
-  const flawUuid = computed(() => affects.value.map(affect => affect.uuid).find(Boolean));
+  const flawUuid = computed(() => affects.value.find(affect => affect.uuid && affect.flaw)?.flaw);
 
   const availableUpdateStreams = computed((): UpdateStreamOsim[] => moduleComponents.value
     .filter(moduleComponent => isResolutionTrackable(moduleComponent.affect))
@@ -123,16 +123,15 @@ export function useTrackersForSingleFlaw(
   const untrackableAffects = computed(() => untrackedAffects.value
     .filter(affect =>
       isResolutionTrackable(affect) // Don't report affects that have invalid resolutions as untrackable
-      && availableUpdateStreams.value.find(
-        affect => undefined === availableUpdateStreams.value.find(
-          stream => stream.ps_module === affect.ps_module && stream.ps_component === affect.ps_component,
-        ),
+      && undefined === availableUpdateStreams.value.find(
+        stream => stream.ps_module === affect.ps_module && stream.ps_component === affect.ps_component,
       ),
     ),
+
   );
 
-  watch(moduleComponents, () => {
-    moduleComponents.value.forEach((moduleComponent) => {
+  watch(moduleComponents, (updatedModuleComponents) => {
+    updatedModuleComponents.forEach((moduleComponent) => {
       const affect = affects.value.find(matchingAffect =>
         matchingAffect.ps_component === moduleComponent.affect.ps_component
         && matchingAffect.ps_module === moduleComponent.affect.ps_module,
@@ -146,7 +145,7 @@ export function useTrackersForSingleFlaw(
     });
   });
 
-  loadTrackers(); // TODO: is this needed still?
+  loadTrackersQueryResult();
 
   function setAllTrackerSelections(isSelected: boolean) {
     for (const stream of filteredSortedStreams.value) {
@@ -170,7 +169,7 @@ export function useTrackersForSingleFlaw(
       }),
   );
 
-  function loadTrackers() {
+  function loadTrackersQueryResult() {
     if (relatedModuleComponents) {
       moduleComponents.value = relatedModuleComponents.value;
       return;
@@ -186,7 +185,7 @@ export function useTrackersForSingleFlaw(
       .then((response: any) => {
         moduleComponents.value = response.modules_components;
       })
-      .catch(e => console.error('useTrackers::loadTrackers() Error loading trackers', e))
+      .catch(e => console.error('useTrackersForSingleFlaw::loadTrackers() Error loading trackers', e))
       .finally(() => isLoadingTrackers.value = false);
   }
 
@@ -200,8 +199,8 @@ export function useTrackersForSingleFlaw(
   function fileTrackers() {
     isFilingTrackers.value = true;
     return fileTrackingFor(trackersToFile.value)
-      .then(loadTrackers)
-      .catch(e => console.error('useTrackers::loadTrackers() Error filing trackers', e))
+      .then(loadTrackersQueryResult)
+      .catch(e => console.error('useTrackersForSingleFlaw::loadTrackers() Error filing trackers', e))
       .finally(() => isFilingTrackers.value = false);
   }
 
@@ -216,6 +215,7 @@ export function useTrackersForSingleFlaw(
     setAllTrackerSelections,
     filteredSortedStreams,
     unselectedStreams,
+    untrackedAffects,
     selectedStreams,
     filterString,
     isFilingTrackers,

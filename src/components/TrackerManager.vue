@@ -5,6 +5,7 @@ import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useTrackersForSingleFlaw';
 import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import type { ZodAffectType, ZodFlawType } from '@/types';
 
@@ -36,6 +37,10 @@ const {
   trackersToFile,
 } = useTrackersForRelatedFlaws(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
 
+const { isFetchingRelatedFlaws } = useFetchFlaw();
+
+const isQuerying = computed(() => isLoadingTrackers.value || isFetchingRelatedFlaws.value);
+
 const selectedRelatedFlawIds = computed(() => Object.keys(affectsBySelectedFlawId.value));
 
 const hasRelatedFlawSelections = computed(() => selectedRelatedFlawIds.value.length > 1);
@@ -53,10 +58,10 @@ function updateSelection(trackerSelections: UpdateStreamSelections, tracker: Upd
   }
 }
 
-function handleSetAll(singleFlawTrackerSlotProps: any, isSelected: boolean) {
-  singleFlawTrackerSlotProps.setAllTrackerSelections(isSelected);
+function handleSetAll(tabProps: any, isSelected: boolean) {
+  tabProps.setAllTrackerSelections(isSelected);
   if (shouldApplyToRelated.value) {
-    synchronizeTrackerSelections(singleFlawTrackerSlotProps.trackerSelections);
+    synchronizeTrackerSelections(tabProps.trackerSelections);
   }
 }
 
@@ -68,11 +73,6 @@ async function handleFileTrackers() {
   await fileTrackers();
   emit('affects-trackers:refresh');
 }
-
-//  TASKS
-// TODO: where are sortedFilteredTrackers and availableUpdateStreams missing from?
-// TODO: place isLoading in the correct place
-// TODO: try to preserve carlos' formatting
 </script>
 
 <template>
@@ -94,7 +94,7 @@ async function handleFileTrackers() {
         <input
           v-model="filterString"
           type="text"
-          class="p-1 ps-2 mt-2 mb-3 border border-info"
+          class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3 "
           placeholder="Filter Modules/Components..."
         />
         <button
@@ -105,33 +105,31 @@ async function handleFileTrackers() {
         >
           <i class="bi bi-x"></i>
         </button>
-        <label
-          v-if="hasRelatedFlawSelections"
-          class="form-check form-switch h-100 ms-5 p-1 d-inline-block"
-        >
-          <input
-            v-model="shouldApplyToRelated"
-            type="checkbox"
-            class="form-check-input info"
-          />
-          <span class="form-check-label">
-            Apply selections to all related flaws
-          </span>
-        </label>
       </div>
       <TabsDynamic
         :labels="selectedRelatedFlawIds"
-        :slotProps="multiFlawTrackers"
+        :tabProps="multiFlawTrackers"
         :addableItems="relatedFlawIds"
         @add-tab="addRelatedFlaw"
       >
+        <template v-if="isQuerying" #add-tab>
+          <div class="ms-2 mt-2">
+            <span
+              class="spinner-border spinner-border-sm me-1 text-info"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </span>
+            <span class="ms-1">Querying available trackers&hellip;</span>
+          </div>
+        </template>
         <template
           v-for="(relatedFlawAffects, flawCveOrId) in affectsBySelectedFlawId"
           :key="flawCveOrId"
-          #[flawCveOrId]="singleFlawTrackerSlotProps"
+          #[flawCveOrId]="tabProps"
         >
           <div class="osim-tracker-tabs">
-            <div v-if="singleFlawTrackerSlotProps.untrackableAffects?.length > 0" class="pt-5 p-3">
+            <div v-if="tabProps.untrackableAffects?.length > 0" class="pt-5 p-3">
               <div class="alert alert-danger">
                 <h5>Untrackable Affects</h5>
                 <p>
@@ -140,7 +138,7 @@ async function handleFileTrackers() {
                 </p>
                 <div class="osim-tracker-list">
                   <span
-                    v-for="affect in singleFlawTrackerSlotProps.untrackableAffects"
+                    v-for="affect in tabProps.untrackableAffects"
                     :key="`${affect.ps_module}-${affect.ps_component}`"
                   >
                     <span class="ps-1 text-danger">
@@ -151,45 +149,58 @@ async function handleFileTrackers() {
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-6">
-
-                <div class="d-flex justify-content-between">
-                  <h5 class="pt-3">
+                <div class="ms-2 pe-2">
+                  <h5 class="pt-4 d-inline-block">
                     Unfiled
                   </h5>
-                  <div class="pt-3 pe-2">
-                    <button
-                      type="button"
-                      class="btn btn-white btn-outline-dark-info btn-sm me-2"
-                      @click="handleSetAll(singleFlawTrackerSlotProps, true)"
-                    >
-                      <i class="bi bi-check-all"></i>
-                      Select
-                      {{ singleFlawTrackerSlotProps.filterString ? 'Filtered' : 'All' }}
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-white btn-outline-dark-info btn-sm me-2"
-                      @click="handleSetAll(singleFlawTrackerSlotProps, false)"
-                    >
-                      <i class="bi bi-eraser"></i>
-                      Deselect
-                      {{ singleFlawTrackerSlotProps.filterString ? 'Filtered' : 'All' }}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-white btn-outline-dark-info btn-sm mx-2"
+                    @click="handleSetAll(tabProps, true)"
+                  >
+                    <i class="bi bi-check-all"></i>
+                    Select
+                    {{ tabProps.filterString ? 'Filtered' : 'All' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-white btn-outline-dark-info btn-sm me-2"
+                    @click="handleSetAll(tabProps, false)"
+                  >
+                    <i class="bi bi-eraser"></i>
+                    Deselect
+                    {{ tabProps.filterString ? 'Filtered' : 'All' }}
+                  </button>
+                  <label
+                    v-if="hasRelatedFlawSelections"
+                    class="form-check form-switch h-100 ms-5 p-1 d-inline-block"
+                  >
+                    <input
+                      v-model="shouldApplyToRelated"
+                      type="checkbox"
+                      class="form-check-input info focus-ring focus-ring-info"
+                    />
+                    <span class="form-check-label">
+                      Sync selections across tabs
+                    </span>
+                  </label>
                 </div>
-                <div class="ms-3 mt-2 pb-3">
-                  <div v-if="singleFlawTrackerSlotProps.unselectedStreams?.length" class="osim-tracker-list my-2">
+                <div class="osim-tracker-list-container ms-3 mt-2 pb-3">
+                  <div
+                    v-if="tabProps.selectedStreams?.length"
+                    class="osim-tracker-list mt-2"
+                  >
                     <label
-                      v-for="(tracker, index) in singleFlawTrackerSlotProps.unselectedStreams"
+                      v-for="(tracker, index) in tabProps.selectedStreams"
                       :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                     >
                       <input
-                        :checked="singleFlawTrackerSlotProps.trackerSelections.get(tracker)"
+                        :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
                         class="osim-tracker form-check-input"
-                        @input="updateSelection(singleFlawTrackerSlotProps.trackerSelections, tracker)"
+                        @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
                       <span
                         class="osim-tracker-label"
@@ -209,16 +220,19 @@ async function handleFileTrackers() {
                       </span>
                     </label>
                   </div>
-                  <div v-if="singleFlawTrackerSlotProps.selectedStreams?.length" class="osim-tracker-list my-2">
+                  <div
+                    v-if="tabProps.unselectedStreams?.length"
+                    class="osim-tracker-list mb-2"
+                  >
                     <label
-                      v-for="(tracker, index) in singleFlawTrackerSlotProps.selectedStreams"
+                      v-for="(tracker, index) in tabProps.unselectedStreams"
                       :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
                     >
                       <input
-                        :checked="singleFlawTrackerSlotProps.trackerSelections.get(tracker)"
+                        :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
                         class="osim-tracker form-check-input"
-                        @input="updateSelection(singleFlawTrackerSlotProps.trackerSelections, tracker)"
+                        @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
                       <span
                         class="osim-tracker-label"
@@ -255,7 +269,7 @@ async function handleFileTrackers() {
                     <input
                       v-model="shouldFileAsMultiFlaw"
                       type="checkbox"
-                      class="form-check-input info"
+                      class="form-check-input info focus-ring focus-ring-info"
                     />
                     <span class="ms-2 d-inline-block text-nowrap">
                       File as MultiFlaw
@@ -263,56 +277,43 @@ async function handleFileTrackers() {
                   </label>
                 </div>
               </div>
-              <div v-if="isLoadingTrackers" class="ms-2 mb-1">
-                <span
-                  class="spinner-border spinner-border-sm me-1"
-                  role="status"
-                >
-                  <span class="visually-hidden">Loading...</span>
-                </span>
-                <span>Loading trackers&hellip;</span>
-              </div>
-              <div v-if="!isLoadingTrackers">
-                <div v-if="singleFlawTrackerSlotProps.alreadyFiledTrackers?.length === 0" class="ms-2">
-                  <span> No filed trackers&hellip; </span>
-                </div>
-                <div v-if="singleFlawTrackerSlotProps.alreadyFiledTrackers?.length > 0" class="osim-tracker-list">
-                  <div class="col-6">
-                    <h5 class="pt-3 mb-2 pb-2">Filed</h5>
-                    <div class="osim-tracker-list my-2">
-                      <label
-                        v-for="(tracker, index) in singleFlawTrackerSlotProps.alreadyFiledTrackers"
-                        :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
+
+              <div class="col-6">
+                <h5 class="pt-4 mb-2 pb-2">Filed</h5>
+                <div class="osim-tracker-list my-2">
+                  <label
+                    v-for="(tracker, index) in tabProps.alreadyFiledTrackers"
+                    :key="`${tracker.ps_update_stream}:${tracker.ps_component}:${index}`"
+                  >
+                    <input
+                      checked
+                      disabled
+                      type="checkbox"
+                      class="osim-tracker form-check-input"
+                    />
+                    <span
+                      class="osim-tracker-label"
+                      :class="{'osim-suggested-tracker': tracker.selected}"
+                    >
+                      <span>{{ `${tracker.ps_update_stream}` }}</span>
+                      <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                      <span
+                        v-if="tracker.selected"
+                        title="Suggested Tracker"
+                        class="ps-1"
                       >
-                        <input
-                          checked
-                          disabled
-                          type="checkbox"
-                          class="osim-tracker form-check-input"
-                        />
-                        <span
-                          class="osim-tracker-label"
-                          :class="{'osim-suggested-tracker': tracker.selected}"
-                        >
-                          <span>{{ `${tracker.ps_update_stream}` }}</span>
-                          <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
-                          <span
-                            v-if="tracker.selected"
-                            title="Suggested Tracker"
-                            class="ps-1"
-                          >
-                            <i class="bi bi-box-arrow-in-right">
-                              <span class="visually-hidden"> Suggested Tracker </span>
-                            </i>
-                          </span>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
+                        <i class="bi bi-box-arrow-in-right">
+                          <span class="visually-hidden"> Suggested Tracker </span>
+                        </i>
+                      </span>
+                    </span>
+                  </label>
                 </div>
               </div>
+
             </div>
-          </div></template>
+          </div>
+        </template>
       </TabsDynamic>
     </div>
   </div>
@@ -323,6 +324,21 @@ async function handleFileTrackers() {
 
 details:not([open]) h5 {
   margin-bottom: 0;
+}
+
+.form-check-input {
+  border-color: $info !important;
+
+  &:checked {
+    background-color: $info;
+  }
+
+  &:not(:checked) {
+    &:active,
+    &:focus {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%2821, 21, 21, 0.25%29'/%3e%3c/svg%3e");
+    }
+  }
 }
 
 .osim-tracker-manager-controls {
@@ -388,16 +404,14 @@ label {
     background-color: $lighter-info;
     margin-right: 0.5rem;
 
-    &:not(.active) {
-      box-shadow: inset 1px 1px 0 rgba($info, 0.5);
-    }
-
     &.active {
       background-color: $lightest-info;
       color: $dark-info;
       border-top: 1px solid $info;
       border-left: 1px solid $info;
       border-right: 1px solid $info;
+      border-bottom: 1px solid $lightest-info;
+      margin-bottom: -2px;
     }
 
     &.osim-add-tab {
@@ -421,8 +435,9 @@ label {
 }
 
 .osim-tracker-tabs {
-  border-left: 1px solid $info;
+  border: 1px solid $info;
   padding-left: 1rem;
+  padding-bottom: 1rem;
   margin: 0;
   background-color: $lightest-info;
 }
@@ -439,21 +454,31 @@ label {
     padding: 0.25rem;
     border: 1px solid $info;
   }
+
+  &::-webkit-scrollbar-thumb {
+    background: $info;
+    border-radius: 0.5rem;
+  }
+}
+
+.osim-tracker-list-container {
+  &:has(.osim-tracker-list:nth-of-type(2)) {
+    .osim-tracker-list {
+      &:nth-of-type(1) {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      &:nth-of-type(2) {
+        border-top: 1px dashed $info;
+        padding-top: 0;
+      }
+    }
+  }
 }
 
 .osim-trackers-filing {
   overflow: hidden;
-}
-
-.osimtracker-manageraffect-trackers-container {
-  border-left: 5px solid $info;
-  background-color: $light-info;
-  border-radius: 5px;
-
-  .btn-white:not(:hover) {
-    background-color: #fff;
-    color: dark-info;
-  }
 }
 
 .osim-tracker-selection-disabled {

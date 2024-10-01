@@ -405,7 +405,7 @@ describe('flawAffects', () => {
     await affectsTableRows[2].trigger('click');
 
     const trackerManagerSelection = subject.find('.affects-toolbar .affects-table-actions .trackers-btn');
-    expect(trackerManagerSelection.text()).toBe('Manage Trackers');
+    expect(trackerManagerSelection.text()).toBe('Manage Trackers for 3 Affect(s)');
     await trackerManagerSelection.trigger('click');
 
     const modal = subject.find('.modal');

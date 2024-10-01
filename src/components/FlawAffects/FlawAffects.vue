@@ -62,7 +62,9 @@ const {
   sortAffects,
 } = useFilterSortAffects();
 
+// TODO: refactor affect editing logic into composable
 const affectsBeingEdited = ref<ZodAffectType[]>([]);
+// TODO: refactor affect editing logic into composable
 const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
 const displayMode = ref(displayModes.ALL);
 const modulesExpanded = ref(true);
@@ -161,14 +163,17 @@ function moduleBtnTooltip(moduleName: string) {
       : '');
 }
 
+// TODO: refactor affect editing logic into composable
 function isBeingEdited(affect: ZodAffectType) {
   return affectsBeingEdited.value.includes(affect);
 }
 
+// TODO: refactor affect editing logic into composable
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
   return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
 }
 
+// TODO: refactor affect editing logic into composable
 function editAffect(affect: ZodAffectType) {
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
@@ -184,6 +189,7 @@ function editSelectedAffects() {
   selectedAffects.value.forEach(editAffect);
 }
 
+// TODO: refactor affect editing logic into composable
 function commitChanges(affect: ZodAffectType) {
   const matchAffect = affectsMatcherFor(affect);
   const updateIndex = flaw.value.affects.findIndex(matchAffect);
@@ -191,10 +197,12 @@ function commitChanges(affect: ZodAffectType) {
   resetStagedAffectEdit(affect);
 }
 
+// TODO: refactor affect editing logic into composable
 function cancelChanges(affect: ZodAffectType) {
   resetStagedAffectEdit(affect);
 }
 
+// TODO: refactor affect editing logic into composable
 function resetStagedAffectEdit(affect: ZodAffectType) {
   const matchAffect = affectsMatcherFor(affect);
   const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
@@ -215,6 +223,7 @@ function cancelAllChanges() {
   affectsToCancel.forEach(cancelChanges);
 }
 
+// TODO: refactor affect editing logic into composable
 function revertAffectToLastSaved(affect: ZodAffectType) {
   const saved = initialAffects.value.find(a => a.uuid === affect.uuid);
   const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
@@ -486,6 +495,14 @@ const displayedTrackers = computed(() => {
         </div>
         <div class="affects-table-actions ms-auto">
           <button
+            v-if="selectedAffects.length > 0"
+            type="button"
+            class="trackers-btn btn btn-sm btn-info"
+            @click.prevent.stop="openManageTrackersModal"
+          >
+            Manage Trackers for {{ selectedAffects.length }} Affect(s)
+          </button>
+          <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white"
@@ -538,14 +555,6 @@ const displayedTrackers = computed(() => {
             @click.prevent="removeSelectedAffects()"
           >
             <i class="bi bi-trash" />
-          </button>
-          <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="trackers-btn btn btn-sm btn-info"
-            @click.prevent.stop="openManageTrackersModal"
-          >
-            Manage Trackers
           </button>
           <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
             Add New Affect

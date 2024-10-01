@@ -105,12 +105,12 @@ exports[`flawForm > mounts and renders 1`] = `
             <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
               <!--<Transition name="flash-bg" :duration="2000">-->
               <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control is-invalid">CVE-0000-0000</span>
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span>
                   <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
                 </div>
               </transition-stub>
-              <div class="input-group" style="display: none;"><input class="form-control is-invalid" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
-              <div class="invalid-tooltip">The CVE ID is invalid: It must begin with "CVE-", have a year between 1999-2999, and have an identifier at least 4 digits long (e.g. use 0001 for 1). Please also check for unexpected characters like spaces.</div>
+              <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+              <!--v-if-->
             </div>
           </div>
         </label></div>
@@ -438,7 +438,7 @@ exports[`flawForm > mounts and renders 1`] = `
                 <div data-v-876c20ac="" id="1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
                   <div data-v-876c20ac="">
                     <div data-v-876c20ac="" class="osim-list-edit">
-                      <div data-v-4357d2eb="" class="info-group"><span data-v-4357d2eb="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-4357d2eb="" class="m-1 mb-3" href="HTTPS://EXAMPLE.COM" target="_blank">HTTPS://EXAMPLE.COM</a></div>
+                      <div data-v-4357d2eb="" class="info-group"><span data-v-4357d2eb="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-4357d2eb="" class="m-1 mb-3" href="https://example.com" target="_blank">https://example.com</a></div>
                       <div data-v-4357d2eb="" class="form-group">
                         <div data-v-633aa8fd="" data-v-4357d2eb="" class="osim-static-label osim-input mb-2 ps-3">
                           <div data-v-633aa8fd="" class="osim-static-label-top-style"><span data-v-633aa8fd="" class="top-label">Description</span>
@@ -580,10 +580,11 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </tr>
           </thead>
           <tbody data-v-93f0c720="">
+            <!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
@@ -600,16 +601,16 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
               <td data-v-cf2e7c24="">
@@ -621,11 +622,11 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
@@ -642,11 +643,11 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
@@ -663,11 +664,11 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
@@ -684,11 +685,11 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
             <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
-                <div data-v-cf2e7c24="" class="ps-3"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
+                <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>

@@ -109,7 +109,7 @@
             "uuid": "f300fbec-29ef-4b4d-8a01-bb210bd09d50",
             "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
             "affectedness": "AFFECTED",
-            "resolution": "FIX",
+            "resolution": "DELEGATED",
             "ps_module": "openshift-2",
             "ps_product": null,
             "ps_component": "openshift-2-1",

@@ -194,7 +194,7 @@ export default tseslint.config(
       '@stylistic/type-annotation-spacing': 'error',
       'eol-last': ['error', 'always'],
       'linebreak-style': ['error', 'unix'],
-      'max-len': ['error', { code: 120 }],
+      'max-len': ['error', { code: 120, ignoreUrls: true }],
     },
   },
   {

@@ -6,7 +6,7 @@ exports[`issueFieldAcknowledgements > should render the acknowledgements field i
     <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="visually-hidden">
-          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-light-light-gray bg-light-yellow">
+          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
             <div data-v-876c20ac="">
               <div data-v-876c20ac="" class="osim-list-edit">
                 <div data-v-fde7522e="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-fde7522e="">Simon McVittie from </div>
@@ -40,7 +40,7 @@ exports[`issueFieldAcknowledgements > should render the acknowledgements field i
     <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="visually-hidden">
-          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-light-light-gray bg-light-yellow">
+          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
             <div data-v-876c20ac="">
               <div data-v-876c20ac="" class="osim-list-edit">
                 <div data-v-fde7522e="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-fde7522e="">Simon McVittie from </div>
