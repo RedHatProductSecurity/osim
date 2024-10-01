@@ -149,6 +149,7 @@ trackers will be refreshed (`OSIDB-3402`)
 
 ## [2024.6.0]
 ### Added
+* Embedded Cvss3 calculator in `Flaw` views (`OSIDB-1204`)
 * Self-Assign button for Flaws (`OSIDB-2593`)
 * Provide time to Public Date field (`OSIDB-1848`)
 * Add neighboring dropdown menu to Flaw Description for its review workflow (`OSIDB-2623`)
@@ -168,58 +169,6 @@ trackers will be refreshed (`OSIDB-3402`)
 * Set public date to current date on unembargo (`OSIDB-2829`)
 * Add CVSSv3 score explanation input field (`OSIDB-2913`)
 * Remove checkbox on IssueQueue (`OSIDB-2488`)
-
-### Changed
-* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
-* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
-* Support internal flaw comments using Jira (`OSIDB-828`)
-* Redesign flaw comments section (`OSIDB-2536`)
-* Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
-* Dramatically enhanced Manage Trackers UI (`OSIDB-2915`)
-  * Organize by selected, unselected, and already filed
-  * Limit UI space of element
-  * Filter trackers by stream or component name
-  * Shows recommended tracker icon
-* Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
-* Renamed Flaw Status to Flaw State (`OSIDB-2899`)
-* Improve reporting on tracker filing errors (`OSIDB-2909`)
-* Added timezone to Public Date field (UTC) (`OSIDB-2790`)
-* Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
-* Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
-
-### Fixed
-* The session is now shared across tabs
-* CVSS scores on affects can be added (`OSIDB-2573`)
-* Disable form on references and acknowledgments save actions (`OSIDB-2645`)
-* References and acknowledgments disappear after save actions (`OSIDB-2645`)
-* References and acknowledgments are not refreshed after save actions (`OSIDB-2645`)
-* Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
-* Restored required field validations to Flaw fields (`OSIDB-2725`)
-* De/Select all button in Trackers Manager (`OSIDB-2908`)
-* Save affects all at once (`OSIDB-2206`)
-* Show only allowed sources for Flaw Create/Edit (`OSIDB-2395`)
-* Fixed deleted affects message after flaw save (`OSIDB-2693`)
-* Recover from save errors during flaw creation, show saving animation (`OSIDB-2765`)
-* Prevent saving of unmodified affects (`OSIDB-2754`)
-* Unable to save first cvss score on flaws (`OSIDB-2769`)
-* Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
-* Reset affects when flaw is reset (`OSIDB-2793`)
-* New public comments are not displayed (`OSIDB-2700`)
-* Fix outdated model (409) errors on saving affects (`OSIDB-2933`)
-* Fix Flaw Owner self assign button to assign correct Jira username (`OSIDB-2715`)
-* Fix My Issues filter on index page to filter by correct Jira usernamne (`OSIDB-2716`)
-
-### Removed
-* Removed is_major_incident usage (`OSIDB-2778`)
-* Removed comment.type usage (`OSIDB-2781`)
-* Removed Flaw.meta usage (`OSIDB-2801`)
-* Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
-* Removed validation on empty references description (`OSIDB-2846`)
-
-## [Unreleased] (TODO update for 2024.1.1 and 2024.2.0 releases)
-
-### Added
-* Embedded Cvss3 calculator in `Flaw` views (`OSIDB-1204`)
 
 ### Changed
 * Flaw URLs consists preferably of CVE ID if possible (`OSIDB-2018`)
@@ -250,6 +199,22 @@ trackers will be refreshed (`OSIDB-3402`)
 * Show Default Filter on IndexView Page
 * Remove Team ID from Flaw detail page and advanced search page
 * Add Errata Link for Tracker
+* Switch Flaw.component to Flaw.components (`OSIDB-2777`)
+* Use comment_zero instead of description from OSIDB (`OSIDB-2784`)
+* Support internal flaw comments using Jira (`OSIDB-828`)
+* Redesign flaw comments section (`OSIDB-2536`)
+* Rename assignee to owner in flaw filter and detail pages (`OSIDB-2898`)
+* Dramatically enhanced Manage Trackers UI (`OSIDB-2915`)
+  * Organize by selected, unselected, and already filed
+  * Limit UI space of element
+  * Filter trackers by stream or component name
+  * Shows recommended tracker icon
+* Make `Impact`, `Public Date` and `Component` optional for a `Rejected` flaw (`OSIDB-2849`)
+* Renamed Flaw Status to Flaw State (`OSIDB-2899`)
+* Improve reporting on tracker filing errors (`OSIDB-2909`)
+* Added timezone to Public Date field (UTC) (`OSIDB-2790`)
+* Don't collapse affected modules automatically after deleting a component (only occurred when no other components were expanded) (`OSIDB-2757`)
+* Add emptiness for CVSSv3, CWE ID, Owner, Description, Statement, Mitigation on Advanced Search (`OSIDB-2816`)
 
 ### Fixed
 * Fixed overlap on edit buttons at References and Acknowledgements items
@@ -276,8 +241,33 @@ trackers will be refreshed (`OSIDB-3402`)
 * Fixed 'outdated Flaw' error when updating affects, references, acknowlegdements, CVSS scores, flaw
 * The session is now shared across tabs
 * Fixed CVSS scores not being saved after flaw creation
+* The session is now shared across tabs
+* CVSS scores on affects can be added (`OSIDB-2573`)
+* Disable form on references and acknowledgments save actions (`OSIDB-2645`)
+* References and acknowledgments disappear after save actions (`OSIDB-2645`)
+* References and acknowledgments are not refreshed after save actions (`OSIDB-2645`)
+* Fixed FlawForm Remove Summary, Statement, Mitigation Button (`OSIDB-2703`)
+* Restored required field validations to Flaw fields (`OSIDB-2725`)
+* De/Select all button in Trackers Manager (`OSIDB-2908`)
+* Save affects all at once (`OSIDB-2206`)
+* Show only allowed sources for Flaw Create/Edit (`OSIDB-2395`)
+* Fixed deleted affects message after flaw save (`OSIDB-2693`)
+* Recover from save errors during flaw creation, show saving animation (`OSIDB-2765`)
+* Prevent saving of unmodified affects (`OSIDB-2754`)
+* Unable to save first cvss score on flaws (`OSIDB-2769`)
+* Unable to save new references and ackowledgments on flaws (`OSIDB-2206`)
+* Reset affects when flaw is reset (`OSIDB-2793`)
+* New public comments are not displayed (`OSIDB-2700`)
+* Fix outdated model (409) errors on saving affects (`OSIDB-2933`)
+* Fix Flaw Owner self assign button to assign correct Jira username (`OSIDB-2715`)
+* Fix My Issues filter on index page to filter by correct Jira usernamne (`OSIDB-2716`)
 
-
+### Removed
+* Removed is_major_incident usage (`OSIDB-2778`)
+* Removed comment.type usage (`OSIDB-2781`)
+* Removed Flaw.meta usage (`OSIDB-2801`)
+* Removed cvss2 and cvss3 fields from Flaw and Affects (`OSIDB-2779`)
+* Removed validation on empty references description (`OSIDB-2846`)
 
 ## [2024.1.0]
 
