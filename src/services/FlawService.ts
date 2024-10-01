@@ -70,6 +70,7 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
       params: {
         affects__ps_module: firstAffectPsModule,
         affects__ps_component: firstAffectPsComponent,
+        order: ['-created_dt'],
       },
     });
     relatedFlaws.push(...response.data.results);
