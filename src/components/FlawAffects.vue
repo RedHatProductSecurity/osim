@@ -30,6 +30,7 @@ const props = defineProps<{
   error: null | Record<string, any>[];
   flawId: string;
 }>();
+
 const emit = defineEmits<{
   'affect:add': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
@@ -448,25 +449,27 @@ function affectCvssDisplay(affect: ZodAffectType) {
   }
 }
 
-function updateAffectCvss(affect: ZodAffectType, newValue: null | string | undefined) {
+function updateAffectCvss(affect: ZodAffectType, newVector: string, newScore: null | number) {
   const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
   const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
-  if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+  if (newVector === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
     affect.cvss_scores[cvssScoreIndex].vector = '';
+    affect.cvss_scores[cvssScoreIndex].score = null;
     affectCvssToDelete.value[affect.uuid] = cvssId;
   } else {
     if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
       delete affectCvssToDelete.value[affect.uuid];
     }
     if (cvssScoreIndex !== -1) {
-      affect.cvss_scores[cvssScoreIndex].vector = newValue;
-    } else if (newValue !== '') {
+      affect.cvss_scores[cvssScoreIndex].vector = newVector;
+      affect.cvss_scores[cvssScoreIndex].score = newScore;
+    } else if (newVector !== '') {
       affect.cvss_scores.push({
         issuer: 'RH',
         cvss_version: 'V3',
         comment: '',
-        score: null,
-        vector: newValue,
+        score: newScore,
+        vector: newVector,
         embargoed: props.embargoed,
         alerts: [],
       });
@@ -1119,7 +1122,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   :id="affectCvss(affect)?.uuid"
                   :cvssVector="affectCvss(affect)?.vector"
                   :cvssScore="affectCvss(affect)?.score"
-                  @updateAffectCvss="(vectorValue) => updateAffectCvss(affect, vectorValue)"
+                  @updateAffectCvss="(vectorValue, scoreValue) => updateAffectCvss(affect, vectorValue, scoreValue)"
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>

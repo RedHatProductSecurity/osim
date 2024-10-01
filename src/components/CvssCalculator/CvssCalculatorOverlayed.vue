@@ -15,7 +15,7 @@ const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
 
 const emit = defineEmits<{
-  updateAffectCvss: [value: null | string | undefined];
+  updateAffectCvss: [vector: string, score: null | number];
 }>();
 
 const error = computed(() => validateCvssVector(cvssVector.value));
@@ -27,7 +27,7 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
+    emit('updateAffectCvss', newCvssVector || '', calculateScore(cvssFactors.value) || null);
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
@@ -36,6 +36,7 @@ updateFactors(cvssVector.value);
 
 watch(() => cvssVector.value, () => {
   updateFactors(cvssVector.value);
+  emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
 });
 
 function onInputFocus(event: FocusEvent) {
@@ -53,7 +54,7 @@ function onInputBlur(event: FocusEvent) {
 
 function reset() {
   cvssScore.value = null;
-  cvssVector.value = null;
+  emit('updateAffectCvss', '', null);
   cvssFactors.value = {};
 }
 
@@ -82,10 +83,6 @@ function highlightFactor(factor: null | string) {
 function highlightFactorValue(factor: null | string) {
   highlightedFactorValue.value = factor;
 }
-
-watch(cvssVector, () => {
-  emit('updateAffectCvss', cvssVector.value);
-});
 </script>
 
 <template>
