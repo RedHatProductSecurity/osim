@@ -73,7 +73,6 @@ async function handleFileTrackers() {
 // TODO: where are sortedFilteredTrackers and availableUpdateStreams missing from?
 // TODO: place isLoading in the correct place
 // TODO: try to preserve carlos' formatting
-
 </script>
 
 <template>
