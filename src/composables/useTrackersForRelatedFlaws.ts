@@ -141,6 +141,7 @@ export function useTrackersForRelatedFlaws(
     }
   });
 
+  // Logic for isLoadingTrackers could be moved to useTrackersForSingleFlaw as an improvement
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
     isLoadingTrackers.value = true;
     getTrackersForFlaws({ flaw_uuids: flawUuids.value })

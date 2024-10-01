@@ -125,6 +125,17 @@ async function handleFileTrackers() {
         :addableItems="relatedFlawIds"
         @add-tab="addRelatedFlaw"
       >
+        <template v-if="true" #add-tab>
+          <div class="ms-2 mt-2">
+            <span
+              class="spinner-border spinner-border-sm me-1 text-info"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </span>
+            <span class="ms-1">Querying available trackers&hellip;</span>
+          </div>
+        </template>
         <template
           v-for="(relatedFlawAffects, flawCveOrId) in affectsBySelectedFlawId"
           :key="flawCveOrId"
