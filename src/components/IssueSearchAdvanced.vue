@@ -165,7 +165,7 @@ function handleToggleOrder() {
         <div v-if="emptinessSupportedFields.includes(facet.field)" class="btn-group">
           <button
             class="btn btn-sm btn-primary rounded-0 py-0"
-            title="Non empty field search"
+            title="Empty field search"
             type="button"
             :disabled="facet.value === 'isempty'"
             @click="facet.value = 'isempty'"
@@ -174,7 +174,7 @@ function handleToggleOrder() {
           </button>
           <button
             class="btn btn-sm btn-primary rounded-0 py-0"
-            title="Empty field search"
+            title="Non empty field search"
             type="button"
             :disabled="facet.value === 'nonempty'"
             @click="facet.value = 'nonempty'"

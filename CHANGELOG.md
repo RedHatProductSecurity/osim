@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Corrected wrong tooltips on advance search, empty/non-empty buttons (`OSIDB-3502`)
+
 ## [2024.9.2]
 ### Added
 * Add query filter support on advance search (`OSIDB-3088`)
