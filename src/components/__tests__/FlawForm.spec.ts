@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
+import { http, HttpResponse } from 'msw';
 
 import LabelEditable from '@/components/widgets/LabelEditable.vue';
 import IssueFieldState from '@/components/IssueFieldState.vue';
@@ -21,6 +22,9 @@ import {
 } from '@/generated-client';
 import { flawSources } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
+import { server } from '@/__tests__/setup';
+import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import { osimFullFlawTest } from './test-suite-helpers';
@@ -499,10 +503,23 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should not show border when flaw is not embargoed', async ({ flaw }) => {
-    flaw.embargoed = false;
     const subject = mountWithProps({ flaw, mode: 'edit' });
     const flawForm = subject.find('div.osim-flaw-form-embargoed');
 
     expect(flawForm?.exists()).toBeFalsy();
+  });
+
+  osimFullFlawTest('should emit event on flaw update', async ({ flaw }) => {
+    server.use(
+      getNextAccessTokenRefreshHandler,
+      http.get(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json(flaw)),
+      http.put(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json({})),
+    );
+    const wrapper = mountWithProps({ flaw, mode: 'edit' });
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.emitted()).toHaveProperty('refresh:flaw');
   });
 });

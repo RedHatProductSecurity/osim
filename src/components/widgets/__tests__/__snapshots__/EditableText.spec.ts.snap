@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`editableText > renders correctly 1`] = `
+"<!-- for invalid-tooltip positioning -->
+<div class="position-relative col-9 osim-editable-field osim-text">
+  <!--<Transition name="flash-bg" :duration="2000">-->
+  <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Initial value</span>
+      <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+    </div>
+  </transition-stub>
+  <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+  <!--v-if-->
+</div>"
+`;

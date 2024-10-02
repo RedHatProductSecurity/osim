@@ -10,6 +10,7 @@ export default defineConfig(configEnv =>
     defineConfig({
       test: {
         coverage: {
+          enabled: false,
           provider: 'istanbul',
           reporter: [
             'text',
@@ -17,7 +18,8 @@ export default defineConfig(configEnv =>
             'json',
             // 'lcov',
           ],
-          exclude: ['src/generated-client/*'],
+          include: ['src/**/*'],
+          exclude: ['src/generated-client/*', 'src/mock-server/*', 'src/shims/*'],
         },
         environment: 'jsdom',
         exclude: [...configDefaults.exclude, 'e2e/*'],

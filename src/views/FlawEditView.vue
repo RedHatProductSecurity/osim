@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
+import FlawForm from '@/components/FlawForm.vue';
+
 import { useToastStore } from '@/stores/ToastStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
-
-import { getFlaw } from '../services/FlawService';
-import FlawForm from '../components/FlawForm.vue';
+import { getFlaw } from '@/services/FlawService';
 
 const props = defineProps<{
   id: string;

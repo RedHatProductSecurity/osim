@@ -4,7 +4,6 @@ import type { Directive } from 'vue';
 import { createPinia } from 'pinia';
 import { IMaskDirective } from 'vue-imask';
 
-import { InputLabelDirective } from '@/directives/InputLabelDirective.js';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 
 import App from './App.vue';
@@ -19,7 +18,6 @@ const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
-app.directive('input-label', InputLabelDirective);
 app.directive('osim-loading', LoadingAnimationDirective);
 app.directive('imask', IMaskDirective as Directive);
 
