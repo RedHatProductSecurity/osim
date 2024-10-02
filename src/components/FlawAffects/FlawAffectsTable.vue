@@ -93,5 +93,12 @@ function isBeingEdited(affect: ZodAffectType) {
 
 table {
   border-collapse: separate;
+
+  &:deep(td) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20vw;
+  }
 }
 </style>

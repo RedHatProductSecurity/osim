@@ -136,9 +136,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     }
 
     if (affectCvssToUpsert.value.length) {
-      console.log('affectsWithChangedCvss.value', affectCvssToUpsert.value);
       let cvssScoresSavedCount = 0;
-
       for (const affect of affectCvssToUpsert.value) {
         // For any new affects that have just been saved, we need to update the affect's
         if (!affect.uuid) {

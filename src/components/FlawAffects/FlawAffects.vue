@@ -486,6 +486,14 @@ const displayedTrackers = computed(() => {
         </div>
         <div class="affects-table-actions ms-auto">
           <button
+            v-if="selectedAffects.length > 0"
+            type="button"
+            class="trackers-btn btn btn-sm btn-info"
+            @click.prevent.stop="openManageTrackersModal"
+          >
+            Manage Trackers for {{ selectedAffects.length }} Affect(s)
+          </button>
+          <button
             v-if="affectsBeingEdited.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white"
@@ -538,14 +546,6 @@ const displayedTrackers = computed(() => {
             @click.prevent="removeSelectedAffects()"
           >
             <i class="bi bi-trash" />
-          </button>
-          <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="trackers-btn btn btn-sm btn-info"
-            @click.prevent.stop="openManageTrackersModal"
-          >
-            Manage Trackers
           </button>
           <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
             Add New Affect

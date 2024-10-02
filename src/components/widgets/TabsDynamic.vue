@@ -6,7 +6,7 @@ import { isCveValid } from '@/utils/helpers';
 const props = defineProps<{
   addableItems?: any[];
   labels: string[];
-  slotProps: Record<string, any>;
+  tabProps: Record<string, any>;
 }>();
 
 const emit = defineEmits<{
@@ -38,7 +38,7 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
         </button>
       </li>
       <slot name="add-tab">
-        <li v-if="addableItems?.length" class="nav-item">
+        <li class="nav-item">
           <button
             type="button"
             class="nav-link osim-add-tab"
@@ -46,7 +46,7 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
           >
             <i class="bi bi-plus"></i>
           </button>
-          <ul class="osim-dropdown-menu dropdown-menu dropdown-menu-end">
+          <ul class="p-2 osim-dropdown-menu dropdown-menu dropdown-menu-end">
             <li>
               <input
                 v-model="searchFilter"
@@ -57,7 +57,7 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
               />
               <button
                 :disabled="!isCveValid(searchFilter)"
-                class="btn btn-info btn-sm"
+                class="btn btn-info btn-sm font-white"
                 type="button"
                 @click="emit('add-tab', searchFilter)"
               >Add</button>
@@ -79,7 +79,7 @@ const filteredItems = computed(() => props.addableItems?.filter((item: string) =
       <slot
         :key="index"
         :name="label"
-        v-bind="slotProps[label]"
+        v-bind="tabProps[label]"
       />
     </div>
   </div>
