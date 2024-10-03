@@ -163,9 +163,6 @@ const usernameDisplay = computed(() => {
           <li>
             <RouterLink class="dropdown-item" :to="{ name: 'settings' }">Settings</RouterLink>
           </li>
-          <li v-if="osimRuntime.env === 'dev'">
-            <RouterLink class="dropdown-item" :to="{ name: 'widget-test' }">Widget Test</RouterLink>
-          </li>
           <li>
             <hr class="dropdown-divider">
           </li>
