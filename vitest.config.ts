@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+import { env } from 'node:process';
 
 import { mergeConfig, defineConfig, configDefaults } from 'vitest/config';
 
@@ -10,7 +11,7 @@ export default defineConfig(configEnv =>
     defineConfig({
       test: {
         coverage: {
-          enabled: false,
+          enabled: env.CI === 'true',
           provider: 'istanbul',
           reporter: [
             'text',
@@ -20,6 +21,13 @@ export default defineConfig(configEnv =>
           ],
           include: ['src/**/*'],
           exclude: ['src/generated-client/*', 'src/mock-server/*', 'src/shims/*'],
+          thresholds: {
+            autoUpdate: false,
+            statements: 80,
+            branches: 65,
+            functions: 74,
+            lines: 80,
+          },
         },
         environment: 'jsdom',
         exclude: [...configDefaults.exclude, 'e2e/*'],
@@ -27,9 +35,6 @@ export default defineConfig(configEnv =>
         globals: true,
         setupFiles: [
           './src/__tests__/setup.ts',
-        ],
-        globalSetup: [
-          // './src/__tests__/global-setup.ts',
         ],
       },
     })));
