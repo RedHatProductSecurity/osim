@@ -17,6 +17,7 @@ const historyExpanded = ref(false);
 
 <template>
   <LabelCollapsible
+    v-show="flaw.history && flaw.history.length > 0"
     class="my-2"
     :isExpanded="historyExpanded"
     @toggleExpanded="historyExpanded = !historyExpanded"
