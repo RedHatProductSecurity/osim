@@ -109,3 +109,7 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 export function getRhCvss3(scores: any[]) {
   return getSpecficCvssScore(scores, 'RH', 'V3');
 }
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
