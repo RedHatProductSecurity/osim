@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { Settings } from 'luxon';
 
 import IssueQueueItem from '@/components/IssueQueueItem.vue';
 
@@ -68,6 +69,7 @@ describe('issueQueue', () => {
 
   afterAll(() => {
     vi.clearAllMocks();
+    Settings.defaultZone = 'local';
   });
 
   it('should fetch data from API', async () => {
@@ -295,5 +297,21 @@ describe('issueQueue', () => {
     expect(defaultFilterEL.findAll('span.badge')).toHaveLength(1);
     const filterOptionEL = defaultFilterEL.find('span.badge');
     expect(filterOptionEL.text()).toBe('Affected Component : test');
+  });
+
+  it('should render create_dt in UTC format', async () => {
+    Settings.defaultZone = 'Europe/Madrid';
+    const wrapper = mountWithConfig(IssueQueue, {
+      props: {
+        issues: [{ ...mockData[0], created_dt: '2021-07-29T22:50:50Z' }],
+        isLoading: false,
+        isFinalPageFetched: false,
+        total: 10,
+      },
+    });
+
+    const dateEl = wrapper.findAll('td')[2];
+    expect(dateEl.exists()).toBeTruthy();
+    expect(dateEl.text()).toBe('2021-07-29');
   });
 });

@@ -118,7 +118,7 @@ function relevantFields(issue: any) {
     unembargo_dt: issue.unembargo_dt,
     embargoed: issue.embargoed,
     owner: issue.owner,
-    formattedDate: DateTime.fromISO(issue.created_dt).toFormat('yyyy-MM-dd'),
+    formattedDate: DateTime.fromISO(issue.created_dt).toUTC().toFormat('yyyy-MM-dd'),
   };
 }
 
