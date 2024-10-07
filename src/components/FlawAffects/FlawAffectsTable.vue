@@ -34,8 +34,6 @@ const { affectsBeingEdited, modifiedAffects, selectedAffects } = toRefs(props);
 
 const selectedModules = ref<string[]>([]);
 
-// const savedAffects = clone(affects.value) as ZodAffectType[];
-
 const newAffects = computed(() => affects.value?.filter(affect => !affect.uuid) ?? []);
 
 function isRemoved(affect: ZodAffectType) {
@@ -65,6 +63,7 @@ function isBeingEdited(affect: ZodAffectType) {
     />
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
+        <!-- TODO: refactor affect editing logic into composable  -->
         <FlawAffectsTableRow
           :affect="affect"
           :error="props.error"

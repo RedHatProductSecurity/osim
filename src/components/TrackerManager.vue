@@ -5,6 +5,7 @@ import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useTrackersForSingleFlaw';
 import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import type { ZodAffectType, ZodFlawType } from '@/types';
 
@@ -35,6 +36,10 @@ const {
   synchronizeTrackerSelections,
   trackersToFile,
 } = useTrackersForRelatedFlaws(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
+
+const { isFetchingRelatedFlaws } = useFetchFlaw();
+
+const isQuerying = computed(() => isLoadingTrackers.value || isFetchingRelatedFlaws.value);
 
 const selectedRelatedFlawIds = computed(() => Object.keys(affectsBySelectedFlawId.value));
 
@@ -89,7 +94,7 @@ async function handleFileTrackers() {
         <input
           v-model="filterString"
           type="text"
-          class="p-1 ps-2 mt-2 mb-3 border border-info"
+          class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3 "
           placeholder="Filter Modules/Components..."
         />
         <button
@@ -107,7 +112,7 @@ async function handleFileTrackers() {
         :addableItems="relatedFlawIds"
         @add-tab="addRelatedFlaw"
       >
-        <template v-if="isLoadingTrackers" #add-tab>
+        <template v-if="isQuerying" #add-tab>
           <div class="ms-2 mt-2">
             <span
               class="spinner-border spinner-border-sm me-1 text-info"
@@ -146,8 +151,8 @@ async function handleFileTrackers() {
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <div class="ms-2 pt-3 pe-2">
-                  <h5 class="pt-3 d-inline-block">
+                <div class="ms-2 pe-2">
+                  <h5 class="pt-4 d-inline-block">
                     Unfiled
                   </h5>
                   <button
@@ -259,7 +264,7 @@ async function handleFileTrackers() {
                   </button>
                   <label
                     v-if="hasRelatedFlawSelections"
-                    class="form-switch  ms-5 p-1"
+                    class="form-switch ms-5 p-1"
                   >
                     <input
                       v-model="shouldFileAsMultiFlaw"
@@ -274,7 +279,7 @@ async function handleFileTrackers() {
               </div>
 
               <div class="col-6">
-                <h5 class="pt-3 mb-2 pb-2">Filed</h5>
+                <h5 class="pt-4 mb-2 pb-2">Filed</h5>
                 <div class="osim-tracker-list my-2">
                   <label
                     v-for="(tracker, index) in tabProps.alreadyFiledTrackers"
@@ -331,7 +336,6 @@ details:not([open]) h5 {
   &:not(:checked) {
     &:active,
     &:focus {
-      // eslint-disable-next-line max-len
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%2821, 21, 21, 0.25%29'/%3e%3c/svg%3e");
     }
   }
@@ -468,17 +472,6 @@ label {
 
 .osim-trackers-filing {
   overflow: hidden;
-}
-
-.osimtracker-manageraffect-trackers-container {
-  border-left: 5px solid $info;
-  background-color: $light-info;
-  border-radius: 5px;
-
-  .btn-white:not(:hover) {
-    background-color: #fff;
-    color: dark-info;
-  }
 }
 
 .osim-tracker-selection-disabled {

@@ -93,7 +93,6 @@ function useComputedState(
         streamsToFile[updateStream] = {
           affects: [affectWithStream.affectUuid],
           ps_update_stream: affectWithStream.ps_update_stream,
-          // TODO: validate that affects in mutliflaw all share the same values for the following 3 fields
           resolution: selectedAffectToTrack?.resolution,
           embargoed: selectedAffectToTrack?.embargoed,
           updated_dt: selectedAffectToTrack?.updated_dt,
@@ -118,6 +117,7 @@ export function useTrackersForRelatedFlaws(
   relatedFlaws: Ref<ZodFlawType[]>,
   specificAffectsToTrack: ZodAffectType[] = [],
 ) {
+  let trackerFetchProgress: Promise<void> | undefined;
   const {
     filterString,
     isLoadingTrackers,
@@ -145,15 +145,13 @@ export function useTrackersForRelatedFlaws(
   // Logic for isLoadingTrackers could be moved to useTrackersForSingleFlaw as an improvement
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
     isLoadingTrackers.value = true;
-    getTrackersForFlaws({ flaw_uuids: flawUuids.value })
+    trackerFetchProgress = getTrackersForFlaws({ flaw_uuids: flawUuids.value })
       .then((response: any) => {
         relatedFlawModuleComponents.value = response.modules_components;
 
         Object.keys(newRelatedAffects).forEach((flawCveOrId) => {
           // Preserve existing selections
           if (!multiFlawTrackers.value[flawCveOrId]) {
-            console.log('useTrackersForRelatedFlaws::watch(affectsBySelectedFlawId) ][ flawCveOrId:', flawCveOrId, 'newRelatedAffects:', newRelatedAffects[flawCveOrId]);
-            console.log(relatedFlawModuleComponents.value);
             multiFlawTrackers.value[flawCveOrId] = useTrackersForSingleFlaw(
               ref(newRelatedAffects[flawCveOrId]),
               relatedFlawModuleComponents,
@@ -252,5 +250,6 @@ export function useTrackersForRelatedFlaws(
     isLoadingTrackers,
     selectedStreams,
     unselectedStreams,
+    trackerFetchProgress,
   };
 }

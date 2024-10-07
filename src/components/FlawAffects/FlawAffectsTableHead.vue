@@ -21,9 +21,9 @@ const props = defineProps<{
 const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
 
 const {
-  affectednessFilter,
-  impactFilter,
-  resolutionFilter,
+  affectednessFilters,
+  impactFilters,
+  resolutionFilters,
   setAffectednessFilter,
   setImpactFilter,
   setResolutionFilter,
@@ -98,13 +98,13 @@ function isRemoved(affect: ZodAffectType) {
           data-bs-toggle="dropdown"
           data-bs-auto-close="outside"
           aria-expanded="false"
-          @contextmenu.prevent="affectednessFilter = []"
+          @contextmenu.prevent="affectednessFilters = []"
           @click.stop
         >
           <i
             class="bi text-white"
-            :class="affectednessFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-            :title="affectednessFilter.length !== 0 ? 'Filtering by some affectedness' : ''"
+            :class="affectednessFilters.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="affectednessFilters.length !== 0 ? 'Filtering by some affectedness' : ''"
           />
         </button>
         <ul class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
@@ -117,7 +117,7 @@ function isRemoved(affect: ZodAffectType) {
               <input
                 type="checkbox"
                 class="form-check-input me-2"
-                :checked="affectednessFilter.includes(affectedness)"
+                :checked="affectednessFilters.includes(affectedness)"
                 @click.stop="setAffectednessFilter(affectedness)"
               />
               <span>{{ affectedness === '' ? 'EMPTY' : affectedness }}</span>
@@ -142,13 +142,13 @@ function isRemoved(affect: ZodAffectType) {
           data-bs-toggle="dropdown"
           data-bs-auto-close="outside"
           aria-expanded="false"
-          @contextmenu.prevent="resolutionFilter = []"
+          @contextmenu.prevent="resolutionFilters = []"
           @click.stop
         >
           <i
             class="bi text-white"
-            :class="resolutionFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-            :title="resolutionFilter.length !== 0 ? 'Filtering by some resolutions' : ''"
+            :class="resolutionFilters.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="resolutionFilters.length !== 0 ? 'Filtering by some resolutions' : ''"
           />
         </button>
         <ul class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
@@ -161,7 +161,7 @@ function isRemoved(affect: ZodAffectType) {
               <input
                 type="checkbox"
                 class="form-check-input me-2"
-                :checked="resolutionFilter.includes(resolution)"
+                :checked="resolutionFilters.includes(resolution)"
                 @click.stop="setResolutionFilter(resolution)"
               />
               <span>{{ resolution === '' ? 'EMPTY' : resolution }}</span>
@@ -186,13 +186,13 @@ function isRemoved(affect: ZodAffectType) {
           data-bs-toggle="dropdown"
           data-bs-auto-close="outside"
           aria-expanded="false"
-          @contextmenu.prevent="impactFilter = []"
+          @contextmenu.prevent="impactFilters = []"
           @click.stop
         >
           <i
             class="bi text-white"
-            :class="impactFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-            :title="impactFilter.length !== 0 ? 'Filtering by some impacts' : ''"
+            :class="impactFilters.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+            :title="impactFilters.length !== 0 ? 'Filtering by some impacts' : ''"
           />
         </button>
         <ul class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
@@ -205,7 +205,7 @@ function isRemoved(affect: ZodAffectType) {
               <input
                 type="checkbox"
                 class="form-check-input me-2"
-                :checked="impactFilter.includes(impact)"
+                :checked="impactFilters.includes(impact)"
                 @click.stop="setImpactFilter(impact)"
               />
               <span>{{ impact === '' ? 'EMPTY' : impact }}</span>
