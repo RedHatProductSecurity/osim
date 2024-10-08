@@ -17,10 +17,7 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import {
-  Source521Enum,
-} from '@/generated-client';
-import { flawSources } from '@/types/zodFlaw';
+import { flawSources, Source521EnumWithBlank } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
@@ -119,7 +116,7 @@ describe('flawForm', () => {
       .find(component => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
     const sourceOptionEls = sourceField?.findAll('option');
-    const sourceOptionCount = Object.keys(Source521Enum).length + 1;
+    const sourceOptionCount = Object.keys(Source521EnumWithBlank).length;
     expect(sourceOptionEls?.length).toBe(sourceOptionCount);
 
     const workflowStateField = subject
