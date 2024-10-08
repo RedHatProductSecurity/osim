@@ -5,11 +5,12 @@ import { DateTime } from 'luxon';
 
 import { capitalizeFirstLetter } from '@/utils/helpers';
 import { flawFieldNamesMapping } from '@/constants/flawFields';
+import type { ZodFlawType } from '@/types/zodFlaw';
 
 import LabelCollapsible from './widgets/LabelCollapsible.vue';
 
 defineProps<{
-  flaw: any;
+  flaw: ZodFlawType;
 }>();
 
 const historyExpanded = ref(false);
@@ -32,7 +33,7 @@ const historyExpanded = ref(false);
         <template v-for="(historyEntry, histIndex) in flaw.history" :key="histIndex">
           <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
             <span>
-              {{ DateTime.fromISO(historyEntry.pgh_created_at,{ setZone: true })
+              {{ DateTime.fromISO(historyEntry.pgh_created_at || '',{ setZone: true })
                 .toFormat('yyyy-MM-dd hh:mm ZZZZ') }} - {{ historyEntry.pgh_context?.user || 'System' }}
             </span>
             <ul class="mb-2">
