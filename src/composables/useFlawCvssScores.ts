@@ -58,6 +58,9 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     if (rhCvss3String.value === '' || nvdCvss3String.value === '-') {
       return false;
     }
+    if (flawRhCvss3.value.comment) {
+      return true;
+    }
     return `${rhCvss3String.value}` !== `${nvdCvss3String.value}`;
   });
 
