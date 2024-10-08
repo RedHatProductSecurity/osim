@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 * Corrected wrong tooltips on advance search, empty/non-empty buttons (`OSIDB-3502`)
+* Show comment field on CVSSv3 when the score is the same but the comment is not empty (`OSIDB-3400`)
 
 ## [2024.9.2]
 ### Added
