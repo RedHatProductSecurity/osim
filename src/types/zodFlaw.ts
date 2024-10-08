@@ -7,7 +7,7 @@ import {
   MajorIncidentStateEnum,
   NistCvssValidationEnum,
   RequiresCveDescriptionEnum,
-  Source521Enum,
+  SourceBe0Enum,
   IssuerEnum,
   FlawReferenceType,
 } from '../generated-client';
@@ -15,7 +15,7 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
-export const Source521EnumWithBlank = { '': '', ...Source521Enum } as const;
+export const Source521EnumWithBlank = { '': '', ...SourceBe0Enum } as const;
 export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 

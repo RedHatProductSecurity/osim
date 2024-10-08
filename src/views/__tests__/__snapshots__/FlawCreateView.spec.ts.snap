@@ -254,6 +254,8 @@ exports[`flawCreateView > should render 1`] = `
                     <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
                     <option data-v-e273ec44="" value="APPROVED">APPROVED</option>
                     <option data-v-e273ec44="" value="CISA_APPROVED">CISA_APPROVED</option>
+                    <option data-v-e273ec44="" value="MINOR">MINOR</option>
+                    <option data-v-e273ec44="" value="ZERO_DAY">ZERO_DAY</option>
                     <option data-v-e273ec44="" value="INVALID">INVALID</option>
                   </select>
                   <!--v-if-->
