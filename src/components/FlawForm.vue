@@ -223,12 +223,12 @@ const createdDate = computed(() => {
               Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
             </a>
           </div>
-          <div>
-            <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
-          </div>
-          <div class="col-12 osim-alerts-banner">
-            <FlawAlertsList :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
-          </div>
+          <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
+          <FlawAlertsList
+            :flaw="flaw"
+            class="col-12 osim-alerts-banner"
+            @expandFocusedComponent="expandFocusedComponent"
+          />
           <div :id="flaw.uuid" class="col-6">
             <LabelEditable
               v-model="flaw.title"

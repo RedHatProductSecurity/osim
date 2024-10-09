@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import { DateTime } from 'luxon';
 
-import { capitalizeFirstLetter } from '@/utils/helpers';
+import { capitalize } from '@/utils/helpers';
 import { flawFieldNamesMapping } from '@/constants/flawFields';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -18,7 +18,7 @@ const historyExpanded = ref(false);
 
 <template>
   <LabelCollapsible
-    v-show="flaw.history && flaw.history.length > 0"
+    v-if="flaw.history && flaw.history.length > 0"
     class="my-2"
     :isExpanded="historyExpanded"
     @toggleExpanded="historyExpanded = !historyExpanded"
@@ -30,16 +30,16 @@ const historyExpanded = ref(false);
     </template>
     <div class="mt-2">
       <label class="mx-2 form-label w-100">
-        <template v-for="(historyEntry, histIndex) in flaw.history" :key="histIndex">
+        <template v-for="historyEntry in flaw.history" :key="historyEntry.pgh_slug">
           <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
             <span>
               {{ DateTime.fromISO(historyEntry.pgh_created_at || '',{ setZone: true })
                 .toFormat('yyyy-MM-dd hh:mm ZZZZ') }} - {{ historyEntry.pgh_context?.user || 'System' }}
             </span>
             <ul class="mb-2">
-              <li v-for="(diffEntry, diffKey, diffIndex) in historyEntry.pgh_diff" :key="diffIndex">
+              <li v-for="(diffEntry, diffKey) in historyEntry.pgh_diff" :key="diffKey">
                 <div class="ms-3 pb-0">
-                  <span>{{ capitalizeFirstLetter(historyEntry.pgh_label) }}</span>
+                  <span>{{ capitalize(historyEntry.pgh_label) }}</span>
                   <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
                   <span>{{ ': ' + diffEntry[0] + ' ' }}</span>
                   <i class="bi bi-arrow-right" />

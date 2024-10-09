@@ -110,6 +110,6 @@ export function getRhCvss3(scores: any[]) {
   return getSpecficCvssScore(scores, 'RH', 'V3');
 }
 
-export function capitalizeFirstLetter(string: string) {
+export function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
