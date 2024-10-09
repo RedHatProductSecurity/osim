@@ -15,7 +15,7 @@ import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 
-export const initialAffects = ref<ZodAffectType[]>([]);
+const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectsToDelete = computed(() => initialAffects.value.filter(
@@ -89,7 +89,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function shouldUpsertAffectCvss(affect: ZodAffectType) {
-    return didAffectChange(affect, false, false);
+    return affectRhCvss3(affect)?.vector && didAffectChange(affect, false, false);
   }
 
   async function removeAffects() {
@@ -221,7 +221,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   };
 }
 
-function resetInitialAffects() {
+export function resetInitialAffects() {
   initialAffects.value = [];
 }
 
