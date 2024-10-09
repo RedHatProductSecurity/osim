@@ -3,10 +3,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 import { isCveValid } from '@/utils/helpers';
 
+type TabNameForSlot = string;
+
 const props = defineProps<{
   addableItems?: any[];
-  labels: string[];
-  tabProps: Record<string, any>;
+  labels: TabNameForSlot[];
+  tabProps: Record<TabNameForSlot, any>; // tabProps includes the props for each tab, keyed by name used for slot
 }>();
 
 const emit = defineEmits<{

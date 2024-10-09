@@ -95,18 +95,20 @@ export function capitalize(string: string) {
 }
 
 type WithModuleComponent = {
+  _osimTempId?: number;
   ps_component: string;
   ps_module: string;
   uuid?: null | string;
 };
 
 export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
-  return first.ps_component === second.ps_component && first.ps_module === second.ps_module;
+  return (first.ps_component === second.ps_component && first.ps_module === second.ps_module);
 }
 
 export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
-  const doIdsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
-  return doIdsMatch || matchModuleComponent(first, second);
+  const doUuidsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
+  const doTempIdsMatch = first._osimTempId && second._osimTempId && (first._osimTempId === second._osimTempId);
+  return doUuidsMatch || doTempIdsMatch || matchModuleComponent(first, second);
 }
 
 export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {

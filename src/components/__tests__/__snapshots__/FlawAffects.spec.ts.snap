@@ -773,7 +773,13 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                     </ul>
                     <div data-v-db8a18da="" class="">
                       <div data-v-4977998e="" class="osim-tracker-tabs">
-                        <!--v-if-->
+                        <div data-v-4977998e="" class="pt-5 p-3">
+                          <div data-v-4977998e="" class="alert alert-danger">
+                            <h5 data-v-4977998e="">Untrackable Affects</h5>
+                            <p data-v-4977998e=""> These affects do not have available trackers. This may indicate an issue with product defintions. Please contact the OSIDB/OSIM team for assistance. </p>
+                            <div data-v-4977998e="" class="osim-tracker-list"><span data-v-4977998e=""><span data-v-4977998e="" class="ps-1 text-danger"><i data-v-4977998e="" class="bi bi-exclamation-triangle"></i> openshift-2/openshift-2-1</span></span></div>
+                          </div>
+                        </div>
                         <div data-v-4977998e="" class="row mb-3">
                           <div data-v-4977998e="" class="col-6">
                             <div data-v-4977998e="" class="ms-2 pe-2">
@@ -788,7 +794,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                           </div>
                           <div data-v-4977998e="" class="col-6">
                             <h5 data-v-4977998e="" class="pt-4 mb-2 pb-2">Filed</h5>
-                            <div data-v-4977998e="" class="osim-tracker-list my-2"></div>
+                            <div data-v-4977998e="" class="osim-tracker-list my-2"><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-001</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-002</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-003</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-004</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label></div>
                           </div>
                         </div>
                       </div>
@@ -1154,7 +1168,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                           </div>
                           <div data-v-4977998e="" class="col-6">
                             <h5 data-v-4977998e="" class="pt-4 mb-2 pb-2">Filed</h5>
-                            <div data-v-4977998e="" class="osim-tracker-list my-2"></div>
+                            <div data-v-4977998e="" class="osim-tracker-list my-2"><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-001</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-002</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-003</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-004</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label></div>
                           </div>
                         </div>
                       </div>

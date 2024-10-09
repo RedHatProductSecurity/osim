@@ -170,7 +170,9 @@ function isBeingEdited(affect: ZodAffectType) {
 
 // TODO: refactor affect editing logic into composable
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
+  // return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
+  const matchAffect = affectsMatcherFor(affect);
+  return affectValuesPriorEdit.value.find(matchAffect) || affect;
 }
 
 // TODO: refactor affect editing logic into composable
@@ -207,7 +209,8 @@ function resetStagedAffectEdit(affect: ZodAffectType) {
   const matchAffect = affectsMatcherFor(affect);
   const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
   affectsBeingEdited.value.splice(editingIndex, 1);
-  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
+  const priorAffectIndex = affectValuesPriorEdit.value.findIndex(matchAffect);
+  affectValuesPriorEdit.value.splice(priorAffectIndex, 1);
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
   }
@@ -253,8 +256,8 @@ function addNewAffect() {
     affectedness: 'NEW',
     resolution: '',
     delegated_resolution: '',
-    ps_module: `NewModule-${newAffects.value.length}`,
-    ps_component: `NewComponent-${newAffects.value.length}`,
+    ps_module: `NewModule-${newAffects.value.length + 1}`,
+    ps_component: `NewComponent-${newAffects.value.length + 1}`,
     impact: '',
     cvss_scores: [{
       // affect: z.string().uuid(),
@@ -268,6 +271,7 @@ function addNewAffect() {
     }],
     trackers: [{ errata: [] }],
     alerts: [],
+    _osimTempId: Date.now(),
   });
 }
 

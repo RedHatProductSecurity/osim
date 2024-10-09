@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
@@ -26,21 +26,6 @@ import { osimRuntime } from '@/stores/osimRuntime';
 
 import IssueFieldEmbargo from '../IssueFieldEmbargo.vue';
 import { osimFullFlawTest } from './test-suite-helpers';
-
-vi.mock('@/services/TrackerService', () => {
-  return {
-    getSuggestedTrackers: vi.fn(() => Promise.resolve([])),
-    trackerUrl: vi.fn(),
-  };
-});
-
-vi.mock('@/composables/useTrackers', () => {
-  return {
-    suggestedTrackers: { value: [] },
-    getUpdateStreamsFor: vi.fn(() => []),
-    useTrackers: vi.fn(() => []),
-  };
-});
 
 const flawProps = (flaw: ZodFlawType, mode: 'create' | 'edit') => ({ flaw, mode, relatedFlaws: [flaw] });
 const flawEditModeProps = (flaw: ZodFlawType) => flawProps(flaw, 'edit');

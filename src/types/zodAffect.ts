@@ -106,6 +106,7 @@ export const ZodAffectSchema = z.object({
   cvss_scores: z.array(AffectCVSSSchema),
   classification: ZodFlawClassification.nullish(),
   embargoed: z.boolean(), // read-only
+  _osimTempId: z.number().optional(),
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
