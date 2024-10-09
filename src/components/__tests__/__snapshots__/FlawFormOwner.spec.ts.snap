@@ -2,7 +2,8 @@
 
 exports[`owner field > assigns the test user when button is clicked 1`] = `
 "<div data-v-73e4e34b="" class="osim-input mb-2 ps-3">
-  <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
+  <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><span data-v-73e4e34b="" class="throbber"></span> Owner
+    <!--attrs: {{ $attrs }}--></span>
     <div data-v-73e4e34b="" class="col-9">
       <!-- for invalid-tooltip positioning -->
       <div class="position-relative col-9 osim-editable-field osim-text col-12">
