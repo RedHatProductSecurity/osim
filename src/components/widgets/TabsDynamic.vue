@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 import { isCveValid } from '@/utils/helpers';
 
@@ -12,16 +12,27 @@ const props = defineProps<{
 const emit = defineEmits<{
   'add-tab': [value?: any];
 }>();
-
 const activeTabIndex = ref(0);
+const searchFilter = ref('');
 
 const selectTab = (index: number) => activeTabIndex.value = index;
 
-const searchFilter = ref('');
 const filteredItems = computed(() => props.addableItems?.filter((item: string) => searchFilter.value
   ? item.toLowerCase().includes(searchFilter.value.toLowerCase())
   : item,
 ));
+
+onMounted(() => {
+  document.addEventListener('hide.bs.dropdown', clearSearchFilter);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('hide.bs.dropdown', clearSearchFilter);
+});
+
+function clearSearchFilter() {
+  searchFilter.value = '';
+}
 </script>
 
 <template>
