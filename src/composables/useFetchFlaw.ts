@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-import { initialAffects } from '@/composables/useFlawAffectsModel';
+import { resetInitialAffects } from '@/composables/useFlawAffectsModel';
 
 import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
 import type { ZodAffectType, ZodFlawType } from '@/types';
@@ -14,7 +14,7 @@ const isFetchingRelatedFlaws = ref(false);
 export function initializeFlaw() {
   flaw.value = null;
   relatedFlaws.value = [];
-  initialAffects.value = [];
+  resetInitialAffects();
 }
 
 export function useFetchFlaw() {
@@ -38,7 +38,7 @@ export function useFetchFlaw() {
   async function fetchFlaw(flawCveOrId: string) {
     try {
       const fetchedFlaw = await getFlaw(flawCveOrId);
-      initialAffects.value = [];
+      resetInitialAffects();
       flaw.value = Object.assign({}, fetchedFlaw);
       await fetchRelatedFlaws(fetchedFlaw.affects);
       history.replaceState(null, '', `/flaws/${(fetchedFlaw.cve_id || fetchedFlaw.uuid)}`);
@@ -46,7 +46,7 @@ export function useFetchFlaw() {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
       flaw.value = null;
-      initialAffects.value = [];
+      resetInitialAffects();
       addToast({
         title: 'Error loading Flaw',
         body: getDisplayedOsidbError(error),
