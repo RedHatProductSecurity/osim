@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { DateTime } from 'luxon';
-
-import { capitalize } from '@/utils/helpers';
+import { capitalize, formatDateWithTimezone } from '@/utils/helpers';
 import { flawFieldNamesMapping } from '@/constants/flawFields';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
@@ -14,6 +12,10 @@ defineProps<{
 }>();
 
 const historyExpanded = ref(false);
+
+function isDateField(field: string) {
+  return field.includes('_dt');
+}
 </script>
 
 <template>
@@ -33,17 +35,25 @@ const historyExpanded = ref(false);
         <template v-for="historyEntry in flaw.history" :key="historyEntry.pgh_slug">
           <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
             <span>
-              {{ DateTime.fromISO(historyEntry.pgh_created_at || '',{ setZone: true })
-                .toFormat('yyyy-MM-dd hh:mm ZZZZ') }} - {{ historyEntry.pgh_context?.user || 'System' }}
+              {{ formatDateWithTimezone(historyEntry.pgh_created_at || '') }}
+              - {{ historyEntry.pgh_context?.user || 'System' }}
             </span>
             <ul class="mb-2">
               <li v-for="(diffEntry, diffKey) in historyEntry.pgh_diff" :key="diffKey">
                 <div class="ms-3 pb-0">
                   <span>{{ capitalize(historyEntry.pgh_label) }}</span>
                   <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
-                  <span>{{ ': ' + diffEntry[0] + ' ' }}</span>
+                  <span>{{ ': ' +
+                    (isDateField(diffKey) && diffEntry[0]
+                      ? formatDateWithTimezone(diffEntry[0])
+                      : (diffEntry[0]?.toString() || '')
+                    ) + ' '
+                  }}</span>
                   <i class="bi bi-arrow-right" />
-                  {{ diffEntry[1] }}
+                  {{ (isDateField(diffKey) && diffEntry[1]
+                    ? formatDateWithTimezone(diffEntry[1])
+                    : (diffEntry[1]?.toString() || '')
+                  ) }}
                 </div>
               </li>
             </ul>
