@@ -454,18 +454,25 @@ label {
     padding: 0.25rem;
     border: 1px solid $info;
   }
+
+  &::-webkit-scrollbar-thumb {
+    background: $info;
+    border-radius: 0.5rem;
+  }
 }
 
-.osim-tracker-list-container:has(.osim-tracker-list:nth-of-type(2)) {
-  .osim-tracker-list {
-    &:nth-of-type(1) {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
+.osim-tracker-list-container {
+  &:has(.osim-tracker-list:nth-of-type(2)) {
+    .osim-tracker-list {
+      &:nth-of-type(1) {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
 
-    &:nth-of-type(2) {
-      border-top: none;
-      padding-top: 0;
+      &:nth-of-type(2) {
+        border-top: 1px dashed $info;
+        padding-top: 0;
+      }
     }
   }
 }
