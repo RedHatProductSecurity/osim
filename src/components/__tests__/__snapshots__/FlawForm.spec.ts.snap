@@ -4,20 +4,20 @@ exports[`flawForm > mounts and renders 1`] = `
 "<form data-v-bb5d5f91="" class="osim-flaw-form">
   <div data-v-bb5d5f91="" class="osim-content container-fluid">
     <div data-v-bb5d5f91="" class="row px-4 my-3">
-      <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
-        <div data-v-bb5d5f91="" class="osim-flaw-form-header">
-          <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
-          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+      <div data-v-bb5d5f91="" class="row osim-flaw-form-section">
+        <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" class="osim-bugzilla-link" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
+        <div data-v-bb5d5f91="" class="col-12 osim-alerts-banner">
+          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
             <div data-v-357e30d7="" class="ps-3 border-start">
               <div data-v-357e30d7="" class="visually-hidden">
-                <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
+                <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
                   <div data-v-357e30d7="" class="ps-3 border-start">
                     <div data-v-357e30d7="" class="visually-hidden">
                       <div>
                         <!--v-if-->
                       </div>
                       <div>
-                        <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-warning"><i data-v-eef2791a="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
+                        <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-warning"><i data-v-eef2791a="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
                           <div data-v-357e30d7="" class="ps-3 border-start">
                             <div data-v-357e30d7="" class="visually-hidden">
                               <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
@@ -36,13 +36,13 @@ exports[`flawForm > mounts and renders 1`] = `
                 </div>
               </div>
             </div>
-            <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
+            <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
                 <!--v-if--></span></span>
               </button>
               <div data-v-357e30d7="" class="ps-3 border-start">
                 <div data-v-357e30d7="" class="visually-hidden">
                   <div>
-                    <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-danger"><i data-v-eef2791a="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
+                    <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-danger"><i data-v-eef2791a="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
                       <div data-v-357e30d7="" class="ps-3 border-start">
                         <div data-v-357e30d7="" class="visually-hidden">
                           <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
@@ -400,7 +400,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </div>
     <!--v-if-->
-    <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label ms-2 cvss-score-mismatch ms-2 cvss-score-mismatch"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
+    <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label ms-2 cvss-score-mismatch ms-2 cvss-score-mismatch"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="visually-hidden"><textarea rows="3" class="form-control col-9 d-inline-block mb-3" placeholder="CVSS Score Explanation"></textarea></div>
       </div>
@@ -432,7 +432,7 @@ exports[`flawForm > mounts and renders 1`] = `
     <div data-v-bb5d5f91="" class="d-flex gap-3">
       <div data-v-4357d2eb="" data-v-bb5d5f91="" class="w-100 my-2">
         <div data-v-876c20ac="" data-v-4357d2eb="">
-          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 1</label></button>
+          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 1</label></button>
             <div data-v-357e30d7="" class="ps-3 border-start">
               <div data-v-357e30d7="" class="visually-hidden">
                 <div data-v-876c20ac="" id="1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
@@ -467,7 +467,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
       <div data-v-fde7522e="" data-v-bb5d5f91="" class="w-100 my-2">
         <div data-v-876c20ac="" data-v-fde7522e="">
-          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
+          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
             <div data-v-357e30d7="" class="ps-3 border-start">
               <div data-v-357e30d7="" class="visually-hidden">
                 <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
@@ -500,17 +500,19 @@ exports[`flawForm > mounts and renders 1`] = `
     <div data-v-2d3c4208="" data-v-bb5d5f91="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-        <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-dash-square-dotted me-1"></i><label data-v-2d3c4208="" class="form-label m-2"> Affected Modules </label></button>
+        <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
           <div data-v-357e30d7="" class="ps-3 border-start">
-            <div data-v-357e30d7="" class=""><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
-                <!--v-if--><span data-v-2d3c4208="">openshift-1</span>
-              </button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-2
+            <div data-v-357e30d7="" class="">
+              <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
+                  <!--v-if--><span data-v-2d3c4208="">openshift-1</span>
+                </button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-2
 This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-exclamation-lg"></i><span data-v-2d3c4208="">openshift-2</span></button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-3
 This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-exclamation-lg"></i><span data-v-2d3c4208="">openshift-3</span></button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-4
 This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-exclamation-lg"></i><span data-v-2d3c4208="">openshift-4</span></button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-5">
-                <!--v-if--><span data-v-2d3c4208="">openshift-5</span>
-              </button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-6
+                  <!--v-if--><span data-v-2d3c4208="">openshift-5</span>
+                </button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-6
 This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-exclamation-lg"></i><span data-v-2d3c4208="">openshift-6</span></button></div>
+            </div>
           </div>
         </div>
         <!--v-if-->

@@ -405,7 +405,10 @@ describe('flawAffects', () => {
     await affectsTableRows[2].trigger('click');
 
     const trackerManagerSelection = subject.find('.affects-toolbar .affects-table-actions .trackers-btn');
-    expect(trackerManagerSelection.text()).toBe('Manage Trackers for 3 Affect(s)');
+    const buttonLabel = trackerManagerSelection.find('span:nth-of-type(1)');
+    const affectCounter = trackerManagerSelection.find('span:nth-of-type(2)');
+    expect(buttonLabel.text()).toBe('Manage Trackers');
+    expect(affectCounter.text()).toBe('3');
     await trackerManagerSelection.trigger('click');
 
     const modal = subject.find('.modal');

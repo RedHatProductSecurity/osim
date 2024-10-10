@@ -342,7 +342,7 @@ exports[`flawCreateView > should render 1`] = `
           <div data-v-bb5d5f91="" class="d-flex gap-3">
             <div data-v-4357d2eb="" data-v-bb5d5f91="" class="w-100 my-2">
               <div data-v-876c20ac="" data-v-4357d2eb="">
-                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 0</label></button>
+                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 0</label></button>
                   <div data-v-357e30d7="" class="ps-3 border-start">
                     <div data-v-357e30d7="" class="visually-hidden"></div>
                   </div>
@@ -354,7 +354,7 @@ exports[`flawCreateView > should render 1`] = `
             </div>
             <div data-v-fde7522e="" data-v-bb5d5f91="" class="w-100 my-2">
               <div data-v-876c20ac="" data-v-fde7522e="">
-                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 0</label></button>
+                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 0</label></button>
                   <div data-v-357e30d7="" class="ps-3 border-start">
                     <div data-v-357e30d7="" class="visually-hidden"></div>
                   </div>

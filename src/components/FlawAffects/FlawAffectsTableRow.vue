@@ -46,7 +46,9 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
 const isSelectable = computed(() => !props.isBeingEdited && !props.isRemoved);
 
 function handleToggle(affect: ZodAffectType) {
-  emit('affect:toggle-selection', affect);
+  if (isSelectable.value) {
+    emit('affect:toggle-selection', affect);
+  }
 }
 
 function revertChanges(affect: ZodAffectType) {

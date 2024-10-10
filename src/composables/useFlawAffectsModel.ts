@@ -2,7 +2,7 @@ import { type Ref, ref, computed } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
-import { affectRhCvss3, deepCopyFromRaw, affectsMatcherFor } from '@/utils/helpers';
+import { affectRhCvss3, deepCopyFromRaw, matcherForAffect } from '@/utils/helpers';
 import {
   postAffects,
   putAffects,
@@ -19,7 +19,7 @@ const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const affectsToDelete = computed(() => initialAffects.value.filter(
-    initialAffect => !flaw.value.affects.find(affectsMatcherFor(initialAffect)),
+    initialAffect => !flaw.value.affects.find(matcherForAffect(initialAffect)),
   ));
 
   const affectCvssToDelete = computed(() => flaw.value.affects.reduce((mappings, affect) => {
@@ -71,7 +71,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   function recoverAffect(affect: ZodAffectType) {
-    const affectToRecover = initialAffects.value.find(affectsMatcherFor(affect));
+    const affectToRecover = initialAffects.value.find(matcherForAffect(affect));
     if (!affectToRecover) return; // Affect is new and has no initial state to recover
     flaw.value.affects.push(affectToRecover);
   }
@@ -138,7 +138,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       for (const affect of affectCvssToUpsert.value) {
         // For any new affects that have just been saved, we need to update the affect's
         if (!affect.uuid) {
-          const savedAffect = savedAffects.find(affectsMatcherFor(affect));
+          const savedAffect = savedAffects.find(matcherForAffect(affect));
 
           if (!savedAffect) {
             const affectIdentifier = `{affect.ps_module}/${affect.ps_component}`;

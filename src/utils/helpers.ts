@@ -115,6 +115,6 @@ export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
   return Boolean(affects.find(affectToMatch => doAffectsMatch(affect, affectToMatch)));
 }
 
-export function affectsMatcherFor(affect: ZodAffectType) {
+export function matcherForAffect(affect: ZodAffectType) {
   return (affectToMatch: ZodAffectType) => doAffectsMatch(affect, affectToMatch);
 }

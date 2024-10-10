@@ -4,8 +4,8 @@ import type {
   ModuleComponent,
   UpdateStreamOsim,
   UpdateStreamSelections,
-} from '@/composables/useTrackersForSingleFlaw';
-import { useTrackersForSingleFlaw } from '@/composables/useTrackersForSingleFlaw';
+} from '@/composables/useSingleFlawTrackers';
+import { useSingleFlawTrackers } from '@/composables/useSingleFlawTrackers';
 
 import type { ZodAffectType } from '@/types/zodAffect';
 import type { ZodFlawType } from '@/types/zodFlaw';
@@ -16,7 +16,7 @@ import { isAffectIn } from '@/utils/helpers';
 
 import { createCatchHandler } from './service-helpers';
 
-type UseTrackersReturnType = ReturnType<typeof useTrackersForSingleFlaw>;
+type UseTrackersReturnType = ReturnType<typeof useSingleFlawTrackers>;
 type FlawCveOrId = string;
 
 // For use with reactive values rather than refs (calls from template tags)
@@ -112,7 +112,7 @@ function useComputedState(
   };
 }
 
-export function useTrackersForRelatedFlaws(
+export function useRelatedFlawTrackers(
   flaw: ZodFlawType,
   relatedFlaws: Ref<ZodFlawType[]>,
   specificAffectsToTrack: ZodAffectType[] = [],
@@ -142,7 +142,7 @@ export function useTrackersForRelatedFlaws(
     }
   });
 
-  // Logic for isLoadingTrackers could be moved to useTrackersForSingleFlaw as an improvement
+  // Logic for isLoadingTrackers could be moved to useSingleFlawTrackers as an improvement
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
     isLoadingTrackers.value = true;
     trackerFetchProgress = getTrackersForFlaws({ flaw_uuids: flawUuids.value })
@@ -152,7 +152,7 @@ export function useTrackersForRelatedFlaws(
         Object.keys(newRelatedAffects).forEach((flawCveOrId) => {
           // Preserve existing selections
           if (!multiFlawTrackers.value[flawCveOrId]) {
-            multiFlawTrackers.value[flawCveOrId] = useTrackersForSingleFlaw(
+            multiFlawTrackers.value[flawCveOrId] = useSingleFlawTrackers(
               ref(newRelatedAffects[flawCveOrId]),
               relatedFlawModuleComponents,
             );
@@ -165,7 +165,7 @@ export function useTrackersForRelatedFlaws(
 
   async function fileTrackers() {
     if (isFilingTrackers.value) {
-      console.error('useTrackersForRelatedFlaws::fileTrackers() ][ Already filing trackers, aborting request');
+      console.error('useRelatedFlawTrackers::fileTrackers() ][ Already filing trackers, aborting request');
       return;
     }
 
@@ -193,7 +193,7 @@ export function useTrackersForRelatedFlaws(
     }
 
     if (errors.length > 0) {
-      console.error('useTrackersForRelatedFlaws::fileTrackers() ][ Error(s) occurred while filing trackers:', errors);
+      console.error('useRelatedFlawTrackers::fileTrackers() ][ Error(s) occurred while filing trackers:', errors);
     }
 
     return { success: !errors.length, errors };
@@ -215,7 +215,7 @@ export function useTrackersForRelatedFlaws(
           trackerManager.trackerSelections.set(updateStream, selection);
         } else {
           console.error(
-            'useTrackersForRelatedFlaws::synchronizeTrackerSelections() '
+            'useRelatedFlawTrackers::synchronizeTrackerSelections() '
             + '][ Could not find selection for update stream:', updateStream,
           );
         }
@@ -230,7 +230,7 @@ export function useTrackersForRelatedFlaws(
         .then((fetchedFlaw) => {
           selectedRelatedFlaws.value.push(fetchedFlaw);
         }).catch(
-          createCatchHandler('useTrackersForRelatedFlaws::addRelatedFlaw(): Fetch for Related Flaw Unsuccessful'),
+          createCatchHandler('useRelatedFlawTrackers::addRelatedFlaw(): Fetch for Related Flaw Unsuccessful'),
         );
     } else {
       selectedRelatedFlaws.value.push(flaw);

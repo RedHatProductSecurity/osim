@@ -6,7 +6,7 @@ import { flushPromises } from '@vue/test-utils';
 
 import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
-import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types';
@@ -27,17 +27,17 @@ async function mockTrackers(
 ) {
   await flushPromises();
   vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackers);
-  const trackers = useTrackersForRelatedFlaws(flaw, relatedFlaws);
+  const trackers = useRelatedFlawTrackers(flaw, relatedFlaws);
   await trackers.trackerFetchProgress;
   return trackers;
 }
 
-describe('useTrackersForRelatedFlaws', () => {
+describe('useRelatedFlawTrackers', () => {
   const relatedFlaws = ref([flaw]);
 
   it('initializes correctly', () => {
     vi.mocked(getTrackersForFlaws).mockResolvedValue({ modules_components: [] });
-    const result = useTrackersForRelatedFlaws(flaw, relatedFlaws);
+    const result = useRelatedFlawTrackers(flaw, relatedFlaws);
 
     expect(result).toBeTypeOf('object');
     expect(Object.keys(result)).toEqual([
@@ -59,25 +59,25 @@ describe('useTrackersForRelatedFlaws', () => {
 
   it('loads trackers on mount', async () => {
     vi.mocked(getTrackersForFlaws).mockResolvedValue({ modules_components: [] });
-    useTrackersForRelatedFlaws(flaw, relatedFlaws);
+    useRelatedFlawTrackers(flaw, relatedFlaws);
 
     expect(getTrackersForFlaws).toHaveBeenCalledTimes(1);
   });
 
   it('files trackers correctly', async () => {
     vi.mocked(fileTrackingFor).mockResolvedValue({ successes: [] });
-    const { fileTrackers, isFilingTrackers } = useTrackersForRelatedFlaws(flaw, relatedFlaws);
+    const { fileTrackers, isFilingTrackers } = useRelatedFlawTrackers(flaw, relatedFlaws);
     await fileTrackers();
     expect(isFilingTrackers.value).toBe(false);
   });
 
   it('computes selectedStreams correctly', () => {
-    const { selectedStreams } = useTrackersForRelatedFlaws(flaw, relatedFlaws);
+    const { selectedStreams } = useRelatedFlawTrackers(flaw, relatedFlaws);
     expect(selectedStreams.value.length).toBe(0);
   });
 
   it('computes unselectedStreams correctly', () => {
-    const { unselectedStreams } = useTrackersForRelatedFlaws(flaw, relatedFlaws);
+    const { unselectedStreams } = useRelatedFlawTrackers(flaw, relatedFlaws);
     expect(unselectedStreams.value.length).toBe(0);
   });
 
