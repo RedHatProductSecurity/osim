@@ -439,16 +439,6 @@ function affectCvss(affect: ZodAffectType) {
   return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === 'V3');
 }
 
-function affectCvssDisplay(affect: ZodAffectType) {
-  const cvssScore = affectCvss(affect)?.score || '';
-  const cvssVector = affectCvss(affect)?.vector || '';
-  if (cvssScore && cvssVector) {
-    return `${cvssScore} ${cvssVector}`;
-  } else {
-    return cvssVector;
-  }
-}
-
 function updateAffectCvss(affect: ZodAffectType, newVector: string, newScore: null | number) {
   const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
   const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
