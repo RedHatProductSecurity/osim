@@ -33,7 +33,7 @@ type ModuleComponentStreamMeta = {
 
 type ZodTrackerTypeWithAffect = ZodAffectType & ZodTrackerType;
 
-export function useTrackersForSingleFlaw(
+export function useSingleFlawTrackers(
   affects: Ref<ZodAffectType[]>,
   relatedModuleComponents?: Ref<ModuleComponent[]>,
 ) {
@@ -185,7 +185,7 @@ export function useTrackersForSingleFlaw(
       .then((response: any) => {
         moduleComponents.value = response.modules_components;
       })
-      .catch(e => console.error('useTrackersForSingleFlaw::loadTrackers() Error loading trackers', e))
+      .catch(e => console.error('useSingleFlawTrackers::loadTrackers() Error loading trackers', e))
       .finally(() => isLoadingTrackers.value = false);
   }
 
@@ -200,7 +200,7 @@ export function useTrackersForSingleFlaw(
     isFilingTrackers.value = true;
     return fileTrackingFor(trackersToFile.value)
       .then(loadTrackersQueryResult)
-      .catch(e => console.error('useTrackersForSingleFlaw::loadTrackers() Error filing trackers', e))
+      .catch(e => console.error('useSingleFlawTrackers::loadTrackers() Error filing trackers', e))
       .finally(() => isFilingTrackers.value = false);
   }
 

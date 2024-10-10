@@ -5,7 +5,6 @@ import {
   affectImpacts,
   affectAffectedness,
   affectResolutions,
-  // possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
 
@@ -31,8 +30,6 @@ const {
   sortKey,
   sortOrder,
 } = useFilterSortAffects();
-
-// Edit Affects
 
 function isBeingEdited(affect: ZodAffectType) {
   return props.affectsBeingEdited.includes(affect);
@@ -255,13 +252,14 @@ thead {
   tr {
     th {
       user-select: none;
+      text-wrap: nowrap;
 
       // Checkbox
       &:nth-of-type(1) {
         max-width: 1ch;
       }
 
-      // Editing State
+      // Editing State Icon
       &:nth-of-type(2) {
         min-width: 1ch;
         max-width: 1ch;
@@ -269,41 +267,50 @@ thead {
       }
 
       &:nth-of-type(3) {
-        min-width: 10ch;
+        // Module
+        min-width: 12ch;
       }
 
       &:nth-of-type(4) {
+        // Component
         min-width: 10ch;
       }
 
       &:nth-of-type(5) {
+        // Affectedness
         min-width: 16ch;
       }
 
       &:nth-of-type(6) {
-        min-width: 12ch;
+        // Resolution
+        min-width: 14ch;
       }
 
       &:nth-of-type(7) {
-        min-width: 8ch;
+        // Impact
+        min-width: 10ch;
       }
 
       &:nth-of-type(8) {
-        min-width: 4ch;
+        // CVSS
+        min-width: 6ch;
       }
 
       &:nth-of-type(9) {
+        // Trackers
         min-width: 8ch;
       }
 
       &:nth-of-type(10) {
+        // Actions
         min-width: 6ch;
       }
 
       &:nth-of-type(11) {
-        min-width: 0%;
-        max-width: 0%;
-        width: 0%;
+        //  Selection Indicator
+        min-width: 0;
+        max-width: 0;
+        width: 0;
       }
 
       &:not(:nth-of-type(10), :nth-of-type(2)) {
