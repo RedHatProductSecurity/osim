@@ -1375,50 +1375,54 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           th {
             user-select: none;
 
+            // Checkbox
             &:nth-of-type(1) {
-              width: 2%;
+              max-width: 1ch;
             }
 
+            // Editing State
             &:nth-of-type(2) {
-              width: 3%;
+              min-width: 1ch;
+              max-width: 1ch;
+              padding: 0;
             }
 
             &:nth-of-type(3) {
-              width: 10%;
+              min-width: 10ch;
             }
 
             &:nth-of-type(4) {
-              width: 14%;
+              min-width: 10ch;
             }
 
             &:nth-of-type(5) {
-              width: 10%;
+              min-width: 16ch;
             }
 
             &:nth-of-type(6) {
-              width: 10%;
+              min-width: 12ch;
             }
 
             &:nth-of-type(7) {
-              width: 8%;
+              min-width: 8ch;
             }
 
             &:nth-of-type(8) {
-              width: 30%;
+              min-width: 4ch;
             }
 
             &:nth-of-type(9) {
-              width: 7%;
+              min-width: 8ch;
             }
 
             &:nth-of-type(10) {
-              width: 6%;
+              min-width: 6ch;
             }
 
             &:nth-of-type(11) {
-              min-width: 0%;
-              max-width: 0%;
-              width: 0%;
+              min-width: 0;
+              max-width: 0;
+              width: 0;
             }
 
             &:not(:nth-of-type(10), :nth-of-type(2)) {
