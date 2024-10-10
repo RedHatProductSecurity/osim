@@ -914,3 +914,15 @@ def step_impl(context):
     for k, v in context.value_dict.items():
         for order, values in v.items():
             assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed."
+
+
+@when("I change the state of affects")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.change_affect_state_for_filter()
+
+
+@then("I can filter affect by affect state")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.select_affect_by_state()

@@ -123,6 +123,10 @@ Feature: Flaw detail testing on public flaw
       When I click a sortable field in affects table
       Then The affects table is sorted by the field
 
+    Scenario: Filter affects by affect state in affects table toolbar
+      When I change the state of affects
+      Then I can filter affect by affect state
+
     @skip
     Scenario Outline: Create tracker
       When I delete an affect of the flaw

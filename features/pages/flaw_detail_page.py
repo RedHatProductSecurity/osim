@@ -141,11 +141,11 @@ class FlawDetailPage(BasePage):
         "alertDropdownBtn": ("XPATH", "(//button[@class='me-2 osim-collapsible-toggle'])[1]"),
         "alertFlawDropdownBtn": ("XPATH", "(//button[@class='me-2 osim-collapsible-toggle'])[2]"),
         "flawWithoutAffectErrorText": ("XPATH", "//span[contains(text(),'Error _validate_flaw_without_affect')]"),
-        "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "selects": ("XPATH", "//select[@class='form-select']"),
         "affectCreatedMsg": ("XPATH", "//div[text()='Affects Created.']"),
 
         # Affects locators
+        "addNewAffectBtn": ("XPATH", "//button[contains(text(), 'Add New Affect')]"),
         "newAddAffectEditBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Edit affect']"),
         "newAddAffectCommitBtn": ("XPATH", "//button[@title='Commit edit']"),
         "newAddAffectModuleInput": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/input"),
@@ -154,6 +154,7 @@ class FlawDetailPage(BasePage):
         "newAddAffectResolutionSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/select"),
         "newAddAffectImpactSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
         "newAddAffectCVSSInput": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/input"),
+        "firstAffectCheckbox": ("XPATH", "(//tbody)[1]/tr[1]/td[1]/input"),
         "firstAffectModuleSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/span"),
         "firstAffectComponentSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/span"),
         "firstAffectAffectednessSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/span"),
@@ -177,8 +178,15 @@ class FlawDetailPage(BasePage):
         "increaseAffectPerPage": ("XPATH", "//i[@title='Increase affects per page']"),
         "allAffectNumberSpan": ("XPATH", "//span[contains(text(), 'All affects')]"),
         "affectModuleHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th[contains(text(), 'Module')]"),
-        "affectComponentHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th[contains(text(), 'Component')]"),
-        "affectAffectednessHeader": ("XPATH", "//thead[@class='sticky-top table-dark']/tr/th/span[contains(text(), 'Affectedness')]"),
+        "affectComponentHeader": (
+            "XPATH", "//thead[@class='sticky-top table-dark']/tr/th[contains(text(), 'Component')]"),
+        "affectAffectednessHeader": (
+            "XPATH", "//thead[@class='sticky-top table-dark']/tr/th/span[contains(text(), 'Affectedness')]"),
+        "displayEditingAffect": ("XPATH", "//div[@title='Display editing affects']"),
+        "displayModifiedAffect": ("XPATH", "//div[@title='Display modified affects']"),
+        "displayRemovedAffect": ("XPATH", "//div[@title='Display removed affects']"),
+        "displayNewAddedAffect": ("XPATH", "//div[@title='Display new affects']"),
+        "displaySelectedAffect": ("XPATH", "//div[@title='Display selected affects']"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -1014,3 +1022,52 @@ class FlawDetailPage(BasePage):
         for row_index in range(1, len(affect_rows) + 1):
             affects.append(self.get_affect_value(row_index))
         return [getattr(affect, field) for affect in affects]
+
+    def change_affect_state_for_filter(self):
+        # add state
+        self.click_button_with_js('addNewAffectBtn')
+
+        # modified state
+        # get original value of component field
+        original_component_value = self.driver.find_element(
+            By.XPATH, "(//tbody)[1]/tr[2]/td[4]/span").text
+
+        second_affect_edit_btn = self.driver.find_element(
+            By.XPATH, "(//tbody)[1]/tr[2]/td[last()]/button[@title='Edit affect']")
+        self.click_button_with_js(second_affect_edit_btn)
+        second_affect_commit_btn = self.driver.find_element(
+            By.XPATH, "(//tbody)[1]/tr[2]/td[last()]/button[@title='Commit edit']")
+        second_affect_component_input = self.driver.find_element(By.XPATH, "(//tbody)[1]/tr[2]/td[4]/input")
+        self.clear_text_with_js(second_affect_component_input)
+        second_affect_component_input.send_keys(original_component_value+'-update')
+
+        self.click_button_with_js(second_affect_commit_btn)
+
+        # edit state
+        third_affect_edit_btn = self.driver.find_element(
+            By.XPATH, "(//tbody)[1]/tr[3]/td[last()]/button[@title='Edit affect']")
+        self.click_button_with_js(third_affect_edit_btn)
+
+        # delete state
+        fourth_affect_delete_btn = self.driver.find_element(
+            By.XPATH, "(//tbody)[1]/tr[4]/td[last()]/button[@title='Remove affect']")
+        self.click_button_with_js(fourth_affect_delete_btn)
+
+        # select state
+        self.click_button_with_js("firstAffectCheckbox")
+
+    def select_affect_by_state(self):
+        self.click_button_with_js("displayEditingAffect")
+        assert self.get_displayed_affects_number() == 1
+
+        self.click_button_with_js("displayModifiedAffect")
+        assert self.get_displayed_affects_number() == 1
+
+        self.click_button_with_js("displayRemovedAffect")
+        assert self.get_displayed_affects_number() == 1
+
+        self.click_button_with_js("displayNewAddedAffect")
+        assert self.get_displayed_affects_number() == 1
+
+        self.click_button_with_js("displaySelectedAffect")
+        assert self.get_displayed_affects_number() == 1
