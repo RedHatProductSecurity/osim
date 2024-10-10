@@ -1126,7 +1126,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   @keydown="handleEdit($event, affect)"
                 />
                 <span v-else>
-                  {{ affectCvssDisplay(affect) }}
+                  {{ affectCvss(affect)?.score || '' }}
                 </span>
               </td>
               <td>
