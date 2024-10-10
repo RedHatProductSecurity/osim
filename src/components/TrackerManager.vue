@@ -3,8 +3,8 @@ import { toRefs, computed, ref } from 'vue';
 
 import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 
-import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useTrackersForSingleFlaw';
-import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
+import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import type { ZodAffectType, ZodFlawType } from '@/types';
@@ -35,7 +35,7 @@ const {
   shouldFileAsMultiFlaw,
   synchronizeTrackerSelections,
   trackersToFile,
-} = useTrackersForRelatedFlaws(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
+} = useRelatedFlawTrackers(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
 
 const { isFetchingRelatedFlaws } = useFetchFlaw();
 
@@ -49,6 +49,9 @@ const relatedFlawIds = computed(() =>
   relatedFlaws.value.map(flaw => flaw.cve_id || flaw.uuid)
     .filter(id => !selectedRelatedFlawIds.value.includes(id)),
 );
+
+const specificAffects = computed(() => props?.specificAffectsToTrack?.map(affect =>
+  `${affect.ps_module}/${affect.ps_component}`));
 
 function updateSelection(trackerSelections: UpdateStreamSelections, tracker: UpdateStreamOsim) {
   const isSelected = trackerSelections.get(tracker);
@@ -81,13 +84,21 @@ async function handleFileTrackers() {
       Tracker Manager
       <button
         type="button"
-        class="btn btn-lightest-info btn-outline-dark-info btn-sm"
+        class="btn btn-lightest-info btn-outline-dark-info btn-sm osim-hide-tracker-manager"
         @click="emit('affects-trackers:hide')"
       >
         <i class="bi bi-eye-slash-fill"></i>
         Hide
       </button>
     </h4>
+    <div v-if="specificAffects?.length" class="mb-2">
+      <span>
+
+      </span>
+      <i class="bi bi-binoculars me-2"></i>
+      <span class="me-2">Managing trackers for {{ specificAffects.length }} affected offering(s):</span>
+      <span v-for="affect in specificAffects" :key="affect" class="badge bg-info me-1">{{ affect }}</span>
+    </div>
 
     <div class="osim-trackers-filing mb-2">
       <div class="osim-tracker-manager-controls">
@@ -507,4 +518,17 @@ button.osim-file-trackers:disabled {
     color: black;
   }
 }
+
+// .osim-specific-affects {
+//   // border-left: 0.25rem solid $info;
+//   padding-left: 0.5rem;
+//   margin-bottom: 1rem;
+//   background-color: $lighter-info;
+//   display: inline-block;
+//   // font-style: italic;
+
+//   span {
+//     font-style: normal;
+//   }
+// }
 </style>
