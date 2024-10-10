@@ -34,7 +34,7 @@ describe('alertsList', () => {
     expect(subject.vm).toBeDefined();
   });
 
-  osimEmptyFlawTest('is not vissible when no alerts are present', async ({ flaw }) => {
+  osimEmptyFlawTest('is not visible when no alerts are present', async ({ flaw }) => {
     subject = mount(FlawAlertsList, {
       props: {
         flaw: flaw,
@@ -45,7 +45,7 @@ describe('alertsList', () => {
     expect(comp?.isVisible()).toBe(false);
   });
 
-  osimFullFlawTest('is vissible when alerts are present', async ({ flaw }) => {
+  osimFullFlawTest('is visible when alerts are present', async ({ flaw }) => {
     flaw.alerts.push(sampleAlert('ERROR', flaw.uuid, 'flaw'));
     subject = mount(FlawAlertsList, {
       props: {

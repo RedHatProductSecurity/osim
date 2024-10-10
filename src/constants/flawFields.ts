@@ -49,6 +49,24 @@ export const flawFields = fieldsFor(ZodFlawSchema)
   .flatMap(field => fieldsMapping[field] || field)
   .sort();
 
+export const flawFieldNamesMapping: Record<string, string> = {
+  owner: 'Owner',
+  title: 'Title',
+  cve_id: 'CVE ID',
+  cwe_id: 'CWE ID',
+  impact: 'Impact',
+  source: 'Source',
+  statement: 'Statement',
+  components: 'Components',
+  mitigation: 'Mitigation',
+  reported_dt: 'Reported Date',
+  unembargo_dt: 'Public Date',
+  cve_description: 'Description',
+  major_incident_state: 'Incident State',
+  major_incident_start_dt: 'Incident Start Date',
+  requires_cve_description: 'Requires CVE Description',
+};
+
 export const allowedEmptyFieldMapping: Record<string, string> = {
   cve_id: 'cve_id__isempty',
   cvss_scores__score: 'cvss3_rh__isempty',
