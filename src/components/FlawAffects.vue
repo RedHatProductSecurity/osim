@@ -1125,7 +1125,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   @updateAffectCvss="(vectorValue, scoreValue) => updateAffectCvss(affect, vectorValue, scoreValue)"
                   @keydown="handleEdit($event, affect)"
                 />
-                <span v-else>
+                <span v-else :title="affectCvss(affect)?.vector || ''">
                   {{ affectCvss(affect)?.score || '' }}
                 </span>
               </td>
