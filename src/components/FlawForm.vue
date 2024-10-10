@@ -14,7 +14,7 @@ import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
-import CvssCalculator from '@/components/CvssCalculator.vue';
+import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
 
