@@ -88,40 +88,12 @@ function highlightFactorValue(factor: null | string) {
 <template>
   <div
     ref="cvssDiv"
-    style="height: 30.8px;"
     tabindex="0"
     @focus="onInputFocus"
     @paste="handlePaste"
   >
-    <div class="osim-input">
-      <div class="input-wrapper col">
-        <CvssVectorInput
-          ref="cvssVectorInput"
-          :cvssVector="cvssVector"
-          :cvssScore="cvssScore"
-          :cvssFactors="cvssFactors"
-          :isFocused="isFocused"
-          :highlightedFactor="highlightedFactor"
-          :error="error"
-          class="vector-input"
-          style="height: 30.8px;"
-          @onInputFocus="onInputFocus"
-          @onInputBlur="onInputBlur"
-          @highlightFactor="highlightFactor"
-          @updateFactors="updateFactors(cvssVector)"
-        />
-      </div>
-      <button
-        tabindex="-1"
-        type="button"
-        :disabled="!cvssVector"
-        class="erase-button input-group-text"
-        @click="reset()"
-        @mousedown="(event: MouseEvent) => event.preventDefault()"
-      >
-        <i class="bi bi-eraser"></i>
-      </button>
-    </div>
+    <span>{{ cvssScore }}</span>
+    <i class="bi bi-calculator-fill p-2" />
     <CvssFactorBtns
       v-model:cvssVector="cvssVector"
       v-model:cvssScore="cvssScore"
@@ -132,7 +104,37 @@ function highlightFactorValue(factor: null | string) {
       class="overlayed"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
-    />
+    >
+      <div class="osim-input">
+        <div class="input-wrapper col">
+          <CvssVectorInput
+            ref="cvssVectorInput"
+            :cvssVector="cvssVector"
+            :cvssScore="cvssScore"
+            :cvssFactors="cvssFactors"
+            :isFocused="isFocused"
+            :highlightedFactor="highlightedFactor"
+            :error="error"
+            class="vector-input"
+            style="height: 30.8px;"
+            @onInputFocus="onInputFocus"
+            @onInputBlur="onInputBlur"
+            @highlightFactor="highlightFactor"
+            @updateFactors="updateFactors(cvssVector)"
+          />
+        </div>
+        <button
+          tabindex="-1"
+          type="button"
+          :disabled="!cvssVector"
+          class="erase-button input-group-text"
+          @click="reset()"
+          @mousedown="(event: MouseEvent) => event.preventDefault()"
+        >
+          <i class="bi bi-eraser"></i>
+        </button>
+      </div>
+    </CvssFactorBtns>
   </div>
 </template>
 

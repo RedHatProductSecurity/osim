@@ -55,57 +55,60 @@ function factorButton(id: string, key: string) {
     :class="{ 'visually-hidden': !isFocused, 'mt-2': cvssVector, }"
     v-bind="$attrs"
   >
-    <div
-      class="osim-input mx-0"
-    >
-      <div class="p-2 mx-auto">
-        <div
-          v-for="(row, rowIndex) in calculatorButtons.rows"
-          :key="rowIndex"
-          class="row-group"
-        >
+    <div class="p-3">
+      <slot />
+      <div
+        class="osim-input mx-0"
+      >
+        <div class="mx-auto">
           <div
-            v-for="(col, colIndex) in row.cols"
-            :key="colIndex"
-            class="col-group"
+            v-for="(row, rowIndex) in calculatorButtons.rows"
+            :key="rowIndex"
+            class="row-group"
           >
             <div
-              class="btn-group-vertical btn-group-sm osim-factor-severity-select"
-              @mouseover="emit('highlightFactor',col.id)"
-              @mouseleave="emit('highlightFactor',null)"
+              v-for="(col, colIndex) in row.cols"
+              :key="colIndex"
+              class="col-group"
             >
-              <button
-                class="btn-group-header btn lh-sm"
-                :class="{ 'osim-factor-highlight': col.id === highlightedFactor}"
-                disabled
-              >{{ col.label }}</button>
-              <template v-for="(button, btnIndex) in col.buttons" :key="btnIndex">
+              <div
+                class="btn-group-vertical btn-group-sm osim-factor-severity-select"
+                @mouseover="emit('highlightFactor',col.id)"
+                @mouseleave="emit('highlightFactor',null)"
+              >
                 <button
-                  tabindex="-1"
-                  type="button"
-                  class="btn lh-sm"
-                  :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="right"
-                  :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
-                  :style="
-                    cvssFactors[col.id] === button.key
-                      || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
-                        getFactorColor(weights[col.id][button.key], false, highlightedFactor) : {
-                        backgroundColor: '#E0E0E0',
-                        color: (cvssFactors[col.id] === button.key
-                          && factorSeverities[col.id][button.key] !== 'Bad')
-                          ? 'white'
-                          : 'inherit'
-                      }"
-                  @click="factorButton(col.id, button.key)"
-                  @mousedown="(event: MouseEvent) => event.preventDefault()"
-                  @mouseover="emit('highlightFactorValue',`${rowIndex}${colIndex}${btnIndex}`)"
-                  @mouseout="emit('highlightFactorValue',null)"
-                >
-                  {{ button.name }}
-                </button>
-              </template>
+                  class="btn-group-header btn lh-sm"
+                  :class="{ 'osim-factor-highlight': col.id === highlightedFactor}"
+                  disabled
+                >{{ col.label }}</button>
+                <template v-for="(button, btnIndex) in col.buttons" :key="btnIndex">
+                  <button
+                    tabindex="-1"
+                    type="button"
+                    class="btn lh-sm"
+                    :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="right"
+                    :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
+                    :style="
+                      cvssFactors[col.id] === button.key
+                        || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
+                          getFactorColor(weights[col.id][button.key], false, highlightedFactor) : {
+                          backgroundColor: '#E0E0E0',
+                          color: (cvssFactors[col.id] === button.key
+                            && factorSeverities[col.id][button.key] !== 'Bad')
+                            ? 'white'
+                            : 'inherit'
+                        }"
+                    @click="factorButton(col.id, button.key)"
+                    @mousedown="(event: MouseEvent) => event.preventDefault()"
+                    @mouseover="emit('highlightFactorValue',`${rowIndex}${colIndex}${btnIndex}`)"
+                    @mouseout="emit('highlightFactorValue',null)"
+                  >
+                    {{ button.name }}
+                  </button>
+                </template>
+              </div>
             </div>
           </div>
         </div>
@@ -118,7 +121,7 @@ function factorButton(id: string, key: string) {
 .cvss-calculator {
   &.overlayed {
     display: block;
-    transform: translateX(-100px);
+    transform: translateX(-25ch);
     background-color: #525252;
     border-radius: 10px;
     z-index: 5;
@@ -126,7 +129,7 @@ function factorButton(id: string, key: string) {
   }
 
   .osim-input {
-    display: inline-flex;
+    display: flex;
     width: 100%;
 
     .row-group {
