@@ -331,44 +331,50 @@ const displayedTrackers = computed(() => {
       <LabelCollapsible
         :isExpanded="modulesExpanded"
         :isExpandable="hasAffects"
+        iconClose="-"
+        iconOpen="-"
         @toggleExpanded="toggleModulesCollapse"
       >
         <template #label>
-          <label class="form-label m-2">
-            Affected Modules
+          <label class="form-label mt-2 btn btn-sm btn-secondary">
+            <i :class="modulesExpanded?'bi-funnel-fill':'bi-funnel'"></i>
+            Affected Module Filters
           </label>
         </template>
         <template #buttons>
           <button
             v-if="selectedModules.length > 0"
             type="button"
-            class="clear-modules-btn btn btn-primary btn-sm"
+            class="mt-2 mb-0 btn btn-primary btn-sm"
             @click="selectedModules = []"
           >
-            Clear
+          <i class="bi bi-x" />
+            Clear Filters
           </button>
         </template>
-        <template v-for="(moduleName) in affectedModules" :key="moduleName">
-          <button
-            v-if="moduleName"
-            type="button"
-            tabindex="-1"
-            class="module-btn btn btn-sm"
-            :class="{
-              'btn-secondary': isModuleSelected(moduleName),
-              'border-gray': !isModuleSelected(moduleName),
-              'fw-bold': moduleTrackersCount(moduleName) === 0,
-            }"
-            :title="moduleBtnTooltip(moduleName)"
-            @click="handleModuleSelection(moduleName)"
-          >
-            <i
-              v-if="moduleTrackersCount(moduleName) === 0"
-              class="bi bi-exclamation-lg"
-            />
-            <span>{{ moduleName }}</span>
-          </button>
-        </template>
+        <div class="d-inline-block bg-light-gray p-2">
+          <template v-for="(moduleName) in affectedModules" :key="moduleName">
+            <button
+              v-if="moduleName"
+              type="button"
+              tabindex="-1"
+              class="module-btn btn btn-sm"
+              :class="{
+                'btn-secondary': isModuleSelected(moduleName),
+                'border-gray': !isModuleSelected(moduleName),
+                'fw-bold': moduleTrackersCount(moduleName) === 0,
+              }"
+              :title="moduleBtnTooltip(moduleName)"
+              @click="handleModuleSelection(moduleName)"
+            >
+              <i
+                v-if="moduleTrackersCount(moduleName) === 0"
+                class="bi bi-exclamation-lg"
+              />
+              <span>{{ moduleName }}</span>
+            </button>
+          </template>
+        </div>
       </LabelCollapsible>
       <span v-if="affectedModules.length === 0" class="my-2 p-2">No modules to display</span>
     </div>
@@ -638,10 +644,6 @@ const displayedTrackers = computed(() => {
       max-width: 200px;
     }
 
-    .clear-modules-btn {
-      height: 1.5rem;
-    }
-
     .module-btn {
       transition: color 0.15s background-color 0.15s;
 
@@ -654,10 +656,28 @@ const displayedTrackers = computed(() => {
         line-height: 2rem;
       }
 
-      &:not(.btn-secondary):hover {
-        background-color: $gray;
-        border-color: $secondary !important;
+      &:not(.btn-secondary) {
+        background-color: #fff;
+
+        &:hover {
+          background-color: $gray;
+          border-color: $secondary !important;
+        }
       }
+    }
+  }
+
+  :deep(.osim-collapsible-label) {
+    & > button.osim-collapsible-toggle label {
+      margin-bottom: 0 !important;
+    }
+
+    & > div.ps-3 {
+      padding: 0 !important;
+    }
+
+    & div.border-start {
+      margin-left: 0.5rem;
     }
   }
 
@@ -754,7 +774,7 @@ const displayedTrackers = computed(() => {
       .osim-affect-trackers-container {
         margin: 0 !important;
 
-        h4 button {
+        .osim-hide-tracker-manager {
           display: none;
         }
       }

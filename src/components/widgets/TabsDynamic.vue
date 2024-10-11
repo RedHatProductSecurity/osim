@@ -14,10 +14,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   'add-tab': [value?: any];
 }>();
+
 const activeTabIndex = ref(0);
 const searchFilter = ref('');
-
-const selectTab = (index: number) => activeTabIndex.value = index;
 
 const filteredItems = computed(() => props.addableItems?.filter((item: string) => searchFilter.value
   ? item.toLowerCase().includes(searchFilter.value.toLowerCase())
@@ -35,6 +34,10 @@ onUnmounted(() => {
 function clearSearchFilter() {
   searchFilter.value = '';
 }
+
+function selectTab(index: number) {
+  activeTabIndex.value = index;
+};
 </script>
 
 <template>
