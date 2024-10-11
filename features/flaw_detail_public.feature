@@ -193,7 +193,7 @@ Feature: Flaw detail testing on public flaw
         # |                            DONE |
 
     Scenario Outline: Update CVSS score explanation
-      When I {action} the CVSS score explanation
+      When I <action> the CVSS score explanation
       Then The CVSS score explanation is updated
 
       Examples:

@@ -1,7 +1,9 @@
+import time
 from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
+from features.utils import go_to_advanced_search_page
 from pages.home_page import HomePage
 
 
@@ -28,6 +30,14 @@ FIELD_IN_DETAIL = [
     "cve_description",
     #"major_incident_state",
     "embargoed",
+]
+EMPTY_FIELDS = [
+    "cve_description",
+    "cve_id",
+    "cvss_scores__score",
+    "mitigation",
+    "owner",
+    "statement"
 ]
 
 
@@ -99,3 +109,55 @@ def step_impl(context):
     assert field_value == "NEW"
     field_value = advanced_search_page.get_field_value_from_flawlist("impact")
     assert field_value == "LOW"
+
+
+@then('I am able to search flaws with empty or nonempty value')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    for field in EMPTY_FIELDS:
+        advanced_search_page.selectKeyList.click_button()
+        advanced_search_page.selectKeyList.select_element_by_value(field)
+
+        # Check search result with empty value
+        advanced_search_page.click_btn("emptyBtn")
+        advanced_search_page.click_btn("searchBtn")
+        advanced_search_page.first_flaw_exist()
+        if field in ['cve_id', 'owner']:
+            value = advanced_search_page.get_field_value_from_flawlist(field)
+            is_correct = not value.startswith('CVE-') if field == 'cve_id' else value == ''
+            assert is_correct is True
+        else:
+            # cve_description, cvss_scores__score, mitigation, statement
+            advanced_search_page.go_to_first_flaw_detail()
+            time.sleep(1)
+            flaw_page = FlawDetailPage(context.browser)
+            if field == 'cvss_scores__score':
+                value = flaw_page.get_cvssV3_score()
+            else:
+                text_field = 'description' if field == 'cve_description' else field
+                value = flaw_page.get_document_text_field(text_field)
+            assert value == ''
+            # Back to advanced search page
+            go_to_advanced_search_page(context.browser)
+            advanced_search_page.selectKeyList.click_button()
+            advanced_search_page.selectKeyList.select_element_by_value(field)
+
+        # Check search result with nonempty value
+        advanced_search_page.click_btn("nonemptyBtn")
+        advanced_search_page.click_btn("searchBtn")
+        advanced_search_page.first_flaw_exist()
+        if field in ['cve_id', 'owner']:
+            value = advanced_search_page.get_field_value_from_flawlist(field)
+            is_correct = value.startswith('CVE-') if field == 'cve_id' else value != ''
+            assert is_correct is True
+        else:
+            advanced_search_page.go_to_first_flaw_detail()
+            time.sleep(1)
+            flaw_page = FlawDetailPage(context.browser)
+            if field == 'cvss_scores__score':
+                value = flaw_page.get_cvssV3_score()
+            else:
+                text_field = 'description' if field == 'cve_description' else field
+                value = flaw_page.get_document_text_field(text_field)
+            assert value != ''
+            go_to_advanced_search_page(context.browser)

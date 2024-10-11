@@ -19,3 +19,7 @@ Feature: Flaw advance search testing
       Given I go to the advanced search page
       When I am searching flaws with two fields and two values
       Then I am able to view flaws matching the search with two selected fileds
+
+    Scenario: Search flaws with empty or nonempty value
+      Given I go to the advanced search page
+      Then I am able to search flaws with empty or nonempty value
