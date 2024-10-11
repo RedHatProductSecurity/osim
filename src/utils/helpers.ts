@@ -3,6 +3,9 @@ import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue
 import { DateTime } from 'luxon';
 import * as R from 'ramda';
 
+import { CVSS_V3 } from '@/constants';
+import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
+
 export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
   const reffedProp = toRef(prop, property);
   const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
@@ -41,42 +44,6 @@ export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T 
   return objectIterator(sourceObj);
 }
 
-// export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T {
-//   return JSON.parse(JSON.stringify(deepToRaw(sourceObj)));
-// }
-
-// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
-export const groupBy = <T>(
-  array: T[],
-  predicate: (value: T, index: number, array: T[]) => string,
-) =>
-  array.reduce(
-    (acc, value, index, array) => {
-      (acc[predicate(value, index, array)] ||= []).push(value);
-      return acc;
-    },
-    {} as { [key: string]: T[] },
-  );
-
-export const assignKeyValue = (object: Record<string, any>, key: string, value: any = null) => {
-  object[key] = value;
-  return object;
-};
-
-export const objectMap = (object: Record<string, any>, mapFn: (key: string, value: any) => any) =>
-  Object.keys(object).reduce(
-    (acc, key) => assignKeyValue(acc, key, mapFn(key, object[key])),
-    {} as Record<string, any>,
-  );
-
-export const sortedByGroup = <T extends Record<string, any>>(array: T[], key: string) =>
-  groupBy(
-    array
-      .filter((item: T) => item[key])
-      .sort((itemA: T, itemB: T) => itemA[key].localeCompare(itemB[key])),
-    (item: T) => item[key],
-  );
-
 type DeepMappable = any[] | Record<string, any>;
 
 const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
@@ -92,6 +59,9 @@ export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any
   );
 
 export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
+
+export const isCveValid = (cve: string) => cveRegex.test(cve);
+
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
 
 export function formatDate(date: Date | string, includeTime: boolean): string {
@@ -100,12 +70,35 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
   return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
 }
 
-export function getSpecficCvssScore(scores: any[], issuer: string, version: string) {
-  return scores.find(
-    score => score.issuer === issuer && score.cvss_version === version,
-  );
+export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
+  return score.issuer === 'RH' && score.cvss_version === CVSS_V3;
 }
 
-export function getRhCvss3(scores: any[]) {
-  return getSpecficCvssScore(scores, 'RH', 'V3');
+export function affectRhCvss3(affect: ZodAffectType) {
+  return affect.cvss_scores.find(isCVSS3issuedByRH);
+}
+
+type WithModuleComponent = {
+  _osimTempId?: number;
+  ps_component: string;
+  ps_module: string;
+  uuid?: null | string;
+};
+
+export function matchModuleComponent(first: WithModuleComponent, second: WithModuleComponent) {
+  return (first.ps_component === second.ps_component && first.ps_module === second.ps_module);
+}
+
+export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
+  const doUuidsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
+  const doTempIdsMatch = first._osimTempId && second._osimTempId && (first._osimTempId === second._osimTempId);
+  return doUuidsMatch || doTempIdsMatch || matchModuleComponent(first, second);
+}
+
+export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
+  return Boolean(affects.find(affectToMatch => doAffectsMatch(affect, affectToMatch)));
+}
+
+export function affectsMatcherFor(affect: ZodAffectType) {
+  return (affectToMatch: ZodAffectType) => doAffectsMatch(affect, affectToMatch);
 }
