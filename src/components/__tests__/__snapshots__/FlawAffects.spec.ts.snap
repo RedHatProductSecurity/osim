@@ -483,7 +483,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if-->
         <!--v-if-->
       </div>
-      <div data-v-2d3c4208="" class="affects-table-actions ms-auto"><button data-v-2d3c4208="" type="button" class="trackers-btn btn btn-sm btn-info"> Manage Trackers for 3 Affect(s) </button>
+      <div data-v-2d3c4208="" class="affects-table-actions ms-auto"><button data-v-2d3c4208="" type="button" class="trackers-btn btn btn-sm btn-info border-dark-info" title="Manage trackers for 3 selected affect(s)">
+          <!-- Manage Trackers for {{ selectedAffects.length }} Affect(s) --><span data-v-2d3c4208="">Manage Trackers</span><span data-v-2d3c4208="" class="bg-dark-info ms-1 text-white rounded-pill px-2">3</span>
+        </button>
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->
