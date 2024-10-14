@@ -348,7 +348,7 @@ const displayedTrackers = computed(() => {
             class="mt-2 mb-0 btn btn-primary btn-sm"
             @click="selectedModules = []"
           >
-          <i class="bi bi-x" />
+            <i class="bi bi-x" />
             Clear Filters
           </button>
         </template>

@@ -3,8 +3,8 @@ import { toRefs, computed, ref } from 'vue';
 
 import TabsDynamic from '@/components/widgets/TabsDynamic.vue';
 
-import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useTrackersForSingleFlaw';
-import { useTrackersForRelatedFlaws } from '@/composables/useTrackersForRelatedFlaws';
+import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
+import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import type { ZodAffectType, ZodFlawType } from '@/types';
@@ -35,7 +35,7 @@ const {
   shouldFileAsMultiFlaw,
   synchronizeTrackerSelections,
   trackersToFile,
-} = useTrackersForRelatedFlaws(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
+} = useRelatedFlawTrackers(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
 
 const { isFetchingRelatedFlaws } = useFetchFlaw();
 
