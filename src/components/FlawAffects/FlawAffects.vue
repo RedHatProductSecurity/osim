@@ -16,7 +16,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { uniques, affectsMatcherFor } from '@/utils/helpers';
+import { uniques, matcherForAffect } from '@/utils/helpers';
 
 import { displayModes } from './flawAffectConstants';
 import { useAffectSelections } from './useAffectSelections';
@@ -171,7 +171,7 @@ function isBeingEdited(affect: ZodAffectType) {
 // TODO: refactor affect editing logic into composable
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
   // return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
-  const matchAffect = affectsMatcherFor(affect);
+  const matchAffect = matcherForAffect(affect);
   return affectValuesPriorEdit.value.find(matchAffect) || affect;
 }
 
@@ -193,7 +193,7 @@ function editSelectedAffects() {
 
 // TODO: refactor affect editing logic into composable
 function commitChanges(affect: ZodAffectType) {
-  const matchAffect = affectsMatcherFor(affect);
+  const matchAffect = matcherForAffect(affect);
   const updateIndex = flaw.value.affects.findIndex(matchAffect);
   flaw.value.affects.splice(updateIndex, 1, affect);
   resetStagedAffectEdit(affect);
@@ -206,7 +206,7 @@ function cancelChanges(affect: ZodAffectType) {
 
 // TODO: refactor affect editing logic into composable
 function resetStagedAffectEdit(affect: ZodAffectType) {
-  const matchAffect = affectsMatcherFor(affect);
+  const matchAffect = matcherForAffect(affect);
   const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
   affectsBeingEdited.value.splice(editingIndex, 1);
   const priorAffectIndex = affectValuesPriorEdit.value.findIndex(matchAffect);
@@ -507,10 +507,13 @@ const displayedTrackers = computed(() => {
           <button
             v-if="selectedAffects.length > 0"
             type="button"
-            class="trackers-btn btn btn-sm btn-info"
+            class="trackers-btn btn btn-sm btn-info border-dark-info"
+            :title="`Manage trackers for ${selectedAffects.length} selected affect(s)`"
             @click.prevent.stop="openManageTrackersModal"
           >
-            Manage Trackers for {{ selectedAffects.length }} Affect(s)
+            <!-- Manage Trackers for {{ selectedAffects.length }} Affect(s) -->
+            <span>Manage Trackers</span>
+            <span class="bg-dark-info ms-1 text-white rounded-pill px-2">{{ selectedAffects.length }} </span>
           </button>
           <button
             v-if="affectsBeingEdited.length > 0"
@@ -745,6 +748,15 @@ const displayedTrackers = computed(() => {
 
           i {
             font-size: 1rem;
+
+            &.bi-bug {
+              line-height: 1;
+            }
+          }
+
+          span:has(i.bi-bug) {
+            padding-top: 0.1rem;
+            padding-bottom: 0.1rem;
           }
         }
 
