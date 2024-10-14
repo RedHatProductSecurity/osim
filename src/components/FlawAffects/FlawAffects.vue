@@ -36,8 +36,8 @@ const emit = defineEmits<{
   'affect:track': [value: ZodAffectType];
   'affects:refresh': [];
 }>();
-const settingsStore = useSettingsStore();
-const settings = ref(settingsStore.settings);
+
+const { settings } = useSettingsStore();
 const {
   closeModal,
   isModalOpen: isManageTrackersModalOpen,
