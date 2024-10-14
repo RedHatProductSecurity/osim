@@ -117,6 +117,15 @@ export const ZodFlawCommentSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
+export type ZodFlawHistoryItemType = z.infer<typeof ZodHistoryItemSchema>;
+export const ZodHistoryItemSchema = z.object({
+  pgh_created_at: zodOsimDateTime().nullish(),
+  pgh_slug: z.string().nullish(),
+  pgh_label: z.string(),
+  pgh_context: z.object({ url: z.string(), user: z.number() }).nullable(),
+  pgh_diff: z.record(z.array(z.string())).nullable(),
+});
+
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
 export type FlawSchemaType = typeof ZodFlawSchema;
 
@@ -135,6 +144,7 @@ export const ZodFlawSchema = z.object({
   components: z.array(z.string().min(1).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
+  history: z.array(ZodHistoryItemSchema).nullish(),
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),

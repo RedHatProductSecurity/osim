@@ -60,6 +60,7 @@ export async function getFlaw(uuid: string): Promise<ZodFlawType> {
     url: `/osidb/api/v1/flaws/${uuid}`,
     params: {
       include_meta_attr: 'bz_id',
+      include_history: 'true',
     },
   }).then(response => response.data);
 }

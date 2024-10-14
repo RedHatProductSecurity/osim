@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Extend incident types to include 'Minor' and 'Zero Day' (`OSIDB-3442`)
+* Added Flaw History section (`OSIDB-3371`)
 
 ### Fixed
 * Corrected wrong tooltips on advance search, empty/non-empty buttons (`OSIDB-3502`)

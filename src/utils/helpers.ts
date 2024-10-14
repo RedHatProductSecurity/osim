@@ -100,6 +100,11 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
   return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
 }
 
+export function formatDateWithTimezone(value: string) {
+  return DateTime.fromISO(value, { setZone: true })
+    .toFormat('yyyy-MM-dd hh:mm ZZZZ');
+}
+
 export function getSpecficCvssScore(scores: any[], issuer: string, version: string) {
   return scores.find(
     score => score.issuer === issuer && score.cvss_version === version,
@@ -108,4 +113,8 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 
 export function getRhCvss3(scores: any[]) {
   return getSpecficCvssScore(scores, 'RH', 'V3');
+}
+
+export function capitalize(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
