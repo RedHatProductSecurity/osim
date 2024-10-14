@@ -5,7 +5,6 @@ import {
   affectImpacts,
   affectAffectedness,
   affectResolutions,
-  // possibleAffectResolutions,
   type ZodAffectType,
 } from '@/types/zodAffect';
 
@@ -31,8 +30,6 @@ const {
   sortKey,
   sortOrder,
 } = useFilterSortAffects();
-
-// Edit Affects
 
 function isBeingEdited(affect: ZodAffectType) {
   return props.affectsBeingEdited.includes(affect);
@@ -311,9 +308,9 @@ thead {
 
       &:nth-of-type(11) {
         //  Selection Indicator
-        min-width: 0%;
-        max-width: 0%;
-        width: 0%;
+        min-width: 0;
+        max-width: 0;
+        width: 0;
       }
 
       &:not(:nth-of-type(10), :nth-of-type(2)) {
