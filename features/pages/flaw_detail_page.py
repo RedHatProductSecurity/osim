@@ -1,10 +1,7 @@
-import json
 import random
 import time
-import urllib.parse
 from collections import namedtuple
 
-import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,11 +15,10 @@ from selenium.webdriver.remote.webelement import WebElement
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory, find_element_in_page_factory
 from features.constants import (
-    OSIDB_URL,
     AFFECTED_MODULE_BZ,
     AFFECTED_MODULE_JR
 )
-from features.common_utils import get_flaw_id, generate_cvss3_vector_string
+from features.common_utils import generate_cvss3_vector_string
 
 
 Affect = namedtuple(
@@ -43,12 +39,12 @@ class FlawDetailPage(BasePage):
 
         "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
-        "descriptionText": ("XPATH", "//span[contains(text(), 'Description')]"),
+        "descriptionText": ("XPATH", "//span[text()=' Description ']"),
         "reviewStatusSelect": ("XPATH", "//select[@class='form-select col-3 osim-description-required']"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
-        "statementText": ("XPATH", "//span[contains(text(), 'Statement')]"),
+        "statementText": ("XPATH", "(//span[contains(text(), 'Statement')])[last()]"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
-        "mitigationText": ("XPATH", "//span[contains(text(),'Mitigation')]"),
+        "mitigationText": ("XPATH", "(//span[contains(text(),'Mitigation')])[last()]"),
 
         "addPublicCommentBtn": ("XPATH", "//button[contains(text(), 'Add Public Comment')]"),
         "savePublicCommentBtn": ("XPATH", "//button[contains(text(),'Save Public Comment')]"),
@@ -105,7 +101,7 @@ class FlawDetailPage(BasePage):
         "publicDateFutureText": ("XPATH", "//span[text()='Public Date [FUTURE]']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
+        "ownerText": ("XPATH", " (//span[contains(text(), 'Owner')])[last()]"),
         "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
         "contributorsText": ("XPATH", "//span[text()='Contributors']"),
@@ -219,7 +215,7 @@ class FlawDetailPage(BasePage):
         "unembargoWarningText": ("XPATH", "//div[@class='alert alert-info']"),
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
         "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]"),
-        'stateText': ("XPATH", "(//span[contains(text(), 'State')])[1]"),
+        'stateText': ("XPATH", "//span[text()=' State']"),
         'embargoedText': ("XPATH", "//span[contains(text(), 'Embargo')]"),
     }
 
@@ -432,6 +428,10 @@ class FlawDetailPage(BasePage):
 
     def get_cvssV3_score(self):
         return find_element_in_page_factory(self, "cvssV3Score").text
+
+    def get_cvssV3_vector(self):
+        r = self.driver.find_elements(By.XPATH, "//div[@class='vector-input form-control']/span[position()>1]")
+        return "".join([element.text for element in r])
 
     def set_cvssV3_field(self):
         field_input = self.driver.find_elements(
@@ -724,67 +724,15 @@ class FlawDetailPage(BasePage):
         self.switch_element_visibility(bottom_footer, 'visible')
         self.switch_element_visibility(bottom_bar, 'visible')
 
-    def load_affects_results_from_osidb(self, token):
-        url = urllib.parse.urljoin(OSIDB_URL, "osidb/api/v1/flaws")
-        headers = {"Authorization": f"Bearer {token}"}
-        cve_id = get_flaw_id()
-        if cve_id.startswith("CVE-"):
-            params = {"cve_id": cve_id}
-        else:
-            params = {"uuid": cve_id}
-        r = requests.get(url, params=params, headers=headers)
-        return json.loads(r.text).get('results')[0]
+    def get_field_value_using_relative_locator(self, field, path):
+        element = getattr(self, field)
+        state_element = self.driver.find_elements(
+            locate_with(By.XPATH, path).near(element))[0]
+        return state_element.get_text()
 
-    def get_affect_values(self, fields, token, component_value):
-        osidb_token = token
-        flaw_info = self.load_affects_results_from_osidb(osidb_token)
-        # Get the field value dict that related to the updated affect
-        field_value_dict = {}
-        for affect in flaw_info.get('affects'):
-            # One module and one module combination should be unique.
-            # One unique component is associated one affect in affect list
-            if affect.get('ps_component') == component_value:
-                for field in fields:
-                    if affect.get(field):
-                        field_value = affect.get(field)
-                        field_value_dict[field] = field_value
-                    else:
-                        field_value_dict[field] = ''
-        return field_value_dict
-
-    def set_select_value_for_affect(self, field):
-        field_element = getattr(self, field)
-        select_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
-        select_element.execute_script("arguments[0].scrollIntoView(true);")
-        if 'affects' in field:
-            hide_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
-            self.driver.execute_script("arguments[0].style.visibility='hidden'", hide_bar)
-        select_list = select_element.get_all_list_item()
-        selected_list = select_element.get_list_selected_item()
-        if selected_list[0] in select_list:
-            select_list.remove(selected_list[0])
-        updated_value = random.choice(select_list)
-        select_element.execute_script("arguments[0].scrollIntoView(true);")
-        select_element.select_element_by_value(updated_value)
-        if 'affects' in field:
-            self.driver.execute_script("arguments[0].style.visibility='visible'", hide_bar)
-        return updated_value
-
-    def get_selected_value_for_affect(self, field):
-        field_element = getattr(self, field)
-        select_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//select[@class='form-select']").near(field_element))[0]
-        select = Select(select_element)
-        current_value = select.first_selected_option.text
-        return current_value
-
-    def get_current_value_of_field(self, field):
-        field_element = getattr(self, field)
-        input_element = self.driver.find_elements(
-            locate_with(By.XPATH, "//span[@class='osim-editable-text-value form-control']").near(field_element))[0]
-        current_value = input_element.get_text()
-        return current_value
+    def get_input_field_value_using_relative_locator(self, field):
+        return self.get_field_value_using_relative_locator(
+            field, "//span[@class='osim-editable-text-value form-control']")
 
     def get_displayed_affects_number(self):
         affect_rows = find_elements_in_page_factory(self, "affectRows")
@@ -812,12 +760,6 @@ class FlawDetailPage(BasePage):
             EC.invisibility_of_element_located((By.XPATH, "//button[contains(text(), 'Unembargo')]"))
         )
 
-    def click_plusdropdown_btn(self, field):
-        element = getattr(self, field)
-        dropdown_btn = self.driver.find_elements(
-            locate_with(By.XPATH, "//button[@class='me-2 osim-collapsible-toggle']").near(element))[0]
-        self.driver.execute_script("arguments[0].click();", dropdown_btn)
-
     def display_affect_detail(self):
         self.click_button_with_js("affectExpandall")
         self.click_button_with_js('affectDropdownBtn')
@@ -841,7 +783,7 @@ class FlawDetailPage(BasePage):
             locate_with(By.TAG_NAME, "textarea").below(element))[0]
         reason_text_area.send_keys(value)
 
-    def get_select_element_value(self, field):
+    def get_select_value_using_relative_locator(self, field):
         element = getattr(self, field)
         field_select = self.driver.find_elements(
             locate_with(By.XPATH, "//select[@class='form-select']").near(element))[0]
@@ -849,45 +791,53 @@ class FlawDetailPage(BasePage):
         current_value = selected_item[0] if selected_item else None
         return current_value
 
-    def get_field_value(self, field,  path):
-        element = getattr(self, field)
-        state_element = self.driver.find_elements(
-            locate_with(By.XPATH, path).near(element))[0]
-        return state_element.get_text()
+    def get_valid_search_keywords_from_created_flaw(self):
+        public_flaw_result = {}
 
-    def get_valid_search_keywords_from_created_flaw(self, fields):
-        result = {}
-        for field in fields:
-            if field == 'cve_id':
-                result[field] = self.get_current_value_of_field("cveidText")
-            elif field == "cwe_id":
-                result[field] = self.get_current_value_of_field("cweidText")
-            elif field in ['title', 'owner']:
-                result[field] = self.get_current_value_of_field(field+'Text')
-            elif field in ["impact", "source"]:
-                result[field] = self.get_select_element_value(field + 'Text')
-            elif field == "workflow_state":
-                result[field] = self.get_field_value('stateText', "//span[@class='form-control rounded-0']")
-            elif field == "cve_description":
-                 result[field] = self.get_document_text_field('description')
-            elif field == "requires_cve_description":
-                _,result[field] = self.get_select_value('reviewStatusSelect')
-            elif field == "embargoed":
-                result[field] = 'false'
-        return(result)
+        # get public flaw search value
+        self.click_acknowledgments_dropdown_btn()
+        public_flaw_result["acknowledgments__name"] = self.get_field_value_using_relative_locator(
+            'acknowledgmentCountLabel', "//div[@class='form-group mb-2']/div"
+        ).split('from')[0].strip()
+        # "affects__trackers__ps_update_stream",
+        first_affect = self.get_affect_value()
+        public_flaw_result["affects__affectedness"] = first_affect.affectedness
+        public_flaw_result["affects__ps_component"] = first_affect.component
+        public_flaw_result["affects__ps_module"] = first_affect.module
+        public_flaw_result["cve_description"] = self.get_document_text_field('description')
+        public_flaw_result['requires_cve_description'] = self.get_select_value('reviewStatusSelect')[1]
+        public_flaw_result['cve_id'] = self.get_input_field_value_using_relative_locator("cveidText")
+        public_flaw_result["source"] = self.get_select_value_using_relative_locator("sourceText")
+        public_flaw_result["cvss_scores__score"] = self.get_cvssV3_score()
+        public_flaw_result["cvss_scores__vector"] = self.get_cvssV3_vector()
+        public_flaw_result["cwe_id"] = self.get_input_field_value_using_relative_locator("cweidText")
+        public_flaw_result["embargoed"] = "true" if "Yes" in self.get_embargoed_value() else "false"
+        # "affects__trackers__errata__advisory_name",
+        public_flaw_result['workflow_state'] = self.get_field_value_using_relative_locator(
+            'stateText', "//span[@class='form-control rounded-0']")
+        public_flaw_result["impact"] = self.get_select_value_using_relative_locator("impactText")
+        public_flaw_result["major_incident_state"] = self.get_select_value_using_relative_locator("incidentStateText")
+        public_flaw_result["mitigation"] = self.get_document_text_field("mitigation")
+        public_flaw_result['owner'] = self.get_input_field_value_using_relative_locator('ownerText')
+        public_flaw_result["statement"] = self.get_document_text_field("statement")
+        public_flaw_result['title'] = self.get_input_field_value_using_relative_locator('titleText')
+        # "affects__trackers__external_system_id",
+        # "uuid"
+
+        return public_flaw_result
 
     def get_value_from_detail_page(self, field):
         if field == "cwe_id":
-            return self.get_current_value_of_field("cweidText")
+            return self.get_input_field_value_using_relative_locator("cweidText")
         elif field == "source":
-            return self.get_select_element_value(field + 'Text')
+            return self.get_select_value_using_relative_locator(field + 'Text')
         elif field == "cve_description":
             return self.get_document_text_field('description')
         elif field == "requires_cve_description":
             _, value = self.get_select_value('reviewStatusSelect')
             return value
         if field == "embargoed":
-            return self.get_field_value('embargoedText', "//span[@class='form-control']")
+            return self.get_field_value_using_relative_locator('embargoedText', "//span[@class='form-control']")
 
     def check_owner_value_exist(self, value):
         return self.driver.find_element(By.XPATH, f"//span[text()='{value}']")
@@ -897,10 +847,10 @@ class FlawDetailPage(BasePage):
             self.click_button_with_js(toast_msg)
 
     def set_cvss_score_explanation(self, value):
-        cvss_comment_dropdown  = self.driver.find_elements(
+        cvss_comment_dropdown = self.driver.find_elements(
             locate_with(By.TAG_NAME, "i").near(self.cvssCommentLabel))[0]
         self.click_button_with_js(cvss_comment_dropdown)
-        cvss_comment_textarea  = self.driver.find_elements(
+        cvss_comment_textarea = self.driver.find_elements(
             locate_with(By.TAG_NAME, "textarea").near(self.cvssCommentLabel))[0]
         if value:
             self.driver.execute_script("arguments[0].value = '';", cvss_comment_textarea)
@@ -1071,3 +1021,13 @@ class FlawDetailPage(BasePage):
 
         self.click_button_with_js("displaySelectedAffect")
         assert self.get_displayed_affects_number() == 1
+
+    def get_embargoed_value(self):
+        try:
+            value = self.get_field_value_using_relative_locator(
+                'embargoedText', "//span[@class='form-control has-button']")
+        except IndexError:
+            value = self.get_field_value_using_relative_locator(
+                'embargoedText', "//span[@class='form-control']")
+
+        return value
