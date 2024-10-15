@@ -325,10 +325,11 @@ const displayedTrackers = computed(() => {
     <h4>Affected Offerings</h4>
     <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
+        v-if="affectedModules.length > 0"
         :isExpanded="modulesExpanded"
         :isExpandable="hasAffects"
-        iconClose="-"
-        iconOpen="-"
+        :iconClose="null"
+        :iconOpen="null"
         @toggleExpanded="toggleModulesCollapse"
       >
         <template #label>
