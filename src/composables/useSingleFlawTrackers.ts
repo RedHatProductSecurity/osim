@@ -44,6 +44,10 @@ export function useSingleFlawTrackers(
   const moduleComponents = ref<ModuleComponent[]>([]);
   const flawUuid = computed(() => affects.value.find(affect => affect.uuid && affect.flaw)?.flaw);
 
+  const affectIdFromModuleComponent = (affect: ZodAffectType) => affects.value.find(
+    (matchingAffect: ZodAffectType) => matchModuleComponent(matchingAffect, affect),
+  )?.uuid;
+
   const availableUpdateStreams = computed((): UpdateStreamOsim[] => moduleComponents.value
     .filter(moduleComponent => isResolutionTrackable(moduleComponent.affect))
     .flatMap(moduleComponent =>
@@ -51,7 +55,8 @@ export function useSingleFlawTrackers(
         ...stream,
         ps_component: moduleComponent.ps_component,
         ps_module: moduleComponent.ps_module,
-        affectUuid: moduleComponent.affect.uuid as string,
+        // Caution: moduleComponent.affect.uuid currently does not support multiflaw
+        affectUuid: affectIdFromModuleComponent(moduleComponent.affect),
       })),
     ).filter((stream: UpdateStreamOsim) => !alreadyFiledTrackers.value.find(
       (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
@@ -140,7 +145,12 @@ export function useSingleFlawTrackers(
         affect && stream.ps_component === affect.ps_component && stream.ps_module === affect.ps_module,
       );
       for (const tracker of trackers) {
-        trackerSelections.value.set(tracker as UpdateStreamOsim, Boolean(tracker.selected));
+        if (undefined === alreadyFiledTrackers.value.find(
+          (filedTracker: ZodTrackerTypeWithAffect) => filedTracker.ps_module === tracker.ps_module
+          && filedTracker.ps_component === tracker.ps_component,
+        )) {
+          trackerSelections.value.set(tracker as UpdateStreamOsim, Boolean(tracker.selected));
+        }
       }
     });
   });
@@ -182,9 +192,7 @@ export function useSingleFlawTrackers(
     isLoadingTrackers.value = true;
 
     return getTrackersForFlaws({ flaw_uuids: [flawUuid.value] })
-      .then((response: any) => {
-        moduleComponents.value = response.modules_components;
-      })
+      .then((response: any) => { moduleComponents.value = response.modules_components; })
       .catch(e => console.error('useSingleFlawTrackers::loadTrackers() Error loading trackers', e))
       .finally(() => isLoadingTrackers.value = false);
   }
