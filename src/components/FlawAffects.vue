@@ -6,6 +6,7 @@ import { equals, clone, prop, descend, ascend, sortWith } from 'ramda';
 import FlawTrackers from '@/components/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager.vue';
 import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
+import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
 import Modal from '@/components/widgets/Modal.vue';
 
 import { useModal } from '@/composables/useModal';
@@ -29,6 +30,7 @@ const props = defineProps<{
   error: null | Record<string, any>[];
   flawId: string;
 }>();
+
 const emit = defineEmits<{
   'affect:add': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
@@ -437,35 +439,27 @@ function affectCvss(affect: ZodAffectType) {
   return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === 'V3');
 }
 
-function affectCvssDisplay(affect: ZodAffectType) {
-  const cvssScore = affectCvss(affect)?.score || '';
-  const cvssVector = affectCvss(affect)?.vector || '';
-  if (cvssScore && cvssVector) {
-    return `${cvssScore} ${cvssVector}`;
-  } else {
-    return cvssVector;
-  }
-}
-
-function updateAffectCvss(affect: ZodAffectType, newValue: string) {
+function updateAffectCvss(affect: ZodAffectType, newVector: string, newScore: null | number) {
   const cvssScoreIndex = affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid);
   const cvssId = affect.cvss_scores[cvssScoreIndex]?.uuid;
-  if (newValue === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
+  if (newVector === '' && cvssScoreIndex !== -1 && affect.uuid && cvssId) {
     affect.cvss_scores[cvssScoreIndex].vector = '';
+    affect.cvss_scores[cvssScoreIndex].score = null;
     affectCvssToDelete.value[affect.uuid] = cvssId;
   } else {
     if (affect.uuid && affectCvssToDelete.value[affect.uuid]) {
       delete affectCvssToDelete.value[affect.uuid];
     }
     if (cvssScoreIndex !== -1) {
-      affect.cvss_scores[cvssScoreIndex].vector = newValue;
-    } else if (newValue !== '') {
+      affect.cvss_scores[cvssScoreIndex].vector = newVector;
+      affect.cvss_scores[cvssScoreIndex].score = newScore;
+    } else if (newVector !== '') {
       affect.cvss_scores.push({
         issuer: 'RH',
         cvss_version: 'V3',
         comment: '',
-        score: null,
-        vector: newValue,
+        score: newScore,
+        vector: newVector,
         embargoed: props.embargoed,
         alerts: [],
       });
@@ -785,7 +779,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         </div>
       </div>
       <table class="table align-middle table-striped mt-1" :class="{'mb-0': totalPages === 0}">
-        <thead class="sticky-top table-dark">
+        <thead class="table-dark">
           <tr>
             <th>
               <input
@@ -1113,15 +1107,16 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                 </span>
               </td>
               <td>
-                <input
+                <CvssCalculatorOverlayed
                   v-if="isBeingEdited(affect)"
-                  class="form-control"
-                  :value="affectCvss(affect)?.vector"
-                  @input="updateAffectCvss(affect, ($event.target as HTMLInputElement).value)"
+                  :id="affectCvss(affect)?.uuid"
+                  :cvssVector="affectCvss(affect)?.vector"
+                  :cvssScore="affectCvss(affect)?.score"
+                  @updateAffectCvss="(vectorValue, scoreValue) => updateAffectCvss(affect, vectorValue, scoreValue)"
                   @keydown="handleEdit($event, affect)"
                 />
-                <span v-else>
-                  {{ affectCvssDisplay(affect) }}
+                <span v-else :title="affectCvss(affect)?.vector || ''">
+                  {{ affectCvss(affect)?.score || '' }}
                 </span>
               </td>
               <td>
@@ -1370,50 +1365,54 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
           th {
             user-select: none;
 
+            // Checkbox
             &:nth-of-type(1) {
-              width: 2%;
+              max-width: 1ch;
             }
 
+            // Editing State
             &:nth-of-type(2) {
-              width: 4%;
+              min-width: 1ch;
+              max-width: 1ch;
+              padding: 0;
             }
 
             &:nth-of-type(3) {
-              width: 10%;
+              min-width: 10ch;
             }
 
             &:nth-of-type(4) {
-              width: 14%;
+              min-width: 10ch;
             }
 
             &:nth-of-type(5) {
-              width: 10%;
+              min-width: 16ch;
             }
 
             &:nth-of-type(6) {
-              width: 10%;
+              min-width: 12ch;
             }
 
             &:nth-of-type(7) {
-              width: 8%;
+              min-width: 8ch;
             }
 
             &:nth-of-type(8) {
-              width: 28%;
+              min-width: 4ch;
             }
 
             &:nth-of-type(9) {
-              width: 8%;
+              min-width: 8ch;
             }
 
             &:nth-of-type(10) {
-              width: 6%;
+              min-width: 6ch;
             }
 
             &:nth-of-type(11) {
-              min-width: 0%;
-              max-width: 0%;
-              width: 0%;
+              min-width: 0;
+              max-width: 0;
+              width: 0;
             }
 
             &:not(:nth-of-type(10), :nth-of-type(2)) {
@@ -1426,7 +1425,6 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
       tbody {
         tr {
           position: relative;
-          transition: filter 0.25s;
 
           td {
             transition:
@@ -1502,12 +1500,9 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
             user-select: none;
           }
 
-          &:hover {
-            filter: brightness(0.9);
-
-            td {
-              border-color: #707070bf;
-            }
+          &:hover td {
+            background-color: #c1c1c1;
+            border-color: #707070bf;
           }
         }
 
@@ -1567,18 +1562,22 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
         }
 
         tr.editing:hover td {
+          background-color: #dbd2af;
           border-color: #73470a80 !important;
         }
 
         tr.modified:hover td {
+          background-color: #d2dec9;
           border-color: #204d0080 !important;
         }
 
         tr.new:hover td {
+          background-color: #c1cedb;
           border-color: #00336680 !important;
         }
 
         tr.removed:hover td {
+          background-color: #e5ccc3;
           border-color: #731f0080 !important;
         }
       }
