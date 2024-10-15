@@ -49,8 +49,8 @@ function useComputedState(
 ) {
   const flawUuids = computed(() => relatedFlaws.value.map(flaw => flaw.uuid));
 
-  const shouldIncludeAffect = (affect: ZodAffectType) =>
-    specificAffectsToTrack.length === 0 || isAffectIn(affect, specificAffectsToTrack);
+  const shouldIncludeAffect = (affect: ZodAffectType) => affect.uuid
+    && (specificAffectsToTrack.length === 0 || isAffectIn(affect, specificAffectsToTrack));
 
   const affectsBySelectedFlawId = computed(() => relatedFlaws.value.reduce(
     (affectsBook: Record<string, ZodAffectType[]>, flaw) => {

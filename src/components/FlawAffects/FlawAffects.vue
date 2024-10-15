@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch } from 'vue';
+import { computed, onUnmounted, toRefs, ref, watch } from 'vue';
 
 import { clone } from 'ramda';
 
@@ -97,12 +97,11 @@ const displayedAffects = computed(() => {
   }
 });
 
+const isNotBeingEdited = (affect: ZodAffectType) => !isBeingEdited(affect);
 const sortedAffects = computed(() => {
-  const filteredAffects = filterAffects(displayedAffects.value);
-  const uneditedFilteredAffects = filteredAffects.map(
-    affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect,
-  );
-  return sortAffects(uneditedFilteredAffects, false);
+  const filteredAffects = filterAffects(displayedAffects.value).filter(isNotBeingEdited);
+  const affectsInEdit = displayedAffects.value.filter(isBeingEdited);
+  return [...affectsInEdit, ...sortAffects(filteredAffects, false)];
 });
 
 const {
@@ -119,12 +118,15 @@ const {
 
 const {
   isAffectSelected,
+  resetSelections,
   selectedAffects,
   toggleAffectSelection,
 } = useAffectSelections(
   computed(() => flaw.value.affects),
   affect => !isRemoved(affect) && !isBeingEdited(affect),
 );
+
+onUnmounted(resetSelections);
 
 function setDisplayMode(mode: displayModes) {
   if (displayMode.value === mode) {
@@ -170,9 +172,7 @@ function isBeingEdited(affect: ZodAffectType) {
 
 // TODO: refactor affect editing logic into composable
 function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  // return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
-  const matchAffect = matcherForAffect(affect);
-  return affectValuesPriorEdit.value.find(matchAffect) || affect;
+  return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
 }
 
 // TODO: refactor affect editing logic into composable
@@ -209,8 +209,7 @@ function resetStagedAffectEdit(affect: ZodAffectType) {
   const matchAffect = matcherForAffect(affect);
   const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
   affectsBeingEdited.value.splice(editingIndex, 1);
-  const priorAffectIndex = affectValuesPriorEdit.value.findIndex(matchAffect);
-  affectValuesPriorEdit.value.splice(priorAffectIndex, 1);
+  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
   if (isAffectSelected(affect)) {
     toggleAffectSelection(affect);
   }
@@ -256,8 +255,8 @@ function addNewAffect() {
     affectedness: 'NEW',
     resolution: '',
     delegated_resolution: '',
-    ps_module: `NewModule-${newAffects.value.length + 1}`,
-    ps_component: `NewComponent-${newAffects.value.length + 1}`,
+    ps_module: `NewModule-${newAffects.value.length}`,
+    ps_component: `NewComponent-${newAffects.value.length}`,
     impact: '',
     cvss_scores: [{
       // affect: z.string().uuid(),
@@ -271,7 +270,6 @@ function addNewAffect() {
     }],
     trackers: [{ errata: [] }],
     alerts: [],
-    _osimTempId: Date.now(),
   });
 }
 
@@ -329,10 +327,11 @@ const displayedTrackers = computed(() => {
     <h4>Affected Offerings</h4>
     <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
+        v-if="affectedModules.length > 0"
         :isExpanded="modulesExpanded"
         :isExpandable="hasAffects"
-        iconClose="-"
-        iconOpen="-"
+        :iconClose="null"
+        :iconOpen="null"
         @toggleExpanded="toggleModulesCollapse"
       >
         <template #label>
@@ -376,7 +375,6 @@ const displayedTrackers = computed(() => {
           </template>
         </div>
       </LabelCollapsible>
-      <span v-if="affectedModules.length === 0" class="my-2 p-2">No modules to display</span>
     </div>
     <div class="affects-management">
       <div v-if="hasAffects" class="pagination-controls gap-1 my-2">
@@ -600,14 +598,13 @@ const displayedTrackers = computed(() => {
         No affects found for current filters
       </span>
     </div>
-    <!-- TODO: Fix/resolve post-rebase -->
     <FlawTrackers
       :flaw="flaw"
       :relatedFlaws="relatedFlaws"
       :displayedTrackers="displayedTrackers"
       :affectsNotBeingDeleted="flaw.affects"
       :allTrackersCount="allTrackers.length"
-      @affects:refresh="emit('affects:refresh')"
+      @affects:refresh="refreshAffects"
     />
     <div class="osim-tracker-manager-modal-container">
       <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">

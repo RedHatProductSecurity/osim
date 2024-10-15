@@ -121,7 +121,7 @@ async function handleFileTrackers() {
         :labels="selectedRelatedFlawIds"
         :tabProps="multiFlawTrackers"
         :addableItems="relatedFlawIds"
-        @add-tab="addRelatedFlaw"
+        @addTab="addRelatedFlaw"
       >
         <template v-if="isQuerying" #add-tab>
           <div class="ms-2 mt-2">

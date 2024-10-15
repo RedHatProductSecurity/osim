@@ -296,7 +296,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         <i class="bi bi-trash" />
       </button>
       <button
-        v-if="isBeingEdited && !isRemoved"
+        v-if="isBeingEdited && !isRemoved && !isNew"
         type="button"
         class="btn btn-sm"
         title="Cancel edit"
