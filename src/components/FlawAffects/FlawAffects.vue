@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, ref, watch } from 'vue';
+import { computed, onUnmounted, toRefs, ref, watch } from 'vue';
 
 import { clone } from 'ramda';
 
@@ -119,12 +119,15 @@ const {
 
 const {
   isAffectSelected,
+  resetSelections,
   selectedAffects,
   toggleAffectSelection,
 } = useAffectSelections(
   computed(() => flaw.value.affects),
   affect => !isRemoved(affect) && !isBeingEdited(affect),
 );
+
+onUnmounted(resetSelections);
 
 function setDisplayMode(mode: displayModes) {
   if (displayMode.value === mode) {

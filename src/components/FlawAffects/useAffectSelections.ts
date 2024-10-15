@@ -44,6 +44,11 @@ export function useAffectSelections(
       (event.target as HTMLInputElement).checked = false;
     }
   }
+
+  function resetSelections() {
+    selectedAffects.value = [];
+  }
+
   return {
     selectedAffects,
     areAllAffectsSelected,
@@ -53,5 +58,6 @@ export function useAffectSelections(
     isAffectSelected,
     toggleAffectSelection,
     toggleMultipleAffectSelections,
+    resetSelections,
   };
 }
