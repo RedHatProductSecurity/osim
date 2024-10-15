@@ -123,7 +123,7 @@ export const ZodHistoryItemSchema = z.object({
   pgh_slug: z.string().nullish(),
   pgh_label: z.string(),
   pgh_context: z.object({ url: z.string(), user: z.number() }).nullable(),
-  pgh_diff: z.record(z.array(z.string())).nullable(),
+  pgh_diff: z.record(z.array(z.any())).nullable(),
 });
 
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
