@@ -279,6 +279,15 @@ const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
   }
 };
 
+function affectednessChange(event: Event, affect: ZodAffectType) {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedValue = selectElement.value;
+  if (selectedValue === 'NOTAFFECTED') {
+    affect.delegated_resolution = '';
+    affect.resolution = '';
+  }
+}
+
 // Modified affects
 const omitAffectAttribute = (obj: ZodAffectType, key: keyof ZodAffectType) => {
   const { [key]: _, ...rest } = obj;
@@ -1058,6 +1067,7 @@ function fileTrackersForAffects(affects: ZodAffectType[]) {
                   v-model="affect.affectedness"
                   class="form-select"
                   @keydown="handleEdit($event, affect)"
+                  @change="affectednessChange($event, affect)"
                 >
                   <option
                     v-for="option in affectAffectedness"
