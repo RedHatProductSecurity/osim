@@ -83,7 +83,6 @@ function openMailto() {
           </div>
           <hr />
         </div>
-
         <LabelTextarea v-model="emailBody" label="Body:" />
       </template>
       <template #footer>
