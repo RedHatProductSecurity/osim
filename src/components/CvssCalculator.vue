@@ -115,7 +115,7 @@ function handlePaste(e: ClipboardEvent) {
     <div class="osim-input vector-row mb-2">
       <label class="label-group row">
         <span class="form-label col-3">
-          CVSSv3
+          RH CVSSv3
         </span>
         <div class="input-wrapper col">
           <div
