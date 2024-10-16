@@ -24,3 +24,7 @@ Feature: Flaw advance search testing
     Scenario: Search flaws with empty or nonempty value
       Given I go to the advanced search page
       Then I am able to search flaws with empty or nonempty value
+
+    Scenario: Search flaws with single query filter
+      Given I go to the advanced search page
+      Then I am able to search flaws with single query filter

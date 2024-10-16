@@ -140,3 +140,29 @@ def step_impl(context):
                 value = flaw_page.get_document_text_field(text_field)
             assert value != ''
             go_to_advanced_search_page(context.browser)
+
+
+@then('I am able to search flaws with single query filter')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    filter_examples = {
+       'impact': 'impact in ("LOW", "MODERATE")',
+       'workflow_state': 'workflow_state = "New"',
+       'title': 'title startswith "RHEL"',
+       'created': 'created_dt >= "2017-01-01"'
+    }
+    for k, v in filter_examples.items():
+        advanced_search_page.set_query_filter(v)
+        advanced_search_page.click_btn("searchBtn")
+        advanced_search_page.first_flaw_exist()
+        value = advanced_search_page.get_field_value_from_flawlist(k)
+        if k == 'workflow_state':
+            assert value == "NEW"
+        elif k == 'impact':
+            assert value in ("LOW", "MODERATE")
+        elif k == 'title':
+            assert value.startswith('RHEL')
+        elif k == 'created':
+            assert value >= "2017-01-01"
+        else:
+            continue
