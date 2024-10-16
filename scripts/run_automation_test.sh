@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# run this script on root dir or osim codebase, ./scripts/run_automation_test.sh
+# run this script in root dir of osim codebase, ./scripts/run_automation_test.sh
 
 
 run_behave() {
@@ -33,7 +33,7 @@ else
     echo "flaw_create_public.feature failed, skip flaw_detail_public.feature"
 fi
 
-if [ -e flaw_id.txt ]
+if [ -e tmp_data.txt ]
 then
     run_behave features/advance_search.feature
     run_behave features/flaw_list.feature --tags=~@skip
@@ -43,7 +43,7 @@ else
     flaw_list.feature, quick_search.feature"
 fi
 
-if [ -e flaw_id.txt ]
+if [ -e tmp_data.txt ]
 then
-    rm flaw_id.txt
+    rm tmp_data.txt
 fi
