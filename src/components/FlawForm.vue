@@ -280,7 +280,7 @@ const createdDate = computed(() => {
               :summary="flaw.comment_zero"
               :bugzilla="bugzillaLink"
               :cvss="rhCvss3String"
-              :allScores="flaw.cvss_scores"
+              :allCvss="flaw.cvss_scores"
               :nistcvss="nvdCvss3String"
             />
             <LabelEditable

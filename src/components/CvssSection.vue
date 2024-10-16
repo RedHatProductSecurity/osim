@@ -7,7 +7,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import type { ZodFlawCVSSType } from '@/types/zodFlaw';
 
 const props = defineProps<{
-  allScores: ZodFlawCVSSType[];
+  allCvss: ZodFlawCVSSType[];
   bugzilla: string;
   cveid: null | string;
   cvss: string;
@@ -17,8 +17,8 @@ const props = defineProps<{
   summary: string;
 }>();
 
-const otherScores = computed(() => props.allScores.filter(score =>
-  (!(score.cvss_version === 'V3' && (score.issuer === 'RH' || score.issuer === 'NIST')))));
+const otherScores = computed(() => props.allCvss.filter(cvssItem =>
+  (!(cvssItem.cvss_version === 'V3' && (cvssItem.issuer === 'RH' || cvssItem.issuer === 'NIST')))));
 </script>
 
 <template>
@@ -51,12 +51,12 @@ const otherScores = computed(() => props.allScores.filter(score =>
         </div>
       </div>
     </LabelDiv>
-    <template v-for="score in otherScores" :key="score.uuid">
-      <LabelDiv :label="score.issuer + ' CVSS' + score.cvss_version.toLocaleLowerCase()">
+    <template v-for="cvssItem in otherScores" :key="cvssItem.uuid">
+      <LabelDiv :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()">
         <div class="d-flex flex-row">
           <div class="form-control text-break h-auto">
             <span>
-              {{ score.score + ' CVSS:' + score.cvss_version.substring(1) + '/' + score.vector }}
+              {{ cvssItem.score + ' CVSS:' + cvssItem.cvss_version.substring(1) + '/' + cvssItem.vector }}
             </span>
           </div>
         </div>
