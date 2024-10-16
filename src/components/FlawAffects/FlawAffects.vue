@@ -97,12 +97,11 @@ const displayedAffects = computed(() => {
   }
 });
 
+const isNotBeingEdited = (affect: ZodAffectType) => !isBeingEdited(affect);
 const sortedAffects = computed(() => {
-  const filteredAffects = filterAffects(displayedAffects.value);
-  const uneditedFilteredAffects = filteredAffects.map(
-    affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect,
-  );
-  return sortAffects(uneditedFilteredAffects, false);
+  const filteredAffects = filterAffects(displayedAffects.value).filter(isNotBeingEdited);
+  const affectsInEdit = displayedAffects.value.filter(isBeingEdited);
+  return [...affectsInEdit, ...sortAffects(filteredAffects, false)];
 });
 
 const {
@@ -376,7 +375,6 @@ const displayedTrackers = computed(() => {
           </template>
         </div>
       </LabelCollapsible>
-      <span v-if="affectedModules.length === 0" class="my-2 p-2">No modules to display</span>
     </div>
     <div class="affects-management">
       <div v-if="hasAffects" class="pagination-controls gap-1 my-2">
