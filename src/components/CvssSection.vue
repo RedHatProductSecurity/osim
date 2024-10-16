@@ -26,11 +26,18 @@ const otherScores = computed(() => props.allScores.filter(score =>
     <LabelDiv label="NVD CVSSv3">
       <div class="d-flex flex-row">
         <div class="form-control text-break h-auto" :class="{shouldDisplayEmailNistForm: 'rounded-0'}">
-          <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
-            <span v-if="chars[0].isHighlighted" class="text-primary">
-              {{ chars.map(c => c.char).join('') }}
+          <template v-if="cvss">
+            <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+              <span v-if="chars[0].isHighlighted" class="text-primary">
+                {{ chars.map(c => c.char).join('') }}
+              </span>
+              <template v-else>{{ chars.map(c => c.char).join('') }}</template>
+            </template>
+          </template>
+          <template v-else>
+            <span>
+              {{ nistcvss }}
             </span>
-            <template v-else>{{ chars.map(c => c.char).join('') }}</template>
           </template>
         </div>
         <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
