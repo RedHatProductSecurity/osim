@@ -11,9 +11,8 @@ import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
-import CvssNISTForm from '@/components/CvssNISTForm.vue';
+import CvssSection from '@/components/CvssSection.vue';
 import FlawComments from '@/components/FlawComments.vue';
-import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawHistory from '@/components/FlawHistory.vue';
@@ -274,27 +273,16 @@ const createdDate = computed(() => {
               v-model:cvss-vector="flawRhCvss3.vector"
               v-model:cvss-score="flawRhCvss3.score"
             />
-            <LabelDiv label="NVD CVSSv3">
-              <div class="d-flex flex-row">
-                <div class="form-control text-break h-auto rounded-0">
-                  <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
-                    <span v-if="chars[0].isHighlighted" class="text-primary">
-                      {{ chars.map(c => c.char).join('') }}
-                    </span>
-                    <template v-else>{{ chars.map(c => c.char).join('') }}</template>
-                  </template>
-                </div>
-                <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
-                  <CvssNISTForm
-                    :cveid="flaw.cve_id"
-                    :summary="flaw.comment_zero"
-                    :bugzilla="bugzillaLink"
-                    :cvss="rhCvss3String"
-                    :nistcvss="nvdCvss3String"
-                  />
-                </div>
-              </div>
-            </LabelDiv>
+            <CvssSection
+              :highlightedNvdCvss3String
+              :shouldDisplayEmailNistForm
+              :cveid="flaw.cve_id"
+              :summary="flaw.comment_zero"
+              :bugzilla="bugzillaLink"
+              :cvss="rhCvss3String"
+              :allScores="flaw.cvss_scores"
+              :nistcvss="nvdCvss3String"
+            />
             <LabelEditable
               v-model="flaw.cwe_id"
               label="CWE ID"
