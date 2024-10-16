@@ -25,7 +25,7 @@ const otherScores = computed(() => props.allScores.filter(score =>
   <div>
     <LabelDiv label="NVD CVSSv3">
       <div class="d-flex flex-row">
-        <div class="form-control text-break h-auto rounded-0">
+        <div class="form-control text-break h-auto" :class="{shouldDisplayEmailNistForm: 'rounded-0'}">
           <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
             <span v-if="chars[0].isHighlighted" class="text-primary">
               {{ chars.map(c => c.char).join('') }}
@@ -45,15 +45,12 @@ const otherScores = computed(() => props.allScores.filter(score =>
       </div>
     </LabelDiv>
     <template v-for="score in otherScores" :key="score.uuid">
-      <LabelDiv :label="score.issuer + ' ' + score.cvss_version">
+      <LabelDiv :label="score.issuer + ' CVSS' + score.cvss_version.toLocaleLowerCase()">
         <div class="d-flex flex-row">
           <div class="form-control text-break h-auto">
-            <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
-              <span v-if="chars[0].isHighlighted" class="text-primary">
-                {{ chars.map(c => c.char).join('') }}
-              </span>
-              <template v-else>{{ chars.map(c => c.char).join('') }}</template>
-            </template>
+            <span>
+              {{ score.score + ' CVSS:' + score.cvss_version.substring(1) + '/' + score.vector }}
+            </span>
           </div>
         </div>
       </LabelDiv>
