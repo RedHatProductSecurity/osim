@@ -11,6 +11,7 @@ defineProps<{
     <div class="row">
       <span class="form-label col-3 position-relative">
         <span v-if="loading" v-osim-loading.grow="loading" class="throbber" />
+        <slot name="labelSlot" />
         {{ label }}
         <!--attrs: {{ $attrs }}-->
       </span>
