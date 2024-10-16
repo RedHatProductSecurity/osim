@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
@@ -17,13 +17,25 @@ const props = defineProps<{
   summary: string;
 }>();
 
-const otherScores = computed(() => props.allCvss.filter(cvssItem =>
+const showAllCvss = ref(false);
+
+const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
   (!(cvssItem.cvss_version === 'V3' && (cvssItem.issuer === 'RH' || cvssItem.issuer === 'NIST')))));
 </script>
 
 <template>
   <div>
     <LabelDiv label="NVD CVSSv3">
+      <template v-if="otherCvss" #labelSlot>
+        <button
+          class="btn btn-sm me-auto"
+          type="button"
+          :title="(showAllCvss ? 'Hide' : 'Show') + ' all available CVSS versions and issuers'"
+          @click="() => showAllCvss = !showAllCvss"
+        >
+          <i :class="showAllCvss ? 'bi bi-caret-down' : 'bi bi-caret-right'" />
+        </button>
+      </template>
       <div class="d-flex flex-row">
         <div class="form-control text-break h-auto" :class="{shouldDisplayEmailNistForm: 'rounded-0'}">
           <template v-if="cvss">
@@ -51,16 +63,18 @@ const otherScores = computed(() => props.allCvss.filter(cvssItem =>
         </div>
       </div>
     </LabelDiv>
-    <template v-for="cvssItem in otherScores" :key="cvssItem.uuid">
-      <LabelDiv :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()">
-        <div class="d-flex flex-row">
-          <div class="form-control text-break h-auto">
-            <span>
-              {{ cvssItem.score + ' CVSS:' + cvssItem.cvss_version.substring(1) + '/' + cvssItem.vector }}
-            </span>
+    <div v-if="showAllCvss">
+      <template v-for="cvssItem in otherCvss" :key="cvssItem.uuid">
+        <LabelDiv :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()">
+          <div class="d-flex flex-row">
+            <div class="form-control text-break h-auto">
+              <span>
+                {{ cvssItem.score + ' CVSS:' + cvssItem.cvss_version.substring(1) + '/' + cvssItem.vector }}
+              </span>
+            </div>
           </div>
-        </div>
-      </LabelDiv>
-    </template>
+        </LabelDiv>
+      </template>
+    </div>
   </div>
 </template>
