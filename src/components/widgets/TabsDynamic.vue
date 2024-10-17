@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'add-tab': [value?: any];
+  addTab: [value?: any];
 }>();
 
 const activeTabIndex = ref(0);
@@ -67,20 +67,20 @@ function selectTab(index: number) {
                 class="border border-info px-1 mx-2 focus-ring focus-ring-info"
                 type="text"
                 placeholder="Search..."
-                @submit.prevent="emit('add-tab', searchFilter)"
+                @submit.prevent="emit('addTab', searchFilter)"
               />
               <button
                 :disabled="!isCveValid(searchFilter)"
                 class="btn btn-info btn-sm font-white"
                 type="button"
-                @click="emit('add-tab', searchFilter)"
+                @click="emit('addTab', searchFilter)"
               >Add</button>
             </li>
             <li v-for="item in filteredItems" :key="item">
               <button
                 class="dropdown-item"
                 type="button"
-                @click="emit('add-tab', item)"
+                @click="emit('addTab', item)"
               >
                 {{ item }}
               </button>
