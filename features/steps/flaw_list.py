@@ -81,7 +81,7 @@ def step_impl(context):
     sort_fields = ['id', 'impact', 'created', 'title', 'state', 'owner']
     value_dict = {}
     for field in sort_fields:
-        # Skip sort on title temporarily due to bug: OSIDB-2903
+        # skip title sort,  https://issues.redhat.com/browse/OSIDB-2903
         if field == 'title':
             continue
         fieldbtn = field + "Btn"

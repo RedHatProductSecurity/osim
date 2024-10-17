@@ -1,4 +1,5 @@
 import time
+
 from behave import *
 
 from features.pages.advanced_search_page import AdvancedSearchPage
@@ -184,3 +185,14 @@ def step_impl(context):
     created_dt = flaw_page.get_input_value('reportedDate')
     assert source == 'NVD' or workflow_state == 'NEW'
     assert created_dt > "2017-01-01"
+
+
+@when('I sort search result by sortable field')
+def step_impl(context):
+    context.execute_steps("When I click the field header of flaw list table")
+
+
+@then('I got sorted search result')
+def step_impl(context):
+    context.execute_steps("Then The flaw list is sorted by the field")
+
