@@ -68,7 +68,7 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssign
 </script>
 
 <template>
-  <LabelDiv label="Owner" :loading="isLoading">
+  <LabelDiv label="Owner" :loading="isLoading" class="mb-2">
     <EditableTextWithSuggestions v-model="owner" class="col-12" @update:query="onQueryChange">
       <template v-if="!isAssignedToMe" #buttons-out-of-editing-mode="{ onBlur }">
         <button

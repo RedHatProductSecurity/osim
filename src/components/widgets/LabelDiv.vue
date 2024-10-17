@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="osim-input mb-2 ps-3" v-bind="$attrs">
+  <div class="osim-input ps-3" v-bind="$attrs">
     <div class="row">
       <span class="form-label col-3 position-relative">
         <span v-if="loading" v-osim-loading.grow="loading" class="throbber" />
