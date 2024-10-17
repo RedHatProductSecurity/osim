@@ -140,3 +140,54 @@ def step_impl(context):
                 value = flaw_page.get_document_text_field(text_field)
             assert value != ''
             go_to_advanced_search_page(context.browser)
+
+
+@when('I sort search result by sortable field')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    advanced_search_page.first_flaw_exist()
+    descending_results = []
+    ascending_results = []
+
+    # order by id
+    desc, asc = advanced_search_page.sort_by_field('sortIDTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    # order by impact
+    desc, asc = advanced_search_page.sort_by_field('sortImpactTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    # order by created
+    desc, asc = advanced_search_page.sort_by_field('sortCreatedTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    # order by title
+    desc, asc = advanced_search_page.sort_by_field('sortTitleTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    # order by state
+    desc, asc = advanced_search_page.sort_by_field('sortStateTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    # order by owner
+    desc, asc = advanced_search_page.sort_by_field('sortOwnerTh')
+    descending_results.append(desc)
+    ascending_results.append(asc)
+
+    context.descending_results = descending_results
+    context.ascending_results = ascending_results
+
+
+@then('I got sortable search result')
+def step_impl(context):
+    # check the sort result
+    for descending_result in context.descending_results:
+        assert descending_result == sorted(descending_result, key=lambda x: str.casefold(x), reverse=True)
+    for ascending_result in context.ascending_results:
+        assert ascending_result == sorted(ascending_result, key=lambda x: str.casefold(x))
+
