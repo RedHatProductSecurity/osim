@@ -14,9 +14,10 @@ from constants import (
     OSIM_URL,
     SELENIUM_URL,
     BUGZILLA_API_KEY,
-    JIRA_API_KEY
+    JIRA_API_KEY,
+    FLAW_ID_KEY
 )
-from common_utils import get_flaw_id
+from common_utils import get_data_from_tmp_data_file
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.settings_page import SettingsPage
@@ -77,7 +78,7 @@ def go_to_specific_flaw_detail_page(browser, flaw_id=None):
     """
     Go to a specific flaw detail page
     """
-    cve_id = flaw_id if flaw_id else get_flaw_id()
+    cve_id = flaw_id if flaw_id else get_data_from_tmp_data_file(FLAW_ID_KEY)
 
     if cve_id.startswith("CVE-"):
         go_to_home_page(browser)

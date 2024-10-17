@@ -10,7 +10,8 @@ Feature: Flaw advance search testing
       Then I get a list of all flaws
 
     Scenario: Search flaws with selected field and value
-      Given I go to a public flaw detail page
+      Given I add lacking data to the flaw which for later search
+      And I go to a public flaw detail page
       When I prepare the advance search keywords
       Given I go to the advanced search page
       Then I use keywords to search flaws and I am able to view flaws matching the search keywords

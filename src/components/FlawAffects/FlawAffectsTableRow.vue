@@ -107,6 +107,15 @@ const affectRowTooltip = computed(() => {
 //     return cvssVector;
 //   }
 // }
+
+function affectednessChange(event: Event, affect: ZodAffectType) {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedValue = selectElement.value;
+  if (selectedValue === 'NOTAFFECTED') {
+    affect.delegated_resolution = '';
+    affect.resolution = '';
+  }
+}
 </script>
 
 <template>
@@ -175,6 +184,7 @@ const affectRowTooltip = computed(() => {
         v-model="affect.ps_component"
         class="form-control"
         @keydown="handleEdit($event, affect)"
+        @change="affectednessChange($event, affect)"
       />
       <span v-else :title="affect.ps_component">
         {{ affect.ps_component }}

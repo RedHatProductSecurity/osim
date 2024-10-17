@@ -1,21 +1,30 @@
 import os
 import random
+import json
 
-from features.constants import FLAW_ID_FILE
-
-
-def set_flaw_id_to_file():
-    with open(FLAW_ID_FILE, "w") as f:
-        f.write(os.getenv("FLAW_ID"))
+from features.constants import TMP_DATA_FILE_NAME
 
 
-def get_flaw_id():
-    flaw_id = os.getenv("FLAW_ID")
-    if flaw_id is not None:
-        return flaw_id
+def write_data_to_tmp_data_file(key, value):
+    try:
+        with open(TMP_DATA_FILE_NAME, "r") as f:
+            content = json.load(f)
+    except FileNotFoundError:
+        content = {}
 
-    with open(FLAW_ID_FILE) as f:
-        return f.read().strip()
+    content[key] = value
+    with open(TMP_DATA_FILE_NAME, "w") as f:
+        json.dump(content, f)
+
+
+def get_data_from_tmp_data_file(key):
+    value = os.getenv(key)
+    if value is not None:
+        return value
+
+    with open(TMP_DATA_FILE_NAME, "r") as f:
+        content = json.load(f)
+        return content[key]
 
 
 def generate_cvss3_vector_string():

@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from features.pages.base import BasePage
 
+
 class AdvancedSearchPage(BasePage):
 
     def __init__(self, driver):
@@ -25,7 +26,7 @@ class AdvancedSearchPage(BasePage):
         "workflow_stateText": ("XPATH", "//tr[1]/td[5]"),
         "ownerText":  ("XPATH", "//tr[1]/td[6]"),
         "closeKeysetBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
-        "closeSelBtn": ("XPATH", "//i[@class='bi-x']"),
+        "closeSelectRowBtn": ("XPATH", '//i[@aria-label="remove field"]'),
         "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]"),
         "defaultFilterSavedMsg": ("XPATH", "//div[contains(text(), 'default filter saved')]"),
     }
