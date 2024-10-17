@@ -79,7 +79,6 @@ export function affectRhCvss3(affect: ZodAffectType) {
 }
 
 type WithModuleComponent = {
-  _osimTempId?: number;
   ps_component: string;
   ps_module: string;
   uuid?: null | string;
@@ -91,8 +90,7 @@ export function matchModuleComponent(first: WithModuleComponent, second: WithMod
 
 export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
   const doUuidsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
-  const doTempIdsMatch = first._osimTempId && second._osimTempId && (first._osimTempId === second._osimTempId);
-  return doUuidsMatch || doTempIdsMatch || matchModuleComponent(first, second);
+  return doUuidsMatch || matchModuleComponent(first, second);
 }
 
 export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
