@@ -1,5 +1,8 @@
-from selenium.webdriver.common.by import By
 from features.pages.base import BasePage
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.relative_locator import locate_with
 
 
 class AdvancedSearchPage(BasePage):
@@ -22,12 +25,14 @@ class AdvancedSearchPage(BasePage):
         "selectValueList2": ("XPATH", "(//select[@class='form-select'])[2]"),
         "cve_idText": ("XPATH", "//tr[1]/td[1]/a"),
         "impactText": ("XPATH", "//tr[1]/td[2]"),
+        "createdText": ("XPATH", "//tr[1]/td[3]"),
         "titleText": ("XPATH", "//tr[1]/td[4]"),
         "workflow_stateText": ("XPATH", "//tr[1]/td[5]"),
         "ownerText":  ("XPATH", "//tr[1]/td[6]"),
         "closeKeysetBtn": ("XPATH", "//button[@class='osim-toast-close-btn btn-close']"),
         "closeSelectRowBtn": ("XPATH", '//i[@aria-label="remove field"]'),
         "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]"),
+        "queryFilterInput": ("XPATH", "(//div[@class='input-group my-1'])[1]/textarea"),
         "defaultFilterSavedMsg": ("XPATH", "//div[contains(text(), 'default filter saved')]"),
     }
 
@@ -64,3 +69,10 @@ class AdvancedSearchPage(BasePage):
 
     def close_setting_keys_window(self):
         self.closeKeysetBtn.click_button()
+
+    def set_query_filter(self, value):
+        filter_input = getattr(self, 'queryFilterInput')
+        filter_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+        if value:
+            self.driver.execute_script("arguments[0].value = '';", filter_input)
+            filter_input.send_keys(value)
