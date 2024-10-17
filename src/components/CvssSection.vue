@@ -26,7 +26,7 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
 <template>
   <div>
     <LabelDiv label="NVD CVSSv3">
-      <template v-if="otherCvss" #labelSlot>
+      <template v-if="otherCvss && otherCvss.length > 0" #labelSlot>
         <button
           class="btn btn-sm me-auto"
           type="button"
