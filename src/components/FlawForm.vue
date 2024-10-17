@@ -223,7 +223,6 @@ const createdDate = computed(() => {
               Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
             </a>
           </div>
-          <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
           <FlawAlertsList
             :flaw="flaw"
             class="col-12 osim-alerts-banner"
@@ -466,6 +465,7 @@ const createdDate = computed(() => {
             @loadInternalComments="loadInternalComments"
           />
         </div>
+        <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
