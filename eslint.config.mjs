@@ -38,6 +38,7 @@ export default tseslint.config(
       '**/generated-client/**',
       '**/mock-server/**',
       '**/*.snap',
+      '**/coverage/**',
     ],
   },
   eslint.configs.recommended,
