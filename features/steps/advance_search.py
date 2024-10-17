@@ -166,3 +166,21 @@ def step_impl(context):
             assert value >= "2017-01-01"
         else:
             continue
+
+
+@then('I am able to search flaws with multiple conditions in query filter')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    filter_str = '(workflow_state = "NEW" or source = "NVD") and created_dt > "2017-01-01"',
+    advanced_search_page.set_query_filter(filter_str)
+    advanced_search_page.click_btn("searchBtn")
+    advanced_search_page.first_flaw_exist()
+
+    advanced_search_page.go_to_first_flaw_detail()
+    flaw_page = FlawDetailPage(context.browser)
+    source = flaw_page.get_value_from_detail_page('source')
+    workflow_state = flaw_page.get_field_value_using_relative_locator(
+            'stateText', "//span[@class='form-control rounded-0']")
+    created_dt = flaw_page.get_input_value('reportedDate')
+    assert source == 'NVD' or workflow_state == 'NEW'
+    assert created_dt > "2017-01-01"

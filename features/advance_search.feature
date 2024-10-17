@@ -28,3 +28,7 @@ Feature: Flaw advance search testing
     Scenario: Search flaws with single query filter
       Given I go to the advanced search page
       Then I am able to search flaws with single query filter
+
+    Scenario: Search flaws with multiple conditions in query filter
+      Given I go to the advanced search page
+      Then I am able to search flaws with multiple conditions in query filter
