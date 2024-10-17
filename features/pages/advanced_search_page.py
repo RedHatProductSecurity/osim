@@ -1,5 +1,13 @@
+from collections import namedtuple
+
 from selenium.webdriver.common.by import By
+
 from features.pages.base import BasePage
+
+
+AdvancedSearchPageResult = namedtuple(
+    'AdvancedSearchPageResult',
+    ["id", "impact", "created", "title", "state", "owner"])
 
 
 class AdvancedSearchPage(BasePage):
@@ -29,6 +37,13 @@ class AdvancedSearchPage(BasePage):
         "closeSelectRowBtn": ("XPATH", '//i[@aria-label="remove field"]'),
         "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]"),
         "defaultFilterSavedMsg": ("XPATH", "//div[contains(text(), 'default filter saved')]"),
+
+        "sortIDTh": ("XPATH", '//th[contains(text(), "ID")]'),
+        "sortImpactTh": ("XPATH", '//th[contains(text(), "Impact")]'),
+        "sortCreatedTh": ("XPATH", '//th[contains(text(), "Created")]'),
+        "sortTitleTh": ("XPATH", '//th[contains(text(), "Title")]'),
+        "sortStateTh": ("XPATH", '//th[contains(text(), "State")]'),
+        "sortOwnerTh": ("XPATH", '//th[contains(text(), "Owner")]'),
     }
 
     def first_flaw_exist(self):
@@ -64,3 +79,43 @@ class AdvancedSearchPage(BasePage):
 
     def close_setting_keys_window(self):
         self.closeKeysetBtn.click_button()
+
+    def get_search_result(self, n=5):
+        flaws = self.driver.find_elements(By.XPATH, "//tbody[@class='table-group-divider']/tr")
+        count = 0
+        result = []
+
+        for flaw in flaws:
+            if count == n:
+                break
+            tds = flaw.find_elements(By.XPATH, './td')
+            if len(tds) < 6:
+                continue
+
+            value = AdvancedSearchPageResult(
+                id=tds[0].find_element(By.XPATH, './a').text,
+                impact=tds[1].text,
+                created=tds[2].text,
+                title=tds[3].text,
+                state=tds[4].text,
+                owner=tds[5].text
+            )
+            result.append(value)
+            count += 1
+
+        return result
+
+    def sort_by_field(self, field_element, n=5):
+        self.click_btn(field_element)
+        self.first_flaw_exist()
+
+        attribute_name = field_element.lstrip("sort").rstrip('Th').lower()
+
+        descending_result = [
+            getattr(r, attribute_name) for r in self.get_search_result(n)]
+        self.click_btn(field_element)
+        self.first_flaw_exist()
+        ascending_result = [
+            getattr(r, attribute_name) for r in self.get_search_result(n)]
+
+        return descending_result, ascending_result
