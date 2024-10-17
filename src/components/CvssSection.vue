@@ -25,19 +25,19 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
 
 <template>
   <div>
-    <LabelDiv label="NVD CVSSv3">
+    <LabelDiv label="NVD CVSSv3" class="mb-2">
       <template v-if="otherCvss && otherCvss.length > 0" #labelSlot>
         <button
-          class="btn btn-sm me-auto"
+          class="btn btn-sm me-auto border-0"
           type="button"
           :title="(showAllCvss ? 'Hide' : 'Show') + ' all available CVSS versions and issuers'"
           @click="() => showAllCvss = !showAllCvss"
         >
-          <i :class="showAllCvss ? 'bi bi-caret-down' : 'bi bi-caret-right'" />
+          <i :class="showAllCvss ? 'bi bi-caret-down' : 'bi bi-caret-right'" style="font-size: 2.25ch;" />
         </button>
       </template>
       <div class="d-flex flex-row">
-        <div class="form-control text-break h-auto" :class="{shouldDisplayEmailNistForm: 'rounded-0'}">
+        <div class="form-control text-break h-auto" :class="shouldDisplayEmailNistForm ? 'rounded-0' : ''">
           <template v-if="cvss">
             <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
               <span v-if="chars[0].isHighlighted" class="text-primary">
@@ -63,9 +63,15 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
         </div>
       </div>
     </LabelDiv>
-    <div v-if="showAllCvss">
-      <template v-for="cvssItem in otherCvss" :key="cvssItem.uuid">
-        <LabelDiv :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()">
+    <div v-if="showAllCvss" class="bg-secondary p-2 mb-2 rounded">
+      <template
+        v-for="(cvssItem, cvssItemIndex) in otherCvss"
+        :key="cvssItemIndex.uuid"
+      >
+        <LabelDiv
+          :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()"
+          :class="cvssItemIndex < otherCvss.length -1 ? 'mb-2' : ''"
+        >
           <div class="d-flex flex-row">
             <div class="form-control text-break h-auto">
               <span>
