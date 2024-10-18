@@ -42,7 +42,13 @@ export async function fileTrackingFor(trackerData: TrackersPost | TrackersPost[]
   }
 
   if (errors.length) {
-    createCatchHandler(`${errors.length} trackers failed to file`)(errors);
+    const messages = errors.slice();
+    if (successes.length) {
+      const list = successes.map(({ ps_update_stream }) => ps_update_stream).join(', ');
+      const successMessage = `${successes.length} tracker(s) filed: ${list}`;
+      messages.push(successMessage);
+    }
+    createCatchHandler(`${errors.length} trackers failed to file`)(messages);
     return Promise.reject({ errors, successes });
   } else {
     createSuccessHandler({
