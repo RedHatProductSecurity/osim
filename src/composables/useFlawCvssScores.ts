@@ -8,6 +8,13 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 
 const formatScore = (score: any) => score?.toFixed(1);
 
+export const issuerLabels: Record<string, string> = {
+  NIST: 'NVD',
+  RH: 'RH',
+  CVEORG: 'CVEOrg',
+  OSV: 'OSV',
+};
+
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
 export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
