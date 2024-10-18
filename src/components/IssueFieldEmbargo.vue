@@ -48,7 +48,7 @@ watch(() => showModal.value, () => {
 </script>
 
 <template>
-  <LabelDiv label="Embargoed">
+  <LabelDiv label="Embargoed" class="mb-2">
     <template #default>
       <div>
         <div class="d-flex ms-0 p-0 justify-content-between">
