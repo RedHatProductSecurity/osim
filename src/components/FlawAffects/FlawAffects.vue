@@ -97,13 +97,13 @@ const displayedAffects = computed(() => {
   }
 });
 
-const isNotBeingEdited = (affect: ZodAffectType) => !isBeingEdited(affect);
 const sortedAffects = computed(() => {
-  const filteredAffects = filterAffects(displayedAffects.value).filter(isNotBeingEdited);
-  const affectsInEdit = displayedAffects.value.filter(isBeingEdited);
-  return [...affectsInEdit, ...sortAffects(filteredAffects, false)];
+  const filteredAffects = filterAffects(displayedAffects.value);
+  const uneditedFilteredAffects = filteredAffects.map(
+    affect => isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect,
+  );
+  return sortAffects(uneditedFilteredAffects, false);
 });
-
 const {
   changePage,
   currentPage,
