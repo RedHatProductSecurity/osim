@@ -500,7 +500,9 @@ exports[`flawForm > mounts and renders 1`] = `
     <div data-v-2d3c4208="" data-v-bb5d5f91="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-        <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
+        <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle">
+            <!--v-if--><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label>
+          </button>
           <div data-v-357e30d7="" class="ps-3 border-start">
             <div data-v-357e30d7="" class="">
               <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
@@ -515,7 +517,6 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </div>
           </div>
         </div>
-        <!--v-if-->
       </div>
       <div data-v-2d3c4208="" class="affects-management">
         <div data-v-2d3c4208="" class="pagination-controls gap-1 my-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-left fs-5"></i></button><button data-v-2d3c4208="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-right fs-5"></i></button></div>
@@ -712,7 +713,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           </tbody>
         </table>
         <!--v-if-->
-      </div><!-- TODO: Fix/resolve post-rebase -->
+      </div>
       <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
         <div data-v-7006d35c="" class="affects-trackers">
           <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -748,7 +749,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </thead>
               <tbody data-v-7006d35c="">
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
                   <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
                   <td data-v-7006d35c="">CLOSED</td>
@@ -757,7 +758,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
                   <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
                   <td data-v-7006d35c="">NEW</td>
@@ -766,7 +767,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
                   <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
                   <td data-v-7006d35c="">CLOSED</td>
@@ -775,7 +776,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
                   <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
                   <td data-v-7006d35c="">NEW</td>
@@ -784,7 +785,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
                   <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
                   <td data-v-7006d35c="">CLOSED</td>
@@ -793,7 +794,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
                   <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
                   <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
                   <td data-v-7006d35c="">NEW</td>

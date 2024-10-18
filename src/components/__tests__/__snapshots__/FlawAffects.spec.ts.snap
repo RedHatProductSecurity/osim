@@ -4,7 +4,9 @@ exports[`flawAffects > Correctly renders the component when there are affects to
 "<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
+    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle">
+        <!--v-if--><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label>
+      </button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="">
           <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
@@ -19,7 +21,6 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
     </div>
-    <!--v-if-->
   </div>
   <div data-v-2d3c4208="" class="affects-management">
     <div data-v-2d3c4208="" class="pagination-controls gap-1 my-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-left fs-5"></i></button><button data-v-2d3c4208="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-right fs-5"></i></button></div>
@@ -216,7 +217,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </tbody>
     </table>
     <!--v-if-->
-  </div><!-- TODO: Fix/resolve post-rebase -->
+  </div>
   <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
     <div data-v-7006d35c="" class="affects-trackers">
       <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -327,13 +328,7 @@ exports[`flawAffects > Correctly renders the component when there are not affect
 "<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection">
-    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
-      <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class="">
-          <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"></div>
-        </div>
-      </div>
-    </div><span data-v-2d3c4208="" class="my-2 p-2">No modules to display</span>
+    <!--v-if-->
   </div>
   <div data-v-2d3c4208="" class="affects-management">
     <!--v-if-->
@@ -401,7 +396,7 @@ exports[`flawAffects > Correctly renders the component when there are not affect
       </thead>
       <tbody data-v-93f0c720=""></tbody>
     </table><span data-v-2d3c4208="" class="my-2 p-2 d-flex"> This flaw has no affects </span>
-  </div><!-- TODO: Fix/resolve post-rebase -->
+  </div>
   <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="">
     <div data-v-7006d35c="" class="affects-trackers">
       <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -454,7 +449,9 @@ exports[`flawAffects > Displays tracker manager for a selection of affects 1`] =
 "<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
+    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle">
+        <!--v-if--><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label>
+      </button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="">
           <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
@@ -469,7 +466,6 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
     </div>
-    <!--v-if-->
   </div>
   <div data-v-2d3c4208="" class="affects-management">
     <div data-v-2d3c4208="" class="pagination-controls gap-1 my-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-left fs-5"></i></button><button data-v-2d3c4208="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-right fs-5"></i></button></div>
@@ -665,7 +661,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </tbody>
     </table>
     <!--v-if-->
-  </div><!-- TODO: Fix/resolve post-rebase -->
+  </div>
   <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
     <div data-v-7006d35c="" class="affects-trackers">
       <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -777,7 +773,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button></div>
                   <div data-v-db8a18da="" data-v-4977998e="">
                     <ul data-v-db8a18da="" class="nav nav-tabs">
-                      <li data-v-db8a18da="" class="nav-item"><button data-v-db8a18da="" type="button" class="nav-link active">CVE-2024-1234</button></li>
+                      <li data-v-db8a18da="" class="nav-item"><button data-v-db8a18da="" type="button" class="nav-link active"><span data-v-db8a18da="">CVE-2024-1234</span></button></li>
                       <div data-v-4977998e="" class="ms-2 mt-2"><span data-v-4977998e="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="" class="ms-1">Querying available trackers…</span></div>
                     </ul>
                     <div data-v-db8a18da="" class="">
@@ -797,8 +793,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             </div>
                             <div data-v-4977998e="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
-                              <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
                               <!--v-if-->
+                              <!--v-if-->
+                              <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>
                           </div>
                           <div data-v-4977998e="" class="col-6">
@@ -836,7 +833,9 @@ exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
 "<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 -"></i><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label></button>
+    <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle">
+        <!--v-if--><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label>
+      </button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="">
           <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
@@ -851,7 +850,6 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
     </div>
-    <!--v-if-->
   </div>
   <div data-v-2d3c4208="" class="affects-management">
     <div data-v-2d3c4208="" class="pagination-controls gap-1 my-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-left fs-5"></i></button><button data-v-2d3c4208="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-2d3c4208="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-2d3c4208="" class="bi bi-arrow-right fs-5"></i></button></div>
@@ -1048,7 +1046,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </tbody>
     </table>
     <!--v-if-->
-  </div><!-- TODO: Fix/resolve post-rebase -->
+  </div>
   <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
     <div data-v-7006d35c="" class="affects-trackers">
       <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
@@ -1160,7 +1158,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button></div>
                   <div data-v-db8a18da="" data-v-4977998e="">
                     <ul data-v-db8a18da="" class="nav nav-tabs">
-                      <li data-v-db8a18da="" class="nav-item"><button data-v-db8a18da="" type="button" class="nav-link active">CVE-2024-1234</button></li>
+                      <li data-v-db8a18da="" class="nav-item"><button data-v-db8a18da="" type="button" class="nav-link active"><span data-v-db8a18da="">CVE-2024-1234</span></button></li>
                       <div data-v-4977998e="" class="ms-2 mt-2"><span data-v-4977998e="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-4977998e="" class="visually-hidden">Loading...</span></span><span data-v-4977998e="" class="ms-1">Querying available trackers…</span></div>
                     </ul>
                     <div data-v-db8a18da="" class="">
@@ -1174,8 +1172,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             </div>
                             <div data-v-4977998e="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
-                              <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File Selected Trackers </button>
                               <!--v-if-->
+                              <!--v-if-->
+                              <!--v-if--><button data-v-4977998e="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-4977998e="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>
                           </div>
                           <div data-v-4977998e="" class="col-6">
