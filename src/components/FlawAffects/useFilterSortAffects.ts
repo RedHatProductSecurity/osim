@@ -60,7 +60,6 @@ export function useFilterSortAffects() {
     const order = sortOrder.value;
 
     const customSortFn = (affect: ZodAffectType) => {
-      // const affectToSort = isBeingEdited(affect) ? getAffectPriorEdit(affect) : affect;
       if (sortKey.value === 'trackers') {
         return affect.trackers.length;
       } else if (sortKey.value === 'cvss_scores') {

@@ -553,14 +553,9 @@ button.osim-file-trackers:disabled {
 }
 
 .osim-specific-affects {
-  // border-left: 0.25rem solid $info;
   padding-left: 0.5rem;
   margin-bottom: 1rem;
   background-color: $lighter-info;
   display: inline-block;
-
-  span {
-    font-style: normal;
-  }
 }
 </style>
