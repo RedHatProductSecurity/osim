@@ -4,6 +4,8 @@ import { computed, ref } from 'vue';
 import CvssNISTForm from '@/components/CvssNISTForm.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 
+import { issuerLabels } from '@/composables/useFlawCvssScores';
+
 import type { ZodFlawCVSSType } from '@/types/zodFlaw';
 
 const props = defineProps<{
@@ -69,7 +71,7 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
         :key="cvssItemIndex.uuid"
       >
         <LabelDiv
-          :label="cvssItem.issuer + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()"
+          :label="issuerLabels[cvssItem.issuer] + ' CVSS' + cvssItem.cvss_version.toLocaleLowerCase()"
           :class="cvssItemIndex < otherCvss.length -1 ? 'mb-2' : ''"
         >
           <div class="d-flex flex-row">
