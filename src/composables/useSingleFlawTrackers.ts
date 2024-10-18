@@ -27,6 +27,7 @@ type ModuleComponentStreamOsidb = {
 
 type ModuleComponentStreamMeta = {
   affectUuid?: null | string;
+  flawCveOrId?: null | string;
   ps_component: string;
   ps_module: string;
 };
@@ -34,6 +35,7 @@ type ModuleComponentStreamMeta = {
 type ZodTrackerTypeWithAffect = ZodAffectType & ZodTrackerType;
 
 export function useSingleFlawTrackers(
+  flawCveOrId: string,
   affects: Ref<ZodAffectType[]>,
   relatedModuleComponents?: Ref<ModuleComponent[]>,
 ) {
@@ -42,7 +44,6 @@ export function useSingleFlawTrackers(
   const isLoadingTrackers = ref(false);
   const filterString = ref('');
   const moduleComponents = ref<ModuleComponent[]>([]);
-  const flawUuid = computed(() => affects.value.find(affect => affect.uuid && affect.flaw)?.flaw);
 
   const affectIdFromModuleComponent = (affect: ZodAffectType) => affects.value.find(
     (matchingAffect: ZodAffectType) => matchModuleComponent(matchingAffect, affect),
@@ -57,6 +58,7 @@ export function useSingleFlawTrackers(
         ps_module: moduleComponent.ps_module,
         // Caution: moduleComponent.affect.uuid currently does not support multiflaw
         affectUuid: affectIdFromModuleComponent(moduleComponent.affect),
+        flawCveOrId,
       })),
     ).filter((stream: UpdateStreamOsim) => !alreadyFiledTrackers.value.find(
       (tracker: ZodTrackerTypeWithAffect) => tracker.ps_update_stream === stream.ps_update_stream
@@ -185,13 +187,13 @@ export function useSingleFlawTrackers(
       return;
     }
 
-    if (!flawUuid.value) {
+    if (!flawCveOrId) {
       return;
     }
 
     isLoadingTrackers.value = true;
 
-    return getTrackersForFlaws({ flaw_uuids: [flawUuid.value] })
+    return getTrackersForFlaws({ flaw_uuids: [flawCveOrId] })
       .then((response: any) => { moduleComponents.value = response.modules_components; })
       .catch(e => console.error('useSingleFlawTrackers::loadTrackers() Error loading trackers', e))
       .finally(() => isLoadingTrackers.value = false);

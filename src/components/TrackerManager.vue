@@ -23,6 +23,7 @@ const emit = defineEmits<{
 const { relatedFlaws } = toRefs(props);
 
 const shouldApplyToRelated = ref(true);
+const shouldShowInspector = ref(false);
 
 const {
   addRelatedFlaw,
@@ -32,7 +33,7 @@ const {
   isFilingTrackers,
   isLoadingTrackers,
   multiFlawTrackers,
-  shouldFileAsMultiFlaw,
+  selectedStreams,
   synchronizeTrackerSelections,
   trackersToFile,
 } = useRelatedFlawTrackers(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
@@ -52,6 +53,22 @@ const relatedFlawIds = computed(() =>
 
 const specificAffects = computed(() => props?.specificAffectsToTrack?.map(affect =>
   `${affect.ps_module}/${affect.ps_component}`));
+
+const trackersToFileLabels = computed(() => selectedStreams.value.reduce(
+  (trackerLabels: Record<string, any>, stream: UpdateStreamOsim) => {
+    const streamName = stream.ps_update_stream;
+    const moduleComponent = `${stream.ps_module}/${stream.ps_component}`;
+    if (streamName in trackerLabels) {
+      trackerLabels[streamName].flaws.add(stream.flawCveOrId);
+      trackerLabels[streamName].affects.push(moduleComponent);
+    } else {
+      trackerLabels[streamName] = {
+        flaws: new Set([stream.flawCveOrId]),
+        affects: [moduleComponent],
+      };
+    }
+    return trackerLabels;
+  }, {}));
 
 function updateSelection(trackerSelections: UpdateStreamSelections, tracker: UpdateStreamOsim) {
   const isSelected = trackerSelections.get(tracker);
@@ -263,6 +280,34 @@ async function handleFileTrackers() {
                       </span>
                     </label>
                   </div>
+
+                  <button
+                    v-if="trackersToFile.length"
+                    type="button"
+                    class="btn btn-sm btn-dark-info text-white mt-2 me-2"
+                    @click="shouldShowInspector = !shouldShowInspector"
+                  >
+                    <i
+                      class="bi me-2"
+                      :class="shouldShowInspector ? 'bi-binoculars-fill': 'bi-binoculars'"
+                    ></i>
+                    <span v-if="!shouldShowInspector">Inspect {{ trackersToFile.length }} Trackers to File</span>
+                    <span v-else>Hide Tracker Filing Inspector </span>
+                  </button>
+                  <table v-if="shouldShowInspector" class="osim-trackers-inspector">
+                    <tr v-for="(trackerData, streamName) in trackersToFileLabels" :key="streamName">
+                      <td>{{ streamName }}</td>
+                      <td>
+
+                        <span :title="trackerData.affects.join(', ')">
+                          {{ trackerData.affects.length }} affect(s)
+                        </span>
+                        in
+                        <span :title="Array.from(trackerData.flaws).join(', ')">
+                          {{ trackerData.flaws.size }} flaw(s)</span>
+                      </td>
+                    </tr>
+                  </table>
                   <button
                     type="button"
                     class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2"
@@ -271,21 +316,8 @@ async function handleFileTrackers() {
                   >
                     <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
                     <i v-else v-osim-loading.grow="isFilingTrackers"></i>
-                    File Selected Trackers
+                    File {{ trackersToFile.length }} Trackers
                   </button>
-                  <label
-                    v-if="hasRelatedFlawSelections"
-                    class="form-switch ms-5 p-1"
-                  >
-                    <input
-                      v-model="shouldFileAsMultiFlaw"
-                      type="checkbox"
-                      class="form-check-input info focus-ring focus-ring-info"
-                    />
-                    <span class="ms-2 d-inline-block text-nowrap">
-                      File as MultiFlaw
-                    </span>
-                  </label>
                 </div>
               </div>
 
@@ -321,7 +353,6 @@ async function handleFileTrackers() {
                   </label>
                 </div>
               </div>
-
             </div>
           </div>
         </template>
@@ -503,32 +534,33 @@ button.osim-file-trackers:disabled {
   opacity: 0.3;
 }
 
-.btn-black {
-  background-color: #212529;
-  transition:
-    background-color 0.25s,
-    outline-color 0.25s;
+.osim-trackers-inspector {
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
 
-  &:hover {
-    background-color: #212529;
-  }
+  td {
+    list-style-type: none;
+    padding: 0.25rem 0.5rem;
+    background-color: #fff;
+    border: 1px solid $info;
+    max-height: 30vh;
+    overflow-y: auto;
 
-  &:disabled {
-    background-color: white;
-    color: black;
+    span {
+      cursor: help;
+    }
   }
 }
 
-// .osim-specific-affects {
-//   // border-left: 0.25rem solid $info;
-//   padding-left: 0.5rem;
-//   margin-bottom: 1rem;
-//   background-color: $lighter-info;
-//   display: inline-block;
-//   // font-style: italic;
+.osim-specific-affects {
+  // border-left: 0.25rem solid $info;
+  padding-left: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: $lighter-info;
+  display: inline-block;
 
-//   span {
-//     font-style: normal;
-//   }
-// }
+  span {
+    font-style: normal;
+  }
+}
 </style>
