@@ -48,7 +48,7 @@ function selectTab(index: number) {
           :class="{ 'active': activeTabIndex === index }"
           @click="selectTab(index)"
         >
-          {{ label }}
+          <span>{{ label }}</span>
         </button>
       </li>
       <slot name="add-tab">
@@ -100,6 +100,17 @@ function selectTab(index: number) {
 </template>
 
 <style scoped lang="scss">
+.nav-item {
+  button span {
+    display: inline-block;
+    overflow: hidden;
+    max-width: 20ch;
+    max-height: 1.125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .nav-link:not(:active) {
   color: gray;
 }
