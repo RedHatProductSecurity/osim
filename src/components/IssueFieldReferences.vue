@@ -31,6 +31,7 @@ const referenceTypeLabel = (label: string) =>
   ({
     ARTICLE: 'Red Hat Security Bulletin (RHSB)',
     EXTERNAL: 'External',
+    UPSTREAM: 'Upstream',
   })[label] || null;
 
 function handleDelete(uuid: string, closeModal: () => void) {
