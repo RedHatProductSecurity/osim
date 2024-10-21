@@ -51,7 +51,7 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
   };
 }
 
-function saveFilter() {
+function saveSearch() {
   const filters = facets.value.reduce(
     (fields, { field, value }) => {
       if (field && (value || allowedEmptyFieldMapping[field])) {
@@ -61,7 +61,7 @@ function saveFilter() {
     },
     {} as Record<string, string>,
   );
-  searchStore.saveFilter(filters, query.value);
+  searchStore.saveSearch(filters, query.value);
   addToast({
     title: 'Default Filter',
     body: 'User\'s default filter saved',
@@ -73,7 +73,7 @@ function saveFilter() {
   <main class="mt-3">
     <IssueSearchAdvanced
       :isLoading="isLoading"
-      @filter:save="saveFilter"
+      @filter:save="saveSearch"
     />
     <IssueQueue
       :issues="issues"
