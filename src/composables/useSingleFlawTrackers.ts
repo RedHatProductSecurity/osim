@@ -66,12 +66,12 @@ export function useSingleFlawTrackers(
     )));
 
   const trackedAffectUuids = computed(() => affects.value.flatMap(
-    affect => affect.trackers.flatMap(tracker => tracker.affects),
+    affect => affect.trackers?.flatMap(tracker => tracker.affects),
   ));
 
   const alreadyFiledTrackers = computed(() => affects.value.flatMap(
     (affect) => {
-      const filedAffectTrackers = affect.trackers.filter(
+      const filedAffectTrackers = affect.trackers?.filter(
         tracker => tracker.affects?.some(
           (affectUuid: string) => trackedAffectUuids.value.includes(affectUuid)),
       );
@@ -125,7 +125,7 @@ export function useSingleFlawTrackers(
       .map(([tracker]) => tracker),
   );
 
-  const untrackedAffects = computed(() => affects.value.filter(affect => affect.trackers.length === 0));
+  const untrackedAffects = computed(() => affects.value.filter(affect => affect.trackers?.length === 0));
 
   const untrackableAffects = computed(() => untrackedAffects.value
     .filter(affect =>

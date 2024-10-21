@@ -153,6 +153,7 @@ export function useRelatedFlawTrackers(
           // Preserve existing selections
           if (!multiFlawTrackers.value[flawCveOrId]) {
             multiFlawTrackers.value[flawCveOrId] = useSingleFlawTrackers(
+              flawCveOrId,
               ref(newRelatedAffects[flawCveOrId]),
               relatedFlawModuleComponents,
             );
