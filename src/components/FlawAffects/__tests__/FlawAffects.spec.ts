@@ -7,7 +7,7 @@ import { mountWithConfig } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
 
-import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
+import { osimEmptyFlawTest, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
