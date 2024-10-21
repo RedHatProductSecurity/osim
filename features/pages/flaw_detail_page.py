@@ -42,9 +42,9 @@ class FlawDetailPage(BasePage):
         "descriptionText": ("XPATH", "//span[text()=' Description ']"),
         "reviewStatusSelect": ("XPATH", "//select[@class='form-select col-3 osim-description-required']"),
         "statementBtn": ("XPATH", "//button[contains(text(), 'Add Statement')]"),
-        "statementText": ("XPATH", "(//span[contains(text(), 'Statement')])[last()]"),
+        "statementText": ("XPATH", "//span[contains(text(),'Statement')]"),
         "mitigationBtn": ("XPATH", "//button[contains(text(), 'Add Mitigation')]"),
-        "mitigationText": ("XPATH", "(//span[contains(text(),'Mitigation')])[last()]"),
+        "mitigationText": ("XPATH", "//span[contains(text(),'Mitigation')]"),
 
         "addPublicCommentBtn": ("XPATH", "//button[contains(text(), 'Add Public Comment')]"),
         "savePublicCommentBtn": ("XPATH", "//button[contains(text(),'Save Public Comment')]"),
@@ -101,8 +101,7 @@ class FlawDetailPage(BasePage):
         "publicDateFutureText": ("XPATH", "//span[text()='Public Date [FUTURE]']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "ownerText": ("XPATH", " (//span[contains(text(), 'Owner')])[last()]"),
-        "owner": ("XPATH", "//span[contains(text(), 'Owner')]"),
+        "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
         "contributorsText": ("XPATH", "//span[text()='Contributors']"),
         "contributorListFirstOption": ("XPATH", "(//div[@class='menu dropdown-menu']/div/span)[1]"),

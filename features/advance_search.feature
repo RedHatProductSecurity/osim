@@ -37,3 +37,7 @@ Feature: Flaw advance search testing
       Given I go to the advanced search page
       When I sort search result by sortable field
       Then I got sorted search result
+
+    Scenario: Search flaws with osidb related models
+      Given I go to the advanced search page
+      Then I am able to search flaws with osidb related models in query filter

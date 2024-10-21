@@ -281,7 +281,7 @@ def step_impl(context):
 @when('I click self assign button and save changes')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    cur_value = flaw_detail_page.get_input_field_value_using_relative_locator("owner")
+    cur_value = flaw_detail_page.get_input_field_value_using_relative_locator("ownerText")
     if cur_value:
         flaw_detail_page.set_input_field('owner', '')
         flaw_detail_page.click_btn('saveBtn')
@@ -296,7 +296,7 @@ def step_impl(context):
 @then("The flaw is assigned to me")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    assignee = flaw_detail_page.get_input_field_value_using_relative_locator("owner")
+    assignee = flaw_detail_page.get_input_field_value_using_relative_locator("ownerText")
     home_page = HomePage(context.browser)
     login_user = home_page.get_jira_username()
     assert assignee == login_user.strip(), f'Self assign failed: {assignee}'
