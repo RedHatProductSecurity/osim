@@ -15,7 +15,7 @@ const mountFlawSearchView = (): VueWrapper<ComponentPublicInstance
   & Partial<{
     fetchMoreFlaws: () => void;
     params: Record<string, string>;
-    saveFilter: () => void;
+    saveSearch: () => void;
     setTableFilters: (filters: Ref<Record<string, string>>) => void;
   }>> => mount(FlawSearchView, {
   global: {
@@ -124,10 +124,10 @@ describe('flawSearchView', () => {
     const searchStore = useSearchStore();
     const toastStore = useToastStore();
 
-    wrapper.vm.saveFilter!();
+    wrapper.vm.saveSearch!();
     await flushPromises();
 
-    expect(searchStore.saveFilter).toHaveBeenNthCalledWith(1, { cve_id: 'CVE-2024-1234' }, 'django query');
+    expect(searchStore.saveSearch).toHaveBeenNthCalledWith(1, { cve_id: 'CVE-2024-1234' }, 'django query');
     expect(toastStore.addToast).toHaveBeenCalledTimes(1);
   });
 });

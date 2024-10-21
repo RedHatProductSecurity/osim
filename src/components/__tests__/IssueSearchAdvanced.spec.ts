@@ -21,6 +21,9 @@ describe('issueSearchAdvanced', () => {
     const wrapper = mount(IssueSearchAdvanced, {
       props: {
         isLoading: false,
+        savedSearches: [],
+        loadedSearch: -1,
+        changedSlot: false,
         ...props,
       },
     });

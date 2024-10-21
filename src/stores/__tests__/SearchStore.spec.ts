@@ -33,18 +33,18 @@ describe('settingsStore', () => {
   });
 
   it('initializes', () => {
-    expect(searchStore.searchFilters).toEqual({});
+    expect(searchStore.savedSearches).toEqual([]);
   });
 
-  it('saveFilter', () => {
-    searchStore.saveFilter({ component: 'test' }, 'test');
+  it('saveSearch', () => {
+    searchStore.saveSearch({ component: 'test' }, 'test');
 
-    expect(searchStore.searchFilters).toEqual({ component: 'test' });
-    expect(searchStore.queryFilter).toBe('test');
+    expect(searchStore.savedSearches[0].searchFilters).toEqual({ component: 'test' });
+    expect(searchStore.savedSearches[0].queryFilter).toBe('test');
   });
 
   it('resetFilter', () => {
-    searchStore.resetFilter();
-    expect(searchStore.searchFilters).toEqual({});
+    searchStore.resetSearches();
+    expect(searchStore.savedSearches).toEqual([]);
   });
 });

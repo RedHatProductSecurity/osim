@@ -24,8 +24,7 @@ vi.mock('@/composables/useFlawsFetching', () => ({
 
 vi.mock('@/stores/SearchStore', () => ({
   useSearchStore: vi.fn().mockReturnValue({
-    queryFilter: 'django query',
-    searchFilters: { affects__ps_component: 'test' },
+    savedSearches: [{ searchFilters: { affects__ps_component: 'test' }, queryFilter: 'django query' }],
   }),
 }));
 
@@ -51,16 +50,13 @@ describe('indexView', () => {
     expect(loadFlaws).toHaveBeenCalledWith(expect.objectContaining({
       _value: {
         order: '-created_dt',
-        affects__ps_component: 'test',
-        query: 'django query',
       },
     }));
   });
 
   it('should call loadFlaws on mount without filters', async () => {
     vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
-      queryFilter: '',
-      searchFilters: {},
+      savedSearches: [],
     });
     const { loadFlaws } = useFlawsFetching();
     const wrapper = mountWithConfig(IndexView);
