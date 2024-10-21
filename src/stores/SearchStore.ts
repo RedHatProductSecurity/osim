@@ -8,27 +8,29 @@ export type SearchSchema = {
   searchFilters: Record<string, string>;
 };
 
-const defaultValues: SearchSchema = { searchFilters: {}, queryFilter: '' };
-
 const _searchStoreKey = 'SearchStore';
-const search = useLocalStorage(_searchStoreKey, defaultValues);
-function saveFilter(filters: Record<string, string>, query: string) {
-  search.value.searchFilters = filters;
-  search.value.queryFilter = query;
+const searches = useLocalStorage(_searchStoreKey, [] as SearchSchema[]);
+
+function saveSearch(filters: Record<string, string>, query: string) {
+  const search: SearchSchema = { searchFilters: filters, queryFilter: query };
+  searches.value.push(search);
 }
 
-function resetFilter() {
-  search.value.searchFilters = {};
-  search.value.queryFilter = '';
+function removeSearch(index: number) {
+  searches.value.splice(index, 1);
 }
+
+function resetSearches() {
+  searches.value = [];
+}
+
 export const useSearchStore = defineStore('SearchStore', () => {
-  const searchFilters = computed(() => search.value.searchFilters || {});
-  const queryFilter = computed(() => search.value.queryFilter || '');
+  const savedSearches = computed(() => searches.value || []);
 
   return {
-    searchFilters,
-    queryFilter,
-    saveFilter,
-    resetFilter,
+    savedSearches,
+    saveSearch,
+    removeSearch,
+    resetSearches,
   };
 });
