@@ -1179,7 +1179,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                           </div>
                           <div data-v-4977998e="" class="col-6">
                             <h5 data-v-4977998e="" class="pt-4 mb-2 pb-2">Filed</h5>
-                            <div data-v-4977998e="" class="osim-tracker-list my-2"></div>
+                            <div data-v-4977998e="" class="osim-tracker-list my-2"><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-001</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-002</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-003</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label><label data-v-4977998e=""><input data-v-4977998e="" checked="" disabled="" type="checkbox" class="osim-tracker form-check-input"><span data-v-4977998e="" class="osim-tracker-label"><span data-v-4977998e="">xxxx-0-004</span><span data-v-4977998e="" class="ms-2 fst-italic pe-1">openshift-1-1</span>
+                                <!--v-if--></span>
+                              </label></div>
                           </div>
                         </div>
                       </div>
