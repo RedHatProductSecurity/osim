@@ -66,7 +66,7 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
         </div>
       </div>
     </LabelDiv>
-    <div v-if="showAllCvss" class="bg-secondary p-2 mb-2 rounded">
+    <div v-if="showAllCvss" class="bg-secondary p-2 ps-1 ms-1 mb-2 rounded">
       <template
         v-for="(cvssItem, cvssItemIndex) in otherCvss"
         :key="cvssItemIndex.uuid"
