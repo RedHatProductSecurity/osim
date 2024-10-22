@@ -1,13 +1,12 @@
 import { describe, expect } from 'vitest';
 
 import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
+import { osimEmptyFlawTest, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { mountWithConfig } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
-
-import { osimEmptyFlawTest, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
