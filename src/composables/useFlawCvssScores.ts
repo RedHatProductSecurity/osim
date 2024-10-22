@@ -5,6 +5,7 @@ import { groupWith, equals } from 'ramda';
 import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { IssuerEnum } from '@/generated-client';
 
 const formatScore = (score: any) => score?.toFixed(1);
 
@@ -25,7 +26,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
   }
 
   function getRHCvssData() {
-    return getCvssData('RH', 'V3')
+    return getCvssData(IssuerEnum.Rh, 'V3')
       || {
         score: null,
         vector: null,
@@ -49,7 +50,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
     wasCvssModified.value = false;
   });
 
-  const flawNvdCvss3 = computed(() => getCvssData('NIST', 'V3'));
+  const flawNvdCvss3 = computed(() => getCvssData(IssuerEnum.Nist, 'V3'));
 
   const nvdCvss3String = computed(() => {
     const values = [formatScore(flawNvdCvss3.value?.score), flawNvdCvss3.value?.vector].filter(Boolean);
@@ -116,7 +117,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       // "score":  is recalculated based on the vector by OSIDB and does not need to be included
       comment: flawRhCvss3.value?.comment,
       cvss_version: 'V3',
-      issuer: 'RH',
+      issuer: IssuerEnum.Rh,
       vector: flawRhCvss3.value?.vector,
       embargoed: flaw.value.embargoed,
     };

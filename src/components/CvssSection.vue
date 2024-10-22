@@ -7,6 +7,7 @@ import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import { issuerLabels } from '@/composables/useFlawCvssScores';
 
 import type { ZodFlawCVSSType } from '@/types/zodFlaw';
+import { IssuerEnum } from '@/generated-client';
 
 const props = defineProps<{
   allCvss: ZodFlawCVSSType[];
@@ -22,7 +23,7 @@ const props = defineProps<{
 const showAllCvss = ref(false);
 
 const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
-  (!(cvssItem.cvss_version === 'V3' && (cvssItem.issuer === 'RH' || cvssItem.issuer === 'NIST')))));
+  (!(cvssItem.cvss_version === 'V3' && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist)))));
 </script>
 
 <template>
