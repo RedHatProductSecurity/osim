@@ -91,6 +91,7 @@ function saveSearch() {
     {} as Record<string, string>,
   );
   searchStore.saveSearch(filters, query.value);
+  loadedSearch.value = searchStore.savedSearches.length - 1;
   addToast({
     title: 'Search saved',
     body: 'User\'s search saved on Slot ' + (searchStore.saveSearch.length + 1),
