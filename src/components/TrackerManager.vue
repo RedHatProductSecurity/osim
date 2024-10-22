@@ -99,14 +99,6 @@ async function handleFileTrackers() {
   <div class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
     <h4 class="mb-2">
       Tracker Manager
-      <button
-        type="button"
-        class="btn btn-lightest-info btn-outline-dark-info btn-sm osim-hide-tracker-manager"
-        @click="emit('affects-trackers:hide')"
-      >
-        <i class="bi bi-eye-slash-fill"></i>
-        Hide
-      </button>
     </h4>
     <div v-if="specificAffects?.length" class="mb-2">
       <span>
