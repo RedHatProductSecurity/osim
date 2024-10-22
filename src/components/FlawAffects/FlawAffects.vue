@@ -29,14 +29,6 @@ const props = defineProps<{
   relatedFlaws: ZodFlawType[];
 }>();
 
-const emit = defineEmits<{
-  'affect:add': [value: ZodAffectType];
-  'affect:recover': [value: ZodAffectType];
-  'affect:remove': [value: ZodAffectType];
-  'affect:track': [value: ZodAffectType];
-  'affects:refresh': [];
-}>();
-
 const { settings } = useSettingsStore();
 const {
   closeModal,

@@ -97,7 +97,7 @@ const affectRowTooltip = computed(() => {
     return '';
   }
 });
-   
+
 function affectednessChange(event: Event, affect: ZodAffectType) {
   const selectElement = event.target as HTMLSelectElement;
   const selectedValue = selectElement.value;
