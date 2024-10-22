@@ -1,7 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawHistory > is shown if history present on flaw 1`] = `
-"<div data-v-357e30d7="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label class="mx-2 mb-0 form-label"> History: </label></button>
+"<div data-v-357e30d7="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label class="mx-2 mb-0 form-label">
+      <h4 class="mb-4">History</h4>
+    </label></button>
   <div data-v-357e30d7="" class="ps-3 border-start">
     <div data-v-357e30d7="" class="visually-hidden">
       <div class="mt-2"><label class="mx-2 form-label w-100">
