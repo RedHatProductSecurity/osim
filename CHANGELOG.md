@@ -3,7 +3,9 @@
 ## [Unreleased]
 
 ### Added
-* Add multi-flaw tracker filing (OSIDB-3129)
+* Add multi-flaw tracker filing in tracker manager (`OSIDB-3129`)
+  * Allows for consolidated filing of same affect across multiple CVES in one unified tracker
+  * Search functionality for related flaws by CVE or UUID
 
 ### Changed
 * Indicate affect module filters functionality more clearly (`OSIDB-3509`)
