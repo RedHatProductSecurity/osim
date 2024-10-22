@@ -174,13 +174,13 @@ const nameForOption = (fieldName: string) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
-function clearDefaultFilter() {
-  searchStore.resetFilter();
-  addToast({
-    title: 'Default Filter',
-    body: 'User\'s default filter cleared',
-  });
-}
+// function clearDefaultFilter() {
+//   searchStore.resetFilter();
+//   addToast({
+//     title: 'Default Filter',
+//     body: 'User\'s default filter cleared',
+//   });
+// }
 </script>
 
 <template>
@@ -211,10 +211,11 @@ function clearDefaultFilter() {
     </div>
     <div v-if="showFilter" class="d-flex gap-2">
       <details class="osim-default-filter">
-        <summary>Default Filters
+        <!-- <summary>Default Filters
           <button class="btn btn-sm btn-primary lh-0 py-0" @click="clearDefaultFilter()">
             clear
-          </button></summary>
+          </button>
+        </summary> -->
         <div class="my-2">
           <span
             v-for="(value, key) in defaultFilters"
