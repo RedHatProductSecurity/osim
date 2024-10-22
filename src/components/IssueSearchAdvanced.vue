@@ -13,11 +13,21 @@ import { useSearchParams } from '@/composables/useSearchParams';
 import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
 import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
+import { type SearchSchema } from '@/stores/SearchStore';
 
 const props = defineProps<{
   isLoading: boolean;
+  loadedSearch: number;
+  savedSearches: SearchSchema[];
 }>();
-const emit = defineEmits(['filter:save']);
+
+const emit = defineEmits<{
+  'filter:delete': [];
+  'filter:save': [];
+  'filter:update': [];
+  'savedSearch:select': [index: number];
+}>();
+
 const {
   facets,
   orderField,
@@ -27,6 +37,7 @@ const {
   submitAdvancedSearch,
   toggleSortOrder,
 } = useSearchParams();
+
 const { closeModal, isModalOpen, openModal } = useModal();
 
 const queryFilterVisible = ref(true);
@@ -95,6 +106,7 @@ const optionsFor = (field: string) =>
   })[field] || null;
 
 const shouldShowAdvanced = ref(true);
+const showSavedSearches = ref(true);
 
 watch(queryFilterVisible, () => {
   if (!queryFilterVisible.value) {
@@ -200,20 +212,12 @@ function handleToggleOrder() {
         <button
           class="btn btn-primary me-2"
           type="submit"
+          style="width: 23ch;"
           :disabled="props.isLoading"
           aria-label="Advance search button"
         >
           <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
           Search
-        </button>
-        <button
-          class="btn btn-primary me-2"
-          aria-label="Save filters as default"
-          type="button"
-          :disabled="isLoading"
-          @click="emit('filter:save')"
-        >
-          Save as Default
         </button>
         <button
           v-if="!queryFilterVisible"
@@ -254,6 +258,58 @@ function handleToggleOrder() {
         </button>
       </div>
     </form>
+  </details>
+  <details
+    :open="showSavedSearches"
+    class="osim-advanced-search-container container-fluid"
+  >
+    <summary @click="showSavedSearches = true"> Saved Searches</summary>
+    <div class="d-flex mt-2">
+      <template v-for="(savedSearch, index) in savedSearches" :key="index">
+        <button
+          :title="'Query: ' + savedSearch.queryFilter + '\nFields: '
+            + Object.entries(savedSearch.searchFilters).map(([key, value]) => `${key}: ${value}`).join(', ')"
+          class="btn me-2"
+          :class="index === loadedSearch ? 'btn-secondary' : 'border'"
+          type="button"
+          @click="emit('savedSearch:select', index)"
+        >
+          Slot {{ index + 1 }}
+        </button>
+      </template>
+    </div>
+    <span v-if="savedSearches.length === 0" class="ms-2">No saved searches</span>
+    <div class="d-flex mt-2">
+      <button
+        class="btn btn-primary me-2"
+        aria-label="Save filters as default"
+        type="button"
+        :disabled="isLoading"
+        @click="emit('filter:save')"
+      >
+        Save Search
+      </button>
+      <button
+        v-if="loadedSearch !== -1"
+        class="btn btn-secondary me-2"
+        aria-label="Save filters as default"
+        type="button"
+        :disabled="isLoading"
+        @click="emit('filter:update')"
+      >
+        Update Slot {{ loadedSearch + 1 }}
+      </button>
+      <button
+        v-if="loadedSearch !== -1"
+        class="btn btn-secondary me-2"
+        aria-label="Save filters as default"
+        type="button"
+        :disabled="isLoading"
+        @click="emit('filter:delete')"
+      >
+        Delete Slot {{ loadedSearch + 1 }}
+      </button>
+    </div>
   </details>
   <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal()">
     <template #header>

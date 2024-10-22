@@ -153,6 +153,19 @@ export function useSearchParams() {
     });
   }
 
+  function loadAdvancedSearch(query: string, params: Record<string, string>) {
+    params = query
+      ? { ...params, query: query }
+      : params;
+    router.replace({
+      query: {
+        ...params,
+      },
+    }).then(() => {
+      facets.value = populateFacets();
+    });
+  }
+
   return {
     facets,
     query,
@@ -166,6 +179,7 @@ export function useSearchParams() {
     populateFacets,
     getSearchParams,
     submitAdvancedSearch,
+    loadAdvancedSearch,
     submitQuickSearch,
   };
 }
