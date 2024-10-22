@@ -10,10 +10,10 @@ import { IssuerEnum } from '@/generated-client';
 const formatScore = (score: any) => score?.toFixed(1);
 
 export const issuerLabels: Record<string, string> = {
-  NIST: 'NVD',
-  RH: 'RH',
-  CVEORG: 'CVEOrg',
-  OSV: 'OSV',
+  [IssuerEnum.Nist]: 'NVD',
+  [IssuerEnum.Rh]: 'RH',
+  [IssuerEnum.Cveorg]: 'CVEOrg',
+  [IssuerEnum.Osv]: 'OSV',
 };
 
 // TODO: This composable should be ideally refactored into a more modular
