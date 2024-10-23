@@ -7,9 +7,7 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
 import { useUserStore } from '@/stores/UserStore';
-import { useSearchStore } from '@/stores/SearchStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
-import { useToastStore } from '@/stores/ToastStore';
 
 const props = defineProps<{
   defaultFilters?: Record<string, string>;
@@ -22,8 +20,6 @@ const props = defineProps<{
 const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 const userStore = useUserStore();
-const searchStore = useSearchStore();
-const { addToast } = useToastStore();
 
 type FilteredIssue = {
   issue: any;
@@ -173,14 +169,6 @@ const nameForOption = (fieldName: string) => {
   name = name.replace(/_/g, ' ');
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
-
-// function clearDefaultFilter() {
-//   searchStore.resetFilter();
-//   addToast({
-//     title: 'Default Filter',
-//     body: 'User\'s default filter cleared',
-//   });
-// }
 </script>
 
 <template>
@@ -211,11 +199,6 @@ const nameForOption = (fieldName: string) => {
     </div>
     <div v-if="showFilter" class="d-flex gap-2">
       <details class="osim-default-filter">
-        <!-- <summary>Default Filters
-          <button class="btn btn-sm btn-primary lh-0 py-0" @click="clearDefaultFilter()">
-            clear
-          </button>
-        </summary> -->
         <div class="my-2">
           <span
             v-for="(value, key) in defaultFilters"

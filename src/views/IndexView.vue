@@ -13,17 +13,14 @@ const { isFinalPageFetched, isLoading, issues, loadFlaws, loadMoreFlaws, total }
 
 const tableFilters = ref<Record<string, string>>({});
 
-const showFilter = computed(() =>
-  Object.keys(searchStore.searchFilters).length > 0 || searchStore.queryFilter !== '',
-);
-
-const isDefaultFilterSelected = ref<boolean>(showFilter.value);
+const showSavedSearches = ref(true);
+const loadedSearch = ref<number>(-1);
 
 const params = computed(() => {
   const paramsObj = {
     ...tableFilters.value,
-    ...isDefaultFilterSelected.value && searchStore.searchFilters,
-    ...isDefaultFilterSelected.value && { query: searchStore.queryFilter },
+    ...loadedSearch.value !== -1 && searchStore.savedSearches[loadedSearch.value].searchFilters,
+    ...loadedSearch.value !== -1 && { query: searchStore.savedSearches[loadedSearch.value].queryFilter },
   };
 
   return paramsObj;
@@ -49,24 +46,44 @@ onDeactivated(() => {
   loadFlaws(params);
 });
 
-const defaultFilters = computed(() => {
-  return {
-    ...(searchStore.queryFilter ? { query: searchStore.queryFilter } : {}),
-    ...searchStore.searchFilters,
-  };
-});
+function selectSavedSearch(index: number) {
+  if (loadedSearch.value === index) {
+    loadedSearch.value = -1;
+    return;
+  }
+
+  loadedSearch.value = index;
+}
 </script>
 
 <template>
   <main class="mt-3">
+    <details
+      :open="showSavedSearches"
+      class="osim-advanced-search-container container-fluid ms-3 ps-3"
+    >
+      <summary @click="showSavedSearches === true"> Saved Searches</summary>
+      <div class="d-flex mt-2">
+        <template v-for="(savedSearch, index) in searchStore.savedSearches" :key="index">
+          <button
+            :title="'Query: ' + savedSearch.queryFilter + '\nFields: '
+              + Object.entries(savedSearch.searchFilters).map(([key, value]) => `${key}: ${value}`).join(', ')"
+            class="btn me-2"
+            :class="index === loadedSearch ? 'btn-secondary' : 'border'"
+            type="button"
+            @click="selectSavedSearch(index)"
+          >
+            Slot {{ index + 1 }}
+          </button>
+        </template>
+      </div>
+      <span v-if="searchStore.savedSearches.length === 0" class="ms-2">No saved searches</span>
+    </details>
     <IssueQueue
-      v-model:isDefaultFilterSelected="isDefaultFilterSelected"
       :issues="issues"
       :isLoading="isLoading"
       :total="total"
       :isFinalPageFetched="isFinalPageFetched"
-      :showFilter="showFilter"
-      :defaultFilters="defaultFilters"
       @flaws:fetch="setTableFilters"
       @flaws:load-more="fetchMoreFlaws"
     />
