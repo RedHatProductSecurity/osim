@@ -617,7 +617,7 @@ div.osim-content {
 .osim-flaw-header-link {
   position: absolute;
   right: 0;
-  top: 2rem;
+  top: 2.5rem;
   width: auto;
 }
 </style>
