@@ -84,13 +84,13 @@ function useComputedState(
   const trackersToFile = computed(
     (): TrackersPost[] => Object.values(
       selectedStreams.value.reduce((streamsToFile: Record<FlawCveOrId, TrackersPost>, affectWithStream) => {
-        const updateStream = affectWithStream.ps_update_stream;
+        const componentStream = `${affectWithStream.ps_component}:${affectWithStream.ps_update_stream}`;
         const selectedAffectToTrack = affectsByUuid.value[affectWithStream.affectUuid];
-        if (updateStream in streamsToFile) {
-          streamsToFile[updateStream].affects.push(affectWithStream.affectUuid);
+        if (componentStream in streamsToFile) {
+          streamsToFile[componentStream].affects.push(affectWithStream.affectUuid);
           return streamsToFile;
         }
-        streamsToFile[updateStream] = {
+        streamsToFile[componentStream] = {
           affects: [affectWithStream.affectUuid],
           ps_update_stream: affectWithStream.ps_update_stream,
           resolution: selectedAffectToTrack?.resolution,

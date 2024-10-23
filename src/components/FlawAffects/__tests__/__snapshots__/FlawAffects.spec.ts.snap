@@ -767,7 +767,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </div>
             <div data-v-a347fd2c="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
               <div data-v-4977998e="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
-                <h4 data-v-4977998e="" class="mb-2"> Tracker Manager <button data-v-4977998e="" type="button" class="btn btn-lightest-info btn-outline-dark-info btn-sm osim-hide-tracker-manager"><i data-v-4977998e="" class="bi bi-eye-slash-fill"></i> Hide </button></h4>
+                <h4 data-v-4977998e="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-4977998e="" class="mb-2"><span data-v-4977998e=""></span><i data-v-4977998e="" class="bi bi-binoculars me-2"></i><span data-v-4977998e="" class="me-2">Managing trackers for 3 affected offering(s):</span><span data-v-4977998e="" class="badge bg-info me-1">openshift-1/openshift-1-1</span><span data-v-4977998e="" class="badge bg-info me-1">openshift-2/openshift-2-1</span><span data-v-4977998e="" class="badge bg-info me-1">openshift-3/openshift-3-1</span></div>
                 <div data-v-4977998e="" class="osim-trackers-filing mb-2">
                   <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button></div>
@@ -1152,7 +1152,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </div>
             <div data-v-a347fd2c="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
               <div data-v-4977998e="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
-                <h4 data-v-4977998e="" class="mb-2"> Tracker Manager <button data-v-4977998e="" type="button" class="btn btn-lightest-info btn-outline-dark-info btn-sm osim-hide-tracker-manager"><i data-v-4977998e="" class="bi bi-eye-slash-fill"></i> Hide </button></h4>
+                <h4 data-v-4977998e="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-4977998e="" class="mb-2"><span data-v-4977998e=""></span><i data-v-4977998e="" class="bi bi-binoculars me-2"></i><span data-v-4977998e="" class="me-2">Managing trackers for 1 affected offering(s):</span><span data-v-4977998e="" class="badge bg-info me-1">openshift-1/openshift-1-1</span></div>
                 <div data-v-4977998e="" class="osim-trackers-filing mb-2">
                   <div data-v-4977998e="" class="osim-tracker-manager-controls"><input data-v-4977998e="" type="text" class="form-control border border-info focus-ring focus-ring-info p-1 ps-2 mt-2 mb-3" placeholder="Filter Modules/Components..."><button data-v-4977998e="" type="button" class="btn btn-sm btn-white btn-outline-dark-info border-0 my-2 ms-1" style="display: none;"><i data-v-4977998e="" class="bi bi-x"></i></button></div>
