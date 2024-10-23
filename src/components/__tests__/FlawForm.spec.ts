@@ -460,7 +460,7 @@ describe('flawForm', () => {
   osimFullFlawTest('should show a link to bugzilla if ID exists', async ({ flaw }) => {
     const subject = mountWithProps({ flaw, mode: 'edit' });
 
-    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    const bugzillaLink = subject.find('.osim-flaw-header-link > a');
     expect(bugzillaLink.exists()).toBe(true);
   });
 
@@ -468,7 +468,7 @@ describe('flawForm', () => {
     flaw.meta_attr = {};
     const subject = mountWithProps({ flaw, mode: 'edit' });
 
-    const bugzillaLink = subject.find('.osim-bugzilla-link');
+    const bugzillaLink = subject.find('.osim-flaw-header-link > a');
     expect(bugzillaLink.exists()).toBe(false);
   });
 
