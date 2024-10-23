@@ -213,20 +213,22 @@ const createdDate = computed(() => {
         :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
       >
         <div class="row osim-flaw-form-section">
-          <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
-            <a
-              :href="bugzillaLink"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-            </a>
+          <div class="osim-flaw-form-header">
+            <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
+              <a
+                :href="bugzillaLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+              </a>
+            </div>
+            <FlawAlertsList
+              :flaw="flaw"
+              class="col-12 osim-alerts-banner"
+              @expandFocusedComponent="expandFocusedComponent"
+            />
           </div>
-          <FlawAlertsList
-            :flaw="flaw"
-            class="col-12 osim-alerts-banner"
-            @expandFocusedComponent="expandFocusedComponent"
-          />
           <div :id="flaw.uuid" class="col-6">
             <LabelEditable
               v-model="flaw.title"
@@ -503,8 +505,9 @@ form.osim-flaw-form :deep(*) {
     padding-block: 1.5rem;
   }
 
-  .osim-alerts-banner {
+  .osim-flaw-form-header {
     min-height: 3rem;
+    margin-block: 0.5rem;
   }
 }
 
