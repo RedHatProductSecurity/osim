@@ -94,7 +94,7 @@ function saveSearch() {
   loadedSearch.value = searchStore.savedSearches.length - 1;
   addToast({
     title: 'Search saved',
-    body: 'User\'s search saved on Slot ' + (searchStore.saveSearch.length + 1),
+    body: 'User\'s search saved on Slot ' + (searchStore.savedSearches.length),
   });
 }
 
@@ -112,8 +112,17 @@ function updateSavedSearch() {
   loadAdvancedSearch(query.value, filters);
   addToast({
     title: 'Slot updated',
-    body: 'User\'s saved Slot ' + loadedSearch.value + ' updated',
+    body: 'User\'s saved Slot ' + (loadedSearch.value + 1) + ' updated',
   });
+}
+
+function deleteSavedSearch() {
+  searchStore.savedSearches.splice(loadedSearch.value, 1);
+  loadedSearch.value = searchStore.savedSearches.length > 0
+    ? loadedSearch.value > 0
+      ? loadedSearch.value - 1
+      : loadedSearch.value + 1
+    : -1;
 }
 </script>
 
@@ -126,6 +135,7 @@ function updateSavedSearch() {
       @savedSearch:select="selectSavedSearch"
       @filter:save="saveSearch"
       @filter:update="updateSavedSearch"
+      @filter:delete="deleteSavedSearch"
     />
     <IssueQueue
       :issues="issues"
