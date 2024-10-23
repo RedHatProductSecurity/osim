@@ -5,9 +5,11 @@ exports[`flawCreateView > should render 1`] = `
   <form data-v-bb5d5f91="" data-v-764cfa6a="" class="osim-flaw-form">
     <div data-v-bb5d5f91="" class="osim-content container-fluid">
       <div data-v-bb5d5f91="" class="row px-4 my-3">
-        <div data-v-bb5d5f91="" class="row osim-flaw-form-section">
-          <!--v-if-->
-          <!--v-if-->
+        <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
+          <div data-v-bb5d5f91="" class="osim-flaw-form-header">
+            <!--v-if-->
+            <!--v-if-->
+          </div>
           <div data-v-bb5d5f91="" id="" class="col-6"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
               <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Title</span>
                 <!--v-if-->
