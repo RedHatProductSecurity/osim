@@ -216,7 +216,6 @@ const createdDate = computed(() => {
           <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
             <a
               :href="bugzillaLink"
-              class="osim-bugzilla-link"
               target="_blank"
               rel="noopener noreferrer"
             >
