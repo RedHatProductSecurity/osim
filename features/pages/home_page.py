@@ -138,10 +138,7 @@ class HomePage(BasePage):
         sorted_numbers = self.get_sort_flaws(field, sort_fields)
         value = []
         for number in sorted_numbers:
-            if "title" not in field:
-                value.append(self.get_field_value(f"{field}{number}"))
-            else:
-                value.append(self.get_field_value(f"{field}{number}").lower())
+            value.append(self.get_field_value(f"{field}{number}"))
         return value
 
     def get_specified_cell_value(self, row, column):
