@@ -263,7 +263,7 @@ function handleToggleOrder() {
     :open="showSavedSearches"
     class="osim-advanced-search-container container-fluid"
   >
-    <summary @click="showSavedSearches = true"> Saved Searches</summary>
+    <summary @click="showSavedSearches === true"> Saved Searches</summary>
     <div class="d-flex mt-2">
       <template v-for="(savedSearch, index) in savedSearches" :key="index">
         <button
