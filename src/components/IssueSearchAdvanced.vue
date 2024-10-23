@@ -278,6 +278,7 @@ function handleToggleOrder() {
         </button>
       </template>
     </div>
+    <span v-if="savedSearches.length === 0" class="ms-2">No saved searches</span>
     <div class="d-flex mt-2">
       <button
         class="btn btn-primary me-2"
