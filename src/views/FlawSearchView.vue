@@ -22,6 +22,17 @@ const loadedSearch = ref<number>(-1);
 const draftQuery = ref('');
 const draftFields = ref({});
 
+const facetsParsed = computed(() => facets.value.reduce(
+  (fields, { field, value }) => {
+    if (field && (value || allowedEmptyFieldMapping[field])) {
+      fields[field] = value;
+    }
+    return fields;
+  },
+  {} as Record<string, string>,
+),
+);
+
 const params = computed(() => {
   const searchParams = getSearchParams();
   const order = [searchParams.order, tableFilters.value.order]
@@ -81,16 +92,7 @@ function deselectSavedSearch() {
 }
 
 function saveSearch() {
-  const filters = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && (value || allowedEmptyFieldMapping[field])) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  searchStore.saveSearch(filters, query.value);
+  searchStore.saveSearch(facetsParsed.value, query.value);
   loadedSearch.value = searchStore.savedSearches.length - 1;
   addToast({
     title: 'Search saved',
@@ -99,17 +101,8 @@ function saveSearch() {
 }
 
 function updateSavedSearch() {
-  const filters = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && (value || allowedEmptyFieldMapping[field])) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  searchStore.savedSearches[loadedSearch.value] = { searchFilters: filters, queryFilter: query.value };
-  loadAdvancedSearch(query.value, filters);
+  searchStore.savedSearches[loadedSearch.value] = { searchFilters: facetsParsed.value, queryFilter: query.value };
+  loadAdvancedSearch(query.value, facetsParsed.value);
   addToast({
     title: 'Slot updated',
     body: 'User\'s saved Slot ' + (loadedSearch.value + 1) + ' updated',
