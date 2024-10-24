@@ -212,7 +212,7 @@ const createdDate = computed(() => {
         class="row px-4 my-3"
         :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
       >
-        <div class="row osim-flaw-form-section">
+        <div class="row osim-flaw-form-section pt-0">
           <div class="osim-flaw-form-header">
             <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
               <a
@@ -617,7 +617,7 @@ div.osim-content {
 .osim-flaw-header-link {
   position: absolute;
   right: 0;
-  top: 2.5rem;
+  top: 1rem;
   width: auto;
 }
 </style>
