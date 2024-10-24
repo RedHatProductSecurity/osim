@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { useLocalStorage } from '@vueuse/core';
 
 export type SearchSchema = {
+  name: string;
   queryFilter: string;
   searchFilters: Record<string, string>;
 };
@@ -11,8 +12,8 @@ export type SearchSchema = {
 const _searchStoreKey = 'SearchStore';
 const searches = useLocalStorage(_searchStoreKey, [] as SearchSchema[]);
 
-function saveSearch(filters: Record<string, string>, query: string) {
-  const search: SearchSchema = { searchFilters: filters, queryFilter: query };
+function saveSearch(name: string, filters: Record<string, string>, query: string) {
+  const search: SearchSchema = { name: name, searchFilters: filters, queryFilter: query };
   searches.value.push(search);
 }
 

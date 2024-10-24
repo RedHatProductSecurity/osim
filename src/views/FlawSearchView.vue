@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, toRaw, watch, type Ref } from 'vue';
+
+import { equals } from 'ramda';
 
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import IssueQueue from '@/components/IssueQueue.vue';
@@ -21,6 +23,24 @@ const tableFilters = ref<Record<string, string>>({});
 const loadedSearch = ref<number>(-1);
 const draftQuery = ref('');
 const draftFields = ref({});
+
+const facetsParsed = computed(() => facets.value.reduce(
+  (fields, { field, value }) => {
+    if (field && (value || allowedEmptyFieldMapping[field])) {
+      fields[field] = value;
+    }
+    return fields;
+  },
+  {} as Record<string, string>,
+),
+);
+
+const changedSlot = computed(() =>
+  loadedSearch.value >= 0
+  && (!equals(toRaw(searchStore.savedSearches[loadedSearch.value].searchFilters), facetsParsed.value)
+  || !equals(searchStore.savedSearches[loadedSearch.value].queryFilter, query.value)
+  ),
+);
 
 const params = computed(() => {
   const searchParams = getSearchParams();
@@ -73,24 +93,14 @@ function selectSavedSearch(index: number) {
 }
 
 function deselectSavedSearch() {
-  // TODO: Check if loaded saved search was modified to remind the user to save/discard new changes
   loadAdvancedSearch(draftQuery.value, draftFields.value);
   draftQuery.value = '';
   draftFields.value = {};
   loadedSearch.value = -1;
 }
 
-function saveSearch() {
-  const filters = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && (value || allowedEmptyFieldMapping[field])) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  searchStore.saveSearch(filters, query.value);
+function saveSearch(name: string) {
+  searchStore.saveSearch(name, facetsParsed.value, query.value);
   loadedSearch.value = searchStore.savedSearches.length - 1;
   addToast({
     title: 'Search saved',
@@ -99,17 +109,9 @@ function saveSearch() {
 }
 
 function updateSavedSearch() {
-  const filters = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && (value || allowedEmptyFieldMapping[field])) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  searchStore.savedSearches[loadedSearch.value] = { searchFilters: filters, queryFilter: query.value };
-  loadAdvancedSearch(query.value, filters);
+  searchStore.savedSearches[loadedSearch.value].queryFilter = query.value;
+  searchStore.savedSearches[loadedSearch.value].searchFilters = facetsParsed.value;
+  loadAdvancedSearch(query.value, facetsParsed.value);
   addToast({
     title: 'Slot updated',
     body: 'User\'s saved Slot ' + (loadedSearch.value + 1) + ' updated',
@@ -123,6 +125,7 @@ function deleteSavedSearch() {
       ? loadedSearch.value - 1
       : loadedSearch.value + 1
     : -1;
+  deselectSavedSearch();
 }
 </script>
 
@@ -132,6 +135,7 @@ function deleteSavedSearch() {
       :isLoading="isLoading"
       :loadedSearch
       :savedSearches="searchStore.savedSearches"
+      :changedSlot
       @savedSearch:select="selectSavedSearch"
       @filter:save="saveSearch"
       @filter:update="updateSavedSearch"

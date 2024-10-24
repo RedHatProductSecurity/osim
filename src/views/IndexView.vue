@@ -73,7 +73,7 @@ function selectSavedSearch(index: number) {
             type="button"
             @click="selectSavedSearch(index)"
           >
-            Slot {{ index + 1 }}
+            {{ savedSearch.name }}
           </button>
         </template>
       </div>

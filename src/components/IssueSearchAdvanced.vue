@@ -16,6 +16,7 @@ import { affectAffectedness } from '@/types/zodAffect';
 import { type SearchSchema } from '@/stores/SearchStore';
 
 const props = defineProps<{
+  changedSlot: boolean;
   isLoading: boolean;
   loadedSearch: number;
   savedSearches: SearchSchema[];
@@ -23,7 +24,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'filter:delete': [];
-  'filter:save': [];
+  'filter:save': [name: string];
   'filter:update': [];
   'savedSearch:select': [index: number];
 }>();
@@ -38,7 +39,14 @@ const {
   toggleSortOrder,
 } = useSearchParams();
 
-const { closeModal, isModalOpen, openModal } = useModal();
+const queryGuideModal = useModal();
+const savingSearchModal = useModal();
+
+const newSearchName = ref('');
+
+const invalidSearcName = computed(() =>
+  newSearchName.value === '' || props.savedSearches.some(search => search.name === newSearchName.value),
+);
 
 const queryFilterVisible = ref(true);
 
@@ -118,6 +126,20 @@ function handleToggleOrder() {
   toggleSortOrder();
   submitAdvancedSearch();
 }
+
+function saveSearch() {
+  emit('filter:save', newSearchName.value);
+  closeSavingSearchModal();
+}
+
+function openSavingSearchModal() {
+  savingSearchModal.openModal();
+}
+
+function closeSavingSearchModal() {
+  savingSearchModal.closeModal();
+  newSearchName.value = '';
+}
 </script>
 
 <template>
@@ -127,7 +149,7 @@ function handleToggleOrder() {
       <div v-show="queryFilterVisible" class="input-group my-1">
         <div type="button" class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
-          <button class="btn btn-sm text-white" type="button" @click="openModal()">
+          <button class="btn btn-sm text-white" type="button" @click="queryGuideModal.openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
@@ -274,23 +296,62 @@ function handleToggleOrder() {
           type="button"
           @click="emit('savedSearch:select', index)"
         >
-          Slot {{ index + 1 }}
+          {{ savedSearch.name }}
         </button>
       </template>
     </div>
-    <span v-if="savedSearches.length === 0" class="ms-2">No saved searches</span>
+    <span v-if="savedSearches.length === 0" class="d-inline-block m-2">No saved searches</span>
+    <Modal
+      :show="savingSearchModal.isModalOpen.value"
+      @close="closeSavingSearchModal()"
+    >
+      <template #header>
+        <h1 class="fs-5">Save New Search</h1>
+        <button
+          type="button"
+          class="btn-close ms-auto"
+          aria-label="Close"
+          @click="closeSavingSearchModal()"
+        />
+      </template>
+      <template #body>
+        <input
+          ref="textArea"
+          v-model="newSearchName"
+          class="form-control"
+          placeholder="Search Name"
+        />
+      </template>
+      <template #footer>
+        <button
+          type="button"
+          class="btn btn-secondary m-0"
+          @click="closeSavingSearchModal()"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="invalidSearcName"
+          @click="saveSearch()"
+        >
+          Save
+        </button>
+      </template>
+    </Modal>
     <div class="d-flex mt-2">
       <button
         class="btn btn-primary me-2"
         aria-label="Save filters as default"
         type="button"
         :disabled="isLoading"
-        @click="emit('filter:save')"
+        @click="openSavingSearchModal()"
       >
         Save Search
       </button>
       <button
-        v-if="loadedSearch !== -1"
+        v-if="loadedSearch !== -1 && changedSlot"
         class="btn btn-secondary me-2"
         aria-label="Save filters as default"
         type="button"
@@ -311,14 +372,14 @@ function handleToggleOrder() {
       </button>
     </div>
   </details>
-  <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal()">
+  <Modal :show="queryGuideModal.isModalOpen.value" style="max-width: 75%;" @close="queryGuideModal.closeModal()">
     <template #header>
       <h1>Query Filter Guide</h1>
       <button
         type="button"
         class="btn-close ms-auto"
         aria-label="Close"
-        @click="closeModal()"
+        @click="queryGuideModal.closeModal()"
       />
     </template>
     <template #body>
@@ -328,7 +389,7 @@ function handleToggleOrder() {
       <button
         type="button"
         class="btn btn-secondary m-0"
-        @click="closeModal()"
+        @click="queryGuideModal.closeModal()"
       >
         Close
       </button>
