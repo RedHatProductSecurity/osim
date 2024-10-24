@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
+
 ## [2024.10.0]
 ### Added
 * Extend incident types to include 'Minor' and 'Zero Day' (`OSIDB-3442`)
