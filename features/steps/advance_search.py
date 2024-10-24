@@ -196,3 +196,25 @@ def step_impl(context):
 def step_impl(context):
     context.execute_steps("Then The flaw list is sorted by the field")
 
+
+@then('I am able to search flaws with osidb related models in query filter')
+def step_impl(context):
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_page = FlawDetailPage(context.browser)
+    search_data = flaw_page.get_valid_search_keywords_from_created_flaw()
+
+    # Search with acknowledgment name or affect ps_component
+    filter_dict = {
+        'acknowledgments.name': search_data['acknowledgments__name'],
+        'affects.ps_component': search_data["affects__ps_component"],
+    }
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    for k, v in filter_dict.items():
+        go_to_advanced_search_page(context.browser)
+        advanced_search_page.set_query_filter(f'{k} = "{v}"')
+        advanced_search_page.click_btn("searchBtn")
+        advanced_search_page.first_flaw_exist()
+        advanced_search_page.go_to_first_flaw_detail()
+        if 'acknowledgments' in k:
+            flaw_page.click_acknowledgments_dropdown_btn()
+        flaw_page.check_text_exist(v)
