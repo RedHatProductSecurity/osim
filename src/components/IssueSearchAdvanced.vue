@@ -131,7 +131,7 @@ function handleToggleOrder() {
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
-        <DjangoQLInput v-model="query" @submit="submitAdvancedSearch()" />
+        <DjangoQLInput v-model="query" style="height: 38px;" @submit="submitAdvancedSearch()" />
         <button
           :disabled="!query"
           class="btn btn-sm btn-secondary rounded-0 py-0"
