@@ -2,6 +2,7 @@ import { test } from 'vitest';
 
 import type { ZodAffectType } from '@/types/zodAffect';
 import type { ZodFlawType } from '@/types/zodFlaw';
+import { IssuerEnum } from '@/generated-client';
 
 import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';
@@ -51,7 +52,7 @@ export function mockAffect({ ps_component, ps_module }: { ps_component: string; 
       created_dt: null,
       cvss_version: 'V3',
       embargoed: false,
-      issuer: 'RH',
+      issuer: IssuerEnum.Rh,
       score: null,
       uuid: null,
       vector: null,

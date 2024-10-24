@@ -15,6 +15,7 @@ import { useToastStore } from '@/stores/ToastStore';
 import type { ZodFlawType } from '@/types/zodFlaw';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/zodAffect';
 import { deepCopyFromRaw } from '@/utils/helpers';
+import { IssuerEnum } from '@/generated-client';
 
 function isCvssNew(cvssScore: ZodAffectCVSSType) {
   if (
@@ -61,13 +62,13 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     const affect = flaw.value.affects.find(matchAffectTo);
 
     if ( // affect is new and has cvss scores
-      affect && !affect.uuid && affect.cvss_scores.length && affectCvssData(affect, 'RH', 'V3')?.vector
+      affect && !affect.uuid && affect.cvss_scores.length && affectCvssData(affect, IssuerEnum.Rh, 'V3')?.vector
     ) {
       return true;
     }
 
     if ( // affect has no relevant cvss scores to check
-      !affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector
+      !affect || !affect.cvss_scores.length || !affectCvssData(affect, IssuerEnum.Rh, 'V3')?.vector
     ) {
       return false;
     }
@@ -90,7 +91,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       || matchAffectTo(affect),
     );
 
-    if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, 'RH', 'V3')?.vector) {
+    if (!affect || !affect.cvss_scores.length || !affectCvssData(affect, IssuerEnum.Rh, 'V3')?.vector) {
       return [];
     }
 

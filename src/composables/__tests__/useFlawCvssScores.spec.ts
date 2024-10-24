@@ -2,6 +2,8 @@ import { ref } from 'vue';
 
 import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
+import { IssuerEnum } from '@/generated-client';
+
 import { useFlawCvssScores } from '../useFlawCvssScores';
 import { blankFlaw } from '../useFlawModel';
 
@@ -28,7 +30,7 @@ describe('useFlawCvssScores', () => {
 
     osimFullFlawTest('should be false when flaw has the same scores and no comment', ({ flaw }) => {
       flaw.cvss_scores[0].comment = '';
-      flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: 'NIST' };
+      flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
 
       const { shouldDisplayEmailNistForm } = useFlawCvssScores(ref(flaw));
 
@@ -36,7 +38,7 @@ describe('useFlawCvssScores', () => {
     });
 
     osimFullFlawTest('should be true when scores have comments', ({ flaw }) => {
-      flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: 'NIST' };
+      flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
       flaw.cvss_scores[0].comment = 'This is a comment';
 
       const { shouldDisplayEmailNistForm } = useFlawCvssScores(ref(flaw));
