@@ -124,6 +124,7 @@ function deleteSavedSearch() {
       ? loadedSearch.value - 1
       : loadedSearch.value + 1
     : -1;
+  deselectSavedSearch();
 }
 </script>
 
