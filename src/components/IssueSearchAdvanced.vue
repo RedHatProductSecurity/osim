@@ -16,6 +16,7 @@ import { affectAffectedness } from '@/types/zodAffect';
 import { type SearchSchema } from '@/stores/SearchStore';
 
 const props = defineProps<{
+  changedSlot: boolean;
   isLoading: boolean;
   loadedSearch: number;
   savedSearches: SearchSchema[];
@@ -290,7 +291,7 @@ function handleToggleOrder() {
         Save Search
       </button>
       <button
-        v-if="loadedSearch !== -1"
+        v-if="loadedSearch !== -1 && changedSlot"
         class="btn btn-secondary me-2"
         aria-label="Save filters as default"
         type="button"

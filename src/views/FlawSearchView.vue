@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, toRaw, watch, type Ref } from 'vue';
+
+import { equals } from 'ramda';
 
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
 import IssueQueue from '@/components/IssueQueue.vue';
@@ -31,6 +33,13 @@ const facetsParsed = computed(() => facets.value.reduce(
   },
   {} as Record<string, string>,
 ),
+);
+
+const changedSlot = computed(() =>
+  loadedSearch.value >= 0
+  && (!equals(toRaw(searchStore.savedSearches[loadedSearch.value].searchFilters), facetsParsed.value)
+  || !equals(searchStore.savedSearches[loadedSearch.value].queryFilter, query.value)
+  ),
 );
 
 const params = computed(() => {
@@ -84,7 +93,6 @@ function selectSavedSearch(index: number) {
 }
 
 function deselectSavedSearch() {
-  // TODO: Check if loaded saved search was modified to remind the user to save/discard new changes
   loadAdvancedSearch(draftQuery.value, draftFields.value);
   draftQuery.value = '';
   draftFields.value = {};
@@ -125,6 +133,7 @@ function deleteSavedSearch() {
       :isLoading="isLoading"
       :loadedSearch
       :savedSearches="searchStore.savedSearches"
+      :changedSlot
       @savedSearch:select="selectSavedSearch"
       @filter:save="saveSearch"
       @filter:update="updateSavedSearch"
