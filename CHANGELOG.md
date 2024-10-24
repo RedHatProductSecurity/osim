@@ -1,5 +1,15 @@
 # OSIM Changelog
 
+## [Unreleased]
+
+### Added
+* Add multi-flaw tracker filing (OSIDB-3129)
+
+### Changed
+* Indicate affect module filters functionality more clearly (`OSIDB-3509`)
+  * Reflects component selections in Tracker Manager
+  * Reworked Affect Offering UI to make filtering functionality clearer
+
 ## [2024.10.0]
 ### Added
 * Extend incident types to include 'Minor' and 'Zero Day' (`OSIDB-3442`)

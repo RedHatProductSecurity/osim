@@ -71,7 +71,6 @@ function login() {
           'Ensure that your system has krb5 configured.',
           'Ensure that your browser has the correct trusted URIs for Negotiate authentication.',
           'Ensure that you have logged into Kerberos on your system.',
-          // eslint-disable-next-line max-len
           'More info: <a class="alert-link" target="_blank" rel="noopener noreferrer nofollow"href="https://people.redhat.com/mikeb/negotiate/">https://people.redhat.com/mikeb/negotiate/</a>',
         ].join('\n');
       } else if (osimRuntime.value.backends.osidbAuth === 'credentials') {

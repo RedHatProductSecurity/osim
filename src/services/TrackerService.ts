@@ -3,13 +3,6 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
 
-export async function getTracker(uuid: string) {
-  return osidbFetch({
-    method: 'get',
-    url: `/osidb/api/v1/trackers/${uuid}`,
-  }).then(response => response.data);
-}
-
 export type TrackersPost = {
   affects: string[];
   embargoed: boolean;
@@ -49,7 +42,13 @@ export async function fileTrackingFor(trackerData: TrackersPost | TrackersPost[]
   }
 
   if (errors.length) {
-    createCatchHandler(`${errors.length} trackers failed to file`)(errors);
+    const messages = errors.slice();
+    if (successes.length) {
+      const list = successes.map(({ ps_update_stream }) => ps_update_stream).join(', ');
+      const successMessage = `${successes.length} tracker(s) filed: ${list}`;
+      messages.push(successMessage);
+    }
+    createCatchHandler(`${errors.length} trackers failed to file`)(messages);
     return Promise.reject({ errors, successes });
   } else {
     createSuccessHandler({

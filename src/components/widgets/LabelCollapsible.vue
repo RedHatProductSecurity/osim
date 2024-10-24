@@ -1,6 +1,8 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
+    iconClose?: null | string;
+    iconOpen?: null | string;
     isExpandable?: boolean | undefined;
     isExpanded?: boolean | undefined;
     label?: string;
@@ -9,6 +11,8 @@ withDefaults(
     isExpandable: true,
     isExpanded: undefined,
     label: '',
+    iconClose: 'bi-dash-square-dotted',
+    iconOpen: 'bi-plus-square-dotted',
   },
 );
 
@@ -26,8 +30,8 @@ const emit = defineEmits<{
       :class="{ 'pe-none': !isExpandable }"
       @click="emit('toggleExpanded')"
     >
-      <i v-if="isExpanded" class="bi bi-dash-square-dotted me-1"></i>
-      <i v-else class="bi bi-plus-square-dotted me-1"></i>
+      <i v-if="isExpanded && iconClose" class="" :class="`bi me-1 ${iconClose}`"></i>
+      <i v-else-if="iconOpen" :class="`bi me-1 ${iconOpen}`"></i>
       <slot name="label">
         <label class="ms-2 form-label">
           {{ label }}
