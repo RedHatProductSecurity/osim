@@ -100,3 +100,12 @@ function selectSavedSearch(index: number) {
     />
   </main>
 </template>
+
+<style scoped lang="scss">
+details {
+  user-select: none;
+  summary {
+    width: fit-content;
+  }
+}
+</style>

@@ -460,6 +460,14 @@ function closeSavingSearchModal() {
     width: 241.5px;
   }
 }
+
+details {
+  user-select: none;
+
+  summary {
+    width: fit-content;
+  }
+}
 </style>
 
 <style lang="scss">
