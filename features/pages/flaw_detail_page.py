@@ -785,8 +785,11 @@ class FlawDetailPage(BasePage):
     def get_select_value_using_relative_locator(self, field):
         element = getattr(self, field)
         field_select = self.driver.find_elements(
-            locate_with(By.XPATH, "//select[@class='form-select']").near(element))[0]
-        selected_item = field_select.get_list_selected_item()
+            locate_with(By.XPATH, "//select[@class='form-select']").near(element))
+        if not field_select:
+            field_select = self.driver.find_elements(
+                locate_with(By.XPATH, "//select[@class='form-select is-invalid']").near(element))
+        selected_item = field_select[0].get_list_selected_item()
         current_value = selected_item[0] if selected_item else None
         return current_value
 
