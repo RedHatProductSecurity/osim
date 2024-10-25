@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onDeactivated, ref, watch, type Ref } from 'vue';
+import { computed, onDeactivated, onMounted, ref, watch, type Ref } from 'vue';
 
 import IssueQueue from '@/components/IssueQueue.vue';
 
@@ -24,6 +24,12 @@ const params = computed(() => {
   };
 
   return paramsObj;
+});
+
+onMounted(() => {
+  if (searchStore.defaultSearch) {
+    loadedSearch.value = searchStore.savedSearches.findIndex(search => search.default);
+  }
 });
 
 watch(() => params, () => {
@@ -74,6 +80,11 @@ function selectSavedSearch(index: number) {
             @click="selectSavedSearch(index)"
           >
             {{ savedSearch.name }}
+            <i
+              class="bi ms-2"
+              :class="savedSearch.default ? 'bi-star-fill' : 'bi-star'"
+              @click.stop="searchStore.setDefaultSearch(index)"
+            />
           </button>
         </template>
       </div>

@@ -27,6 +27,7 @@ const emit = defineEmits<{
   'filter:save': [name: string];
   'filter:update': [];
   'savedSearch:select': [index: number];
+  'savedSearch:setDefault': [index: number];
 }>();
 
 const {
@@ -297,6 +298,11 @@ function closeSavingSearchModal() {
           @click="emit('savedSearch:select', index)"
         >
           {{ savedSearch.name }}
+          <i
+            class="bi ms-2"
+            :class="savedSearch.default ? 'bi-star-fill' : 'bi-star'"
+            @click.stop="emit('savedSearch:setDefault', index)"
+          />
         </button>
       </template>
     </div>

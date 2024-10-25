@@ -137,6 +137,7 @@ function deleteSavedSearch() {
       :savedSearches="searchStore.savedSearches"
       :changedSlot
       @savedSearch:select="selectSavedSearch"
+      @savedSearch:setDefault="searchStore.setDefaultSearch"
       @filter:save="saveSearch"
       @filter:update="updateSavedSearch"
       @filter:delete="deleteSavedSearch"
