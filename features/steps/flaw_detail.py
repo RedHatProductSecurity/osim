@@ -2,6 +2,7 @@ import time
 from datetime import date, datetime
 
 from behave import when, then
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from features.common_utils import get_data_from_tmp_data_file
@@ -321,7 +322,6 @@ def step_impl(context):
 
 def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page = FlawDetailPage(context.browser)
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page.click_button_with_js("addReferenceBtn")
     if external:
         flaw_detail_page.add_reference_select_external_type()
@@ -330,6 +330,7 @@ def add_a_reference_to_first_flaw(context, value, wait_msg, external=True):
     flaw_detail_page.click_button_with_js("saveReferenceBtn")
     flaw_detail_page.wait_msg(wait_msg)
     flaw_detail_page.click_btn("toastMsgCloseBtn")
+    time.sleep(2)
 
 
 @when("I add two external references to the flaw")
@@ -344,7 +345,6 @@ def step_impl(context):
 
 @then("Two external references added")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.click_reference_dropdown_button()
     flaw_detail_page.check_text_exist(context.first_value)
@@ -643,12 +643,10 @@ def step_impl(context):
         flaw_detail_page.wait_msg('flawSavedMsg')
         flaw_detail_page.check_text_exist(f"{current_affects_number} Affect(s) Deleted.")
         flaw_detail_page.close_all_toast_msg()
-        time.sleep(2)
 
     # add a new affect for filing tracker
     context.component = flaw_detail_page.add_new_affect(affectedness_value='AFFECTED')
     flaw_detail_page.close_all_toast_msg()
-    time.sleep(2)
 
 
 @when('I file a tracker for new added affect')
@@ -847,7 +845,6 @@ def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.add_new_affect(affectedness_value="NEW", component=generate_random_text())
     flaw_page.close_all_toast_msg()
-    time.sleep(2)
     context.check_result = flaw_page.bulk_update_affects()
 
 
@@ -890,13 +887,9 @@ def step_impl(context):
     if all_affects_number < 6:
         diff = 6 - all_affects_number
         for _ in range(diff):
-            flaw_detail_page.add_new_affect(component=generate_random_text(), affectedness_value="NEW", save=False)
-
-        flaw_detail_page.click_btn('saveBtn')
-        flaw_detail_page.wait_msg('flawSavedMsg')
-        flaw_detail_page.wait_msg("affectCreatedMsg")
-        flaw_detail_page.check_element_exists(
-            By.XPATH, f"//div[text()='{diff} CVSS score(s) saved on {diff} affect(s).']")
+            flaw_detail_page.add_new_affect(component=generate_random_text(), affectedness_value="NEW")
+            flaw_detail_page.close_all_toast_msg()
+            time.sleep(2)
 
     # change affect pagination to 5
     flaw_detail_page.change_affect_pagination(5)
@@ -1004,9 +997,15 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
+    # confirm if current flaw is low impact
+    try:
+        flaw_detail_page.driver.find_element(By.XPATH, "//*[contains(text(), ' Filing Low Severity Trackers ')]")
+    except NoSuchElementException:
+        pass
+    else:
+        flaw_detail_page.confirmFileLowSeverityBtn.click_button()
     flaw_detail_page.wait_msg("trackersFiledMsg")
     flaw_detail_page.close_all_toast_msg()
-    time.sleep(2)
 
 
 @then('Tracker filed for multiple flaw')

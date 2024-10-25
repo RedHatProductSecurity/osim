@@ -35,6 +35,8 @@ class FlawDetailPage(BasePage):
         "createFlawLink": ("LINK_TEXT", "Create Flaw"),
         "createNewFlawBtn": ("XPATH", '//button[contains(text(), "Create New Flaw")]'),
         "embargeodCheckBox": ("XPATH", "//input[@class='form-check-input']"),
+        "muteNotificationIcon": (
+            "XPATH", "//i[@class='bi notification-icon text-white osim-notification-icon bi-bell-slash-fill']"),
 
         "comment#0Text": ("XPATH", "//span[text()=' Comment#0']"),
         "descriptionBtn": ("XPATH", "//button[contains(text(), 'Add Description')]"),
@@ -127,6 +129,7 @@ class FlawDetailPage(BasePage):
         "referenceUpdatedMsg": ("XPATH", "//div[text()='Reference updated.']"),
         "rhsbReferenceLinkFormatErrorMsg": ("XPATH", '//div[contains(text(), "A flaw reference of the ARTICLE type does not begin with https://access.redhat.com")]'),
         "firstReferenceDescriptionValue": ("XPATH", "(//div[@class='osim-list-edit'])[1]/div/div/div/div/span"),
+        "referenceTypeText": ("XPATH", "//span[text()='Reference type']"),
 
         "bottomBar": ("XPATH", "//div[@class='osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end']"),
         "bottomFooter": ("XPATH", "//footer[@class='fixed-bottom osim-status-bar']"),
@@ -195,6 +198,7 @@ class FlawDetailPage(BasePage):
         "addFlawTabButton": ("XPATH", "//button[@class='nav-link osim-add-tab']"),
         "trackerMangerSearchFlawInput": ("XPATH", "//input[@placeholder='Search...']"),
         "trackerManagerAddFlawBtn": ("XPATH", "//button[text()='Add']"),
+        "confirmFileLowSeverityBtn": ("XPATH", "//button[text()=' Confirm ']"),
 
         "msgClose": ("XPATH", "(//button[@class='osim-toast-close-btn btn-close'])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
@@ -507,7 +511,6 @@ class FlawDetailPage(BasePage):
                 self.referenceDelConfirmBtn.click_button()
                 self.wait_msg("referenceDeletedMsg")
                 self.close_all_toast_msg()
-                time.sleep(2)
 
     def add_reference_select_external_type(self):
         try:
@@ -516,20 +519,17 @@ class FlawDetailPage(BasePage):
         except ElementNotVisibleException:
             pass
 
+        self.referenceTypeText.execute_script(
+            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});")
+
         add_reference_select = self.driver.find_elements(
             locate_with(By.TAG_NAME, "select").
-            below(self.referenceCountLabel))[0]
+            near(self.referenceTypeText))[0]
 
         select = Select(add_reference_select)
 
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
             (By.XPATH, "//select[@value='ARTICLE']//option[contains(.,'External')]")))
-
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
-            add_reference_select)
-
-        time.sleep(2)
 
         select.select_by_visible_text("External")
 
@@ -766,8 +766,11 @@ class FlawDetailPage(BasePage):
     def get_select_value_using_relative_locator(self, field):
         element = getattr(self, field)
         field_select = self.driver.find_elements(
-            locate_with(By.XPATH, "//select[@class='form-select']").near(element))[0]
-        selected_item = field_select.get_list_selected_item()
+            locate_with(By.XPATH, "//select[@class='form-select']").near(element))
+        if not field_select:
+            field_select = self.driver.find_elements(
+                locate_with(By.XPATH, "//select[@class='form-select is-invalid']").near(element))
+        selected_item = field_select[0].get_list_selected_item()
         current_value = selected_item[0] if selected_item else None
         return current_value
 
@@ -823,8 +826,12 @@ class FlawDetailPage(BasePage):
         return self.driver.find_element(By.XPATH, f"//span[text()='{value}']")
 
     def close_all_toast_msg(self):
-        for toast_msg in find_elements_in_page_factory(self, 'toastMsgCloseBtn'):
+        notifications = find_elements_in_page_factory(self, 'toastMsgCloseBtn')
+        if not notifications:
+            return
+        for toast_msg in notifications:
             self.click_button_with_js(toast_msg)
+        time.sleep(1)
 
     def set_cvss_score_explanation(self, value):
         cvss_comment_dropdown = self.driver.find_elements(
@@ -1036,6 +1043,13 @@ class FlawDetailPage(BasePage):
         self.select_unfiled_tracker(row=row)
         # file tracker
         self.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
+        # confirm if current flaw is low impact
+        try:
+            self.driver.find_element(By.XPATH, "//*[contains(text(), ' Filing Low Severity Trackers ')]")
+        except NoSuchElementException:
+            pass
+        else:
+            self.confirmFileLowSeverityBtn.click_button()
         self.wait_msg("trackersFiledMsg")
         self.close_all_toast_msg()
         # close tracker manager window

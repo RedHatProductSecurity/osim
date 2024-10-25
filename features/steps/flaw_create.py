@@ -52,6 +52,8 @@ def create_flaw_with_valid_data(context, embargoed=False, with_optional=False):
         flaw_create_page.click_btn('createNewFlawBtn')
         flaw_create_page.wait_msg('flawCreatedMsg')
 
+    flaw_create_page.close_all_toast_msg()
+
 
 def check_created_flaw_exist(context, embargoed=False):
     go_to_advanced_search_page(context.browser)
