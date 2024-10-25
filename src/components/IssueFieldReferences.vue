@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import LabelStatic from '@/components/widgets/LabelStatic.vue';
+import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelInput from '@/components/widgets/LabelInput.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
 import EditableList from '@/components/widgets/EditableList.vue';
@@ -31,6 +32,8 @@ const referenceTypeLabel = (label: string) =>
   ({
     ARTICLE: 'Red Hat Security Bulletin (RHSB)',
     EXTERNAL: 'External',
+    UPSTREAM: 'Upstream',
+    SOURCE: 'Source',
   })[label] || null;
 
 function handleDelete(uuid: string, closeModal: () => void) {
@@ -81,16 +84,13 @@ defineExpose({ editableListComp });
               v-model="items[itemIndex].description"
               label="Description"
             />
-            <select v-model="items[itemIndex].type" class="form-select mb-3 osim-reference-types">
-              <option value="" disabled selected>Select a reference type</option>
-              <option
-                v-for="referenceType in allowedReferenceTypes"
-                :key="referenceType"
-                :value="referenceType"
-              >
-                Change to {{ referenceTypeLabel(referenceType) }} Reference
-              </option>
-            </select>
+            <LabelSelect
+              v-model="items[itemIndex].type"
+              label="Reference type"
+              :error="null"
+              :options="Object.fromEntries(flawReferenceTypeValues.map(type=> [referenceTypeLabel(type), type]))"
+              :options-hidden="excludedReferenceTypes"
+            />
           </div>
         </div>
       </template>
@@ -111,16 +111,13 @@ defineExpose({ editableListComp });
               label="Description"
               :error="error?.[itemIndex].description"
             />
-            <select v-model="items[itemIndex].type" class="form-select mb-2 osim-reference-types">
-              <option value="" disabled selected>Select a reference type</option>
-              <option
-                v-for="referenceType in allowedReferenceTypes"
-                :key="referenceType"
-                :value="referenceType"
-              >
-                {{ referenceTypeLabel(referenceType) }}
-              </option>
-            </select>
+            <LabelSelect
+              v-model="items[itemIndex].type"
+              label="Reference type"
+              :error="null"
+              :options="Object.fromEntries(flawReferenceTypeValues.map(type=> [referenceTypeLabel(type), type]))"
+              :options-hidden="excludedReferenceTypes"
+            />
           </div>
         </div>
       </template>
