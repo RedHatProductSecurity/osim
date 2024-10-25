@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
 
-type Facet = {
+export type Facet = {
   field: string;
   value: string;
 };

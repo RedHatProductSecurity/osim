@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { useLocalStorage } from '@vueuse/core';
 
 export type SearchSchema = {
-  default: boolean;
+  isDefault: boolean;
   name: string;
   queryFilter: string;
   searchFilters: Record<string, string>;
@@ -13,8 +13,20 @@ export type SearchSchema = {
 const _searchStoreKey = 'SearchStore';
 const searches = useLocalStorage(_searchStoreKey, [] as SearchSchema[]);
 
+// TODO remove once released to Prod (users existing stores will be converted)
+if (!Array.isArray(searches.value)) {
+  if ((searches.value as any).queryFilter || Object.keys((searches.value as any).searchFilters).length) {
+    searches.value = [{
+      name: 'default search',
+      ...(searches.value as any),
+      isDefault: true }] as SearchSchema[];
+  } else {
+    searches.value = [];
+  }
+}
+
 function saveSearch(name: string, filters: Record<string, string>, query: string) {
-  const search: SearchSchema = { name: name, searchFilters: filters, queryFilter: query, default: false };
+  const search: SearchSchema = { name: name, searchFilters: filters, queryFilter: query, isDefault: false };
   searches.value.push(search);
 }
 
@@ -27,16 +39,16 @@ function resetSearches() {
 }
 
 function setDefaultSearch(index: number) {
-  if (defaultSearch.value === searches.value[index] && searches.value[index].default) {
-    searches.value[index].default = false;
+  if (defaultSearch.value === searches.value[index] && searches.value[index].isDefault) {
+    searches.value[index].isDefault = false;
   } else {
     searches.value.forEach((search, i) => {
-      search.default = i === index;
+      search.isDefault = i === index;
     });
   }
 }
 
-const defaultSearch = computed(() => searches.value.find(search => search.default) || null);
+const defaultSearch = computed(() => searches.value.find(search => search.isDefault) || null);
 
 export const useSearchStore = defineStore('SearchStore', () => {
   const savedSearches = computed(() => searches.value || []);
