@@ -24,9 +24,6 @@ const emit = defineEmits<{
   'reference:update': [value: any[]];
 }>();
 const excludedReferenceTypes = ['SOURCE'];
-const allowedReferenceTypes = flawReferenceTypeValues.filter(
-  referenceType => !excludedReferenceTypes.includes(referenceType),
-);
 
 const referenceTypeLabel = (label: string) =>
   ({
