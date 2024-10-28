@@ -206,7 +206,7 @@ export function blankFlaw(): ZodFlawType {
     cwe_id: '',
     comment_zero: '',
     embargoed: false,
-    impact: '',
+    impact: null,
     major_incident_state: '',
     source: '',
     title: '',

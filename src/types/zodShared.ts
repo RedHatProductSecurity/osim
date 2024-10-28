@@ -22,7 +22,7 @@ export const ZodFlawClassification = z.object({
   state: z.nativeEnum(FlawClassificationStateEnum),
 });
 
-export const ImpactEnumWithBlank = { '': '', ...ImpactEnum } as const;
+export const ImpactEnumWithBlank = { None: '', ...ImpactEnum } as const;
 
 export const zodOsimDateTime = () =>
   z

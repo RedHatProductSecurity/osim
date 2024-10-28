@@ -17,7 +17,7 @@ import LabelStatic from '@/components/widgets/LabelStatic.vue';
 import { blankFlaw } from '@/composables/useFlawModel';
 
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { flawSources, Source521EnumWithBlank } from '@/types/zodFlaw';
+import { flawImpactEnum, flawSources, Source521EnumWithBlank } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
@@ -88,13 +88,7 @@ describe('flawForm', () => {
       .find(component => component.props().label === 'Impact');
     expect(impactField?.exists()).toBe(true);
     const impactOptions = impactField?.findAll('option').map(item => item.text());
-    expect(impactOptions).toEqual([
-      'CRITICAL',
-      'IMPORTANT',
-      'MODERATE',
-      'LOW',
-      '',
-    ]);
+    expect(impactOptions).toEqual(['', ...Object.keys(flawImpactEnum)]);
 
     const cvssV3Field = subject
       .findAllComponents(CvssCalculator)

@@ -8,6 +8,7 @@ withDefaults(
     modelValue: null | string;
     options: Record<string, string> | string[];
     optionsHidden?: null | string[];
+    withBlank?: boolean;
   }>(),
   {
     modelValue: '',
@@ -40,6 +41,12 @@ defineEmits<{
             $emit('update:modelValue', (($event as InputEvent).target as HTMLInputElement).value)
           "
         >
+          <option
+            v-if="withBlank && modelValue !== ''"
+            selected
+            disabled
+            value=""
+          ></option>
           <template v-if="isStringArray(options)">
             <option
               v-for="option in options"

@@ -118,11 +118,12 @@ exports[`flawForm > mounts and renders 1`] = `
     </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Impact</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="MODERATE">
+            <option data-v-e273ec44="" selected="" disabled="" value=""></option>
             <option data-v-e273ec44="" value="CRITICAL">CRITICAL</option>
             <option data-v-e273ec44="" value="IMPORTANT">IMPORTANT</option>
             <option data-v-e273ec44="" selected="" value="MODERATE">MODERATE</option>
             <option data-v-e273ec44="" value="LOW">LOW</option>
-            <option data-v-e273ec44="" value=""></option>
+            <option data-v-e273ec44="" value="">NONE</option>
           </select>
           <!--v-if-->
         </div>
@@ -210,6 +211,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </label><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">CVE Source</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="GIT">
+            <!--v-if-->
             <option data-v-e273ec44="" value=""></option>
             <option data-v-e273ec44="" value="ADOBE">ADOBE</option>
             <option data-v-e273ec44="" value="APPLE">APPLE</option>
@@ -328,6 +330,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Incident State</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="APPROVED">
+            <!--v-if-->
             <option data-v-e273ec44="" value=""></option>
             <option data-v-e273ec44="" value="REQUESTED">REQUESTED</option>
             <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
