@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Changed
+* Allow empty impact on flaw (`OSIDB-3596`)
+
 ### Fixed
 * Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
 
