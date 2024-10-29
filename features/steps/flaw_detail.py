@@ -1,5 +1,4 @@
 import time
-import random
 from datetime import date, datetime
 
 from behave import when, then
@@ -11,7 +10,6 @@ from features.utils import (
     generate_cwe,
     generate_random_text,
     go_to_specific_flaw_detail_page,
-    get_osidb_token,
 )
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
@@ -594,6 +592,8 @@ def step_impl(context):
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     context.ps_component1 = flaw_page.add_new_affect('bugzilla', "NEW")
+    time.sleep(2)
+    flaw_page.close_all_toast_msg()
     flaw_page.bulk_delete_affects()
     flaw_page.click_btn('saveBtn')
     flaw_page.wait_msg('flawSavedMsg')
@@ -786,6 +786,7 @@ def step_impl(context, new_state):
 @then('The flaw incident state is updated to {new_state}')
 def step_impl(context, new_state):
     flaw_page = FlawDetailPage(context.browser)
+    time.sleep(2)
     _, v = flaw_page.get_select_value('incidentState')
     assert v == new_state, f"Incident state should be {new_state}, got {v}"
 
@@ -831,7 +832,6 @@ def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
     flaw_page.add_new_affect('bugzilla', "NEW")
     flaw_page.close_all_toast_msg()
-    go_to_specific_flaw_detail_page(context.browser)
     context.check_result = flaw_page.bulk_update_affects()
 
 
@@ -875,7 +875,6 @@ def step_impl(context):
         diff = 6 - all_affects_number
         for _ in range(diff):
             flaw_detail_page.add_new_affect('bugzilla', "NEW", False)
-            flaw_detail_page.click_btn("newAddAffectCommitBtn")
 
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
