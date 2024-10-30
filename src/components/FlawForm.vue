@@ -21,7 +21,7 @@ import FlawContributors from '@/components/FlawContributors.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
-import { type ZodFlawType, descriptionRequiredStates, flawSources } from '@/types/zodFlaw';
+import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import type { ZodAffectType } from '@/types/zodAffect';
@@ -61,7 +61,6 @@ const {
   errors,
   flaw,
   flawAcknowledgments,
-  flawImpacts,
   flawIncidentStates,
   flawReferences,
   flawRhCvss3,
@@ -266,8 +265,9 @@ const createdDate = computed(() => {
             <LabelSelect
               v-model="flaw.impact"
               label="Impact"
-              :options="flawImpacts"
+              :options="flawImpactEnum"
               :error="errors.impact"
+              :withBlank="true"
             />
             <CvssCalculator
               :id="flawRhCvss3.uuid"
