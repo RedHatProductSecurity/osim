@@ -10,9 +10,9 @@ import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
   bugzilla?: string;
-  cveid?: null | string;
+  cveId?: null | string;
   cvss?: string;
-  nistcvss?: string;
+  nistCvss?: string;
   summary?: null | string;
 }>();
 
@@ -21,20 +21,20 @@ const { closeModal, isModalOpen, openModal } = useModal();
 
 const toEmail = 'nvd@nist.gov';
 const ccEmail = 'secalert@redhat.com';
-const subject = computed(() => `CVSS Rescore Request - ${props.cveid}`);
+const subject = computed(() => `CVSS Rescore Request - ${props.cveId}`);
 const emailBody = computed(() => `Hello,
 
-I have performed an analysis of ${props.cveid} on behalf of Red Hat Product Security,
+I have performed an analysis of ${props.cveId} on behalf of Red Hat Product Security,
 resulting in a Red Hat CVSS score which is different from the NIST score.
 Our information and analysis is included below,
 and we would appreciate your consideration and review.
 
-CVE : ${props.cveid}
+CVE : ${props.cveId}
 
 Red Hat Bugzilla: ${props.bugzilla}
-NVD Page: https://nvd.nist.gov/vuln/detail/${props.cveid}
+NVD Page: https://nvd.nist.gov/vuln/detail/${props.cveId}
 Red Hat CVSS: ${props.cvss}
-NIST CVSS: ${props.nistcvss}
+NIST CVSS: ${props.nistCvss}
 
 Flaw Summary: 
 ${props.summary}

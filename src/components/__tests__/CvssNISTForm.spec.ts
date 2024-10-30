@@ -8,12 +8,12 @@ import CvssNISTForm from '../CvssNISTForm.vue';
 const mountCvssNISTForm = () => mountWithConfig(CvssNISTForm, {
   props: {
     flaw: 'any',
-    cveid: 'string',
+    cveId: 'string',
     summary: 'string',
     bugzilla: 'string',
     nvdpage: 'string',
     cvss: 'string',
-    nistcvss: 'string',
+    nistCvss: 'string',
     cvssjustification: 'string',
   },
 });
