@@ -20,6 +20,7 @@ import {
   affectResolutions,
   possibleAffectResolutions,
 } from '@/types/zodAffect';
+import { IssuerEnum } from '@/generated-client';
 
 const props = defineProps<{
   affectCvssToDelete: Record<string, string>;
@@ -347,7 +348,7 @@ function addNewAffect() {
     cvss_scores: [{
       // affect: z.string().uuid(),
       cvss_version: 'V3',
-      issuer: 'RH',
+      issuer: IssuerEnum.Rh,
       comment: '',
       score: null,
       vector: '',
@@ -443,7 +444,7 @@ function selectAffects(event: Event) {
 
 // Affects Fields
 function affectCvss(affect: ZodAffectType) {
-  return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === 'RH' && cvss_version === 'V3');
+  return affect.cvss_scores.find(({ cvss_version, issuer }) => issuer === IssuerEnum.Rh && cvss_version === 'V3');
 }
 
 function affectCvssDisplay(affect: ZodAffectType) {
@@ -470,7 +471,7 @@ function updateAffectCvss(affect: ZodAffectType, newValue: string) {
       affect.cvss_scores[cvssScoreIndex].vector = newValue;
     } else if (newValue !== '') {
       affect.cvss_scores.push({
-        issuer: 'RH',
+        issuer: IssuerEnum.Rh,
         cvss_version: 'V3',
         comment: '',
         score: null,

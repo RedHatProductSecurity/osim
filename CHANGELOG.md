@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Added new CVSS versions and issuers on flaw form (`OSIDB-3546`)
+
 ### Changed
 * Allow empty impact on flaw (`OSIDB-3596`)
 
@@ -18,6 +21,9 @@
 * Show comment field on CVSSv3 when the score is the same but the comment is not empty (`OSIDB-3400`)
 * Use UTC time for created date on flaw list (`OSIDB-3478`)
 * Automatically reset affect's delegated resolution when affectedness is set to not affected (`OSIDB-3533`)
+
+### Changed
+* Display NVD CVSS when it is available (`OSIDB-3546`)
 
 ## [2024.9.2]
 ### Added

@@ -130,7 +130,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </label>
     <div data-v-563bd83c="" data-v-bb5d5f91="" tabindex="0" id="db265f8e-f7f6-4e96-b61f-8dea783e79c7">
-      <div data-v-563bd83c="" class="osim-input vector-row mb-2"><label data-v-563bd83c="" class="label-group row"><span data-v-563bd83c="" class="form-label col-3"> CVSSv3 </span>
+      <div data-v-563bd83c="" class="osim-input vector-row mb-2"><label data-v-563bd83c="" class="label-group row"><span data-v-563bd83c="" class="form-label col-3"> RH CVSSv3 </span>
           <div data-v-563bd83c="" class="input-wrapper col">
             <div data-v-563bd83c="" tabindex="0" class="vector-input form-control" id="db265f8e-f7f6-4e96-b61f-8dea783e79c7" focused=""><span data-v-563bd83c="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-563bd83c="" style="color: black;">CVSS:3.1</span><span data-v-563bd83c="" style="color: black;">/AV:N</span><span data-v-563bd83c="" style="color: black;">/AC:H</span><span data-v-563bd83c="" style="color: black;">/PR:H</span><span data-v-563bd83c="" style="color: black;">/UI:N</span><span data-v-563bd83c="" style="color: black;">/S:U</span><span data-v-563bd83c="" style="color: black;">/C:L</span><span data-v-563bd83c="" style="color: black;">/I:N</span><span data-v-563bd83c="" style="color: black;">/A:N</span></div>
           </div>
@@ -172,27 +172,26 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </div>
     <div data-v-bb5d5f91="">
-      <div data-v-bb5d5f91="" class="col">
-        <div data-v-73e4e34b="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-          <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
-            <div data-v-73e4e34b="" class="col-9">
-              <div data-v-bb5d5f91="" class="d-flex flex-row">
-                <div data-v-bb5d5f91="" class="form-control text-break h-auto rounded-0"><span data-v-bb5d5f91="" class="text-primary">4.0</span> CVSS:3.1/AV:N/AC:H/PR:<span data-v-bb5d5f91="" class="text-primary">E</span>/UI:N/S:U/C:<span data-v-bb5d5f91="" class="text-primary">N</span>/I:<span data-v-bb5d5f91="" class="text-primary">L</span>/A:<span data-v-bb5d5f91="" class="text-primary">R</span></div>
-                <div data-v-bb5d5f91="" class="col-auto align-self-center">
-                  <div data-v-b75fd97d="" data-v-bb5d5f91="" class="osim-cve-nist-form"><button data-v-b75fd97d="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
-                    <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
-                      <!--v-if-->
-                    </transition-stub>
-                    <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
-                      <!--v-if-->
-                    </transition-stub>
-                  </div>
+      <div data-v-73e4e34b="" class="osim-input ps-3 mb-2 mb-2">
+        <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+          <div data-v-73e4e34b="" class="col-9">
+            <div class="d-flex flex-row">
+              <div class="form-control text-break h-auto rounded-0"><span class="text-primary">4.0</span> CVSS:3.1/AV:N/AC:H/PR:<span class="text-primary">E</span>/UI:N/S:U/C:<span class="text-primary">N</span>/I:<span class="text-primary">L</span>/A:<span class="text-primary">R</span></div>
+              <div class="col-auto align-self-center">
+                <div data-v-b75fd97d="" class="osim-cve-nist-form"><button data-v-b75fd97d="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
+                  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+                    <!--v-if-->
+                  </transition-stub>
+                  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+                    <!--v-if-->
+                  </transition-stub>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!--v-if-->
     </div><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
       <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">CWE ID</span>
         <!--v-if-->
@@ -310,7 +309,7 @@ exports[`flawForm > mounts and renders 1`] = `
   </div>
   <div data-v-bb5d5f91="" class="col-6">
     <div data-v-37d3889c="" data-v-bb5d5f91="" class="osim-workflow-state-container mb-2">
-      <div data-v-73e4e34b="" data-v-37d3889c="" class="osim-input mb-2 ps-3 osim-workflow-state-display osim-workflow-state-display" type="text">
+      <div data-v-73e4e34b="" data-v-37d3889c="" class="osim-input ps-3 osim-workflow-state-display mb-2 osim-workflow-state-display mb-2" type="text">
         <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
           <div data-v-73e4e34b="" class="col-9">
             <div data-v-37d3889c="" class="d-flex"><span data-v-37d3889c="" class="form-control rounded-0">NEW</span>
@@ -362,7 +361,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
       </div>
     </label>
-    <div data-v-73e4e34b="" data-v-cbaa3298="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
+    <div data-v-73e4e34b="" data-v-cbaa3298="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
       <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
         <div data-v-73e4e34b="" class="col-9">
           <div data-v-cbaa3298="">
@@ -376,7 +375,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-73e4e34b="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
+    <div data-v-73e4e34b="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
       <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
         <div data-v-73e4e34b="" class="col-9">
           <!-- for invalid-tooltip positioning -->
