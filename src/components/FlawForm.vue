@@ -276,12 +276,12 @@ const createdDate = computed(() => {
             <CvssSection
               :highlightedNvdCvss3String
               :shouldDisplayEmailNistForm
-              :cveid="flaw.cve_id"
+              :cveId="flaw.cve_id"
               :summary="flaw.comment_zero"
               :bugzilla="bugzillaLink"
               :cvss="rhCvss3String"
               :allCvss="flaw.cvss_scores"
-              :nistcvss="nvdCvss3String"
+              :nistCvss="nvdCvss3String"
             />
             <LabelEditable
               v-model="flaw.cwe_id"

@@ -12,10 +12,10 @@ import { IssuerEnum } from '@/generated-client';
 const props = defineProps<{
   allCvss: ZodFlawCVSSType[];
   bugzilla: string;
-  cveid: null | string;
+  cveId: null | string;
   cvss: string;
   highlightedNvdCvss3String: { char: null | string; isHighlighted: boolean }[][];
-  nistcvss: string;
+  nistCvss: string;
   shouldDisplayEmailNistForm: boolean;
   summary: string;
 }>();
@@ -51,17 +51,17 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
           </template>
           <template v-else>
             <span>
-              {{ nistcvss }}
+              {{ nistCvss }}
             </span>
           </template>
         </div>
         <div v-if="shouldDisplayEmailNistForm" class="col-auto align-self-center">
           <CvssNISTForm
-            :cveid
+            :cveId
             :summary
             :bugzilla
             :cvss
-            :nistcvss
+            :nistCvss
           />
         </div>
       </div>
