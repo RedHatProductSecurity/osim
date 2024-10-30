@@ -4,70 +4,71 @@ exports[`flawForm > mounts and renders 1`] = `
 "<form data-v-bb5d5f91="" class="osim-flaw-form">
   <div data-v-bb5d5f91="" class="osim-content container-fluid">
     <div data-v-bb5d5f91="" class="row px-4 my-3">
-      <div data-v-bb5d5f91="" class="row osim-flaw-form-section">
-        <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" class="osim-bugzilla-link" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
-        <!--v-if-->
-        <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
-          <div data-v-357e30d7="" class="ps-3 border-start">
-            <div data-v-357e30d7="" class="visually-hidden">
-              <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
-                <div data-v-357e30d7="" class="ps-3 border-start">
-                  <div data-v-357e30d7="" class="visually-hidden">
-                    <div>
-                      <!--v-if-->
-                    </div>
-                    <div>
-                      <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-warning"><i data-v-eef2791a="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
-                        <div data-v-357e30d7="" class="ps-3 border-start">
-                          <div data-v-357e30d7="" class="visually-hidden">
-                            <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
-                              <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> CVSSv3 score is missing.</span></div>
-                              <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
-                              <div data-v-eef2791a="" class="row mt-2">
-                                <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+      <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
+        <div data-v-bb5d5f91="" class="osim-flaw-form-header">
+          <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
+          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+            <div data-v-357e30d7="" class="ps-3 border-start">
+              <div data-v-357e30d7="" class="visually-hidden">
+                <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
+                  <div data-v-357e30d7="" class="ps-3 border-start">
+                    <div data-v-357e30d7="" class="visually-hidden">
+                      <div>
+                        <!--v-if-->
+                      </div>
+                      <div>
+                        <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-warning"><i data-v-eef2791a="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
+                          <div data-v-357e30d7="" class="ps-3 border-start">
+                            <div data-v-357e30d7="" class="visually-hidden">
+                              <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
+                                <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> CVSSv3 score is missing.</span></div>
+                                <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
+                                <div data-v-eef2791a="" class="row mt-2">
+                                  <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div></span>
+                      </div></span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
-              <!--v-if--></span></span>
-            </button>
-            <div data-v-357e30d7="" class="ps-3 border-start">
-              <div data-v-357e30d7="" class="visually-hidden">
-                <div>
-                  <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-danger"><i data-v-eef2791a="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
-                    <div data-v-357e30d7="" class="ps-3 border-start">
-                      <div data-v-357e30d7="" class="visually-hidden">
-                        <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
-                          <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> Flaw contains acknowledgments for public source LKML</span></div>
-                          <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
-                          <div data-v-eef2791a="" class="row mt-2">
-                            <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+            <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
+                <!--v-if--></span></span>
+              </button>
+              <div data-v-357e30d7="" class="ps-3 border-start">
+                <div data-v-357e30d7="" class="visually-hidden">
+                  <div>
+                    <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi bi-plus-square-dotted me-1"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-danger"><i data-v-eef2791a="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
+                      <div data-v-357e30d7="" class="ps-3 border-start">
+                        <div data-v-357e30d7="" class="visually-hidden">
+                          <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
+                            <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> Flaw contains acknowledgments for public source LKML</span></div>
+                            <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
+                            <div data-v-eef2791a="" class="row mt-2">
+                              <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div></span>
+                  </div></span>
+                </div>
               </div>
-            </div>
-            <div>
-              <!--v-if-->
+              <div>
+                <!--v-if-->
+              </div>
             </div>
           </div>
         </div>
+        <!--v-if-->
+        <!--v-if-->
+        <!--v-if-->
+        <!--v-if-->
       </div>
-      <!--v-if-->
-      <!--v-if-->
-      <!--v-if-->
-      <!--v-if-->
     </div>
   </div>
   </div>
@@ -117,11 +118,12 @@ exports[`flawForm > mounts and renders 1`] = `
     </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Impact</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="MODERATE">
+            <option data-v-e273ec44="" selected="" disabled="" value=""></option>
             <option data-v-e273ec44="" value="CRITICAL">CRITICAL</option>
             <option data-v-e273ec44="" value="IMPORTANT">IMPORTANT</option>
             <option data-v-e273ec44="" selected="" value="MODERATE">MODERATE</option>
             <option data-v-e273ec44="" value="LOW">LOW</option>
-            <option data-v-e273ec44="" value=""></option>
+            <option data-v-e273ec44="" value="">NONE</option>
           </select>
           <!--v-if-->
         </div>
@@ -208,6 +210,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </label><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">CVE Source</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="GIT">
+            <!--v-if-->
             <option data-v-e273ec44="" value=""></option>
             <option data-v-e273ec44="" value="ADOBE">ADOBE</option>
             <option data-v-e273ec44="" value="APPLE">APPLE</option>
@@ -326,6 +329,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
       <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Incident State</span>
         <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="APPROVED">
+            <!--v-if-->
             <option data-v-e273ec44="" value=""></option>
             <option data-v-e273ec44="" value="REQUESTED">REQUESTED</option>
             <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
@@ -838,6 +842,7 @@ This module has no trackers associated"><i data-v-0fd8a3c0="" class="bi bi-excla
       </div>
     </section>
   </div>
+  <!--v-if-->
   </div>
   </div>
   <div data-v-bb5d5f91="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

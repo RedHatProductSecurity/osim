@@ -27,7 +27,7 @@ function isDateField(field: string) {
   >
     <template #label>
       <label class="mx-2 mb-0 form-label">
-        History:
+        <h4 class="mb-4">History</h4>
       </label>
     </template>
     <div class="mt-2">

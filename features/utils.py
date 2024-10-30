@@ -136,6 +136,6 @@ def get_osidb_token():
 
 def is_sorted(l, order):
     if order == 'desc':
-        return l == sorted(l, reverse=True)
+        return l == sorted(l, key=lambda x: str.casefold(x), reverse=True)
     else:
-        return l == sorted(l)
+        return l == sorted(l, key=lambda x: str.casefold(x))

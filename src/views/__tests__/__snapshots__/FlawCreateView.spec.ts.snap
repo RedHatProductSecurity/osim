@@ -5,10 +5,11 @@ exports[`flawCreateView > should render 1`] = `
   <form data-v-bb5d5f91="" data-v-764cfa6a="" class="osim-flaw-form">
     <div data-v-bb5d5f91="" class="osim-content container-fluid">
       <div data-v-bb5d5f91="" class="row px-4 my-3">
-        <div data-v-bb5d5f91="" class="row osim-flaw-form-section">
-          <!--v-if-->
-          <!--v-if-->
-          <!--v-if-->
+        <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
+          <div data-v-bb5d5f91="" class="osim-flaw-form-header">
+            <!--v-if-->
+            <!--v-if-->
+          </div>
           <div data-v-bb5d5f91="" id="" class="col-6"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
               <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Title</span>
                 <!--v-if-->
@@ -54,12 +55,13 @@ exports[`flawCreateView > should render 1`] = `
               <!--v-if-->
             </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
               <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Impact</span>
-                <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select is-invalid" value="">
+                <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select is-invalid">
+                    <option data-v-e273ec44="" selected="" disabled="" value=""></option>
                     <option data-v-e273ec44="" value="CRITICAL">CRITICAL</option>
                     <option data-v-e273ec44="" value="IMPORTANT">IMPORTANT</option>
                     <option data-v-e273ec44="" value="MODERATE">MODERATE</option>
                     <option data-v-e273ec44="" value="LOW">LOW</option>
-                    <option data-v-e273ec44="" selected="" value=""></option>
+                    <option data-v-e273ec44="" value="">NONE</option>
                   </select>
                   <div data-v-e273ec44="" class="invalid-tooltip">You must select an impact before saving the Flaw.</div>
                 </div>
@@ -147,6 +149,7 @@ exports[`flawCreateView > should render 1`] = `
             </label><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
               <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">CVE Source</span>
                 <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select is-invalid" value="">
+                    <!--v-if-->
                     <option data-v-e273ec44="" selected="" value=""></option>
                     <option data-v-e273ec44="" value="ADOBE">ADOBE</option>
                     <option data-v-e273ec44="" value="APPLE">APPLE</option>
@@ -247,6 +250,7 @@ exports[`flawCreateView > should render 1`] = `
             <!--v-if--><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
               <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Incident State</span>
                 <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="">
+                    <!--v-if-->
                     <option data-v-e273ec44="" selected="" value=""></option>
                     <option data-v-e273ec44="" value="REQUESTED">REQUESTED</option>
                     <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
@@ -365,6 +369,7 @@ exports[`flawCreateView > should render 1`] = `
         <div data-v-bb5d5f91="" class="osim-flaw-form-section">
           <!--v-if-->
         </div>
+        <!--v-if-->
         <!--v-if-->
       </div>
     </div>

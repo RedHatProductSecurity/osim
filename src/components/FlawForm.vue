@@ -20,7 +20,7 @@ import FlawContributors from '@/components/FlawContributors.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
-import { type ZodFlawType, descriptionRequiredStates, flawSources } from '@/types/zodFlaw';
+import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import type { ZodAffectType } from '@/types/zodAffect';
@@ -60,7 +60,6 @@ const {
   errors,
   flaw,
   flawAcknowledgments,
-  flawImpacts,
   flawIncidentStates,
   flawReferences,
   flawRhCvss3,
@@ -211,23 +210,23 @@ const createdDate = computed(() => {
         class="row px-4 my-3"
         :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
       >
-        <div class="row osim-flaw-form-section">
-          <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
-            <a
-              :href="bugzillaLink"
-              class="osim-bugzilla-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-            </a>
+        <div class="row osim-flaw-form-section pt-0">
+          <div class="osim-flaw-form-header">
+            <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
+              <a
+                :href="bugzillaLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+              </a>
+            </div>
+            <FlawAlertsList
+              :flaw="flaw"
+              class="col-12 osim-alerts-banner"
+              @expandFocusedComponent="expandFocusedComponent"
+            />
           </div>
-          <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
-          <FlawAlertsList
-            :flaw="flaw"
-            class="col-12 osim-alerts-banner"
-            @expandFocusedComponent="expandFocusedComponent"
-          />
           <div :id="flaw.uuid" class="col-6">
             <LabelEditable
               v-model="flaw.title"
@@ -265,8 +264,9 @@ const createdDate = computed(() => {
             <LabelSelect
               v-model="flaw.impact"
               label="Impact"
-              :options="flawImpacts"
+              :options="flawImpactEnum"
               :error="errors.impact"
+              :withBlank="true"
             />
             <CvssCalculator
               :id="flawRhCvss3.uuid"
@@ -450,6 +450,7 @@ const createdDate = computed(() => {
             @loadInternalComments="loadInternalComments"
           />
         </div>
+        <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
@@ -488,8 +489,9 @@ form.osim-flaw-form :deep(*) {
     padding-block: 1.5rem;
   }
 
-  .osim-alerts-banner {
+  .osim-flaw-form-header {
     min-height: 3rem;
+    margin-block: 0.5rem;
   }
 }
 
@@ -599,7 +601,7 @@ div.osim-content {
 .osim-flaw-header-link {
   position: absolute;
   right: 0;
-  top: 2rem;
+  top: 1rem;
   width: auto;
 }
 </style>

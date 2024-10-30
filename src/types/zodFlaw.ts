@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
+import type { ValueOf } from '@/utils/typeHelpers';
 
 import {
   MajorIncidentStateEnum,
@@ -21,16 +22,21 @@ export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEn
 
 export const flawSources = Object.values(Source521EnumWithBlank);
 
-const flawImpactsWeight = {
+const flawImpactsWeight: Record<ValueOf<typeof ImpactEnumWithBlank>, number> = {
   '': 0,
   'LOW': 1,
   'MODERATE': 2,
   'IMPORTANT': 3,
   'CRITICAL': 4,
-};
+} as const;
 
 export const flawImpacts = Object.values(ImpactEnumWithBlank)
   .sort((a, b) => flawImpactsWeight[b] - flawImpactsWeight[a]);
+export const flawImpactEnum = Object.fromEntries(
+  Object.entries(ImpactEnumWithBlank).sort(([, a], [, b]) => flawImpactsWeight[b] - flawImpactsWeight[a])
+    .map(([k, v]) => [k.toUpperCase(), v]), // TODO: Remove once all enums are capitalized
+);
+
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
 export const descriptionRequiredStates = Object.values(RequiresDescriptionEnumWithBlank);
 
@@ -194,7 +200,7 @@ export const ZodFlawSchema = z.object({
   }
 
   if (zodFlaw.classification?.state !== 'REJECTED') {
-    if (!zodFlaw.impact) {
+    if (zodFlaw.impact === null || typeof zodFlaw.impact === 'undefined') {
       raiseIssue('You must select an impact before saving the Flaw.', ['impact']);
     }
 

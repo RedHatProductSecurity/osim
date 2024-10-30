@@ -1,8 +1,6 @@
 from features.pages.base import BasePage
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.relative_locator import locate_with
 
 
 class AdvancedSearchPage(BasePage):
