@@ -4,6 +4,13 @@
 ### Fixed
 * Time format on history dates changed from 12h to 24h (`OSIDB-3645`)
 
+### Added
+* Support multiple user saved searches (`OSIDB-3554`)
+* Allow editing/removing/adding saved user searches (`OSIDB-3555`)
+
+### Changed
+* Extend advance search UI to handle multiple saved searches (`OSIDB-3556`)
+
 ## [2024.11.0]
 ### Added
 * Add multi-flaw tracker filing (`OSIDB-3129`)
