@@ -45,6 +45,8 @@ const savingSearchModal = useModal();
 
 const newSearchName = ref('');
 
+const emptySearch = computed(() => facets.value.length <= 1 && !query.value);
+
 const invalidSearcName = computed(() =>
   newSearchName.value === '' || props.savedSearches.some(search => search.name === newSearchName.value),
 );
@@ -351,7 +353,7 @@ function closeSavingSearchModal() {
         class="btn btn-primary me-2"
         aria-label="Save filters as default"
         type="button"
-        :disabled="isLoading"
+        :disabled="isLoading || emptySearch"
         @click="openSavingSearchModal()"
       >
         Save Search
