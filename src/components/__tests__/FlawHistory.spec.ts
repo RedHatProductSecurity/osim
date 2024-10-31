@@ -23,9 +23,8 @@ describe('flawHistory', () => {
         history: flaw.history,
       },
     });
-    const comp = subject.findComponent(FlawHistory);
-    expect(comp?.exists()).toBe(true);
-    expect(comp?.isVisible()).toBe(false);
+    const historyItems = subject.findAll('.alert-info');
+    expect(historyItems.length).toBe(0);
   });
 
   osimFullFlawTest('is shown if history present on flaw', async ({ flaw }) => {
@@ -36,9 +35,8 @@ describe('flawHistory', () => {
         history: flaw.history,
       },
     });
-    const comp = subject.findComponent(FlawHistory);
-    expect(comp?.exists()).toBe(true);
-    expect(comp?.isVisible()).toBe(true);
+    const historyItems = subject.findAll('.alert-info');
+    expect(historyItems.length).toBe(1);
     expect(subject.html()).toMatchSnapshot();
   });
 

@@ -1,11 +1,11 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawHistory > is shown if history present on flaw 1`] = `
-"<div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
+"<div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
       <h4 data-v-aa9a2cf6="" class="">History</h4>
     </label></button>
   <div data-v-357e30d7="" class="ps-3 border-start">
-    <div data-v-357e30d7="" class=""><span data-v-aa9a2cf6="">Ejemplo</span>
+    <div data-v-357e30d7="" class="">
       <div data-v-aa9a2cf6="" class="mt-2"><label data-v-aa9a2cf6="" class="mx-2 form-label w-100">
           <div data-v-aa9a2cf6="" class="alert alert-info mb-1 p-2"><span data-v-aa9a2cf6="">2024-10-04 15:06 UTC - 1</span>
             <ul data-v-aa9a2cf6="" class="mb-2">
