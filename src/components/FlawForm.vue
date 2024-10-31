@@ -12,28 +12,28 @@ import IssueFieldEmbargo from '@/components/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import CvssSection from '@/components/CvssSection.vue';
+import IssueFieldState from '@/components/IssueFieldState.vue';
+import IssueFieldReferences from '@/components/IssueFieldReferences.vue';
+import IssueFieldAcknowledgments from '@/components/IssueFieldAcknowledgments.vue';
 import FlawComments from '@/components/FlawComments.vue';
 import CvssCalculator from '@/components/CvssCalculator.vue';
 import FlawAlertsList from '@/components/FlawAlertsList.vue';
 import FlawHistory from '@/components/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors.vue';
+import CvssExplainForm from '@/components/CvssExplainForm.vue';
+import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
 import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSources } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
-import type { ZodAffectType } from '@/types/zodAffect';
-
-import CvssExplainForm from './CvssExplainForm.vue';
-import IssueFieldAcknowledgments from './IssueFieldAcknowledgments.vue';
-import IssueFieldReferences from './IssueFieldReferences.vue';
-import IssueFieldState from './IssueFieldState.vue';
-import FlawAffects from './FlawAffects.vue';
+import { allowedSources } from '@/constants/';
 
 const props = defineProps<{
   flaw: ZodFlawType;
   mode: 'create' | 'edit';
+  relatedFlaws: ZodFlawType[];
 }>();
 
 const emit = defineEmits<{
@@ -45,12 +45,9 @@ function onSaveSuccess() {
 }
 
 const {
-  addAffect,
   addBlankAcknowledgment,
   addBlankReference,
   addFlawComment,
-  affectCvssToDelete,
-  affectsToDelete,
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
@@ -74,9 +71,6 @@ const {
   osimLink,
   privateComments,
   publicComments,
-  recoverAffect,
-  refreshAffects,
-  removeAffect,
   rhCvss3String,
   saveAcknowledgments,
   saveReferences,
@@ -132,39 +126,6 @@ const onUnembargoed = (isEmbargoed: boolean) => {
     flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
   }
 };
-
-const allowedSources = [
-  '',
-  'ADOBE',
-  'APPLE',
-  'BUGTRAQ',
-  'CERT',
-  'CUSTOMER',
-  'CVE',
-  'DEBIAN',
-  'DISTROS',
-  'GENTOO',
-  'GIT',
-  'GOOGLE',
-  'HW_VENDOR',
-  'INTERNET',
-  'LKML',
-  'MAGEIA',
-  'MOZILLA',
-  'NVD',
-  'OPENSSL',
-  'ORACLE',
-  'OSSSECURITY',
-  'OSV',
-  'REDHAT',
-  'RESEARCHER',
-  'SECUNIA',
-  'SKO',
-  'SUSE',
-  'TWITTER',
-  'UBUNTU',
-  'UPSTREAM',
-];
 
 const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
@@ -423,16 +384,10 @@ const createdDate = computed(() => {
         <div class="osim-flaw-form-section">
           <FlawAffects
             v-if="mode === 'edit'"
-            :affects="flaw.affects"
-            :affectsToDelete="affectsToDelete"
-            :affectCvssToDelete="affectCvssToDelete"
+            v-model:flaw="flaw"
             :error="errors.affects"
-            :flawId="flaw.uuid"
             :embargoed="flaw.embargoed"
-            @affect:recover="(affect: ZodAffectType) => recoverAffect(affectsToDelete.indexOf(affect))"
-            @affect:remove="(affect: ZodAffectType) => removeAffect(flaw.affects.indexOf(affect))"
-            @affects:refresh="refreshAffects()"
-            @affect:add="addAffect"
+            :relatedFlaws="relatedFlaws"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

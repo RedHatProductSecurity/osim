@@ -1,41 +1,20 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, watch, onUnmounted } from 'vue';
 
-import FlawForm from '@/components/FlawForm.vue';
+import { useFetchFlaw, initializeFlaw } from '@/composables/useFetchFlaw';
 
-import { useToastStore } from '@/stores/ToastStore';
-import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
-import type { ZodFlawType } from '@/types/zodFlaw';
-import { getFlaw } from '@/services/FlawService';
+import FlawForm from '../components/FlawForm.vue';
 
 const props = defineProps<{
   id: string;
 }>();
-const flaw = ref<null | ZodFlawType>(null);
-const errorLoadingFlaw = ref(false);
-const { addToast } = useToastStore();
+const { didFetchFail, fetchFlaw, flaw, relatedFlaws } = useFetchFlaw();
 
-refreshFlaw();
+watch(() => props.id, fetchFlaw, { immediate: true });
 
-watch(() => props.id, refreshFlaw);
+onUnmounted(initializeFlaw);
 
-function refreshFlaw() {
-  errorLoadingFlaw.value = false;
-  getFlaw(props.id)
-    .then((theFlaw) => {
-      flaw.value = Object.assign({}, theFlaw);
-      history.replaceState(null, '', `/flaws/${(theFlaw.cve_id || theFlaw.uuid)}`);
-    })
-    .catch((err) => {
-      errorLoadingFlaw.value = true;
-      flaw.value = null;
-      addToast({
-        title: 'Error loading Flaw',
-        body: getDisplayedOsidbError(err),
-      });
-      console.error('FlawEditView::refreshFlaw() Error loading flaw', err);
-    });
-}
+const isLoading = computed(() => !flaw.value && !didFetchFail);
 </script>
 
 <template>
@@ -44,10 +23,11 @@ function refreshFlaw() {
       v-if="flaw"
       :key="`${flaw.uuid}-${flaw.updated_dt}`"
       v-model:flaw="flaw"
+      :relatedFlaws="relatedFlaws"
       mode="edit"
-      @refresh:flaw="refreshFlaw"
+      @refresh:flaw="fetchFlaw(id)"
     />
-    <div v-if="errorLoadingFlaw">
+    <div v-if="didFetchFail">
       <div class="row justify-content-around">
         <div class="m-5 col-lg-6 col-md-8 col-sm-12">
           <div class="alert alert-warning" role="alert">
@@ -60,7 +40,7 @@ function refreshFlaw() {
         </div>
       </div>
     </div>
-    <div v-if="!flaw && !errorLoadingFlaw" class="d-flex justify-content-center m-5">
+    <div v-if="isLoading" class="d-flex justify-content-center m-5">
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>

@@ -2,13 +2,17 @@
 
 ## [Unreleased]
 ### Added
+* Add multi-flaw tracker filing (`OSIDB-3129`)
 * Added new CVSS versions and issuers on flaw form (`OSIDB-3546`)
-
-### Changed
-* Allow empty impact on flaw (`OSIDB-3596`)
 
 ### Fixed
 * Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
+
+### Changed
+* Allow empty impact on flaw (`OSIDB-3596`)
+* Indicate affect module filters functionality more clearly (`OSIDB-3509`)
+  * Reflects component selections in Tracker Manager
+  * Reworked Affect Offering UI to make filtering functionality clearer
 
 ## [2024.10.0]
 ### Added

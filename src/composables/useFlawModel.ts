@@ -30,16 +30,16 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const flaw = ref<ZodFlawType>(forFlaw);
   const shouldCreateJiraTask = ref(false);
   const cvssScoresModel = useFlawCvssScores(flaw);
-  const flawAffectsModel = useFlawAffectsModel(flaw);
+
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const { saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
     affectsToDelete,
-    didAffectsChange,
     initialAffects,
     removeAffects,
     saveAffects,
-  } = flawAffectsModel;
+    wereAffectsEditedOrAdded,
+  } = useFlawAffectsModel(flaw);
 
   const router = useRouter();
   const committedFlaw = ref<null | ZodFlawType>(null);
@@ -49,7 +49,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
 
   const isInTriageWithoutAffects = computed(
-    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.length === 0,
+    () => flaw.value.classification?.state === 'TRIAGE' && initialAffects.value.length === 0,
   );
 
   function isValid() {
@@ -127,7 +127,8 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       return;
     }
 
-    if (isInTriageWithoutAffects.value && didAffectsChange.value) {
+    // If the flaw is in triage and has no affects, we need to save the affects first
+    if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(saveAffects);
     }
 
@@ -141,7 +142,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
       queue.push(removeAffects);
     }
 
-    if (!isInTriageWithoutAffects.value && didAffectsChange.value) {
+    if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(saveAffects);
     }
 
@@ -184,7 +185,6 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
     updateFlaw,
     afterSaveSuccess,
     ...cvssScoresModel,
-    ...flawAffectsModel,
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };

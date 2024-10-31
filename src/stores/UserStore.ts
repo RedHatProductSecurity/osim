@@ -230,7 +230,7 @@ export const useUserStore = defineStore('UserStore', () => {
             router.push(redirect);
             return;
           } else {
-            console.log('UserStore::isAuthenticated() Refusing to redirect to', redirect);
+            console.debug('UserStore::isAuthenticated() Refusing to redirect to', redirect);
           }
         } catch (e) {
           // do nothing

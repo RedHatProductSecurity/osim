@@ -1,8 +1,8 @@
 import { test } from 'vitest';
 
-import type { ZodAffectType } from '@/types/zodAffect';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import { IssuerEnum } from '@/generated-client';
+import { CVSS_V3 } from '@/constants';
+import type { ZodFlawType, ZodAffectType } from '@/types';
 
 import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 import sampleFlawRequired from './__fixtures__/sampleFlawRequired.json';
@@ -50,7 +50,7 @@ export function mockAffect({ ps_component, ps_module }: { ps_component: string; 
     cvss_scores: [{
       comment: 'hardcoded comment',
       created_dt: null,
-      cvss_version: 'V3',
+      cvss_version: CVSS_V3,
       embargoed: false,
       issuer: IssuerEnum.Rh,
       score: null,

@@ -1,7 +1,7 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
+import type { ZodAffectType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -54,10 +54,43 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
   });
 }
 
-export async function getFlaw(uuid: string): Promise<ZodFlawType> {
+export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlawType[]> {
+  let relatedFlaws: ZodFlawType[] = [];
+
+  if (!affects?.[0]) {
+    return relatedFlaws;
+  }
+
+  const { ps_component: firstAffectPsComponent, ps_module: firstAffectPsModule } = affects[0];
+
+  try {
+    const response = await osidbFetch({
+      method: 'get',
+      url: '/osidb/api/v1/flaws',
+      params: {
+        affects__ps_module: firstAffectPsModule,
+        affects__ps_component: firstAffectPsComponent,
+        order: ['-created_dt'],
+      },
+    });
+    relatedFlaws.push(...response.data.results);
+    for (const affect of affects.slice(1)) {
+      relatedFlaws = relatedFlaws.filter(flaw => flaw.affects.some(
+        matchingAffect =>
+          affect.ps_module === matchingAffect.ps_module && affect.ps_component === matchingAffect.ps_component,
+      ));
+    }
+  } catch (error) {
+    console.error('Problem fetching related flaws:', error);
+  }
+
+  return relatedFlaws;
+}
+
+export async function getFlaw(uuidOrCve: string): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuid}`,
+    url: `/osidb/api/v1/flaws/${uuidOrCve}`,
     params: {
       include_meta_attr: 'bz_id',
       include_history: 'true',
