@@ -20,7 +20,7 @@ describe('flawHistory', () => {
   osimEmptyFlawTest('is not shown if no history present on flaw', async ({ flaw }) => {
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
     const comp = subject.findComponent(FlawHistory);
@@ -33,7 +33,7 @@ describe('flawHistory', () => {
     flaw.history.push(sampleHistoryItem());
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
     const comp = subject.findComponent(FlawHistory);
@@ -47,7 +47,7 @@ describe('flawHistory', () => {
     flaw.history.push(sampleHistoryItem());
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
     const historyListItem = subject.find('li div');

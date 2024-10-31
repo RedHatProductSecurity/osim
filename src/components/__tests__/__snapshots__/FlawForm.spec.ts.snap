@@ -848,7 +848,17 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
       </div>
     </section>
   </div>
-  <!--v-if-->
+  <div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
+        <h4 data-v-aa9a2cf6="" class="">History</h4>
+      </label></button>
+    <div data-v-357e30d7="" class="ps-3 border-start">
+      <div data-v-357e30d7="" class="">
+        <!--v-if-->
+        <div data-v-aa9a2cf6="" class="mt-2"><label data-v-aa9a2cf6="" class="mx-2 form-label w-100"></label></div>
+      </div>
+    </div>
+  </div>
+  <div data-v-aa9a2cf6="" class="pagination-controls gap-1 my-2"><button data-v-aa9a2cf6="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-aa9a2cf6="" class="bi bi-arrow-left fs-5"></i></button><button data-v-aa9a2cf6="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-aa9a2cf6="" class="bi bi-arrow-right fs-5"></i></button></div>
   </div>
   </div>
   <div data-v-bb5d5f91="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">

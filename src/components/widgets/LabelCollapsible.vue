@@ -22,7 +22,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="osim-collapsible-label" v-bind="$attrs">
+  <div class="osim-collapsible-label">
     <button
       :disabled="!isExpandable"
       type="button"
