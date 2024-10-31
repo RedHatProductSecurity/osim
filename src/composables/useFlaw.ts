@@ -11,10 +11,10 @@ function resetFlaw() {
 }
 
 export function useFlaw() {
-  return { flaw, relatedFlaws, blankFlaw, resetFlaw };
+  return { flaw, relatedFlaws, resetFlaw };
 }
 
-function blankFlaw(): ZodFlawType {
+export function blankFlaw(): ZodFlawType {
   return {
     affects: [],
     classification: {

@@ -65,13 +65,24 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
   const { ps_component: firstAffectPsComponent, ps_module: firstAffectPsModule } = affects[0];
 
   try {
+    const include_fields = [
+      'cve_id',
+      'uuid',
+      'affects',
+      'created_dt',
+      'updated_dt',
+    ].join(',');
+
+
     const response = await osidbFetch({
       method: 'get',
       url: '/osidb/api/v1/flaws',
       params: {
+        include_fields,
         affects__ps_module: firstAffectPsModule,
         affects__ps_component: firstAffectPsComponent,
         order: ['-created_dt'],
+        limit: 10,
       },
     });
     relatedFlaws.push(...response.data.results);

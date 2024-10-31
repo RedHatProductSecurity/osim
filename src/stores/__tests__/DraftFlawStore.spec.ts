@@ -3,8 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { blankFlaw } from '@/composables/useFlaw';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
-
-import { useDraftFlawStore } from '../DraftFlawStore';
+import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 
 describe('draftFlawStore', () => {
   beforeEach(() => {

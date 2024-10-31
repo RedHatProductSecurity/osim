@@ -286,7 +286,8 @@ export function resetInitialAffects() {
 
 function areAffectsEqual(affect: ZodAffectType, otherAffect?: ZodAffectType, shouldExcludeCvss = false) {
   if (!otherAffect) return false;
-  const fieldsToExclude = shouldExcludeCvss ? ['trackers', 'cvss_scores'] : ['trackers'];
+  const fieldsToExclude = ['trackers', 'history'];
+  if (shouldExcludeCvss) fieldsToExclude.push('cvss_scores');
   const excludeFields = pickBy((_, key) => !fieldsToExclude.includes(key));
   return equals(excludeFields(affect), excludeFields(otherAffect));
 }

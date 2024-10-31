@@ -24,11 +24,12 @@ type UnrefUseTrackersReturnType = UnwrapNestedRefs<UseTrackersReturnType>;
 
 type MultiFlawTrackers = Record<string, UnrefUseTrackersReturnType> | Record<string, UseTrackersReturnType>;
 
+const isLoadingTrackers = ref(false);
+
 function useState(flaw: ZodFlawType) {
   const multiFlawTrackers = ref<MultiFlawTrackers>({});
   const filterString = ref('');
   const relatedFlawModuleComponents = ref<ModuleComponent[]>([]);
-  const isLoadingTrackers = ref(false);
   const shouldFileAsMultiFlaw = ref(true);
   const selectedRelatedFlaws = ref<ZodFlawType[]>([flaw]);
 
@@ -44,15 +45,15 @@ function useState(flaw: ZodFlawType) {
 
 function useComputedState(
   multiFlawTrackers: Ref<MultiFlawTrackers>,
-  relatedFlaws: Ref<ZodFlawType[]>,
+  addedRelatedFlaws: Ref<ZodFlawType[]>,
   specificAffectsToTrack: ZodAffectType[],
 ) {
-  const flawUuids = computed(() => relatedFlaws.value.map(flaw => flaw.uuid));
+  const flawUuids = computed(() => addedRelatedFlaws.value.map(flaw => flaw.uuid));
 
   const shouldIncludeAffect = (affect: ZodAffectType) => affect.uuid
     && (specificAffectsToTrack.length === 0 || isAffectIn(affect, specificAffectsToTrack));
 
-  const affectsBySelectedFlawId = computed(() => relatedFlaws.value.reduce(
+  const affectsBySelectedFlawId = computed(() => addedRelatedFlaws.value.reduce(
     (affectsBook: Record<string, ZodAffectType[]>, flaw) => {
       affectsBook[flaw.cve_id ?? flaw.uuid] = flaw.affects.filter(shouldIncludeAffect);
       return affectsBook;
@@ -62,7 +63,7 @@ function useComputedState(
     () => Object.entries(multiFlawTrackers.value).some(([, { isFilingTrackers }]) => isFilingTrackers),
   );
 
-  const allRelatedAffects = computed((): ZodAffectType[] => relatedFlaws.value.flatMap(
+  const allRelatedAffects = computed((): ZodAffectType[] => addedRelatedFlaws.value.flatMap(
     flaw => flaw.affects.filter(shouldIncludeAffect),
   ));
 
@@ -142,19 +143,32 @@ export function useRelatedFlawTrackers(
     }
   });
 
-  // Logic for isLoadingTrackers could be moved to useSingleFlawTrackers as an improvement
   watch(affectsBySelectedFlawId, (newRelatedAffects: Record<string, ZodAffectType[]>) => {
+    updateMultiFlawTrackers(newRelatedAffects, false);
+  }, { immediate: true });
+
+  watch(relatedFlaws, () => {
+    selectedRelatedFlaws.value.forEach((selectedFlaw, index) => {
+      const relatedIndex = relatedFlaws.value.findIndex(({ uuid }) => uuid === selectedFlaw.uuid);
+      if (relatedIndex !== -1) {
+        selectedRelatedFlaws.value[index].affects = relatedFlaws.value[relatedIndex].affects;
+      }
+    });
+    updateMultiFlawTrackers(affectsBySelectedFlawId.value, true);
+  }, { deep: true });
+
+  function updateMultiFlawTrackers(affectsById: Record<string, ZodAffectType[]>, shouldOverwrite = false) {
     isLoadingTrackers.value = true;
     trackerFetchProgress = getTrackersForFlaws({ flaw_uuids: flawUuids.value })
       .then((response: any) => {
         relatedFlawModuleComponents.value = response.modules_components;
 
-        Object.keys(newRelatedAffects).forEach((flawCveOrId) => {
+        Object.keys(affectsById).forEach((flawCveOrId) => {
           // Preserve existing selections
-          if (!multiFlawTrackers.value[flawCveOrId]) {
+          if (!multiFlawTrackers.value[flawCveOrId] || shouldOverwrite) {
             multiFlawTrackers.value[flawCveOrId] = useSingleFlawTrackers(
               flawCveOrId,
-              ref(newRelatedAffects[flawCveOrId]),
+              ref(affectsById[flawCveOrId]),
               relatedFlawModuleComponents,
             );
           }
@@ -162,7 +176,8 @@ export function useRelatedFlawTrackers(
       })
       .catch(console.error)
       .finally(() => isLoadingTrackers.value = false);
-  }, { immediate: true });
+    return trackerFetchProgress;
+  }
 
   async function fileTrackers() {
     if (isFilingTrackers.value) {
@@ -227,6 +242,8 @@ export function useRelatedFlawTrackers(
   function addRelatedFlaw(flawId: string) {
     const flaw = relatedFlaws.value.find(flaw => flaw.uuid === flawId || flaw.cve_id === flawId);
     if (flaw === undefined) {
+      // Handles data fetching for filing of unrelated flaws
+      // and flaws that are new, related, but not yet fetched
       getFlaw(flawId)
         .then((fetchedFlaw) => {
           selectedRelatedFlaws.value.push(fetchedFlaw);
@@ -238,10 +255,26 @@ export function useRelatedFlawTrackers(
     }
   }
 
+  async function refreshRelatedFlaws() {
+    isLoadingTrackers.value = true;
+    try {
+      for (const flaw of selectedRelatedFlaws.value) {
+        const fetchedFlaw = await getFlaw(flaw.uuid);
+        const index = relatedFlaws.value.findIndex(({ uuid }) => uuid === flaw.uuid);
+        if (index !== -1) {
+          relatedFlaws.value[index].affects = fetchedFlaw.affects;
+        }
+      }
+    } finally {
+      isLoadingTrackers.value = false;
+    }
+  }
+
   return {
     fileTrackers,
     synchronizeTrackerSelections,
     addRelatedFlaw,
+    refreshRelatedFlaws,
     filterString,
     isFilingTrackers,
     trackersToFile,
