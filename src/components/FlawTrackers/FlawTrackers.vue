@@ -24,7 +24,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'affect:track-selected': [value: ZodAffectType[]];
   'affect:track-single': [value: ZodAffectType];
-  'affects:refresh': [];
+  'affects-trackers:refresh': [];
 }>();
 
 const settingsStore = useSettingsStore();
