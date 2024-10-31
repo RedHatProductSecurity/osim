@@ -16,7 +16,8 @@ const props = defineProps<{
   editing?: boolean;
   error?: null | string;
   includesTime?: boolean;
-  modelValue: string | undefined;
+  modelValue: null | string | undefined;
+  placeholder?: string;
   readOnly?: boolean;
 }>();
 
@@ -179,7 +180,7 @@ function isValidDate(d: Date | string): boolean {
 
 function osimFormatDate(date?: null | string): string {
   if (date == null) {
-    return '[No date selected]';
+    return props.placeholder ?? '[No date selected]';
   }
 
   const formattedDate = formatDate(date, props.includesTime);
