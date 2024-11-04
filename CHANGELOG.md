@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.11.0]
 ### Added
 * Add multi-flaw tracker filing (`OSIDB-3129`)
 * Added new CVSS versions and issuers on flaw form (`OSIDB-3546`)
@@ -337,7 +337,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.10.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...HEAD
+[2024.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.10.0...v2024.11.0
 [2024.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.2...v2024.10.0
 [2024.9.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.1...v2024.9.2
 [2024.9.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.0...v2024.9.1
