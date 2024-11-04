@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Added pagination to history section (`OSIDB-3563`)
+
 ### Fixed
 * Time format on history dates changed from 12h to 24h (`OSIDB-3645`)
 
