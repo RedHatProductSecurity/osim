@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Time format on history dates changed from 12h to 24h (`OSIDB-3645`)
+
 ## [2024.11.0]
 ### Added
 * Add multi-flaw tracker filing (`OSIDB-3129`)
