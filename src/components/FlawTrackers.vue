@@ -310,7 +310,7 @@ const {
           v-if="showTrackerManager"
           :relatedFlaws="relatedFlaws"
           :flaw="flaw"
-          @affects-trackers:refresh="emit('affects:refresh')"
+          @affects-trackers:refresh="emit('affects-trackers:refresh')"
         />
       </div>
     </div>
