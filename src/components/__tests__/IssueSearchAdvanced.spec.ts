@@ -1,8 +1,12 @@
 import { type ExtractPublicPropTypes } from 'vue';
 
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
+import { createTestingPinia } from '@pinia/testing';
+import { number } from 'zod';
+
+import { useSearchStore } from '@/stores/SearchStore';
 
 describe('issueSearchAdvanced', () => {
   let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
@@ -13,7 +17,20 @@ describe('issueSearchAdvanced', () => {
       query: {},
     }),
     useRouter: vi.fn().mockReturnValue({
-      replace: vi.fn(),
+      replace: vi.fn().mockResolvedValue(''),
+    }),
+  }));
+
+  vi.mock('@/stores/SearchStore', () => ({
+    useSearchStore: vi.fn().mockReturnValue({
+      savedSearches: [
+        {
+          name: 'name',
+          searchFilters: { affects__ps_component: 'test' },
+          queryFilter: 'django query',
+          isDefault: false,
+        },
+      ],
     }),
   }));
 
@@ -23,8 +40,12 @@ describe('issueSearchAdvanced', () => {
         isLoading: false,
         ...props,
       },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+      loadedSearch: number,
+      selectSavedSearch: vi.fn(),
     });
-    await flushPromises();
     return wrapper;
   };
 
@@ -97,13 +118,84 @@ describe('issueSearchAdvanced', () => {
     expect(router.replace).toHaveBeenNthCalledWith(1, { query: { cve_description: 'nonempty' } });
   });
 
-  it('should save search as default', async () => {
+  it('shouldn\'t display empty saved searches', async () => {
+    vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
+      savedSearches: [],
+    });
     const wrapper = await mountIssueSearchAdvanced();
+    const savedSearchesContainer = wrapper.findAll('details')[1];
+    const savedSearches = savedSearchesContainer.findAll('div')[0].findAll('.btn');
+    expect(savedSearches.length).toBe(0);
+  });
 
-    await wrapper.find('select').setValue('cve_description');
-    await wrapper.find('.input-group input').setValue('some value');
-    await wrapper.find('button[aria-label="Save filters as default"]').trigger('click');
+  it('should display saved searches', async () => {
+    vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
+      savedSearches: [
+        {
+          name: 'name',
+          searchFilters: { affects__ps_component: 'test' },
+          queryFilter: 'django query',
+          isDefault: false,
+        },
+      ],
+    });
+    const wrapper = await mountIssueSearchAdvanced();
+    const savedSearchesContainer = wrapper.findAll('details')[1];
+    const savedSearches = savedSearchesContainer.findAll('div')[0].findAll('.btn');
+    expect(savedSearches[0].text()).toBe('name');
+  });
 
-    expect(wrapper.emitted()).toHaveProperty('filter:save');
+  it('should save new search', async () => {
+    vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
+      savedSearches: [],
+      saveSearch: vi.fn(),
+    });
+    const wrapper = await mountIssueSearchAdvanced();
+    await wrapper.find('textarea').setValue('djangoql query');
+    await wrapper.find('[aria-label="Save search"]').trigger('click');
+    await wrapper.find('.modal-body > input').setValue('name-1');
+
+    const saveBtn = wrapper.find('.modal-footer > .btn-primary');
+    await saveBtn.trigger('click');
+
+    const { saveSearch } = useSearchStore();
+    expect(saveSearch).toHaveBeenCalledTimes(1);
+    expect(saveSearch).toHaveBeenCalledWith('name-1', {}, 'djangoql query');
+  });
+
+  it('should allow selecting saved searches', async () => {
+    vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
+      savedSearches: [
+        {
+          name: 'name',
+          searchFilters: { affects__ps_component: 'test' },
+          queryFilter: 'django query',
+          isDefault: false,
+        },
+      ],
+    });
+    const wrapper = await mountIssueSearchAdvanced();
+    const btns = wrapper.findAll('details > div > .btn');
+    await btns[0].trigger('click');
+    expect(btns[0].classes().toString()).toContain('btn-secondary');
+  });
+
+  it('should remove saved searches', async () => {
+    vi.mocked(useSearchStore, { partial: true }).mockReturnValue({
+      savedSearches: [
+        {
+          name: 'name',
+          searchFilters: { affects__ps_component: 'test' },
+          queryFilter: 'django query',
+          isDefault: false,
+        },
+      ],
+    });
+    const wrapper = await mountIssueSearchAdvanced();
+    let btns = wrapper.findAll('details > div > .btn');
+    await btns[0].trigger('click');
+    await wrapper.find('[aria-label="Delete search"]').trigger('click');
+    btns = wrapper.findAll('details > div > .btn');
+    expect(btns[0].text()).not.toBe(('name'));
   });
 });

@@ -16,9 +16,7 @@ vi.mock('@vueuse/core', () => ({
   useLocalStorage: vi.fn((key: string, defaults) => {
     return {
       SearchStore: {
-        value: defaults || {
-          searchFilters: { test: 'test' },
-        },
+        value: defaults,
       },
     }[key];
   }),
@@ -33,18 +31,40 @@ describe('settingsStore', () => {
   });
 
   it('initializes', () => {
-    expect(searchStore.searchFilters).toEqual({});
+    expect(searchStore.savedSearches).toEqual([]);
   });
 
-  it('saveFilter', () => {
-    searchStore.saveFilter({ component: 'test' }, 'test');
+  it('saveSearch', () => {
+    searchStore.saveSearch('name', { component: 'test' }, 'test');
 
-    expect(searchStore.searchFilters).toEqual({ component: 'test' });
-    expect(searchStore.queryFilter).toBe('test');
+    expect(searchStore.savedSearches[0].name).toEqual('name');
+    expect(searchStore.savedSearches[0].searchFilters).toEqual({ component: 'test' });
+    expect(searchStore.savedSearches[0].queryFilter).toBe('test');
   });
 
-  it('resetFilter', () => {
-    searchStore.resetFilter();
-    expect(searchStore.searchFilters).toEqual({});
+  it('removeSearch', () => {
+    searchStore.removeSearch(0);
+    expect(searchStore.savedSearches).toEqual([]);
+  });
+
+  it('setDefaultSearch', () => {
+    searchStore.saveSearch('name', { component: 'test' }, 'test');
+    searchStore.setDefaultSearch(0);
+    expect(searchStore.savedSearches[0].isDefault).toBeTruthy();
+  });
+
+  it('swap DefaultSearch', () => {
+    searchStore.saveSearch('name1', { component: 'test1' }, 'test1');
+    searchStore.setDefaultSearch(0);
+    searchStore.saveSearch('name2', { component: 'test2' }, 'test2');
+    searchStore.setDefaultSearch(1);
+    expect(!searchStore.savedSearches[0].isDefault && searchStore.savedSearches[1].isDefault).toBeTruthy();
+  });
+
+  it('resetSearches', () => {
+    searchStore.saveSearch('name1', { component: 'test1' }, 'test1');
+    searchStore.saveSearch('name2', { component: 'test2' }, 'test2');
+    searchStore.resetSearches();
+    expect(searchStore.savedSearches).toEqual([]);
   });
 });

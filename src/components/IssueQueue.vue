@@ -7,23 +7,16 @@ import IssueQueueItem from '@/components/IssueQueueItem.vue';
 import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
 
 import { useUserStore } from '@/stores/UserStore';
-import { useSearchStore } from '@/stores/SearchStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
-import { useToastStore } from '@/stores/ToastStore';
 
 const props = defineProps<{
-  defaultFilters?: Record<string, string>;
   isFinalPageFetched: boolean;
   isLoading: boolean;
   issues: any[];
-  showFilter?: boolean;
   total: number;
 }>();
-const isDefaultFilterSelected = defineModel<boolean>('isDefaultFilterSelected', { default: true });
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 const userStore = useUserStore();
-const searchStore = useSearchStore();
-const { addToast } = useToastStore();
 
 type FilteredIssue = {
   issue: any;
@@ -150,37 +143,6 @@ function emitLoadMore() {
 watch(params, () => {
   emit('flaws:fetch', params);
 });
-
-const nameForOption = (fieldName: string) => {
-  const mappings: Record<string, string> = {
-    uuid: 'UUID',
-    cvss_scores__score: 'CVSS Score',
-    cvss_scores__vector: 'CVSS Vector',
-    affects__ps_module: 'Affected Module',
-    affects__ps_component: 'Affected Component',
-    affects__trackers__ps_update_stream: 'Affect Update Stream',
-    acknowledgments__name: 'Acknowledgment Author',
-    affects__trackers__errata__advisory_name: 'Errata Advisory Name',
-    affects__trackers__external_system_id: 'Tracker External System ID',
-    workflow_state: 'Flaw State',
-    cwe_id: 'CWE ID',
-    cve_id: 'CVE ID',
-    source: 'CVE Source',
-  };
-  let name =
-    mappings[fieldName]
-    || fieldName.replace(/__[a-z]/g, label => `: ${label.charAt(2).toUpperCase()}`);
-  name = name.replace(/_/g, ' ');
-  return name.charAt(0).toUpperCase() + name.slice(1);
-};
-
-function clearDefaultFilter() {
-  searchStore.resetFilter();
-  addToast({
-    title: 'Default Filter',
-    body: 'User\'s default filter cleared',
-  });
-}
 </script>
 
 <template>
@@ -188,12 +150,6 @@ function clearDefaultFilter() {
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
-      <LabelCheckbox
-        v-if="showFilter"
-        v-model="isDefaultFilterSelected"
-        label="Default Filter"
-        class="d-inline-block"
-      />
       <div v-if="isLoading" class="d-inline-block float-end">
         <span
           class="spinner-border spinner-border-sm"
@@ -208,23 +164,6 @@ function clearDefaultFilter() {
         class="float-end"
         :class="{'text-secondary': isLoading}"
       > Loaded {{ issues.length }} of {{ total }}</span>
-    </div>
-    <div v-if="showFilter" class="d-flex gap-2">
-      <details class="osim-default-filter">
-        <summary>Default Filters
-          <button class="btn btn-sm btn-primary lh-0 py-0" @click="clearDefaultFilter()">
-            clear
-          </button></summary>
-        <div class="my-2">
-          <span
-            v-for="(value, key) in defaultFilters"
-            :key="key"
-            class="badge bg-secondary me-1"
-          >
-            {{ nameForOption(key) }} : {{ value }}
-          </span>
-        </div>
-      </details>
     </div>
     <div ref="tableContainerEl" class="osim-incident-list">
       <table class="table align-middle" :class="{ 'osim-table-loading': isLoading }">

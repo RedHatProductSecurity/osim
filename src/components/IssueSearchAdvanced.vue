@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, toRaw, watch } from 'vue';
 
-import { sort } from 'ramda';
+import { equals, sort } from 'ramda';
 
 import Modal from '@/components/widgets/Modal.vue';
 import QueryFilterGuide from '@/components/QueryFilterGuide.vue';
@@ -13,13 +13,21 @@ import { useSearchParams } from '@/composables/useSearchParams';
 import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
 import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
+import { useSearchStore } from '@/stores/SearchStore';
+import { useToastStore } from '@/stores/ToastStore';
 
 const props = defineProps<{
   isLoading: boolean;
 }>();
-const emit = defineEmits(['filter:save']);
+
+const { addToast } = useToastStore();
+const draftQuery = ref('');
+const draftFields = ref<Record<string, string>>();
+
+const searchStore = useSearchStore();
 const {
   facets,
+  loadAdvancedSearch,
   orderField,
   orderMode,
   query,
@@ -27,7 +35,35 @@ const {
   submitAdvancedSearch,
   toggleSortOrder,
 } = useSearchParams();
-const { closeModal, isModalOpen, openModal } = useModal();
+
+const queryGuideModal = useModal();
+const savingSearchModal = useModal();
+
+const loadedSearchIndex = ref<number>(-1);
+const newSearchName = ref('');
+
+const emptySearch = computed(() => facets.value.length <= 1 && !query.value);
+
+const changedSlot = computed(() =>
+  loadedSearchIndex.value >= 0
+  && (!equals(toRaw(searchStore.savedSearches[loadedSearchIndex.value].searchFilters), facetsParsed.value)
+  || !equals(searchStore.savedSearches[loadedSearchIndex.value].queryFilter, query.value)
+  ),
+);
+
+const facetsParsed = computed(() => facets.value.reduce(
+  (fields, { field, value }) => {
+    if (field && (value || allowedEmptyFieldMapping[field])) {
+      fields[field] = value;
+    }
+    return fields;
+  },
+  {} as Record<string, string>,
+));
+
+const invalidSearcName = computed(() =>
+  newSearchName.value === '' || searchStore.savedSearches.some(search => search.name === newSearchName.value),
+);
 
 const queryFilterVisible = ref(true);
 
@@ -95,6 +131,7 @@ const optionsFor = (field: string) =>
   })[field] || null;
 
 const shouldShowAdvanced = ref(true);
+const showSavedSearches = ref(true);
 
 watch(queryFilterVisible, () => {
   if (!queryFilterVisible.value) {
@@ -106,6 +143,68 @@ function handleToggleOrder() {
   toggleSortOrder();
   submitAdvancedSearch();
 }
+function openSavingSearchModal() {
+  savingSearchModal.openModal();
+}
+
+function closeSavingSearchModal() {
+  savingSearchModal.closeModal();
+  newSearchName.value = '';
+}
+
+function selectSavedSearch(index: number) {
+  if (loadedSearchIndex.value === index) {
+    deselectSavedSearch();
+    return;
+  }
+
+  if (loadedSearchIndex.value === -1) {
+    draftQuery.value = query.value;
+    draftFields.value = facetsParsed.value;
+  }
+
+  const savedQuery = searchStore.savedSearches.at(index)?.queryFilter || '';
+  const savedFields = searchStore.savedSearches.at(index)?.searchFilters || {};
+  loadAdvancedSearch(savedQuery, savedFields);
+  loadedSearchIndex.value = index;
+}
+
+function deselectSavedSearch() {
+  loadAdvancedSearch(draftQuery.value, draftFields.value || {});
+  draftQuery.value = '';
+  draftFields.value = {};
+  loadedSearchIndex.value = -1;
+}
+
+function saveSearch() {
+  searchStore.saveSearch(newSearchName.value, facetsParsed.value, query.value);
+  loadedSearchIndex.value = searchStore.savedSearches.length - 1;
+  addToast({
+    title: 'Search saved',
+    body: 'User\'s search saved ' + (searchStore.savedSearches.length),
+  });
+  closeSavingSearchModal();
+}
+
+function updateSavedSearch() {
+  searchStore.savedSearches[loadedSearchIndex.value].queryFilter = query.value;
+  searchStore.savedSearches[loadedSearchIndex.value].searchFilters = facetsParsed.value;
+  loadAdvancedSearch(query.value, facetsParsed.value);
+  addToast({
+    title: 'Saved search updated',
+    body: 'User\'s search saved ' + (loadedSearchIndex.value + 1) + ' updated',
+  });
+}
+
+function deleteSavedSearch() {
+  searchStore.savedSearches.splice(loadedSearchIndex.value, 1);
+  loadedSearchIndex.value = searchStore.savedSearches.length > 0
+    ? loadedSearchIndex.value > 0
+      ? loadedSearchIndex.value - 1
+      : loadedSearchIndex.value + 1
+    : -1;
+  deselectSavedSearch();
+}
 </script>
 
 <template>
@@ -115,11 +214,11 @@ function handleToggleOrder() {
       <div v-show="queryFilterVisible" class="input-group my-1">
         <div type="button" class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
-          <button class="btn btn-sm text-white" type="button" @click="openModal()">
+          <button class="btn btn-sm text-white" type="button" @click="queryGuideModal.openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />
           </button>
         </div>
-        <DjangoQLInput v-model="query" @submit="submitAdvancedSearch()" />
+        <DjangoQLInput v-model="query" style="height: 38px;" @submit="submitAdvancedSearch()" />
         <button
           :disabled="!query"
           class="btn btn-sm btn-secondary rounded-0 py-0"
@@ -200,20 +299,12 @@ function handleToggleOrder() {
         <button
           class="btn btn-primary me-2"
           type="submit"
+          style="width: 23ch;"
           :disabled="props.isLoading"
           aria-label="Advance search button"
         >
           <div v-if="props.isLoading" class="spinner-border spinner-border-sm"></div>
           Search
-        </button>
-        <button
-          class="btn btn-primary me-2"
-          aria-label="Save filters as default"
-          type="button"
-          :disabled="isLoading"
-          @click="emit('filter:save')"
-        >
-          Save as Default
         </button>
         <button
           v-if="!queryFilterVisible"
@@ -255,14 +346,110 @@ function handleToggleOrder() {
       </div>
     </form>
   </details>
-  <Modal :show="isModalOpen" style="max-width: 75%;" @close="closeModal()">
+  <details
+    :open="showSavedSearches"
+    class="osim-advanced-search-container container-fluid"
+  >
+    <summary @click="showSavedSearches === true"> Saved Searches</summary>
+    <div class="container-fluid mt-2">
+      <template v-for="(savedSearch, index) in searchStore.savedSearches" :key="index">
+        <button
+          :title="'Query: ' + savedSearch.queryFilter + '\nFields: '
+            + Object.entries(savedSearch.searchFilters).map(([key, value]) => `${key}: ${value}`).join(', ')"
+          class="btn me-2 mt-1"
+          :class="index === loadedSearchIndex ? 'btn-secondary' : 'border'"
+          type="button"
+          @click="selectSavedSearch(index)"
+        >
+          {{ savedSearch.name }}
+          <i
+            class="bi ms-2"
+            :class="savedSearch.isDefault ? 'bi-star-fill' : 'bi-star'"
+            @click.stop="searchStore.setDefaultSearch(index)"
+          />
+        </button>
+      </template>
+    </div>
+    <span v-if="searchStore.savedSearches.length === 0" class="d-inline-block m-2">No saved searches</span>
+    <Modal
+      :show="savingSearchModal.isModalOpen.value"
+      @close="closeSavingSearchModal()"
+    >
+      <template #header>
+        <h1 class="fs-5">Save New Search</h1>
+        <button
+          type="button"
+          class="btn-close ms-auto"
+          aria-label="Close"
+          @click="closeSavingSearchModal()"
+        />
+      </template>
+      <template #body>
+        <input
+          ref="textArea"
+          v-model="newSearchName"
+          class="form-control"
+          placeholder="Search Name"
+        />
+      </template>
+      <template #footer>
+        <button
+          type="button"
+          class="btn btn-secondary m-0"
+          @click="closeSavingSearchModal()"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="invalidSearcName"
+          @click="saveSearch()"
+        >
+          Save
+        </button>
+      </template>
+    </Modal>
+    <div class="d-flex mt-2">
+      <button
+        class="btn btn-primary me-2"
+        aria-label="Save search"
+        type="button"
+        :disabled="isLoading || emptySearch"
+        @click="openSavingSearchModal()"
+      >
+        Save Search
+      </button>
+      <button
+        v-if="loadedSearchIndex !== -1 && changedSlot"
+        class="btn btn-secondary me-2"
+        aria-label="Update search"
+        type="button"
+        :disabled="isLoading"
+        @click="updateSavedSearch"
+      >
+        Update Search
+      </button>
+      <button
+        v-if="loadedSearchIndex !== -1"
+        class="btn btn-secondary me-2"
+        aria-label="Delete search"
+        type="button"
+        :disabled="isLoading"
+        @click="deleteSavedSearch"
+      >
+        Delete Search
+      </button>
+    </div>
+  </details>
+  <Modal :show="queryGuideModal.isModalOpen.value" style="max-width: 75%;" @close="queryGuideModal.closeModal()">
     <template #header>
       <h1>Query Filter Guide</h1>
       <button
         type="button"
         class="btn-close ms-auto"
         aria-label="Close"
-        @click="closeModal()"
+        @click="queryGuideModal.closeModal()"
       />
     </template>
     <template #body>
@@ -272,7 +459,7 @@ function handleToggleOrder() {
       <button
         type="button"
         class="btn btn-secondary m-0"
-        @click="closeModal()"
+        @click="queryGuideModal.closeModal()"
       >
         Close
       </button>
@@ -333,6 +520,14 @@ function handleToggleOrder() {
 
   .search-btn {
     width: 241.5px;
+  }
+}
+
+details {
+  user-select: none;
+
+  summary {
+    width: fit-content;
   }
 }
 </style>

@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
 
-type Facet = {
+export type Facet = {
   field: string;
   value: string;
 };
@@ -153,6 +153,19 @@ export function useSearchParams() {
     });
   }
 
+  function loadAdvancedSearch(query: string, params: Record<string, string>) {
+    params = query
+      ? { ...params, query: query }
+      : params;
+    router.replace({
+      query: {
+        ...params,
+      },
+    }).then(() => {
+      facets.value = populateFacets();
+    });
+  }
+
   return {
     facets,
     query,
@@ -166,6 +179,7 @@ export function useSearchParams() {
     populateFacets,
     getSearchParams,
     submitAdvancedSearch,
+    loadAdvancedSearch,
     submitQuickSearch,
   };
 }

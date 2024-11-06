@@ -9,8 +9,9 @@ import IssueQueue from '../IssueQueue.vue';
 import LabelCheckbox from '../widgets/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
-  useLocalStorage: vi.fn((key: string) => {
+  useLocalStorage: vi.fn((key: string, defaults) => {
     return {
+      SearchStore: { value: defaults },
       UserStore: {
         value: {
           // Set your fake user data here
@@ -260,43 +261,6 @@ describe('issueQueue', () => {
     expect(filterEl.exists()).toBeTruthy();
     const spinner = filterEl.find('div.float-end span.spinner-border');
     expect(spinner.exists()).toBeTruthy();
-  });
-
-  it('shouldn\'t render useDefault filter button', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: mockData,
-        isLoading: false,
-        isFinalPageFetched: false,
-        showFilter: false,
-        total: 10,
-      },
-    });
-    const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];
-    expect(defaultFilterCheckbox).toBeFalsy();
-    const defaultFilterEL = wrapper.find('details.osim-default-filter');
-    expect(defaultFilterEL.exists()).toBeFalsy();
-  });
-
-  it('should render useDefault filter button', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: mockData,
-        isLoading: false,
-        isFinalPageFetched: false,
-        showFilter: true,
-        defaultFilters: { affects__ps_component: 'test' },
-        total: 10,
-      },
-    });
-    const defaultFilterCheckbox = wrapper.findAllComponents(LabelCheckbox)[2];
-    expect(defaultFilterCheckbox.exists()).toBeTruthy();
-    const defaultFilterEL = wrapper.find('details.osim-default-filter');
-    expect(defaultFilterEL.exists()).toBeTruthy();
-    await defaultFilterEL.trigger('click');
-    expect(defaultFilterEL.findAll('span.badge')).toHaveLength(1);
-    const filterOptionEL = defaultFilterEL.find('span.badge');
-    expect(filterOptionEL.text()).toBe('Affected Component : test');
   });
 
   it('should render create_dt in UTC format', async () => {

@@ -3,6 +3,6 @@
 exports[`flawSearchView > should render 1`] = `
 "<main class="mt-3">
   <issue-search-advanced-stub isloading="false"></issue-search-advanced-stub>
-  <issue-queue-stub issues="" total="1337" isfinalpagefetched="false" isloading="false" showfilter="false" isdefaultfilterselected="true"></issue-queue-stub>
+  <issue-queue-stub issues="" total="1337" isfinalpagefetched="false" isloading="false"></issue-queue-stub>
 </main>"
 `;

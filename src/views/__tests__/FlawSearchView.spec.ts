@@ -2,25 +2,18 @@ import { ref, type ComponentPublicInstance, type Ref } from 'vue';
 
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-import { createTestingPinia } from '@pinia/testing';
 
 import { useSearchParams } from '@/composables/useSearchParams';
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 
 import FlawSearchView from '@/views/FlawSearchView.vue';
-import { useSearchStore } from '@/stores/SearchStore';
-import { useToastStore } from '@/stores/ToastStore';
 
 const mountFlawSearchView = (): VueWrapper<ComponentPublicInstance
   & Partial<{
     fetchMoreFlaws: () => void;
     params: Record<string, string>;
-    saveFilter: () => void;
     setTableFilters: (filters: Ref<Record<string, string>>) => void;
   }>> => mount(FlawSearchView, {
-  global: {
-    plugins: [createTestingPinia()],
-  },
   shallow: true,
 });
 
@@ -110,24 +103,5 @@ describe('flawSearchView', () => {
     await flushPromises();
 
     expect(loadMoreFlaws).toHaveBeenCalledTimes(1);
-  });
-
-  it('should save filters to store', async () => {
-    vi.mocked(useSearchParams, {
-      partial: true,
-    }).mockReturnValue({
-      getSearchParams: vi.fn().mockReturnValue({}),
-      facets: ref([{ field: 'cve_id', value: 'CVE-2024-1234' }]),
-      query: ref('django query'),
-    });
-    const wrapper = mountFlawSearchView();
-    const searchStore = useSearchStore();
-    const toastStore = useToastStore();
-
-    wrapper.vm.saveFilter!();
-    await flushPromises();
-
-    expect(searchStore.saveFilter).toHaveBeenNthCalledWith(1, { cve_id: 'CVE-2024-1234' }, 'django query');
-    expect(toastStore.addToast).toHaveBeenCalledTimes(1);
   });
 });

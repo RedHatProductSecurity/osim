@@ -5,7 +5,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <!--v-if-->
@@ -63,9 +63,9 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
       <!--v-if-->
       <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
+    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
+      </button>
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
@@ -77,6 +77,22 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
       <!--v-if-->
     </div>
   </form>
+</details>
+<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-21c9158a=""> Saved Searches</summary>
+  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+  <!--v-if-->
+  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button"> Save Search </button>
+    <!--v-if-->
+    <!--v-if-->
+  </div>
 </details>
 <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->
@@ -91,7 +107,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
@@ -122,9 +138,9 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
       <!--v-if-->
       <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" aria-label="Advance search button">
+    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
         <!--v-if--> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button"> Save as Default </button>
+      </button>
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
@@ -136,6 +152,22 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
       <!--v-if-->
     </div>
   </form>
+</details>
+<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-21c9158a=""> Saved Searches</summary>
+  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+  <!--v-if-->
+  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
+    <!--v-if-->
+    <!--v-if-->
+  </div>
 </details>
 <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->
@@ -150,7 +182,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
   <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
   <form data-v-21c9158a="" class="mb-2">
     <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
     <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
         <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
@@ -181,9 +213,9 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
       <!--v-if-->
       <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" disabled="" aria-label="Advance search button">
+    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" disabled="" aria-label="Advance search button">
         <div data-v-21c9158a="" class="spinner-border spinner-border-sm"></div> Search
-      </button><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save filters as default" type="button" disabled=""> Save as Default </button>
+      </button>
       <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
         <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
         <option data-v-21c9158a="" hidden="" label="" value=""></option>
@@ -195,6 +227,22 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
       <!--v-if-->
     </div>
   </form>
+</details>
+<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-21c9158a=""> Saved Searches</summary>
+  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+  <!--v-if-->
+  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
+    <!--v-if-->
+    <!--v-if-->
+  </div>
 </details>
 <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->

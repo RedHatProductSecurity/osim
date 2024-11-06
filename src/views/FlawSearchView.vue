@@ -7,15 +7,9 @@ import IssueQueue from '@/components/IssueQueue.vue';
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 import { useSearchParams } from '@/composables/useSearchParams';
 
-import { useSearchStore } from '@/stores/SearchStore';
-import { useToastStore } from '@/stores/ToastStore';
-import { allowedEmptyFieldMapping } from '@/constants/flawFields';
-
 const { isFinalPageFetched, isLoading, issues, loadFlaws, loadMoreFlaws, total } = useFlawsFetching();
-const { facets, getSearchParams, query } = useSearchParams();
+const { getSearchParams } = useSearchParams();
 
-const searchStore = useSearchStore();
-const { addToast } = useToastStore();
 const tableFilters = ref<Record<string, string>>({});
 
 const params = computed(() => {
@@ -50,30 +44,12 @@ function setTableFilters(newFilters: Ref<Record<string, string>>) {
     ...newFilters.value,
   };
 }
-
-function saveFilter() {
-  const filters = facets.value.reduce(
-    (fields, { field, value }) => {
-      if (field && (value || allowedEmptyFieldMapping[field])) {
-        fields[field] = value;
-      }
-      return fields;
-    },
-    {} as Record<string, string>,
-  );
-  searchStore.saveFilter(filters, query.value);
-  addToast({
-    title: 'Default Filter',
-    body: 'User\'s default filter saved',
-  });
-}
 </script>
 
 <template>
   <main class="mt-3">
     <IssueSearchAdvanced
       :isLoading="isLoading"
-      @filter:save="saveFilter"
     />
     <IssueQueue
       :issues="issues"

@@ -10,51 +10,6 @@ import Navbar from '../Navbar.vue';
 
 describe('navbar', () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;
-  beforeEach(() => {
-    vi.mock('@vueuse/core', () => ({
-      useLocalStorage: vi.fn((key: string, defaults) => {
-        return {
-          UserStore: {
-            value: defaults || {
-              // Set your fake user data here
-              refresh: 'mocked_refresh_token',
-              env: 'mocked_env',
-              whoami: {
-                email: 'test@example.com',
-                username: 'testuser',
-              },
-              jiraUsername: 'skynet',
-            },
-          },
-        }[key];
-      }),
-      useElementBounding: vi.fn(() => ({
-        bottom: 1000,
-        height: 100,
-      })),
-      useStorage: vi.fn((key: string, defaults) => {
-        return {
-          'OSIM::USER-SETTINGS': {
-            value: defaults || {
-              bugzillaApiKey: '',
-              jiraApiKey: '',
-              showNotifications: false,
-            },
-          },
-        }[key];
-      }),
-    }));
-
-    vi.mock('jwt-decode', () => ({
-      default: vi.fn(() => ({
-        sub: '1234567890',
-        name: 'Test User',
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365),
-      })),
-    }));
-
-    router.push('/');
-  });
 
   afterEach(() => {
     vi.clearAllMocks();
