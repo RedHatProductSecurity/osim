@@ -41,3 +41,6 @@ Feature: Flaw advance search testing
     Scenario: Search flaws with osidb related models
       Given I go to the advanced search page
       Then I am able to search flaws with osidb related models in query filter
+
+    Scenario: Search flaws with both query filter and selected field
+      Then I am able to search flaws with both query filter and selected field

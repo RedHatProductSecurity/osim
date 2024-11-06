@@ -89,7 +89,7 @@ class FlawDetailPage(BasePage):
         "cweidValue": ("XPATH", "(//span[@class='osim-editable-text-value form-control'])[3]"),
         "incidentStateText": ("XPATH", "//span[text()='Incident State']"),
 
-        "cvssV3Text": ("XPATH", "//span[text()=' CVSSv3 ']"),
+        "cvssV3Text": ("XPATH", "//span[text()=' RH CVSSv3 ']"),
         "cvssV3Score": ("XPATH", "//span[@class='osim-cvss-score']"),
         "cvssV3EraseButton": ("XPATH", "//button[@class='erase-button input-group-text']"),
         "cvssV3SavedMsg": ("XPATH", "//div[text()='Saved CVSS Scores']"),
@@ -101,7 +101,7 @@ class FlawDetailPage(BasePage):
         "publicDateFutureText": ("XPATH", "//span[text()='Public Date [FUTURE]']"),
         "publicDateValue": ("XPATH", "(//span[@class='osim-editable-date-value form-control text-start form-control'])[2]"),
 
-        "ownerText": ("XPATH", "//span[contains(text(), 'Owner')]"),
+        "ownerText": ("XPATH", "//span[text()=' Owner']"),
         "selfAssignBtn": ("XPATH", "//button[contains(text(), 'Self Assign')]"),
         "contributorsText": ("XPATH", "//span[text()='Contributors']"),
         "contributorListFirstOption": ("XPATH", "(//div[@class='menu dropdown-menu']/div/span)[1]"),
@@ -215,7 +215,7 @@ class FlawDetailPage(BasePage):
         "unembargoConfirmText": ("XPATH", "//span[text()='Confirm']"),
         "removeEmbargoBtn": ("XPATH", "//button[contains(text(), 'Remove Embargo')]"),
         'stateText': ("XPATH", "//span[text()=' State']"),
-        'embargoedText': ("XPATH", "//span[contains(text(), 'Embargo')]"),
+        'embargoedText': ("XPATH", "//span[text()=' Embargoed']"),
     }
 
     # Data is from OSIDB allowed sources:
@@ -361,7 +361,7 @@ class FlawDetailPage(BasePage):
             all_values.remove("")
         if all_values:
             updated_value = all_values[-1]
-            field_select.select_element_by_value(updated_value)
+            field_select.select_element_by_text(updated_value)
         else:
             updated_value = current_value
         return updated_value
@@ -537,7 +537,7 @@ class FlawDetailPage(BasePage):
         select = Select(add_reference_select)
 
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
-            (By.XPATH, "//select[@class='form-select mb-2 osim-reference-types']//option[contains(.,'External')]")))
+            (By.XPATH, "//select[@value='ARTICLE']//option[contains(.,'External')]")))
 
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'auto',block: 'center',inline: 'center'});",
@@ -605,6 +605,8 @@ class FlawDetailPage(BasePage):
         else:
             self.click_button_with_js(affect_edit_btn)
 
+        commit_edit_btn = self.driver.find_element(
+            By.XPATH, f"(//tbody)[1]/tr[{row}]/td[last()]/button[@title='Commit edit']")
         module_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[3]/input")
         component_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[4]/input")
         affectedness_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[5]/select")
@@ -637,6 +639,9 @@ class FlawDetailPage(BasePage):
         # set CVSS field
         cvss_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
         cvss_input.send_keys(cvss_vector)
+
+        # commit edit
+        self.click_button_with_js(commit_edit_btn)
 
     def get_affect_value(self, row=1):
         module = f"(//tbody)[1]/tr[{row}]/td[3]/span"
@@ -709,7 +714,6 @@ class FlawDetailPage(BasePage):
         if not field.endswith('Select'):
             select_element = self.driver.find_elements(
                 locate_with(By.XPATH, "//select[@class='form-select']").near(select_element))[0]
-        self.close_all_toast_msg()
 
         bottom_footer = find_elements_in_page_factory(self, 'bottomFooter')[0]
         bottom_bar = find_elements_in_page_factory(self, 'bottomBar')[0]
@@ -719,6 +723,7 @@ class FlawDetailPage(BasePage):
         time.sleep(2)
 
         select_element.execute_script("arguments[0].scrollIntoView(true);")
+        self.close_all_toast_msg()
         select_element.select_element_by_value(value)
         self.switch_element_visibility(bottom_footer, 'visible')
         self.switch_element_visibility(bottom_bar, 'visible')
@@ -916,7 +921,7 @@ class FlawDetailPage(BasePage):
                 resolution = 'DELEGATED'
             else:
                 affectedness = 'NEW'
-                resolution = ''
+                resolution = 'DEFER'
 
             # Generate the random component name to be updated
             ps_component = str(i) + generate_random_text()

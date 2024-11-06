@@ -6,7 +6,7 @@ from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.common_utils import get_data_from_tmp_data_file
 from features.steps.common_steps import go_to_specific_flaw_detail_page
-from features.constants import EMBARGOED_FLAW_UUID_KEY
+from features.constants import EMBARGOED_FLAW_UUID_KEY, FLAW_ID_KEY
 from features.utils import go_to_advanced_search_page
 
 
@@ -218,3 +218,20 @@ def step_impl(context):
         if 'acknowledgments' in k:
             flaw_page.click_acknowledgments_dropdown_btn()
         flaw_page.check_text_exist(v)
+
+
+@then('I am able to search flaws with both query filter and selected field')
+def step_impl(context):
+    # get flaw data for search
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_page = FlawDetailPage(context.browser)
+    search_data = flaw_page.get_valid_search_keywords_from_created_flaw()
+    go_to_advanced_search_page(context.browser)
+
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    # set query in query filter
+    advanced_search_page.set_query_filter(f'cve_id = "{search_data["cve_id"]}"')
+    # set query in selected field
+    advanced_search_page.select_field_and_value_to_search("title", search_data['title'])
+    advanced_search_page.click_btn("searchBtn")
+    advanced_search_page.first_flaw_exist()
