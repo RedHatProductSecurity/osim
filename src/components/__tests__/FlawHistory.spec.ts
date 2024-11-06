@@ -8,7 +8,7 @@ import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
 
 function sampleHistoryItem(): ZodFlawHistoryItemType {
   return {
-    pgh_created_at: '2024-10-04T12:06:56.760289Z',
+    pgh_created_at: '2024-10-04T15:06:56.760289Z',
     pgh_slug: 'osidb.FlawAudit:123456',
     pgh_label: 'update',
     pgh_context: { url: 'osidb/api/v1/flaws/12d3820a-a43b-417c-a22e-46e47c232a63', user: 1 },

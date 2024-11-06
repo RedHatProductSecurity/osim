@@ -73,7 +73,7 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
 
 export function formatDateWithTimezone(value: string) {
   return DateTime.fromISO(value, { setZone: true })
-    .toFormat('yyyy-MM-dd hh:mm ZZZZ');
+    .toFormat('yyyy-MM-dd HH:mm ZZZZ');
 }
 
 export function getSpecficCvssScore(scores: any[], issuer: string, version: string) {
