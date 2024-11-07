@@ -20,12 +20,11 @@ describe('flawHistory', () => {
   osimEmptyFlawTest('is not shown if no history present on flaw', async ({ flaw }) => {
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
-    const comp = subject.findComponent(FlawHistory);
-    expect(comp?.exists()).toBe(true);
-    expect(comp?.isVisible()).toBe(false);
+    const historyItems = subject.findAll('.alert-info');
+    expect(historyItems.length).toBe(0);
   });
 
   osimFullFlawTest('is shown if history present on flaw', async ({ flaw }) => {
@@ -33,12 +32,11 @@ describe('flawHistory', () => {
     flaw.history.push(sampleHistoryItem());
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
-    const comp = subject.findComponent(FlawHistory);
-    expect(comp?.exists()).toBe(true);
-    expect(comp?.isVisible()).toBe(true);
+    const historyItems = subject.findAll('.alert-info');
+    expect(historyItems.length).toBe(1);
     expect(subject.html()).toMatchSnapshot();
   });
 
@@ -47,7 +45,7 @@ describe('flawHistory', () => {
     flaw.history.push(sampleHistoryItem());
     const subject = mount(FlawHistory, {
       props: {
-        flaw: flaw,
+        history: flaw.history,
       },
     });
     const historyListItem = subject.find('li div');

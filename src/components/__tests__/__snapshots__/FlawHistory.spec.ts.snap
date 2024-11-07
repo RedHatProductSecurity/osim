@@ -1,21 +1,22 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawHistory > is shown if history present on flaw 1`] = `
-"<div data-v-357e30d7="" class="osim-collapsible-label my-2 my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label">
-      <h4 class="mb-4">History</h4>
+"<div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
+      <h4 data-v-aa9a2cf6="" class="">History</h4>
     </label></button>
   <div data-v-357e30d7="" class="ps-3 border-start">
-    <div data-v-357e30d7="" class="visually-hidden">
-      <div class="mt-2"><label class="mx-2 form-label w-100">
-          <div class="alert alert-info mb-1 p-2"><span>2024-10-04 15:06 UTC - 1</span>
-            <ul class="mb-2">
-              <li>
-                <div class="ms-3 pb-0"><span>Update</span><span class="fw-bold"> Owner</span><span>:  </span><i class="bi bi-arrow-right"></i> noemail@example.com</div>
+    <div data-v-357e30d7="" class="">
+      <div data-v-aa9a2cf6="" class="mt-2"><label data-v-aa9a2cf6="" class="mx-2 form-label w-100">
+          <div data-v-aa9a2cf6="" class="alert alert-info mb-1 p-2"><span data-v-aa9a2cf6="">2024-10-04 15:06 UTC - 1</span>
+            <ul data-v-aa9a2cf6="" class="mb-2">
+              <li data-v-aa9a2cf6="">
+                <div data-v-aa9a2cf6="" class="ms-3 pb-0"><span data-v-aa9a2cf6="">Update</span><span data-v-aa9a2cf6="" class="fw-bold"> Owner</span><span data-v-aa9a2cf6="">:  </span><i data-v-aa9a2cf6="" class="bi bi-arrow-right"></i> noemail@example.com</div>
               </li>
             </ul>
           </div>
         </label></div>
     </div>
   </div>
-</div>"
+</div>
+<div data-v-aa9a2cf6="" class="pagination-controls gap-1 my-2"><button data-v-aa9a2cf6="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-aa9a2cf6="" class="bi bi-arrow-left fs-5"></i></button><button data-v-aa9a2cf6="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-aa9a2cf6="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-aa9a2cf6="" class="bi bi-arrow-right fs-5"></i></button></div>"
 `;

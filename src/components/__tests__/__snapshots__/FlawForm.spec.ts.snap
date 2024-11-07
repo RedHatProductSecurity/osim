@@ -7,7 +7,7 @@ exports[`flawForm > mounts and renders 1`] = `
       <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
         <div data-v-bb5d5f91="" class="osim-flaw-form-header">
           <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
-          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
             <div data-v-357e30d7="" class="ps-3 border-start">
               <div data-v-357e30d7="" class="visually-hidden">
                 <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
@@ -400,7 +400,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </div>
     <!--v-if-->
-    <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label ms-2 cvss-score-mismatch ms-2 cvss-score-mismatch"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
+    <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label ms-2 cvss-score-mismatch"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
       <div data-v-357e30d7="" class="ps-3 border-start">
         <div data-v-357e30d7="" class="visually-hidden"><textarea rows="3" class="form-control col-9 d-inline-block mb-3" placeholder="CVSS Score Explanation"></textarea></div>
       </div>
@@ -847,6 +847,13 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
     </section>
+  </div>
+  <div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2 pb-4"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
+        <h4 data-v-aa9a2cf6="" class="">History</h4>
+      </label></button>
+    <div data-v-357e30d7="" class="ps-3 border-start">
+      <div data-v-357e30d7="" class=""><span data-v-aa9a2cf6="">There are no tracked changes for this flaw.</span></div>
+    </div>
   </div>
   <!--v-if-->
   </div>

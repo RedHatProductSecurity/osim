@@ -405,7 +405,7 @@ const createdDate = computed(() => {
             @loadInternalComments="loadInternalComments"
           />
         </div>
-        <FlawHistory :flaw="flaw" @expandFocusedComponent="expandFocusedComponent" />
+        <FlawHistory v-if="mode === 'edit'" :history="flaw.history" />
       </div>
     </div>
     <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
