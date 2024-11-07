@@ -16,7 +16,7 @@ const props = defineProps<{
   editing?: boolean;
   error?: null | string;
   includesTime?: boolean;
-  modelValue: null | string | undefined;
+  modelValue: string | undefined;
   placeholder?: string;
   readOnly?: boolean;
 }>();
