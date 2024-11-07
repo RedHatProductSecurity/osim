@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 * Time format on history dates changed from 12h to 24h (`OSIDB-3645`)
+* Fix some update streams not showing until De/Select All button is clicked on PS Modules with *some but not all* trackers already filed (`OSIDB-3674`)
 
 ### Added
 * Support multiple user saved searches (`OSIDB-3554`)

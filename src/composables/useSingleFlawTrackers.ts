@@ -148,8 +148,10 @@ export function useSingleFlawTrackers(
       );
       for (const tracker of trackers) {
         if (undefined === alreadyFiledTrackers.value.find(
-          (filedTracker: ZodTrackerTypeWithAffect) => filedTracker.ps_module === tracker.ps_module
-          && filedTracker.ps_component === tracker.ps_component,
+          (filedTracker: ZodTrackerTypeWithAffect) =>
+            filedTracker.ps_update_stream === tracker.ps_update_stream
+            && filedTracker.ps_module === tracker.ps_module
+            && filedTracker.ps_component === tracker.ps_component,
         )) {
           trackerSelections.value.set(tracker as UpdateStreamOsim, Boolean(tracker.selected));
         }
