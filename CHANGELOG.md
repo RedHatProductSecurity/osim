@@ -4,6 +4,7 @@
 ### Added
 * Add component column to trackers table (`OSIDB-3721`)
 * Warning when filing trackers on CVEs with low severity (`OSIDB-3429`)
+* Date range filter on history (`OSIDB-3562`)
 
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
