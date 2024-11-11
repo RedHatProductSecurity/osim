@@ -37,6 +37,8 @@ export function withSetup<T>(composable: () => T): [T, App] {
       return () => { };
     },
   });
+  app.use(createTestingPinia());
+  app.use(router);
   app.mount(document.createElement('div'));
   return [result!, app];
 }

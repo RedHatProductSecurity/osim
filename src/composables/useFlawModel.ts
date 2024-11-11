@@ -23,6 +23,7 @@ import { ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useNetworkQueue } from './useNetworkQueue';
+import { validateCvssVector } from './useCvssCalculator';
 
 export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: () => void) {
   const isSaving = ref(false);
@@ -32,7 +33,7 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
   const cvssScoresModel = useFlawCvssScores(flaw);
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { saveCvssScores, wasCvssModified } = cvssScoresModel;
+  const { flawRhCvss3, saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
     affectsToDelete,
     initialAffects,
@@ -112,6 +113,19 @@ export function useFlawModel(forFlaw: ZodFlawType = blankFlaw(), onSaveSuccess: 
         css: 'warning',
       });
     }
+
+    if (wasCvssModified) {
+      const validatedCVSS = validateCvssVector(flawRhCvss3.value.vector);
+      if (validatedCVSS !== null) {
+        addToast({
+          title: 'CVSS Vector validation failed',
+          body: validatedCVSS,
+          css: 'warning',
+        });
+        validatedFlaw.success = false;
+      }
+    }
+
     return validatedFlaw;
   }
 
