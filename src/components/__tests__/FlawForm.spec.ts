@@ -9,7 +9,7 @@ import FlawForm from '@/components/FlawForm.vue';
 import LabelDiv from '@/components/widgets/LabelDiv.vue';
 import LabelSelect from '@/components/widgets/LabelSelect.vue';
 import LabelTextarea from '@/components/widgets/LabelTextarea.vue';
-import CvssCalculator from '@/components/CvssCalculator.vue';
+import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner.vue';
 import LabelTagsInput from '@/components/widgets/LabelTagsInput.vue';
 import LabelStatic from '@/components/widgets/LabelStatic.vue';

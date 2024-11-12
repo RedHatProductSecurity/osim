@@ -2,15 +2,14 @@
 
 ## [Unreleased]
 ### Added
+* Support multiple user saved searches (`OSIDB-3554`)
+* Allow editing/removing/adding saved user searches (`OSIDB-3555`)
 * Added pagination to history section (`OSIDB-3563`)
+* Integrate CVSS Calculator on affect's CVSS editing field (`OSIDB-3434`)
 
 ### Fixed
 * Time format on history dates changed from 12h to 24h (`OSIDB-3645`)
 * Fix some update streams not showing until De/Select All button is clicked on PS Modules with *some but not all* trackers already filed (`OSIDB-3674`)
-
-### Added
-* Support multiple user saved searches (`OSIDB-3554`)
-* Allow editing/removing/adding saved user searches (`OSIDB-3555`)
 
 ### Changed
 * Extend advance search UI to handle multiple saved searches (`OSIDB-3556`)

@@ -27,6 +27,7 @@ const emit = defineEmits<{
   'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
   'affect:track': [value: ZodAffectType];
+  'affect:updateCvss': [affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number];
   'affects:display-mode': [value: displayModes];
 }>();
 
@@ -81,6 +82,13 @@ function isBeingEdited(affect: ZodAffectType) {
           @affect:remove="emit('affect:remove', affect)"
           @affect:toggle-selection="emit('affect:toggle-selection', affect)"
           @affect:track="emit('affect:track', affect)"
+          @affect:updateCvss="(affect, newVector, newScore, cvssScoreIndex) => emit(
+            'affect:updateCvss',
+            affect,
+            newVector,
+            newScore,
+            cvssScoreIndex
+          )"
         />
       </template>
     </tbody>
