@@ -247,8 +247,8 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       <div class="affect-tracker-cell">
         <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
         <button
+          v-if="!(isBeingEdited || isRemoved)"
           type="button"
-          :disabled="isBeingEdited || isRemoved"
           class="btn btn-sm px-1 py-0 d-flex rounded-circle"
           @click.prevent.stop="emit('affect:track', affect)"
         >
@@ -327,8 +327,6 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
 
 tr {
   height: 39.2px;
-  position: relative;
-  transition: filter 0.25s;
 
   td {
     transition:
