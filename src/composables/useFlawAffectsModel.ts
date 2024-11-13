@@ -52,6 +52,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   const modifiedAffects = computed(() => [
     ...affectsToUpdate.value,
     ...affectCvssToUpsert.value.filter(({ uuid }) => uuid),
+    ...Object.keys(affectCvssToDelete.value)
+      .flatMap(affectId => flaw.value.affects.filter(({ uuid }) => uuid === affectId)),
   ]);
 
   const wereAffectsEditedOrAdded = computed(() => modifiedAffects.value.length > 0 || affectsToCreate.value.length > 0);
@@ -171,7 +173,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     if (affectCvssToUpsert.value.length) {
       let cvssScoresSavedCount = 0;
       for (const affect of affectCvssToUpsert.value) {
-        // For any new affects that have just been saved, we need to update the affect's
+        // For any new affects that have just been saved, we need to update the affect's uuid
         if (!affect.uuid) {
           const savedAffect = savedAffects.find(matcherForAffect(affect));
 
