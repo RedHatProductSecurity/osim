@@ -1,6 +1,6 @@
 {
     "uuid": "3ede0314-a6c5-4462-bcf3-b034a15cf106",
-    "cve_id": "CVE-0000-0001",
+    "cve_id": "CVE-2024-0001",
     "impact": "MODERATE",
     "components": [
         "kernel"
@@ -9,14 +9,14 @@
     "trackers": [],
     "comment_zero": "Comment Zero == Patient Zero",
     "cve_description": "",
-    "requires_cve_description": "APPROVED",
+    "requires_cve_description": "",
     "statement": "Statement for None",
     "cwe_id": "",
     "unembargo_dt": "2012-01-10T00:00:00Z",
     "source": "GIT",
     "reported_dt": "2012-01-10T00:00:00Z",
     "mitigation": "CVE mitigation",
-    "major_incident_state": "APPROVED",
+    "major_incident_state": "",
     "nist_cvss_validation": "",
     "affects": [],
     "comments": [],

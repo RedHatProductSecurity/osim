@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils';
 
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
+import { acknowledgments } from '@/__tests__/__fixtures__/sampleFlawFull.json';
 
 import IssueFieldAcknowledgments from '../IssueFieldAcknowledgments.vue';
-import { acknowledgments } from './__fixtures__/sampleFlawFull.json';
 
 const mountIssueFieldAcknowledgments =
 (mode: InstanceType<typeof IssueFieldAcknowledgments>['$props']['mode'] = 'edit') => mount(IssueFieldAcknowledgments, {
