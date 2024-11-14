@@ -11,8 +11,9 @@ Refer to the README of osim-selenium-image and Start the osim-selenium-image.
 - OSIM_URL: export OSIM_URL=$OSIM_URL
 - OSIDB_URL: export OSIDB_URL=$OSIDB_URL
 - SELENIUM_URL: export SELENIUM_URL=$SELENIUM_URL
-- AFFECTED_MODULE_BZ: export AFFECTED_MODULE_BZ=$AFFECTED_MODULE_BZ
-- AFFECTED_MODULE_JR: export AFFECTED_MODULE_JR=$AFFECTED_MODULE_JR
+- AFFECTS_MODULE_COMPONENT_PAIR: Validated module/component pairs in json format, for 
+creating affect and filing tracker. For example export AFFECTS_MODULE_COMPONENT_PAIR=
+'{"rhel-8": ["kernel", "kernel-rt"], "rhel-9": ["kernel", "kernel-rt"]}'
 
 ### Configure environment variables when you want running single case
 

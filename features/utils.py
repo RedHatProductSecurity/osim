@@ -83,7 +83,7 @@ def go_to_specific_flaw_detail_page(browser, flaw_id=None):
     if cve_id.startswith("CVE-"):
         go_to_home_page(browser)
         home_page = HomePage(browser)
-        home_page.quickSearchBox.clear_text()
+        home_page.clear_text_with_js(home_page.quickSearchBox)
         home_page.quickSearchBox.set_text(cve_id)
         home_page.click_btn('quickSearchBtn')
     else:

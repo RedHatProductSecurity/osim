@@ -127,23 +127,13 @@ Feature: Flaw detail testing on public flaw
       When I change the state of affects
       Then I can filter affect by affect state
 
-    @skip
-    Scenario Outline: Create tracker
-      When I delete an affect of the flaw
-      When I add a new affect to <external_system> supported module and selected <affectedness_value>
-      When I file a <type> tracker
+    Scenario: File trackers for individual affect
+      When I add a new affect for file tracker
+      And I file a tracker for new added affect
       Then The tracker is created
-
-      Examples:
-          |external_system|  affectedness_value| type   |
-          #|           jira|           AFFECTED|  ystream|
-          #|           jira|                NEW|  ystream|
-          |       bugzilla|           AFFECTED|  ystream|
-          |       bugzilla|                NEW|  zstream|
 
     @skip
     Scenario Outline: Can not create tracker
-      When I delete an affect of the flaw
       When I add a new affect to <external_system> supported module and selected <affectedness_value>
       Then I can't file a tracker
 
