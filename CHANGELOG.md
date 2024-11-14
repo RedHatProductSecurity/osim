@@ -3,10 +3,12 @@
 ## [Unreleased]
 ### Added
 * Add component column to trackers table (`OSIDB-3721`)
+* Warning when filing trackers on CVEs with low severity (`OSIDB-3429`)
 
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
+
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
 
