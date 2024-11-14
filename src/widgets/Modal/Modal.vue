@@ -40,7 +40,7 @@ watch(show, () => {
     >
       <div class="modal-dialog" v-bind="$attrs">
         <div class="modal-content">
-          <div class="modal-header">
+          <div v-if="$slots.header || $slots.title" class="modal-header">
             <slot name="header">
               <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
               <button
@@ -56,7 +56,7 @@ watch(show, () => {
               Modal Body
             </slot>
           </div>
-          <div class="modal-footer">
+          <div v-if="$slots.footer" class="modal-footer">
             <slot name="footer">
               <button
                 type="button"
