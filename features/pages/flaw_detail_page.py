@@ -14,11 +14,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from features.pages.base import BasePage
 from features.page_factory_utils import find_elements_in_page_factory, find_element_in_page_factory
-from features.constants import (
-    AFFECTED_MODULE_BZ,
-    AFFECTED_MODULE_JR
-)
-from features.common_utils import generate_cvss3_vector_string
+from features.constants import AFFECTS_MODULE_COMPONENT_PAIR
 
 
 Affect = namedtuple(
@@ -182,6 +178,9 @@ class FlawDetailPage(BasePage):
         "displayRemovedAffect": ("XPATH", "//div[@title='Display removed affects']"),
         "displayNewAddedAffect": ("XPATH", "//div[@title='Display new affects']"),
         "displaySelectedAffect": ("XPATH", "//div[@title='Display selected affects']"),
+        "deselectAllTracker": ("XPATH", "//button[text()=' Deselect All']/i"),
+        "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'Tracker filed.')]"),
+        "trackerManagerCloseBtn": ("XPATH", "//button[@class='btn btn-close ms-auto']"),
 
         "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
@@ -197,7 +196,6 @@ class FlawDetailPage(BasePage):
         "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "affectUpstreamCheckbox": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']/label)[1]"),
         "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
-        "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'trackers filed')]"),
         "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
         "filedTrackers": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']//input[@disabled='' and @checked=''])[1]"),
         "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
@@ -250,7 +248,6 @@ class FlawDetailPage(BasePage):
         'TWITTER',
         'UBUNTU',
         'UPSTREAM',
-        'VENDORSEC',
         'XEN',
     ]
 
@@ -592,7 +589,7 @@ class FlawDetailPage(BasePage):
                 near(self.acknowledgmentCountLabel))[0]
             self.click_button_with_js(reference_dropdown_btn)
 
-    def set_affect_fields(self, module, component, affectedness, resolution, cvss_vector, row=1):
+    def set_affect_fields(self, module, component, affectedness, resolution, row=1):
         """
         set specified affect field value
         """
@@ -612,7 +609,9 @@ class FlawDetailPage(BasePage):
         affectedness_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[5]/select")
         resolution_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[6]/select")
         impact_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[7]/select")
-        cvss_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/input")
+        cvss_calculator_icon = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/div/i")
+        erase_cvss_button = self.driver.find_element(
+            By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/div/div/div/div/button[@class='erase-button input-group-text']")
 
         # Set new affect inputs: PS module, PS component, CVSSv3
         self.clear_text_with_js(module_input)
@@ -637,8 +636,15 @@ class FlawDetailPage(BasePage):
         impact_select_element.select_by_value(random.choice(list_item))
 
         # set CVSS field
-        cvss_input.send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
-        cvss_input.send_keys(cvss_vector)
+        self.click_button_with_js(cvss_calculator_icon)
+        self.click_button_with_js(erase_cvss_button)
+        for i in range(1, 9):
+            #
+            items = self.driver.find_elements(
+                By.XPATH, f'(//div[@class="btn-group-vertical btn-group-sm osim-factor-severity-select"])[{8+i}]/button[position()>1]')
+
+            item = random.choice(items)
+            self.click_button_with_js(item)
 
         # commit edit
         self.click_button_with_js(commit_edit_btn)
@@ -662,12 +668,13 @@ class FlawDetailPage(BasePage):
 
         return affect
 
-    def add_new_affect(self, external_system='jira', affectedness_value='NEW', save=True):
+    def add_new_affect(self, affectedness_value='NEW', random_component=True, save=True):
         from features.utils import generate_random_text
         self.click_button_with_js('addNewAffectBtn')
 
-        module = AFFECTED_MODULE_JR if external_system == 'jira' else AFFECTED_MODULE_BZ
-        component = generate_random_text()
+        module = random.choice(list(AFFECTS_MODULE_COMPONENT_PAIR.keys()))
+        component = generate_random_text() if random_component else\
+            random.choice(AFFECTS_MODULE_COMPONENT_PAIR[module])
 
         if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
             resolution = ''
@@ -675,11 +682,9 @@ class FlawDetailPage(BasePage):
             affectedness_value = 'AFFECTED'
             resolution = 'DELEGATED'
 
-        cvss_vector = generate_cvss3_vector_string()
-
         self.set_affect_fields(
             module=module, component=component, affectedness=affectedness_value,
-            resolution=resolution, cvss_vector=cvss_vector
+            resolution=resolution
         )
 
         # Save all the updates
@@ -704,10 +709,10 @@ class FlawDetailPage(BasePage):
         #    else:
         #        break
         #ps_module = "fedora-" + str(num)
-        if affect_module == AFFECTED_MODULE_BZ:
-            return AFFECTED_MODULE_JR
-        else:
-            return AFFECTED_MODULE_BZ
+        module_list = list(AFFECTS_MODULE_COMPONENT_PAIR.keys())
+        module_list.remove(affect_module)
+
+        return random.choice(module_list)
 
     def set_select_specific_value(self, field, value):
         select_element = getattr(self, field)
@@ -763,10 +768,6 @@ class FlawDetailPage(BasePage):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, "//button[contains(text(), 'Unembargo')]"))
         )
-
-    def display_affect_detail(self):
-        self.click_button_with_js("affectExpandall")
-        self.click_button_with_js('affectDropdownBtn')
 
     def trackers_list_count(self, trackers_list):
         if trackers_list == "checkedTrackersList":
@@ -904,10 +905,12 @@ class FlawDetailPage(BasePage):
         affects = find_elements_in_page_factory(self, "affectRows")
 
         # get current module and affectedness
-        affectedness_list = []
+        module_list, affectedness_list = [], []
         for i in range(len(affects)):
             current_affectedness = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[5]/span").text
             affectedness_list.append(current_affectedness)
+            current_module = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[3]/span").text
+            module_list.append(current_module)
 
         self.click_button_with_js('allAffectsCheckBox')
         self.click_button_with_js("bulkEditAffectBtn")
@@ -928,12 +931,9 @@ class FlawDetailPage(BasePage):
             check_result.append(ps_component)
 
             # Update the fields with the available values
-            cvss = generate_cvss3_vector_string()
-            check_result.append(cvss)
-
             self.set_affect_fields(
-                module=AFFECTED_MODULE_JR, component=ps_component, affectedness=affectedness,
-                resolution=resolution, cvss_vector=cvss, row=i+1)
+                module=self.get_an_available_ps_module(module_list[i]), component=ps_component,
+                affectedness=affectedness, resolution=resolution, row=i+1)
 
         self.click_btn('saveBtn')
         self.wait_msg('flawSavedMsg')
@@ -1035,3 +1035,30 @@ class FlawDetailPage(BasePage):
                 'embargoedText', "//span[@class='form-control']")
 
         return value
+
+    def file_tracker_for_specific_affect(self, component):
+        """
+        Click plus(+) button of an affect to file tracker
+        """
+        plus_button = self.driver.find_element(By.XPATH, f"//span[@title='{component}']/ancestor::tr/td[9]/div/button")
+        self.click_button_with_js(plus_button)
+        time.sleep(2)
+        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
+        self.check_value_not_exist("Querying available trackers…")
+        # click deselectAll button
+        self.click_button_with_js(self.deselectAllTracker)
+
+        # get first tracker's product stream
+        product_stream = self.driver.find_element(
+            By.XPATH, "//div[@class='osim-tracker-list mb-2']/label[1]/span/span[1]").get_text()
+        # select first tracker
+        self.driver.find_element(By.XPATH, "//div[@class='osim-tracker-list mb-2']/label[1]/input").click()
+        # file tracker
+        self.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
+        self.wait_msg("trackersFiledMsg")
+        self.close_all_toast_msg()
+        # close tracker manager window
+        self.click_button_with_js(self.trackerManagerCloseBtn)
+        time.sleep(2)
+
+        return product_stream

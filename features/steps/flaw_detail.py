@@ -17,7 +17,6 @@ from features.constants import (
     AFFECTED_MODULE_JR,
     CVSS_COMMENT_FLAW_ID,
 )
-from features.common_utils import generate_cvss3_vector_string
 
 
 MAX_RETRY = 10
@@ -507,19 +506,16 @@ def step_impl(context):
     ps_component = generate_random_text()
 
     # Update the fields with the available values
-    cvss = generate_cvss3_vector_string()
     context.value_dict = {
         'ps_module': f'{ps_module}',
         'ps_component': f'{ps_component}',
         'affectedness': f'{affectedness}',
         'resolution': f'{resolution}',
-        # Generate the random cvss3_score
-        'cvss3_score': cvss
     }
 
     flaw_detail_page.set_affect_fields(
         module=ps_module, component=ps_component, affectedness=affectedness,
-        resolution=resolution, cvss_vector=cvss)
+        resolution=resolution)
     flaw_detail_page.click_btn('saveBtn')
     flaw_detail_page.wait_msg('flawSavedMsg')
     flaw_detail_page.wait_msg('affectUpdateMsg')
@@ -537,7 +533,7 @@ def step_impl(context):
 @when("I add a new affect with valid data")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.ps_component = flaw_detail_page.add_new_affect('bugzilla', "NEW")
+    context.ps_component = flaw_detail_page.add_new_affect("NEW")
 
 
 @then("The affect is added")
@@ -591,7 +587,7 @@ def step_impl(context):
 @when("I bulk delete selected affects of the flaw")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    context.ps_component1 = flaw_page.add_new_affect('bugzilla', "NEW")
+    context.ps_component1 = flaw_page.add_new_affect("NEW")
     time.sleep(2)
     flaw_page.close_all_toast_msg()
     flaw_page.bulk_delete_affects()
@@ -630,38 +626,38 @@ def step_impl(context):
     assert public_date in v, f"Public date should be {public_date}, got {v}"
 
 
-@when('I file a {type} tracker')
-def step_impl(context, type):
-    go_to_specific_flaw_detail_page(context.browser)
+@when('I add a new affect for file tracker')
+def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    if type == 'zstream':
-        trackertext = flaw_detail_page.trackerZstream.get_text()
-        flaw_detail_page.click_button_with_js("trackerZstream")
-    else:
-        trackertext = flaw_detail_page.affectUpstreamCheckbox.get_text()
-        flaw_detail_page.click_button_with_js("affectUpstreamCheckbox")
-    context.upstream = trackertext.split(' ')[0]
-    flaw_detail_page.click_button_with_js("fileSelectedTrackers")
-    flaw_detail_page.wait_msg("trackersFiledMsg")
-    flaw_detail_page.clear_text_with_js('msgClose')
+
+    # delete all existing affects
+    current_affects_number = flaw_detail_page.get_all_affects_number()
+    if current_affects_number > 0:
+        flaw_detail_page.bulk_delete_affects()
+        flaw_detail_page.click_btn('saveBtn')
+        flaw_detail_page.wait_msg('flawSavedMsg')
+        flaw_detail_page.check_text_exist(f"{current_affects_number} Affect(s) Deleted.")
+        flaw_detail_page.close_all_toast_msg()
+        time.sleep(2)
+
+    # add a new affect for filing tracker
+    context.component = flaw_detail_page.add_new_affect(affectedness_value='AFFECTED', random_component=False)
+    flaw_detail_page.close_all_toast_msg()
+    time.sleep(2)
+
+
+@when('I file a tracker for new added affect')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.product_stream = flaw_detail_page.file_tracker_for_specific_affect(context.component)
 
 
 @then('The tracker is created')
 def step_impl(context):
     go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.display_affect_detail()
-    # Check the tracker summary
-    trackerSummary_xpath = f"//summary[contains(text(), '{context.upstream}')]"
-    flaw_detail_page.check_element_exists(By.XPATH, trackerSummary_xpath)
-
-
-@when('I add a new affect to {external_system} supported module and selected {affectedness_value}')
-def step_imp(context, external_system, affectedness_value):
-    go_to_specific_flaw_detail_page(context.browser)
-    flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.add_new_affect(external_system, affectedness_value)
+    # Check the created tracker
+    flaw_detail_page.check_text_exist(context.product_stream)
 
 
 @then("I can't file a tracker")
@@ -830,8 +826,9 @@ def step_impl(context):
 @when("I bulk update affects")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    flaw_page.add_new_affect('bugzilla', "NEW")
+    flaw_page.add_new_affect("NEW")
     flaw_page.close_all_toast_msg()
+    time.sleep(2)
     context.check_result = flaw_page.bulk_update_affects()
 
 
@@ -874,7 +871,7 @@ def step_impl(context):
     if all_affects_number < 6:
         diff = 6 - all_affects_number
         for _ in range(diff):
-            flaw_detail_page.add_new_affect('bugzilla', "NEW", False)
+            flaw_detail_page.add_new_affect("NEW", save=False)
 
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
