@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.11.1]
 ### Added
 * Support multiple user saved searches (`OSIDB-3554`)
 * Allow editing/removing/adding saved user searches (`OSIDB-3555`)
@@ -353,7 +353,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...HEAD
+[2024.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...v2024.11.1
 [2024.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.10.0...v2024.11.0
 [2024.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.2...v2024.10.0
 [2024.9.2]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.1...v2024.9.2
