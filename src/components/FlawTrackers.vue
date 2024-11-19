@@ -24,7 +24,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'affect:track-selected': [value: ZodAffectType[]];
   'affect:track-single': [value: ZodAffectType];
-  'affects:refresh': [];
+  'affects-trackers:refresh': [];
 }>();
 
 const settingsStore = useSettingsStore();
@@ -310,7 +310,7 @@ const {
           v-if="showTrackerManager"
           :relatedFlaws="relatedFlaws"
           :flaw="flaw"
-          @affects-trackers:refresh="emit('affects:refresh')"
+          @affects-trackers:refresh="emit('affects-trackers:refresh')"
         />
       </div>
     </div>
