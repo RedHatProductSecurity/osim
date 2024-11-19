@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Fix duplicated values on CVSS displays (`OSIDB-3658`)
+
 ## [2024.11.1]
 ### Added
 * Support multiple user saved searches (`OSIDB-3554`)
