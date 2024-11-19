@@ -1,8 +1,7 @@
 import { mountWithConfig } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 import { getNextAccessTokenHandler } from '@/__tests__/handlers';
-
-import FlawCreateView from '../FlawCreateView.vue';
+import FlawCreateView from '@/views/FlawCreateView.vue';
 
 describe('flawCreateView', () => {
   beforeAll(() => {

@@ -6,9 +6,9 @@ import CvssNISTForm from '@/components/CvssNISTForm/CvssNISTForm.vue';
 import { issuerLabels } from '@/composables/useFlawCvssScores';
 
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
-import type { ZodFlawCVSSType } from '@/types/zodFlaw';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
+import type { ZodFlawCVSSType } from '@/types';
 
 const props = defineProps<{
   allCvss: ZodFlawCVSSType[];
@@ -27,6 +27,12 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
   (
     !(cvssItem.cvss_version === CVSS_V3 && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist))
   )));
+
+function cvssDisplay(score: string, vector: string, version: string) {
+  return vector.includes('CVSS')
+    ? score + ' ' + vector
+    : score + ' CVSS:' + version + '/' + vector;
+}
 </script>
 
 <template>
@@ -81,7 +87,13 @@ const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
           <div class="d-flex flex-row">
             <div class="form-control text-break h-auto">
               <span>
-                {{ cvssItem.score + ' CVSS:' + cvssItem.cvss_version.substring(1) + '/' + cvssItem.vector }}
+                {{
+                  cvssDisplay(
+                    cvssItem.score?.toString() || '',
+                    cvssItem.vector || '',
+                    cvssItem.cvss_version.substring(1)
+                  )
+                }}
               </span>
             </div>
           </div>
