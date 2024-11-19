@@ -181,25 +181,13 @@ class FlawDetailPage(BasePage):
         "deselectAllTracker": ("XPATH", "//button[text()=' Deselect All']/i"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'Tracker filed.')]"),
         "trackerManagerCloseBtn": ("XPATH", "//button[@class='btn btn-close ms-auto']"),
-
-        "affectDropdownBtn": ("XPATH", "(//i[@class='bi bi-plus-square-dotted me-1'])[last()]"),
+        "showTrackerManagerBtn": ("XPATH", "//button[text()=' Show Trackers Manager ']"),
         "affectUpdateMsg": ("XPATH", "//div[text()='Affects Updated.']"),
-        "affectScoreSaveMsg": ("XPATH", "//div[text()='Affects CVSS scores saved.']"),
-        "affectSaveMsg": ("XPATH", "//div[contains(text(), 'Affect 1 of 1 Saved:')]"),
-        "affectDeleteTips": ("XPATH", "//h5[contains(text(), 'Affected Offerings To Be Deleted')]"),
         "affectDeleteMsg": ("XPATH", "//div[text()='1 Affect(s) Deleted.']"),
-        "affectAffectednessText": ("XPATH", "//span[contains(text(), 'Affectedness:')]"),
-        "affectRecoverBtn": ("XPATH", "//button[@title='Recover']"),
-        "affectExpandall": ("XPATH", "//button[contains(text(), 'Expand All Affects')]"),
-        "affectNoTrackerPlus": ("XPATH", "//span[contains(text(), '0 trackers')]"),
-        "firstAffectItem": ("XPATH", "(//span[contains(text(), '1 affected')])[1]"),
+        "filterModuleComponentInput": ("XPATH", "//input[@placeholder='Filter Modules/Components...']"),
+        "selectFilteredTrackerBtn": ("XPATH", "//button[text()=' Select Filtered']"),
+
         "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
-        "affectUpstreamCheckbox": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']/label)[1]"),
-        "fileSelectedTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers')]"),
-        "disabledfileSelectTrackers": ("XPATH", "//button[contains(text(), 'File Selected Trackers') and @disabled='']"),
-        "filedTrackers": ("XPATH", "(//div[@class='osim-tracker-selections mb-2']//input[@disabled='' and @checked=''])[1]"),
-        "trackerJiraSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_JR)][1]"),
-        "trackerBzSummary": ("XPATH", "//summary[contains(text(), AFFECTED_MODULE_BZ)][1]"),
         "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
         "DeselectAllTrackers": ("XPATH", "//button[contains(text(), 'Deselect All')]"),
         "trackersList": ("XPATH", "//input[@class='osim-tracker form-check-input']"),
@@ -1036,6 +1024,31 @@ class FlawDetailPage(BasePage):
 
         return value
 
+    def get_unfiled_tracker_number(self):
+        return len(self.driver.find_elements(By.XPATH, "//div[@class='osim-tracker-list mb-2']/label"))
+
+    def get_unfiled_tracker_product_stream(self, row=1):
+        return self.driver.find_element(
+            By.XPATH, f"//div[@class='osim-tracker-list mb-2']/label[{row}]/span/span[1]").get_text()
+
+    def get_selected_tracker_number(self):
+        return len(self.driver.find_elements(By.XPATH, "//div[@class='osim-tracker-list mt-2']/label"))
+
+    def file_tracker(self, row=1):
+        # get tracker's product stream
+        product_stream = self.get_unfiled_tracker_product_stream(row)
+        # select first tracker
+        self.driver.find_element(By.XPATH, f"//div[@class='osim-tracker-list mb-2']/label[{row}]/input").click()
+        # file tracker
+        self.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
+        self.wait_msg("trackersFiledMsg")
+        self.close_all_toast_msg()
+        # close tracker manager window
+        self.click_button_with_js(self.trackerManagerCloseBtn)
+        time.sleep(2)
+
+        return product_stream
+
     def file_tracker_for_specific_affect(self, component):
         """
         Click plus(+) button of an affect to file tracker
@@ -1048,17 +1061,52 @@ class FlawDetailPage(BasePage):
         # click deselectAll button
         self.click_button_with_js(self.deselectAllTracker)
 
-        # get first tracker's product stream
-        product_stream = self.driver.find_element(
-            By.XPATH, "//div[@class='osim-tracker-list mb-2']/label[1]/span/span[1]").get_text()
-        # select first tracker
-        self.driver.find_element(By.XPATH, "//div[@class='osim-tracker-list mb-2']/label[1]/input").click()
-        # file tracker
-        self.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
-        self.wait_msg("trackersFiledMsg")
-        self.close_all_toast_msg()
-        # close tracker manager window
-        self.click_button_with_js(self.trackerManagerCloseBtn)
+        return self.file_tracker(row=1)
+
+    def file_tracker_for_selected_affects(self):
+        n = self.get_displayed_affects_number()
+        self.click_button_with_js('allAffectsCheckBox')
+        manage_tracker_btn = self.driver.find_element(
+            By.XPATH, f"//button[@title='Manage trackers for {n} selected affect(s)']")
+        module_component_pairs = []
+        for i in range(n):
+            affect = self.get_affect_value(i+1)
+            module_component_pairs.append(f"{affect.module}/{affect.component}")
+
+        self.click_button_with_js(manage_tracker_btn)
+        for v in module_component_pairs:
+            self.check_text_exist(v)
+
         time.sleep(2)
+        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
+        self.check_value_not_exist("Querying available trackers…")
+
+        # click deselectAll button
+        self.click_button_with_js(self.deselectAllTracker)
+
+        return self.file_tracker(row=1)
+
+    def select_filter_tracker(self):
+        self.click_button_with_js("showTrackerManagerBtn")
+        time.sleep(2)
+        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
+        self.check_value_not_exist("Querying available trackers…")
+        # click deselectAll button
+        self.click_button_with_js(self.deselectAllTracker)
+
+        # get first tracker's product stream
+        product_stream = self.get_unfiled_tracker_product_stream(row=1)
+
+        self.filterModuleComponentInput.set_text(product_stream)
+        self.click_button_with_js('selectFilteredTrackerBtn')
 
         return product_stream
+
+    def is_tracker_selected(self, product_stream):
+        self.check_element_exists(
+            By.XPATH, f"//div[@class='osim-tracker-list mt-2']/label/span/span[1][text()='{product_stream}']")
+
+        tracker_check_box = self.driver.find_element(
+            By.XPATH, f"//div[@class='osim-tracker-list mt-2']/label/span/span[1][text()='{product_stream}']/../../input")
+
+        return tracker_check_box.is_selected()

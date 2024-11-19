@@ -660,20 +660,23 @@ def step_impl(context):
     flaw_detail_page.check_text_exist(context.product_stream)
 
 
-@then("I can't file a tracker")
+@when('I filter modules/components in Tracker Manager and select filtered')
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    flaw_detail_page.disabledfileSelectTrackers.visibility_of_element_located()
+    context.product_stream = flaw_detail_page.select_filter_tracker()
 
 
-@then('The manager trackers list the filed trackers')
+@then('Filtered trackers selected')
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    flaw_detail_page.filedTrackers.visibility_of_element_located()
+    assert flaw_detail_page.get_selected_tracker_number() == 1
+    assert flaw_detail_page.is_tracker_selected(context.product_stream) is True
+
+
+@when('I file tracker for selected affects')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.product_stream = flaw_detail_page.file_tracker_for_selected_affects()
 
 
 @then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')

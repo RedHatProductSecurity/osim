@@ -132,21 +132,13 @@ Feature: Flaw detail testing on public flaw
       And I file a tracker for new added affect
       Then The tracker is created
 
-    @skip
-    Scenario Outline: Can not create tracker
-      When I add a new affect to <external_system> supported module and selected <affectedness_value>
-      Then I can't file a tracker
+    Scenario: File tracker for selected affects
+      When I file tracker for selected affects
+      Then The tracker is created
 
-      Examples:
-          |external_system|  affectedness_value|
-          |       bugzilla|         NOTAFFECTED|
-
-    @skip
-    Scenario: List filed trackers
-      When I delete an affect of the flaw
-      When I add a new affect with valid data
-      When I select the affect above and file a tracker
-      Then The manager trackers list the filed trackers
+    Scenario: Filter modules/components in Tracker Manager
+      When I filter modules/components in Tracker Manager and select filtered
+      Then Filtered trackers selected
 
     @skip
     Scenario: Select/Deselect all trackers
