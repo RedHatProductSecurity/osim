@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Fix trackers status filter not working (`OSIDB-3720`)
+
 ## [2024.11.1]
 ### Added
 * Support multiple user saved searches (`OSIDB-3554`)
