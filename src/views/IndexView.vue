@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onActivated, onDeactivated, ref, watch, type Ref } from 'vue';
 
-import IssueQueue from '@/components/IssueQueue.vue';
+import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 

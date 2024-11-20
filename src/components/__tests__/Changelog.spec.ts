@@ -1,10 +1,10 @@
 import { mount } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
 
+import ChangeLog from '@/components/ChangeLog/ChangeLog.vue';
+
 import { osimRuntime } from '@/stores/osimRuntime';
 import { server } from '@/__tests__/setup';
-
-import ChangeLog from '../ChangeLog.vue';
 
 describe('changelog', () => {
   beforeAll(() => {

@@ -2,12 +2,13 @@ import { randomUUID } from 'node:crypto';
 
 import { VueWrapper, mount } from '@vue/test-utils';
 
+import FlawAlertsList from '@/components/FlawAlertsList/FlawAlertsList.vue';
+import FlawAlertsSection from '@/components/FlawAlertsSection/FlawAlertsSection.vue';
+
 import { AlertTypeEnum } from '@/generated-client';
 import type { ZodAlertType } from '@/types/zodShared';
 
 import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
-import FlawAlertsList from '../FlawAlertsList.vue';
-import FlawAlertsSection from '../FlawAlertsSection.vue';
 
 function sampleAlert(alertType: AlertTypeEnum, parentUuid: string, parentModel: string): ZodAlertType {
   return {

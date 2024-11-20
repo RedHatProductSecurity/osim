@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
 
-import DjangoQLInput from '@/components/DjangoQLInput.vue';
+import DjangoQLInput from '@/components/DjangoQLInput/DjangoQLInput.vue';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 import { server } from '@/__tests__/setup';

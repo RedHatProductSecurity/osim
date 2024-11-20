@@ -9,7 +9,7 @@ import { number } from 'zod';
 import { useSearchStore } from '@/stores/SearchStore';
 
 describe('issueSearchAdvanced', () => {
-  let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced.vue').default;
+  let IssueSearchAdvanced: typeof import('@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue').default;
 
   vi.mock('@mrmarble/djangoql-completion');
   vi.mock('vue-router', () => ({
@@ -50,7 +50,7 @@ describe('issueSearchAdvanced', () => {
   };
 
   beforeEach(async () => {
-    IssueSearchAdvanced = (await import('@/components/IssueSearchAdvanced.vue')).default;
+    IssueSearchAdvanced = (await import('@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue')).default;
   });
 
   afterEach(() => {

@@ -3,16 +3,16 @@ import { computed, onUnmounted, toRefs, ref, watch } from 'vue';
 
 import { clone } from 'ramda';
 
-import FlawTrackers from '@/components/FlawTrackers.vue';
-import TrackerManager from '@/components/TrackerManager.vue';
-import LabelCollapsible from '@/components/widgets/LabelCollapsible.vue';
-import Modal from '@/components/widgets/Modal.vue';
+import FlawTrackers from '@/components/FlawTrackers/FlawTrackers.vue';
+import TrackerManager from '@/components/TrackerManager/TrackerManager.vue';
 import FlawAffectsTable from '@/components/FlawAffects/FlawAffectsTable.vue';
 
 import { useModal } from '@/composables/useModal';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
+import Modal from '@/widgets/Modal/Modal.vue';
+import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';

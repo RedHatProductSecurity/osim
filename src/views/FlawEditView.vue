@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, watch, onUnmounted } from 'vue';
 
-import { useFetchFlaw, initializeFlaw } from '@/composables/useFetchFlaw';
+import FlawForm from '@/components/FlawForm/FlawForm.vue';
 
-import FlawForm from '../components/FlawForm.vue';
+import { useFetchFlaw, initializeFlaw } from '@/composables/useFetchFlaw';
 
 const props = defineProps<{
   id: string;

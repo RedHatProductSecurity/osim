@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import FlawHistory from '@/components/FlawHistory.vue';
+import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 
 import type { ZodFlawHistoryItemType } from '@/types/zodFlaw';
 

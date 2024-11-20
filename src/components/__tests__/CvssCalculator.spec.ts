@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
-import CvssCalculator from '../CvssCalculator/CvssCalculator.vue';
+import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 
 function activateFactorButton(subject: any, factor: string, value: string) {
   const factorButtonGroup = subject.findAll('.btn-group-vertical')
