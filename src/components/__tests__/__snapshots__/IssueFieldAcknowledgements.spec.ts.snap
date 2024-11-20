@@ -1,67 +1,67 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`issueFieldAcknowledgements > should render the acknowledgements field in create mode 1`] = `
-"<div data-v-fde7522e="">
-  <div data-v-876c20ac="" data-v-fde7522e="">
-    <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
-      <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class="visually-hidden">
-          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
-            <div data-v-876c20ac="">
-              <div data-v-876c20ac="" class="osim-list-edit">
-                <div data-v-fde7522e="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-fde7522e="">Simon McVittie from </div>
+"<div data-v-0ecea5ec="">
+  <div data-v-b4f0a608="" data-v-0ecea5ec="">
+    <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Acknowledgments: 1</label></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden">
+          <div data-v-b4f0a608="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
+            <div data-v-b4f0a608="">
+              <div data-v-b4f0a608="" class="osim-list-edit">
+                <div data-v-0ecea5ec="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-0ecea5ec="">Simon McVittie from </div>
                 </div>
-                <div data-v-876c20ac="" class="buttons"><button data-v-876c20ac="" type="button" class="btn pe-1"><i data-v-876c20ac="" class="bi bi-pencil"><span data-v-876c20ac="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-876c20ac="" type="button" class="btn ps-1"><i data-v-876c20ac="" class="bi bi-trash"><span data-v-876c20ac="" class="visually-hidden">Delete Acknowledgment</span></i></button>
+                <div data-v-b4f0a608="" class="buttons"><button data-v-b4f0a608="" type="button" class="btn pe-1"><i data-v-b4f0a608="" class="bi bi-pencil"><span data-v-b4f0a608="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-b4f0a608="" type="button" class="btn ps-1"><i data-v-b4f0a608="" class="bi bi-trash"><span data-v-b4f0a608="" class="visually-hidden">Delete Acknowledgment</span></i></button>
                   <!--v-if-->
                   <!--v-if-->
                 </div>
               </div>
             </div>
-            <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
-            <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
           </div>
         </div>
       </div>
     </div>
-    <form data-v-876c20ac="">
-      <!--v-if--><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
+    <form data-v-b4f0a608="">
+      <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
     </form>
   </div>
 </div>"
 `;
 
 exports[`issueFieldAcknowledgements > should render the acknowledgements field in edit mode 1`] = `
-"<div data-v-fde7522e="">
-  <div data-v-876c20ac="" data-v-fde7522e="">
-    <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
-      <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class="visually-hidden">
-          <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
-            <div data-v-876c20ac="">
-              <div data-v-876c20ac="" class="osim-list-edit">
-                <div data-v-fde7522e="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-fde7522e="">Simon McVittie from </div>
+"<div data-v-0ecea5ec="">
+  <div data-v-b4f0a608="" data-v-0ecea5ec="">
+    <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Acknowledgments: 1</label></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden">
+          <div data-v-b4f0a608="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
+            <div data-v-b4f0a608="">
+              <div data-v-b4f0a608="" class="osim-list-edit">
+                <div data-v-0ecea5ec="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-0ecea5ec="">Simon McVittie from </div>
                 </div>
-                <div data-v-876c20ac="" class="buttons"><button data-v-876c20ac="" type="button" class="btn pe-1"><i data-v-876c20ac="" class="bi bi-pencil"><span data-v-876c20ac="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-876c20ac="" type="button" class="btn ps-1"><i data-v-876c20ac="" class="bi bi-trash"><span data-v-876c20ac="" class="visually-hidden">Delete Acknowledgment</span></i></button>
+                <div data-v-b4f0a608="" class="buttons"><button data-v-b4f0a608="" type="button" class="btn pe-1"><i data-v-b4f0a608="" class="bi bi-pencil"><span data-v-b4f0a608="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-b4f0a608="" type="button" class="btn ps-1"><i data-v-b4f0a608="" class="bi bi-trash"><span data-v-b4f0a608="" class="visually-hidden">Delete Acknowledgment</span></i></button>
                   <!--v-if-->
                   <!--v-if-->
                 </div>
               </div>
             </div>
-            <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
-            <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
           </div>
         </div>
       </div>
     </div>
-    <form data-v-876c20ac=""><button data-v-876c20ac="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
+    <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
   </div>
 </div>"
 `;

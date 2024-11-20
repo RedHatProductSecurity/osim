@@ -1,30 +1,30 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawForm > mounts and renders 1`] = `
-"<form data-v-bb5d5f91="" class="osim-flaw-form">
-  <div data-v-bb5d5f91="" class="osim-content container-fluid">
-    <div data-v-bb5d5f91="" class="row px-4 my-3">
-      <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
-        <div data-v-bb5d5f91="" class="osim-flaw-form-header">
-          <div data-v-bb5d5f91="" class="osim-flaw-header-link"><a data-v-bb5d5f91="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-bb5d5f91="" class="bi-box-arrow-up-right ms-2"></i></a></div>
-          <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
-            <div data-v-357e30d7="" class="ps-3 border-start">
-              <div data-v-357e30d7="" class="visually-hidden">
-                <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
-                  <div data-v-357e30d7="" class="ps-3 border-start">
-                    <div data-v-357e30d7="" class="visually-hidden">
+"<form data-v-76e7a15d="" class="osim-flaw-form">
+  <div data-v-76e7a15d="" class="osim-content container-fluid">
+    <div data-v-76e7a15d="" class="row px-4 my-3">
+      <div data-v-76e7a15d="" class="row osim-flaw-form-section pt-0">
+        <div data-v-76e7a15d="" class="osim-flaw-form-header">
+          <div data-v-76e7a15d="" class="osim-flaw-header-link"><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a></div>
+          <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+            <div data-v-4715e8e2="" class="ps-3 border-start">
+              <div data-v-4715e8e2="" class="visually-hidden">
+                <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
+                  <div data-v-4715e8e2="" class="ps-3 border-start">
+                    <div data-v-4715e8e2="" class="visually-hidden">
                       <div>
                         <!--v-if-->
                       </div>
                       <div>
-                        <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-warning"><i data-v-eef2791a="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
-                          <div data-v-357e30d7="" class="ps-3 border-start">
-                            <div data-v-357e30d7="" class="visually-hidden">
-                              <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
-                                <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> CVSSv3 score is missing.</span></div>
-                                <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
-                                <div data-v-eef2791a="" class="row mt-2">
-                                  <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+                        <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-warning"><i data-v-ec9bcb53="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
+                          <div data-v-4715e8e2="" class="ps-3 border-start">
+                            <div data-v-4715e8e2="" class="visually-hidden">
+                              <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
+                                <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> CVSSv3 score is missing.</span></div>
+                                <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
+                                <div data-v-ec9bcb53="" class="row mt-2">
+                                  <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
                                 </div>
                               </div>
                             </div>
@@ -36,20 +36,20 @@ exports[`flawForm > mounts and renders 1`] = `
                 </div>
               </div>
             </div>
-            <div data-v-357e30d7="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
+            <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
                 <!--v-if--></span></span>
               </button>
-              <div data-v-357e30d7="" class="ps-3 border-start">
-                <div data-v-357e30d7="" class="visually-hidden">
+              <div data-v-4715e8e2="" class="ps-3 border-start">
+                <div data-v-4715e8e2="" class="visually-hidden">
                   <div>
-                    <div><span><div data-v-eef2791a="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-357e30d7="" data-v-eef2791a="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-eef2791a="" class="badge mx-2 text-bg-danger"><i data-v-eef2791a="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
-                      <div data-v-357e30d7="" class="ps-3 border-start">
-                        <div data-v-357e30d7="" class="visually-hidden">
-                          <div data-v-eef2791a="" class="ms-1 py-2 container text-left">
-                            <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">Description:</strong><span data-v-eef2791a=""> Flaw contains acknowledgments for public source LKML</span></div>
-                            <div data-v-eef2791a="" class="osim-flaw-alert-info"><strong data-v-eef2791a="">How To Resolve:</strong><span data-v-eef2791a=""> No resolution steps are defined.</span></div>
-                            <div data-v-eef2791a="" class="row mt-2">
-                              <div data-v-eef2791a="" class="col"><button data-v-eef2791a="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-eef2791a="" class="bi bi-arrow-down-circle"></i></button></div>
+                    <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-danger"><i data-v-ec9bcb53="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
+                      <div data-v-4715e8e2="" class="ps-3 border-start">
+                        <div data-v-4715e8e2="" class="visually-hidden">
+                          <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
+                            <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> Flaw contains acknowledgments for public source LKML</span></div>
+                            <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
+                            <div data-v-ec9bcb53="" class="row mt-2">
+                              <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
                             </div>
                           </div>
                         </div>
@@ -72,11 +72,11 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   </div>
-  <div data-v-bb5d5f91="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-      <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Title</span>
+  <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
         <!--v-if-->
         <!-- for invalid-tooltip positioning -->
-        <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
           <!--<Transition name="flash-bg" :duration="2000">-->
           <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
             <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span>
@@ -87,22 +87,22 @@ exports[`flawForm > mounts and renders 1`] = `
           <!--v-if-->
         </div>
       </div>
-    </label><label data-v-3b095636="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-      <div data-v-3b095636="" class="row"><span data-v-3b095636="" class="form-label col-3">Components</span>
-        <div data-v-3b095636="" class="col-9">
-          <div data-v-329e9a81="" data-v-3b095636="" class="osim-pill-list form-control">
-            <transition-group-stub data-v-329e9a81="" appear="false" persisted="false" css="true"><span data-v-329e9a81="" class="osim-pill-list-item badge text-bg-secondary" draggable="true" data-index="0"><span data-v-329e9a81="" style="cursor: text;">kernel</span><i data-v-329e9a81="" class="bi bi-x-square ms-1" style="cursor: pointer;" tabindex="0"><span data-v-329e9a81="" class="visually-hidden">Remove</span></i></span></transition-group-stub><input data-v-329e9a81="" class="osim-pill-list-input no-drag" type="text">
+    </label><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
+        <div data-v-76f6bf34="" class="col-9">
+          <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
+            <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"><span data-v-8bc603c3="" class="osim-pill-list-item badge text-bg-secondary" draggable="true" data-index="0"><span data-v-8bc603c3="" style="cursor: text;">kernel</span><i data-v-8bc603c3="" class="bi bi-x-square ms-1" style="cursor: pointer;" tabindex="0"><span data-v-8bc603c3="" class="visually-hidden">Remove</span></i></span></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
             <!--v-if-->
           </div>
         </div>
       </div>
     </label>
-    <div data-v-bb5d5f91="" class="row">
-      <div data-v-bb5d5f91="" class="col"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-          <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">CVE ID</span>
+    <div data-v-76e7a15d="" class="row">
+      <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+          <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
             <!--v-if-->
             <!-- for invalid-tooltip positioning -->
-            <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+            <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
               <!--<Transition name="flash-bg" :duration="2000">-->
               <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
                 <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span>
@@ -115,21 +115,21 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
         </label></div>
       <!--v-if-->
-    </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-      <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Impact</span>
-        <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="MODERATE">
-            <option data-v-e273ec44="" selected="" disabled="" value=""></option>
-            <option data-v-e273ec44="" value="CRITICAL">CRITICAL</option>
-            <option data-v-e273ec44="" value="IMPORTANT">IMPORTANT</option>
-            <option data-v-e273ec44="" selected="" value="MODERATE">MODERATE</option>
-            <option data-v-e273ec44="" value="LOW">LOW</option>
-            <option data-v-e273ec44="" value="">NONE</option>
+    </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact</span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MODERATE">
+            <option data-v-001a00e0="" selected="" disabled="" value=""></option>
+            <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
+            <option data-v-001a00e0="" value="IMPORTANT">IMPORTANT</option>
+            <option data-v-001a00e0="" selected="" value="MODERATE">MODERATE</option>
+            <option data-v-001a00e0="" value="LOW">LOW</option>
+            <option data-v-001a00e0="" value="">NONE</option>
           </select>
           <!--v-if-->
         </div>
       </div>
     </label>
-    <div data-v-ffda1b6f="" data-v-bb5d5f91="" tabindex="0" id="db265f8e-f7f6-4e96-b61f-8dea783e79c7">
+    <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0" id="db265f8e-f7f6-4e96-b61f-8dea783e79c7">
       <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSSv3 </span>
           <div data-v-ffda1b6f="" class="input-wrapper col">
             <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
@@ -175,18 +175,18 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-bb5d5f91="">
-      <div data-v-73e4e34b="" class="osim-input ps-3 mb-2 mb-2">
-        <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
-          <div data-v-73e4e34b="" class="col-9">
+    <div data-v-76e7a15d="">
+      <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+          <div data-v-0e2ae48e="" class="col-9">
             <div class="d-flex flex-row">
               <div class="form-control text-break h-auto rounded-0"><span class="text-primary">4.0</span> CVSS:3.1/AV:N/AC:H/PR:<span class="text-primary">E</span>/UI:N/S:U/C:<span class="text-primary">N</span>/I:<span class="text-primary">L</span>/A:<span class="text-primary">R</span></div>
               <div class="col-auto align-self-center">
-                <div data-v-b75fd97d="" class="osim-cve-nist-form"><button data-v-b75fd97d="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
-                  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+                <div data-v-b05c734f="" class="osim-cve-nist-form"><button data-v-b05c734f="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
+                  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
-                  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+                  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
                 </div>
@@ -196,11 +196,11 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
       <!--v-if-->
-    </div><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-      <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">CWE ID</span>
+    </div><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CWE ID</span>
         <!--v-if-->
         <!-- for invalid-tooltip positioning -->
-        <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
           <!--<Transition name="flash-bg" :duration="2000">-->
           <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
             <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
@@ -211,153 +211,153 @@ exports[`flawForm > mounts and renders 1`] = `
           <!--v-if-->
         </div>
       </div>
-    </label><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-      <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">CVE Source</span>
-        <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="GIT">
+    </label><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source</span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="GIT">
             <!--v-if-->
-            <option data-v-e273ec44="" value=""></option>
-            <option data-v-e273ec44="" value="ADOBE">ADOBE</option>
-            <option data-v-e273ec44="" value="APPLE">APPLE</option>
-            <option data-v-e273ec44="" hidden="" value="ASF">ASF</option>
-            <option data-v-e273ec44="" hidden="" value="BIND">BIND</option>
-            <option data-v-e273ec44="" hidden="" value="BK">BK</option>
-            <option data-v-e273ec44="" value="BUGTRAQ">BUGTRAQ</option>
-            <option data-v-e273ec44="" hidden="" value="BUGZILLA">BUGZILLA</option>
-            <option data-v-e273ec44="" value="CERT">CERT</option>
-            <option data-v-e273ec44="" hidden="" value="CERTIFI">CERTIFI</option>
-            <option data-v-e273ec44="" hidden="" value="CORELABS">CORELABS</option>
-            <option data-v-e273ec44="" value="CUSTOMER">CUSTOMER</option>
-            <option data-v-e273ec44="" value="CVE">CVE</option>
-            <option data-v-e273ec44="" hidden="" value="CVEORG">CVEORG</option>
-            <option data-v-e273ec44="" hidden="" value="DAILYDAVE">DAILYDAVE</option>
-            <option data-v-e273ec44="" value="DEBIAN">DEBIAN</option>
-            <option data-v-e273ec44="" value="DISTROS">DISTROS</option>
-            <option data-v-e273ec44="" hidden="" value="FEDORA">FEDORA</option>
-            <option data-v-e273ec44="" hidden="" value="FETCHMAIL">FETCHMAIL</option>
-            <option data-v-e273ec44="" hidden="" value="FREEDESKTOP">FREEDESKTOP</option>
-            <option data-v-e273ec44="" hidden="" value="FREERADIUS">FREERADIUS</option>
-            <option data-v-e273ec44="" hidden="" value="FRSIRT">FRSIRT</option>
-            <option data-v-e273ec44="" hidden="" value="FULLDISCLOSURE">FULLDISCLOSURE</option>
-            <option data-v-e273ec44="" hidden="" value="GAIM">GAIM</option>
-            <option data-v-e273ec44="" value="GENTOO">GENTOO</option>
-            <option data-v-e273ec44="" hidden="" value="GENTOOBZ">GENTOOBZ</option>
-            <option data-v-e273ec44="" selected="" value="GIT">GIT</option>
-            <option data-v-e273ec44="" hidden="" value="GNOME">GNOME</option>
-            <option data-v-e273ec44="" hidden="" value="GNUPG">GNUPG</option>
-            <option data-v-e273ec44="" value="GOOGLE">GOOGLE</option>
-            <option data-v-e273ec44="" hidden="" value="HP">HP</option>
-            <option data-v-e273ec44="" value="HW_VENDOR">HW_VENDOR</option>
-            <option data-v-e273ec44="" hidden="" value="IBM">IBM</option>
-            <option data-v-e273ec44="" hidden="" value="IDEFENSE">IDEFENSE</option>
-            <option data-v-e273ec44="" value="INTERNET">INTERNET</option>
-            <option data-v-e273ec44="" hidden="" value="ISC">ISC</option>
-            <option data-v-e273ec44="" hidden="" value="ISEC">ISEC</option>
-            <option data-v-e273ec44="" hidden="" value="IT">IT</option>
-            <option data-v-e273ec44="" hidden="" value="JBOSS">JBOSS</option>
-            <option data-v-e273ec44="" hidden="" value="JPCERT">JPCERT</option>
-            <option data-v-e273ec44="" hidden="" value="KERNELBUGZILLA">KERNELBUGZILLA</option>
-            <option data-v-e273ec44="" hidden="" value="KERNELSEC">KERNELSEC</option>
-            <option data-v-e273ec44="" value="LKML">LKML</option>
-            <option data-v-e273ec44="" hidden="" value="LWN">LWN</option>
-            <option data-v-e273ec44="" hidden="" value="MACROMEDIA">MACROMEDIA</option>
-            <option data-v-e273ec44="" value="MAGEIA">MAGEIA</option>
-            <option data-v-e273ec44="" hidden="" value="MAILINGLIST">MAILINGLIST</option>
-            <option data-v-e273ec44="" hidden="" value="MILW0RM">MILW0RM</option>
-            <option data-v-e273ec44="" hidden="" value="MIT">MIT</option>
-            <option data-v-e273ec44="" hidden="" value="MITRE">MITRE</option>
-            <option data-v-e273ec44="" value="MOZILLA">MOZILLA</option>
-            <option data-v-e273ec44="" hidden="" value="MUTTDEV">MUTTDEV</option>
-            <option data-v-e273ec44="" hidden="" value="NETDEV">NETDEV</option>
-            <option data-v-e273ec44="" hidden="" value="NISCC">NISCC</option>
-            <option data-v-e273ec44="" value="NVD">NVD</option>
-            <option data-v-e273ec44="" hidden="" value="OCERT">OCERT</option>
-            <option data-v-e273ec44="" hidden="" value="OPENOFFICE">OPENOFFICE</option>
-            <option data-v-e273ec44="" value="OPENSSL">OPENSSL</option>
-            <option data-v-e273ec44="" hidden="" value="OPENSUSE">OPENSUSE</option>
-            <option data-v-e273ec44="" value="ORACLE">ORACLE</option>
-            <option data-v-e273ec44="" hidden="" value="OSS">OSS</option>
-            <option data-v-e273ec44="" value="OSSSECURITY">OSSSECURITY</option>
-            <option data-v-e273ec44="" value="OSV">OSV</option>
-            <option data-v-e273ec44="" hidden="" value="PHP">PHP</option>
-            <option data-v-e273ec44="" hidden="" value="PIDGIN">PIDGIN</option>
-            <option data-v-e273ec44="" hidden="" value="POSTGRESQL">POSTGRESQL</option>
-            <option data-v-e273ec44="" hidden="" value="PRESS">PRESS</option>
-            <option data-v-e273ec44="" hidden="" value="REAL">REAL</option>
-            <option data-v-e273ec44="" value="REDHAT">REDHAT</option>
-            <option data-v-e273ec44="" value="RESEARCHER">RESEARCHER</option>
-            <option data-v-e273ec44="" hidden="" value="RT">RT</option>
-            <option data-v-e273ec44="" hidden="" value="SAMBA">SAMBA</option>
-            <option data-v-e273ec44="" hidden="" value="SECALERT">SECALERT</option>
-            <option data-v-e273ec44="" value="SECUNIA">SECUNIA</option>
-            <option data-v-e273ec44="" hidden="" value="SECURITYFOCUS">SECURITYFOCUS</option>
-            <option data-v-e273ec44="" value="SKO">SKO</option>
-            <option data-v-e273ec44="" hidden="" value="SQUID">SQUID</option>
-            <option data-v-e273ec44="" hidden="" value="SQUIRRELMAIL">SQUIRRELMAIL</option>
-            <option data-v-e273ec44="" hidden="" value="SUN">SUN</option>
-            <option data-v-e273ec44="" hidden="" value="SUNSOLVE">SUNSOLVE</option>
-            <option data-v-e273ec44="" value="SUSE">SUSE</option>
-            <option data-v-e273ec44="" value="TWITTER">TWITTER</option>
-            <option data-v-e273ec44="" value="UBUNTU">UBUNTU</option>
-            <option data-v-e273ec44="" value="UPSTREAM">UPSTREAM</option>
-            <option data-v-e273ec44="" hidden="" value="VENDORSEC">VENDORSEC</option>
-            <option data-v-e273ec44="" hidden="" value="VULNWATCH">VULNWATCH</option>
-            <option data-v-e273ec44="" hidden="" value="WIRESHARK">WIRESHARK</option>
-            <option data-v-e273ec44="" hidden="" value="XCHAT">XCHAT</option>
-            <option data-v-e273ec44="" hidden="" value="XEN">XEN</option>
-            <option data-v-e273ec44="" hidden="" value="XPDF">XPDF</option>
+            <option data-v-001a00e0="" value=""></option>
+            <option data-v-001a00e0="" value="ADOBE">ADOBE</option>
+            <option data-v-001a00e0="" value="APPLE">APPLE</option>
+            <option data-v-001a00e0="" hidden="" value="ASF">ASF</option>
+            <option data-v-001a00e0="" hidden="" value="BIND">BIND</option>
+            <option data-v-001a00e0="" hidden="" value="BK">BK</option>
+            <option data-v-001a00e0="" value="BUGTRAQ">BUGTRAQ</option>
+            <option data-v-001a00e0="" hidden="" value="BUGZILLA">BUGZILLA</option>
+            <option data-v-001a00e0="" value="CERT">CERT</option>
+            <option data-v-001a00e0="" hidden="" value="CERTIFI">CERTIFI</option>
+            <option data-v-001a00e0="" hidden="" value="CORELABS">CORELABS</option>
+            <option data-v-001a00e0="" value="CUSTOMER">CUSTOMER</option>
+            <option data-v-001a00e0="" value="CVE">CVE</option>
+            <option data-v-001a00e0="" hidden="" value="CVEORG">CVEORG</option>
+            <option data-v-001a00e0="" hidden="" value="DAILYDAVE">DAILYDAVE</option>
+            <option data-v-001a00e0="" value="DEBIAN">DEBIAN</option>
+            <option data-v-001a00e0="" value="DISTROS">DISTROS</option>
+            <option data-v-001a00e0="" hidden="" value="FEDORA">FEDORA</option>
+            <option data-v-001a00e0="" hidden="" value="FETCHMAIL">FETCHMAIL</option>
+            <option data-v-001a00e0="" hidden="" value="FREEDESKTOP">FREEDESKTOP</option>
+            <option data-v-001a00e0="" hidden="" value="FREERADIUS">FREERADIUS</option>
+            <option data-v-001a00e0="" hidden="" value="FRSIRT">FRSIRT</option>
+            <option data-v-001a00e0="" hidden="" value="FULLDISCLOSURE">FULLDISCLOSURE</option>
+            <option data-v-001a00e0="" hidden="" value="GAIM">GAIM</option>
+            <option data-v-001a00e0="" value="GENTOO">GENTOO</option>
+            <option data-v-001a00e0="" hidden="" value="GENTOOBZ">GENTOOBZ</option>
+            <option data-v-001a00e0="" selected="" value="GIT">GIT</option>
+            <option data-v-001a00e0="" hidden="" value="GNOME">GNOME</option>
+            <option data-v-001a00e0="" hidden="" value="GNUPG">GNUPG</option>
+            <option data-v-001a00e0="" value="GOOGLE">GOOGLE</option>
+            <option data-v-001a00e0="" hidden="" value="HP">HP</option>
+            <option data-v-001a00e0="" value="HW_VENDOR">HW_VENDOR</option>
+            <option data-v-001a00e0="" hidden="" value="IBM">IBM</option>
+            <option data-v-001a00e0="" hidden="" value="IDEFENSE">IDEFENSE</option>
+            <option data-v-001a00e0="" value="INTERNET">INTERNET</option>
+            <option data-v-001a00e0="" hidden="" value="ISC">ISC</option>
+            <option data-v-001a00e0="" hidden="" value="ISEC">ISEC</option>
+            <option data-v-001a00e0="" hidden="" value="IT">IT</option>
+            <option data-v-001a00e0="" hidden="" value="JBOSS">JBOSS</option>
+            <option data-v-001a00e0="" hidden="" value="JPCERT">JPCERT</option>
+            <option data-v-001a00e0="" hidden="" value="KERNELBUGZILLA">KERNELBUGZILLA</option>
+            <option data-v-001a00e0="" hidden="" value="KERNELSEC">KERNELSEC</option>
+            <option data-v-001a00e0="" value="LKML">LKML</option>
+            <option data-v-001a00e0="" hidden="" value="LWN">LWN</option>
+            <option data-v-001a00e0="" hidden="" value="MACROMEDIA">MACROMEDIA</option>
+            <option data-v-001a00e0="" value="MAGEIA">MAGEIA</option>
+            <option data-v-001a00e0="" hidden="" value="MAILINGLIST">MAILINGLIST</option>
+            <option data-v-001a00e0="" hidden="" value="MILW0RM">MILW0RM</option>
+            <option data-v-001a00e0="" hidden="" value="MIT">MIT</option>
+            <option data-v-001a00e0="" hidden="" value="MITRE">MITRE</option>
+            <option data-v-001a00e0="" value="MOZILLA">MOZILLA</option>
+            <option data-v-001a00e0="" hidden="" value="MUTTDEV">MUTTDEV</option>
+            <option data-v-001a00e0="" hidden="" value="NETDEV">NETDEV</option>
+            <option data-v-001a00e0="" hidden="" value="NISCC">NISCC</option>
+            <option data-v-001a00e0="" value="NVD">NVD</option>
+            <option data-v-001a00e0="" hidden="" value="OCERT">OCERT</option>
+            <option data-v-001a00e0="" hidden="" value="OPENOFFICE">OPENOFFICE</option>
+            <option data-v-001a00e0="" value="OPENSSL">OPENSSL</option>
+            <option data-v-001a00e0="" hidden="" value="OPENSUSE">OPENSUSE</option>
+            <option data-v-001a00e0="" value="ORACLE">ORACLE</option>
+            <option data-v-001a00e0="" hidden="" value="OSS">OSS</option>
+            <option data-v-001a00e0="" value="OSSSECURITY">OSSSECURITY</option>
+            <option data-v-001a00e0="" value="OSV">OSV</option>
+            <option data-v-001a00e0="" hidden="" value="PHP">PHP</option>
+            <option data-v-001a00e0="" hidden="" value="PIDGIN">PIDGIN</option>
+            <option data-v-001a00e0="" hidden="" value="POSTGRESQL">POSTGRESQL</option>
+            <option data-v-001a00e0="" hidden="" value="PRESS">PRESS</option>
+            <option data-v-001a00e0="" hidden="" value="REAL">REAL</option>
+            <option data-v-001a00e0="" value="REDHAT">REDHAT</option>
+            <option data-v-001a00e0="" value="RESEARCHER">RESEARCHER</option>
+            <option data-v-001a00e0="" hidden="" value="RT">RT</option>
+            <option data-v-001a00e0="" hidden="" value="SAMBA">SAMBA</option>
+            <option data-v-001a00e0="" hidden="" value="SECALERT">SECALERT</option>
+            <option data-v-001a00e0="" value="SECUNIA">SECUNIA</option>
+            <option data-v-001a00e0="" hidden="" value="SECURITYFOCUS">SECURITYFOCUS</option>
+            <option data-v-001a00e0="" value="SKO">SKO</option>
+            <option data-v-001a00e0="" hidden="" value="SQUID">SQUID</option>
+            <option data-v-001a00e0="" hidden="" value="SQUIRRELMAIL">SQUIRRELMAIL</option>
+            <option data-v-001a00e0="" hidden="" value="SUN">SUN</option>
+            <option data-v-001a00e0="" hidden="" value="SUNSOLVE">SUNSOLVE</option>
+            <option data-v-001a00e0="" value="SUSE">SUSE</option>
+            <option data-v-001a00e0="" value="TWITTER">TWITTER</option>
+            <option data-v-001a00e0="" value="UBUNTU">UBUNTU</option>
+            <option data-v-001a00e0="" value="UPSTREAM">UPSTREAM</option>
+            <option data-v-001a00e0="" hidden="" value="VENDORSEC">VENDORSEC</option>
+            <option data-v-001a00e0="" hidden="" value="VULNWATCH">VULNWATCH</option>
+            <option data-v-001a00e0="" hidden="" value="WIRESHARK">WIRESHARK</option>
+            <option data-v-001a00e0="" hidden="" value="XCHAT">XCHAT</option>
+            <option data-v-001a00e0="" hidden="" value="XEN">XEN</option>
+            <option data-v-001a00e0="" hidden="" value="XPDF">XPDF</option>
           </select>
           <!--v-if-->
         </div>
       </div>
     </label>
   </div>
-  <div data-v-bb5d5f91="" class="col-6">
-    <div data-v-37d3889c="" data-v-bb5d5f91="" class="osim-workflow-state-container mb-2">
-      <div data-v-73e4e34b="" data-v-37d3889c="" class="osim-input ps-3 osim-workflow-state-display mb-2 osim-workflow-state-display mb-2" type="text">
-        <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
-          <div data-v-73e4e34b="" class="col-9">
-            <div data-v-37d3889c="" class="d-flex"><span data-v-37d3889c="" class="form-control rounded-0">NEW</span>
-              <div data-v-37d3889c="" class="col-auto">
-                <div data-v-37d3889c="" class="osim-workflow-state-buttons"><button data-v-37d3889c="" type="button" class="btn btn-secondary rounded-0"> Reject </button><button data-v-37d3889c="" type="button" class="btn btn-warning osim-last-field-button" title="Promote to Triage"> Promote to Triage</button></div>
+  <div data-v-76e7a15d="" class="col-6">
+    <div data-v-d6c306ee="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
+      <div data-v-0e2ae48e="" data-v-d6c306ee="" class="osim-input ps-3 osim-workflow-state-display mb-2 osim-workflow-state-display mb-2" type="text">
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
+          <div data-v-0e2ae48e="" class="col-9">
+            <div data-v-d6c306ee="" class="d-flex"><span data-v-d6c306ee="" class="form-control rounded-0">NEW</span>
+              <div data-v-d6c306ee="" class="col-auto">
+                <div data-v-d6c306ee="" class="osim-workflow-state-buttons"><button data-v-d6c306ee="" type="button" class="btn btn-secondary rounded-0"> Reject </button><button data-v-d6c306ee="" type="button" class="btn btn-warning osim-last-field-button" title="Promote to Triage"> Promote to Triage</button></div>
               </div>
             </div>
-            <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
-            <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+            <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
               <!--v-if-->
             </transition-stub>
           </div>
         </div>
       </div>
-    </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-      <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Incident State</span>
-        <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="APPROVED">
+    </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="APPROVED">
             <!--v-if-->
-            <option data-v-e273ec44="" value=""></option>
-            <option data-v-e273ec44="" value="REQUESTED">REQUESTED</option>
-            <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
-            <option data-v-e273ec44="" selected="" value="APPROVED">APPROVED</option>
-            <option data-v-e273ec44="" value="CISA_APPROVED">CISA_APPROVED</option>
-            <option data-v-e273ec44="" value="MINOR">MINOR</option>
-            <option data-v-e273ec44="" value="ZERO_DAY">ZERO_DAY</option>
-            <option data-v-e273ec44="" value="INVALID">INVALID</option>
+            <option data-v-001a00e0="" value=""></option>
+            <option data-v-001a00e0="" value="REQUESTED">REQUESTED</option>
+            <option data-v-001a00e0="" value="REJECTED">REJECTED</option>
+            <option data-v-001a00e0="" selected="" value="APPROVED">APPROVED</option>
+            <option data-v-001a00e0="" value="CISA_APPROVED">CISA_APPROVED</option>
+            <option data-v-001a00e0="" value="MINOR">MINOR</option>
+            <option data-v-001a00e0="" value="ZERO_DAY">ZERO_DAY</option>
+            <option data-v-001a00e0="" value="INVALID">INVALID</option>
           </select>
           <!--v-if-->
         </div>
       </div>
-    </label><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-      <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
-        <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-date">
+    </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
           <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2012-01-10</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
           <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2012-01-10"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
           <!--v-if-->
         </div>
         <!--v-if-->
       </div>
-    </label><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-      <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Public Date</span><!-- for invalid-tooltip positioning -->
-        <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-date">
+    </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Public Date</span><!-- for invalid-tooltip positioning -->
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
           <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2012-01-10 00:00 UTC</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
           <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2012-01-10 00:00 UTC"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
           <!--v-if-->
@@ -365,12 +365,12 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
       </div>
     </label>
-    <div data-v-73e4e34b="" data-v-cbaa3298="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
-      <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
-        <div data-v-73e4e34b="" class="col-9">
-          <div data-v-cbaa3298="">
-            <div data-v-cbaa3298="" class="d-flex ms-0 p-0 justify-content-between">
-              <div data-v-cbaa3298="" class="osim-embargo-label osim-input d-flex align-items-center"><span data-v-cbaa3298="" class="form-control">No <!--v-if--></span>
+    <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="col-9">
+          <div data-v-cbe7eb54="">
+            <div data-v-cbe7eb54="" class="d-flex ms-0 p-0 justify-content-between">
+              <div data-v-cbe7eb54="" class="osim-embargo-label osim-input d-flex align-items-center"><span data-v-cbe7eb54="" class="form-control">No <!--v-if--></span>
                 <!--v-if-->
               </div>
               <!--v-if-->
@@ -379,9 +379,9 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-73e4e34b="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
-      <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
-        <div data-v-73e4e34b="" class="col-9">
+    <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="col-9">
           <!-- for invalid-tooltip positioning -->
           <div class="position-relative col-9 osim-editable-field osim-text col-12">
             <!--<Transition name="flash-bg" :duration="2000">-->
@@ -398,117 +398,117 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-633aa8fd="" data-v-bb5d5f91="" class="osim-static-label osim-input mb-2 ps-3" type="text">
-      <div data-v-633aa8fd="" class="row"><span data-v-633aa8fd="" class="form-label col-3">Created Date</span>
-        <div data-v-633aa8fd="" class="col-9"><span data-v-633aa8fd="" class="form-control">2021-09-13 09:09 UTC</span></div>
+    <div data-v-b341c440="" data-v-76e7a15d="" class="osim-static-label osim-input mb-2 ps-3" type="text">
+      <div data-v-b341c440="" class="row"><span data-v-b341c440="" class="form-label col-3">Created Date</span>
+        <div data-v-b341c440="" class="col-9"><span data-v-b341c440="" class="form-control">2021-09-13 09:09 UTC</span></div>
       </div>
     </div>
     <!--v-if-->
-    <div data-v-357e30d7="" data-v-bb5d5f91="" class="osim-collapsible-label ms-2 cvss-score-mismatch"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
-      <div data-v-357e30d7="" class="ps-3 border-start">
-        <div data-v-357e30d7="" class="visually-hidden"><textarea rows="3" class="form-control col-9 d-inline-block mb-3" placeholder="CVSS Score Explanation"></textarea></div>
+    <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label ms-2 cvss-score-mismatch"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden"><textarea rows="3" class="form-control col-9 d-inline-block mb-3" placeholder="CVSS Score Explanation"></textarea></div>
       </div>
     </div>
   </div>
   </div>
-  <div data-v-bb5d5f91="" class="osim-flaw-form-section border-top row mx-0"><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-      <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Comment#0 <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-        <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Comment#0 ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" disabled="" rows="5" value="Comment Zero == Patient Zero"></textarea>
+  <div data-v-76e7a15d="" class="osim-flaw-form-section border-top row mx-0"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+      <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Comment#0 <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+        <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Comment#0 ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" disabled="" rows="5" value="Comment Zero == Patient Zero"></textarea>
         <!--v-if-->
       </div>
-    </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-      <div data-v-1ccd17dd="" class="row"><span data-v-bb5d5f91="" class="form-label col-3 osim-folder-tab-label"> Description </span><span data-v-bb5d5f91="" class="col-3 ps-2"><select data-v-bb5d5f91="" class="form-select col-3 osim-description-required"><option data-v-bb5d5f91="" disabled="" value="">Review Status</option><option data-v-bb5d5f91="" value=""></option><option data-v-bb5d5f91="" value="REQUESTED">REQUESTED</option><option data-v-bb5d5f91="" value="APPROVED">APPROVED</option><option data-v-bb5d5f91="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
-        <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Description Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="I am a spooky CVE"></textarea>
+    </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+      <div data-v-055401b4="" class="row"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label"> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
+        <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="I am a spooky CVE"></textarea>
         <!--v-if-->
       </div>
-    </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-      <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Statement <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-        <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Statement Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="Statement for None"></textarea>
+    </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+      <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Statement <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+        <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="Statement for None"></textarea>
         <!--v-if-->
       </div>
-    </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-      <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Mitigation <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-        <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Mitigation Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="CVE mitigation"></textarea>
+    </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+      <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Mitigation <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+        <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Mitigation Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value="CVE mitigation"></textarea>
         <!--v-if-->
       </div>
     </label></div>
-  <div data-v-bb5d5f91="" class="osim-flaw-form-section border-top border-bottom">
-    <div data-v-bb5d5f91="" class="d-flex gap-3">
-      <div data-v-4357d2eb="" data-v-bb5d5f91="" class="w-100 my-2">
-        <div data-v-876c20ac="" data-v-4357d2eb="">
-          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 1</label></button>
-            <div data-v-357e30d7="" class="ps-3 border-start">
-              <div data-v-357e30d7="" class="visually-hidden">
-                <div data-v-876c20ac="" id="1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
-                  <div data-v-876c20ac="">
-                    <div data-v-876c20ac="" class="osim-list-edit">
-                      <div data-v-4357d2eb="" class="info-group"><span data-v-4357d2eb="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-4357d2eb="" class="m-1 mb-3" href="https://example.com" target="_blank">https://example.com</a></div>
-                      <div data-v-4357d2eb="" class="form-group">
-                        <div data-v-633aa8fd="" data-v-4357d2eb="" class="osim-static-label osim-input mb-2 ps-3">
-                          <div data-v-633aa8fd="" class="osim-static-label-top-style"><span data-v-633aa8fd="" class="top-label">Description</span>
-                            <div data-v-633aa8fd="" class="top-left-corner"><span data-v-633aa8fd="" class="form-control top-left-corner">Reference details</span></div>
+  <div data-v-76e7a15d="" class="osim-flaw-form-section border-top border-bottom">
+    <div data-v-76e7a15d="" class="d-flex gap-3">
+      <div data-v-58ccaadf="" data-v-76e7a15d="" class="w-100 my-2">
+        <div data-v-b4f0a608="" data-v-58ccaadf="">
+          <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">References: 1</label></button>
+            <div data-v-4715e8e2="" class="ps-3 border-start">
+              <div data-v-4715e8e2="" class="visually-hidden">
+                <div data-v-b4f0a608="" id="1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
+                  <div data-v-b4f0a608="">
+                    <div data-v-b4f0a608="" class="osim-list-edit">
+                      <div data-v-58ccaadf="" class="info-group"><span data-v-58ccaadf="" class="badge rounded-pill bg-warning" style="color: black;">External</span><a data-v-58ccaadf="" class="m-1 mb-3" href="https://example.com" target="_blank">https://example.com</a></div>
+                      <div data-v-58ccaadf="" class="form-group">
+                        <div data-v-b341c440="" data-v-58ccaadf="" class="osim-static-label osim-input mb-2 ps-3">
+                          <div data-v-b341c440="" class="osim-static-label-top-style"><span data-v-b341c440="" class="top-label">Description</span>
+                            <div data-v-b341c440="" class="top-left-corner"><span data-v-b341c440="" class="form-control top-left-corner">Reference details</span></div>
                           </div>
                         </div>
                       </div>
-                      <div data-v-876c20ac="" class="buttons"><button data-v-876c20ac="" type="button" class="btn pe-1"><i data-v-876c20ac="" class="bi bi-pencil"><span data-v-876c20ac="" class="visually-hidden">Edit Reference</span></i></button><button data-v-876c20ac="" type="button" class="btn ps-1"><i data-v-876c20ac="" class="bi bi-trash"><span data-v-876c20ac="" class="visually-hidden">Delete Reference</span></i></button>
+                      <div data-v-b4f0a608="" class="buttons"><button data-v-b4f0a608="" type="button" class="btn pe-1"><i data-v-b4f0a608="" class="bi bi-pencil"><span data-v-b4f0a608="" class="visually-hidden">Edit Reference</span></i></button><button data-v-b4f0a608="" type="button" class="btn ps-1"><i data-v-b4f0a608="" class="bi bi-trash"><span data-v-b4f0a608="" class="visually-hidden">Delete Reference</span></i></button>
                         <!--v-if-->
                         <!--v-if-->
                       </div>
                     </div>
                   </div>
-                  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+                  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
-                  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+                  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
                 </div>
               </div>
             </div>
           </div>
-          <form data-v-876c20ac=""><button data-v-876c20ac="" type="button" class="btn btn-primary me-2"> Save Changes to References</button><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Reference</button></form>
+          <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to References</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Reference</button></form>
         </div>
       </div>
-      <div data-v-fde7522e="" data-v-bb5d5f91="" class="w-100 my-2">
-        <div data-v-876c20ac="" data-v-fde7522e="">
-          <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 1</label></button>
-            <div data-v-357e30d7="" class="ps-3 border-start">
-              <div data-v-357e30d7="" class="visually-hidden">
-                <div data-v-876c20ac="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
-                  <div data-v-876c20ac="">
-                    <div data-v-876c20ac="" class="osim-list-edit">
-                      <div data-v-fde7522e="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-fde7522e="">Simon McVittie from </div>
+      <div data-v-0ecea5ec="" data-v-76e7a15d="" class="w-100 my-2">
+        <div data-v-b4f0a608="" data-v-0ecea5ec="">
+          <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Acknowledgments: 1</label></button>
+            <div data-v-4715e8e2="" class="ps-3 border-start">
+              <div data-v-4715e8e2="" class="visually-hidden">
+                <div data-v-b4f0a608="" id="5cf5979d-b344-4dd1-873c-3901559b0366" class="card p-3 pb-1 mb-3 rounded-3 osim-editable-list-card bg-lighter-gray bg-light-yellow">
+                  <div data-v-b4f0a608="">
+                    <div data-v-b4f0a608="" class="osim-list-edit">
+                      <div data-v-0ecea5ec="" class="form-group mb-2">5cf5979d-b344-4dd1-873c-3901559b0366 <div data-v-0ecea5ec="">Simon McVittie from </div>
                       </div>
-                      <div data-v-876c20ac="" class="buttons"><button data-v-876c20ac="" type="button" class="btn pe-1"><i data-v-876c20ac="" class="bi bi-pencil"><span data-v-876c20ac="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-876c20ac="" type="button" class="btn ps-1"><i data-v-876c20ac="" class="bi bi-trash"><span data-v-876c20ac="" class="visually-hidden">Delete Acknowledgment</span></i></button>
+                      <div data-v-b4f0a608="" class="buttons"><button data-v-b4f0a608="" type="button" class="btn pe-1"><i data-v-b4f0a608="" class="bi bi-pencil"><span data-v-b4f0a608="" class="visually-hidden">Edit Acknowledgment</span></i></button><button data-v-b4f0a608="" type="button" class="btn ps-1"><i data-v-b4f0a608="" class="bi bi-trash"><span data-v-b4f0a608="" class="visually-hidden">Delete Acknowledgment</span></i></button>
                         <!--v-if-->
                         <!--v-if-->
                       </div>
                     </div>
                   </div>
-                  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+                  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
-                  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+                  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
                     <!--v-if-->
                   </transition-stub>
                 </div>
               </div>
             </div>
           </div>
-          <form data-v-876c20ac=""><button data-v-876c20ac="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
+          <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
         </div>
       </div>
     </div>
   </div>
-  <div data-v-bb5d5f91="" class="osim-flaw-form-section">
-    <div data-v-2d3c4208="" data-v-bb5d5f91="" class="osim-affects-section">
+  <div data-v-76e7a15d="" class="osim-flaw-form-section">
+    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
-        <div data-v-357e30d7="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle">
+        <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
             <!--v-if--><label data-v-2d3c4208="" class="form-label mt-2 btn btn-sm btn-secondary"><i data-v-2d3c4208="" class="bi-funnel-fill"></i> Affected Module Filters </label>
           </button>
-          <div data-v-357e30d7="" class="ps-3 border-start">
-            <div data-v-357e30d7="" class="">
+          <div data-v-4715e8e2="" class="ps-3 border-start">
+            <div data-v-4715e8e2="" class="">
               <div data-v-2d3c4208="" class="d-inline-block bg-light-gray p-2"><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray" title="openshift-1">
                   <!--v-if--><span data-v-2d3c4208="">openshift-1</span>
                 </button><button data-v-2d3c4208="" type="button" tabindex="-1" class="module-btn btn btn-sm border-gray fw-bold" title="openshift-2
@@ -718,93 +718,93 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </table>
         <!--v-if-->
       </div>
-      <div data-v-7006d35c="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
-        <div data-v-7006d35c="" class="affects-trackers">
-          <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
-            <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
-              <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
+      <div data-v-89a61d08="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
+        <div data-v-89a61d08="" class="affects-trackers">
+          <div data-v-89a61d08="" class="bg-dark rounded-top-2 text-info">
+            <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
+              <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
             </div>
-            <div data-v-7006d35c="" class="pagination-controls gap-1 ms-2"><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-left fs-5"></i></button><button data-v-7006d35c="" class="osim-page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info rounded-start-0" disabled=""><i data-v-7006d35c="" class="bi bi-arrow-right fs-5"></i></button></div>
-            <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-              <div data-v-7006d35c="" class="tracker-badges">
-                <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-                <div data-v-7006d35c="" class="badge" title="All trackers in this flaw"><span data-v-7006d35c="">All trackers 6</span></div>
-                <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
-              </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
+            <div data-v-89a61d08="" class="pagination-controls gap-1 ms-2"><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info rounded-end-0" disabled=""><i data-v-89a61d08="" class="bi bi-arrow-left fs-5"></i></button><button data-v-89a61d08="" class="osim-page-btn btn btn-sm rounded-0 btn-info" disabled="">1</button><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info rounded-start-0" disabled=""><i data-v-89a61d08="" class="bi bi-arrow-right fs-5"></i></button></div>
+            <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
+              <div data-v-89a61d08="" class="tracker-badges">
+                <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
+                <div data-v-89a61d08="" class="badge" title="All trackers in this flaw"><span data-v-89a61d08="">All trackers 6</span></div>
+                <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+              </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
             </div>
           </div>
-          <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-            <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-              <thead data-v-7006d35c="">
-                <tr data-v-7006d35c="">
-                  <th data-v-7006d35c="">Bug ID</th>
-                  <th data-v-7006d35c="">Module</th>
-                  <th data-v-7006d35c="">Product Stream</th>
-                  <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
-                    <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
-                      <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
-                      <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
+          <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
+            <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+              <thead data-v-89a61d08="">
+                <tr data-v-89a61d08="">
+                  <th data-v-89a61d08="">Bug ID</th>
+                  <th data-v-89a61d08="">Module</th>
+                  <th data-v-89a61d08="">Product Stream</th>
+                  <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+                    <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
+                      <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
+                      <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
                     </ul>
                   </th>
-                  <th data-v-7006d35c="">Resolution</th>
-                  <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
-                  <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+                  <th data-v-89a61d08="">Resolution</th>
+                  <th data-v-89a61d08=""> Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i></th>
+                  <th data-v-89a61d08=""> Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i></th>
                 </tr>
               </thead>
-              <tbody data-v-7006d35c="">
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-                  <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
-                  <td data-v-7006d35c="">CLOSED</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
+              <tbody data-v-89a61d08="">
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0006 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" title="xxxx-0-006">xxxx-0-006</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-07-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-07-01 13:06 UTC</td>
                 </tr>
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-                  <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
-                  <td data-v-7006d35c="">NEW</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0005 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" title="xxxx-0-005">xxxx-0-005</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-08-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-08-01 13:06 UTC</td>
                 </tr>
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-                  <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
-                  <td data-v-7006d35c="">CLOSED</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0004 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-004">xxxx-0-004</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-09-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-09-01 13:06 UTC</td>
                 </tr>
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-                  <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
-                  <td data-v-7006d35c="">NEW</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0003 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-003">xxxx-0-003</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-10-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-10-01 13:06 UTC</td>
                 </tr>
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-                  <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
-                  <td data-v-7006d35c="">CLOSED</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0002 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-002">xxxx-0-002</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-11-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-11-01 13:06 UTC</td>
                 </tr>
-                <tr data-v-7006d35c="">
-                  <td data-v-7006d35c=""><a data-v-7006d35c="" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-                  <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
-                  <td data-v-7006d35c="">NEW</td>
-                  <td data-v-7006d35c=""></td>
-                  <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
-                  <td data-v-7006d35c="">2024-12-01 13:06 UTC</td>
+                <tr data-v-89a61d08="">
+                  <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0001 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-001">xxxx-0-001</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-12-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-12-01 13:06 UTC</td>
                 </tr>
               </tbody>
             </table>
@@ -814,56 +814,56 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
       <div data-v-2d3c4208="" class="osim-tracker-manager-modal-container">
-        <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+        <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
           <!--v-if-->
         </transition-stub>
-        <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+        <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
           <!--v-if-->
         </transition-stub>
       </div>
     </div>
   </div>
-  <div data-v-bb5d5f91="" class="border-top osim-flaw-form-section">
-    <section data-v-bb90633e="" data-v-bb5d5f91="" class="osim-comments my-2">
-      <h4 data-v-bb90633e="" class="mb-4">Comments</h4>
-      <div data-v-8cd9b350="" data-v-bb90633e="">
-        <ul data-v-8cd9b350="" class="nav nav-tabs">
-          <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link active" title="Bugzilla Public - This comments are visible to everyone.">Public Comments</button></li>
-          <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Bugzilla Private - This comments are visible to Red Hat associates.">Private Comments</button></li>
-          <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Jira Internal - This comments are visible to team members with required permissions.">Internal Comments</button></li>
-          <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Bugzilla System - This are auto-generated private comments.">System Comments</button></li>
-          <div data-v-bb90633e="" class="tab-actions"><button data-v-bb90633e="" type="button" class="btn btn-secondary tab-btn"> Add Public Comment </button><a data-v-bb90633e="" href="/show_bug.cgi?id=1984541" target="_blank" class="btn btn-secondary tab-btn" disabled="false"> View on Bugzilla </a>
+  <div data-v-76e7a15d="" class="border-top osim-flaw-form-section">
+    <section data-v-0b679fcf="" data-v-76e7a15d="" class="osim-comments my-2">
+      <h4 data-v-0b679fcf="" class="mb-4">Comments</h4>
+      <div data-v-8b945130="" data-v-0b679fcf="">
+        <ul data-v-8b945130="" class="nav nav-tabs">
+          <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link active" title="Bugzilla Public - This comments are visible to everyone.">Public Comments</button></li>
+          <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Bugzilla Private - This comments are visible to Red Hat associates.">Private Comments</button></li>
+          <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Jira Internal - This comments are visible to team members with required permissions.">Internal Comments</button></li>
+          <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Bugzilla System - This are auto-generated private comments.">System Comments</button></li>
+          <div data-v-0b679fcf="" class="tab-actions"><button data-v-0b679fcf="" type="button" class="btn btn-secondary tab-btn"> Add Public Comment </button><a data-v-0b679fcf="" href="/show_bug.cgi?id=1984541" target="_blank" class="btn btn-secondary tab-btn" disabled="false"> View on Bugzilla </a>
             <!--v-if-->
           </div>
         </ul>
-        <div data-v-bb90633e="" class="tab-content">
-          <div data-v-bb90633e="" class="info-message ms-3 mb-4">
+        <div data-v-0b679fcf="" class="tab-content">
+          <div data-v-0b679fcf="" class="info-message ms-3 mb-4">
             <!--v-if-->
           </div>
           <!--v-if-->
-          <ul data-v-bb90633e="" class="comments list-unstyled">
-            <li data-v-bb90633e="" class="bg-light p-4 mt-3 rounded-2">
-              <p data-v-bb90633e="" class="border-bottom pb-3"><i data-v-bb90633e="" class="bi bi-caret-right-fill me-2"></i><span data-v-bb90633e="">example@example.com</span> - 2021-09-13 09:09 AM UTC <span data-v-bb90633e="" class="badge rounded-pill float-end cursor-pointer bg-success">Public</span></p>
+          <ul data-v-0b679fcf="" class="comments list-unstyled">
+            <li data-v-0b679fcf="" class="bg-light p-4 mt-3 rounded-2">
+              <p data-v-0b679fcf="" class="border-bottom pb-3"><i data-v-0b679fcf="" class="bi bi-caret-right-fill me-2"></i><span data-v-0b679fcf="">example@example.com</span> - 2021-09-13 09:09 AM UTC <span data-v-0b679fcf="" class="badge rounded-pill float-end cursor-pointer bg-success">Public</span></p>
               <!--eslint-disable-next-line vue/no-v-html -->
-              <p data-v-bb90633e="" class="osim-flaw-comment">Dictum maecenas congue quis quam phasellus aenean.</p>
+              <p data-v-0b679fcf="" class="osim-flaw-comment">Dictum maecenas congue quis quam phasellus aenean.</p>
             </li>
           </ul>
         </div>
       </div>
     </section>
   </div>
-  <div data-v-357e30d7="" data-v-aa9a2cf6="" class="osim-collapsible-label my-2 pb-4"><button data-v-357e30d7="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-357e30d7="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-aa9a2cf6="" class="mx-2 mb-0 form-label">
-        <h4 data-v-aa9a2cf6="" class="">History</h4>
+  <div data-v-4715e8e2="" data-v-f4fcc8d4="" class="osim-collapsible-label my-2 pb-4"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><label data-v-f4fcc8d4="" class="mx-2 mb-0 form-label">
+        <h4 data-v-f4fcc8d4="" class="">History</h4>
       </label></button>
-    <div data-v-357e30d7="" class="ps-3 border-start">
-      <div data-v-357e30d7="" class=""><span data-v-aa9a2cf6="">There are no tracked changes for this flaw.</span></div>
+    <div data-v-4715e8e2="" class="ps-3 border-start">
+      <div data-v-4715e8e2="" class=""><span data-v-f4fcc8d4="">There are no tracked changes for this flaw.</span></div>
     </div>
   </div>
   <!--v-if-->
   </div>
   </div>
-  <div data-v-bb5d5f91="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-    <div data-v-bb5d5f91=""><button data-v-bb5d5f91="" type="button" class="btn btn-secondary">Reset Changes</button><button data-v-bb5d5f91="" type="submit" class="btn btn-primary ms-3">
+  <div data-v-76e7a15d="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
+    <div data-v-76e7a15d=""><button data-v-76e7a15d="" type="button" class="btn btn-secondary">Reset Changes</button><button data-v-76e7a15d="" type="submit" class="btn btn-primary ms-3">
         <div style="max-height: 1rem; max-width: 1rem;" role="status"></div> Save Changes
       </button></div>
   </div>

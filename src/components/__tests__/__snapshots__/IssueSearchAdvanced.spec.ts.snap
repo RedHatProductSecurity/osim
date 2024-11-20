@@ -1,253 +1,253 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`issueSearchAdvanced > should add new facet when last facet is populated 1`] = `
-"<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
-  <form data-v-21c9158a="" class="mb-2">
-    <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+"<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8="" class="mb-1">Advanced Search</summary>
+  <form data-v-b86992a8="" class="mb-2">
+    <div data-v-b86992a8="" class="input-group my-1">
+      <div data-v-b86992a8="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-b86992a8="" class="my-auto">Query Filter</span><button data-v-b86992a8="" class="btn btn-sm text-white" type="button"><i data-v-b86992a8="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-b86992a8="" class="form-control" style="height: 38px;"></textarea><button data-v-b86992a8="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-b86992a8="" class="bi bi-eraser fs-5"></i></button><button data-v-b86992a8="" class="btn btn-secondary py-0" type="button"><i data-v-b86992a8="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
-    <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
+    <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
         <!--v-if-->
-        <option data-v-21c9158a="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-21c9158a="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
-        <option data-v-21c9158a="" value="affects__affectedness">Affected Affectedness</option>
-        <option data-v-21c9158a="" value="affects__ps_component">Affected Component</option>
-        <option data-v-21c9158a="" value="affects__ps_module">Affected Module</option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
-        <option data-v-21c9158a="" value="requires_cve_description">CVE Description Review</option>
-        <option data-v-21c9158a="" value="cve_id">CVE ID</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cvss_scores__vector">CVSS Vector</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="embargoed">Embargoed</option>
-        <option data-v-21c9158a="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
-        <option data-v-21c9158a="" value="workflow_state">Flaw State</option>
-        <option data-v-21c9158a="" value="impact">Impact</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
-        <option data-v-21c9158a="" value="owner">Owner</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
-        <option data-v-21c9158a="" value="title">Title</option>
-        <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
-        <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control">
-      <div data-v-21c9158a="" class="btn-group"><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Empty field search" type="button"><i data-v-21c9158a="" class="bi bi-circle fs-5"></i></button><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Non empty field search" type="button"><i data-v-21c9158a="" class="bi bi-slash-circle fs-5"></i></button></div><button data-v-21c9158a="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+        <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
+        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
+        <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
+        <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
+        <option data-v-b86992a8="" value="cve_description">CVE Description</option>
+        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
+        <option data-v-b86992a8="" value="cve_id">CVE ID</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="embargoed">Embargoed</option>
+        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
+        <option data-v-b86992a8="" value="impact">Impact</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="mitigation">Mitigation</option>
+        <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="statement">Statement</option>
+        <option data-v-b86992a8="" value="title">Title</option>
+        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="uuid">UUID</option>
+      </select><input data-v-b86992a8="" type="text" class="form-control">
+      <div data-v-b86992a8="" class="btn-group"><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Empty field search" type="button"><i data-v-b86992a8="" class="bi bi-circle fs-5"></i></button><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Non empty field search" type="button"><i data-v-b86992a8="" class="bi bi-slash-circle fs-5"></i></button></div><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-b86992a8="" class="bi bi-eraser fs-5"></i></button><button data-v-b86992a8="" class="btn btn-primary py-0" type="button"><i data-v-b86992a8="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
-        <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
-        <option data-v-21c9158a="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-21c9158a="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
-        <option data-v-21c9158a="" value="affects__affectedness">Affected Affectedness</option>
-        <option data-v-21c9158a="" value="affects__ps_component">Affected Component</option>
-        <option data-v-21c9158a="" value="affects__ps_module">Affected Module</option>
-        <option data-v-21c9158a="" value="requires_cve_description">CVE Description Review</option>
-        <option data-v-21c9158a="" value="cve_id">CVE ID</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cvss_scores__vector">CVSS Vector</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="embargoed">Embargoed</option>
-        <option data-v-21c9158a="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
-        <option data-v-21c9158a="" value="workflow_state">Flaw State</option>
-        <option data-v-21c9158a="" value="impact">Impact</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
-        <option data-v-21c9158a="" value="owner">Owner</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
-        <option data-v-21c9158a="" value="title">Title</option>
-        <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
-        <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+    <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
+        <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
+        <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
+        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
+        <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
+        <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
+        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
+        <option data-v-b86992a8="" value="cve_id">CVE ID</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="embargoed">Embargoed</option>
+        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
+        <option data-v-b86992a8="" value="impact">Impact</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="mitigation">Mitigation</option>
+        <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="statement">Statement</option>
+        <option data-v-b86992a8="" value="title">Title</option>
+        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="uuid">UUID</option>
+      </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->
-      <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+      <!--v-if--><button data-v-b86992a8="" class="btn btn-primary py-0" type="button"><i data-v-b86992a8="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
+    <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
         <!--v-if--> Search
       </button>
-      <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
-        <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
-        <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
+      <!--v-if--><select data-v-b86992a8="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
+        <option data-v-b86992a8="" selected="" disabled="" label="Sort By..."></option>
+        <option data-v-b86992a8="" hidden="" label="" value=""></option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
       </select>
       <!--v-if-->
     </div>
   </form>
 </details>
-<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a=""> Saved Searches</summary>
-  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
-Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8=""> Saved Searches</summary>
+  <div data-v-b86992a8="" class="container-fluid mt-2"><button data-v-b86992a8="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-b86992a8="" class="bi ms-2 bi-star"></i></button></div>
   <!--v-if-->
-  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button"> Save Search </button>
+  <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" aria-label="Save search" type="button"> Save Search </button>
     <!--v-if-->
     <!--v-if-->
   </div>
 </details>
-<transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>
-<transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>"
 `;
 
 exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
-"<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
-  <form data-v-21c9158a="" class="mb-2">
-    <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+"<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8="" class="mb-1">Advanced Search</summary>
+  <form data-v-b86992a8="" class="mb-2">
+    <div data-v-b86992a8="" class="input-group my-1">
+      <div data-v-b86992a8="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-b86992a8="" class="my-auto">Query Filter</span><button data-v-b86992a8="" class="btn btn-sm text-white" type="button"><i data-v-b86992a8="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-b86992a8="" class="form-control" style="height: 38px;"></textarea><button data-v-b86992a8="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-b86992a8="" class="bi bi-eraser fs-5"></i></button><button data-v-b86992a8="" class="btn btn-secondary py-0" type="button"><i data-v-b86992a8="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
-    <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
-        <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
-        <option data-v-21c9158a="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-21c9158a="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
-        <option data-v-21c9158a="" value="affects__affectedness">Affected Affectedness</option>
-        <option data-v-21c9158a="" value="affects__ps_component">Affected Component</option>
-        <option data-v-21c9158a="" value="affects__ps_module">Affected Module</option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
-        <option data-v-21c9158a="" value="requires_cve_description">CVE Description Review</option>
-        <option data-v-21c9158a="" value="cve_id">CVE ID</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cvss_scores__vector">CVSS Vector</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="embargoed">Embargoed</option>
-        <option data-v-21c9158a="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
-        <option data-v-21c9158a="" value="workflow_state">Flaw State</option>
-        <option data-v-21c9158a="" value="impact">Impact</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
-        <option data-v-21c9158a="" value="owner">Owner</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
-        <option data-v-21c9158a="" value="title">Title</option>
-        <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
-        <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+    <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
+        <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
+        <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
+        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
+        <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
+        <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
+        <option data-v-b86992a8="" value="cve_description">CVE Description</option>
+        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
+        <option data-v-b86992a8="" value="cve_id">CVE ID</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="embargoed">Embargoed</option>
+        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
+        <option data-v-b86992a8="" value="impact">Impact</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="mitigation">Mitigation</option>
+        <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="statement">Statement</option>
+        <option data-v-b86992a8="" value="title">Title</option>
+        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="uuid">UUID</option>
+      </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->
-      <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+      <!--v-if--><button data-v-b86992a8="" class="btn btn-primary py-0" type="button"><i data-v-b86992a8="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
+    <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" aria-label="Advance search button">
         <!--v-if--> Search
       </button>
-      <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
-        <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
-        <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
+      <!--v-if--><select data-v-b86992a8="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
+        <option data-v-b86992a8="" selected="" disabled="" label="Sort By..."></option>
+        <option data-v-b86992a8="" hidden="" label="" value=""></option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
       </select>
       <!--v-if-->
     </div>
   </form>
 </details>
-<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a=""> Saved Searches</summary>
-  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
-Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8=""> Saved Searches</summary>
+  <div data-v-b86992a8="" class="container-fluid mt-2"><button data-v-b86992a8="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-b86992a8="" class="bi ms-2 bi-star"></i></button></div>
   <!--v-if-->
-  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
+  <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
     <!--v-if-->
     <!--v-if-->
   </div>
 </details>
-<transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>
-<transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>"
 `;
 
 exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
-"<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a="" class="mb-1">Advanced Search</summary>
-  <form data-v-21c9158a="" class="mb-2">
-    <div data-v-21c9158a="" class="input-group my-1">
-      <div data-v-21c9158a="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-21c9158a="" class="my-auto">Query Filter</span><button data-v-21c9158a="" class="btn btn-sm text-white" type="button"><i data-v-21c9158a="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-21c9158a="" class="form-control" style="height: 38px;"></textarea><button data-v-21c9158a="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-21c9158a="" class="bi bi-eraser fs-5"></i></button><button data-v-21c9158a="" class="btn btn-secondary py-0" type="button"><i data-v-21c9158a="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
+"<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8="" class="mb-1">Advanced Search</summary>
+  <form data-v-b86992a8="" class="mb-2">
+    <div data-v-b86992a8="" class="input-group my-1">
+      <div data-v-b86992a8="" type="button" class="query-input form-control bg-secondary text-white"><span data-v-b86992a8="" class="my-auto">Query Filter</span><button data-v-b86992a8="" class="btn btn-sm text-white" type="button"><i data-v-b86992a8="" class="bi bi-question-circle-fill fs-5" aria-label="hide query filter"></i></button></div><textarea data-v-b86992a8="" class="form-control" style="height: 38px;"></textarea><button data-v-b86992a8="" disabled="" class="btn btn-sm btn-secondary rounded-0 py-0" title="Clear query" type="button"><i data-v-b86992a8="" class="bi bi-eraser fs-5"></i></button><button data-v-b86992a8="" class="btn btn-secondary py-0" type="button"><i data-v-b86992a8="" class="bi bi-x fs-5" aria-label="hide query filter"></i></button>
     </div>
-    <div data-v-21c9158a="" class="input-group my-1"><select data-v-21c9158a="" class="form-select search-facet-field">
-        <option data-v-21c9158a="" selected="" disabled="" value="">Select field...</option>
-        <option data-v-21c9158a="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-21c9158a="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
-        <option data-v-21c9158a="" value="affects__affectedness">Affected Affectedness</option>
-        <option data-v-21c9158a="" value="affects__ps_component">Affected Component</option>
-        <option data-v-21c9158a="" value="affects__ps_module">Affected Module</option>
-        <option data-v-21c9158a="" value="cve_description">CVE Description</option>
-        <option data-v-21c9158a="" value="requires_cve_description">CVE Description Review</option>
-        <option data-v-21c9158a="" value="cve_id">CVE ID</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cvss_scores__vector">CVSS Vector</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="embargoed">Embargoed</option>
-        <option data-v-21c9158a="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
-        <option data-v-21c9158a="" value="workflow_state">Flaw State</option>
-        <option data-v-21c9158a="" value="impact">Impact</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="mitigation">Mitigation</option>
-        <option data-v-21c9158a="" value="owner">Owner</option>
-        <option data-v-21c9158a="" value="statement">Statement</option>
-        <option data-v-21c9158a="" value="title">Title</option>
-        <option data-v-21c9158a="" value="affects__trackers__external_system_id">Tracker External System ID</option>
-        <option data-v-21c9158a="" value="uuid">UUID</option>
-      </select><input data-v-21c9158a="" type="text" class="form-control" disabled="">
+    <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
+        <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
+        <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
+        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
+        <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
+        <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
+        <option data-v-b86992a8="" value="cve_description">CVE Description</option>
+        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
+        <option data-v-b86992a8="" value="cve_id">CVE ID</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="embargoed">Embargoed</option>
+        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
+        <option data-v-b86992a8="" value="impact">Impact</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="mitigation">Mitigation</option>
+        <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="statement">Statement</option>
+        <option data-v-b86992a8="" value="title">Title</option>
+        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="uuid">UUID</option>
+      </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->
-      <!--v-if--><button data-v-21c9158a="" class="btn btn-primary py-0" type="button"><i data-v-21c9158a="" class="bi-x fs-5" aria-label="remove field"></i></button>
+      <!--v-if--><button data-v-b86992a8="" class="btn btn-primary py-0" type="button"><i data-v-b86992a8="" class="bi-x fs-5" aria-label="remove field"></i></button>
     </div>
-    <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" disabled="" aria-label="Advance search button">
-        <div data-v-21c9158a="" class="spinner-border spinner-border-sm"></div> Search
+    <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" type="submit" style="width: 23ch;" disabled="" aria-label="Advance search button">
+        <div data-v-b86992a8="" class="spinner-border spinner-border-sm"></div> Search
       </button>
-      <!--v-if--><select data-v-21c9158a="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
-        <option data-v-21c9158a="" selected="" disabled="" label="Sort By..."></option>
-        <option data-v-21c9158a="" hidden="" label="" value=""></option>
-        <option data-v-21c9158a="" value="cvss_scores__score">CVSS Score</option>
-        <option data-v-21c9158a="" value="cwe_id">CWE ID</option>
-        <option data-v-21c9158a="" value="major_incident_state">Incident State</option>
-        <option data-v-21c9158a="" value="source">CVE Source</option>
+      <!--v-if--><select data-v-b86992a8="" class="sort-by-select form-select search-facet-field" title="When using this sorting with active table column sort, the table column field will be used as secondary sorting key">
+        <option data-v-b86992a8="" selected="" disabled="" label="Sort By..."></option>
+        <option data-v-b86992a8="" hidden="" label="" value=""></option>
+        <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
+        <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
+        <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
+        <option data-v-b86992a8="" value="source">CVE Source</option>
       </select>
       <!--v-if-->
     </div>
   </form>
 </details>
-<details data-v-21c9158a="" open="" class="osim-advanced-search-container container-fluid">
-  <summary data-v-21c9158a=""> Saved Searches</summary>
-  <div data-v-21c9158a="" class="container-fluid mt-2"><button data-v-21c9158a="" title="Query: django query
-Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-21c9158a="" class="bi ms-2 bi-star"></i></button></div>
+<details data-v-b86992a8="" open="" class="osim-advanced-search-container container-fluid">
+  <summary data-v-b86992a8=""> Saved Searches</summary>
+  <div data-v-b86992a8="" class="container-fluid mt-2"><button data-v-b86992a8="" title="Query: django query
+Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-b86992a8="" class="bi ms-2 bi-star"></i></button></div>
   <!--v-if-->
-  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <div data-v-21c9158a="" class="d-flex mt-2"><button data-v-21c9158a="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
+  <div data-v-b86992a8="" class="d-flex mt-2"><button data-v-b86992a8="" class="btn btn-primary me-2" aria-label="Save search" type="button" disabled=""> Save Search </button>
     <!--v-if-->
     <!--v-if-->
   </div>
 </details>
-<transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>
-<transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+<transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
   <!--v-if-->
 </transition-stub>"
 `;

@@ -2,21 +2,21 @@
 
 exports[`loginView > should render 1`] = `
 "<main data-v-45f5edd7="">
-  <div data-v-47199182="" data-v-45f5edd7="">
+  <div data-v-952917a1="" data-v-45f5edd7="">
     <!--v-if-->
-    <form data-v-47199182="" class="container">
-      <h1 data-v-47199182="" class="h4 mb-3 mt-2">Open Security Issue Management</h1>
+    <form data-v-952917a1="" class="container">
+      <h1 data-v-952917a1="" class="h4 mb-3 mt-2">Open Security Issue Management</h1>
       <!--<div class="row mb-3 text-center">-->
       <!--  <span class="col">Login</span>-->
       <!--</div>-->
-      <div data-v-47199182="" class="row mb-3">
-        <div data-v-47199182="" class="col"><label data-v-47199182="" for="username" class="visually-hidden">Username</label>
-          <div data-v-47199182="" class="input-group"><input data-v-47199182="" id="username" type="text" class="form-control" placeholder="username"></div>
-          <div data-v-47199182="" class="input-group"><input data-v-47199182="" id="password" type="password" class="form-control" placeholder="password"><button data-v-47199182="" id="reveal-password" class="btn btn-outline-secondary" type="button"><i data-v-47199182="" class="bi-eye-fill"></i></button></div>
+      <div data-v-952917a1="" class="row mb-3">
+        <div data-v-952917a1="" class="col"><label data-v-952917a1="" for="username" class="visually-hidden">Username</label>
+          <div data-v-952917a1="" class="input-group"><input data-v-952917a1="" id="username" type="text" class="form-control" placeholder="username"></div>
+          <div data-v-952917a1="" class="input-group"><input data-v-952917a1="" id="password" type="password" class="form-control" placeholder="password"><button data-v-952917a1="" id="reveal-password" class="btn btn-outline-secondary" type="button"><i data-v-952917a1="" class="bi-eye-fill"></i></button></div>
         </div>
       </div>
-      <div data-v-47199182="" class="row mb-3">
-        <div data-v-47199182="" class="col"><button data-v-47199182="" class="btn btn-primary align-self-end" type="submit">
+      <div data-v-952917a1="" class="row mb-3">
+        <div data-v-952917a1="" class="col"><button data-v-952917a1="" class="btn btn-primary align-self-end" type="submit">
             <!--v-if--> Login with credentials
           </button></div>
       </div>
