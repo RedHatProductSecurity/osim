@@ -2,10 +2,10 @@ import { ref, type ExtractPublicPropTypes } from 'vue';
 
 import { flushPromises, mount } from '@vue/test-utils';
 
+import FlawContributors from '@/components/FlawContributors/FlawContributors.vue';
+
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective';
 import type { ZodJiraContributorType } from '@/types/zodJira';
-
-import FlawContributors from '../FlawContributors.vue';
 
 const useJiraContributors = {
   contributors: ref<Partial<ZodJiraContributorType>[]>([]),

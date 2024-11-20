@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
-import { mountWithConfig } from '@/__tests__/helpers';
+import CveRequestForm from '@/components/CveRequestForm/CveRequestForm.vue';
 
-import CveRequestForm from '../CveRequestForm.vue';
+import { mountWithConfig } from '@/__tests__/helpers';
 
 describe('cveRequestForm', () => {
   it('renders a form', () => {

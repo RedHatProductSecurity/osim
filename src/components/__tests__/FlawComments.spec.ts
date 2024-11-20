@@ -1,7 +1,7 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 
-import FlawComments from '@/components/FlawComments.vue';
+import FlawComments from '@/components/FlawComments/FlawComments.vue';
 
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { searchJiraUsers } from '@/services/JiraService';

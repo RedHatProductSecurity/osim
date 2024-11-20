@@ -1,12 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Settings } from 'luxon';
 
-import IssueQueueItem from '@/components/IssueQueueItem.vue';
+import IssueQueueItem from '@/components/IssueQueueItem/IssueQueueItem.vue';
+import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
-
-import IssueQueue from '../IssueQueue.vue';
-import LabelCheckbox from '../widgets/LabelCheckbox.vue';
+import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 
 vi.mock('@vueuse/core', () => ({
   useLocalStorage: vi.fn((key: string, defaults) => {

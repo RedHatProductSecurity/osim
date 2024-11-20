@@ -2,11 +2,11 @@ import { ref } from 'vue';
 
 import { flushPromises, type VueWrapper } from '@vue/test-utils';
 
-import IssueQueue from '@/components/IssueQueue.vue';
-import LabelCheckbox from '@/components/widgets/LabelCheckbox.vue';
+import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 
+import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { useSearchStore } from '@/stores/SearchStore';
 

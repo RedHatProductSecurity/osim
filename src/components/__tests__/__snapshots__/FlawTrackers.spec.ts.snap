@@ -1,39 +1,39 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawTrackers > Correctly renders the component when there are not trackers to display 1`] = `
-"<div data-v-7006d35c="">
-  <div data-v-7006d35c="" class="affects-trackers">
-    <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
-      <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
-        <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
+"<div data-v-89a61d08="">
+  <div data-v-89a61d08="" class="affects-trackers">
+    <div data-v-89a61d08="" class="bg-dark rounded-top-2 text-info">
+      <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
+        <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
       <!--v-if-->
-      <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="tracker-badges">
+      <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
+        <div data-v-89a61d08="" class="tracker-badges">
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
-        </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
+        </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
-    <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="">
-          <tr data-v-7006d35c="">
-            <th data-v-7006d35c="">Bug ID</th>
-            <th data-v-7006d35c="">Module</th>
-            <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
-              <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
+    <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
+      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <thead data-v-89a61d08="">
+          <tr data-v-89a61d08="">
+            <th data-v-89a61d08="">Bug ID</th>
+            <th data-v-89a61d08="">Module</th>
+            <th data-v-89a61d08="">Product Stream</th>
+            <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
             </th>
-            <th data-v-7006d35c="">Resolution</th>
-            <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
-            <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08="">Resolution</th>
+            <th data-v-89a61d08=""> Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08=""> Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
         </thead>
-        <tbody data-v-7006d35c=""></tbody>
+        <tbody data-v-89a61d08=""></tbody>
       </table>
-      <div data-v-7006d35c=""> No trackers to display </div>
+      <div data-v-89a61d08=""> No trackers to display </div>
       <!--v-if-->
     </div>
   </div>
@@ -41,93 +41,93 @@ exports[`flawTrackers > Correctly renders the component when there are not track
 `;
 
 exports[`flawTrackers > Correctly renders the component when there are trackers to display 1`] = `
-"<div data-v-7006d35c="">
-  <div data-v-7006d35c="" class="affects-trackers">
-    <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
-      <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
-        <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
+"<div data-v-89a61d08="">
+  <div data-v-89a61d08="" class="affects-trackers">
+    <div data-v-89a61d08="" class="bg-dark rounded-top-2 text-info">
+      <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
+        <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
       <!--v-if-->
-      <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="tracker-badges">
-          <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
+      <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
+        <div data-v-89a61d08="" class="tracker-badges">
+          <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <!--v-if-->
-          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
-        </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
+          <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+        </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
-    <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="">
-          <tr data-v-7006d35c="">
-            <th data-v-7006d35c="">Bug ID</th>
-            <th data-v-7006d35c="">Module</th>
-            <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
-              <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
-                <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
-                <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
+    <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
+      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <thead data-v-89a61d08="">
+          <tr data-v-89a61d08="">
+            <th data-v-89a61d08="">Bug ID</th>
+            <th data-v-89a61d08="">Module</th>
+            <th data-v-89a61d08="">Product Stream</th>
+            <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
+                <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
+                <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
               </ul>
             </th>
-            <th data-v-7006d35c="">Resolution</th>
-            <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
-            <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08="">Resolution</th>
+            <th data-v-89a61d08=""> Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08=""> Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
         </thead>
-        <tbody data-v-7006d35c="">
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-            <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
+        <tbody data-v-89a61d08="">
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+            <td data-v-89a61d08="" title="xxxx-0-006">xxxx-0-006</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-07-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-07-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-            <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+            <td data-v-89a61d08="" title="xxxx-0-005">xxxx-0-005</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-08-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-08-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-004">xxxx-0-004</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-09-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-09-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-003">xxxx-0-003</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-10-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-10-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-002">xxxx-0-002</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-11-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-11-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-12-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-001">xxxx-0-001</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-12-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-12-01 13:06 UTC</td>
           </tr>
         </tbody>
       </table>
@@ -139,93 +139,93 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
 `;
 
 exports[`flawTrackers > Displays embedded trackers manager 1`] = `
-"<div data-v-7006d35c="">
-  <div data-v-7006d35c="" class="affects-trackers">
-    <div data-v-7006d35c="" class="bg-dark rounded-top-2 text-info">
-      <div data-v-7006d35c="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
-        <h5 data-v-7006d35c="" class="m-0">Trackers</h5>
+"<div data-v-89a61d08="">
+  <div data-v-89a61d08="" class="affects-trackers">
+    <div data-v-89a61d08="" class="bg-dark rounded-top-2 text-info">
+      <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
+        <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
       <!--v-if-->
-      <div data-v-7006d35c="" class="trackers-toolbar p-2 pt-1">
-        <div data-v-7006d35c="" class="tracker-badges">
-          <div data-v-7006d35c="" class="per-page-btn btn btn-sm badge"><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-7006d35c="" class="mx-2 my-auto">Per page: 10</span><i data-v-7006d35c="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
+      <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
+        <div data-v-89a61d08="" class="tracker-badges">
+          <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <!--v-if-->
-          <div data-v-7006d35c="" class="badge" title="Trackers displayed in current page"><span data-v-7006d35c="">Displaying 6</span></div>
-        </div><button data-v-7006d35c="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-7006d35c="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
+          <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+        </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
-    <div data-v-7006d35c="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-7006d35c="" class="table table-striped table-info mb-0">
-        <thead data-v-7006d35c="">
-          <tr data-v-7006d35c="">
-            <th data-v-7006d35c="">Bug ID</th>
-            <th data-v-7006d35c="">Module</th>
-            <th data-v-7006d35c="">Product Stream</th>
-            <th data-v-7006d35c=""><span data-v-7006d35c="" class="align-bottom me-1">Status</span><button data-v-7006d35c="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-7006d35c="" class="bi bi-funnel" title=""></i></button>
-              <ul data-v-7006d35c="" class="dropdown-menu" aria-labelledby="status-filter">
-                <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">NEW</span></a></li>
-                <li data-v-7006d35c=""><a data-v-7006d35c="" href="#" class="btn py-0 dropdown-item"><input data-v-7006d35c="" type="checkbox" class="form-check-input me-2"><span data-v-7006d35c="">CLOSED</span></a></li>
+    <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
+      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <thead data-v-89a61d08="">
+          <tr data-v-89a61d08="">
+            <th data-v-89a61d08="">Bug ID</th>
+            <th data-v-89a61d08="">Module</th>
+            <th data-v-89a61d08="">Product Stream</th>
+            <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
+                <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
+                <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
               </ul>
             </th>
-            <th data-v-7006d35c="">Resolution</th>
-            <th data-v-7006d35c=""> Created date <i data-v-7006d35c="" class="bi-caret-up-fill bi"></i></th>
-            <th data-v-7006d35c=""> Updated date <i data-v-7006d35c="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08="">Resolution</th>
+            <th data-v-89a61d08=""> Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-89a61d08=""> Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i></th>
           </tr>
         </thead>
-        <tbody data-v-7006d35c="">
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-            <td data-v-7006d35c="" title="xxxx-0-006">xxxx-0-006</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-07-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-07-01 13:06 UTC</td>
+        <tbody data-v-89a61d08="">
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0006" target="_blank">XXXX-0006 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+            <td data-v-89a61d08="" title="xxxx-0-006">xxxx-0-006</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-07-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-07-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-5">openshift-5</td>
-            <td data-v-7006d35c="" title="xxxx-0-005">xxxx-0-005</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-08-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-08-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0005" target="_blank">XXXX-0005 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+            <td data-v-89a61d08="" title="xxxx-0-005">xxxx-0-005</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-08-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-08-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-004">xxxx-0-004</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-09-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-09-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0004" target="_blank">XXXX-0004 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-004">xxxx-0-004</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-09-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-09-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-003">xxxx-0-003</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-10-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-10-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0003" target="_blank">XXXX-0003 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-003">xxxx-0-003</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-10-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-10-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-002">xxxx-0-002</td>
-            <td data-v-7006d35c="">CLOSED</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-11-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-11-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-002">xxxx-0-002</td>
+            <td data-v-89a61d08="">CLOSED</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-11-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-11-01 13:06 UTC</td>
           </tr>
-          <tr data-v-7006d35c="">
-            <td data-v-7006d35c=""><a data-v-7006d35c="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-7006d35c="" class="bi-box-arrow-up-right"></i></a></td>
-            <td data-v-7006d35c="" title="openshift-1">openshift-1</td>
-            <td data-v-7006d35c="" title="xxxx-0-001">xxxx-0-001</td>
-            <td data-v-7006d35c="">NEW</td>
-            <td data-v-7006d35c=""></td>
-            <td data-v-7006d35c="">2024-12-01 13:05 UTC</td>
-            <td data-v-7006d35c="">2024-12-01 13:06 UTC</td>
+          <tr data-v-89a61d08="">
+            <td data-v-89a61d08=""><a data-v-89a61d08="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
+            <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+            <td data-v-89a61d08="" title="xxxx-0-001">xxxx-0-001</td>
+            <td data-v-89a61d08="">NEW</td>
+            <td data-v-89a61d08=""></td>
+            <td data-v-89a61d08="">2024-12-01 13:05 UTC</td>
+            <td data-v-89a61d08="">2024-12-01 13:06 UTC</td>
           </tr>
         </tbody>
       </table>

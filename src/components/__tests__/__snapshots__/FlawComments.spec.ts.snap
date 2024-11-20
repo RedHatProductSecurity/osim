@@ -1,33 +1,33 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawComments > correctly display private comments 1`] = `
-"<section data-v-bb90633e="" class="osim-comments my-2">
-  <h4 data-v-bb90633e="" class="mb-4">Comments</h4>
-  <div data-v-8cd9b350="" data-v-bb90633e="">
-    <ul data-v-8cd9b350="" class="nav nav-tabs">
-      <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Bugzilla Public - This comments are visible to everyone.">Public Comments</button></li>
-      <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link active" title="Bugzilla Private - This comments are visible to Red Hat associates.">Private Comments</button></li>
-      <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Jira Internal - This comments are visible to team members with required permissions.">Internal Comments</button></li>
-      <li data-v-8cd9b350="" class="nav-item"><button data-v-8cd9b350="" type="button" class="nav-link" title="Bugzilla System - This are auto-generated private comments.">System Comments</button></li>
-      <div data-v-bb90633e="" class="tab-actions"><button data-v-bb90633e="" type="button" class="btn btn-secondary tab-btn"> Add Private Comment </button><a data-v-bb90633e="" href="sampleBzLink" target="_blank" class="btn btn-secondary tab-btn" disabled="false"> View on Bugzilla </a>
+"<section data-v-0b679fcf="" class="osim-comments my-2">
+  <h4 data-v-0b679fcf="" class="mb-4">Comments</h4>
+  <div data-v-8b945130="" data-v-0b679fcf="">
+    <ul data-v-8b945130="" class="nav nav-tabs">
+      <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Bugzilla Public - This comments are visible to everyone.">Public Comments</button></li>
+      <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link active" title="Bugzilla Private - This comments are visible to Red Hat associates.">Private Comments</button></li>
+      <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Jira Internal - This comments are visible to team members with required permissions.">Internal Comments</button></li>
+      <li data-v-8b945130="" class="nav-item"><button data-v-8b945130="" type="button" class="nav-link" title="Bugzilla System - This are auto-generated private comments.">System Comments</button></li>
+      <div data-v-0b679fcf="" class="tab-actions"><button data-v-0b679fcf="" type="button" class="btn btn-secondary tab-btn"> Add Private Comment </button><a data-v-0b679fcf="" href="sampleBzLink" target="_blank" class="btn btn-secondary tab-btn" disabled="false"> View on Bugzilla </a>
         <!--v-if-->
       </div>
     </ul>
-    <div data-v-bb90633e="" class="tab-content">
-      <div data-v-bb90633e="" class="info-message ms-3 mb-4">
+    <div data-v-0b679fcf="" class="tab-content">
+      <div data-v-0b679fcf="" class="info-message ms-3 mb-4">
         <!--v-if-->
       </div>
       <!--v-if-->
-      <ul data-v-bb90633e="" class="comments list-unstyled">
-        <li data-v-bb90633e="" class="bg-light p-4 mt-3 rounded-2">
-          <p data-v-bb90633e="" class="border-bottom pb-3"><i data-v-bb90633e="" class="bi bi-caret-right-fill me-2"></i><span data-v-bb90633e="">noonerelevant</span> - 2021-07-29 03:50 PM UTC <span data-v-bb90633e="" class="badge rounded-pill float-end cursor-pointer bg-info">Private</span></p>
+      <ul data-v-0b679fcf="" class="comments list-unstyled">
+        <li data-v-0b679fcf="" class="bg-light p-4 mt-3 rounded-2">
+          <p data-v-0b679fcf="" class="border-bottom pb-3"><i data-v-0b679fcf="" class="bi bi-caret-right-fill me-2"></i><span data-v-0b679fcf="">noonerelevant</span> - 2021-07-29 03:50 PM UTC <span data-v-0b679fcf="" class="badge rounded-pill float-end cursor-pointer bg-info">Private</span></p>
           <!--eslint-disable-next-line vue/no-v-html -->
-          <p data-v-bb90633e="" class="osim-flaw-comment">First private comment</p>
+          <p data-v-0b679fcf="" class="osim-flaw-comment">First private comment</p>
         </li>
-        <li data-v-bb90633e="" class="bg-light p-4 mt-3 rounded-2">
-          <p data-v-bb90633e="" class="border-bottom pb-3"><i data-v-bb90633e="" class="bi bi-caret-right-fill me-2"></i><span data-v-bb90633e="">onelessrelevant</span> - 2023-09-20 03:50 PM UTC <span data-v-bb90633e="" class="badge rounded-pill float-end cursor-pointer bg-info">Private</span></p>
+        <li data-v-0b679fcf="" class="bg-light p-4 mt-3 rounded-2">
+          <p data-v-0b679fcf="" class="border-bottom pb-3"><i data-v-0b679fcf="" class="bi bi-caret-right-fill me-2"></i><span data-v-0b679fcf="">onelessrelevant</span> - 2023-09-20 03:50 PM UTC <span data-v-0b679fcf="" class="badge rounded-pill float-end cursor-pointer bg-info">Private</span></p>
           <!--eslint-disable-next-line vue/no-v-html -->
-          <p data-v-bb90633e="" class="osim-flaw-comment">Second private comment</p>
+          <p data-v-0b679fcf="" class="osim-flaw-comment">Second private comment</p>
         </li>
       </ul>
     </div>

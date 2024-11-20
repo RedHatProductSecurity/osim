@@ -1,9 +1,9 @@
 import { flushPromises } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
-import { mountWithConfig } from '@/__tests__/helpers';
+import CvssNISTForm from '@/components/CvssNISTForm/CvssNISTForm.vue';
 
-import CvssNISTForm from '../CvssNISTForm.vue';
+import { mountWithConfig } from '@/__tests__/helpers';
 
 const mountCvssNISTForm = () => mountWithConfig(CvssNISTForm, {
   props: {

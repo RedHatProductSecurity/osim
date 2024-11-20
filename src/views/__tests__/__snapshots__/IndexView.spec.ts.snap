@@ -8,30 +8,30 @@ exports[`indexView > should render 1`] = `
 Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-fb5dc0f2="" class="bi ms-2 bi-star"></i></button></div>
     <!--v-if-->
   </details>
-  <div data-v-5f4ac70c="" data-v-fb5dc0f2="" class="osim-content container-fluid osim-issue-queue">
-    <div data-v-5f4ac70c="" class="osim-incident-filter">
-      <div data-v-5fd32c51="" data-v-5f4ac70c="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" class="d-inline-block form-check-input" type="checkbox"><span data-v-5fd32c51="" class="form-check-label">My Issues</span></label></div>
-      <div data-v-5fd32c51="" data-v-5f4ac70c="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" class="d-inline-block form-check-input" type="checkbox"><span data-v-5fd32c51="" class="form-check-label">Open Issues</span></label></div>
+  <div data-v-48717bcb="" data-v-fb5dc0f2="" class="osim-content container-fluid osim-issue-queue">
+    <div data-v-48717bcb="" class="osim-incident-filter">
+      <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
+      <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
       <!--v-if-->
       <!--v-if-->
     </div>
-    <div data-v-5f4ac70c="" class="osim-incident-list">
-      <table data-v-5f4ac70c="" class="table align-middle">
-        <thead data-v-5f4ac70c="" class="sticky-top">
+    <div data-v-48717bcb="" class="osim-incident-list">
+      <table data-v-48717bcb="" class="table align-middle">
+        <thead data-v-48717bcb="" class="sticky-top">
           <!-- <thead class=""> -->
-          <tr data-v-5f4ac70c="">
-            <th data-v-5f4ac70c="">ID <i data-v-5f4ac70c="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-            <th data-v-5f4ac70c="">Impact <i data-v-5f4ac70c="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-            <th data-v-5f4ac70c="">Created <i data-v-5f4ac70c="" class="bi-caret-down-fill bi"></i></th>
-            <th data-v-5f4ac70c="">Title <i data-v-5f4ac70c="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-            <th data-v-5f4ac70c="">State <i data-v-5f4ac70c="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-            <th data-v-5f4ac70c="">Owner <i data-v-5f4ac70c="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <tr data-v-48717bcb="">
+            <th data-v-48717bcb="">ID <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+            <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+            <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
+            <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+            <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+            <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           </tr>
         </thead>
-        <tbody data-v-5f4ac70c="" class="table-group-divider"></tbody>
+        <tbody data-v-48717bcb="" class="table-group-divider"></tbody>
       </table>
       <!--v-if-->
-      <p data-v-5f4ac70c="">No results.</p>
+      <p data-v-48717bcb="">No results.</p>
       <!--v-if-->
     </div>
   </div>

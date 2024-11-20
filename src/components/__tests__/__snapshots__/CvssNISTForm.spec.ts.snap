@@ -1,37 +1,37 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`cvssNISTForm > renders a button 1`] = `
-"<div data-v-b75fd97d="" class="osim-cve-nist-form" flaw="any" nvdpage="string" cvssjustification="string"><button data-v-b75fd97d="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
-  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
+"<div data-v-b05c734f="" class="osim-cve-nist-form" flaw="any" nvdpage="string" cvssjustification="string"><button data-v-b05c734f="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
-  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>
 </div>"
 `;
 
 exports[`cvssNISTForm > renders a modal when clicking the button 1`] = `
-"<div data-v-b75fd97d="" class="osim-cve-nist-form" flaw="any" nvdpage="string" cvssjustification="string"><button data-v-b75fd97d="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
-  <transition-stub data-v-a347fd2c="" name="modal" appear="false" persisted="false" css="true">
-    <div data-v-a347fd2c="" class="modal fade show" style="display: block;" aria-hidden="false" tabindex="-1" aria-labelledby="modalTitle" role="dialog">
-      <div data-v-a347fd2c="" class="modal-dialog">
-        <div data-v-a347fd2c="" class="modal-content">
-          <div data-v-a347fd2c="" class="modal-header">
-            <h1 data-v-a347fd2c="" class="modal-title fs-5"> Email NIST </h1><button data-v-a347fd2c="" type="button" class="btn-close" aria-label="Close"></button>
+"<div data-v-b05c734f="" class="osim-cve-nist-form" flaw="any" nvdpage="string" cvssjustification="string"><button data-v-b05c734f="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+    <div data-v-296c460d="" class="modal fade show" style="display: block;" aria-hidden="false" tabindex="-1" aria-labelledby="modalTitle" role="dialog">
+      <div data-v-296c460d="" class="modal-dialog">
+        <div data-v-296c460d="" class="modal-content">
+          <div data-v-296c460d="" class="modal-header">
+            <h1 data-v-296c460d="" class="modal-title fs-5"> Email NIST </h1><button data-v-296c460d="" type="button" class="btn-close" aria-label="Close"></button>
           </div>
-          <div data-v-a347fd2c="" class="modal-body">
-            <div data-v-b75fd97d="" class="osim-input mb-3 border-start ps-3">
-              <p data-v-b75fd97d=""><span data-v-b75fd97d="" class="fw-bold">To:</span> <span data-v-b75fd97d="" class="to-email">nvd@nist.gov</span></p>
-              <p data-v-b75fd97d="" class="from-email"><span data-v-b75fd97d="" class="fw-bold">From:</span> </p>
-              <p data-v-b75fd97d=""><span data-v-b75fd97d="" class="fw-bold">CC:</span> <span data-v-b75fd97d="" class="cc-email">secalert@redhat.com</span></p>
-              <hr data-v-b75fd97d="">
-              <p data-v-b75fd97d="">Subject:</p>
-              <div data-v-b75fd97d="" class="mb-2"><input data-v-b75fd97d="" class="form-control" readonly="" type="text" value="CVSS Rescore Request - string"></div>
-              <hr data-v-b75fd97d="">
-            </div><label data-v-1ccd17dd="" data-v-b75fd97d="" class="osim-input mb-2 ps-3">
-              <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Body: <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-                <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" class="form-control col-9 d-inline-block" rows="5" value="Hello,
+          <div data-v-296c460d="" class="modal-body">
+            <div data-v-b05c734f="" class="osim-input mb-3 border-start ps-3">
+              <p data-v-b05c734f=""><span data-v-b05c734f="" class="fw-bold">To:</span> <span data-v-b05c734f="" class="to-email">nvd@nist.gov</span></p>
+              <p data-v-b05c734f="" class="from-email"><span data-v-b05c734f="" class="fw-bold">From:</span> </p>
+              <p data-v-b05c734f=""><span data-v-b05c734f="" class="fw-bold">CC:</span> <span data-v-b05c734f="" class="cc-email">secalert@redhat.com</span></p>
+              <hr data-v-b05c734f="">
+              <p data-v-b05c734f="">Subject:</p>
+              <div data-v-b05c734f="" class="mb-2"><input data-v-b05c734f="" class="form-control" readonly="" type="text" value="CVSS Rescore Request - string"></div>
+              <hr data-v-b05c734f="">
+            </div><label data-v-055401b4="" data-v-b05c734f="" class="osim-input mb-2 ps-3">
+              <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Body: <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+                <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" class="form-control col-9 d-inline-block" rows="5" value="Hello,
 
 I have performed an analysis of string on behalf of Red Hat Product Security,
 resulting in a Red Hat CVSS score which is different from the NIST score.
@@ -58,13 +58,13 @@ Thank you,
               </div>
             </label>
           </div>
-          <div data-v-a347fd2c="" class="modal-footer"><button data-v-b75fd97d="" type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal">Cancel </button><button data-v-b75fd97d="" type="button" class="btn btn-primary send-email"> Send Email </button></div>
+          <div data-v-296c460d="" class="modal-footer"><button data-v-b05c734f="" type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal">Cancel </button><button data-v-b05c734f="" type="button" class="btn btn-primary send-email"> Send Email </button></div>
         </div>
       </div>
     </div>
   </transition-stub>
-  <transition-stub data-v-a347fd2c="" name="modal-bg" appear="false" persisted="false" css="true">
-    <div data-v-a347fd2c="" class="modal-backdrop fade show"></div>
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+    <div data-v-296c460d="" class="modal-backdrop fade show"></div>
   </transition-stub>
 </div>"
 `;

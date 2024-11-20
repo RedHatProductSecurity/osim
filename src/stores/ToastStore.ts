@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { DateTime } from 'luxon';
 
-import type { ToastProps } from '@/components/widgets/Toast.vue';
+import type { ToastProps } from '@/widgets/Toast/Toast.vue';
 
 export interface ToastNew {
   body: string;

@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import FlawTrackers from '@/components/FlawTrackers.vue';
+import FlawTrackers from '@/components/FlawTrackers/FlawTrackers.vue';
 
 import type { ZodFlawType } from '@/types';
 import { mountWithConfig } from '@/__tests__/helpers';

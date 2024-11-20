@@ -2,11 +2,11 @@ import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
+import Navbar from '@/components/Navbar/Navbar.vue';
+
 import router from '@/router';
 import { useToastStore, type ToastAdded } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
-
-import Navbar from '../Navbar.vue';
 
 describe('navbar', () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;

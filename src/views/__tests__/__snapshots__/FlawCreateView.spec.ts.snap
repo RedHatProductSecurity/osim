@@ -2,19 +2,19 @@
 
 exports[`flawCreateView > should render 1`] = `
 "<main data-v-764cfa6a="">
-  <form data-v-bb5d5f91="" data-v-764cfa6a="" class="osim-flaw-form">
-    <div data-v-bb5d5f91="" class="osim-content container-fluid">
-      <div data-v-bb5d5f91="" class="row px-4 my-3">
-        <div data-v-bb5d5f91="" class="row osim-flaw-form-section pt-0">
-          <div data-v-bb5d5f91="" class="osim-flaw-form-header">
+  <form data-v-76e7a15d="" data-v-764cfa6a="" class="osim-flaw-form">
+    <div data-v-76e7a15d="" class="osim-content container-fluid">
+      <div data-v-76e7a15d="" class="row px-4 my-3">
+        <div data-v-76e7a15d="" class="row osim-flaw-form-section pt-0">
+          <div data-v-76e7a15d="" class="osim-flaw-form-header">
             <!--v-if-->
             <!--v-if-->
           </div>
-          <div data-v-bb5d5f91="" id="" class="col-6"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-              <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Title</span>
+          <div data-v-76e7a15d="" id="" class="col-6"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+              <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
                 <!--v-if-->
                 <!-- for invalid-tooltip positioning -->
-                <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+                <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
                   <!--<Transition name="flash-bg" :duration="2000">-->
                   <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
                     <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control is-invalid"></span>
@@ -25,22 +25,22 @@ exports[`flawCreateView > should render 1`] = `
                   <div class="invalid-tooltip">String must contain at least 4 character(s)</div>
                 </div>
               </div>
-            </label><label data-v-3b095636="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-              <div data-v-3b095636="" class="row"><span data-v-3b095636="" class="form-label col-3">Components</span>
-                <div data-v-3b095636="" class="col-9">
-                  <div data-v-329e9a81="" data-v-3b095636="" class="osim-pill-list form-control is-invalid">
-                    <transition-group-stub data-v-329e9a81="" appear="false" persisted="false" css="true"></transition-group-stub><input data-v-329e9a81="" class="osim-pill-list-input no-drag" type="text">
-                    <div data-v-329e9a81="" class="invalid-tooltip no-drag">Components cannot be empty.</div>
+            </label><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+              <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
+                <div data-v-76f6bf34="" class="col-9">
+                  <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control is-invalid">
+                    <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
+                    <div data-v-8bc603c3="" class="invalid-tooltip no-drag">Components cannot be empty.</div>
                   </div>
                 </div>
               </div>
             </label>
-            <div data-v-bb5d5f91="" class="row">
-              <div data-v-bb5d5f91="" class="col"><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-                  <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">CVE ID</span>
+            <div data-v-76e7a15d="" class="row">
+              <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+                  <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
                     <!--v-if-->
                     <!-- for invalid-tooltip positioning -->
-                    <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+                    <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
                       <!--<Transition name="flash-bg" :duration="2000">-->
                       <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
                         <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
@@ -53,21 +53,21 @@ exports[`flawCreateView > should render 1`] = `
                   </div>
                 </label></div>
               <!--v-if-->
-            </div><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-              <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Impact</span>
-                <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select is-invalid">
-                    <option data-v-e273ec44="" selected="" disabled="" value=""></option>
-                    <option data-v-e273ec44="" value="CRITICAL">CRITICAL</option>
-                    <option data-v-e273ec44="" value="IMPORTANT">IMPORTANT</option>
-                    <option data-v-e273ec44="" value="MODERATE">MODERATE</option>
-                    <option data-v-e273ec44="" value="LOW">LOW</option>
-                    <option data-v-e273ec44="" value="">NONE</option>
+            </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+              <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact</span>
+                <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select is-invalid">
+                    <option data-v-001a00e0="" selected="" disabled="" value=""></option>
+                    <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
+                    <option data-v-001a00e0="" value="IMPORTANT">IMPORTANT</option>
+                    <option data-v-001a00e0="" value="MODERATE">MODERATE</option>
+                    <option data-v-001a00e0="" value="LOW">LOW</option>
+                    <option data-v-001a00e0="" value="">NONE</option>
                   </select>
-                  <div data-v-e273ec44="" class="invalid-tooltip">You must select an impact before saving the Flaw.</div>
+                  <div data-v-001a00e0="" class="invalid-tooltip">You must select an impact before saving the Flaw.</div>
                 </div>
               </div>
             </label>
-            <div data-v-ffda1b6f="" data-v-bb5d5f91="" tabindex="0">
+            <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
               <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSSv3 </span>
                   <div data-v-ffda1b6f="" class="input-wrapper col">
                     <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
@@ -122,10 +122,10 @@ exports[`flawCreateView > should render 1`] = `
                 </div>
               </div>
             </div>
-            <div data-v-bb5d5f91="">
-              <div data-v-73e4e34b="" class="osim-input ps-3 mb-2 mb-2">
-                <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
-                  <div data-v-73e4e34b="" class="col-9">
+            <div data-v-76e7a15d="">
+              <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
+                <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+                  <div data-v-0e2ae48e="" class="col-9">
                     <div class="d-flex flex-row">
                       <div class="form-control text-break h-auto"><span>-</span></div>
                       <!--v-if-->
@@ -134,11 +134,11 @@ exports[`flawCreateView > should render 1`] = `
                 </div>
               </div>
               <!--v-if-->
-            </div><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-              <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">CWE ID</span>
+            </div><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+              <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CWE ID</span>
                 <!--v-if-->
                 <!-- for invalid-tooltip positioning -->
-                <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-text">
+                <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
                   <!--<Transition name="flash-bg" :duration="2000">-->
                   <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
                     <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
@@ -149,135 +149,135 @@ exports[`flawCreateView > should render 1`] = `
                   <!--v-if-->
                 </div>
               </div>
-            </label><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-              <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">CVE Source</span>
-                <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select is-invalid" value="">
+            </label><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+              <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source</span>
+                <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select is-invalid" value="">
                     <!--v-if-->
-                    <option data-v-e273ec44="" selected="" value=""></option>
-                    <option data-v-e273ec44="" value="ADOBE">ADOBE</option>
-                    <option data-v-e273ec44="" value="APPLE">APPLE</option>
-                    <option data-v-e273ec44="" hidden="" value="ASF">ASF</option>
-                    <option data-v-e273ec44="" hidden="" value="BIND">BIND</option>
-                    <option data-v-e273ec44="" hidden="" value="BK">BK</option>
-                    <option data-v-e273ec44="" value="BUGTRAQ">BUGTRAQ</option>
-                    <option data-v-e273ec44="" hidden="" value="BUGZILLA">BUGZILLA</option>
-                    <option data-v-e273ec44="" value="CERT">CERT</option>
-                    <option data-v-e273ec44="" hidden="" value="CERTIFI">CERTIFI</option>
-                    <option data-v-e273ec44="" hidden="" value="CORELABS">CORELABS</option>
-                    <option data-v-e273ec44="" value="CUSTOMER">CUSTOMER</option>
-                    <option data-v-e273ec44="" value="CVE">CVE</option>
-                    <option data-v-e273ec44="" hidden="" value="CVEORG">CVEORG</option>
-                    <option data-v-e273ec44="" hidden="" value="DAILYDAVE">DAILYDAVE</option>
-                    <option data-v-e273ec44="" value="DEBIAN">DEBIAN</option>
-                    <option data-v-e273ec44="" value="DISTROS">DISTROS</option>
-                    <option data-v-e273ec44="" hidden="" value="FEDORA">FEDORA</option>
-                    <option data-v-e273ec44="" hidden="" value="FETCHMAIL">FETCHMAIL</option>
-                    <option data-v-e273ec44="" hidden="" value="FREEDESKTOP">FREEDESKTOP</option>
-                    <option data-v-e273ec44="" hidden="" value="FREERADIUS">FREERADIUS</option>
-                    <option data-v-e273ec44="" hidden="" value="FRSIRT">FRSIRT</option>
-                    <option data-v-e273ec44="" hidden="" value="FULLDISCLOSURE">FULLDISCLOSURE</option>
-                    <option data-v-e273ec44="" hidden="" value="GAIM">GAIM</option>
-                    <option data-v-e273ec44="" value="GENTOO">GENTOO</option>
-                    <option data-v-e273ec44="" hidden="" value="GENTOOBZ">GENTOOBZ</option>
-                    <option data-v-e273ec44="" value="GIT">GIT</option>
-                    <option data-v-e273ec44="" hidden="" value="GNOME">GNOME</option>
-                    <option data-v-e273ec44="" hidden="" value="GNUPG">GNUPG</option>
-                    <option data-v-e273ec44="" value="GOOGLE">GOOGLE</option>
-                    <option data-v-e273ec44="" hidden="" value="HP">HP</option>
-                    <option data-v-e273ec44="" value="HW_VENDOR">HW_VENDOR</option>
-                    <option data-v-e273ec44="" hidden="" value="IBM">IBM</option>
-                    <option data-v-e273ec44="" hidden="" value="IDEFENSE">IDEFENSE</option>
-                    <option data-v-e273ec44="" value="INTERNET">INTERNET</option>
-                    <option data-v-e273ec44="" hidden="" value="ISC">ISC</option>
-                    <option data-v-e273ec44="" hidden="" value="ISEC">ISEC</option>
-                    <option data-v-e273ec44="" hidden="" value="IT">IT</option>
-                    <option data-v-e273ec44="" hidden="" value="JBOSS">JBOSS</option>
-                    <option data-v-e273ec44="" hidden="" value="JPCERT">JPCERT</option>
-                    <option data-v-e273ec44="" hidden="" value="KERNELBUGZILLA">KERNELBUGZILLA</option>
-                    <option data-v-e273ec44="" hidden="" value="KERNELSEC">KERNELSEC</option>
-                    <option data-v-e273ec44="" value="LKML">LKML</option>
-                    <option data-v-e273ec44="" hidden="" value="LWN">LWN</option>
-                    <option data-v-e273ec44="" hidden="" value="MACROMEDIA">MACROMEDIA</option>
-                    <option data-v-e273ec44="" value="MAGEIA">MAGEIA</option>
-                    <option data-v-e273ec44="" hidden="" value="MAILINGLIST">MAILINGLIST</option>
-                    <option data-v-e273ec44="" hidden="" value="MILW0RM">MILW0RM</option>
-                    <option data-v-e273ec44="" hidden="" value="MIT">MIT</option>
-                    <option data-v-e273ec44="" hidden="" value="MITRE">MITRE</option>
-                    <option data-v-e273ec44="" value="MOZILLA">MOZILLA</option>
-                    <option data-v-e273ec44="" hidden="" value="MUTTDEV">MUTTDEV</option>
-                    <option data-v-e273ec44="" hidden="" value="NETDEV">NETDEV</option>
-                    <option data-v-e273ec44="" hidden="" value="NISCC">NISCC</option>
-                    <option data-v-e273ec44="" value="NVD">NVD</option>
-                    <option data-v-e273ec44="" hidden="" value="OCERT">OCERT</option>
-                    <option data-v-e273ec44="" hidden="" value="OPENOFFICE">OPENOFFICE</option>
-                    <option data-v-e273ec44="" value="OPENSSL">OPENSSL</option>
-                    <option data-v-e273ec44="" hidden="" value="OPENSUSE">OPENSUSE</option>
-                    <option data-v-e273ec44="" value="ORACLE">ORACLE</option>
-                    <option data-v-e273ec44="" hidden="" value="OSS">OSS</option>
-                    <option data-v-e273ec44="" value="OSSSECURITY">OSSSECURITY</option>
-                    <option data-v-e273ec44="" value="OSV">OSV</option>
-                    <option data-v-e273ec44="" hidden="" value="PHP">PHP</option>
-                    <option data-v-e273ec44="" hidden="" value="PIDGIN">PIDGIN</option>
-                    <option data-v-e273ec44="" hidden="" value="POSTGRESQL">POSTGRESQL</option>
-                    <option data-v-e273ec44="" hidden="" value="PRESS">PRESS</option>
-                    <option data-v-e273ec44="" hidden="" value="REAL">REAL</option>
-                    <option data-v-e273ec44="" value="REDHAT">REDHAT</option>
-                    <option data-v-e273ec44="" value="RESEARCHER">RESEARCHER</option>
-                    <option data-v-e273ec44="" hidden="" value="RT">RT</option>
-                    <option data-v-e273ec44="" hidden="" value="SAMBA">SAMBA</option>
-                    <option data-v-e273ec44="" hidden="" value="SECALERT">SECALERT</option>
-                    <option data-v-e273ec44="" value="SECUNIA">SECUNIA</option>
-                    <option data-v-e273ec44="" hidden="" value="SECURITYFOCUS">SECURITYFOCUS</option>
-                    <option data-v-e273ec44="" value="SKO">SKO</option>
-                    <option data-v-e273ec44="" hidden="" value="SQUID">SQUID</option>
-                    <option data-v-e273ec44="" hidden="" value="SQUIRRELMAIL">SQUIRRELMAIL</option>
-                    <option data-v-e273ec44="" hidden="" value="SUN">SUN</option>
-                    <option data-v-e273ec44="" hidden="" value="SUNSOLVE">SUNSOLVE</option>
-                    <option data-v-e273ec44="" value="SUSE">SUSE</option>
-                    <option data-v-e273ec44="" value="TWITTER">TWITTER</option>
-                    <option data-v-e273ec44="" value="UBUNTU">UBUNTU</option>
-                    <option data-v-e273ec44="" value="UPSTREAM">UPSTREAM</option>
-                    <option data-v-e273ec44="" hidden="" value="VENDORSEC">VENDORSEC</option>
-                    <option data-v-e273ec44="" hidden="" value="VULNWATCH">VULNWATCH</option>
-                    <option data-v-e273ec44="" hidden="" value="WIRESHARK">WIRESHARK</option>
-                    <option data-v-e273ec44="" hidden="" value="XCHAT">XCHAT</option>
-                    <option data-v-e273ec44="" hidden="" value="XEN">XEN</option>
-                    <option data-v-e273ec44="" hidden="" value="XPDF">XPDF</option>
+                    <option data-v-001a00e0="" selected="" value=""></option>
+                    <option data-v-001a00e0="" value="ADOBE">ADOBE</option>
+                    <option data-v-001a00e0="" value="APPLE">APPLE</option>
+                    <option data-v-001a00e0="" hidden="" value="ASF">ASF</option>
+                    <option data-v-001a00e0="" hidden="" value="BIND">BIND</option>
+                    <option data-v-001a00e0="" hidden="" value="BK">BK</option>
+                    <option data-v-001a00e0="" value="BUGTRAQ">BUGTRAQ</option>
+                    <option data-v-001a00e0="" hidden="" value="BUGZILLA">BUGZILLA</option>
+                    <option data-v-001a00e0="" value="CERT">CERT</option>
+                    <option data-v-001a00e0="" hidden="" value="CERTIFI">CERTIFI</option>
+                    <option data-v-001a00e0="" hidden="" value="CORELABS">CORELABS</option>
+                    <option data-v-001a00e0="" value="CUSTOMER">CUSTOMER</option>
+                    <option data-v-001a00e0="" value="CVE">CVE</option>
+                    <option data-v-001a00e0="" hidden="" value="CVEORG">CVEORG</option>
+                    <option data-v-001a00e0="" hidden="" value="DAILYDAVE">DAILYDAVE</option>
+                    <option data-v-001a00e0="" value="DEBIAN">DEBIAN</option>
+                    <option data-v-001a00e0="" value="DISTROS">DISTROS</option>
+                    <option data-v-001a00e0="" hidden="" value="FEDORA">FEDORA</option>
+                    <option data-v-001a00e0="" hidden="" value="FETCHMAIL">FETCHMAIL</option>
+                    <option data-v-001a00e0="" hidden="" value="FREEDESKTOP">FREEDESKTOP</option>
+                    <option data-v-001a00e0="" hidden="" value="FREERADIUS">FREERADIUS</option>
+                    <option data-v-001a00e0="" hidden="" value="FRSIRT">FRSIRT</option>
+                    <option data-v-001a00e0="" hidden="" value="FULLDISCLOSURE">FULLDISCLOSURE</option>
+                    <option data-v-001a00e0="" hidden="" value="GAIM">GAIM</option>
+                    <option data-v-001a00e0="" value="GENTOO">GENTOO</option>
+                    <option data-v-001a00e0="" hidden="" value="GENTOOBZ">GENTOOBZ</option>
+                    <option data-v-001a00e0="" value="GIT">GIT</option>
+                    <option data-v-001a00e0="" hidden="" value="GNOME">GNOME</option>
+                    <option data-v-001a00e0="" hidden="" value="GNUPG">GNUPG</option>
+                    <option data-v-001a00e0="" value="GOOGLE">GOOGLE</option>
+                    <option data-v-001a00e0="" hidden="" value="HP">HP</option>
+                    <option data-v-001a00e0="" value="HW_VENDOR">HW_VENDOR</option>
+                    <option data-v-001a00e0="" hidden="" value="IBM">IBM</option>
+                    <option data-v-001a00e0="" hidden="" value="IDEFENSE">IDEFENSE</option>
+                    <option data-v-001a00e0="" value="INTERNET">INTERNET</option>
+                    <option data-v-001a00e0="" hidden="" value="ISC">ISC</option>
+                    <option data-v-001a00e0="" hidden="" value="ISEC">ISEC</option>
+                    <option data-v-001a00e0="" hidden="" value="IT">IT</option>
+                    <option data-v-001a00e0="" hidden="" value="JBOSS">JBOSS</option>
+                    <option data-v-001a00e0="" hidden="" value="JPCERT">JPCERT</option>
+                    <option data-v-001a00e0="" hidden="" value="KERNELBUGZILLA">KERNELBUGZILLA</option>
+                    <option data-v-001a00e0="" hidden="" value="KERNELSEC">KERNELSEC</option>
+                    <option data-v-001a00e0="" value="LKML">LKML</option>
+                    <option data-v-001a00e0="" hidden="" value="LWN">LWN</option>
+                    <option data-v-001a00e0="" hidden="" value="MACROMEDIA">MACROMEDIA</option>
+                    <option data-v-001a00e0="" value="MAGEIA">MAGEIA</option>
+                    <option data-v-001a00e0="" hidden="" value="MAILINGLIST">MAILINGLIST</option>
+                    <option data-v-001a00e0="" hidden="" value="MILW0RM">MILW0RM</option>
+                    <option data-v-001a00e0="" hidden="" value="MIT">MIT</option>
+                    <option data-v-001a00e0="" hidden="" value="MITRE">MITRE</option>
+                    <option data-v-001a00e0="" value="MOZILLA">MOZILLA</option>
+                    <option data-v-001a00e0="" hidden="" value="MUTTDEV">MUTTDEV</option>
+                    <option data-v-001a00e0="" hidden="" value="NETDEV">NETDEV</option>
+                    <option data-v-001a00e0="" hidden="" value="NISCC">NISCC</option>
+                    <option data-v-001a00e0="" value="NVD">NVD</option>
+                    <option data-v-001a00e0="" hidden="" value="OCERT">OCERT</option>
+                    <option data-v-001a00e0="" hidden="" value="OPENOFFICE">OPENOFFICE</option>
+                    <option data-v-001a00e0="" value="OPENSSL">OPENSSL</option>
+                    <option data-v-001a00e0="" hidden="" value="OPENSUSE">OPENSUSE</option>
+                    <option data-v-001a00e0="" value="ORACLE">ORACLE</option>
+                    <option data-v-001a00e0="" hidden="" value="OSS">OSS</option>
+                    <option data-v-001a00e0="" value="OSSSECURITY">OSSSECURITY</option>
+                    <option data-v-001a00e0="" value="OSV">OSV</option>
+                    <option data-v-001a00e0="" hidden="" value="PHP">PHP</option>
+                    <option data-v-001a00e0="" hidden="" value="PIDGIN">PIDGIN</option>
+                    <option data-v-001a00e0="" hidden="" value="POSTGRESQL">POSTGRESQL</option>
+                    <option data-v-001a00e0="" hidden="" value="PRESS">PRESS</option>
+                    <option data-v-001a00e0="" hidden="" value="REAL">REAL</option>
+                    <option data-v-001a00e0="" value="REDHAT">REDHAT</option>
+                    <option data-v-001a00e0="" value="RESEARCHER">RESEARCHER</option>
+                    <option data-v-001a00e0="" hidden="" value="RT">RT</option>
+                    <option data-v-001a00e0="" hidden="" value="SAMBA">SAMBA</option>
+                    <option data-v-001a00e0="" hidden="" value="SECALERT">SECALERT</option>
+                    <option data-v-001a00e0="" value="SECUNIA">SECUNIA</option>
+                    <option data-v-001a00e0="" hidden="" value="SECURITYFOCUS">SECURITYFOCUS</option>
+                    <option data-v-001a00e0="" value="SKO">SKO</option>
+                    <option data-v-001a00e0="" hidden="" value="SQUID">SQUID</option>
+                    <option data-v-001a00e0="" hidden="" value="SQUIRRELMAIL">SQUIRRELMAIL</option>
+                    <option data-v-001a00e0="" hidden="" value="SUN">SUN</option>
+                    <option data-v-001a00e0="" hidden="" value="SUNSOLVE">SUNSOLVE</option>
+                    <option data-v-001a00e0="" value="SUSE">SUSE</option>
+                    <option data-v-001a00e0="" value="TWITTER">TWITTER</option>
+                    <option data-v-001a00e0="" value="UBUNTU">UBUNTU</option>
+                    <option data-v-001a00e0="" value="UPSTREAM">UPSTREAM</option>
+                    <option data-v-001a00e0="" hidden="" value="VENDORSEC">VENDORSEC</option>
+                    <option data-v-001a00e0="" hidden="" value="VULNWATCH">VULNWATCH</option>
+                    <option data-v-001a00e0="" hidden="" value="WIRESHARK">WIRESHARK</option>
+                    <option data-v-001a00e0="" hidden="" value="XCHAT">XCHAT</option>
+                    <option data-v-001a00e0="" hidden="" value="XEN">XEN</option>
+                    <option data-v-001a00e0="" hidden="" value="XPDF">XPDF</option>
                   </select>
-                  <div data-v-e273ec44="" class="invalid-tooltip">You must specify a source for this Flaw before saving.</div>
+                  <div data-v-001a00e0="" class="invalid-tooltip">You must specify a source for this Flaw before saving.</div>
                 </div>
               </div>
             </label>
           </div>
-          <div data-v-bb5d5f91="" class="col-6">
-            <!--v-if--><label data-v-e273ec44="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3">
-              <div data-v-e273ec44="" class="row"><span data-v-e273ec44="" class="form-label col-3">Incident State</span>
-                <div data-v-e273ec44="" class="col-9"><select data-v-e273ec44="" class="form-select" value="">
+          <div data-v-76e7a15d="" class="col-6">
+            <!--v-if--><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+              <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
+                <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
                     <!--v-if-->
-                    <option data-v-e273ec44="" selected="" value=""></option>
-                    <option data-v-e273ec44="" value="REQUESTED">REQUESTED</option>
-                    <option data-v-e273ec44="" value="REJECTED">REJECTED</option>
-                    <option data-v-e273ec44="" value="APPROVED">APPROVED</option>
-                    <option data-v-e273ec44="" value="CISA_APPROVED">CISA_APPROVED</option>
-                    <option data-v-e273ec44="" value="MINOR">MINOR</option>
-                    <option data-v-e273ec44="" value="ZERO_DAY">ZERO_DAY</option>
-                    <option data-v-e273ec44="" value="INVALID">INVALID</option>
+                    <option data-v-001a00e0="" selected="" value=""></option>
+                    <option data-v-001a00e0="" value="REQUESTED">REQUESTED</option>
+                    <option data-v-001a00e0="" value="REJECTED">REJECTED</option>
+                    <option data-v-001a00e0="" value="APPROVED">APPROVED</option>
+                    <option data-v-001a00e0="" value="CISA_APPROVED">CISA_APPROVED</option>
+                    <option data-v-001a00e0="" value="MINOR">MINOR</option>
+                    <option data-v-001a00e0="" value="ZERO_DAY">ZERO_DAY</option>
+                    <option data-v-001a00e0="" value="INVALID">INVALID</option>
                   </select>
                   <!--v-if-->
                 </div>
               </div>
-            </label><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-              <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
-                <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-date">
+            </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+              <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
+                <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
                   <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2024-09-24</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
                   <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2024-09-24"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
                   <!--v-if-->
                 </div>
                 <!--v-if-->
               </div>
-            </label><label data-v-3f715d23="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 input-group">
-              <div data-v-3f715d23="" class="row"><span data-v-3f715d23="" class="form-label col-3">Public Date</span><!-- for invalid-tooltip positioning -->
-                <div data-v-3f715d23="" class="position-relative col-9 osim-editable-field osim-date">
+            </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+              <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Public Date</span><!-- for invalid-tooltip positioning -->
+                <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
                   <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control is-invalid">[No date selected]</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
                   <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control is-invalid" type="text" value=" "><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
                   <div class="invalid-tooltip">A public flaw must have a public date set.</div>
@@ -285,21 +285,21 @@ exports[`flawCreateView > should render 1`] = `
                 <!--v-if-->
               </div>
             </label>
-            <div data-v-73e4e34b="" data-v-cbaa3298="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
-              <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
-                <div data-v-73e4e34b="" class="col-9">
-                  <div data-v-cbaa3298="">
-                    <div data-v-cbaa3298="" class="d-flex ms-0 p-0 justify-content-between">
-                      <div data-v-5fd32c51="" data-v-cbaa3298="" class="osim-input ps-3"><label data-v-5fd32c51="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-5fd32c51="" type="checkbox" class="form-check-input"><span data-v-5fd32c51="" class="form-check-label">Embargoed?</span></label></div>
+            <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+              <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
+                <div data-v-0e2ae48e="" class="col-9">
+                  <div data-v-cbe7eb54="">
+                    <div data-v-cbe7eb54="" class="d-flex ms-0 p-0 justify-content-between">
+                      <div data-v-b2ceeac4="" data-v-cbe7eb54="" class="osim-input ps-3"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" type="checkbox" class="form-check-input"><span data-v-b2ceeac4="" class="form-check-label">Embargoed?</span></label></div>
                       <!--v-if-->
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div data-v-73e4e34b="" data-v-bb5d5f91="" class="osim-input ps-3 mb-2 mb-2">
-              <div data-v-73e4e34b="" class="row"><span data-v-73e4e34b="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
-                <div data-v-73e4e34b="" class="col-9">
+            <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+              <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
+                <div data-v-0e2ae48e="" class="col-9">
                   <!-- for invalid-tooltip positioning -->
                   <div class="position-relative col-9 osim-editable-field osim-text col-12">
                     <!--<Transition name="flash-bg" :duration="2000">-->
@@ -321,63 +321,63 @@ exports[`flawCreateView > should render 1`] = `
             <!--v-if-->
           </div>
         </div>
-        <div data-v-bb5d5f91="" class="osim-flaw-form-section border-top row mx-0"><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-            <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Comment#0 <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-              <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Comment#0 ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block is-invalid" rows="5" value=""></textarea><span data-v-1ccd17dd="" class="invalid-feedback d-block">Comment#0 cannot be empty.</span>
+        <div data-v-76e7a15d="" class="osim-flaw-form-section border-top row mx-0"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+            <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Comment#0 <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+              <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Comment#0 ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block is-invalid" rows="5" value=""></textarea><span data-v-055401b4="" class="invalid-feedback d-block">Comment#0 cannot be empty.</span>
             </div>
-          </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-            <div data-v-1ccd17dd="" class="row"><span data-v-bb5d5f91="" class="form-label col-3 osim-folder-tab-label"> Description </span><span data-v-bb5d5f91="" class="col-3 ps-2"><select data-v-bb5d5f91="" class="form-select col-3 osim-description-required"><option data-v-bb5d5f91="" disabled="" selected="" value="">Review Status</option><option data-v-bb5d5f91="" value=""></option><option data-v-bb5d5f91="" value="REQUESTED">REQUESTED</option><option data-v-bb5d5f91="" value="APPROVED">APPROVED</option><option data-v-bb5d5f91="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
-              <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Description Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
+          </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+            <div data-v-055401b4="" class="row"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label"> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" selected="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
+              <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
               <!--v-if-->
             </div>
-          </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-            <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Statement <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-              <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Statement Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
+          </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+            <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Statement <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+              <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
               <!--v-if-->
             </div>
-          </label><label data-v-1ccd17dd="" data-v-bb5d5f91="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
-            <div data-v-1ccd17dd="" class="row"><span data-v-1ccd17dd="" class="form-label col-3 position-relative"><!--v-if--> Mitigation <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-              <!--    @keyup="resizeTextarea"--><textarea data-v-1ccd17dd="" placeholder="Mitigation Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
+          </label><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2 ps-3 col-6 px-4 py-2">
+            <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Mitigation <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+              <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Mitigation Text ..." class="col-6 px-4 py-2 form-control col-9 d-inline-block" rows="5" value=""></textarea>
               <!--v-if-->
             </div>
           </label></div>
-        <div data-v-bb5d5f91="" class="osim-flaw-form-section border-top border-bottom">
-          <div data-v-bb5d5f91="" class="d-flex gap-3">
-            <div data-v-4357d2eb="" data-v-bb5d5f91="" class="w-100 my-2">
-              <div data-v-876c20ac="" data-v-4357d2eb="">
-                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">References: 0</label></button>
-                  <div data-v-357e30d7="" class="ps-3 border-start">
-                    <div data-v-357e30d7="" class="visually-hidden"></div>
+        <div data-v-76e7a15d="" class="osim-flaw-form-section border-top border-bottom">
+          <div data-v-76e7a15d="" class="d-flex gap-3">
+            <div data-v-58ccaadf="" data-v-76e7a15d="" class="w-100 my-2">
+              <div data-v-b4f0a608="" data-v-58ccaadf="">
+                <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">References: 0</label></button>
+                  <div data-v-4715e8e2="" class="ps-3 border-start">
+                    <div data-v-4715e8e2="" class="visually-hidden"></div>
                   </div>
                 </div>
-                <form data-v-876c20ac="">
-                  <!--v-if--><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Reference</button>
+                <form data-v-b4f0a608="">
+                  <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Reference</button>
                 </form>
               </div>
             </div>
-            <div data-v-fde7522e="" data-v-bb5d5f91="" class="w-100 my-2">
-              <div data-v-876c20ac="" data-v-fde7522e="">
-                <div data-v-357e30d7="" data-v-876c20ac="" class="osim-collapsible-label"><button data-v-357e30d7="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-357e30d7="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-357e30d7="" class="ms-2 form-label">Acknowledgments: 0</label></button>
-                  <div data-v-357e30d7="" class="ps-3 border-start">
-                    <div data-v-357e30d7="" class="visually-hidden"></div>
+            <div data-v-0ecea5ec="" data-v-76e7a15d="" class="w-100 my-2">
+              <div data-v-b4f0a608="" data-v-0ecea5ec="">
+                <div data-v-4715e8e2="" data-v-b4f0a608="" class="osim-collapsible-label"><button data-v-4715e8e2="" disabled="" type="button" class="me-2 osim-collapsible-toggle pe-none"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Acknowledgments: 0</label></button>
+                  <div data-v-4715e8e2="" class="ps-3 border-start">
+                    <div data-v-4715e8e2="" class="visually-hidden"></div>
                   </div>
                 </div>
-                <form data-v-876c20ac="">
-                  <!--v-if--><button data-v-876c20ac="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
+                <form data-v-b4f0a608="">
+                  <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-        <div data-v-bb5d5f91="" class="osim-flaw-form-section">
+        <div data-v-76e7a15d="" class="osim-flaw-form-section">
           <!--v-if-->
         </div>
         <!--v-if-->
         <!--v-if-->
       </div>
     </div>
-    <div data-v-bb5d5f91="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-      <div data-v-bb5d5f91=""><button data-v-bb5d5f91="" type="submit" class="btn btn-primary ms-3"> Create New Flaw </button></div>
+    <div data-v-76e7a15d="" class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
+      <div data-v-76e7a15d=""><button data-v-76e7a15d="" type="submit" class="btn btn-primary ms-3"> Create New Flaw </button></div>
     </div>
   </form>
 </main>"

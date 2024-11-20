@@ -1,9 +1,9 @@
 import { flushPromises, type VueWrapper } from '@vue/test-utils';
 
+import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
+
 import { searchJiraUsers } from '@/services/JiraService';
 import { mountWithConfig } from '@/__tests__/helpers';
-
-import FlawFormOwner from '../FlawFormOwner.vue';
 
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),

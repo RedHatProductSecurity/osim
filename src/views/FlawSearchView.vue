@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, type Ref } from 'vue';
 
-import IssueSearchAdvanced from '@/components/IssueSearchAdvanced.vue';
-import IssueQueue from '@/components/IssueQueue.vue';
+import IssueSearchAdvanced from '@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue';
+import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 import { useSearchParams } from '@/composables/useSearchParams';
