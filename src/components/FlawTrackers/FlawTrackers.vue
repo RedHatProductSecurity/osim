@@ -12,7 +12,7 @@ import type { ZodTrackerType, ZodFlawType, ZodAffectType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { trackerUrl } from '@/services/TrackerService';
 
-type TrackerWithModule = { ps_module: string } & ZodTrackerType;
+type TrackerWithModule = { ps_component: string; ps_module: string } & ZodTrackerType;
 
 const props = defineProps<{
   allTrackersCount: number;
@@ -209,6 +209,7 @@ const {
             <tr>
               <th>Bug ID</th>
               <th>Module</th>
+              <th>Component</th>
               <th>Product Stream</th>
               <th>
                 <span class="align-bottom me-1">Status</span>
@@ -294,12 +295,13 @@ const {
                   None
                 </span>
               </td>
-              <td :title="tracker.ps_module">{{ tracker.ps_module }}</td>
-              <td :title="tracker.ps_update_stream ?? ''">{{ tracker.ps_update_stream }}</td>
-              <td>{{ tracker.status?.toUpperCase() || 'EMPTY' }}</td>
-              <td>{{ tracker.resolution?.toUpperCase() }}</td>
-              <td>{{ formatDate(tracker.created_dt ?? '', true) }}</td>
-              <td>{{ formatDate(tracker.updated_dt ?? '', true) }}</td>
+              <td colspan="1" :title="tracker.ps_module">{{ tracker.ps_module }}</td>
+              <td colspan="1" :title="tracker.ps_component">{{ tracker.ps_component }}</td>
+              <td colspan="1" :title="tracker.ps_update_stream ?? ''">{{ tracker.ps_update_stream }}</td>
+              <td colspan="1">{{ tracker.status?.toUpperCase() || 'EMPTY' }}</td>
+              <td colspan="1">{{ tracker.resolution?.toUpperCase() }}</td>
+              <td colspan="1">{{ formatDate(tracker.created_dt ?? '', true) }}</td>
+              <td colspan="1">{{ formatDate(tracker.updated_dt ?? '', true) }}</td>
             </tr>
           </tbody>
         </table>
@@ -403,33 +405,11 @@ const {
           font-size: 1rem;
         }
 
-        &:nth-of-type(1) {
-          width: 12.5%;
-        }
-
-        &:nth-of-type(2) {
-          width: 18.5%;
-        }
-
-        &:nth-of-type(3) {
-          width: 18.5%;
-        }
-
-        &:nth-of-type(4) {
-          width: 12.5%;
-        }
-
-        &:nth-of-type(5) {
-          width: 12.5%;
-        }
-
-        &:nth-of-type(6) {
-          width: 12.5%;
+        &:nth-of-type(7) {
           cursor: pointer;
         }
 
-        &:nth-of-type(7) {
-          width: 12.5%;
+        &:nth-of-type(8) {
           cursor: pointer;
         }
       }
