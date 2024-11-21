@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Add component column to trackers table (`OSIDB-3721`)
+
 ### Fixed
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
 
