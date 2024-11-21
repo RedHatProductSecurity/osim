@@ -679,6 +679,44 @@ def step_impl(context):
     context.product_stream = flaw_detail_page.file_tracker_for_selected_affects()
 
 
+@when("I sort tracker by updated date and created date")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    asce, desc = [], []
+    # created date ascending order
+    asce.append(flaw_detail_page.get_value_list_of_displayed_tracker_list("created_date"))
+
+    # created date descending order
+    flaw_detail_page.click_button_with_js("trackerCreatedDateOrder")
+    time.sleep(2)
+    desc.append(flaw_detail_page.get_value_list_of_displayed_tracker_list("created_date"))
+
+    # updated date ascending order
+    flaw_detail_page.click_button_with_js("trackerUpdatedDateOrder")
+    time.sleep(2)
+    asce.append(flaw_detail_page.get_value_list_of_displayed_tracker_list("updated_date"))
+
+    # updated date descending order
+    flaw_detail_page.click_button_with_js("trackerUpdatedDateOrder")
+    time.sleep(2)
+    desc.append(flaw_detail_page.get_value_list_of_displayed_tracker_list("updated_date"))
+
+    context.asce = asce
+    context.desc = desc
+
+
+@then("I got sorted tracker list order by updated date and created date")
+def step_impl(context):
+    # check asce result
+    for r in context.asce:
+        sorted_r = sorted(r)
+        assert sorted_r == r, f"got incorrect asce sort result, {r}"
+    # check desc result
+    for r in context.desc:
+        sorted_r = sorted(r, reverse=True)
+        assert sorted_r == r, f"got incorrect desc sort result, {r}"
+
+
 @then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)

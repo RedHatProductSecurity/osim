@@ -21,6 +21,9 @@ Affect = namedtuple(
     'Affect',
     ["module", "component", "affectedness", "resolution", "impact", "cvss"])
 
+Tracker = namedtuple(
+    "Tracker", ["bug_id", "module", "product_stream", "status", "resolution", "created_date", "updated_date"])
+
 
 class FlawDetailPage(BasePage):
 
@@ -186,6 +189,8 @@ class FlawDetailPage(BasePage):
         "affectDeleteMsg": ("XPATH", "//div[text()='1 Affect(s) Deleted.']"),
         "filterModuleComponentInput": ("XPATH", "//input[@placeholder='Filter Modules/Components...']"),
         "selectFilteredTrackerBtn": ("XPATH", "//button[text()=' Select Filtered']"),
+        "trackerCreatedDateOrder": ("XPATH", "//th[text()=' Created date ']"),
+        "trackerUpdatedDateOrder": ("XPATH", "//th[text()=' Updated date ']"),
 
         "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
         "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
@@ -1110,3 +1115,33 @@ class FlawDetailPage(BasePage):
             By.XPATH, f"//div[@class='osim-tracker-list mt-2']/label/span/span[1][text()='{product_stream}']/../../input")
 
         return tracker_check_box.is_selected()
+
+    def get_tracker_number_of_displayed_tracker_list(self):
+        return len(self.driver.find_elements(
+            By.XPATH, "//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr"))
+
+    def get_tracker_value(self, row=1):
+        bug_id = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[1]/a"
+        module = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[2]"
+        product_stream = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[3]"
+        status = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[4]"
+        resolution = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[5]"
+        created_date = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[6]"
+        updated_date = f"//div[@class='osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark']/table/tbody/tr[{row}]/td[7]"
+
+        tracker = Tracker(
+            bug_id=self.driver.find_element(By.XPATH, bug_id).get_attribute('href'),
+            module=self.driver.find_element(By.XPATH, module).text,
+            product_stream=self.driver.find_element(By.XPATH, product_stream).text,
+            status=self.driver.find_element(By.XPATH, status).text,
+            resolution=self.driver.find_element(By.XPATH, resolution).text,
+            created_date=self.driver.find_element(By.XPATH, created_date).text,
+            updated_date=self.driver.find_element(By.XPATH, updated_date).text
+        )
+
+        return tracker
+
+    def get_value_list_of_displayed_tracker_list(self, field):
+        n = self.get_tracker_number_of_displayed_tracker_list()
+        return [
+            getattr(self.get_tracker_value(i+1), field) for i in range(n)]

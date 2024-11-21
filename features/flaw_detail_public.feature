@@ -140,6 +140,10 @@ Feature: Flaw detail testing on public flaw
       When I filter modules/components in Tracker Manager and select filtered
       Then Filtered trackers selected
 
+    Scenario: Sort tracker by updated date and created date
+      When I sort tracker by updated date and created date
+      Then I got sorted tracker list order by updated date and created date
+
     @skip
     Scenario: Select/Deselect all trackers
       When I delete an affect of the flaw
