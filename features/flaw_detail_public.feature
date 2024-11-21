@@ -144,16 +144,8 @@ Feature: Flaw detail testing on public flaw
       When I sort tracker by updated date and created date
       Then I got sorted tracker list order by updated date and created date
 
-    @skip
-    Scenario: Select/Deselect all trackers
-      When I delete an affect of the flaw
-      When I add a new affect with valid data
+    Scenario: Select/Deselect all trackers in tracker manager
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
-
-    @skip
-    Scenario: Filter unfiled trackers
-      When I add some affects with valid data
-      Then I could filter trackers by stream or component name
 
     Scenario Outline: Update flaw incident state
       When I update flaw incident state to <new_state>
@@ -175,8 +167,7 @@ Feature: Flaw detail testing on public flaw
         |                          TRIAGE |
         |        PRE_SECONDARY_ASSESSMENT |
         |            SECONDARY_ASSESSMENT |
-        # Below state can only work after tracker(s) filed
-        # |                            DONE |
+        |                            DONE |
 
     Scenario Outline: Update CVSS score explanation
       When I <action> the CVSS score explanation

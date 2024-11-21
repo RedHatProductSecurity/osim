@@ -182,6 +182,7 @@ class FlawDetailPage(BasePage):
         "displayNewAddedAffect": ("XPATH", "//div[@title='Display new affects']"),
         "displaySelectedAffect": ("XPATH", "//div[@title='Display selected affects']"),
         "deselectAllTracker": ("XPATH", "//button[text()=' Deselect All']/i"),
+        "selectAllTracker": ("XPATH", "//button[text()=' Select All']"),
         "trackersFiledMsg": ("XPATH", "//div[contains(text(), 'Tracker filed.')]"),
         "trackerManagerCloseBtn": ("XPATH", "//button[@class='btn btn-close ms-auto']"),
         "showTrackerManagerBtn": ("XPATH", "//button[text()=' Show Trackers Manager ']"),
@@ -1039,6 +1040,11 @@ class FlawDetailPage(BasePage):
     def get_selected_tracker_number(self):
         return len(self.driver.find_elements(By.XPATH, "//div[@class='osim-tracker-list mt-2']/label"))
 
+    def wait_trackers_loaded_in_tracker_manager(self):
+        time.sleep(2)
+        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
+        self.check_value_not_exist("Querying available trackers…")
+
     def file_tracker(self, row=1):
         # get tracker's product stream
         product_stream = self.get_unfiled_tracker_product_stream(row)
@@ -1060,9 +1066,7 @@ class FlawDetailPage(BasePage):
         """
         plus_button = self.driver.find_element(By.XPATH, f"//span[@title='{component}']/ancestor::tr/td[9]/div/button")
         self.click_button_with_js(plus_button)
-        time.sleep(2)
-        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
-        self.check_value_not_exist("Querying available trackers…")
+        self.wait_trackers_loaded_in_tracker_manager()
         # click deselectAll button
         self.click_button_with_js(self.deselectAllTracker)
 
@@ -1082,9 +1086,7 @@ class FlawDetailPage(BasePage):
         for v in module_component_pairs:
             self.check_text_exist(v)
 
-        time.sleep(2)
-        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
-        self.check_value_not_exist("Querying available trackers…")
+        self.wait_trackers_loaded_in_tracker_manager()
 
         # click deselectAll button
         self.click_button_with_js(self.deselectAllTracker)
@@ -1093,9 +1095,7 @@ class FlawDetailPage(BasePage):
 
     def select_filter_tracker(self):
         self.click_button_with_js("showTrackerManagerBtn")
-        time.sleep(2)
-        self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
-        self.check_value_not_exist("Querying available trackers…")
+        self.wait_trackers_loaded_in_tracker_manager()
         # click deselectAll button
         self.click_button_with_js(self.deselectAllTracker)
 
