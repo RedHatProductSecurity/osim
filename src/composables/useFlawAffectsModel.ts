@@ -1,4 +1,4 @@
-import { type Ref, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
@@ -13,13 +13,16 @@ import {
 } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
-import type { ZodAffectType, ZodFlawType } from '@/types';
+import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 
+import { useFlaw } from './useFlaw';
+
 const initialAffects = ref<ZodAffectType[]>([]);
 
-export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
+export function useFlawAffectsModel() {
+  const flaw = useFlaw();
   const affectsToDelete = computed(() => initialAffects.value.filter(
     initialAffect => !flaw.value.affects.find(matcherForAffect(initialAffect)),
   ));
@@ -45,20 +48,22 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
 
   const affectsToUpdate = computed(() => flaw.value.affects.filter(shouldUpdateAffect));
 
-  const affectCvssToUpsert = computed(() => flaw.value.affects.filter(shouldUpsertAffectCvss));
+  const affectCvssToSave = computed(() => flaw.value.affects.filter(shouldUpsertAffectCvss));
 
   const affectsToCreate = computed(() => flaw.value.affects.filter(affect => !affect.uuid));
 
   const modifiedAffects = computed(() => [
     ...affectsToUpdate.value,
-    ...affectCvssToUpsert.value.filter(({ uuid }) => uuid),
+    ...affectCvssToSave.value.filter(({ uuid }) => uuid),
     ...Object.keys(affectCvssToDelete.value)
       .flatMap(affectId => flaw.value.affects.filter(({ uuid }) => uuid === affectId)),
   ]);
 
   const wereAffectsEditedOrAdded = computed(() => modifiedAffects.value.length > 0 || affectsToCreate.value.length > 0);
 
-  const { addToast } = useToastStore();
+  function isAffectBeingRemoved(affect: ZodAffectType) {
+    return affectsToDelete.value.some(matcherForAffect(affect));
+  }
 
   function addAffect(newAffect: ZodAffectType) {
     newAffect.embargoed = flaw.value.embargoed;
@@ -88,12 +93,23 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     return !areAffectsEqual(affect, originalAffect, shouldExcludeCvss);
   }
 
+  function didAffectCvssChange(affect: ZodAffectType, shouldExcludeNew = true) {
+    const originalAffect = initialAffects.value.find(maybeMatch => maybeMatch.uuid === affect.uuid);
+
+    if (!originalAffect && shouldExcludeNew) return false;
+
+    return !areAffectsCvssEqual(
+      affectRhCvss3(affect) as ZodAffectCVSSType,
+      affectRhCvss3(originalAffect as ZodAffectType) as ZodAffectCVSSType,
+    );
+  }
+
   function shouldUpdateAffect(affect: ZodAffectType) {
     return affect.uuid && didAffectChange(affect, true);
   }
 
   function shouldUpsertAffectCvss(affect: ZodAffectType) {
-    return affectRhCvss3(affect)?.vector && didAffectChange(affect, false, false);
+    return affectRhCvss3(affect)?.vector && didAffectCvssChange(affect);
   }
 
   async function removeAffects() {
@@ -135,6 +151,8 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
   }
 
   async function saveAffects() {
+    const { addToast } = useToastStore();
+
     const savedAffects: ZodAffectType[] = [];
     const saveErrors: unknown[] = [];
     const requestBodyFromAffect = (affect: ZodAffectType) => ({
@@ -170,10 +188,11 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
       }
     }
 
-    if (affectCvssToUpsert.value.length) {
+    if (affectCvssToSave.value.length) {
       let cvssScoresSavedCount = 0;
-      for (const affect of affectCvssToUpsert.value) {
+      for (const affect of affectCvssToSave.value) {
         // For any new affects that have just been saved, we need to update the affect's uuid
+
         if (!affect.uuid) {
           const savedAffect = savedAffects.find(matcherForAffect(affect));
 
@@ -256,6 +275,7 @@ export function useFlawAffectsModel(flaw: Ref<ZodFlawType>) {
     refreshAffects,
     modifiedAffects,
     wereAffectsEditedOrAdded,
+    isAffectBeingRemoved,
   };
 }
 
@@ -268,4 +288,8 @@ function areAffectsEqual(affect: ZodAffectType, otherAffect?: ZodAffectType, sho
   const fieldsToExclude = shouldExcludeCvss ? ['trackers', 'cvss_scores'] : ['trackers'];
   const excludeFields = pickBy((_, key) => !fieldsToExclude.includes(key));
   return equals(excludeFields(affect), excludeFields(otherAffect));
+}
+
+function areAffectsCvssEqual(affectCvss: ZodAffectCVSSType, otherAffectCvss: ZodAffectCVSSType) {
+  return equals(affectCvss, otherAffectCvss);
 }
