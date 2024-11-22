@@ -18,6 +18,13 @@ export type {
   ZodFlawType,
 } from '@/types/zodFlaw';
 
+export {
+  flawImpacts,
+  flawIncidentStates,
+  flawSources,
+  ZodFlawSchema,
+} from '@/types/zodFlaw';
+
 export type {
   ZodJiraContributorType,
   ZodJiraIssueType,

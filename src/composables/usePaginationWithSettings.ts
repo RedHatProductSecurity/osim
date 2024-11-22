@@ -46,9 +46,16 @@ export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: 
   } = usePagination(totalPages, maxPagesToShow);
 
   const paginatedItems = computed(() => {
+    // get() {
     const start = (currentPage.value - 1) * settings.value[setting];
     const end = start + settings.value[setting];
-    return itemsToPaginate.value.slice(start, end);
+    // return itemsToPaginate.value.slice(start, end);
+    return itemsToPaginate.value.filter((_, index) => start <= index && index < end);
+    // },
+    // set(newValue: any) {
+    //   console.log('set', newValue);
+    //   itemsToPaginate.value = newValue;
+    // },
   });
 
   return {
