@@ -5,19 +5,10 @@ import {
   affectImpacts,
   affectAffectedness,
   affectResolutions,
-  type ZodAffectType,
 } from '@/types/zodAffect';
+import { useAffectsEditing } from '@/stores/AffectsEditingStore';
 
 import { useFilterSortAffects } from './useFilterSortAffects';
-import { useAffectSelections } from './useAffectSelections';
-
-const props = defineProps<{
-  affectsBeingEdited: ZodAffectType[];
-  affectsToDelete: ZodAffectType[];
-  selectedModules: string[];
-}>();
-
-const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
 
 const {
   affectednessFilters,
@@ -31,20 +22,12 @@ const {
   sortOrder,
 } = useFilterSortAffects();
 
-function isBeingEdited(affect: ZodAffectType) {
-  return props.affectsBeingEdited.includes(affect);
-}
-
 const {
   areAllAffectsSelectable,
   areAllAffectsSelected,
   isIndeterminateSelection,
   toggleMultipleAffectSelections,
-} = useAffectSelections(affects, affect => !isRemoved(affect) && !isBeingEdited(affect));
-
-function isRemoved(affect: ZodAffectType) {
-  return props.affectsToDelete.includes(affect);
-}
+} = useAffectsEditing();
 </script>
 
 <template>
