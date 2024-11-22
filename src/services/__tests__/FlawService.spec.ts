@@ -1,6 +1,6 @@
 import { createTestingPinia } from '@pinia/testing';
 
-import { blankFlaw } from '@/composables/useFlawModel';
+import { blankFlaw } from '@/composables/useFlaw';
 import { createSuccessHandler } from '@/composables/service-helpers';
 
 import { getFlaw, putFlaw } from '@/services/FlawService';
