@@ -2,10 +2,10 @@ import { ref } from 'vue';
 
 import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
-import { IssuerEnum } from '@/generated-client';
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+import { blankFlaw } from '@/composables/useFlaw';
 
-import { useFlawCvssScores } from '../useFlawCvssScores';
-import { blankFlaw } from '../useFlawModel';
+import { IssuerEnum } from '@/generated-client';
 
 describe('useFlawCvssScores', () => {
   osimFullFlawTest('should return an object', ({ flaw }) => {

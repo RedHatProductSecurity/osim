@@ -43,7 +43,7 @@ export const server = setupServer();
 
 vi.spyOn(console, 'warn').mockImplementation((...msg) => {
   const warning = msg.join(' ');
-  console.debug(warning);
+  console.trace(warning);
   assert.fail(warning);
 });
 

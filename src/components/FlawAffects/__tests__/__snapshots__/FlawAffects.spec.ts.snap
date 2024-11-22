@@ -87,8 +87,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </tr>
       </thead>
       <tbody data-v-93f0c720="">
-        <!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -108,8 +107,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -129,8 +128,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -150,8 +149,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -171,8 +170,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -192,8 +191,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -324,7 +323,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
 </div>"
 `;
 
-exports[`flawAffects > Correctly renders the component when there are not affects to display 1`] = `
+exports[`flawAffects > Correctly renders the component when there are no affects to display 1`] = `
 "<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection">
@@ -531,8 +530,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </tr>
       </thead>
       <tbody data-v-93f0c720="">
-        <!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="" isselected="true">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -552,8 +550,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="" isselected="true">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -573,8 +571,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="" isselected="true">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -594,8 +592,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -615,8 +613,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -636,8 +634,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -916,8 +914,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </tr>
       </thead>
       <tbody data-v-93f0c720="">
-        <!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -937,8 +934,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -958,8 +955,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -979,8 +976,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -1000,8 +997,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -1021,8 +1018,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if-->
             <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
           </td>
-        </tr><!-- TODO: refactor affect editing logic into composable  -->
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+        </tr>
+        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="" isselected="false">
           <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
           <td data-v-cf2e7c24="">
             <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>

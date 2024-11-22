@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 import { test } from 'vitest';
 
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
@@ -10,32 +11,24 @@ import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 
 let flaw: null | ZodFlawType = null;
 export const osimEmptyFlawTest = test.extend<{ flaw: ZodFlawType }>({
-  // eslint-disable-next-line no-empty-pattern
   flaw: async ({}, use) => {
     flaw = structuredClone(sampleFlawEmpty) as ZodFlawType;
-
     await use(flaw);
-
     flaw = null;
-  } });
+  },
+});
 
 export const osimRequiredFlawTest = test.extend<{ flaw: ZodFlawType }>({
-  // eslint-disable-next-line no-empty-pattern
   flaw: async ({}, use) => {
     flaw = structuredClone(sampleFlawRequired) as ZodFlawType;
-
     await use(flaw);
-
     flaw = null;
   } });
 
 export const osimFullFlawTest = test.extend<{ flaw: ZodFlawType }>({
-  // eslint-disable-next-line no-empty-pattern
   flaw: async ({}, use) => {
     flaw = structuredClone(sampleFlawFull) as ZodFlawType;
-
     await use(flaw);
-
     flaw = null;
   },
 });
