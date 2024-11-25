@@ -720,18 +720,19 @@ def step_impl(context):
 @then('I Select/Deselect all trackers and all the trackers could be Selected/Deselected')
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    context.trackersCount = flaw_detail_page.trackers_list_count("trackersList")
-    actions = ['Select', 'Deselect']
-    for action in actions:
-        if action == 'Select':
-            flaw_detail_page.click_button_with_js("SelectAllTrackers")
-            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
-            assert checked_count == context.trackersCount
-        if action == 'Deselect':
-            flaw_detail_page.click_button_with_js("DeselectAllTrackers")
-            checked_count = flaw_detail_page.trackers_list_count("checkedTrackersList")
-            assert checked_count == 0
+    flaw_detail_page.click_button_with_js("showTrackerManagerBtn")
+    flaw_detail_page.wait_trackers_loaded_in_tracker_manager()
+    # click deselectAll button to deselect pre-selected tracker
+    flaw_detail_page.click_button_with_js("deselectAllTracker")
+    n = flaw_detail_page.get_unfiled_tracker_number()
+    # select
+    flaw_detail_page.click_button_with_js("selectAllTracker")
+    selected_number = flaw_detail_page.get_selected_tracker_number()
+    assert selected_number == n, f"should select all trackers({n}), selected {selected_number}"
+
+    # deselect
+    flaw_detail_page.click_button_with_js("deselectAllTracker")
+    assert flaw_detail_page.get_unfiled_tracker_number() == n, "should deselect all trackers"
 
 
 @when('I add some affects with valid data')
