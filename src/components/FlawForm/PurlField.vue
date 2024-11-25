@@ -5,8 +5,8 @@ import { PackageURL } from 'packageurl-js';
 
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 
+const purl = defineModel<null | string>({ default: null });
 const error = ref<null | string>(null);
-const purl = ref<null | string>(null);
 
 function validatePurl(purl: string) {
   try {
@@ -29,7 +29,7 @@ function updatePurl(value: string) {
 <template>
   <div class="ms-0">
     <LabelEditable
-      v-model:modelValue="purl"
+      v-model="purl"
       label="Package URL"
       type="text"
       :error="error"

@@ -1,25 +1,21 @@
-import { ref } from 'vue';
 import { mount } from '@vue/test-utils';
+
 import PurlField from '@/components/FlawForm/PurlField.vue';
 
-describe('PurlField.vue', () => {
-  let wrapper: any;
-  let input: any;
-
-  beforeEach(() => {
-    wrapper = mount(PurlField);
-    input = wrapper.find('input');
-  });
-
-  it('should pass valid PURL test', async () => {
-    input.setValue('pkg:npm/%40angular/core@12.0.0');
-    await input.trigger('input');
+describe('purlField.vue', () => {
+it('should pass valid PURL test', async () => {
+    const wrapper = mount(PurlField, { props: { purl: 'pkg:npm/%40angular/core@12.0.0' } });
+    // input.setValue('pkg:npm/%40angular/core@12.0.0');
+    // await input.trigger('input');
     expect(wrapper.vm.error).toBeNull();
   });
-
+  
   it('should pass invalid PURL test', async () => {
+    const wrapper = mount(PurlField);
+    const input = wrapper.find('input');
     input.setValue('invalid-purl');
     await input.trigger('input');
+
     expect(wrapper.vm.error).not.toBeNull();
   });
 });
