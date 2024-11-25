@@ -13,7 +13,7 @@ function validatePurl(purl: string) {
     PackageURL.fromString(purl);
     error.value = null;
     return purl;
-  } catch (e) {
+  } catch (e: any) {
     error.value = e.message;
     return null;
   }
