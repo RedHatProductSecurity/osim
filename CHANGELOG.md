@@ -1,5 +1,13 @@
 # OSIM Changelog
 
+## [Unreleased]
+* Added Prouct URL field in Flaw forms (`OSIDB-3412`)
+
+## [2024.12.1]
+### Fixed
+* Fix save all button behavior for affects table (`OSIDB-3664`)
+* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
+
 ## [2024.12.0]
 ### Added
 * Add component column to trackers table (`OSIDB-3721`)
@@ -9,8 +17,6 @@
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
-* Fix save all button behavior for affects table (`OSIDB-3664`)
-* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
 * Fix wrong advance search custom order (`OSIDB-3609`)
 
 ### Changed
