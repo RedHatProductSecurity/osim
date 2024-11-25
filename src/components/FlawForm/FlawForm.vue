@@ -17,6 +17,7 @@ import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors/FlawContributors.vue';
 import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
+import PurlField from '@/components/FlawForm/PurlField.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
@@ -200,6 +201,7 @@ const createdDate = computed(() => {
               label="Components"
               :error="errors.components"
             />
+            <PurlField v-model="flaw.purl" />
             <div class="row">
               <div class="col">
                 <LabelEditable
