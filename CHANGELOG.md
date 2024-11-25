@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Fixed
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
+### Added
+* Added Prouct URL field in Flaw forms (`OSIDB-3412`)
 
 ## [2024.11.1]
 ### Added
