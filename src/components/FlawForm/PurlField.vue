@@ -20,7 +20,6 @@ function validatePurl(purl: string) {
 }
 
 function updatePurl(value: string) {
-  console.log('updatePurl', value);
   if (validatePurl(value)) {
     purl.value = value;
   }
