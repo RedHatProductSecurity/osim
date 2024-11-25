@@ -77,11 +77,8 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
         <!-- for invalid-tooltip positioning -->
         <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-          <!--<Transition name="flash-bg" :duration="2000">-->
           <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-            <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span>
-              <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-            </div>
+            <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
           </transition-stub>
           <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
           <!--v-if-->
@@ -97,17 +94,27 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </label>
+    <div data-v-76e7a15d="" class="ms-0"><label data-v-76509415="" class="osim-input ps-3 mb-2 input-group">
+        <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Package URL</span>
+          <!--v-if-->
+          <!-- for invalid-tooltip positioning -->
+          <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
+            <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+              <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">pkg:kernel/org.example/kerel@5.5.5</span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
+            </transition-stub>
+            <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+            <!--v-if-->
+          </div>
+        </div>
+      </label></div>
     <div data-v-76e7a15d="" class="row">
       <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
           <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
             <!--v-if-->
             <!-- for invalid-tooltip positioning -->
             <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-              <!--<Transition name="flash-bg" :duration="2000">-->
               <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span>
-                  <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-                </div>
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
               </transition-stub>
               <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
               <!--v-if-->
@@ -201,11 +208,8 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
         <!-- for invalid-tooltip positioning -->
         <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-          <!--<Transition name="flash-bg" :duration="2000">-->
           <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-            <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
-              <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-            </div>
+            <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
           </transition-stub>
           <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
           <!--v-if-->
@@ -501,7 +505,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section" flaw="[object Object]">
+    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
         <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
@@ -587,7 +591,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </tr>
           </thead>
           <tbody data-v-93f0c720="">
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -607,8 +612,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -628,8 +633,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -649,8 +654,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -670,8 +675,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -691,8 +696,8 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if-->
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
-            </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" title="" isselected="false">
+            </tr><!-- TODO: refactor affect editing logic into composable  -->
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="ps-1"><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></div>
@@ -738,7 +743,6 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <tr data-v-89a61d08="">
                   <th data-v-89a61d08="">Bug ID</th>
                   <th data-v-89a61d08="">Module</th>
-                  <th data-v-89a61d08="">Component</th>
                   <th data-v-89a61d08="">Product Stream</th>
                   <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                     <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
@@ -754,63 +758,57 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <tbody data-v-89a61d08="">
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0006 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-5">openshift-5</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-5-1">openshift-5-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-006">xxxx-0-006</td>
-                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-07-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-07-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" title="xxxx-0-006">xxxx-0-006</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-07-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-07-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0005 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-5">openshift-5</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-5-1">openshift-5-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-005">xxxx-0-005</td>
-                  <td data-v-89a61d08="" colspan="1">NEW</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-08-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-08-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" title="xxxx-0-005">xxxx-0-005</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-08-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-08-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0004 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-004">xxxx-0-004</td>
-                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-09-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-09-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-004">xxxx-0-004</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-09-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-09-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0003 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-003">xxxx-0-003</td>
-                  <td data-v-89a61d08="" colspan="1">NEW</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-10-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-10-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-003">xxxx-0-003</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-10-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-10-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0002 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-002">xxxx-0-002</td>
-                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-11-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-11-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-002">xxxx-0-002</td>
+                  <td data-v-89a61d08="">CLOSED</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-11-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-11-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0001 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
-                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-001">xxxx-0-001</td>
-                  <td data-v-89a61d08="" colspan="1">NEW</td>
-                  <td data-v-89a61d08="" colspan="1"></td>
-                  <td data-v-89a61d08="" colspan="1">2024-12-01 13:05 UTC</td>
-                  <td data-v-89a61d08="" colspan="1">2024-12-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" title="xxxx-0-001">xxxx-0-001</td>
+                  <td data-v-89a61d08="">NEW</td>
+                  <td data-v-89a61d08=""></td>
+                  <td data-v-89a61d08="">2024-12-01 13:05 UTC</td>
+                  <td data-v-89a61d08="">2024-12-01 13:06 UTC</td>
                 </tr>
               </tbody>
             </table>
