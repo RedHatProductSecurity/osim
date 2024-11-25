@@ -49,8 +49,6 @@ function onBlur(e: FocusEvent | null) {
     commit();
     return;
   }
-  // if (e.currentTarget.contains(e.relatedTarget)) {
-  // || elDiv.value?.contains(e.currentTarget)
 
   if (e.relatedTarget == null) {
     commit();
@@ -68,20 +66,12 @@ function onBlur(e: FocusEvent | null) {
       return;
     }
   }
-
-  // if (e.currentTarget instanceof Node) {
-  //   if (elDiv.value?.contains(e.currentTarget)) {
-  //     abort();
-  //     return;
-  //   }
-  // }
 }
 </script>
 
 <template>
   <!-- for invalid-tooltip positioning -->
   <div class="position-relative col-9 osim-editable-field osim-text">
-    <!--<Transition name="flash-bg" :duration="2000">-->
     <Transition name="flash-bg">
       <div
         v-show="!editing"
@@ -96,7 +86,6 @@ function onBlur(e: FocusEvent | null) {
             'is-invalid': error != null
           }"
         >{{ modelValue === '' ? placeholder : modelValue }}</span>
-        <!--if a button is inside a label, clicking the label clicks the button?-->
         <button
           v-if="!readOnly"
           type="button"
@@ -188,7 +177,6 @@ function onBlur(e: FocusEvent | null) {
     .osim-editable-text-value {
       @extend .form-control;
 
-      // border-color: transparent; // TODO decide to keep the hovering effect?
       color: var(--bs-secondary-color);
       text-overflow: ellipsis;
       overflow: hidden;
