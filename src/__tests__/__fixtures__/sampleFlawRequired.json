@@ -5,6 +5,7 @@
     "components": [
         "kernel"
     ],
+    "purl": "",
     "title": "Sample title",
     "trackers": [],
     "comment_zero": "Comment Zero == Patient Zero",

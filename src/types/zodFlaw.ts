@@ -148,6 +148,7 @@ export const ZodFlawSchema = z.object({
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
   components: z.array(z.string().min(1).max(100)),
+  purl: z.string().nullish(),
   title: z.string().min(4),
   owner: z.string().nullish(),
   history: z.array(ZodHistoryItemSchema).nullish(),
