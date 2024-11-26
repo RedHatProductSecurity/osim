@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Move notifications to left side (`OSIDB-3543`)
+* Don't show notifications when they are disabled (`OSIDB-3543`)
 
 ## [2024.12.0]
 ### Added
@@ -15,8 +19,7 @@
 
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
-* Move notifications to left side (`OSIDB-3543`)
-* Don't show notifications when they are disabled (`OSIDB-3543`)
+* Fix save all button behavior for affects table (`OSIDB-3664`)
 
 ## [2024.11.1]
 ### Added
