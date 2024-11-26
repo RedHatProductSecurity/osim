@@ -36,7 +36,6 @@ describe('useAffectsEditingStore Store', () => {
   beforeEach(async ({ flaw }) => {
     vi.clearAllMocks();
     vi.resetModules();
-    // vi.doMock('@/composables/useFlawAffectsModel');
     console.log(useFlawAffectsModel);
 
     type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
