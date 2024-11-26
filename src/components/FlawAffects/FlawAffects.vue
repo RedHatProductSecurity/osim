@@ -180,7 +180,6 @@ function cancelAllChanges() {
 function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
   affectsToRestore.forEach((affect) => {
-    // if (!affectsBeingEdited.value.includes(affect)) {
     if (!affectsBeingEdited.value.includes(affect)) {
       revertAffectToLastSaved(affect);
     }
