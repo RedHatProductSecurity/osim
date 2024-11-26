@@ -163,20 +163,6 @@ function moduleBtnTooltip(moduleName: string) {
       : '');
 }
 
-// function editSelectedAffects() {
-//   selectedAffects.value.forEach(editAffect);
-// }
-
-// function commitAllChanges() {
-//   const affectsToCommit = [...affectsBeingEdited.value];
-//   affectsToCommit.forEach(commitChanges);
-// }
-
-// function cancelAllChanges() {
-//   const affectsToCancel = [...affectsBeingEdited.value];
-//   affectsToCancel.forEach(cancelChanges);
-// }
-
 function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
   affectsToRestore.forEach((affect) => {
