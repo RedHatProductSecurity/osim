@@ -100,16 +100,16 @@ describe('flawTrackers', () => {
 
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let firstTracker = trackersTableRows[0];
-    expect(firstTracker.find('td:nth-of-type(3)').text()).toBe('xxxx-0-006');
+    expect(firstTracker.find('td:nth-of-type(4)').text()).toBe('xxxx-0-006');
 
-    const componentHeader = subject.find('.affects-trackers table thead tr th:nth-of-type(6)');
+    const componentHeader = subject.find('.affects-trackers table thead tr th:nth-of-type(7)');
     expect(componentHeader.exists()).toBe(true);
     expect(componentHeader.text()).toBe('Created date');
     await componentHeader.trigger('click');
 
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     firstTracker = trackersTableRows[0];
-    expect(firstTracker.find('td:nth-of-type(3)').text()).toBe('xxxx-0-001');
+    expect(firstTracker.find('td:nth-of-type(4)').text()).toBe('xxxx-0-001');
   });
 
   osimFullFlawTest('Trackers can be filtered by status', async ({ flaw }) => {
@@ -181,7 +181,7 @@ describe('flawTrackers', () => {
       allTrackersCount: 0,
     });
     const trackerRow = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr')[0];
-    const trackerModuleCell = trackerRow.find('td:nth-of-type(3)');
+    const trackerModuleCell = trackerRow.find('td:nth-of-type(4)');
     expect(trackerModuleCell.attributes('title')).toBe('xxxx-0-006');
   });
 

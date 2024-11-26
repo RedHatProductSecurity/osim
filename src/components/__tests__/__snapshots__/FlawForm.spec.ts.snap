@@ -739,6 +739,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <tr data-v-89a61d08="">
                   <th data-v-89a61d08="">Bug ID</th>
                   <th data-v-89a61d08="">Module</th>
+                  <th data-v-89a61d08="">Component</th>
                   <th data-v-89a61d08="">Product Stream</th>
                   <th data-v-89a61d08=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                     <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
@@ -754,57 +755,63 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <tbody data-v-89a61d08="">
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0006 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
-                  <td data-v-89a61d08="" title="xxxx-0-006">xxxx-0-006</td>
-                  <td data-v-89a61d08="">CLOSED</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-07-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-07-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-5-1">openshift-5-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-006">xxxx-0-006</td>
+                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-07-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-07-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0005 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-5">openshift-5</td>
-                  <td data-v-89a61d08="" title="xxxx-0-005">xxxx-0-005</td>
-                  <td data-v-89a61d08="">NEW</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-08-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-08-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-5">openshift-5</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-5-1">openshift-5-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-005">xxxx-0-005</td>
+                  <td data-v-89a61d08="" colspan="1">NEW</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-08-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-08-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0004 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" title="xxxx-0-004">xxxx-0-004</td>
-                  <td data-v-89a61d08="">CLOSED</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-09-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-09-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-004">xxxx-0-004</td>
+                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-09-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-09-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0003 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" title="xxxx-0-003">xxxx-0-003</td>
-                  <td data-v-89a61d08="">NEW</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-10-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-10-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-003">xxxx-0-003</td>
+                  <td data-v-89a61d08="" colspan="1">NEW</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-10-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-10-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0002 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" title="xxxx-0-002">xxxx-0-002</td>
-                  <td data-v-89a61d08="">CLOSED</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-11-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-11-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-002">xxxx-0-002</td>
+                  <td data-v-89a61d08="" colspan="1">CLOSED</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-11-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-11-01 13:06 UTC</td>
                 </tr>
                 <tr data-v-89a61d08="">
                   <td data-v-89a61d08=""><a data-v-89a61d08="" target="_blank">XXXX-0001 <i data-v-89a61d08="" class="bi-box-arrow-up-right"></i></a></td>
-                  <td data-v-89a61d08="" title="openshift-1">openshift-1</td>
-                  <td data-v-89a61d08="" title="xxxx-0-001">xxxx-0-001</td>
-                  <td data-v-89a61d08="">NEW</td>
-                  <td data-v-89a61d08=""></td>
-                  <td data-v-89a61d08="">2024-12-01 13:05 UTC</td>
-                  <td data-v-89a61d08="">2024-12-01 13:06 UTC</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1">openshift-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="openshift-1-1">openshift-1-1</td>
+                  <td data-v-89a61d08="" colspan="1" title="xxxx-0-001">xxxx-0-001</td>
+                  <td data-v-89a61d08="" colspan="1">NEW</td>
+                  <td data-v-89a61d08="" colspan="1"></td>
+                  <td data-v-89a61d08="" colspan="1">2024-12-01 13:05 UTC</td>
+                  <td data-v-89a61d08="" colspan="1">2024-12-01 13:06 UTC</td>
                 </tr>
               </tbody>
             </table>

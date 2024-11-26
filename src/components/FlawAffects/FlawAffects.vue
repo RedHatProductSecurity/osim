@@ -311,6 +311,7 @@ const displayedTrackers = computed(() => {
       affect.trackers.map(tracker => ({
         ...tracker,
         ps_module: affect.ps_module,
+        ps_component: affect.ps_component,
       })),
     );
 });
