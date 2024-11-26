@@ -87,6 +87,19 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
       toggleAffectSelection(affect);
     }
   }
+  function editSelectedAffects() {
+    selectedAffects.value.forEach(editAffect);
+  }
+
+  function commitAllChanges() {
+    const affectsToCommit = [...affectsBeingEdited.value];
+    affectsToCommit.forEach(commitChanges);
+  }
+
+  function cancelAllChanges() {
+    const affectsToCancel = [...affectsBeingEdited.value];
+    affectsToCancel.forEach(cancelChanges);
+  }
 
   function $reset() {
     affectsBeingEdited.value = [];
@@ -112,6 +125,9 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
     toggleAffectSelection,
     toggleMultipleAffectSelections,
     resetSelections,
+    editSelectedAffects,
+    commitAllChanges,
+    cancelAllChanges,
   };
 });
 

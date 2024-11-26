@@ -34,9 +34,9 @@ const flaw = useFlaw();
 
 const affectsEditingStore = useAffectsEditingStore();
 const {
-  cancelChanges,
-  commitChanges,
-  editAffect,
+  cancelAllChanges,
+  commitAllChanges,
+  editSelectedAffects,
   getAffectPriorEdit,
   isAffectSelected,
   isBeingEdited,
@@ -163,19 +163,19 @@ function moduleBtnTooltip(moduleName: string) {
       : '');
 }
 
-function editSelectedAffects() {
-  selectedAffects.value.forEach(editAffect);
-}
+// function editSelectedAffects() {
+//   selectedAffects.value.forEach(editAffect);
+// }
 
-function commitAllChanges() {
-  const affectsToCommit = [...affectsBeingEdited.value];
-  affectsToCommit.forEach(commitChanges);
-}
+// function commitAllChanges() {
+//   const affectsToCommit = [...affectsBeingEdited.value];
+//   affectsToCommit.forEach(commitChanges);
+// }
 
-function cancelAllChanges() {
-  const affectsToCancel = [...affectsBeingEdited.value];
-  affectsToCancel.forEach(cancelChanges);
-}
+// function cancelAllChanges() {
+//   const affectsToCancel = [...affectsBeingEdited.value];
+//   affectsToCancel.forEach(cancelChanges);
+// }
 
 function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
