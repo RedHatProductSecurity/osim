@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
+* Fix save all button behavior for affects table (`OSIDB-3664`)
 
 ## [2024.11.1]
 ### Added
