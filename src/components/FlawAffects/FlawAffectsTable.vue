@@ -6,7 +6,7 @@ import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vu
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import type { ZodAffectType } from '@/types';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { displayModes } from './flawAffectConstants';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
@@ -26,7 +26,7 @@ const emit = defineEmits<{
   'affects:display-mode': [value: displayModes];
 }>();
 
-const { selectedAffects } = useAffectsEditing();
+const { selectedAffects } = useAffectsEditingStore();
 
 const { isAffectBeingRemoved, modifiedAffects } = useFlawAffectsModel();
 

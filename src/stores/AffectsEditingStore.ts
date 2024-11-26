@@ -9,7 +9,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import type { ZodAffectType } from '@/types/zodAffect';
 import { matcherForAffect } from '@/utils/helpers';
 
-export const useAffectsEditing = defineStore('EditableAffects', () => {
+export const useAffectsEditingStore = defineStore('EditableAffects', () => {
   const flaw = useFlaw();
 
   const { initialAffects } = useFlawAffectsModel();
@@ -29,7 +29,7 @@ export const useAffectsEditing = defineStore('EditableAffects', () => {
 
   const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
   const affectsBeingEdited = ref<ZodAffectType[]>([]);
-  // TODO: Fix error test suite
+
   onUnmounted($reset);
 
   function isBeingEdited(affect: ZodAffectType) {

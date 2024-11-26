@@ -6,7 +6,7 @@ import {
   affectAffectedness,
   affectResolutions,
 } from '@/types/zodAffect';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { useFilterSortAffects } from './useFilterSortAffects';
 
@@ -27,7 +27,7 @@ const {
   areAllAffectsSelected,
   isIndeterminateSelection,
   toggleMultipleAffectSelections,
-} = useAffectsEditing();
+} = useAffectsEditingStore();
 </script>
 
 <template>
