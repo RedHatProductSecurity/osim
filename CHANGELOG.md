@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Fixed
+* Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
 
 ## [2024.11.1]

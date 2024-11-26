@@ -69,7 +69,7 @@ function sortTrackers(trackers: TrackerWithModule[]): TrackerWithModule[] {
 const filteredTrackers = computed(() => {
   return props.displayedTrackers.filter((tracker) => {
     const matchesStatusFilter =
-      statusFilter.value.length === 0 || statusFilter.value.includes(tracker.status ?? 'EMPTY');
+      statusFilter.value.length === 0 || statusFilter.value.includes(tracker.status?.toUpperCase() || 'EMPTY');
     return matchesStatusFilter;
   });
 });

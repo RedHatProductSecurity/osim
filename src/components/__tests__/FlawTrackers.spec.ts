@@ -112,6 +112,31 @@ describe('flawTrackers', () => {
     expect(firstTracker.find('td:nth-of-type(3)').text()).toBe('xxxx-0-001');
   });
 
+  osimFullFlawTest('Trackers can be filtered by status', async ({ flaw }) => {
+    const subject = mountFlawTrackers({
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      allTrackersCount: 0,
+    });
+
+    let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
+    expect(trackersTableRows.length).toBe(6);
+
+    const trackerStatusFilterBtn = subject.find('#status-filter');
+    await trackerStatusFilterBtn.trigger('click');
+
+    const statusFilterSelection = subject.find('ul.dropdown-menu > li > a');
+    expect(statusFilterSelection.find('span').text()).toBe('NEW');
+    await statusFilterSelection.find('input').trigger('click');
+
+    trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
+    expect(trackersTableRows.length).toBe(3);
+  });
+
   osimFullFlawTest('Trackers display functional external links', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw,
