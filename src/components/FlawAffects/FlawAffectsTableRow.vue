@@ -14,7 +14,7 @@ import {
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import { matcherForAffect } from '@/utils/helpers';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 const props = defineProps<{
   affect: ZodAffectType;
@@ -33,7 +33,7 @@ const emit = defineEmits<{
   'affect:updateCvss': [affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number];
 }>();
 
-const affectsEditingStore = useAffectsEditing();
+const affectsEditingStore = useAffectsEditingStore();
 const {
   cancelChanges,
   commitChanges,

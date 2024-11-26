@@ -15,7 +15,7 @@ import { useFlaw } from '@/composables/useFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 // import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 import { mountWithConfig, withSetup } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
@@ -41,18 +41,18 @@ async function useMocks(flaw: ZodFlawType) {
   const { useFlawAffectsModel: _useFlawAffectsModel } =
     await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
 
-  const { useAffectsEditing: _useAffectsEditing } =
+  const { useAffectsEditingStore: _useAffectsEditingStore } =
     await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
 
   const _flaw = _useFlaw();
   _flaw.value = flaw;
 
-  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditing };
+  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditingStore };
 }
 
 const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
   const {
-    _useAffectsEditing,
+    _useAffectsEditingStore,
     _useFlaw,
     _useFlawAffectsModel,
   } = await useMocks(flaw);
@@ -60,7 +60,7 @@ const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
   const [mockedFlaw] = withSetup(() => {
     vi.mocked(useFlaw).mockReturnValue(_useFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
-    vi.mocked(useAffectsEditing).mockReturnValue(_useAffectsEditing());
+    vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
     return _useFlaw();
   });
 

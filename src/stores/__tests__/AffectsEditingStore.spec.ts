@@ -10,7 +10,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import { router, withSetup } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 vi.mock('@/composables/useFlaw');
 vi.mock('@/composables/useFlawAffectsModel');
@@ -18,20 +18,20 @@ console.log(useFlawAffectsModel);
 
 let pinia: ReturnType<typeof createPinia>;
 console.log(useFlawAffectsModel);
-type FlawWithStore = [ReturnType<typeof useFlaw>, ReturnType<typeof useAffectsEditing>];
+type FlawWithStore = [ReturnType<typeof useFlaw>, ReturnType<typeof useAffectsEditingStore>];
 
 function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
   const [[flaw, store]] = withSetup((): FlawWithStore => {
     const flaw = useFlaw();
     flaw.value = testFlaw;
     useFlawAffectsModel();
-    return [flaw, useAffectsEditing()];
+    return [flaw, useAffectsEditingStore()];
   },
   [pinia, router]);
   return [flaw, store];
 }
 
-describe('useAffectsEditing Store', () => {
+describe('useAffectsEditingStore Store', () => {
   // @ts-expect-error  flaw not defined
   beforeEach(async ({ flaw }) => {
     vi.clearAllMocks();

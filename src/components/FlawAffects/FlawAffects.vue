@@ -19,7 +19,7 @@ import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
-import { useAffectsEditing } from '@/stores/AffectsEditingStore';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { displayModes } from './flawAffectConstants';
 import { useFilterSortAffects } from './useFilterSortAffects';
@@ -32,7 +32,7 @@ const props = defineProps<{
 
 const flaw = useFlaw();
 
-const affectsEditingStore = useAffectsEditing();
+const affectsEditingStore = useAffectsEditingStore();
 const {
   cancelChanges,
   commitChanges,
