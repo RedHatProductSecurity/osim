@@ -14,10 +14,8 @@ import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 vi.mock('@/composables/useFlaw');
 vi.mock('@/composables/useFlawAffectsModel');
-console.log(useFlawAffectsModel);
 
 let pinia: ReturnType<typeof createPinia>;
-console.log(useFlawAffectsModel);
 type FlawWithStore = [ReturnType<typeof useFlaw>, ReturnType<typeof useAffectsEditingStore>];
 
 function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
@@ -36,7 +34,6 @@ describe('useAffectsEditingStore Store', () => {
   beforeEach(async ({ flaw }) => {
     vi.clearAllMocks();
     vi.resetModules();
-    console.log(useFlawAffectsModel);
 
     type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
 
