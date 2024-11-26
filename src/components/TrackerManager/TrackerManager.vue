@@ -107,7 +107,6 @@ async function handleFileTrackers() {
       <span class="me-2">Managing trackers for {{ specificAffects.length }} affected offering(s):</span>
       <span v-for="affect in specificAffects" :key="affect" class="badge bg-info me-1">{{ affect }}</span>
     </div>
-
     <div class="osim-trackers-filing mb-2">
       <div class="osim-tracker-manager-controls">
         <input
@@ -131,7 +130,7 @@ async function handleFileTrackers() {
         :addableItems="relatedFlawIds"
         @addTab="addRelatedFlaw"
       >
-        <template v-if="isQuerying" #add-tab>
+        <template v-if="isQuerying" #loading-indicator>
           <div class="ms-2 mt-2">
             <span
               class="spinner-border spinner-border-sm me-1 text-info"

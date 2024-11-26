@@ -789,7 +789,14 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <div data-v-4940748f="" data-v-f682b1b0="">
                     <ul data-v-4940748f="" class="nav nav-tabs">
                       <li data-v-4940748f="" class="nav-item"><button data-v-4940748f="" type="button" class="nav-link active"><span data-v-4940748f="">CVE-2024-1234</span></button></li>
-                      <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><span data-v-f682b1b0="" class="ms-1">Querying available trackers…</span></div>
+                      <li data-v-4940748f="" class="nav-item"><button data-v-4940748f="" type="button" class="nav-link osim-add-tab" data-bs-toggle="dropdown"><i data-v-4940748f="" class="bi bi-plus"></i></button>
+                        <ul data-v-4940748f="" class="p-2 osim-dropdown-menu dropdown-menu dropdown-menu-end">
+                          <li data-v-4940748f=""><input data-v-4940748f="" class="border border-info px-1 mx-2 focus-ring focus-ring-info" type="text" placeholder="Search..."><button data-v-4940748f="" disabled="" class="btn btn-info btn-sm font-white" type="button">Add</button></li>
+                          <li data-v-4940748f="">
+                            <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><span data-v-f682b1b0="" class="ms-1">Querying available trackers…</span></div>
+                          </li>
+                        </ul>
+                      </li>
                     </ul>
                     <div data-v-4940748f="" class="">
                       <div data-v-f682b1b0="" class="osim-tracker-tabs">
@@ -1181,7 +1188,14 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                   <div data-v-4940748f="" data-v-f682b1b0="">
                     <ul data-v-4940748f="" class="nav nav-tabs">
                       <li data-v-4940748f="" class="nav-item"><button data-v-4940748f="" type="button" class="nav-link active"><span data-v-4940748f="">CVE-2024-1234</span></button></li>
-                      <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><span data-v-f682b1b0="" class="ms-1">Querying available trackers…</span></div>
+                      <li data-v-4940748f="" class="nav-item"><button data-v-4940748f="" type="button" class="nav-link osim-add-tab" data-bs-toggle="dropdown"><i data-v-4940748f="" class="bi bi-plus"></i></button>
+                        <ul data-v-4940748f="" class="p-2 osim-dropdown-menu dropdown-menu dropdown-menu-end">
+                          <li data-v-4940748f=""><input data-v-4940748f="" class="border border-info px-1 mx-2 focus-ring focus-ring-info" type="text" placeholder="Search..."><button data-v-4940748f="" disabled="" class="btn btn-info btn-sm font-white" type="button">Add</button></li>
+                          <li data-v-4940748f="">
+                            <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><span data-v-f682b1b0="" class="ms-1">Querying available trackers…</span></div>
+                          </li>
+                        </ul>
+                      </li>
                     </ul>
                     <div data-v-4940748f="" class="">
                       <div data-v-f682b1b0="" class="osim-tracker-tabs">

@@ -7,6 +7,8 @@
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
+### Changed
+* Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
 
 ## [2024.11.1]
 ### Added
