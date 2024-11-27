@@ -20,6 +20,7 @@
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
 * Fix save all button behavior for affects table (`OSIDB-3664`)
+* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
 
 ## [2024.11.1]
 ### Added
