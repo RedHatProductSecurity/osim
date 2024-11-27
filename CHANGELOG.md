@@ -4,6 +4,7 @@
 ### Fixed
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
 * Fix save all button behavior for affects table (`OSIDB-3664`)
+* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
 
 ## [2024.11.1]
 ### Added
