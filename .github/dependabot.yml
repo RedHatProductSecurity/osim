@@ -7,3 +7,5 @@ updates:
     labels:
       - "internal"
       - "dependencies"
+    # Disable version updates, only make PRs for security updates
+    open-pull-requests-limit: 0
