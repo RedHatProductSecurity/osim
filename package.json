@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
-    "@faker-js/faker": "^9.0.1",
+    "@faker-js/faker": "^9.2.0",
     "@fullhuman/postcss-purgecss": "^6.0.0",
     "@mrmarble/msw-auto-mock": "^0.28.1",
     "@openapitools/openapi-generator-cli": "^2.15.3",
