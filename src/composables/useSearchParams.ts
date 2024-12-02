@@ -22,7 +22,10 @@ const searchQuery = z.object({
 
 const facets = ref<Facet[]>([]);
 const query = ref<string>('');
-const order = computed(() => orderMode.value === 'asc' && orderField.value ? `-${orderField.value}` : orderField.value);
+const order = computed(() => orderMode.value === 'desc' && orderField.value
+  ? `-${orderField.value}`
+  : orderField.value,
+);
 const orderField = ref<string>('');
 const orderMode = ref<orderMode>('asc');
 const search = ref('');
@@ -66,10 +69,10 @@ export function useSearchParams() {
     if (parsedRoute.query.order) {
       params.order = parsedRoute.query.order;
       if ((route.query.order as string).startsWith('-')) {
-        orderMode.value = 'asc';
+        orderMode.value = 'desc';
         orderField.value = (route.query.order as string).slice(1);
       } else {
-        orderMode.value = 'desc';
+        orderMode.value = 'asc';
         orderField.value = route.query.order as string;
       }
     }
