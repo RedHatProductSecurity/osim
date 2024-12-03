@@ -768,11 +768,6 @@ const displayedTrackers = computed(() => {
   }
 
   .osim-tracker-manager-modal-container {
-    &:deep(.modal-header),
-    &:deep(.modal-footer) {
-      display: none;
-    }
-
     &:deep(.modal-body) {
       position: relative;
       padding: 0;
