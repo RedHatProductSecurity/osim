@@ -15,11 +15,8 @@ exports[`flawCreateView > should render 1`] = `
                 <!--v-if-->
                 <!-- for invalid-tooltip positioning -->
                 <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-                  <!--<Transition name="flash-bg" :duration="2000">-->
                   <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control is-invalid"></span>
-                      <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-                    </div>
+                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control is-invalid"></span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
                   </transition-stub>
                   <div class="input-group" style="display: none;"><input class="form-control is-invalid" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
                   <div class="invalid-tooltip">String must contain at least 4 character(s)</div>
@@ -35,17 +32,27 @@ exports[`flawCreateView > should render 1`] = `
                 </div>
               </div>
             </label>
+            <div data-v-76e7a15d="" class="ms-0"><label data-v-76509415="" class="osim-input ps-3 mb-2 input-group">
+                <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Package URL</span>
+                  <!--v-if-->
+                  <!-- for invalid-tooltip positioning -->
+                  <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
+                    <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+                      <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
+                    </transition-stub>
+                    <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+                    <!--v-if-->
+                  </div>
+                </div>
+              </label></div>
             <div data-v-76e7a15d="" class="row">
               <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
                   <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
                     <!--v-if-->
                     <!-- for invalid-tooltip positioning -->
                     <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-                      <!--<Transition name="flash-bg" :duration="2000">-->
                       <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                        <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
-                          <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-                        </div>
+                        <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
                       </transition-stub>
                       <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
                       <!--v-if-->
@@ -139,11 +146,8 @@ exports[`flawCreateView > should render 1`] = `
                 <!--v-if-->
                 <!-- for invalid-tooltip positioning -->
                 <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-                  <!--<Transition name="flash-bg" :duration="2000">-->
                   <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
-                      <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-                    </div>
+                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
                   </transition-stub>
                   <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
                   <!--v-if-->

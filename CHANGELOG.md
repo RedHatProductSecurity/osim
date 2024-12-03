@@ -8,6 +8,8 @@
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
+### Added
+* Added Prouct URL field in Flaw forms (`OSIDB-3412`)
 
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
