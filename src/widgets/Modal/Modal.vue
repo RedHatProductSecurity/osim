@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/* TODO: Modal refactors:
+- Move composable here
+- Revisit component design for reusability
+*/
+
 import { toRefs, watch } from 'vue';
 
 const props = defineProps<{
