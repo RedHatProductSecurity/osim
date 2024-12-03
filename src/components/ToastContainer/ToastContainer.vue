@@ -66,7 +66,7 @@ function clearAll() {
     <TransitionGroup name="toast">
       <Toast
         v-for="(toast, index) in toasts"
-        v-show="toast.isFresh || settings.showNotifications"
+        v-show="settings.showNotifications"
         :key="toast.id"
         :title="toast.title"
         :body="toast.body"
@@ -75,7 +75,6 @@ function clearAll() {
         :timeoutMs="toast.timeoutMs"
         :css="toast.css"
         @close="toasts.splice(index, 1)"
-        @stale="toast.isFresh = false"
       >
       </Toast>
     </TransitionGroup>
