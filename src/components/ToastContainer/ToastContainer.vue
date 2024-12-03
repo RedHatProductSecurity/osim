@@ -53,7 +53,7 @@ function clearAll() {
     <Transition name="toast">
       <div
         v-if="settings.showNotifications && toasts.length > 0"
-        class="osim-toast-container-clear d-flex justify-content-end"
+        class="osim-toast-container-clear justify-content-end"
       >
         <button
           v-if="settings.showNotifications && toasts.length > 0"
@@ -96,7 +96,7 @@ function clearAll() {
   overflow: clip auto;
 
   /* clip-path: inset(-100vw 0 -100vw -100vw); */
-  right: 0;
+  left: 0;
 
   /* justify-self: end; */
 }
