@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, toRefs } from 'vue';
+import { computed, toRefs, watch } from 'vue';
+
+import { storeToRefs } from 'pinia';
 
 import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
 
@@ -11,52 +13,69 @@ import {
 } from '@/types/zodAffect';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
+import { matcherForAffect } from '@/utils/helpers';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 const props = defineProps<{
   affect: ZodAffectType;
   error: null | Record<string, any>;
-  isBeingEdited: boolean;
   isLast: boolean;
   isModified: boolean;
   isNew: boolean;
   isRemoved: boolean;
-  isSelected: boolean;
 }>();
 
 const emit = defineEmits<{
-  'affect:cancel': [value: ZodAffectType];
-  'affect:commit': [value: ZodAffectType];
-  'affect:edit': [value: ZodAffectType];
   'affect:recover': [value: ZodAffectType];
   'affect:remove': [value: ZodAffectType];
-  'affect:revert': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
   'affect:track': [value: ZodAffectType];
   'affect:updateCvss': [affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number];
 }>();
 
+const affectsEditingStore = useAffectsEditingStore();
+const {
+  cancelChanges,
+  commitChanges,
+  editAffect,
+  isAffectSelected,
+  isBeingEdited,
+  isSelectable,
+  revertAffectToLastSaved,
+} = affectsEditingStore;
+const { affectsBeingEdited } = storeToRefs(affectsEditingStore);
+
 const { affect } = toRefs(props);
 
-const handleEdit = (event: KeyboardEvent, affect: ZodAffectType) => {
+watch(affect, (newAffect) => {
+  if (isBeingEdited(affect.value)) {
+    const filter = matcherForAffect(affect.value);
+    const index = affectsBeingEdited.value.findIndex(filter);
+    if (index !== -1) {
+      affectsBeingEdited.value[index] = newAffect;
+    }
+  }
+});
+
+const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
-    emit('affect:cancel', affect);
+    cancelChanges(affect);
   } else if (event.key === 'Enter') {
-    emit('affect:commit', affect);
+    commitChanges(affect);
   }
 };
 
 // Select Affects
-const isSelectable = computed(() => !props.isBeingEdited && !props.isRemoved);
 
 function handleToggle(affect: ZodAffectType) {
-  if (isSelectable.value) {
+  if (isSelectable(affect)) {
     emit('affect:toggle-selection', affect);
   }
 }
 
 function revertChanges(affect: ZodAffectType) {
-  emit('affect:revert', affect);
-  if (props.isSelected) {
+  revertAffectToLastSaved(affect);
+  if (isAffectSelected(affect)) {
     handleToggle(affect);
   }
 }
@@ -97,12 +116,12 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     v-if="affect"
     :class="{
       'border-bottom border-gray': isLast,
-      'editing': isBeingEdited,
-      'modified': isModified && !isBeingEdited,
-      'new': isNew && !isBeingEdited,
+      'editing': isBeingEdited(affect),
+      'modified': isModified && !isBeingEdited(affect),
+      'new': isNew && !isBeingEdited(affect),
       'removed': isRemoved,
-      'selected': isSelected }"
-    :style="isSelectable ? 'cursor: pointer' : ''"
+      'selected': isAffectSelected(affect) }"
+    :style="isSelectable(affect) ? 'cursor: pointer' : ''"
     :title="affectRowTooltip"
     @click.prevent="handleToggle(affect)"
   >
@@ -111,15 +130,15 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       <input
         type="checkbox"
         class="form-check-input"
-        :checked="isSelected"
-        :disabled="isBeingEdited || isRemoved"
+        :checked="isAffectSelected(affect)"
+        :disabled="isBeingEdited(affect) || isRemoved"
         @click.stop="handleToggle(affect)"
       />
     </td>
     <td>
       <div class="ps-1">
         <i
-          v-if="isBeingEdited"
+          v-if="isBeingEdited(affect)"
           class="bi bi-pencil"
           title="This affect is currently being edited"
         />
@@ -143,10 +162,10 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <input
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         v-model="affect.ps_module"
         class="form-control"
-        @keydown="handleEdit($event, affect)"
+        @keydown="handleKeystroke($event, affect)"
       />
       <span v-else :title="affect.ps_module">
         {{ affect.ps_module }}
@@ -154,10 +173,10 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <input
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         v-model="affect.ps_component"
         class="form-control"
-        @keydown="handleEdit($event, affect)"
+        @keydown="handleKeystroke($event, affect)"
       />
       <span v-else :title="affect.ps_component">
         {{ affect.ps_component }}
@@ -165,19 +184,19 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <select
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         v-model="affect.affectedness"
         class="form-select"
-        @keydown="handleEdit($event, affect)"
+        @keydown="handleKeystroke($event, affect)"
       >
         <option
-          v-for="option in affectAffectedness"
-          :key="option"
-          :value="option"
-          :selected="option === affect.affectedness"
+          v-for="affectedness in affectAffectedness"
+          :key="affectedness"
+          :value="affectedness"
+          :selected="affectedness === affect.affectedness"
           @change="affectednessChange($event, affect)"
         >
-          {{ option }}
+          {{ affectedness }}
         </option>
       </select>
       <span v-else>
@@ -186,18 +205,18 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <select
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         v-model="affect.resolution"
         class="form-select"
-        @keydown="handleEdit($event, affect)"
+        @keydown="handleKeystroke($event, affect)"
       >
         <option
-          v-for="option in resolutionOptions(affect)"
-          :key="option"
-          :value="option"
-          :selected="option === affect.resolution"
+          v-for="resolution in resolutionOptions(affect)"
+          :key="resolution"
+          :value="resolution"
+          :selected="resolution === affect.resolution"
         >
-          {{ option }}
+          {{ resolution }}
         </option>
       </select>
       <span v-else>
@@ -206,18 +225,18 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <select
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         v-model="affect.impact"
         class="form-select"
-        @keydown="handleEdit($event, affect)"
+        @keydown="handleKeystroke($event, affect)"
       >
         <option
-          v-for="option in affectImpacts"
-          :key="option"
-          :value="option"
-          :selected="option === affect.impact"
+          v-for="impact in affectImpacts"
+          :key="impact"
+          :value="impact"
+          :selected="impact === affect.impact"
         >
-          {{ option }}
+          {{ impact }}
         </option>
       </select>
       <span v-else>
@@ -226,7 +245,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <CvssCalculatorOverlayed
-        v-if="isBeingEdited"
+        v-if="isBeingEdited(affect)"
         :id="affectCvss(affect)?.uuid"
         :cvssVector="affectCvss(affect)?.vector"
         :cvssScore="affectCvss(affect)?.score"
@@ -237,7 +256,6 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
           scoreValue,
           affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
         )"
-        @keydown="handleEdit($event, affect)"
       />
       <span v-else :title="affectCvss(affect)?.vector || ''">
         {{ affectCvss(affect)?.score || '' }}
@@ -247,7 +265,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       <div class="affect-tracker-cell">
         <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
         <button
-          v-if="!(isBeingEdited || isRemoved)"
+          v-if="!(isBeingEdited(affect) || isRemoved)"
           type="button"
           class="btn btn-sm px-1 py-0 d-flex rounded-circle"
           @click.prevent.stop="emit('affect:track', affect)"
@@ -258,27 +276,27 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <button
-        v-if="!isBeingEdited && !isRemoved"
+        v-if="!isBeingEdited(affect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Edit affect"
         tabindex="-1"
-        @click.stop="emit('affect:edit', affect)"
+        @click.stop="editAffect(affect)"
       >
         <i class="bi bi-pencil" />
       </button>
       <button
-        v-if="isBeingEdited && !isRemoved"
+        v-if="isBeingEdited(affect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Commit edit"
         tabindex="-1"
-        @click.stop="emit('affect:commit', affect)"
+        @click.stop="commitChanges(affect)"
       >
         <i class="bi bi-check2 fs-5 lh-sm" />
       </button>
       <button
-        v-if="!isBeingEdited && !isRemoved"
+        v-if="!isBeingEdited(affect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Remove affect"
@@ -288,12 +306,12 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         <i class="bi bi-trash" />
       </button>
       <button
-        v-if="isBeingEdited && !isRemoved && !isNew"
+        v-if="isBeingEdited(affect) && !isRemoved && !isNew"
         type="button"
         class="btn btn-sm"
         title="Cancel edit"
         tabindex="-1"
-        @click.stop="emit('affect:cancel', affect)"
+        @click.stop="cancelChanges(affect)"
       >
         <i class="bi bi-x fs-5 lh-sm" />
       </button>
@@ -308,7 +326,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
       </button>
       <button
-        v-if="!isBeingEdited && isModified"
+        v-if="!isBeingEdited(affect) && isModified"
         type="button"
         class="btn btn-sm"
         title="Discard changes (Revert)"

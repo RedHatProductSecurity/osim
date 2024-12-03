@@ -1,67 +1,116 @@
+import { type Component } from 'vue';
+
 import { describe, expect } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { useRouter } from 'vue-router';
+import { flushPromises, VueWrapper } from '@vue/test-utils';
 
+import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test-suite-helpers';
 import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
-import { osimEmptyFlawTest, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
+import { useFlaw } from '@/composables/useFlaw';
+import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
+import { mountWithConfig, withSetup } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
-import { mountWithConfig } from '@/__tests__/helpers';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
+import type { ZodFlawType } from '@/types';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
+vi.mock('@/composables/useFlaw');
+vi.mock('@/composables/useFlawModel');
+vi.mock('@/composables/useFlawAffectsModel');
+vi.mock('@/stores/AffectsEditingStore');
 
-const mountFlawAffects = (flaw: ZodFlawType) => mountWithConfig(FlawAffects, {
-  props: {
-    embargoed: flaw.embargoed,
-    flaw,
-    relatedFlaws: [flaw],
-    error: [],
-  },
-});
+let pinia: ReturnType<typeof createPinia>;
 
-let FlawAffects: typeof import('@/components/FlawAffects/FlawAffects.vue').default;
+async function useMocks(flaw: ZodFlawType) {
+  type ActualFlaw = typeof import('@/composables/useFlaw');
+  type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
+  type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
+
+  const { useFlaw: _useFlaw } =
+    await vi.importActual<ActualFlaw>('@/composables/useFlaw');
+
+  const { useFlawAffectsModel: _useFlawAffectsModel } =
+    await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
+
+  const { useAffectsEditingStore: _useAffectsEditingStore } =
+    await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
+
+  const _flaw = _useFlaw();
+  _flaw.value = flaw;
+
+  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditingStore };
+}
+
+const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
+  const {
+    _useAffectsEditingStore,
+    _useFlaw,
+    _useFlawAffectsModel,
+  } = await useMocks(flaw);
+
+  const [mockedFlaw] = withSetup(() => {
+    vi.mocked(useFlaw).mockReturnValue(_useFlaw());
+    vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
+    vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
+    return _useFlaw();
+  });
+
+  return mountWithConfig(Component, {
+    props: {
+      embargoed: mockedFlaw.value.embargoed,
+      relatedFlaws: [mockedFlaw.value],
+      error: [],
+    },
+  });
+};
+
+type Subject = VueWrapper<Component>;
+let subject: Subject;
+
 describe('flawAffects', () => {
-  beforeAll(() => {
+  // @ts-expect-error - flaw is not defined property
+  beforeEach(async ({ flaw }) => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    pinia = createPinia();
+    setActivePinia(pinia);
     vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
     vi.mocked(getNextAccessToken).mockResolvedValue('mocked-access-token');
-  });
-
-  beforeEach(async () => {
+    vi.mocked(useRouter);
     const importedComponent = await import('@/components/FlawAffects/FlawAffects.vue');
-    FlawAffects = importedComponent.default;
+    const FlawAffects = importedComponent.default;
+    await flushPromises();
+    subject = await mountFlawAffects(flaw, FlawAffects);
   });
 
-  afterEach(() => {
+  afterAll(() => {
+    vi.resetAllMocks();
     vi.resetModules();
   });
 
-  osimEmptyFlawTest('Correctly renders the component when there are not affects to display', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
+  osimEmptyFlawTest('Correctly renders the component when there are no affects to display',
+    () => expect(subject.html()).toMatchSnapshot());
 
-    expect(subject.html()).toMatchSnapshot();
-  });
+  osimFullFlawTest('Correctly renders the component when there are affects to display',
+    () => expect(subject.html()).toMatchSnapshot());
 
-  osimFullFlawTest('Correctly renders the component when there are affects to display', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-    expect(subject.html()).toMatchSnapshot();
-  });
-
-  osimFullFlawTest('Filter button for module with trackers have correct tootltip', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
+  osimFullFlawTest('Filter button for module with trackers have correct tootltip', () => {
     const moduleFilterBtn = subject.findAll('.module-btn')[0];
     expect(moduleFilterBtn.attributes('title')).toBe('openshift-1');
   });
 
-  osimFullFlawTest('Filter button for module without trackers have correct tootltip', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-    const moduleFilterBtn = subject.findAll('.module-btn')[1];
-    expect(moduleFilterBtn.attributes('title')).toBe('openshift-2\nThis module has no trackers associated');
-  });
+  osimFullFlawTest('Filter button for module without trackers have correct tootltip',
+    () => {
+      const moduleFilterBtn = subject.findAll('.module-btn')[1];
+      expect(moduleFilterBtn.attributes('title')).toBe('openshift-2\nThis module has no trackers associated');
+    });
 
-  osimFullFlawTest('Filter tables when affected modules are selected', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Filter tables when affected modules are selected', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let rowCount = affectsTableRows.length;
     expect(rowCount).toBe(6);
@@ -74,9 +123,7 @@ describe('flawAffects', () => {
     expect(rowCount).toBe(1);
   });
 
-  osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Per page setting correctly changes the table page items number', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let rowCount = affectsTableRows.length;
     expect(rowCount).toBe(6);
@@ -105,22 +152,17 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
-  osimFullFlawTest('Affects are selectable by clicking in the row', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects are selectable by clicking in the row', async () => {
     let affectsTableSelectedRows = subject.findAll('.affects-management table tbody tr.selected');
     expect(affectsTableSelectedRows.length).toBe(0);
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     await affectsTableRows[0].trigger('click');
-
     affectsTableSelectedRows = subject.findAll('.affects-management table tbody tr.selected');
     expect(affectsTableSelectedRows.length).toBe(1);
   });
 
-  osimFullFlawTest('Selection actions are displayed on toolbar', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Selection actions are displayed on toolbar', async () => {
     let tableActions = subject.findAll('.affects-toolbar .affects-table-actions .btn');
     expect(tableActions.length).toBe(1);
 
@@ -132,24 +174,23 @@ describe('flawAffects', () => {
     expect(tableActions.length).toBe(4);
   });
 
-  osimFullFlawTest('Affects can be set to edit mode', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
+  osimFullFlawTest('Affects can be set to edit mode', async () => {
+    await flushPromises();
 
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
     expect(affectsTableEditingRows.length).toBe(0);
 
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
+    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button');
     expect(affectRowEditBtn.exists()).toBe(true);
-    await affectRowEditBtn.trigger('click');
 
+    await affectRowEditBtn.trigger('click');
+    await flushPromises();
     affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
     expect(affectsTableEditingRows.length).toBe(1);
   });
 
-  osimFullFlawTest('Show DEFER resolution option when affect impact is LOW', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Show DEFER resolution option when affect impact is LOW', async () => {
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
     expect(affectRowEditBtn.exists()).toBe(true);
@@ -171,9 +212,7 @@ describe('flawAffects', () => {
     expect(resolutionOptions.includes('DELEGATED')).toBe(true);
   });
 
-  osimFullFlawTest('Don\'t show DEFER resolution option if impact is not LOW', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Don\'t show DEFER resolution option if impact is not LOW', async () => {
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowEditBtn = affectsTableRows[5].find('td:last-of-type button:first-of-type');
     expect(affectRowEditBtn.exists()).toBe(true);
@@ -194,9 +233,7 @@ describe('flawAffects', () => {
     expect(resolutionOptions.includes('DEFER')).toBe(false);
   });
 
-  osimFullFlawTest('Affects can be modified', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects can be modified', async () => {
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.modified');
     expect(affectsTableEditingRows.length).toBe(0);
 
@@ -219,9 +256,7 @@ describe('flawAffects', () => {
     expect(affectsTableModifiedRows.length).toBe(1);
   });
 
-  osimFullFlawTest('Affect changes can be discarded', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affect changes can be discarded', async () => {
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.modified');
     expect(affectsTableEditingRows.length).toBe(0);
 
@@ -244,16 +279,14 @@ describe('flawAffects', () => {
     expect(affectsTableModifiedRows.length).toBe(0);
   });
 
-  osimFullFlawTest('Toolbar state badges can be activate to filter affects', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Toolbar state badges can be activate to filter affects', async () => {
     let badgeBtns = subject.findAll('.affects-toolbar .badges .badge-btn');
     expect(badgeBtns.length).toBe(1);
 
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
 
-    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type  button:first-of-type');
+    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
     expect(affectRowEditBtn.find('i.bi-pencil').exists()).toBe(true);
     await affectRowEditBtn.trigger('click');
 
@@ -269,9 +302,7 @@ describe('flawAffects', () => {
     expect(affectsTableRows.length).toBe(6);
   });
 
-  osimFullFlawTest('Affects can be sorted by clicking on the field column', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects can be sorted by clicking on the field column', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let firstAffect = affectsTableRows[0];
     expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-1-1');
@@ -291,9 +322,7 @@ describe('flawAffects', () => {
     expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-5-1');
   });
 
-  osimFullFlawTest('Affects can be filtered by affectedness', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects can be filtered by affectedness', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
 
@@ -316,9 +345,7 @@ describe('flawAffects', () => {
     expect(affectednessFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  osimFullFlawTest('Affects can be filtered by resolution', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects can be filtered by resolution', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
 
@@ -341,9 +368,7 @@ describe('flawAffects', () => {
     expect(resolutionFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  osimFullFlawTest('Affects can be filtered by impact', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Affects can be filtered by impact', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     expect(affectsTableRows.length).toBe(6);
 
@@ -366,23 +391,19 @@ describe('flawAffects', () => {
     expect(impactFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
   });
 
-  osimFullFlawTest('Affect modules table cell have correct tootltip', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
+  osimFullFlawTest('Affect modules table cell have correct tootltip', async () => {
     const affectRow = subject.findAll('.affects-management table tbody tr')[1];
     const affectModuleDisplay = affectRow.find('td:nth-of-type(3) > span');
     expect(affectModuleDisplay.attributes('title')).toBe('openshift-2');
   });
 
-  osimFullFlawTest('Affect components table cell have correct tootltip', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
+  osimFullFlawTest('Affect components table cell have correct tootltip', async () => {
     const affectRow = subject.findAll('.affects-management table tbody tr')[1];
     const affectComponentDisplay = affectRow.find('td:nth-of-type(4) > span');
     expect(affectComponentDisplay.attributes('title')).toBe('openshift-2-1');
   });
 
-  osimFullFlawTest('Displays tracker manager for individual affect', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Displays tracker manager for individual affect', async () => {
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowTrackersBtn = affectsTableRows[0]
       .find('td:nth-of-type(9) .affect-tracker-cell button:first-of-type');
@@ -395,9 +416,7 @@ describe('flawAffects', () => {
     expect(subject.html()).toMatchSnapshot();
   });
 
-  osimFullFlawTest('Displays tracker manager for a selection of affects', async ({ flaw }) => {
-    const subject = mountFlawAffects(flaw);
-
+  osimFullFlawTest('Displays tracker manager for a selection of affects', async () => {
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     await affectsTableRows[0].trigger('click');
     await affectsTableRows[1].trigger('click');
