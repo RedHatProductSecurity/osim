@@ -147,6 +147,14 @@ Feature: Flaw detail testing on public flaw
     Scenario: Select/Deselect all trackers in tracker manager
       Then I Select/Deselect all trackers and all the trackers could be Selected/Deselected
 
+    Scenario: File tracker for multiple flaw
+      When I create a new flaw and add same module/component affect
+      And I add embargoed flaw in public flaw's Tracker Manager
+      And Sync tracker selections across tabs in Tracker Manager
+      And Inspect selected trackers to file in Tracker Manager
+      And I file tracker for multiple flaw
+      Then Tracker filed for multiple flaw
+
     Scenario Outline: Update flaw incident state
       When I update flaw incident state to <new_state>
       Then The flaw incident state is updated to <new_state>

@@ -1,6 +1,7 @@
+import time
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from seleniumpagefactory.Pagefactory import PageFactory
@@ -62,3 +63,18 @@ class BasePage(PageFactory):
     def is_element_exists(self, by, value):
         results = self.driver.find_elements(by, value)
         return bool(results)
+
+    def open_new_tab(self, url):
+        # Store the ID of the original window
+        original_window = self.driver.current_window_handle
+
+        # switch to new tab
+        self.driver.switch_to.new_window('tab')
+        self.driver.get(url)
+        time.sleep(3)
+
+        return original_window
+
+    def close_tab_return_to_original_window(self, original_window):
+        self.driver.close()
+        self.driver.switch_to.window(original_window)

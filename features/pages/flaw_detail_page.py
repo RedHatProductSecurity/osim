@@ -192,14 +192,9 @@ class FlawDetailPage(BasePage):
         "selectFilteredTrackerBtn": ("XPATH", "//button[text()=' Select Filtered']"),
         "trackerCreatedDateOrder": ("XPATH", "//th[text()=' Created date ']"),
         "trackerUpdatedDateOrder": ("XPATH", "//th[text()=' Updated date ']"),
-
-        "ManageTrackers": ("XPATH", "//button[contains(text(), 'Manage Trackers')]"),
-        "SelectAllTrackers": ("XPATH", "//button[contains(text(), 'Select All')]"),
-        "DeselectAllTrackers": ("XPATH", "//button[contains(text(), 'Deselect All')]"),
-        "trackersList": ("XPATH", "//input[@class='osim-tracker form-check-input']"),
-        "checkedTrackersList": ("XPATH", "//input[@class='osim-tracker form-check-input' and @checked='']"),
-        "FilterTrackers": ("XPATH", "//input[@placeholder='Filter by stream or component name']"),
-        "trackerZstream": ("XPATH", "(//label[contains(text(), '.z')])[1]"),
+        "addFlawTabButton": ("XPATH", "//button[@class='nav-link osim-add-tab']"),
+        "trackerMangerSearchFlawInput": ("XPATH", "//input[@placeholder='Search...']"),
+        "trackerManagerAddFlawBtn": ("XPATH", "//button[text()='Add']"),
 
         "msgClose": ("XPATH", "(//button[@class='osim-toast-close-btn btn-close'])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
@@ -662,12 +657,11 @@ class FlawDetailPage(BasePage):
 
         return affect
 
-    def add_new_affect(self, affectedness_value='NEW', random_component=True, save=True):
-        from features.utils import generate_random_text
+    def add_new_affect(self, module=None, component=None, affectedness_value='NEW', save=True):
         self.click_button_with_js('addNewAffectBtn')
 
-        module = random.choice(list(AFFECTS_MODULE_COMPONENT_PAIR.keys()))
-        component = generate_random_text() if random_component else\
+        module = module if module is not None else random.choice(list(AFFECTS_MODULE_COMPONENT_PAIR.keys()))
+        component = component if component is not None else\
             random.choice(AFFECTS_MODULE_COMPONENT_PAIR[module])
 
         if affectedness_value == 'NEW' or affectedness_value == 'NOTAFFECTED':
@@ -762,19 +756,6 @@ class FlawDetailPage(BasePage):
         return WebDriverWait(self.driver, self.timeout).until(
             EC.invisibility_of_element_located((By.XPATH, "//button[contains(text(), 'Unembargo')]"))
         )
-
-    def trackers_list_count(self, trackers_list):
-        if trackers_list == "checkedTrackersList":
-            try:
-                elements = find_elements_in_page_factory(self, "checkedTrackersList")
-            except NoSuchElementException:
-                return 0
-        else:
-            try:
-                elements = find_elements_in_page_factory(self, "trackersList")
-            except NoSuchElementException:
-                return 0
-        return len(elements)
 
     def set_reject_reason(self, value):
         element = getattr(self, 'rejectReasonText')
@@ -1045,11 +1026,14 @@ class FlawDetailPage(BasePage):
         self.check_element_exists(By.XPATH, "//div[@class='osim-tracker-list-container ms-3 mt-2 pb-3']")
         self.check_value_not_exist("Querying available trackers…")
 
+    def select_unfiled_tracker(self, row=1):
+        self.driver.find_element(By.XPATH, f"//div[@class='osim-tracker-list mb-2']/label[{row}]/input").click()
+
     def file_tracker(self, row=1):
         # get tracker's product stream
         product_stream = self.get_unfiled_tracker_product_stream(row)
         # select first tracker
-        self.driver.find_element(By.XPATH, f"//div[@class='osim-tracker-list mb-2']/label[{row}]/input").click()
+        self.select_unfiled_tracker(row=row)
         # file tracker
         self.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
         self.wait_msg("trackersFiledMsg")
@@ -1145,3 +1129,41 @@ class FlawDetailPage(BasePage):
         n = self.get_tracker_number_of_displayed_tracker_list()
         return [
             getattr(self.get_tracker_value(i+1), field) for i in range(n)]
+
+    def click_flaw_tab_in_tracker_manager(self, flaw_id):
+        flaw_tab_btn = self.driver.find_element(By.XPATH, f"//span[text()='{flaw_id}']/ancestor::button")
+        self.click_button_with_js(flaw_tab_btn)
+
+    def click_flaw_deselect_all_in_tracker_manager(self, flaw_id):
+        tabs = self.driver.find_elements(By.XPATH, "(//ul[@class='nav nav-tabs'])[1]/li")
+        index = 1
+        for i, tab in enumerate(tabs[:-1]):
+            if tab.find_element(By.XPATH, "./button/span").text == flaw_id:
+                index = i+1
+                break
+
+        deselect_all_btn = self.driver.find_element(By.XPATH, f"(//button[text()=' Deselect All']/i)[{index}]")
+
+        self.click_button_with_js(deselect_all_btn)
+
+    def click_inspect_trackers_to_file_btn(self, tracker_number):
+        inspect_btn = self.driver.find_element(
+            By.XPATH, f"//span[text()='Inspect {tracker_number} Trackers to File']/ancestor::button")
+
+        self.click_button_with_js(inspect_btn)
+
+    def get_inspect_trackers_result(self, product_stream):
+        """
+        get specific tracker's inspection results
+        """
+        affect_info = self.driver.find_element(
+            By.XPATH,
+            f"(//table[@class='osim-trackers-inspector'])[1]/tr/td[text()='{product_stream}']/../td[2]/span[1]").text
+        flaw_info = self.driver.find_element(
+            By.XPATH,
+            f"(//table[@class='osim-trackers-inspector'])[1]/tr/td[text()='{product_stream}']/../td[2]/span[2]").text
+
+        affect_number = int(affect_info.split()[0])
+        flaw_number = int(flaw_info.split()[0])
+
+        return affect_number, flaw_number
