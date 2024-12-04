@@ -4,6 +4,8 @@ from datetime import date, datetime
 from behave import when, then
 from selenium.webdriver.common.by import By
 
+from features.common_utils import get_data_from_tmp_data_file
+from features.steps.flaw_create import create_flaw_with_valid_data
 from features.utils import (
     is_sorted,
     generate_cve,
@@ -14,8 +16,9 @@ from features.utils import (
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.pages.home_page import HomePage
 from features.constants import (
-    AFFECTED_MODULE_JR,
     CVSS_COMMENT_FLAW_ID,
+    OSIM_URL,
+    FLAW_ID_KEY
 )
 
 
@@ -454,7 +457,6 @@ def step_impl(context):
 
 @when("I update the embargoed flaw with a past public date")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     context.v = date(2024, 1, 1).strftime("%Y%m%d")+"0000"
     flaw_detail_page.set_input_field("publicDate", context.v)
@@ -472,7 +474,6 @@ def step_impl(context):
 
 @when("I update the embargoed flaw with a future public date")
 def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
     flaw_detail_page = FlawDetailPage(context.browser)
     context.v = date(2040, 1, 1).strftime("%Y%m%d")+"0000"
     flaw_detail_page.set_input_field("publicDate", context.v)
@@ -482,7 +483,11 @@ def step_impl(context):
 
 @then("The embargoed flaw is updated")
 def step_impl(context):
-    pass
+    go_to_specific_flaw_detail_page(context.browser)
+    flaw_detail_page = FlawDetailPage(context.browser)
+    v = flaw_detail_page.get_input_value("publicDate")
+    format_v = datetime.strptime(context.v, "%Y%m%d%H%M").strftime("%Y-%m-%d %H:%M")
+    assert format_v in v, f"Public date should updated to a {format_v}, got {v}"
 
 
 @when("I update the affects of the flaw and click 'Save Changes' button")
@@ -533,7 +538,7 @@ def step_impl(context):
 @when("I add a new affect with valid data")
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
-    context.ps_component = flaw_detail_page.add_new_affect("NEW")
+    context.ps_component = flaw_detail_page.add_new_affect(component=generate_random_text(), affectedness_value="NEW")
 
 
 @then("The affect is added")
@@ -587,7 +592,7 @@ def step_impl(context):
 @when("I bulk delete selected affects of the flaw")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    context.ps_component1 = flaw_page.add_new_affect("NEW")
+    context.ps_component1 = flaw_page.add_new_affect(affectedness_value="NEW", component=generate_random_text())
     time.sleep(2)
     flaw_page.close_all_toast_msg()
     flaw_page.bulk_delete_affects()
@@ -641,7 +646,7 @@ def step_impl(context):
         time.sleep(2)
 
     # add a new affect for filing tracker
-    context.component = flaw_detail_page.add_new_affect(affectedness_value='AFFECTED', random_component=False)
+    context.component = flaw_detail_page.add_new_affect(affectedness_value='AFFECTED')
     flaw_detail_page.close_all_toast_msg()
     time.sleep(2)
 
@@ -733,34 +738,6 @@ def step_impl(context):
     # deselect
     flaw_detail_page.click_button_with_js("deselectAllTracker")
     assert flaw_detail_page.get_unfiled_tracker_number() == n, "should deselect all trackers"
-
-
-@when('I add some affects with valid data')
-def step_impl(context):
-    go_to_specific_flaw_detail_page(context.browser)
-    flaw_detail_page = FlawDetailPage(context.browser)
-    # Get the current trackers count
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    context.trackersCurrentCount = flaw_detail_page.trackers_list_count("trackersList")
-    # Add one more affect and get the trackers count of the new affect
-    context.ps_component = flaw_detail_page.add_new_affect('jira', 'AFFECTED')
-    go_to_specific_flaw_detail_page(context.browser)
-    flaw_detail_page.click_button_with_js("ManageTrackers")
-    context.trackersTotalCount = flaw_detail_page.trackers_list_count("trackersList")
-    context.trackersNewCount = context.trackersTotalCount - context.trackersCurrentCount
-
-
-@then('I could filter trackers by stream or component name')
-def step_impl(context):
-    flaw_detail_page = FlawDetailPage(context.browser)
-    # Filter by the component name
-    flaw_detail_page.FilterTrackers.set_text(context.ps_component)
-    trackersCount = flaw_detail_page.trackers_list_count("trackersList")
-    assert trackersCount == context.trackersNewCount
-    # Filter by the stream name
-    flaw_detail_page.FilterTrackers.set_text(AFFECTED_MODULE_JR)
-    trackersCount = flaw_detail_page.trackers_list_count("trackersList")
-    assert trackersCount == context.trackersNewCount
 
 
 @when('I click state button to update flaw state')
@@ -868,7 +845,7 @@ def step_impl(context):
 @when("I bulk update affects")
 def step_impl(context):
     flaw_page = FlawDetailPage(context.browser)
-    flaw_page.add_new_affect("NEW")
+    flaw_page.add_new_affect(affectedness_value="NEW", component=generate_random_text())
     flaw_page.close_all_toast_msg()
     time.sleep(2)
     context.check_result = flaw_page.bulk_update_affects()
@@ -913,7 +890,7 @@ def step_impl(context):
     if all_affects_number < 6:
         diff = 6 - all_affects_number
         for _ in range(diff):
-            flaw_detail_page.add_new_affect("NEW", save=False)
+            flaw_detail_page.add_new_affect(component=generate_random_text(), affectedness_value="NEW", save=False)
 
         flaw_detail_page.click_btn('saveBtn')
         flaw_detail_page.wait_msg('flawSavedMsg')
@@ -964,3 +941,79 @@ def step_impl(context):
 def step_impl(context):
     flaw_detail_page = FlawDetailPage(context.browser)
     flaw_detail_page.select_affect_by_state()
+
+
+@when("I create a new flaw and add same module/component affect")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    # get public flaw affect information
+    affect = flaw_detail_page.get_affect_value()
+    # open a new tab, create a new flaw add same module/component affect to flaw
+    original_window = flaw_detail_page.open_new_tab(OSIM_URL)
+    flaw_detail_page.click_btn('createFlawLink')
+    create_flaw_with_valid_data(context, with_optional=True)
+    flaw_detail_page.close_all_toast_msg()
+    flaw_detail_page.add_new_affect(module=affect.module, component=affect.component, affectedness_value="AFFECTED")
+
+    flaw_detail_page.close_tab_return_to_original_window(original_window)
+
+
+@when("I add embargoed flaw in public flaw's Tracker Manager")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_button_with_js("showTrackerManagerBtn")
+    flaw_detail_page.wait_trackers_loaded_in_tracker_manager()
+    # click deselectAll button to deselect pre-selected tracker
+    flaw_detail_page.click_button_with_js("deselectAllTracker")
+    # add another related flaw
+    flaw_detail_page.click_button_with_js('addFlawTabButton')
+
+    flaw_detail_page.trackerMangerSearchFlawInput.set_text(context.cve_id)
+    flaw_detail_page.click_button_with_js('trackerManagerAddFlawBtn')
+    flaw_detail_page.wait_trackers_loaded_in_tracker_manager()
+    flaw_detail_page.click_flaw_tab_in_tracker_manager(context.cve_id)
+    flaw_detail_page.click_flaw_deselect_all_in_tracker_manager(context.cve_id)
+
+
+@when("Sync tracker selections across tabs in Tracker Manager")
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_flaw_tab_in_tracker_manager(get_data_from_tmp_data_file(FLAW_ID_KEY))
+    # select first tracker and check if the selection sync to another flaw tab
+    product_stream = flaw_detail_page.get_unfiled_tracker_product_stream(row=1)
+    context.product_stream = product_stream
+    flaw_detail_page.select_unfiled_tracker(row=1)
+    # check select status
+    assert flaw_detail_page.is_tracker_selected(product_stream) is True
+    flaw_detail_page.click_flaw_tab_in_tracker_manager(context.cve_id)
+    assert flaw_detail_page.is_tracker_selected(product_stream) is True
+    flaw_detail_page.click_flaw_tab_in_tracker_manager(get_data_from_tmp_data_file(FLAW_ID_KEY))
+
+
+@when('Inspect selected trackers to file in Tracker Manager')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.click_inspect_trackers_to_file_btn(tracker_number=1)
+
+    affect_number, flaw_number = flaw_detail_page.get_inspect_trackers_result(context.product_stream)
+    assert affect_number == 2, f"inspect tracker result incorrect, should get 2 affect(s), got {affect_number}"
+    assert flaw_number == 2, f"inspect tracker result incorrect, should get 2 flaw(s), got {flaw_number}"
+
+
+@when('I file tracker for multiple flaw')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    flaw_detail_page.driver.find_element(By.XPATH, "//button[text()=' File 1 Trackers ']").click()
+    flaw_detail_page.wait_msg("trackersFiledMsg")
+    flaw_detail_page.close_all_toast_msg()
+    time.sleep(2)
+
+
+@then('Tracker filed for multiple flaw')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    go_to_specific_flaw_detail_page(context.browser)
+    # Check if tracker created successfully
+    flaw_detail_page.check_text_exist(context.product_stream)
+    go_to_specific_flaw_detail_page(context.browser, flaw_id=context.cve_id)
+    flaw_detail_page.check_text_exist(context.product_stream)
