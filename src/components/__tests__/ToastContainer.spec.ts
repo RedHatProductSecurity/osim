@@ -85,39 +85,6 @@ describe('toastContainer', () => {
     expect(clearAllButton.exists()).toBeFalsy();
   });
 
-  it('renders toasts and hide toasts after 10 seconds when showNotification is false', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vitest.fn,
-      stubActions: false,
-    });
-    const settingStore = useSettingsStore(pinia);
-    settingStore.$state = {
-      settings: {
-        ...settingStore.$state.settings,
-        showNotifications: false,
-      },
-    };
-    const toastStore = useToastStore(pinia);
-    toastStore.addToast({
-      title: 'Test',
-      body: 'Test',
-    });
-    subject = mount(ToastContainer, {
-      global: {
-        plugins: [
-          pinia,
-          router,
-        ],
-      },
-    });
-    const toastElements = subject.findAllComponents(Toast);
-    expect(toastElements.length).toBe(1);
-    vi.advanceTimersByTime(12000);
-    await flushPromises();
-    expect(toastStore.toasts.length).toBe(1);
-    expect(toastStore.toasts[0].isFresh).toBe(false);
-  });
-
   it(
     'renders temporary toasts and hide toasts after its timeoutMs when showNotification is false',
     async () => {

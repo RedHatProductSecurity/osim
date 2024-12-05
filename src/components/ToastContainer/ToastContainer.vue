@@ -53,7 +53,7 @@ function clearAll() {
     <Transition name="toast">
       <div
         v-if="settings.showNotifications && toasts.length > 0"
-        class="osim-toast-container-clear d-flex justify-content-end"
+        class="osim-toast-container-clear justify-content-end"
       >
         <button
           v-if="settings.showNotifications && toasts.length > 0"
@@ -66,7 +66,7 @@ function clearAll() {
     <TransitionGroup name="toast">
       <Toast
         v-for="(toast, index) in toasts"
-        v-show="toast.isFresh || settings.showNotifications"
+        v-show="settings.showNotifications"
         :key="toast.id"
         :title="toast.title"
         :body="toast.body"
@@ -75,7 +75,6 @@ function clearAll() {
         :timeoutMs="toast.timeoutMs"
         :css="toast.css"
         @close="toasts.splice(index, 1)"
-        @stale="toast.isFresh = false"
       >
       </Toast>
     </TransitionGroup>
@@ -96,7 +95,7 @@ function clearAll() {
   overflow: clip auto;
 
   /* clip-path: inset(-100vw 0 -100vw -100vw); */
-  right: 0;
+  left: 0;
 
   /* justify-self: end; */
 }
