@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onUnmounted, toRefs, ref, watch } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 
-import { clone } from 'ramda';
+import { storeToRefs } from 'pinia';
 
 import FlawTrackers from '@/components/FlawTrackers/FlawTrackers.vue';
 import TrackerManager from '@/components/TrackerManager/TrackerManager.vue';
@@ -10,25 +10,42 @@ import FlawAffectsTable from '@/components/FlawAffects/FlawAffectsTable.vue';
 import { useModal } from '@/composables/useModal';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+import { useFlaw } from '@/composables/useFlaw';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { uniques, matcherForAffect } from '@/utils/helpers';
+import { uniques } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { displayModes } from './flawAffectConstants';
-import { useAffectSelections } from './useAffectSelections';
 import { useFilterSortAffects } from './useFilterSortAffects';
 
 const props = defineProps<{
   embargoed: boolean;
   error: null | Record<string, any>;
-  flaw: ZodFlawType;
   relatedFlaws: ZodFlawType[];
 }>();
+
+const flaw = useFlaw();
+
+const affectsEditingStore = useAffectsEditingStore();
+const {
+  cancelAllChanges,
+  commitAllChanges,
+  editSelectedAffects,
+  getAffectPriorEdit,
+  isAffectSelected,
+  isBeingEdited,
+  resetSelections,
+  revertAffectToLastSaved,
+  toggleAffectSelection,
+} = affectsEditingStore;
+
+const { affectsBeingEdited, selectedAffects } = storeToRefs(affectsEditingStore);
 
 const { settings } = useSettingsStore();
 const {
@@ -37,18 +54,16 @@ const {
   openModal,
 } = useModal();
 
-const { flaw } = toRefs(props);
-
 const {
   addAffect,
   affectsToDelete,
-  initialAffects,
-  modifiedAffects,
+  isAffectBeingRemoved,
+  modifiedAffects, // TODO: move to composable?
   recoverAffect,
   refreshAffects,
   removeAffect,
   updateAffectCvss,
-} = useFlawAffectsModel(flaw);
+} = useFlawAffectsModel();
 
 const {
   filterAffects,
@@ -56,23 +71,9 @@ const {
   sortAffects,
 } = useFilterSortAffects();
 
-// TODO: refactor affect editing logic into composable
-const affectsBeingEdited = ref<ZodAffectType[]>([]);
-// TODO: refactor affect editing logic into composable
-const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
 const displayMode = ref(displayModes.ALL);
-const modulesExpanded = ref(true);
-const specificAffectsToTrack = ref<ZodAffectType[]>([]);
 
-const allAffects = computed(() => affectsToDelete.value.concat(flaw.value.affects));
-const affectedModules = computed(() => uniques(sortAffects(allAffects.value, true).map(affect => affect.ps_module)));
-const hasAffects = computed(() => allAffects.value.length > 0);
-
-watch(flaw.value.affects, (newAffects) => {
-  if (newAffects.length <= 0) {
-    setDisplayMode(displayModes.ALL);
-  }
-});
+const allAffects = computed((): ZodAffectType[] => affectsToDelete.value.concat(flaw.value.affects));
 
 const displayedAffects = computed(() => {
   switch (displayMode.value) {
@@ -98,6 +99,7 @@ const sortedAffects = computed(() => {
   );
   return sortAffects(uneditedFilteredAffects, false);
 });
+
 const {
   changePage,
   currentPage,
@@ -110,15 +112,17 @@ const {
   totalPages,
 } = usePaginationWithSettings(sortedAffects, { setting: 'affectsPerPage' });
 
-const {
-  isAffectSelected,
-  resetSelections,
-  selectedAffects,
-  toggleAffectSelection,
-} = useAffectSelections(
-  computed(() => flaw.value.affects),
-  affect => !isRemoved(affect) && !isBeingEdited(affect),
-);
+const modulesExpanded = ref(true);
+const specificAffectsToTrack = ref<ZodAffectType[]>([]);
+
+const affectedModules = computed(() => uniques(sortAffects(allAffects.value, true).map(affect => affect.ps_module)));
+const hasAffects = computed(() => allAffects.value.length > 0);
+
+watch(flaw.value.affects, (newAffects) => {
+  if (newAffects.length <= 0) {
+    setDisplayMode(displayModes.ALL);
+  }
+});
 
 onUnmounted(resetSelections);
 
@@ -159,78 +163,6 @@ function moduleBtnTooltip(moduleName: string) {
       : '');
 }
 
-// TODO: refactor affect editing logic into composable
-function isBeingEdited(affect: ZodAffectType) {
-  return affectsBeingEdited.value.includes(affect);
-}
-
-// TODO: refactor affect editing logic into composable
-function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
-  return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
-}
-
-// TODO: refactor affect editing logic into composable
-function editAffect(affect: ZodAffectType) {
-  if (isAffectSelected(affect)) {
-    toggleAffectSelection(affect);
-  }
-  if (!isBeingEdited(affect)) {
-    affectsBeingEdited.value.push(affect);
-    const affectCopy = clone(affect) as ZodAffectType;
-    affectValuesPriorEdit.value.push(affectCopy);
-  }
-}
-
-function editSelectedAffects() {
-  selectedAffects.value.forEach(editAffect);
-}
-
-// TODO: refactor affect editing logic into composable
-function commitChanges(affect: ZodAffectType) {
-  const matchAffect = matcherForAffect(affect);
-  const updateIndex = flaw.value.affects.findIndex(matchAffect);
-  flaw.value.affects.splice(updateIndex, 1, affect);
-  resetStagedAffectEdit(affect);
-}
-
-// TODO: refactor affect editing logic into composable
-function cancelChanges(affect: ZodAffectType) {
-  resetStagedAffectEdit(affect);
-}
-
-// TODO: refactor affect editing logic into composable
-function resetStagedAffectEdit(affect: ZodAffectType) {
-  const matchAffect = matcherForAffect(affect);
-  const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
-  affectsBeingEdited.value.splice(editingIndex, 1);
-  affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
-  if (isAffectSelected(affect)) {
-    toggleAffectSelection(affect);
-  }
-}
-
-function commitAllChanges() {
-  const affectsToCommit = [...affectsBeingEdited.value];
-  affectsToCommit.forEach(commitChanges);
-}
-
-function cancelAllChanges() {
-  const affectsToCancel = [...affectsBeingEdited.value];
-  affectsToCancel.forEach(cancelChanges);
-}
-
-// TODO: refactor affect editing logic into composable
-function revertAffectToLastSaved(affect: ZodAffectType) {
-  const saved = initialAffects.value.find(a => a.uuid === affect.uuid);
-  const index = flaw.value.affects.findIndex(a => a.uuid === affect.uuid);
-  if (index !== -1 && saved) {
-    flaw.value.affects[index] = { ...saved };
-  }
-  if (isAffectSelected(affect)) {
-    toggleAffectSelection(affect);
-  }
-}
-
 function revertAllAffects() {
   const affectsToRestore = [...modifiedAffects.value];
   affectsToRestore.forEach((affect) => {
@@ -262,7 +194,7 @@ function addNewAffect() {
       embargoed: props.embargoed,
       alerts: [],
     }],
-    trackers: [{ errata: [] }],
+    trackers: [],
     alerts: [],
   });
 }
@@ -271,10 +203,6 @@ function addNewAffect() {
 function handleRemove(affect: ZodAffectType) {
   if (isAffectSelected(affect)) toggleAffectSelection(affect);
   removeAffect(affect);
-}
-
-function isRemoved(affect: ZodAffectType) {
-  return affectsToDelete.value.includes(affect);
 }
 
 function removeSelectedAffects() {
@@ -306,7 +234,7 @@ const allTrackers = computed(() => allAffects.value.flatMap(affect => affect.tra
 
 const displayedTrackers = computed(() => {
   return sortedAffects.value
-    .filter(affect => !isRemoved(affect) && affect.uuid)
+    .filter(affect => !isAffectBeingRemoved(affect) && affect.uuid)
     .flatMap(affect =>
       affect.trackers.map(tracker => ({
         ...tracker,
@@ -448,7 +376,7 @@ const displayedTrackers = computed(() => {
             <span>Selected {{ selectedAffects.length }}</span>
           </div>
           <div
-            v-if="affectsBeingEdited.length > 0"
+            v-if="affectsBeingEdited?.length > 0"
             class="badge-btn btn btn-sm bg-light-yellow"
             style="border-color: #73480b !important; color: #73480b;"
             :style="displayMode === displayModes.EDITING
@@ -509,7 +437,7 @@ const displayedTrackers = computed(() => {
             <span class="bg-dark-info ms-1 text-white rounded-pill px-2">{{ selectedAffects.length }} </span>
           </button>
           <button
-            v-if="affectsBeingEdited.length > 0"
+            v-if="affectsBeingEdited?.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white"
             title="Commit changes on all affects being edited"
@@ -518,7 +446,7 @@ const displayedTrackers = computed(() => {
             <i class="bi bi-check2-all fs-5 lh-sm" />
           </button>
           <button
-            v-if="affectsBeingEdited.length > 0"
+            v-if="affectsBeingEdited?.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white px-1"
             title="Cancel changes on all affects being edited"
@@ -569,19 +497,10 @@ const displayedTrackers = computed(() => {
       </div>
       <FlawAffectsTable
         v-model:affects="paginatedAffects"
-        :affectsBeingEdited="affectsBeingEdited"
         :error="error"
-        :modifiedAffects="modifiedAffects"
-        :affectsToDelete="affectsToDelete"
         :selectedModules="selectedModules"
-        :selectedAffects="selectedAffects"
         :totalPages="totalPages"
         @affects:display-mode="setDisplayMode"
-        @affect:edit="editAffect"
-        @affect:cancel="cancelChanges"
-        @affect:commit="commitChanges"
-        @affect:recover="recoverAffect"
-        @affect:revert="revertAffectToLastSaved"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
         @affect:track="trackSpecificAffect"

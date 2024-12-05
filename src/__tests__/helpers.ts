@@ -1,4 +1,4 @@
-import { createApp, type App } from 'vue';
+import { createApp, type App, type Plugin } from 'vue';
 
 import { createHmac } from 'node:crypto';
 
@@ -29,16 +29,23 @@ export const encodeJWT = (payload: unknown) => {
   return segments.concat(signature).join('.');
 };
 
-export function withSetup<T>(composable: () => T): [T, App] {
+export function withSetup<T>(setupFn: (() => T), plugins: Plugin[] = [router]): [T, App] {
   let result: T;
+
   const app = createApp({
     setup() {
-      result = composable();
-      return () => { };
+      try {
+        result = setupFn();
+      } catch (error) {
+        console.trace(error);
+        throw error;
+      }
+      return () => {};
     },
   });
-  app.use(createTestingPinia());
-  app.use(router);
+  for (const plugin of plugins) {
+    app.use(plugin);
+  }
   app.mount(document.createElement('div'));
   return [result!, app];
 }
@@ -48,7 +55,20 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-export const mountWithConfig: typeof mount = (originalComponent, options) => mount(originalComponent, {
+
+type MountConfig = {
+  <Component>(
+    originalComponent: Component,
+    options?: Record<string, any>,
+    plugins?: Plugin[],
+  ): ReturnType<typeof mount<Component>>;
+};
+
+export const mountWithConfig: MountConfig = (
+  originalComponent,
+  options,
+  plugins?: Plugin[],
+) => mount(originalComponent, {
   ...options,
   global: {
     directives: {
@@ -56,6 +76,6 @@ export const mountWithConfig: typeof mount = (originalComponent, options) => mou
       imask: vi.fn(),
       ...options?.global?.directives,
     },
-    plugins: [createTestingPinia(), router],
+    plugins: plugins ?? [createTestingPinia(), router],
   },
 });

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 
-import { blankFlaw } from '@/composables/useFlawModel';
+import { blankFlaw } from '@/composables/useFlaw';
 
 const flaw = ref(blankFlaw());
 </script>

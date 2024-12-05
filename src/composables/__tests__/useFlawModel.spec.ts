@@ -1,24 +1,24 @@
 import type { App } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+
+import { useFlawModel } from '@/composables/useFlawModel';
+import { blankFlaw } from '@/composables/useFlaw';
 
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
-import { withSetup } from '@/__tests__/helpers';
+import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { postFlaw, putFlaw } from '@/services/FlawService';
 
-import { blankFlaw, useFlawModel } from '../useFlawModel';
-
-vi.mock('./useFlawCommentsModel', () => ({
+vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
 }));
 
-vi.mock('./useFlawAttributionsModel', () => ({
+vi.mock('@/composables/useFlawAttributionsModel', () => ({
   useFlawAttributionsModel: vi.fn(),
 }));
-
-vi.mock('./useNetworkQueue');
 
 vi.mock('@/services/FlawService', () => ({
   getFlawBugzillaLink: vi.fn().mockResolvedValue({}),
@@ -33,7 +33,9 @@ describe('useFlawModel', () => {
   let app: App;
 
   const mountFlawModel = (flaw: ZodFlawType = blankFlaw()) => {
-    const [composable, _app] = withSetup(() => useFlawModel(flaw, onSaveSuccess));
+    const pinia = createTestingPinia();
+    const plugins = [router, pinia];
+    const [composable, _app] = withSetup(() => useFlawModel(flaw, onSaveSuccess), plugins);
     app = _app;
     return composable;
   };
@@ -103,10 +105,11 @@ describe('useFlawModel', () => {
       expect(postFlaw).toHaveBeenCalled();
     });
 
-    it('should call putFlaw on updateFlaw', () => {
-      const { updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
-
-      updateFlaw();
+    it('should call putFlaw on updateFlaw', async () => {
+      const { flaw, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      flaw.value.title = 'altered';
+      await flushPromises();
+      await updateFlaw();
 
       expect(putFlaw).toHaveBeenCalled();
     });
