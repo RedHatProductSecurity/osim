@@ -42,5 +42,10 @@ Feature: Flaw advance search testing
       Given I go to the advanced search page
       Then I am able to search flaws with osidb related models in query filter
 
+    Scenario: Sort search result by extended sortable fields
+      Given I go to the advanced search page
+      When I sort search result by extended sortable field
+      Then I got search result sorted by extended field
+
     Scenario: Search flaws with both query filter and selected field
       Then I am able to search flaws with both query filter and selected field
