@@ -15,6 +15,8 @@
 
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
+* Move notifications to left side (`OSIDB-3543`)
+* Don't show notifications when they are disabled (`OSIDB-3543`)
 
 ## [2024.11.1]
 ### Added
