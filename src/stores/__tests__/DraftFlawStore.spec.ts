@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia';
 
-import { blankFlaw } from '@/composables/useFlawModel';
+import { blankFlaw } from '@/composables/useFlaw';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
 

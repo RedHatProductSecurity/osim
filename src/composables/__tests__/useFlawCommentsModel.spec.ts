@@ -2,13 +2,13 @@ import { ref } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 
+import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
+import { blankFlaw } from '@/composables/useFlaw';
+
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import { postFlawComment } from '@/services/FlawService';
 import { SYSTEM_EMAIL } from '@/constants';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
-
-import { useFlawCommentsModel } from '../useFlawCommentsModel';
-import { blankFlaw } from '../useFlawModel';
 
 vi.mock('@/services/JiraService');
 vi.mock('@/services/FlawService');

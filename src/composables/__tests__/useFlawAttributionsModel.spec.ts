@@ -2,11 +2,11 @@ import { ref } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 
+import { blankFlaw } from '@/composables/useFlaw';
+import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
+
 import { postFlawAcknowledgment, postFlawReference, putFlawReference } from '@/services/FlawService';
 import type { ZodFlawType, ZodFlawReferenceType } from '@/types/zodFlaw';
-
-import { useFlawAttributionsModel } from '../useFlawAttributionsModel';
-import { blankFlaw } from '../useFlawModel';
 
 vi.mock('@/services/FlawService');
 
