@@ -1,10 +1,20 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2024.12.0]
+### Added
+* Add component column to trackers table (`OSIDB-3721`)
+* Warning when filing trackers on CVEs with low severity (`OSIDB-3429`)
+* Date range filter on history (`OSIDB-3562`)
+
 ### Fixed
+* Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
 * Fix save all button behavior for affects table (`OSIDB-3664`)
 * Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
+* Fix wrong advance search custom order (`OSIDB-3609`)
+
+### Changed
+* Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
 
 ## [2024.11.1]
 ### Added
@@ -359,7 +369,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...HEAD
+[2024.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...v2024.12.0
 [2024.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...v2024.11.1
 [2024.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.10.0...v2024.11.0
 [2024.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.9.2...v2024.10.0

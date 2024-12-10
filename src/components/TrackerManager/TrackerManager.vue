@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { toRefs, computed, ref } from 'vue';
 
+import LowSeverityTrackersWarning from '@/components/LowSeverityTrackersWarning.vue';
+
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
 import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import TabsDynamic from '@/widgets/TabsDynamic/TabsDynamic.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
+import { ImpactEnum } from '@/generated-client';
 
 const props = defineProps<{
   flaw: ZodFlawType;
@@ -19,6 +22,7 @@ const emit = defineEmits<{
   'affects-trackers:refresh': [];
 }>();
 
+const showLowSeverityTrackersWarning = ref(false);
 const { relatedFlaws } = toRefs(props);
 
 const shouldApplyToRelated = ref(true);
@@ -52,6 +56,14 @@ const relatedFlawIds = computed(() =>
 
 const specificAffects = computed(() => props?.specificAffectsToTrack?.map(affect =>
   `${affect.ps_module}/${affect.ps_component}`));
+
+const lowImpactAffectUuids = computed(() =>
+  props.flaw.affects.filter(affect => affect.impact === ImpactEnum.Low).map(affect => affect.uuid),
+);
+
+const filingLowSeverityTrackers = computed(() =>
+  selectedStreams.value.some(stream => lowImpactAffectUuids.value.includes(stream.affectUuid)),
+);
 
 const trackersToFileLabels = computed(() => selectedStreams.value.reduce(
   (trackerLabels: Record<string, any>, stream: UpdateStreamOsim) => {
@@ -89,8 +101,18 @@ function clearFilter() {
 }
 
 async function handleFileTrackers() {
-  await fileTrackers();
-  emit('affects-trackers:refresh');
+  if ((props.flaw.impact === ImpactEnum.Low || filingLowSeverityTrackers.value)
+    && !showLowSeverityTrackersWarning.value
+  ) {
+    showLowSeverityTrackersWarning.value = true;
+  } else {
+    await fileTrackers();
+    emit('affects-trackers:refresh');
+  }
+}
+
+function hideLowSeverityTrackersWarning() {
+  showLowSeverityTrackersWarning.value = false;
 }
 </script>
 
@@ -100,14 +122,17 @@ async function handleFileTrackers() {
       Tracker Manager
     </h4>
     <div v-if="specificAffects?.length" class="mb-2">
-      <span>
-
-      </span>
       <i class="bi bi-binoculars me-2"></i>
       <span class="me-2">Managing trackers for {{ specificAffects.length }} affected offering(s):</span>
       <span v-for="affect in specificAffects" :key="affect" class="badge bg-info me-1">{{ affect }}</span>
     </div>
-
+    <div class="osim-tracker-manager-warning-modal">
+      <LowSeverityTrackersWarning
+        :showModal="showLowSeverityTrackersWarning"
+        @hideModal="hideLowSeverityTrackersWarning()"
+        @confirmOperation="handleFileTrackers()"
+      />
+    </div>
     <div class="osim-trackers-filing mb-2">
       <div class="osim-tracker-manager-controls">
         <input
@@ -131,7 +156,7 @@ async function handleFileTrackers() {
         :addableItems="relatedFlawIds"
         @addTab="addRelatedFlaw"
       >
-        <template v-if="isQuerying" #add-tab>
+        <template v-if="isQuerying" #loading-indicator>
           <div class="ms-2 mt-2">
             <span
               class="spinner-border spinner-border-sm me-1 text-info"
@@ -548,5 +573,26 @@ button.osim-file-trackers:disabled {
   margin-bottom: 1rem;
   background-color: $lighter-info;
   display: inline-block;
+}
+
+.osim-tracker-manager-warning-modal {
+  &:deep(.modal-body) {
+    position: relative;
+    padding: 0;
+
+    .osim-affect-trackers-container {
+      margin: 0 !important;
+
+      .osim-hide-tracker-manager {
+        display: none;
+      }
+    }
+  }
+
+  :deep(.btn-close) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
 }
 </style>

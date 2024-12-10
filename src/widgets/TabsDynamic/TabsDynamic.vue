@@ -51,43 +51,42 @@ function selectTab(index: number) {
           <span>{{ label }}</span>
         </button>
       </li>
-      <slot name="add-tab">
-        <li class="nav-item">
-          <button
-            type="button"
-            class="nav-link osim-add-tab"
-            data-bs-toggle="dropdown"
-          >
-            <i class="bi bi-plus"></i>
-          </button>
-          <ul class="p-2 osim-dropdown-menu dropdown-menu dropdown-menu-end">
-            <li>
-              <input
-                v-model="searchFilter"
-                class="border border-info px-1 mx-2 focus-ring focus-ring-info"
-                type="text"
-                placeholder="Search..."
-                @submit.prevent="emit('addTab', searchFilter)"
-              />
-              <button
-                :disabled="!isCveValid(searchFilter)"
-                class="btn btn-info btn-sm font-white"
-                type="button"
-                @click="emit('addTab', searchFilter)"
-              >Add</button>
-            </li>
-            <li v-for="item in filteredItems" :key="item">
-              <button
-                class="dropdown-item"
-                type="button"
-                @click="emit('addTab', item)"
-              >
-                {{ item }}
-              </button>
-            </li>
-          </ul>
-        </li>
-      </slot>
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link osim-add-tab"
+          data-bs-toggle="dropdown"
+        >
+          <i class="bi bi-plus"></i>
+        </button>
+        <ul class="p-2 osim-dropdown-menu dropdown-menu dropdown-menu-end">
+          <li>
+            <input
+              v-model="searchFilter"
+              class="border border-info px-1 mx-2 focus-ring focus-ring-info"
+              type="text"
+              placeholder="Search..."
+              @submit.prevent="emit('addTab', searchFilter)"
+            />
+            <button
+              :disabled="!isCveValid(searchFilter)"
+              class="btn btn-info btn-sm font-white"
+              type="button"
+              @click="emit('addTab', searchFilter)"
+            >Add</button>
+          </li>
+          <li><slot name="loading-indicator" /></li>
+          <li v-for="item in filteredItems" :key="item">
+            <button
+              class="dropdown-item"
+              type="button"
+              @click="emit('addTab', item)"
+            >
+              {{ item }}
+            </button>
+          </li>
+        </ul>
+      </li>
     </ul>
     <div v-for="(label, index) in labels" :key="index" :class="{ 'visually-hidden': index !== activeTabIndex }">
       <slot

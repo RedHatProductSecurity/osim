@@ -239,6 +239,7 @@ const displayedTrackers = computed(() => {
       affect.trackers.map(tracker => ({
         ...tracker,
         ps_module: affect.ps_module,
+        ps_component: affect.ps_component,
       })),
     );
 });
@@ -686,11 +687,6 @@ const displayedTrackers = computed(() => {
   }
 
   .osim-tracker-manager-modal-container {
-    &:deep(.modal-header),
-    &:deep(.modal-footer) {
-      display: none;
-    }
-
     &:deep(.modal-body) {
       position: relative;
       padding: 0;
