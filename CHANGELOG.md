@@ -1,5 +1,9 @@
 # OSIM Changelog
 ## [Unreleased]
+## Fixed
+* Fix save all button behavior for affects table (`OSIDB-3664`)
+* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
+
 ### Changed
 * Move notifications to left side (`OSIDB-3543`)
 * Don't show notifications when they are disabled (`OSIDB-3543`)
@@ -13,14 +17,10 @@
 ### Fixed
 * Fix trackers status filter not working (`OSIDB-3720`)
 * Fix duplicated values on CVSS displays (`OSIDB-3658`)
-* Fix save all button behavior for affects table (`OSIDB-3664`)
-* Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
 * Fix wrong advance search custom order (`OSIDB-3609`)
 
 ### Changed
 * Enable manual flaw association in Trackers Manager while query for related flaws resolves (`OSIDB-3739`)
-* Move notifications to left side (`OSIDB-3543`)
-* Don't show notifications when they are disabled (`OSIDB-3543`)
 
 ## [2024.11.1]
 ### Added
