@@ -5,6 +5,7 @@
     "components": [
         "kernel"
     ],
+    "purl": "pkg:kernel/org.example/kerel@5.5.5",
     "title": "Sample title",
     "trackers": [
         "XXXX-0001",

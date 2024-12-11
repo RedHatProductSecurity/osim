@@ -96,6 +96,12 @@ export interface Affect {
      */
     'cvss_scores': Array<AffectCVSS>;
     /**
+     * 
+     * @type {string}
+     * @memberof Affect
+     */
+    'purl'?: string;
+    /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
      * @memberof Affect
@@ -211,6 +217,12 @@ export interface AffectBulkPut {
      * @memberof AffectBulkPut
      */
     'cvss_scores': Array<AffectCVSS>;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectBulkPut
+     */
+    'purl'?: string;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
@@ -521,6 +533,12 @@ export interface AffectPost {
      * @memberof AffectPost
      */
     'cvss_scores': Array<AffectCVSS>;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectPost
+     */
+    'purl'?: string;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
@@ -3318,6 +3336,12 @@ export interface OsidbApiV1AffectsCreate201Response {
      * @memberof OsidbApiV1AffectsCreate201Response
      */
     'cvss_scores': Array<AffectCVSS>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1AffectsCreate201Response
+     */
+    'purl'?: string;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}

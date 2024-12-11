@@ -212,6 +212,40 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   };
 }
 
+export function blankFlaw(): ZodFlawType {
+  return {
+    affects: [],
+    classification: {
+      state: 'NEW',
+      workflow: '',
+    },
+    components: [],
+    purl: '',
+    unembargo_dt: null,
+    reported_dt: new Date().toISOString(),
+    uuid: '',
+    cve_id: '',
+    cvss_scores: [],
+    cwe_id: '',
+    comment_zero: '',
+    embargoed: false,
+    impact: null,
+    major_incident_state: '',
+    source: '',
+    title: '',
+    owner: '',
+    team_id: '',
+    cve_description: '',
+    statement: '',
+    mitigation: '',
+    task_key: '',
+    comments: [],
+    references: [],
+    acknowledgments: [],
+    alerts: [],
+  };
+}
+
 function flawErrors(flaw: ZodFlawType) {
   const parsedFlaw = ZodFlawSchema.safeParse(flaw);
   let mirroredFlaw = deepMap(() => null, flaw);
