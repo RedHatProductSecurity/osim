@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { modifyPath } from 'ramda';
@@ -13,6 +13,7 @@ import { useNetworkQueue } from '@/composables/useNetworkQueue';
 import { validateCvssVector } from '@/composables/useCvssCalculator';
 
 import {
+  getFlaw,
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlaw,
@@ -227,4 +228,16 @@ function flawErrors(flaw: ZodFlawType) {
     });
 
   return mirroredFlaw;
+}
+
+export async function refreshFlawAffectTrackers(flaw: Ref<ZodFlawType>) {
+  const freshFlaw = await getFlaw(flaw.value.uuid);
+  if (freshFlaw) {
+    flaw.value.affects.forEach((affect) => {
+      const freshAffect = freshFlaw.affects.find(freshAffect => freshAffect.uuid === affect.uuid);
+      if (freshAffect) {
+        affect.trackers = freshAffect.trackers;
+      }
+    });
+  }
 }
