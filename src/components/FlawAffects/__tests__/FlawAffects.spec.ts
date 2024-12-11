@@ -233,6 +233,30 @@ describe('flawAffects', () => {
     expect(resolutionOptions.includes('DEFER')).toBe(false);
   });
 
+  osimFullFlawTest('Changing affect to not affected automatically sets empty resolution', async () => {
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+
+    let resolutionSelect = affectsTableRows[0].find('td:nth-of-type(6) span');
+    expect(resolutionSelect.text()).not.toEqual('');
+
+    const affectRowEditBtn = affectsTableRows[0].find('td:last-of-type button:first-of-type');
+    expect(affectRowEditBtn.exists()).toBe(true);
+    await affectRowEditBtn.trigger('click');
+
+    const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
+    await affectednessSelect.setValue('NOTAFFECTED');
+    const selectedAffectedness = affectednessSelect.find('option[selected]');
+    expect(selectedAffectedness.text()).toBe('NOTAFFECTED');
+
+    const affectRowCommitBtn = affectsTableEditingRows[0].find('td:last-of-type button:first-of-type');
+    expect(affectRowCommitBtn.exists()).toBe(true);
+    await affectRowCommitBtn.trigger('click');
+
+    resolutionSelect = affectsTableRows[0].find('td:nth-of-type(6) span');
+    expect(resolutionSelect.text()).toBe('');
+  });
+
   osimFullFlawTest('Affects can be modified', async () => {
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.modified');
     expect(affectsTableEditingRows.length).toBe(0);

@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Move notifications to left side (`OSIDB-3543`)
+* Don't show notifications when they are disabled (`OSIDB-3543`)
 
 ## [2024.12.0]
 ### Added

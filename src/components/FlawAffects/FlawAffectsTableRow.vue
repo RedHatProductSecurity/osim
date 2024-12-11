@@ -188,13 +188,13 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         v-model="affect.affectedness"
         class="form-select"
         @keydown="handleKeystroke($event, affect)"
+        @change="affectednessChange($event, affect)"
       >
         <option
           v-for="affectedness in affectAffectedness"
           :key="affectedness"
           :value="affectedness"
           :selected="affectedness === affect.affectedness"
-          @change="affectednessChange($event, affect)"
         >
           {{ affectedness }}
         </option>
