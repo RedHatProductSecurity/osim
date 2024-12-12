@@ -3,6 +3,7 @@
 ## Fixed
 * Fix save all button behavior for affects table (`OSIDB-3664`)
 * Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
+* Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 
 ### Changed
 * Move notifications to left side (`OSIDB-3543`)
