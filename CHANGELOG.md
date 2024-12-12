@@ -3,6 +3,7 @@
 ## Fixed
 * Fix save all button behavior for affects table (`OSIDB-3664`)
 * Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
+* Fix CVSS not created for new affects on save (`OSIDB-3777`)
 
 ### Changed
 * Move notifications to left side (`OSIDB-3543`)
