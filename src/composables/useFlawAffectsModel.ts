@@ -109,7 +109,7 @@ export function useFlawAffectsModel() {
   }
 
   function shouldUpsertAffectCvss(affect: ZodAffectType) {
-    return affectRhCvss3(affect)?.vector && didAffectCvssChange(affect);
+    return affectRhCvss3(affect)?.vector && (didAffectCvssChange(affect) || !affect.uuid);
   }
 
   async function removeAffects() {
