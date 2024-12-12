@@ -1,6 +1,7 @@
 # OSIM Changelog
-## [Unreleased]
-## Fixed
+
+## [2024.12.1]
+### Fixed
 * Fix save all button behavior for affects table (`OSIDB-3664`)
 * Fix loss of focus and undesirable sorting on affects being edited (`OSIDB-3700`)
 * Fix CVSS not created for new affects on save (`OSIDB-3777`)
@@ -376,7 +377,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.1...HEAD
+[2024.12.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...v2024.12.1
 [2024.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...v2024.12.0
 [2024.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...v2024.11.1
 [2024.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.10.0...v2024.11.0
