@@ -326,7 +326,7 @@ describe('flawAffects', () => {
     expect(affectsTableRows.length).toBe(6);
   });
 
-  osimFullFlawTest('Affects can be sorted by clicking on the field column', async () => {
+  osimFullFlawTest('Affects can be sorted by component column', async () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let firstAffect = affectsTableRows[0];
     expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-1-1');
@@ -344,6 +344,44 @@ describe('flawAffects', () => {
     expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-6-1');
     secondAffect = affectsTableRows[1];
     expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-5-1');
+  });
+
+  osimFullFlawTest('Affects can be sorted by resolution column', async () => {
+    let affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    let firstAffect = affectsTableRows[0];
+    expect(firstAffect.find('td:nth-of-type(6) span').text()).toBe('FIX');
+    let secondAffect = affectsTableRows[1];
+    expect(secondAffect.find('td:nth-of-type(6) span').text()).toBe('DELEGATED');
+
+    const componentHeader = subject.find('.affects-management table thead tr th:nth-of-type(6)');
+    expect(componentHeader.exists()).toBe(true);
+    expect(componentHeader.text()).includes('Resolution');
+    await componentHeader.trigger('click');
+
+    affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    firstAffect = affectsTableRows[0];
+    expect(firstAffect.find('td:nth-of-type(6) span').text()).toBe('DELEGATED');
+    secondAffect = affectsTableRows[1];
+    expect(secondAffect.find('td:nth-of-type(6) span').text()).toBe('FIX');
+  });
+
+  osimFullFlawTest('Affects can be sorted by impact column', async () => {
+    let affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    let firstAffect = affectsTableRows[0];
+    expect(firstAffect.find('td:nth-of-type(7) span').text()).toBe('LOW');
+    let lastAffect = affectsTableRows[affectsTableRows.length - 1];
+    expect(lastAffect.find('td:nth-of-type(7) span').text()).toBe('CRITICAL');
+
+    const componentHeader = subject.find('.affects-management table thead tr th:nth-of-type(7)');
+    expect(componentHeader.exists()).toBe(true);
+    expect(componentHeader.text()).includes('Impact');
+    await componentHeader.trigger('click');
+
+    affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    firstAffect = affectsTableRows[0];
+    expect(firstAffect.find('td:nth-of-type(7) span').text()).toBe('CRITICAL');
+    lastAffect = affectsTableRows[affectsTableRows.length - 1];
+    expect(lastAffect.find('td:nth-of-type(7) span').text()).toBe('LOW');
   });
 
   osimFullFlawTest('Affects can be filtered by affectedness', async () => {

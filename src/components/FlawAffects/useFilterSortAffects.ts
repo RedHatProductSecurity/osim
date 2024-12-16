@@ -65,13 +65,18 @@ export function useFilterSortAffects() {
       } else if (sortKey.value === 'cvss_scores') {
         return affect[sortKey.value].length;
       }
+      if (affect[sortKey.value] === '') {
+        return sortOrder.value === ascend ? '_' : 'Z';
+      }
       return affect[sortKey.value] || 0;
     };
 
     const comparators = standard
       ? [ascend<ZodAffectType>(prop('ps_module')), ascend<ZodAffectType>(prop('ps_component'))]
-      : [order<ZodAffectType>(customSortFn),
-          order<ZodAffectType>(sortKey.value === 'ps_module' ? prop('ps_component') : prop('ps_module'))];
+      : [
+          order<ZodAffectType>(customSortFn),
+          order<ZodAffectType>(sortKey.value === 'ps_module' ? prop('ps_component') : prop('ps_module')),
+        ];
 
     return sortWith([
       ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),

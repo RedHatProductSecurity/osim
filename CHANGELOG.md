@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Fixed
+* Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
+
 ## [2024.12.1]
 ### Fixed
 * Fix save all button behavior for affects table (`OSIDB-3664`)
