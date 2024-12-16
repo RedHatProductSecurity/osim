@@ -326,24 +326,36 @@ describe('flawAffects', () => {
     expect(affectsTableRows.length).toBe(6);
   });
 
-  osimFullFlawTest('Affects can be sorted by clicking on the field column', async () => {
+  osimFullFlawTest.each([
+    { column: 'Module', columnIndex: 3, first: 'openshift-6', last: 'openshift-1' },
+    { column: 'Component', columnIndex: 4, first: 'openshift-1-1', last: 'openshift-6-1' },
+    { column: 'Affectedness', columnIndex: 5, first: 'AFFECTED', last: '' },
+    { column: 'Resolution', columnIndex: 6, first: 'DELEGATED', last: 'WONTFIX' },
+    { column: 'Impact', columnIndex: 7, first: 'CRITICAL', last: 'LOW' },
+    { column: 'Trackers', columnIndex: 9, first: '0', last: '4' },
+  ])('Affects can be sorted by $column column', async ({ column, columnIndex, first, last }) => {
+    const componentHeader = subject.find(`.affects-management table thead tr th:nth-of-type(${columnIndex})`);
+    expect(componentHeader.text()).toStrictEqual(expect.stringMatching(column));
+
+    // Ascending order
+    await componentHeader.trigger('click');
+
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let firstAffect = affectsTableRows[0];
-    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-1-1');
-    let secondAffect = affectsTableRows[1];
-    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-2-1');
+    let lastAffect = affectsTableRows.at(-1)!;
 
-    const componentHeader = subject.find('.affects-management table thead tr th:nth-of-type(4)');
-    expect(componentHeader.exists()).toBe(true);
-    expect(componentHeader.text()).toBe('Component');
-    await componentHeader.trigger('click');
+    expect(firstAffect.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(first);
+    expect(lastAffect.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(last);
+
+    // Descending order
     await componentHeader.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     firstAffect = affectsTableRows[0];
-    expect(firstAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-6-1');
-    secondAffect = affectsTableRows[1];
-    expect(secondAffect.find('td:nth-of-type(4) span').text()).toBe('openshift-5-1');
+    lastAffect = affectsTableRows.at(-1)!;
+
+    expect(firstAffect.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(last);
+    expect(lastAffect.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(first);
   });
 
   osimFullFlawTest('Affects can be filtered by affectedness', async () => {
