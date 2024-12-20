@@ -19,8 +19,6 @@ def step_impl(context):
 @given('I set the bugzilla api key and jira api key')
 def step_impl(context):
     set_api_keys(context.browser)
-    # wait osim getting username from jira
-    time.sleep(2)
 
 
 @given('I am on the flaw list')

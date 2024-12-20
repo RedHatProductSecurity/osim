@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 from behave import *
 
@@ -6,9 +7,8 @@ from features.pages.advanced_search_page import AdvancedSearchPage
 from features.pages.flaw_detail_page import FlawDetailPage
 from features.common_utils import get_data_from_tmp_data_file
 from features.steps.common_steps import go_to_specific_flaw_detail_page
-from features.constants import EMBARGOED_FLAW_UUID_KEY, FLAW_ID_KEY
-from features.utils import go_to_advanced_search_page
-
+from features.constants import EMBARGOED_FLAW_UUID_KEY
+from features.utils import go_to_advanced_search_page, is_sorted
 
 EMPTY_FIELDS = [
     "cve_description",
@@ -218,6 +218,44 @@ def step_impl(context):
         if 'acknowledgments' in k:
             flaw_page.click_acknowledgments_dropdown_btn()
         flaw_page.check_text_exist(v)
+
+
+@when('I sort search result by extended sortable field')
+def step_impl(context):
+    advanced_search_page = AdvancedSearchPage(context.browser)
+    # click created order twice, let result not sort by table column
+    advanced_search_page.click_btn("createdBtn")
+    advanced_search_page.click_btn('createdBtn')
+    advanced_search_page.first_flaw_exist()
+
+    select_value_list = ["cvss_scores__score", "cwe_id", "major_incident_state", "source"]
+    # select_value_list = ["cvss_scores__score", "major_incident_state", "source"]
+    result_dict = {}
+
+    # ascending
+    for select_value in select_value_list:
+        advanced_search_page.extendSortSelect.select_element_by_value(select_value)
+        time.sleep(3)
+        res = advanced_search_page.get_specified_field_search_result(select_value)
+        result_dict[select_value] = {"asce": res}
+
+    advanced_search_page.extendSortOrderBtn.click_button()
+    # descending
+    for select_value in select_value_list:
+        advanced_search_page.extendSortSelect.select_element_by_value(select_value)
+        time.sleep(3)
+        res = advanced_search_page.get_specified_field_search_result(select_value)
+        result_dict[select_value]["desc"] = res
+
+    context.result_dict = result_dict
+    pprint(context.result_dict, indent=4)
+
+
+@then('I got search result sorted by extended field')
+def step_impl(context):
+    for k, v in context.result_dict.items():
+        for order, values in v.items():
+            assert is_sorted(values, order) is True, f"Sort by field {k} in {order} failed. Get: {values}"
 
 
 @then('I am able to search flaws with both query filter and selected field')

@@ -1,6 +1,13 @@
-from features.pages.base import BasePage
+import time
 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+from features.pages.base import BasePage
+from features.pages.flaw_detail_page import FlawDetailPage
 
 
 class AdvancedSearchPage(BasePage):
@@ -32,6 +39,11 @@ class AdvancedSearchPage(BasePage):
         "embargoedFlag": ("XPATH", "(//span[contains(text(), 'Embargoed')])[1]"),
         "queryFilterInput": ("XPATH", "(//div[@class='input-group my-1'])[1]/textarea"),
         "defaultFilterSavedMsg": ("XPATH", "//div[contains(text(), 'default filter saved')]"),
+
+        "createdBtn": ("XPATH", "//thead[@class='sticky-top']/tr/th[contains(text(), 'Created')]"),
+        "extendSortSelect": ("XPATH", "//select[@title='When using this sorting with active table column sort,"
+                                      " the table column field will be used as secondary sorting key']"),
+        "extendSortOrderBtn": ("XPATH", "//button[@class='sort-by-order btn btn-sm']"),
     }
 
     def first_flaw_exist(self):
@@ -74,3 +86,55 @@ class AdvancedSearchPage(BasePage):
         if value:
             self.driver.execute_script("arguments[0].value = '';", filter_input)
             filter_input.send_keys(value)
+
+    def get_specified_field_search_result(self, field_name, n=5):
+        flaws = self.driver.find_elements(By.XPATH, "//tbody[@class='table-group-divider']/tr")
+        count = 0
+        result = []
+
+        flaw_detail_page = FlawDetailPage(self.driver)
+
+        wait = WebDriverWait(self.driver, 10)
+
+        for flaw in flaws:
+            if count == n:
+                break
+            tds = flaw.find_elements(By.XPATH, './td')
+            if len(tds) < 6:
+                continue
+
+            # Store the ID of the original window
+            original_window = self.driver.current_window_handle
+
+            link = tds[0].find_element(By.XPATH, './a')
+
+            # open link with a new tab
+            (ActionChains(self.driver).key_down(Keys.LEFT_CONTROL).
+             click(link).key_up(Keys.LEFT_CONTROL).perform())
+
+            # Wait for the new window or tab
+            wait.until(EC.number_of_windows_to_be(2))
+
+            # switch to new tab
+            self.driver.switch_to.window(self.driver.window_handles[1])
+            time.sleep(5)
+
+            # get data
+            value = ""
+            if field_name == "cvss_scores__score":
+                value = flaw_detail_page.get_cvssV3_score()
+            elif field_name == "cwe_id":
+                value = flaw_detail_page.get_input_field_value_using_relative_locator("cweidText")
+            elif field_name == "major_incident_state":
+                value = flaw_detail_page.get_select_value_using_relative_locator("incidentStateText")
+            elif field_name == "source":
+                value = flaw_detail_page.get_select_value_using_relative_locator("sourceText")
+
+            # close tab and back to search page
+            self.driver.close()
+            self.driver.switch_to.window(original_window)
+
+            result.append(value)
+            count += 1
+
+        return result
