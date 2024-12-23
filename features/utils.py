@@ -1,6 +1,8 @@
 import json
 import os
 import re
+import time
+
 import rstr
 import random
 import string
@@ -8,6 +10,7 @@ import urllib.parse
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.common.exceptions import NoSuchElementException
 
 from constants import (
     OSIDB_URL,
@@ -66,6 +69,18 @@ def set_api_keys(browser):
     settings_page = SettingsPage(browser)
     settings_page.set_api_key('bugzilla', BUGZILLA_API_KEY)
     settings_page.set_api_key('jira', JIRA_API_KEY)
+
+    # wait osim getting username from jira
+    time.sleep(2)
+
+    # open notification so that we can judge if operation succeed
+    flaw_detail_page = FlawDetailPage(browser)
+    try:
+        flaw_detail_page.muteNotificationIcon.click()
+    except NoSuchElementException:
+        pass
+
+    flaw_detail_page.close_all_toast_msg()
 
 
 def go_to_home_page(browser):
