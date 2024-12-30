@@ -1016,3 +1016,18 @@ def step_impl(context):
     flaw_detail_page.check_text_exist(context.product_stream)
     go_to_specific_flaw_detail_page(context.browser, flaw_id=context.cve_id)
     flaw_detail_page.check_text_exist(context.product_stream)
+
+
+@when('I filter tracker by status field')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    context.n = flaw_detail_page.get_tracker_number_of_displayed_tracker_list()
+    flaw_detail_page.click_button_with_js('trackerStatusFilterBtn')
+    flaw_detail_page.select_tracker_status_filter_by_test("NEW")
+
+
+@then('Tracker filtered by status field')
+def step_impl(context):
+    flaw_detail_page = FlawDetailPage(context.browser)
+    n = flaw_detail_page.get_tracker_number_of_displayed_tracker_list()
+    assert n == context.n, f"incorrect number of filtered trackers, should get {context.n}, got {n}"

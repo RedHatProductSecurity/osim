@@ -140,6 +140,10 @@ Feature: Flaw detail testing on public flaw
       When I filter modules/components in Tracker Manager and select filtered
       Then Filtered trackers selected
 
+    Scenario: Filter trackers by Status field
+      When I filter tracker by status field
+      Then Tracker filtered by status field
+
     Scenario: Sort tracker by updated date and created date
       When I sort tracker by updated date and created date
       Then I got sorted tracker list order by updated date and created date
