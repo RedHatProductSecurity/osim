@@ -199,6 +199,7 @@ class FlawDetailPage(BasePage):
         "trackerMangerSearchFlawInput": ("XPATH", "//input[@placeholder='Search...']"),
         "trackerManagerAddFlawBtn": ("XPATH", "//button[text()='Add']"),
         "confirmFileLowSeverityBtn": ("XPATH", "//button[text()=' Confirm ']"),
+        "trackerStatusFilterBtn": ("XPATH", "//button[@id='status-filter']"),
 
         "msgClose": ("XPATH", "(//button[@class='osim-toast-close-btn btn-close'])[1]"),
         "unembargoBtn": ("XPATH", "//button[contains(text(), 'Unembargo')]"),
@@ -1181,3 +1182,6 @@ class FlawDetailPage(BasePage):
         flaw_number = int(flaw_info.split()[0])
 
         return affect_number, flaw_number
+
+    def select_tracker_status_filter_by_test(self, status):
+        self.driver.find_element(By.XPATH, f"(//span[text()='{status}'])[last()]/ancestor::a/input").click()
