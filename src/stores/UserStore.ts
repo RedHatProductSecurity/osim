@@ -185,7 +185,8 @@ export const useUserStore = defineStore('UserStore', () => {
       .then((json) => {
         const parsedWhoamiResponse = whoamiResponse.parse(json);
         _userStoreSession.value.whoami = parsedWhoamiResponse;
-      }).then(async () => {
+      })
+      .then(async () => {
         await updateJiraUsername();
       })
       .catch((e) => {
