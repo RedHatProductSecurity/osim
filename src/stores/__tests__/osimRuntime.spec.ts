@@ -15,6 +15,7 @@ describe('osimRuntime', () => {
       bugzilla: 'bugzilla',
       jira: 'jira',
       errata: 'errata',
+      mitre: 'mitre',
       jiraDisplay: 'jiraDisplay',
       osidbAuth: 'credentials',
     },
