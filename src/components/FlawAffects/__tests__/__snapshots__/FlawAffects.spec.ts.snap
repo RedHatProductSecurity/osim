@@ -53,7 +53,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           </th>
           <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
           <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> PURL <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+          <th data-v-3026e75d="">PURL</th>
           <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
@@ -374,7 +374,7 @@ exports[`flawAffects > Correctly renders the component when there are no affects
           </th>
           <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
           <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> PURL <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+          <th data-v-3026e75d="">PURL</th>
           <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
@@ -512,7 +512,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           </th>
           <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
           <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> PURL <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+          <th data-v-3026e75d="">PURL</th>
           <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
@@ -923,7 +923,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           </th>
           <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
           <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> PURL <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+          <th data-v-3026e75d="">PURL</th>
           <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
