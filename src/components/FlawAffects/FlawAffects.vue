@@ -26,7 +26,7 @@ import { useFilterSortAffects } from './useFilterSortAffects';
 
 const props = defineProps<{
   embargoed: boolean;
-  error: null | Record<string, any>;
+  errors: null | Record<string, any>;
   relatedFlaws: ZodFlawType[];
 }>();
 
@@ -497,7 +497,7 @@ const displayedTrackers = computed(() => {
       </div>
       <FlawAffectsTable
         v-model:affects="paginatedAffects"
-        :error="error"
+        :errors="errors"
         :selectedModules="selectedModules"
         :totalPages="totalPages"
         @affects:display-mode="setDisplayMode"

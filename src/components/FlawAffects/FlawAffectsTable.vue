@@ -11,8 +11,8 @@ import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 import { displayModes } from './flawAffectConstants';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
-const props = defineProps<{
-  error: null | Record<string, any>;
+defineProps<{
+  errors: null | Record<string, any>;
   totalPages: number;
 }>();
 
@@ -48,7 +48,7 @@ function isNewAffect(affect: ZodAffectType) {
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
         <FlawAffectsTableRow
           v-model:affect="affects[affectIndex]"
-          :error="props.error"
+          :error="errors?.[affectIndex] ?? null"
           :isRemoved="isAffectBeingRemoved(affect)"
           :isModified="isModified(affect)"
           :isNew="isNewAffect(affect)"

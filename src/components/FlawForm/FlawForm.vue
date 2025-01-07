@@ -385,7 +385,7 @@ const createdDate = computed(() => {
           <FlawAffects
             v-if="mode === 'edit'"
             v-model:flaw="flaw"
-            :error="errors.affects"
+            :errors="errors.affects"
             :embargoed="flaw.embargoed"
             :relatedFlaws="relatedFlaws"
           />
