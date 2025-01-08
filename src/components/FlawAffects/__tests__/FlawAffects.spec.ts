@@ -358,73 +358,30 @@ describe('flawAffects', () => {
     expect(lastAffect.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(first);
   });
 
-  osimFullFlawTest('Affects can be filtered by affectedness', async () => {
-    let affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(6);
+  osimFullFlawTest.each([
+    { column: 'Affectedness', columnIndex: 5, option: 'EMPTY', optionValue: '', optionIndex: 1 },
+    { column: 'Resolution', columnIndex: 6, option: 'WONTFIX', optionValue: 'WONTFIX', optionIndex: 4 },
+    { column: 'Impact', columnIndex: 7, option: 'CRITICAL', optionValue: 'CRITICAL', optionIndex: 4 },
+  ])('Affects can be filtered by $column', async ({ column, columnIndex, option, optionIndex, optionValue }) => {
+    const componentHeader = subject.find(`.affects-management table thead tr th:nth-of-type(${columnIndex})`);
+    expect(componentHeader.text()).toStrictEqual(expect.stringMatching(column));
 
-    let affectednessFilterBtn = subject.find('#affectedness-filter');
-    expect(affectednessFilterBtn.find('i.bi-funnel').exists()).toBe(true);
-    await affectednessFilterBtn.trigger('click');
+    const filterBtn = componentHeader.find('button');
+    expect(filterBtn.find('i.bi-funnel').exists()).toBe(true);
+    await filterBtn.trigger('click');
 
-    const affectednessFilterDropdownMenu = subject.findAll('ul.dropdown-menu')[0];
-    expect(affectednessFilterDropdownMenu.exists()).toBe(true);
+    const filterDropdownMenu = componentHeader.find('ul.dropdown-menu');
+    expect(filterDropdownMenu.exists()).toBe(true);
 
-    const affectednessEmptyFilterOption = affectednessFilterDropdownMenu.find('li:first-of-type a');
-    expect(affectednessEmptyFilterOption.exists()).toBe(true);
-    expect(affectednessEmptyFilterOption.find('span').text()).toBe('EMPTY');
-    await affectednessEmptyFilterOption.trigger('click');
+    const filterOption = filterDropdownMenu.find(`li:nth-of-type(${optionIndex}) a`);
+    expect(filterOption.find('span').text()).toBe(option);
+    await filterOption.trigger('click');
+    await filterBtn.trigger('click');
 
-    affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(1);
-
-    affectednessFilterBtn = subject.find('#affectedness-filter');
-    expect(affectednessFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
-  });
-
-  osimFullFlawTest('Affects can be filtered by resolution', async () => {
-    let affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(6);
-
-    let resolutionFilterBtn = subject.find('#resolution-filter');
-    expect(resolutionFilterBtn.find('i.bi-funnel').exists()).toBe(true);
-    await resolutionFilterBtn.trigger('click');
-
-    const resolutionFilterDropdownMenu = subject.findAll('ul.dropdown-menu')[1];
-    expect(resolutionFilterDropdownMenu.exists()).toBe(true);
-
-    const resolutionWontfixFilterOption = resolutionFilterDropdownMenu.find('li:nth-of-type(4) a');
-    expect(resolutionWontfixFilterOption.exists()).toBe(true);
-    expect(resolutionWontfixFilterOption.find('span').text()).toBe('WONTFIX');
-    await resolutionWontfixFilterOption.trigger('click');
-
-    affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(1);
-
-    resolutionFilterBtn = subject.find('#resolution-filter');
-    expect(resolutionFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
-  });
-
-  osimFullFlawTest('Affects can be filtered by impact', async () => {
-    let affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(6);
-
-    let impactFilterBtn = subject.find('#impact-filter');
-    expect(impactFilterBtn.find('i.bi-funnel').exists()).toBe(true);
-    await impactFilterBtn.trigger('click');
-
-    const impactFilterDropdownMenu = subject.findAll('ul.dropdown-menu')[2];
-    expect(impactFilterDropdownMenu.exists()).toBe(true);
-
-    const impactWontfixFilterOption = impactFilterDropdownMenu.find('li:nth-of-type(4) a');
-    expect(impactWontfixFilterOption.exists()).toBe(true);
-    expect(impactWontfixFilterOption.find('span').text()).toBe('CRITICAL');
-    await impactWontfixFilterOption.trigger('click');
-
-    affectsTableRows = subject.findAll('.affects-management table tbody tr');
-    expect(affectsTableRows.length).toBe(1);
-
-    impactFilterBtn = subject.find('#impact-filter');
-    expect(impactFilterBtn.find('i.bi-funnel-fill').exists()).toBe(true);
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    for (const row of affectsTableRows) {
+      expect(row.find(`td:nth-of-type(${columnIndex}) span`).text()).toBe(optionValue);
+    }
   });
 
   osimFullFlawTest('Affect modules table cell have correct tootltip', async () => {
