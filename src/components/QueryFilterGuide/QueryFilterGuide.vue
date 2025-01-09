@@ -176,7 +176,8 @@
             </tr>
           </tbody>
         </table>
-        <p class="info">Notes:
+        <section class="info mt-3">
+          Notes:
           <ol>
             <li>
               <code>~</code> and <code>!~</code> operators can be applied only to
@@ -198,7 +199,7 @@
               will cause an error.
             </li>
           </ol>
-        </p>
+        </section>
       </div>
       <div class="module">
         <h2 id="values">Values</h2>
@@ -330,19 +331,19 @@ code {
   font-size: 1.5ch;
 }
 
-p.info,
-p.warn {
+.info,
+.warn {
   border: 0.1rem solid $redhat-teal-30;
   border-radius: 0.25rem;
   padding: 0.75ch;
 }
 
-p.info {
+.info {
   background-color: $redhat-teal-10;
   border: 0.1rem solid $redhat-teal-30;
 }
 
-p.warn {
+.warn {
   background-color: $redhat-yellow-10;
   border: 0.1rem solid $redhat-yellow-30;
 }
