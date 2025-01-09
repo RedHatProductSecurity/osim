@@ -1,7 +1,9 @@
+import { ref } from 'vue';
+
 import { describe, it, expect, vi } from 'vitest';
 import { Settings } from 'luxon';
 
-import IssueQueueItem from '@/components/IssueQueueItem/IssueQueueItem.vue';
+import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
 import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
@@ -36,6 +38,7 @@ vi.mock('@vueuse/core', () => ({
       },
     }[key];
   }),
+  useElementVisibility: vi.fn(() => ref(false)),
 }));
 
 vi.mock('jwt-decode', () => ({

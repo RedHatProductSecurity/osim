@@ -37,6 +37,7 @@ const FLAW_LIST_FIELDS = [
   'unembargo_dt',
   'embargoed',
   'owner',
+  'labels',
 ];
 
 export async function getFlaws(offset = 0, limit = 20, args = {}) {

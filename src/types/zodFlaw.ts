@@ -11,6 +11,7 @@ import {
   SourceBe0Enum,
   IssuerEnum,
   FlawReferenceType,
+  StateEnum,
 } from '../generated-client';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
@@ -175,6 +176,12 @@ export const ZodFlawSchema = z.object({
   affects: z.array(ZodAffectSchema), // read-only
   comments: z.array(ZodFlawCommentSchema),
   cvss_scores: z.array(FlawCVSSSchema),
+  labels: z.array(z.object({
+    label: z.string(),
+    state: z.nativeEnum(StateEnum),
+    collaborator: z.string().optional(),
+    relevant: z.boolean(),
+  })).nullish(),
   references: z.array(FlawReferenceSchema),
   acknowledgments: z.array(FlawAcknowledgmentSchema),
   embargoed: z.boolean(),
