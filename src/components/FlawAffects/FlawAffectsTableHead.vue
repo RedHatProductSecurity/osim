@@ -69,6 +69,7 @@ const {
           class="bi"
         />
       </th>
+      <th>PURL</th>
       <th @click="setSort('affectedness')">
         <span class="align-bottom me-1">Affectedness</span>
         <button

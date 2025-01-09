@@ -64,7 +64,7 @@ const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
     props: {
       embargoed: mockedFlaw.value.embargoed,
       relatedFlaws: [mockedFlaw.value],
-      error: [],
+      errors: [],
     },
   });
 };
@@ -197,9 +197,9 @@ describe('flawAffects', () => {
     await affectRowEditBtn.trigger('click');
 
     const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
-    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
-    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
-    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
+    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(8) select');
 
     const selectedImpact = impactSelect.find('option[selected]');
     expect(selectedImpact.text()).toBe('LOW');
@@ -219,9 +219,9 @@ describe('flawAffects', () => {
     await affectRowEditBtn.trigger('click');
 
     const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
-    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
-    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
-    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
+    const resolutionSelect = affectsTableEditingRows[0].find('td:nth-of-type(7) select');
+    const impactSelect = affectsTableEditingRows[0].find('td:nth-of-type(8) select');
 
     const selectedImpact = impactSelect.find('option[selected]');
     expect(selectedImpact.text()).toBe('CRITICAL');
@@ -244,7 +244,7 @@ describe('flawAffects', () => {
     await affectRowEditBtn.trigger('click');
 
     const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
-    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(5) select');
+    const affectednessSelect = affectsTableEditingRows[0].find('td:nth-of-type(6) select');
     await affectednessSelect.setValue('NOTAFFECTED');
     const selectedAffectedness = affectednessSelect.find('option[selected]');
     expect(selectedAffectedness.text()).toBe('NOTAFFECTED');
@@ -253,8 +253,23 @@ describe('flawAffects', () => {
     expect(affectRowCommitBtn.exists()).toBe(true);
     await affectRowCommitBtn.trigger('click');
 
-    resolutionSelect = affectsTableRows[0].find('td:nth-of-type(6) span');
+    resolutionSelect = affectsTableRows[0].find('td:nth-of-type(7) span');
     expect(resolutionSelect.text()).toBe('');
+  });
+
+  osimFullFlawTest('Validates affect PURLs when present', async () => {
+    const affectRow = subject.find('.affects-management table tbody tr');
+    const editButton = affectRow.find('button[title="Edit affect"]');
+    await editButton.trigger('click');
+
+    const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    const purlField = affectsTableEditingRows[0].find('td:nth-of-type(5)');
+    const purlInput = purlField.find('input');
+    purlInput.setValue('invalid-purl');
+    await affectRow.find('button[title="Commit edit"]').trigger('click');
+
+    const purlInputError = purlField.find('.affect-field-error');
+    expect(purlInputError.exists()).toBe(true);
   });
 
   osimFullFlawTest('Affects can be modified', async () => {
@@ -329,10 +344,10 @@ describe('flawAffects', () => {
   osimFullFlawTest.each([
     { column: 'Module', columnIndex: 3, first: 'openshift-6', last: 'openshift-1' },
     { column: 'Component', columnIndex: 4, first: 'openshift-1-1', last: 'openshift-6-1' },
-    { column: 'Affectedness', columnIndex: 5, first: 'AFFECTED', last: '' },
-    { column: 'Resolution', columnIndex: 6, first: 'DELEGATED', last: 'WONTFIX' },
-    { column: 'Impact', columnIndex: 7, first: 'CRITICAL', last: 'LOW' },
-    { column: 'Trackers', columnIndex: 9, first: '0', last: '4' },
+    { column: 'Affectedness', columnIndex: 6, first: 'AFFECTED', last: '' },
+    { column: 'Resolution', columnIndex: 7, first: 'DELEGATED', last: 'WONTFIX' },
+    { column: 'Impact', columnIndex: 8, first: 'CRITICAL', last: 'LOW' },
+    { column: 'Trackers', columnIndex: 10, first: '0', last: '4' },
   ])('Affects can be sorted by $column column', async ({ column, columnIndex, first, last }) => {
     const componentHeader = subject.find(`.affects-management table thead tr th:nth-of-type(${columnIndex})`);
     expect(componentHeader.text()).toStrictEqual(expect.stringMatching(column));
@@ -359,9 +374,9 @@ describe('flawAffects', () => {
   });
 
   osimFullFlawTest.each([
-    { column: 'Affectedness', columnIndex: 5, option: 'EMPTY', optionValue: '', optionIndex: 1 },
-    { column: 'Resolution', columnIndex: 6, option: 'WONTFIX', optionValue: 'WONTFIX', optionIndex: 4 },
-    { column: 'Impact', columnIndex: 7, option: 'CRITICAL', optionValue: 'CRITICAL', optionIndex: 4 },
+    { column: 'Affectedness', columnIndex: 6, option: 'EMPTY', optionValue: '', optionIndex: 1 },
+    { column: 'Resolution', columnIndex: 7, option: 'WONTFIX', optionValue: 'WONTFIX', optionIndex: 4 },
+    { column: 'Impact', columnIndex: 8, option: 'CRITICAL', optionValue: 'CRITICAL', optionIndex: 4 },
   ])('Affects can be filtered by $column', async ({ column, columnIndex, option, optionIndex, optionValue }) => {
     const componentHeader = subject.find(`.affects-management table thead tr th:nth-of-type(${columnIndex})`);
     expect(componentHeader.text()).toStrictEqual(expect.stringMatching(column));
@@ -399,7 +414,7 @@ describe('flawAffects', () => {
   osimFullFlawTest('Displays tracker manager for individual affect', async () => {
     const affectsTableRows = subject.findAll('.affects-management table tbody tr');
     const affectRowTrackersBtn = affectsTableRows[0]
-      .find('td:nth-of-type(9) .affect-tracker-cell button:first-of-type');
+      .find('td:nth-of-type(10) .affect-tracker-cell button:first-of-type');
     expect(affectRowTrackersBtn.exists()).toBe(true);
     await affectRowTrackersBtn.trigger('click');
 

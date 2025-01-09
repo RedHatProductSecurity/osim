@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { pick } from 'ramda';
+import { PackageURL } from 'packageurl-js';
 
 import {
   AffectednessEnum,
@@ -86,7 +87,18 @@ export const ZodAffectSchema = z.object({
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
   resolution: z.nativeEnum(ResolutionEnumWithBlank).nullish(),
   ps_module: z.string().max(100),
-  ps_component: z.string().max(255),
+  purl: z.string().nullish().superRefine((purl, zodContext) => {
+    if (!purl) return;
+    try {
+      PackageURL.fromString(purl);
+    } catch (e: any) {
+      zodContext.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: e.message,
+      });
+    }
+  }),
+  ps_component: z.string().max(255), // TODO: Deprecate?
   ps_product: z.string().nullish(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
   trackers: z.array(TrackerSchema).or(z.array(z.any())),

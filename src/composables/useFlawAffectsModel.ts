@@ -162,6 +162,7 @@ export function useFlawAffectsModel() {
       resolution: affect.resolution,
       delegated_resolution: affect.delegated_resolution,
       ps_module: affect.ps_module,
+      purl: affect.purl,
       ps_component: affect.ps_component,
       impact: affect.impact,
       embargoed: affect.embargoed || false,

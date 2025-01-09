@@ -553,6 +553,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </th>
               <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
               <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+              <th data-v-3026e75d="">PURL</th>
               <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
                 <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
                   <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
@@ -594,6 +595,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
@@ -615,6 +617,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
@@ -636,6 +639,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
@@ -657,6 +661,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
@@ -678,6 +683,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
@@ -699,6 +705,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               </td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
+              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span><span data-v-cf2e7c24="" class="invalid-feedback d-block text-wrap affect-field-error"></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
