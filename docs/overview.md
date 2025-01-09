@@ -83,6 +83,8 @@ OSIM_BACKENDS_BUGZILLA="http://bugzilla-service:8001"
 OSIM_BACKENDS_JIRA="http://jira-service:8002"
 OSIM_BACKENDS_ERRATA="http://errata-service:8003"
 OSIM_BACKENDS_JIRA_DISPLAY="http://jira-service:8002"
+OSIM_BACKENDS_MITRE="http://mitre-service:8084"
+OSIM_NGINX_PROXY_MITRE=
 OSIM_NGINX_PROXY_JIRA=
 OSIM_NGINX_PROXY_CA=
 ```
@@ -90,6 +92,10 @@ OSIM_NGINX_PROXY_CA=
 * `OSIM_NGINX_PROXY_JIRA`: If set, creates a /proxy/jira/ endpoint in the OSIM
   server, to simplify CORS configuration. `OSIM_BACKENDS_JIRA` should be updated
   to point to OSIM's proxy. It might be required to also add the `OSIM_NGINX_PROXY_CA` with the certificate's endpoint for the proxy authorization.
+
+* `OSIM_NGINX_PROXY_MITRE`: If set, creates a /proxy/mitre/ endpoint in the OSIM
+  server, to simplify CORS configuration. `OSIM_BACKENDS_MITRE` should be updated
+  to point to OSIM's proxy.
 
 ## Local Configuration
 
@@ -102,8 +108,9 @@ OSIM_NGINX_PROXY_CA=
         "osidbAuth": "<kerberos|credentials>",
         "bugzilla": "http://localhost:8001",
         "jira": "http://localhost:8002",
-        "errata": "http://localhost:8003"
-        "jiraDisplay": "http://localhost:8002"
+        "errata": "http://localhost:8003",
+        "jiraDisplay": "http://localhost:8002",
+        "mitre": "https://localhost:8004"
       },
       "osimVersion": {
         "rev":"dev",
