@@ -1,5 +1,3 @@
-import { ref } from 'vue';
-
 import { describe, it, expect, vi } from 'vitest';
 import { Settings } from 'luxon';
 
@@ -8,53 +6,19 @@ import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
+import type { ZodFlawType } from '@/types';
 
-vi.mock('@vueuse/core', () => ({
-  useLocalStorage: vi.fn((key: string, defaults) => {
-    return {
-      SearchStore: { value: defaults },
-      UserStore: {
-        value: {
-          // Set your fake user data here
-          refresh: 'mocked_refresh_token',
-          env: 'mocked_env',
-          whoami: {
-            email: 'test@example.com',
-            username: 'testuser',
-          },
-          jiraUsername: 'skynet',
-        },
-      },
-    }[key];
+vi.mock('@/stores/UserStore', () => ({
+  useUserStore: () => ({
+    jiraUsername: 'skynet',
   }),
-  useStorage: vi.fn((key: string, defaults) => {
-    return {
-      'OSIM::USER-SETTINGS': {
-        value: defaults || {
-          bugzillaApiKey: '',
-          jiraApiKey: '',
-          showNotifications: false,
-        },
-      },
-    }[key];
-  }),
-  useElementVisibility: vi.fn(() => ref(false)),
-}));
-
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({
-    sub: '1234567890',
-    name: 'Test User',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365,
-  })),
 }));
 
 describe('issueQueue', () => {
-  const mockData = [
+  const mockData: Partial<ZodFlawType>[] = [
     {
       uuid: '709e9ea1-ed0f-49b8-a7ad-9164d4034849',
       cve_id: 'CVE-2903-0092',
-      state: 'NEW',
       impact: 'MODERATE',
       title: 'title',
       unembargo_dt: '2024-02-01T00:00:00Z',
@@ -70,21 +34,23 @@ describe('issueQueue', () => {
     },
   ];
 
+  const mountIssueQueue = (props?: Partial<InstanceType<typeof IssueQueue>['$props']>) => mountWithConfig(IssueQueue, {
+    props: {
+      issues: mockData,
+      isLoading: false,
+      isFinalPageFetched: false,
+      total: 10,
+      ...props,
+    },
+  });
+
   afterAll(() => {
     vi.clearAllMocks();
     Settings.defaultZone = 'local';
   });
 
   it('should fetch data from API', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: mockData,
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-
-    });
+    const wrapper = mountIssueQueue();
 
     const fetchEvents = wrapper.emitted();
     const issues = wrapper.findAllComponents(IssueQueueItem);
@@ -101,14 +67,7 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on MyFlaws', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: mockData,
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-    });
+    const wrapper = mountIssueQueue();
 
     const myIssuesCheckbox = wrapper.findAllComponents(LabelCheckbox)[0];
     const myIssuesCheckboxEl = myIssuesCheckbox.find('input[type="checkbox"]');
@@ -128,14 +87,7 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on OpenFlaws', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [],
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-    });
+    const wrapper = mountIssueQueue({ issues: [] });
 
     const openIssuesCheckox = wrapper.findAllComponents(LabelCheckbox)[1];
     const openIssuesCheckboxEl = openIssuesCheckox.find('input[type="checkbox"]');
@@ -154,14 +106,7 @@ describe('issueQueue', () => {
   });
 
   it('fetch data from API with specified parameters on sort', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [],
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-    });
+    const wrapper = mountIssueQueue();
 
     await wrapper.findAll('th').at(0)!.trigger('click');
     const fetchEvents = wrapper.emitted();
@@ -175,14 +120,7 @@ describe('issueQueue', () => {
   });
 
   it('changes sort order on click', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [],
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-    });
+    const wrapper = mountIssueQueue();
 
     await wrapper.findAll('th').at(0)!.trigger('click');
     await wrapper.findAll('th').at(0)!.trigger('click');
@@ -197,14 +135,7 @@ describe('issueQueue', () => {
   });
 
   it('removes sort order on third click', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [],
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
-    });
+    const wrapper = mountIssueQueue();
 
     await wrapper.findAll('th').at(0)!.trigger('click');
     await wrapper.findAll('th').at(0)!.trigger('click');
@@ -220,14 +151,8 @@ describe('issueQueue', () => {
   });
 
   it('shouldn\'t render total count when no issues', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [],
-        isLoading: true,
-        isFinalPageFetched: false,
-        total: 100,
-      },
-    });
+    const wrapper = mountIssueQueue({ issues: [] });
+
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
     const countEL = filterEl.find('span.float-end');
@@ -235,13 +160,9 @@ describe('issueQueue', () => {
   });
 
   it('should render total count', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: Array.from({ length: 50 }).fill(mockData[0]),
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 100,
-      },
+    const wrapper = mountIssueQueue({
+      issues: Array.from({ length: 50 }).fill(mockData[0]) as ZodFlawType[],
+      total: 100,
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
@@ -251,13 +172,10 @@ describe('issueQueue', () => {
   });
 
   it('should render loader when loading flaws', async () => {
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: Array.from({ length: 25 }).fill(mockData[0]),
-        isLoading: true,
-        isFinalPageFetched: false,
-        total: 100,
-      },
+    const wrapper = mountIssueQueue({
+      issues: Array.from({ length: 50 }).fill(mockData[0]) as ZodFlawType[],
+      isLoading: true,
+      total: 100,
     });
     const filterEl = wrapper.find('div.osim-incident-filter');
     expect(filterEl.exists()).toBeTruthy();
@@ -267,17 +185,60 @@ describe('issueQueue', () => {
 
   it('should render create_dt in UTC format', async () => {
     Settings.defaultZone = 'Europe/Madrid';
-    const wrapper = mountWithConfig(IssueQueue, {
-      props: {
-        issues: [{ ...mockData[0], created_dt: '2021-07-29T22:50:50Z' }],
-        isLoading: false,
-        isFinalPageFetched: false,
-        total: 10,
-      },
+    const wrapper = mountIssueQueue({
+      issues: [{ ...mockData[0], created_dt: '2021-07-29T22:50:50Z' } as ZodFlawType],
     });
 
     const dateEl = wrapper.findAll('td')[2];
     expect(dateEl.exists()).toBeTruthy();
     expect(dateEl.text()).toBe('2021-07-29');
+  });
+
+  it('should render flaw labels', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: [
+          { label: 'test', state: 'NEW', collaborator: '' },
+          { label: 'test-2', state: 'NEW', collaborator: '' },
+          { label: 'test-3', state: 'REQ', collaborator: '' },
+        ],
+      } as ZodFlawType],
+    });
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+
+    expect(labels.length).toBe(3);
+    expect(labels[0].text()).toBe('test-3');
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  it('should truncate flaw labels', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', collaborator: '' })),
+      } as ZodFlawType],
+    });
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+
+    expect(labels.length).toBe(4);
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  it('should toggle flaw labels', async () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', collaborator: '' })),
+      } as ZodFlawType],
+    });
+
+    const toggleBtn = wrapper.findComponent(IssueQueueItem).find('i');
+    await toggleBtn.trigger('click');
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+    expect(labels.length).toBe(10);
   });
 });

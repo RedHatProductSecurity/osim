@@ -33,7 +33,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
         <tr data-v-15d9c71d="" class="osim-badge-lane osim-shaded">
           <td data-v-15d9c71d="" colspan="100%">
             <div data-v-15d9c71d="" class="gap-1 d-flex">
-              <!--v-if--><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-warning fw-bold text-decoration-line-through text-bg-gray" title="Requested">test-3</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test-2</span>
+              <!--v-if--><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-bg-warning fw-bold border-warning text-decoration-line-through text-bg-gray border-secondary" title="Requested">test-3</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-2</span>
               <!--v-if-->
             </div>
           </td>
@@ -81,7 +81,7 @@ exports[`issueQueue > should truncate flaw labels 1`] = `
         <tr data-v-15d9c71d="" class="osim-badge-lane osim-shaded">
           <td data-v-15d9c71d="" colspan="100%">
             <div data-v-15d9c71d="" class="gap-1 d-flex">
-              <!--v-if--><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test-0</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test-1</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test-2</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize text-bg-light-info text-decoration-line-through text-bg-gray" title="">test-3</span><i data-v-15d9c71d="" class="bi pe-1 cursor-pointer osim-show-all-labels bi-caret-right-fill" title="Show all labels"></i>
+              <!--v-if--><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-0</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-1</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-2</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-3</span><i data-v-15d9c71d="" class="bi pe-1 cursor-pointer osim-show-all-labels bi-caret-right-fill" title="Show all labels"></i>
             </div>
           </td>
         </tr>
