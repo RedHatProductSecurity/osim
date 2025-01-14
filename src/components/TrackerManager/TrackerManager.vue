@@ -6,7 +6,7 @@ import LowSeverityTrackersWarning from '@/components/LowSeverityTrackersWarning.
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
 import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
-import { useRefreshTrackers } from '@/composables/useFlawModel';
+import { useRefreshTrackers } from '@/composables/useRefreshTrackers';
 
 import TabsDynamic from '@/widgets/TabsDynamic/TabsDynamic.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
@@ -18,7 +18,7 @@ const props = defineProps<{
   specificAffectsToTrack?: ZodAffectType[];
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   'affects-trackers:hide': [];
   'affects-trackers:refresh': [];
 }>();
