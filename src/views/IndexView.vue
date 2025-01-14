@@ -66,7 +66,7 @@ function selectSavedSearch(index: number) {
   <main class="mt-3">
     <details
       :open="showSavedSearches"
-      class="osim-advanced-search-container container-fluid ms-3 ps-3"
+      class="osim-advanced-search-container container-fluid ps-3"
     >
       <summary @click="showSavedSearches === true"> Saved Searches</summary>
       <div class="container-fluid mt-2">

@@ -2,6 +2,7 @@ import { ref } from 'vue';
 
 import { getFlaws } from '@/services/FlawService';
 import { allowedEmptyFieldMapping } from '@/constants/flawFields';
+import type { ZodFlawType } from '@/types';
 
 function finializeRequestParams(params: Record<string, 'isempty' | 'nonempty' | string> = {}) {
   const requestParams: Record<string, any> = {};
@@ -18,7 +19,7 @@ function finializeRequestParams(params: Record<string, 'isempty' | 'nonempty' | 
 export function useFlawsFetching() {
   const isFinalPageFetched = ref(false);
   const isLoading = ref(false);
-  const issues = ref<any[]>([]);
+  const issues = ref<ZodFlawType[]>([]);
   const offset = ref(0);
   const pagesize = 20;
   const total = ref(0);
