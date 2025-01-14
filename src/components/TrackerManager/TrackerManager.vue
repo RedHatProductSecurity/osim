@@ -18,11 +18,6 @@ const props = defineProps<{
   specificAffectsToTrack?: ZodAffectType[];
 }>();
 
-defineEmits<{
-  'affects-trackers:hide': [];
-  'affects-trackers:refresh': [];
-}>();
-
 const showLowSeverityTrackersWarning = ref(false);
 const { relatedFlaws } = toRefs(props);
 
