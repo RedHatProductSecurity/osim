@@ -1,4 +1,4 @@
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { modifyPath } from 'ramda';
