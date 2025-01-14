@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
+
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 
