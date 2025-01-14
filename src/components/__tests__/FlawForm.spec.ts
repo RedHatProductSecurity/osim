@@ -8,6 +8,7 @@ import FlawForm from '@/components/FlawForm/FlawForm.vue';
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
+import CweSelector from '@/components/CweSelector/CweSelector.vue';
 
 import { blankFlaw } from '@/composables/useFlaw';
 
@@ -106,7 +107,7 @@ describe('flawForm', () => {
     expect(nvdCvssField?.exists()).toBe(true);
 
     const cweIdField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(CweSelector)
       .find(component => component.props().label === 'CWE ID');
     expect(cweIdField?.exists()).toBe(true);
 
@@ -187,7 +188,7 @@ describe('flawForm', () => {
     expect(nvdCvssField?.exists()).toBe(true);
 
     const cweIdField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(CweSelector)
       .find(component => component.props().label === 'CWE ID');
     expect(cweIdField?.exists()).toBe(true);
 
