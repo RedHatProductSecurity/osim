@@ -194,7 +194,6 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   return {
     flaw,
     isSaving,
-    isRefreshingTrackers,
     isValid,
     errors,
     committedFlaw,
