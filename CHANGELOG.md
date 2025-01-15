@@ -6,6 +6,7 @@
 * Support PURLs in affected components (`OSIDB-3412`)
 * Increase step value for affects and trackers per page (`OSIDB-3508`)
 * Support showing all trackers/affects in single page (`OSIDB-3506`)
+* Add suggestions on CWE Field (`OSIDB-3743`)
 
 
 ### Fixed
