@@ -534,7 +534,6 @@ const displayedTrackers = computed(() => {
             :relatedFlaws="relatedFlaws"
             :flaw="flaw"
             :specificAffectsToTrack="specificAffectsToTrack"
-            @affects-trackers:refresh="refreshAffects"
           />
         </template>
       </Modal>

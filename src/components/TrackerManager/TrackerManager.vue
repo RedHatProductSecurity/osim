@@ -6,6 +6,7 @@ import LowSeverityTrackersWarning from '@/components/LowSeverityTrackersWarning.
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
 import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
+import { useRefreshTrackers } from '@/composables/useRefreshTrackers';
 
 import TabsDynamic from '@/widgets/TabsDynamic/TabsDynamic.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
@@ -17,16 +18,12 @@ const props = defineProps<{
   specificAffectsToTrack?: ZodAffectType[];
 }>();
 
-const emit = defineEmits<{
-  'affects-trackers:hide': [];
-  'affects-trackers:refresh': [];
-}>();
-
 const showLowSeverityTrackersWarning = ref(false);
 const { relatedFlaws } = toRefs(props);
 
 const shouldApplyToRelated = ref(true);
 const shouldShowInspector = ref(false);
+const { isRefreshingTrackers, refreshTrackers } = useRefreshTrackers();
 
 const {
   addRelatedFlaw,
@@ -107,7 +104,7 @@ async function handleFileTrackers() {
     showLowSeverityTrackersWarning.value = true;
   } else {
     await fileTrackers();
-    emit('affects-trackers:refresh');
+    await refreshTrackers();
   }
 }
 
@@ -165,6 +162,17 @@ function hideLowSeverityTrackersWarning() {
               <span class="visually-hidden">Loading...</span>
             </span>
             <span class="ms-1">Querying available trackers&hellip;</span>
+          </div>
+        </template>
+        <template v-else-if="isRefreshingTrackers" #loading-indicator>
+          <div class="ms-2 mt-2">
+            <span
+              class="spinner-border spinner-border-sm me-1 text-info"
+              role="status"
+            >
+              <span class="visually-hidden">Refreshing trackers...</span>
+            </span>
+            <span class="ms-1">Refreshing trackers&hellip;</span>
           </div>
         </template>
         <template
