@@ -37,6 +37,13 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     https: true,
+    proxy: {
+      '/proxy/mitre': {
+        target: 'https://cwe-api.mitre.org/api/v1',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/proxy\/mitre/, ''),
+      },
+    },
   },
   resolve: {
     alias: {

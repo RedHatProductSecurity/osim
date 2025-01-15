@@ -18,11 +18,14 @@ import {
 } from '@/stores/osimRuntime';
 import { footerHeight, footerTop } from '@/stores/responsive';
 
+import { updateCWEData } from './services/CweService';
+
 setup();
 
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
+    updateCWEData();
   }
 });
 
