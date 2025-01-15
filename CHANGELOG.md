@@ -10,6 +10,7 @@
 
 ### Added
 * Support PURLs in affected components (`OSIDB-3412`)
+* Add suggestions on CWE Field (`OSIDB-3743`)
 
 ## [2024.12.1]
 ### Fixed
