@@ -3,16 +3,20 @@ import { computed, watch, onUnmounted } from 'vue';
 
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 
-import { useFetchFlaw, initializeFlaw } from '@/composables/useFetchFlaw';
+import { useFetchFlaw } from '@/composables/useFetchFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 
 const props = defineProps<{
   id: string;
 }>();
+
+const { resetFlaw } = useFlaw();
+
 const { didFetchFail, fetchFlaw, flaw, relatedFlaws } = useFetchFlaw();
 
 watch(() => props.id, fetchFlaw, { immediate: true });
 
-onUnmounted(initializeFlaw);
+onUnmounted(resetFlaw);
 
 const isLoading = computed(() => !flaw.value && !didFetchFail);
 </script>
@@ -20,7 +24,7 @@ const isLoading = computed(() => !flaw.value && !didFetchFail);
 <template>
   <main>
     <FlawForm
-      v-if="flaw"
+      v-if="flaw?.uuid"
       :key="`${flaw.uuid}-${flaw.updated_dt}`"
       v-model:flaw="flaw"
       :relatedFlaws="relatedFlaws"

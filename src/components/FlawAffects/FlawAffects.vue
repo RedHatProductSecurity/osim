@@ -30,7 +30,7 @@ const props = defineProps<{
   relatedFlaws: ZodFlawType[];
 }>();
 
-const flaw = useFlaw();
+const { flaw } = useFlaw();
 
 const affectsEditingStore = useAffectsEditingStore();
 const {
