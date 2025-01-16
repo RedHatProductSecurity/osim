@@ -8,8 +8,8 @@ import type { ZodAffectType } from '@/types';
 import { useToastStore } from '@/stores/ToastStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
-const relatedFlaws = useRelatedFlaws();
 const flaw = useFlaw();
+const relatedFlaws = useRelatedFlaws();
 
 const isFetchingRelatedFlaws = ref(false);
 
@@ -42,6 +42,7 @@ export function useFetchFlaw() {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
       initializeFlaw();
+      resetInitialAffects();
       addToast({
         title: 'Error loading Flaw',
         body: getDisplayedOsidbError(error),

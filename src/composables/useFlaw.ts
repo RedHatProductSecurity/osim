@@ -1,7 +1,5 @@
 import { ref } from 'vue';
 
-import { resetInitialAffects } from '@/composables/useFlawAffectsModel';
-
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const flaw = ref<null | ZodFlawType>(blankFlaw());
@@ -10,7 +8,6 @@ const relatedFlaws = ref<ZodFlawType[]>([]);
 export function initializeFlaw() {
   flaw.value = null;
   relatedFlaws.value = [];
-  resetInitialAffects();
 }
 
 export function useFlaw() {
