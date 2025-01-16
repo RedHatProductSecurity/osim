@@ -15,7 +15,7 @@ import { getFlaw } from '@/services/FlawService';
 import { isAffectIn } from '@/utils/helpers';
 
 import { createCatchHandler } from './service-helpers';
-import { useRelatedFlaws } from './useFlaw';
+// import { useRelatedFlaws } from './useFlaw';
 
 type UseTrackersReturnType = ReturnType<typeof useSingleFlawTrackers>;
 type FlawCveOrId = string;
@@ -26,7 +26,7 @@ type UnrefUseTrackersReturnType = UnwrapNestedRefs<UseTrackersReturnType>;
 type MultiFlawTrackers = Record<string, UnrefUseTrackersReturnType> | Record<string, UseTrackersReturnType>;
 
 const isLoadingTrackers = ref(false);
-const relatedFlaws = useRelatedFlaws();
+// const relatedFlaws = useRelatedFlaws();
 
 function useState(flaw: ZodFlawType) {
   const multiFlawTrackers = ref<MultiFlawTrackers>({});
@@ -265,7 +265,6 @@ export function useRelatedFlawTrackers(
         const index = relatedFlaws.value.findIndex(({ uuid }) => uuid === flaw.uuid);
         if (index !== -1) {
           relatedFlaws.value[index].affects = fetchedFlaw.affects;
-          console.log(fetchedFlaw.affects);
         }
       }
     } finally {

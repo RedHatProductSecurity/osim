@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, onUnmounted, ref, watch, type Ref } from 'vue';
 
 import { storeToRefs } from 'pinia';
 
@@ -30,7 +30,7 @@ const props = defineProps<{
   relatedFlaws: ZodFlawType[];
 }>();
 
-const flaw = useFlaw();
+const flaw = useFlaw() as Ref<ZodFlawType>;
 
 const affectsEditingStore = useAffectsEditingStore();
 const {

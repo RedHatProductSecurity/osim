@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 
 import { describe, expect, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
@@ -16,11 +16,11 @@ vi.mock('@/composables/useFlaw');
 vi.mock('@/composables/useFlawAffectsModel');
 
 let pinia: ReturnType<typeof createPinia>;
-type FlawWithStore = [ReturnType<typeof useFlaw>, ReturnType<typeof useAffectsEditingStore>];
+type FlawWithStore = [Ref<ZodFlawType>, ReturnType<typeof useAffectsEditingStore>];
 
 function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
   const [[flaw, store]] = withSetup((): FlawWithStore => {
-    const flaw = useFlaw();
+    const flaw = useFlaw() as Ref<ZodFlawType>;
     flaw.value = testFlaw;
     useFlawAffectsModel();
     return [flaw, useAffectsEditingStore()];

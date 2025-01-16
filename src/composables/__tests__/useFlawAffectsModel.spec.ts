@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 
 import { setActivePinia } from 'pinia';
 import { createTestingPinia } from '@pinia/testing';
@@ -43,7 +43,7 @@ vi.mock('@/services/FlawService');
 
 function useMockedModel(flaw: ZodFlawType) {
   vi.mocked(useFlaw).mockReturnValue(ref(flaw));
-  const flawRef = useFlaw();
+  const flawRef = useFlaw() as Ref<ZodFlawType>;
   const model = useFlawAffectsModel();
 
   return { model, flawRef };

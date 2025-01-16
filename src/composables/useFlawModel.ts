@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { modifyPath } from 'ramda';
@@ -32,7 +32,7 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 
 export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
-  const flaw = useFlaw();
+  const flaw = useFlaw() as Ref<ZodFlawType>;
   flaw.value = forFlaw;
 
   const isSaving = ref(false);
