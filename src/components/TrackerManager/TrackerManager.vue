@@ -31,10 +31,10 @@ const {
   isFilingTrackers,
   isLoadingTrackers,
   multiFlawTrackers,
+  refreshRelatedFlaws,
   selectedStreams,
   synchronizeTrackerSelections,
   trackersToFile,
-  refreshRelatedFlaws,
 } = useRelatedFlawTrackers(props.flaw, relatedFlaws, props?.specificAffectsToTrack);
 
 const { isFetchingRelatedFlaws } = useFetchFlaw();
