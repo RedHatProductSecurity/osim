@@ -14,7 +14,7 @@ OSIM_NGINX_PROXY_MITRE="${OSIM_NGINX_PROXY_MITRE%/}"
 echo resolver "$(awk -v ORS=' ' '$1=="nameserver" {print $2}' /etc/resolv.conf)" ";" >/etc/nginx/conf.d/resolvers.conf
 
 # Add MITRE reverse proxy endpoint
-cat <<EOF >/tmp/osim-nginx-proxy.conf
+cat <<EOF >>/tmp/osim-nginx-proxy.conf
 location /proxy/mitre/ {
     # Trailing slash in proxy_pass strips the location directive prefix from the downstream URL
     proxy_pass ${OSIM_NGINX_PROXY_MITRE}/;
