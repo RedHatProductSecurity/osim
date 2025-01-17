@@ -6,6 +6,9 @@ import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { blankFlaw } from '@/composables/useFlaw';
 
 import { IssuerEnum } from '@/generated-client';
+import { putFlawCvssScores } from '@/services/FlawService';
+
+vi.mock('@/services/FlawService');
 
 describe('useFlawCvssScores', () => {
   osimFullFlawTest('should return an object', ({ flaw }) => {
@@ -45,5 +48,16 @@ describe('useFlawCvssScores', () => {
 
       expect(shouldDisplayEmailNistForm.value).toBeTruthy();
     });
+  });
+
+  osimFullFlawTest('should match flaw embargo status', ({ flaw }) => {
+    flaw.cvss_scores.forEach(score => score.embargoed = true);
+    flaw.embargoed = false;
+    const { saveCvssScores } = useFlawCvssScores(ref(flaw));
+
+    saveCvssScores();
+
+    expect(vi.mocked(putFlawCvssScores))
+      .toHaveBeenCalledWith(flaw.uuid, flaw.cvss_scores[0].uuid, expect.objectContaining({ embargoed: false }));
   });
 });

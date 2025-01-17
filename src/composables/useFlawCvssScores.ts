@@ -109,7 +109,9 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       if (flawRhCvss3.value?.vector === null && flawRhCvss3.value?.uuid != null) {
         return deleteFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid);
       }
-      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value as unknown);
+      // Update embargoed state from parent flaw
+      flawRhCvss3.value.embargoed = flaw.value.embargoed;
+      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value);
     }
 
     // Handle newly created CVSS score
