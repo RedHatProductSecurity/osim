@@ -6,6 +6,7 @@
 
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
+* Fix incorrect embargoed state of CVSS scores (`OSIDB-3861`)
 
 ### Added
 * Support PURLs in affected components (`OSIDB-3412`)

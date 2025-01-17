@@ -7,6 +7,7 @@ import type { ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
+import type { Nullable } from '@/utils/typeHelpers';
 
 export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Nist]: 'NVD',
@@ -15,7 +16,7 @@ export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Osv]: 'OSV',
 };
 
-const formatScore = (score: any) => score?.toFixed(1);
+const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 // TODO: This composable should be ideally refactored into a more modular
 // solution when CVSSv4 starts being used
 export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
@@ -109,7 +110,9 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       if (flawRhCvss3.value?.vector === null && flawRhCvss3.value?.uuid != null) {
         return deleteFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid);
       }
-      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value as unknown);
+      // Update embargoed state from parent flaw
+      flawRhCvss3.value.embargoed = flaw.value.embargoed;
+      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value);
     }
 
     // Handle newly created CVSS score
@@ -121,7 +124,7 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       vector: flawRhCvss3.value?.vector,
       embargoed: flaw.value.embargoed,
     };
-    return postFlawCvssScores(flaw.value.uuid, requestBody as unknown);
+    return postFlawCvssScores(flaw.value.uuid, requestBody);
   }
 
   return {

@@ -1,6 +1,6 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
-import type { ZodAffectType, ZodFlawType } from '@/types';
+import type { ZodAffectType, ZodFlawCVSSType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
@@ -123,21 +123,12 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
     .catch(createCatchHandler('Could not update Flaw'));
 }
 
-// {
-//   "comment": "string",
-//   "cvss_version": "string",
-//   "issuer": "RH",
-//   "score": 0,
-//   "vector": "string",
-//   "embargoed": true,
-//   "updated_dt": "2024-02-06T16:02:54.708Z"
-// }
 export async function putFlawCvssScores(
   flawId: string,
   cvssScoresId: string,
-  cvssScoreObject: unknown,
+  cvssScoreObject: ZodFlawCVSSType,
 ) {
-  const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
+  const putObject: Partial<ZodFlawCVSSType> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
   delete putObject['flaw'];
   delete putObject['created_dt'];
@@ -163,16 +154,9 @@ export async function deleteFlawCvssScores(
     .catch(createCatchHandler('Error deleting CVSS score:'));
 }
 
-// {
-//   "comment": "string",
-//   "cvss_version": "string",
-//   "issuer": "RH",
-//   "score": 0,
-//   "vector": "string",
-//   "embargoed": true
-// }
-export async function postFlawCvssScores(flawId: string, cvssScoreObject: unknown) {
-  const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
+type PostFlawCvssScores = Omit<ZodFlawCVSSType, 'alerts' | 'flaw' | 'score' | 'updated_dt' | 'uuid'>;
+export async function postFlawCvssScores(flawId: string, cvssScoreObject: PostFlawCvssScores) {
+  const postObject = Object.assign({}, cvssScoreObject);
   return osidbFetch({
     method: 'post',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
@@ -283,22 +267,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
     .catch(createCatchHandler('Problem searching flaws:'));
 }
 
-export async function postFlaw(requestBody: any) {
-  // {
-  //   "cve_id": "string",
-  //   "impact": "LOW",
-  //   "component": "string",
-  //   "title": "string",
-  //   "comment_zero": "string",
-  //   "cve_description": "string",
-  //   "statement": "string",
-  //   "cwe_id": "string",
-  //   "unembargo_dt": "2023-06-26T06:19:23.982Z",
-  //   "source": "ADOBE",
-  //   "reported_dt": "2023-06-26T06:19:23.982Z",
-  //   "mitigation": "string",
-  //   "embargoed": true
-  // }
+export async function postFlaw(requestBody: ZodFlawType) {
   return osidbFetch({
     method: 'post',
     url: '/osidb/api/v1/flaws',
@@ -308,15 +277,15 @@ export async function postFlaw(requestBody: any) {
   });
 }
 
-export function getFlawOsimLink(flawUuid: any) {
+export function getFlawOsimLink(flawUuid: string) {
   const osimPath = router.resolve({ name: 'flaw-details', params: { id: flawUuid } }).path;
   const link = window.location.protocol + '//' + window.location.host + osimPath;
   return link;
 }
 
-export function getFlawBugzillaLink(flaw: any) {
-  let bzId = String(flaw.meta_attr?.bz_id);
-  if (bzId === '') {
+export function getFlawBugzillaLink(flaw: ZodFlawType) {
+  let bzId = flaw.meta_attr?.bz_id;
+  if (!bzId) {
     bzId = '0';
   }
   const link = osimRuntime.value.backends.bugzilla + '/show_bug.cgi?id=' + bzId;
