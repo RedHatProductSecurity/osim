@@ -19,5 +19,15 @@ location /proxy/mitre/ {
     # Trailing slash in proxy_pass strips the location directive prefix from the downstream URL
     proxy_pass ${OSIM_NGINX_PROXY_MITRE}/;
     proxy_http_version 1.1;
+
+    proxy_ssl_trusted_certificate /tmp/Proxy-CA.crt;
+    proxy_ssl_session_reuse on; # try off if connection issues
+    proxy_ssl_server_name on; # required
+EOF
+cat <<'EOF' >>/tmp/osim-nginx-proxy.conf
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header User-Agent OSIM;
 }
 EOF
