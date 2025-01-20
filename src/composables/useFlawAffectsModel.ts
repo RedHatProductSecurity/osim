@@ -23,7 +23,6 @@ const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel() {
   const { flaw } = useFlaw();
-  if (!flaw.value?.affects) console.log('🚨'.repeat(90), flaw.value?.affects.length, flaw.value.uuid)
   const affectsToDelete = computed(() => initialAffects.value.filter(
     initialAffect => !flaw.value.affects.find(matcherForAffect(initialAffect)),
   ));
