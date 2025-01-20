@@ -1,11 +1,13 @@
 import { createTestingPinia } from '@pinia/testing';
 
-import { blankFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 import { createSuccessHandler } from '@/composables/service-helpers';
 
 import { getFlaw, putFlaw } from '@/services/FlawService';
 import { server } from '@/__tests__/setup';
 import { handlers } from '@/mock-server/handlers';
+
+const { blankFlaw } = useFlaw();
 
 vi.mock('@/composables/service-helpers', () => ({
   createSuccessHandler: vi.fn().mockReturnValue(vi.fn()),

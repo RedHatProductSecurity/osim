@@ -8,7 +8,7 @@ import { flushPromises, VueWrapper } from '@vue/test-utils';
 import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test-suite-helpers';
 import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
-import { useFlaw, useRelatedFlaws } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
@@ -34,7 +34,7 @@ async function useMocks(flaw: ZodFlawType) {
   type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
   type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
 
-  const { useFlaw: _useFlaw, useRelatedFlaws: _useRelatedFlaws } =
+  const { useFlaw: _useFlaw } =
     await vi.importActual<ActualFlaw>('@/composables/useFlaw');
 
   const { useFetchFlaw: _useFetchFlaw } =
@@ -46,35 +46,32 @@ async function useMocks(flaw: ZodFlawType) {
   const { useAffectsEditingStore: _useAffectsEditingStore } =
     await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
 
-  const _flaw = _useFlaw();
-  _flaw.value = flaw;
-  const _relatedFlaws = _useRelatedFlaws();
-  _relatedFlaws.value = [flaw];
-
-  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditingStore, _useRelatedFlaws, _useFetchFlaw };
+  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
 }
 
-const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
+const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => {
   const {
     _useAffectsEditingStore,
     _useFetchFlaw,
     _useFlaw,
     _useFlawAffectsModel,
-    _useRelatedFlaws,
-  } = await useMocks(flaw);
-
+    flaw,
+  } = await useMocks(testFlaw);
   const [mockedFlaw] = withSetup(() => {
-    vi.mocked(useFlaw).mockReturnValue(_useFlaw());
-    vi.mocked(useRelatedFlaws).mockReturnValue(_useRelatedFlaws());
+    const mockedUseFlaw = _useFlaw();
+    mockedUseFlaw.flaw.value = flaw;
+    mockedUseFlaw.relatedFlaws.value = [flaw];
+
+    vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
     vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
     vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
-    return _useFlaw();
+    return mockedUseFlaw.flaw;
   });
 
   return mountWithConfig(Component, {
     props: {
-      embargoed: (mockedFlaw.value as ZodFlawType).embargoed,
+      embargoed: mockedFlaw.value.embargoed,
       relatedFlaws: [mockedFlaw.value],
       errors: [],
     },

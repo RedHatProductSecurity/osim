@@ -9,7 +9,7 @@ import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
 
-import { blankFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
@@ -26,6 +26,8 @@ import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 import { osimFullFlawTest } from './test-suite-helpers';
+
+const { blankFlaw } = useFlaw();
 
 vi.mock('@/services/TrackerService', () => {
   return {

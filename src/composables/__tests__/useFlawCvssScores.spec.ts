@@ -3,9 +3,11 @@ import { ref } from 'vue';
 import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
-import { blankFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 
 import { IssuerEnum } from '@/generated-client';
+
+const { blankFlaw } = useFlaw();
 
 describe('useFlawCvssScores', () => {
   osimFullFlawTest('should return an object', ({ flaw }) => {

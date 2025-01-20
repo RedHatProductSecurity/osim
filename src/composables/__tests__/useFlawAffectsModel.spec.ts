@@ -1,11 +1,11 @@
-import { ref, type Ref } from 'vue';
+import { ref } from 'vue';
 
 import { setActivePinia } from 'pinia';
 import { createTestingPinia } from '@pinia/testing';
 
 import { mockAffect, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
-import { blankFlaw, useFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import { IssuerEnum } from '@/generated-client';
@@ -14,6 +14,7 @@ import type { ZodFlawType } from '@/types';
 import { postAffects, deleteAffects } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
 
+// const { blankFlaw } = useFlaw();
 vi.mock('@/composables/useFlaw');
 
 vi.mock('@/stores/ToastStore', () => ({
@@ -31,19 +32,21 @@ vi.mock('@/services/AffectService', () => ({
   deleteAffectCvssScore: vi.fn(),
 }));
 
+// vi.mock('@/composables/useFlawAffectsModel', async importOriginal => ({
+//   ...await importOriginal(),
+//   refreshAffects: vi.fn(),
+// }));
 vi.mock('@/composables/useFlawAffectsModel', async importOriginal => ({
   ...await importOriginal(),
   refreshAffects: vi.fn(),
 }));
 
-const composable = await vi.importActual<typeof import('@/composables/useFlaw')>('@/composables/useFlaw');
-vi.mocked(blankFlaw).mockReturnValue(composable.blankFlaw());
-
 vi.mock('@/services/FlawService');
 
-function useMockedModel(flaw: ZodFlawType) {
-  vi.mocked(useFlaw).mockReturnValue(ref(flaw));
-  const flawRef = useFlaw() as Ref<ZodFlawType>;
+async function useMockedModel(flaw: ZodFlawType) {
+  const _useFlaw = await vi.importActual<typeof import('@/composables/useFlaw')>('@/composables/useFlaw');
+  vi.mocked(useFlaw).mockReturnValue({ ..._useFlaw.useFlaw(), flaw: ref(flaw) });
+  const { flaw: flawRef } = useFlaw();
   const model = useFlawAffectsModel();
 
   return { model, flawRef };
@@ -58,8 +61,8 @@ describe('useFlawAffectsModel', () => {
     vi.clearAllMocks();
   });
 
-  osimFullFlawTest('should return the expected values', ({ flaw }) => {
-    const { model } = useMockedModel(flaw);
+  osimFullFlawTest('should return the expected values', async ({ flaw }) => {
+    const { model } = await useMockedModel(flaw);
     expect(model).toBeDefined();
     expect(model).toBeInstanceOf(Object);
 
@@ -81,8 +84,8 @@ describe('useFlawAffectsModel', () => {
     });
   });
 
-  osimFullFlawTest('should add an affect', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should add an affect', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
 
     const { addAffect, wereAffectsEditedOrAdded } = useFlawAffectsModel();
     const initialAffectsCount = flawRef.value.affects.length;
@@ -103,8 +106,8 @@ describe('useFlawAffectsModel', () => {
     expect(flawRef.value.affects.length).toBe(initialAffectsCount + 1);
   });
 
-  osimFullFlawTest('should remove an affect', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should remove an affect', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
     const { affectsToDelete, removeAffect } = useFlawAffectsModel();
 
     removeAffect(flawRef.value.affects[0]);
@@ -112,8 +115,8 @@ describe('useFlawAffectsModel', () => {
     expect(affectsToDelete.value.length).toBe(1);
   });
 
-  osimFullFlawTest('should update an affect', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should update an affect', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
     const { modifiedAffects, wereAffectsEditedOrAdded } = useFlawAffectsModel();
     flawRef.value.affects[0].impact = 'CRITICAL';
 
@@ -121,8 +124,8 @@ describe('useFlawAffectsModel', () => {
     expect(wereAffectsEditedOrAdded.value).toBe(true);
   });
 
-  osimFullFlawTest('should update an affect CVSS', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should update an affect CVSS', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
     const { updateAffectCvss, wereAffectsEditedOrAdded } = useFlawAffectsModel();
 
     updateAffectCvss(flawRef.value.affects[0], 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', 7.8, -1);
@@ -130,8 +133,8 @@ describe('useFlawAffectsModel', () => {
     expect(wereAffectsEditedOrAdded.value).toBe(true);
   });
 
-  osimFullFlawTest('should delete an affect CVSS', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should delete an affect CVSS', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
     flawRef.value.affects[0].cvss_scores.push({
       issuer: IssuerEnum.Rh,
       cvss_version: CVSS_V3,
@@ -149,8 +152,8 @@ describe('useFlawAffectsModel', () => {
     expect(affectCvssToDelete.value[flawRef.value.affects[0].uuid!]).toBe('123');
   });
 
-  osimFullFlawTest('should delete an affect CVSS', ({ flaw }) => {
-    const { flawRef } = useMockedModel(flaw);
+  osimFullFlawTest('should delete an affect CVSS', async ({ flaw }) => {
+    const { flawRef } = await useMockedModel(flaw);
     flawRef.value.affects[0].cvss_scores.push({
       issuer: IssuerEnum.Rh,
       cvss_version: CVSS_V3,
@@ -168,8 +171,8 @@ describe('useFlawAffectsModel', () => {
     expect(affectCvssToDelete.value[flawRef.value.affects[0].uuid!]).toBe('123');
   });
 
-  osimFullFlawTest('should recover an affect', ({ flaw }) => {
-    const { flawRef, model: { affectsToDelete, recoverAffect } } = useMockedModel(flaw);
+  osimFullFlawTest('should recover an affect', async ({ flaw }) => {
+    const { flawRef, model: { affectsToDelete, recoverAffect } } = await useMockedModel(flaw);
     const affect = flawRef.value.affects[0];
 
     affectsToDelete.value.push(affect);
@@ -179,8 +182,8 @@ describe('useFlawAffectsModel', () => {
     expect(affectsToDelete.value.length).toBe(0);
   });
 
-  osimFullFlawTest('should remove affects', ({ flaw }) => {
-    const { flawRef, model: { removeAffects } } = useMockedModel(flaw);
+  osimFullFlawTest('should remove affects', async ({ flaw }) => {
+    const { flawRef, model: { removeAffects } } = await useMockedModel(flaw);
     const affectsToDelete = flawRef.value.affects.map(({ uuid }) => uuid);
     flawRef.value.affects.splice(0, flawRef.value.affects.length);
     removeAffects();
@@ -191,7 +194,7 @@ describe('useFlawAffectsModel', () => {
 
   osimFullFlawTest('should save new affects', async ({ flaw }) => {
     vi.mocked(getFlaw).mockResolvedValue(flaw);
-    const { flawRef, model } = useMockedModel(flaw);
+    const { flawRef, model } = await useMockedModel(flaw);
     const fakeAffect = mockAffect({ ps_component: 'component1', ps_module: 'module1' });
     flawRef.value.affects.push(fakeAffect);
 
