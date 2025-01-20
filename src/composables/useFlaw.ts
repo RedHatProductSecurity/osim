@@ -2,23 +2,19 @@ import { ref } from 'vue';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
 
-const flaw = ref<null | ZodFlawType>(blankFlaw());
+const flaw = ref<ZodFlawType>(blankFlaw());
 const relatedFlaws = ref<ZodFlawType[]>([]);
 
-export function initializeFlaw() {
-  flaw.value = null;
+function resetFlaw() {
+  flaw.value = blankFlaw();
   relatedFlaws.value = [];
 }
 
 export function useFlaw() {
-  return flaw;
+  return { flaw, relatedFlaws, blankFlaw, resetFlaw };
 }
 
-export function useRelatedFlaws() {
-  return relatedFlaws;
-}
-
-export function blankFlaw(): ZodFlawType {
+function blankFlaw(): ZodFlawType {
   return {
     affects: [],
     classification: {

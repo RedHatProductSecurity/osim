@@ -8,10 +8,9 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import type { ZodAffectType } from '@/types/zodAffect';
 import { matcherForAffect } from '@/utils/helpers';
-import type { ZodFlawType } from '@/types';
 
 export const useAffectsEditingStore = defineStore('EditableAffects', () => {
-  const flaw = useFlaw() as Ref<ZodFlawType>;
+  const { flaw } = useFlaw();
 
   const { initialAffects } = useFlawAffectsModel();
   const affectSelections = ref<ZodAffectType[]>([]);
@@ -133,7 +132,7 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
 });
 
 function useAffectSelections(selectedAffects: Ref<ZodAffectType[]>, isBeingEdited: (affect: ZodAffectType) => boolean) {
-  const flaw = useFlaw() as Ref<ZodFlawType>;
+  const { flaw } = useFlaw();
   const affects = computed(() => flaw.value.affects);
 
   const { isAffectBeingRemoved } = useFlawAffectsModel();

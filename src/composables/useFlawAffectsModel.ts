@@ -1,6 +1,8 @@
-import { ref, computed, type Ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { equals, pickBy } from 'ramda';
+
+import { useFlaw } from '@/composables/useFlaw';
 
 import { affectRhCvss3, deepCopyFromRaw, matcherForAffect } from '@/utils/helpers';
 import {
@@ -13,16 +15,15 @@ import {
 } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
-import type { ZodAffectType, ZodAffectCVSSType, ZodFlawType } from '@/types';
+import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
-
-import { useFlaw } from './useFlaw';
 
 const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel() {
-  const flaw = useFlaw() as Ref<ZodFlawType>;
+  const { flaw } = useFlaw();
+  if (!flaw.value?.affects) console.log('🚨'.repeat(90), flaw.value?.affects.length, flaw.value.uuid)
   const affectsToDelete = computed(() => initialAffects.value.filter(
     initialAffect => !flaw.value.affects.find(matcherForAffect(initialAffect)),
   ));

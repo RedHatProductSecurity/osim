@@ -4,16 +4,19 @@ import { computed, watch, onUnmounted } from 'vue';
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
-import { initializeFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 
 const props = defineProps<{
   id: string;
 }>();
+
+const { resetFlaw } = useFlaw();
+
 const { didFetchFail, fetchFlaw, flaw, relatedFlaws } = useFetchFlaw();
 
 watch(() => props.id, fetchFlaw, { immediate: true });
 
-onUnmounted(initializeFlaw);
+onUnmounted(resetFlaw);
 
 const isLoading = computed(() => !flaw.value && !didFetchFail);
 </script>
