@@ -71,7 +71,7 @@ const {
   sortAffects,
 } = useFilterSortAffects();
 
-const displayMode = ref(displayModes.ALL);
+const displayMode = ref(displayModes.DEFAULT);
 
 const allAffects = computed((): ZodAffectType[] => affectsToDelete.value.concat(flaw.value.affects));
 
@@ -112,6 +112,9 @@ const {
   totalPages,
 } = usePaginationWithSettings(sortedAffects, { setting: 'affectsPerPage' });
 
+const tableAffects = computed(() =>
+  displayMode.value === displayModes.ALL ? sortedAffects.value : paginatedAffects.value,
+);
 const modulesExpanded = ref(true);
 const specificAffectsToTrack = ref<ZodAffectType[]>([]);
 
@@ -120,7 +123,7 @@ const hasAffects = computed(() => allAffects.value.length > 0);
 
 watch(flaw.value.affects, (newAffects) => {
   if (newAffects.length <= 0) {
-    setDisplayMode(displayModes.ALL);
+    setDisplayMode(displayModes.DEFAULT);
   }
 });
 
@@ -128,7 +131,7 @@ onUnmounted(resetSelections);
 
 function setDisplayMode(mode: displayModes) {
   if (displayMode.value === mode) {
-    displayMode.value = displayModes.ALL;
+    displayMode.value = displayModes.DEFAULT;
   } else {
     displayMode.value = mode;
   }
@@ -300,7 +303,7 @@ const displayedTrackers = computed(() => {
       </LabelCollapsible>
     </div>
     <div class="affects-management">
-      <div v-if="hasAffects" class="pagination-controls gap-1 my-2">
+      <div v-if="hasAffects && displayMode !== displayModes.ALL" class="pagination-controls gap-1 my-2">
         <button
           type="button"
           tabindex="-1"
@@ -334,7 +337,7 @@ const displayedTrackers = computed(() => {
       <div class="affects-toolbar">
         <div class="badges my-auto gap-1" :class="{ 'me-3': hasAffects }">
           <div
-            v-if="paginatedAffects.length > 0"
+            v-if="paginatedAffects.length > 0 && displayMode !== displayModes.ALL"
             class="per-page-btn btn btn-sm btn-secondary"
           >
             <i
@@ -363,7 +366,7 @@ const displayedTrackers = computed(() => {
             :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
             @click.stop="setDisplayMode(displayModes.ALL)"
           >
-            <span>All affects {{ allAffects.length }}</span>
+            <span>Show all affects ({{ allAffects.length }})</span>
           </div>
           <div
             v-if="selectedAffects.length > 0"
@@ -496,7 +499,7 @@ const displayedTrackers = computed(() => {
         </div>
       </div>
       <FlawAffectsTable
-        v-model:affects="paginatedAffects"
+        v-model:affects="tableAffects"
         :errors="errors"
         :selectedModules="selectedModules"
         :totalPages="totalPages"
