@@ -14,7 +14,6 @@ import type { ZodFlawType } from '@/types';
 import { postAffects, deleteAffects } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
 
-// const { blankFlaw } = useFlaw();
 vi.mock('@/composables/useFlaw');
 
 vi.mock('@/stores/ToastStore', () => ({
