@@ -131,9 +131,7 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
 
     const reduceItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-dash-square');
-    for (let i = 0; i < 5; i++) {
-      await reduceItemsBtn.trigger('click');
-    }
+    await reduceItemsBtn.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
@@ -142,9 +140,7 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
 
     const increaseItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-plus-square');
-    for (let i = 0; i < 5; i++) {
-      await increaseItemsBtn.trigger('click');
-    }
+    await increaseItemsBtn.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;

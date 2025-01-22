@@ -65,9 +65,7 @@ describe('flawTrackers', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
 
     const reduceItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-dash-square');
-    for (let i = 0; i < 5; i++) {
-      await reduceItemsBtn.trigger('click');
-    }
+    await reduceItemsBtn.trigger('click');
 
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
@@ -76,9 +74,7 @@ describe('flawTrackers', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
 
     const increaseItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-plus-square');
-    for (let i = 0; i < 5; i++) {
-      await increaseItemsBtn.trigger('click');
-    }
+    await increaseItemsBtn.trigger('click');
 
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
