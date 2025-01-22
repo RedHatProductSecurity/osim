@@ -150,7 +150,7 @@ export function useRelatedFlawTrackers(
   watch(relatedFlaws, () => {
     selectedRelatedFlaws.value.forEach((selectedFlaw, index) => {
       const relatedIndex = relatedFlaws.value.findIndex(({ uuid }) => uuid === selectedFlaw.uuid);
-      if (index !== -1) {
+      if (relatedIndex !== -1) {
         selectedRelatedFlaws.value[index].affects = relatedFlaws.value[relatedIndex].affects;
       }
     });
