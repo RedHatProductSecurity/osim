@@ -19,6 +19,7 @@ const queryRef = ref('');
 
 const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
+const selectedIndex = ref(-1);
 
 const loadCweData = () => {
   const data = localStorage.getItem('CWE:API-DATA');
@@ -55,8 +56,27 @@ const handleSuggestionClick = (fn: (args?: any) => void, suggestion: string) => 
   nextTick(fn);
 };
 
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (suggestions.value.length === 0) return;
+
+  switch (event.key) {
+    case 'ArrowDown':
+      selectedIndex.value = (selectedIndex.value + 1) % suggestions.value.length;
+      break;
+    case 'ArrowUp':
+      selectedIndex.value = (selectedIndex.value - 1 + suggestions.value.length) % suggestions.value.length;
+      break;
+    case 'Enter':
+      if (selectedIndex.value >= 0 && selectedIndex.value < suggestions.value.length) {
+        handleSuggestionClick(() => {}, `CWE-${suggestions.value[selectedIndex.value].id}`);
+      }
+      break;
+  }
+};
+
 onMounted(() => {
   loadCweData();
+  window.addEventListener('keydown', handleKeyDown);
 });
 
 const getUsageClass = (usage: string) => {
@@ -98,6 +118,7 @@ const getUsageClass = (usage: string) => {
           :class="{'selected': index === selectedIndex }"
           style="display: flex; justify-content: space-between;"
           @click.prevent.stop="handleSuggestionClick(abort, `CWE-${cwe.id}`)"
+          @mouseenter="selectedIndex = index"
         >
           <span style="flex: 1;">{{ `CWE-${cwe.id} ` }}</span>
           <span style="flex: 3;">{{ `${cwe.name}. ` }}</span>
