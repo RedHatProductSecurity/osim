@@ -1,4 +1,5 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+// import { useAbortControllerFor } from '@/composables/useAbortController';
 
 import type { ZodAffectType, ZodFlawCVSSType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
@@ -65,9 +66,23 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
   const { ps_component: firstAffectPsComponent, ps_module: firstAffectPsModule } = affects[0];
 
   try {
+<<<<<<< Updated upstream
+=======
+    const include_fields = [
+      'cve_id',
+      'uuid',
+      'affects',
+      'created_dt',
+      'updated_dt',
+    ].join(',');
+
+    // const { signal } = useAbortControllerFor('related-flaws:fetch');
+
+>>>>>>> Stashed changes
     const response = await osidbFetch({
       method: 'get',
       url: '/osidb/api/v1/flaws',
+      // signal,
       params: {
         affects__ps_module: firstAffectPsModule,
         affects__ps_component: firstAffectPsComponent,

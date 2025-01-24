@@ -19,6 +19,7 @@ export type OsidbGetFetchOptions = {
   data?: never;
   method: 'GET' | 'get';
   params?: Record<string, any>;
+  signal?: AbortSignal;
   url: string;
 };
 
@@ -26,6 +27,7 @@ export type OsidbPutPostFetchOptions = {
   data?: Record<string, any>;
   method: 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
+  signal?: AbortSignal;
   url: string;
 };
 
@@ -33,6 +35,7 @@ export type OsidbDeleteFetchOptions = {
   data?: Record<string, any> | Record<string, any>[] | string[];
   method: 'DELETE' | 'delete';
   params?: never;
+  signal?: AbortSignal;
   url: string;
 };
 
@@ -62,6 +65,11 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
       headers: await osimRequestHeaders(),
       mode: 'cors',
       credentials: 'include',
+<<<<<<< Updated upstream
+=======
+      signal: config?.signal,
+      cache: config?.cache,
+>>>>>>> Stashed changes
       body,
     });
   } catch (e) {
