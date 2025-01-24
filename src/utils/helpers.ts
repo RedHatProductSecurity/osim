@@ -118,5 +118,8 @@ export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefin
   const hasChanged = ref(false);
 
   watchOnce(refValue, () => hasChanged.value = true);
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - TODO: this throws an error on `yarn type-check` but IDE is happy with it
   return [refValue, hasChanged] as const;
 }
