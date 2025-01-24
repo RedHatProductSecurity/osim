@@ -17,6 +17,7 @@ import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors/FlawContributors.vue';
 import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
+import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
@@ -257,6 +258,8 @@ const createdDate = computed(() => {
               :error="errors.source"
               :options-hidden="hiddenSources"
             />
+            <FlawLabelsTable v-model="flaw.labels" />
+
           </div>
 
           <div class="col-6">
