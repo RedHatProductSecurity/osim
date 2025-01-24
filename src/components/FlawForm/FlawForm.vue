@@ -258,8 +258,7 @@ const createdDate = computed(() => {
               :error="errors.source"
               :options-hidden="hiddenSources"
             />
-            <FlawLabelsTable v-model="flaw.labels" />
-
+            <FlawLabelsTable v-if="mode==='edit'" v-model="flaw.labels!" />
           </div>
 
           <div class="col-6">
