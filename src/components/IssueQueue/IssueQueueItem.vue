@@ -22,13 +22,13 @@ const [showLabels, toggleShowLabels] = useToggle();
 const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
   if (
     (a.state === 'REQ' && b.state !== 'REQ')
-    || (a.collaborator && !b.collaborator)
+    || (a.contributor && !b.contributor)
   ) {
     return -1;
   }
   if (
     (a.state !== 'REQ' && b.state === 'REQ')
-    || (!a.collaborator && b.collaborator)
+    || (!a.contributor && b.contributor)
   ) {
     return 1;
   }
