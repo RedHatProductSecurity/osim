@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`flawLabelsContributor > should render 1`] = `
+"<div data-v-fd829dac="" class="input-group input-group-sm">
+  <!--v-if--><input data-v-fd829dac="" type="text" class="form-control"><button data-v-fd829dac="" type="button" class="btn btn-secondary osim-self-assign" title="Self assign"><span data-v-fd829dac="" class="self-assign"></span></button>
+</div>"
+`;

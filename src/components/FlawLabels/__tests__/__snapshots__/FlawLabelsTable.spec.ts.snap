@@ -1,0 +1,193 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`flawLabelsTable > should handle add label 1`] = `
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+  <div data-v-4715e8e2="" class="ps-3 border-start">
+    <div data-v-4715e8e2="" class="visually-hidden">
+      <table data-v-5d530569="" class="table table-striped table-hover">
+        <thead data-v-5d530569="" class="table-dark">
+          <tr data-v-5d530569="">
+            <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Label</th>
+            <th data-v-5d530569="">Contributor</th>
+            <th data-v-5d530569="" class="table-actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-5d530569="">
+          <tr data-v-5d530569="" class="">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <tr data-v-5d530569="" class="new">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <!--v-if-->
+          <!--v-if-->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`flawLabelsTable > should handle delete label 1`] = `
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+  <div data-v-4715e8e2="" class="ps-3 border-start">
+    <div data-v-4715e8e2="" class="visually-hidden">
+      <table data-v-5d530569="" class="table table-striped table-hover">
+        <thead data-v-5d530569="" class="table-dark">
+          <tr data-v-5d530569="">
+            <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Label</th>
+            <th data-v-5d530569="">Contributor</th>
+            <th data-v-5d530569="" class="table-actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-5d530569="">
+          <tr data-v-5d530569="" class="deleted">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions">
+                <!--v-if--><button data-v-5d530569="" type="button" title="Undo delete" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-arrow-counterclockwise"></i></button>
+                <!--v-if-->
+              </div>
+            </td>
+          </tr>
+          <!--v-if-->
+          <tr data-v-5d530569="" class="table-new-row">
+            <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`flawLabelsTable > should handle edit label 1`] = `
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+  <div data-v-4715e8e2="" class="ps-3 border-start">
+    <div data-v-4715e8e2="" class="visually-hidden">
+      <table data-v-5d530569="" class="table table-striped table-hover">
+        <thead data-v-5d530569="" class="table-dark">
+          <tr data-v-5d530569="">
+            <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Label</th>
+            <th data-v-5d530569="">Contributor</th>
+            <th data-v-5d530569="" class="table-actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-5d530569="">
+          <tr data-v-5d530569="" class="">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <tr data-v-5d530569="" class="updated">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <!--v-if-->
+          <!--v-if-->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`flawLabelsTable > should handle undo delete label 1`] = `
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+  <div data-v-4715e8e2="" class="ps-3 border-start">
+    <div data-v-4715e8e2="" class="visually-hidden">
+      <table data-v-5d530569="" class="table table-striped table-hover">
+        <thead data-v-5d530569="" class="table-dark">
+          <tr data-v-5d530569="">
+            <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Label</th>
+            <th data-v-5d530569="">Contributor</th>
+            <th data-v-5d530569="" class="table-actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-5d530569="">
+          <tr data-v-5d530569="" class="">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <!--v-if-->
+          <tr data-v-5d530569="" class="table-new-row">
+            <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`flawLabelsTable > should render flaw labels table 1`] = `
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+  <div data-v-4715e8e2="" class="ps-3 border-start">
+    <div data-v-4715e8e2="" class="visually-hidden">
+      <table data-v-5d530569="" class="table table-striped table-hover">
+        <thead data-v-5d530569="" class="table-dark">
+          <tr data-v-5d530569="">
+            <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Label</th>
+            <th data-v-5d530569="">Contributor</th>
+            <th data-v-5d530569="" class="table-actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-5d530569="">
+          <tr data-v-5d530569="" class="">
+            <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="">skynet</td>
+            <td data-v-5d530569="">
+              <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
+                <!--v-if--><button data-v-5d530569="" type="button" title="Delete label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          <!--v-if-->
+          <tr data-v-5d530569="" class="table-new-row">
+            <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"
+`;
