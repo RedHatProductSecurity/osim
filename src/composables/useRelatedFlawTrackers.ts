@@ -263,7 +263,7 @@ export function useRelatedFlawTrackers(
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
       for (const flaw of selectedRelatedFlaws.value) {
-        const fetchedFlaw = await getFlaw(flaw.uuid);
+        const fetchedFlaw = await getFlaw(flaw.uuid, true);
         const index = relatedFlaws.value.findIndex(({ uuid }) => uuid === flaw.uuid);
         if (index !== -1) {
           relatedFlaws.value[index].affects = fetchedFlaw.affects;

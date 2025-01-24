@@ -73,7 +73,6 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
       'updated_dt',
     ].join(',');
 
-
     const response = await osidbFetch({
       method: 'get',
       url: '/osidb/api/v1/flaws',
@@ -99,10 +98,11 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
   return relatedFlaws;
 }
 
-export async function getFlaw(uuidOrCve: string): Promise<ZodFlawType> {
+export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
     url: `/osidb/api/v1/flaws/${uuidOrCve}`,
+    cache: breakCache ? 'no-cache' : 'default',
     params: {
       include_meta_attr: 'bz_id',
       include_history: 'true',
