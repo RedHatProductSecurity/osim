@@ -292,7 +292,16 @@ function hideLowSeverityTrackersWarning() {
                       </span>
                     </label>
                   </div>
-
+                  <div v-if="isLoadingTrackers" class="ms-2 mt-2">
+                    <span
+                      class="spinner-border spinner-border-sm me-1 text-info"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <!-- TODO: Remove when OSIDB-3961 is implemented -->
+                    <span class="ms-1">Refreshing trackers&hellip; (refresh may be required in some cases)</span>
+                  </div>
                   <button
                     v-if="trackersToFile.length"
                     type="button"

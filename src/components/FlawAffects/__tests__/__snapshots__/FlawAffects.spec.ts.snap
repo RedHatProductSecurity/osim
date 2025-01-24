@@ -792,7 +792,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           <div data-v-296c460d="" class="modal-content">
             <!--v-if-->
             <div data-v-296c460d="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
-              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
+              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3" relatedflaws="[object Object]">
                 <h4 data-v-f682b1b0="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-f682b1b0="" class="mb-2"><i data-v-f682b1b0="" class="bi bi-binoculars me-2"></i><span data-v-f682b1b0="" class="me-2">Managing trackers for 3 affected offering(s):</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-1/openshift-1-1</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-2/openshift-2-1</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-3/openshift-3-1</span></div>
                 <div data-v-f682b1b0="" class="osim-tracker-manager-warning-modal">
@@ -835,6 +835,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
                               <!--v-if-->
+                              <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><!-- TODO: Remove when OSIDB-3961 is implemented --><span data-v-f682b1b0="" class="ms-1">Refreshing trackers… (refresh may be required in some cases)</span></div>
                               <!--v-if-->
                               <!--v-if--><button data-v-f682b1b0="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-f682b1b0="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>
@@ -1203,7 +1204,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           <div data-v-296c460d="" class="modal-content">
             <!--v-if-->
             <div data-v-296c460d="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
-              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
+              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3" relatedflaws="[object Object]">
                 <h4 data-v-f682b1b0="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-f682b1b0="" class="mb-2"><i data-v-f682b1b0="" class="bi bi-binoculars me-2"></i><span data-v-f682b1b0="" class="me-2">Managing trackers for 1 affected offering(s):</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-1/openshift-1-1</span></div>
                 <div data-v-f682b1b0="" class="osim-tracker-manager-warning-modal">
@@ -1240,6 +1241,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
                               <!--v-if-->
+                              <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><!-- TODO: Remove when OSIDB-3961 is implemented --><span data-v-f682b1b0="" class="ms-1">Refreshing trackers… (refresh may be required in some cases)</span></div>
                               <!--v-if-->
                               <!--v-if--><button data-v-f682b1b0="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-f682b1b0="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>

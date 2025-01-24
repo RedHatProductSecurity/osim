@@ -258,6 +258,8 @@ export function useRelatedFlawTrackers(
   async function refreshRelatedFlaws() {
     isLoadingTrackers.value = true;
     // After filing new trackers, there is a delay before the new trackers are available on the flaws
+    // This is a temporary workaround that may not work in all situations
+    // TODO: Implement a sustainable solution (OSIDB-3961)
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
       for (const flaw of selectedRelatedFlaws.value) {
