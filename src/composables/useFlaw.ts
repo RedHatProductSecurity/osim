@@ -35,6 +35,7 @@ export function blankFlaw(): ZodFlawType {
     mitigation: '',
     task_key: '',
     comments: [],
+    labels: [],
     references: [],
     acknowledgments: [],
     alerts: [],
