@@ -199,9 +199,9 @@ describe('issueQueue', () => {
       issues: [{
         ...mockData[0],
         labels: [
-          { label: 'test', state: 'NEW', collaborator: '' },
-          { label: 'test-2', state: 'NEW', collaborator: '' },
-          { label: 'test-3', state: 'REQ', collaborator: '' },
+          { label: 'test', state: 'NEW', contributor: '' },
+          { label: 'test-2', state: 'NEW', contributor: '' },
+          { label: 'test-3', state: 'REQ', contributor: '' },
         ],
       } as ZodFlawType],
     });
@@ -217,7 +217,7 @@ describe('issueQueue', () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
-        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', collaborator: '' })),
+        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', contributor: '' })),
       } as ZodFlawType],
     });
 
@@ -231,7 +231,7 @@ describe('issueQueue', () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
-        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', collaborator: '' })),
+        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', contributor: '' })),
       } as ZodFlawType],
     });
 
