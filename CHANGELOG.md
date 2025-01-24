@@ -8,7 +8,7 @@
 * Support custom number of items per page in affects and trackers tables (`OSIDB-3507`)
 * Support showing all trackers/affects in single page (`OSIDB-3506`)
 * Add suggestions on CWE Field (`OSIDB-3743`)
-
+* Show Flaw contributors table on edit view (`OSIDB-3806`)
 
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
