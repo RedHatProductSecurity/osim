@@ -104,6 +104,7 @@ const {
   changePage,
   currentPage,
   decreaseItemsPerPage,
+  handlePerPageInput,
   increaseItemsPerPage,
   maxItemsPerPage,
   minItemsPerPage,
@@ -348,7 +349,13 @@ const displayedTrackers = computed(() => {
               title="Reduce affects per page"
               @click="decreaseItemsPerPage()"
             />
-            <span class="mx-2 my-auto">{{ `Per page: ${settings.affectsPerPage}` }}</span>
+            <span class="mx-2 my-auto">Per page:</span>
+            <input
+              type="text"
+              class="form-control mx-2"
+              :value="settings.affectsPerPage"
+              @input="handlePerPageInput($event)"
+            />
             <i
               :style="settings.affectsPerPage < maxItemsPerPage
                 ? 'pointer-events: auto;'
@@ -624,7 +631,10 @@ const displayedTrackers = computed(() => {
         .per-page-btn {
           display: flex;
           padding-block: 0;
-          pointer-events: none;
+
+          input {
+            width: 3rem;
+          }
         }
 
         > div {
