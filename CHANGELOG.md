@@ -58,6 +58,7 @@
 
 ### Fixed
 * Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
+* Refresh trackers after filing new trackers (`OSIDB-3483`)
 
 ### Changed
 * Allow empty impact on flaw (`OSIDB-3596`)

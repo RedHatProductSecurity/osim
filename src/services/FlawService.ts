@@ -65,13 +65,23 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
   const { ps_component: firstAffectPsComponent, ps_module: firstAffectPsModule } = affects[0];
 
   try {
+    const include_fields = [
+      'cve_id',
+      'uuid',
+      'affects',
+      'created_dt',
+      'updated_dt',
+    ].join(',');
+
     const response = await osidbFetch({
       method: 'get',
       url: '/osidb/api/v1/flaws',
       params: {
+        include_fields,
         affects__ps_module: firstAffectPsModule,
         affects__ps_component: firstAffectPsComponent,
         order: ['-created_dt'],
+        limit: 10,
       },
     });
     relatedFlaws.push(...response.data.results);
@@ -88,10 +98,11 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
   return relatedFlaws;
 }
 
-export async function getFlaw(uuidOrCve: string): Promise<ZodFlawType> {
+export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
     url: `/osidb/api/v1/flaws/${uuidOrCve}`,
+    cache: breakCache ? 'no-cache' : 'default',
     params: {
       include_meta_attr: 'bz_id',
       include_history: 'true',

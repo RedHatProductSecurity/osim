@@ -5,7 +5,7 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { mockAffect, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
-import { blankFlaw, useFlaw } from '@/composables/useFlaw';
+import { useFlaw } from '@/composables/useFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import { IssuerEnum } from '@/generated-client';
@@ -36,14 +36,11 @@ vi.mock('@/composables/useFlawAffectsModel', async importOriginal => ({
   refreshAffects: vi.fn(),
 }));
 
-const composable = await vi.importActual<typeof import('@/composables/useFlaw')>('@/composables/useFlaw');
-vi.mocked(blankFlaw).mockReturnValue(composable.blankFlaw());
-
 vi.mock('@/services/FlawService');
 
 function useMockedModel(flaw: ZodFlawType) {
-  vi.mocked(useFlaw).mockReturnValue(ref(flaw));
-  const flawRef = useFlaw();
+  vi.mocked(useFlaw, { partial: true }).mockReturnValue({ flaw: ref(flaw) });
+  const { flaw: flawRef } = useFlaw();
   const model = useFlawAffectsModel();
 
   return { model, flawRef };

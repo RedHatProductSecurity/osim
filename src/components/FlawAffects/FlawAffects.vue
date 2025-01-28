@@ -30,7 +30,7 @@ const props = defineProps<{
   relatedFlaws: ZodFlawType[];
 }>();
 
-const flaw = useFlaw();
+const { flaw } = useFlaw();
 
 const affectsEditingStore = useAffectsEditingStore();
 const {
@@ -534,7 +534,6 @@ const displayedTrackers = computed(() => {
             :relatedFlaws="relatedFlaws"
             :flaw="flaw"
             :specificAffectsToTrack="specificAffectsToTrack"
-            @affects-trackers:refresh="refreshAffects"
           />
         </template>
       </Modal>

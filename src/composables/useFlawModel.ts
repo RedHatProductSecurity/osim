@@ -32,7 +32,7 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 
 export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
-  const flaw = useFlaw();
+  const { flaw } = useFlaw();
   flaw.value = forFlaw;
 
   const isSaving = ref(false);
