@@ -5,6 +5,8 @@
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
 * Support PURLs in affected components (`OSIDB-3412`)
 * Increase step value for affects and trackers per page (`OSIDB-3508`)
+* Support showing all trackers/affects in single page (`OSIDB-3506`)
+
 
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
@@ -57,6 +59,7 @@
 
 ### Fixed
 * Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
+* Refresh trackers after filing new trackers (`OSIDB-3483`)
 
 ### Changed
 * Allow empty impact on flaw (`OSIDB-3596`)

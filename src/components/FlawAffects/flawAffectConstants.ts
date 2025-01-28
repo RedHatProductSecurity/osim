@@ -3,6 +3,7 @@ import { type ZodAffectType } from '@/types';
 export enum displayModes {
   ALL = 'All',
   CREATED = 'Created',
+  DEFAULT = 'Default',
   DELETED = 'Deleted',
   EDITING = 'Editing',
   MODIFIED = 'Modified',

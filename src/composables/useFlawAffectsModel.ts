@@ -2,6 +2,8 @@ import { ref, computed } from 'vue';
 
 import { equals, pickBy } from 'ramda';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import { affectRhCvss3, deepCopyFromRaw, matcherForAffect } from '@/utils/helpers';
 import {
   postAffects,
@@ -17,12 +19,10 @@ import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 
-import { useFlaw } from './useFlaw';
-
 const initialAffects = ref<ZodAffectType[]>([]);
 
 export function useFlawAffectsModel() {
-  const flaw = useFlaw();
+  const { flaw } = useFlaw();
   const affectsToDelete = computed(() => initialAffects.value.filter(
     initialAffect => !flaw.value.affects.find(matcherForAffect(initialAffect)),
   ));
@@ -286,7 +286,8 @@ export function resetInitialAffects() {
 
 function areAffectsEqual(affect: ZodAffectType, otherAffect?: ZodAffectType, shouldExcludeCvss = false) {
   if (!otherAffect) return false;
-  const fieldsToExclude = shouldExcludeCvss ? ['trackers', 'cvss_scores'] : ['trackers'];
+  const fieldsToExclude = ['trackers', 'history'];
+  if (shouldExcludeCvss) fieldsToExclude.push('cvss_scores');
   const excludeFields = pickBy((_, key) => !fieldsToExclude.includes(key));
   return equals(excludeFields(affect), excludeFields(otherAffect));
 }

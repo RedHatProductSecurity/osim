@@ -27,7 +27,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     <div data-v-2d3c4208="" class="affects-toolbar">
       <div data-v-2d3c4208="" class="badges my-auto gap-1 me-3">
         <div data-v-2d3c4208="" class="per-page-btn btn btn-sm btn-secondary"><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce affects per page"></i><span data-v-2d3c4208="" class="mx-2 my-auto">Per page: 10</span><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase affects per page"></i></div>
-        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-secondary text-white" style="cursor: auto;" title="Displaying all affects"><span data-v-2d3c4208="">All affects 6</span></div>
+        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-light-gray text-black" style="cursor: pointer;" title="Display all affects"><span data-v-2d3c4208="">Show all affects (6)</span></div>
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->
@@ -234,8 +234,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
           <div data-v-89a61d08="" class="tracker-badges">
             <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-            <div data-v-89a61d08="" class="badge" title="All trackers in this flaw"><span data-v-89a61d08="">All trackers 6</span></div>
-            <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+            <div data-v-89a61d08="" class="badge bg-light-cyan" style="cursor: pointer;"><span data-v-89a61d08="">Show All Trackers (6)</span></div>
           </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
@@ -422,7 +421,6 @@ exports[`flawAffects > Correctly renders the component when there are no affects
           <div data-v-89a61d08="" class="tracker-badges">
             <!--v-if-->
             <!--v-if-->
-            <!--v-if-->
           </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
@@ -487,7 +485,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     <div data-v-2d3c4208="" class="affects-toolbar">
       <div data-v-2d3c4208="" class="badges my-auto gap-1 me-3">
         <div data-v-2d3c4208="" class="per-page-btn btn btn-sm btn-secondary"><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce affects per page"></i><span data-v-2d3c4208="" class="mx-2 my-auto">Per page: 10</span><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase affects per page"></i></div>
-        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-secondary text-white" style="cursor: auto;" title="Displaying all affects"><span data-v-2d3c4208="">All affects 6</span></div>
+        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-light-gray text-black" style="cursor: pointer;" title="Display all affects"><span data-v-2d3c4208="">Show all affects (6)</span></div>
         <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-light-gray text-black" title="Display selected affects"><i data-v-2d3c4208="" class="bi bi-check-square me-1 h-fit"></i><span data-v-2d3c4208="">Selected 3</span></div>
         <!--v-if-->
         <!--v-if-->
@@ -693,8 +691,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
           <div data-v-89a61d08="" class="tracker-badges">
             <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-            <div data-v-89a61d08="" class="badge" title="All trackers in this flaw"><span data-v-89a61d08="">All trackers 6</span></div>
-            <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+            <div data-v-89a61d08="" class="badge bg-light-cyan" style="cursor: pointer;"><span data-v-89a61d08="">Show All Trackers (6)</span></div>
           </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
@@ -792,7 +789,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           <div data-v-296c460d="" class="modal-content">
             <!--v-if-->
             <div data-v-296c460d="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
-              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
+              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3" relatedflaws="[object Object]">
                 <h4 data-v-f682b1b0="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-f682b1b0="" class="mb-2"><i data-v-f682b1b0="" class="bi bi-binoculars me-2"></i><span data-v-f682b1b0="" class="me-2">Managing trackers for 3 affected offering(s):</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-1/openshift-1-1</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-2/openshift-2-1</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-3/openshift-3-1</span></div>
                 <div data-v-f682b1b0="" class="osim-tracker-manager-warning-modal">
@@ -835,6 +832,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
                               <!--v-if-->
+                              <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><!-- TODO: Remove when OSIDB-3961 is implemented --><span data-v-f682b1b0="" class="ms-1">Refreshing trackers… (refresh may be required in some cases)</span></div>
                               <!--v-if-->
                               <!--v-if--><button data-v-f682b1b0="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-f682b1b0="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>
@@ -897,7 +895,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     <div data-v-2d3c4208="" class="affects-toolbar">
       <div data-v-2d3c4208="" class="badges my-auto gap-1 me-3">
         <div data-v-2d3c4208="" class="per-page-btn btn btn-sm btn-secondary"><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce affects per page"></i><span data-v-2d3c4208="" class="mx-2 my-auto">Per page: 10</span><i data-v-2d3c4208="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase affects per page"></i></div>
-        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-secondary text-white" style="cursor: auto;" title="Displaying all affects"><span data-v-2d3c4208="">All affects 6</span></div>
+        <div data-v-2d3c4208="" class="badge-btn btn btn-sm border-secondary bg-light-gray text-black" style="cursor: pointer;" title="Display all affects"><span data-v-2d3c4208="">Show all affects (6)</span></div>
         <!--v-if-->
         <!--v-if-->
         <!--v-if-->
@@ -1104,8 +1102,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
           <div data-v-89a61d08="" class="tracker-badges">
             <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
-            <div data-v-89a61d08="" class="badge" title="All trackers in this flaw"><span data-v-89a61d08="">All trackers 6</span></div>
-            <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
+            <div data-v-89a61d08="" class="badge bg-light-cyan" style="cursor: pointer;"><span data-v-89a61d08="">Show All Trackers (6)</span></div>
           </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
         </div>
       </div>
@@ -1203,7 +1200,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
           <div data-v-296c460d="" class="modal-content">
             <!--v-if-->
             <div data-v-296c460d="" class="modal-body"><button data-v-2d3c4208="" type="button" class="btn btn-close ms-auto" aria-label="Close"></button>
-              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3">
+              <div data-v-f682b1b0="" data-v-2d3c4208="" class="mt-3 mb-2 osim-tracker-manager py-1 px-3" relatedflaws="[object Object]">
                 <h4 data-v-f682b1b0="" class="mb-2"> Tracker Manager </h4>
                 <div data-v-f682b1b0="" class="mb-2"><i data-v-f682b1b0="" class="bi bi-binoculars me-2"></i><span data-v-f682b1b0="" class="me-2">Managing trackers for 1 affected offering(s):</span><span data-v-f682b1b0="" class="badge bg-info me-1">openshift-1/openshift-1-1</span></div>
                 <div data-v-f682b1b0="" class="osim-tracker-manager-warning-modal">
@@ -1240,6 +1237,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
                               <!--v-if-->
                               <!--v-if-->
+                              <div data-v-f682b1b0="" class="ms-2 mt-2"><span data-v-f682b1b0="" class="spinner-border spinner-border-sm me-1 text-info" role="status"><span data-v-f682b1b0="" class="visually-hidden">Loading...</span></span><!-- TODO: Remove when OSIDB-3961 is implemented --><span data-v-f682b1b0="" class="ms-1">Refreshing trackers… (refresh may be required in some cases)</span></div>
                               <!--v-if-->
                               <!--v-if--><button data-v-f682b1b0="" type="button" class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2" disabled=""><i data-v-f682b1b0="" class="bi bi-archive"></i> File 0 Trackers </button>
                             </div>
