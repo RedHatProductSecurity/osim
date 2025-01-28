@@ -3,13 +3,12 @@
 ## [Unreleased]
 ### Added
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
+* Support PURLs in affected components (`OSIDB-3412`)
+* Support showing all trackers/affects in single page (`OSIDB-3506`)
 
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 * Fix incorrect embargoed state of CVSS scores (`OSIDB-3861`)
-
-### Added
-* Support PURLs in affected components (`OSIDB-3412`)
 
 ## [2024.12.1]
 ### Fixed

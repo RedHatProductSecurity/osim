@@ -28,6 +28,8 @@ const showTrackerManager = ref(false);
 
 const hasTrackers = computed(() => props.allTrackersCount > 0);
 
+const showAllTrackers = ref(false);
+
 // Sorting
 const sortedTrackers = computed(() => sortTrackers(filteredTrackers.value));
 
@@ -100,6 +102,10 @@ const {
   paginatedItems: paginatedTrackers,
   totalPages,
 } = usePaginationWithSettings(sortedTrackers, { setting: 'trackersPerPage' });
+
+const tableTrackers = computed(() => {
+  return showAllTrackers.value ? filteredTrackers.value : paginatedTrackers.value;
+});
 </script>
 
 <template>
@@ -109,7 +115,7 @@ const {
         <div class="affect-trackers-heading d-flex p-1 pt-2 px-3">
           <h5 class="m-0">Trackers</h5>
         </div>
-        <div v-if="hasTrackers" class="pagination-controls gap-1 ms-2">
+        <div v-if="hasTrackers && !showAllTrackers" class="pagination-controls gap-1 ms-2">
           <button
             type="button"
             class="btn btn-sm btn-info rounded-end-0"
@@ -139,7 +145,7 @@ const {
         <div class="trackers-toolbar p-2 pt-1">
           <div class="tracker-badges">
             <div
-              v-if="paginatedTrackers.length > 0"
+              v-if="paginatedTrackers.length > 0 && !showAllTrackers"
               class="per-page-btn btn btn-sm badge"
             >
               <i
@@ -163,16 +169,11 @@ const {
             <div
               v-if="hasTrackers"
               class="badge"
-              title="All trackers in this flaw"
+              :class="showAllTrackers ? 'bg-info' : 'bg-light-cyan'"
+              style="cursor: pointer;"
+              @click.stop="showAllTrackers = !showAllTrackers"
             >
-              <span>All trackers {{ allTrackersCount }}</span>
-            </div>
-            <div
-              v-if="paginatedTrackers.length > 0"
-              class="badge"
-              title="Trackers displayed in current page"
-            >
-              <span>Displaying {{ paginatedTrackers.length }}</span>
+              <span>Show All Trackers ({{ allTrackersCount }})</span>
             </div>
           </div>
           <button
@@ -274,7 +275,7 @@ const {
           </thead>
           <tbody>
             <tr
-              v-for="(tracker, trackerIndex) in paginatedTrackers"
+              v-for="(tracker, trackerIndex) in tableTrackers"
               :key="trackerIndex"
             >
               <td>

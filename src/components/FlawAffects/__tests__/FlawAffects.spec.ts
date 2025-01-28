@@ -161,6 +161,21 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
+  osimFullFlawTest('Show all button works properly', async () => {
+    let badgeButtons = subject.findAll('.badges div');
+    const showAllBtn = badgeButtons[1];
+    expect(badgeButtons.length).toBe(2);
+    expect(showAllBtn.text()).toBe('Show all affects (6)');
+
+    await showAllBtn.trigger('click');
+
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    const rowCount = affectsTableRows.length;
+    expect(rowCount).toBe(6);
+    badgeButtons = subject.findAll('.badges div');
+    expect(badgeButtons.length).toBe(1);
+  });
+
   osimFullFlawTest('Affects are selectable by clicking in the row', async () => {
     let affectsTableSelectedRows = subject.findAll('.affects-management table tbody tr.selected');
     expect(affectsTableSelectedRows.length).toBe(0);

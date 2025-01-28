@@ -87,6 +87,30 @@ describe('flawTrackers', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
   });
 
+  osimFullFlawTest('Show all button works properly', async ({ flaw }) => {
+    const subject = mountFlawTrackers({
+      flaw: flaw as ZodFlawType,
+      relatedFlaws: [flaw as ZodFlawType],
+      displayedTrackers: flaw.affects
+        .flatMap(affect => affect.trackers
+          .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
+        ),
+      allTrackersCount: 6,
+    });
+
+    let badgeButtons = subject.findAll('.tracker-badges div');
+    const showAllBtn = badgeButtons[1];
+    expect(showAllBtn.text()).toBe('Show All Trackers (6)');
+
+    await showAllBtn.trigger('click');
+
+    const affectsTableRows = subject.findAll('.osim-tracker-card table tbody tr');
+    const rowCount = affectsTableRows.length;
+    expect(rowCount).toBe(6);
+    badgeButtons = subject.findAll('.tracker-badges div');
+    expect(badgeButtons.length).toBe(1);
+  });
+
   osimFullFlawTest('Trackers can be sorted by clicking on the date field columns', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
