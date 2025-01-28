@@ -172,6 +172,39 @@ export const handlers = [
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
+  http.get(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.put(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.delete(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+    const resultArray = [[undefined, { status: 204 }]];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/package_versions`, async () => {
     const resultArray = [
       [
@@ -287,6 +320,20 @@ export const handlers = [
   http.put(`${baseURL}/osidb/api/v1/flaws/*`, async () => {
     const resultArray = [
       [await getOsidbApiV1FlawsUpdate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v1/labels`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1LabelsList200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v1/labels/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1LabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -636,6 +683,7 @@ export function getOsidbApiV1FlawsList200Response() {
           created_dt: faker.date.past(),
           updated_dt: faker.date.past(),
         })),
+        purl: faker.internet.url(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -744,7 +792,12 @@ export function getOsidbApiV1FlawsList200Response() {
       ].map((_) => ({
         description: faker.lorem.words(),
         flaw: faker.string.uuid(),
-        type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+        type: faker.helpers.arrayElement([
+          "ARTICLE",
+          "EXTERNAL",
+          "SOURCE",
+          "UPSTREAM",
+        ]),
         url: faker.internet.url(),
         uuid: faker.string.uuid(),
         embargoed: faker.datatype.boolean(),
@@ -792,6 +845,19 @@ export function getOsidbApiV1FlawsList200Response() {
         })),
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
+      })),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        flaw: faker.string.uuid(),
+        label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+        contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        relevant: faker.datatype.boolean(),
+        type: faker.lorem.words(),
       })),
       embargoed: faker.datatype.boolean(),
       created_dt: faker.date.past(),
@@ -1077,6 +1143,7 @@ export function getOsidbApiV1FlawsCreate201Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      purl: faker.internet.url(),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -1175,7 +1242,12 @@ export function getOsidbApiV1FlawsCreate201Response() {
     ].map((_) => ({
       description: faker.lorem.words(),
       flaw: faker.string.uuid(),
-      type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
       url: faker.internet.url(),
       uuid: faker.string.uuid(),
       embargoed: faker.datatype.boolean(),
@@ -1221,6 +1293,17 @@ export function getOsidbApiV1FlawsCreate201Response() {
       })),
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
+    })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
     })),
     embargoed: faker.datatype.boolean(),
     created_dt: faker.date.past(),
@@ -1401,7 +1484,7 @@ export function getOsidbApiV1FlawsCommentsList200Response() {
       text: faker.lorem.words(),
       uuid: faker.string.uuid(),
       external_system_id: faker.lorem.words(),
-      order: faker.number.int({ min: -2147483648, max: 2147483647 }),
+      order: faker.number.int(),
       creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
       is_private: faker.datatype.boolean(),
       alerts: [
@@ -1434,7 +1517,7 @@ export function getOsidbApiV1FlawsCommentsCreate201Response() {
     text: faker.lorem.words(),
     uuid: faker.string.uuid(),
     external_system_id: faker.lorem.words(),
-    order: faker.number.int({ min: -2147483648, max: 2147483647 }),
+    order: faker.number.int(),
     creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
     is_private: faker.datatype.boolean(),
     alerts: [
@@ -1464,7 +1547,7 @@ export function getOsidbApiV1FlawsCommentsRetrieve200Response() {
     text: faker.lorem.words(),
     uuid: faker.string.uuid(),
     external_system_id: faker.lorem.words(),
-    order: faker.number.int({ min: -2147483648, max: 2147483647 }),
+    order: faker.number.int(),
     creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
     is_private: faker.datatype.boolean(),
     alerts: [
@@ -1626,6 +1709,86 @@ export function getOsidbApiV1FlawsCvssScoresDestroy200Response() {
   };
 }
 
+export function getOsidbApiV1FlawsLabelsList200Response() {
+  return {
+    count: 123,
+    next: "http://api.example.org/accounts/?offset=400&limit=100",
+    previous: "http://api.example.org/accounts/?offset=200&limit=100",
+    results: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1FlawsLabelsCreate201Response() {
+  return {
+    uuid: faker.string.uuid(),
+    flaw: faker.string.uuid(),
+    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+    contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    relevant: faker.datatype.boolean(),
+    type: faker.lorem.words(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1FlawsLabelsRetrieve200Response() {
+  return {
+    uuid: faker.string.uuid(),
+    flaw: faker.string.uuid(),
+    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+    contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    relevant: faker.datatype.boolean(),
+    type: faker.lorem.words(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1FlawsLabelsUpdate200Response() {
+  return {
+    uuid: faker.string.uuid(),
+    flaw: faker.string.uuid(),
+    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+    contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    relevant: faker.datatype.boolean(),
+    type: faker.lorem.words(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1FlawsLabelsDestroy204Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
 export function getOsidbApiV1FlawsPackageVersionsList200Response() {
   return {
     count: 123,
@@ -1743,7 +1906,12 @@ export function getOsidbApiV1FlawsReferencesList200Response() {
     ].map((_) => ({
       description: faker.lorem.words(),
       flaw: faker.string.uuid(),
-      type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
       url: faker.internet.url(),
       uuid: faker.string.uuid(),
       embargoed: faker.datatype.boolean(),
@@ -1774,7 +1942,12 @@ export function getOsidbApiV1FlawsReferencesCreate201Response() {
   return {
     description: faker.lorem.words(),
     flaw: faker.string.uuid(),
-    type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+    type: faker.helpers.arrayElement([
+      "ARTICLE",
+      "EXTERNAL",
+      "SOURCE",
+      "UPSTREAM",
+    ]),
     url: faker.internet.url(),
     uuid: faker.string.uuid(),
     embargoed: faker.datatype.boolean(),
@@ -1802,7 +1975,12 @@ export function getOsidbApiV1FlawsReferencesRetrieve200Response() {
   return {
     description: faker.lorem.words(),
     flaw: faker.string.uuid(),
-    type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+    type: faker.helpers.arrayElement([
+      "ARTICLE",
+      "EXTERNAL",
+      "SOURCE",
+      "UPSTREAM",
+    ]),
     url: faker.internet.url(),
     uuid: faker.string.uuid(),
     embargoed: faker.datatype.boolean(),
@@ -1830,7 +2008,12 @@ export function getOsidbApiV1FlawsReferencesUpdate200Response() {
   return {
     description: faker.lorem.words(),
     flaw: faker.string.uuid(),
-    type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+    type: faker.helpers.arrayElement([
+      "ARTICLE",
+      "EXTERNAL",
+      "SOURCE",
+      "UPSTREAM",
+    ]),
     url: faker.internet.url(),
     uuid: faker.string.uuid(),
     embargoed: faker.datatype.boolean(),
@@ -2116,6 +2299,7 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      purl: faker.internet.url(),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -2214,7 +2398,12 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
     ].map((_) => ({
       description: faker.lorem.words(),
       flaw: faker.string.uuid(),
-      type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
       url: faker.internet.url(),
       uuid: faker.string.uuid(),
       embargoed: faker.datatype.boolean(),
@@ -2260,6 +2449,17 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       })),
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
+    })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
     })),
     embargoed: faker.datatype.boolean(),
     created_dt: faker.date.past(),
@@ -2542,6 +2742,7 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      purl: faker.internet.url(),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -2640,7 +2841,12 @@ export function getOsidbApiV1FlawsUpdate200Response() {
     ].map((_) => ({
       description: faker.lorem.words(),
       flaw: faker.string.uuid(),
-      type: faker.helpers.arrayElement(["ARTICLE", "EXTERNAL", "SOURCE"]),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
       url: faker.internet.url(),
       uuid: faker.string.uuid(),
       embargoed: faker.datatype.boolean(),
@@ -2687,6 +2893,17 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
     })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
+    })),
     embargoed: faker.datatype.boolean(),
     created_dt: faker.date.past(),
     updated_dt: faker.date.past(),
@@ -2717,6 +2934,35 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       parent_uuid: faker.string.uuid(),
       parent_model: faker.lorem.words(),
     })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1LabelsList200Response() {
+  return {
+    count: 123,
+    next: "http://api.example.org/accounts/?offset=400&limit=100",
+    previous: "http://api.example.org/accounts/?offset=200&limit=100",
+    results: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      name: faker.person.fullName(),
+      type: faker.lorem.words(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1LabelsRetrieve200Response() {
+  return {
+    name: faker.person.fullName(),
+    type: faker.lorem.words(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -3030,6 +3276,7 @@ export function getTrackersApiV1FileCreate200Response() {
           created_dt: faker.date.past(),
           updated_dt: faker.date.past(),
         })),
+        purl: faker.internet.url(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -3155,6 +3402,7 @@ export function getTrackersApiV1FileCreate200Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      purl: faker.internet.url(),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(

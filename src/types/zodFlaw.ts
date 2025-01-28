@@ -133,6 +133,11 @@ export const ZodHistoryItemSchema = z.object({
   pgh_diff: z.record(z.array(z.any())).nullable(),
 });
 
+export enum FlawLabelTypeEnum {
+  CONTEXT_BASED = 'context_based',
+  PRODUCT_FAMILY = 'product_family',
+}
+export type ZodFlawLabelType = NonNullable<ZodFlawType['labels']>[number];
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
 export type FlawSchemaType = typeof ZodFlawSchema;
 
@@ -177,10 +182,12 @@ export const ZodFlawSchema = z.object({
   comments: z.array(ZodFlawCommentSchema),
   cvss_scores: z.array(FlawCVSSSchema),
   labels: z.array(z.object({
+    uuid: z.string().optional(),
     label: z.string(),
     state: z.nativeEnum(StateEnum),
-    collaborator: z.string().optional(),
+    contributor: z.string().optional(),
     relevant: z.boolean(),
+    type: z.nativeEnum(FlawLabelTypeEnum),
   })).nullish(),
   references: z.array(FlawReferenceSchema),
   acknowledgments: z.array(FlawAcknowledgmentSchema),

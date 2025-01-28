@@ -33,6 +33,7 @@
         "workflow": "DEFAULT",
         "state": "NEW"
     },
+    "labels": [],
     "owner": "",
     "task_key": "",
     "team_id": "",
