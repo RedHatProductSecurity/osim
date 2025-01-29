@@ -17,9 +17,9 @@ type PaginationOptions = {
 export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: PaginationOptions) {
   const { settings } = storeToRefs(useSettingsStore());
   const {
-    maxItemsPerPage = 20,
+    maxItemsPerPage = 100,
     maxPagesToShow = 7,
-    minItemsPerPage = 5,
+    minItemsPerPage = 1,
     setting,
   } = options;
 
