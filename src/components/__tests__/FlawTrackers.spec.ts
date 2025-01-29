@@ -61,8 +61,8 @@ describe('flawTrackers', () => {
     let trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     let rowCount = trackersTableRows.length;
     expect(rowCount).toBe(6);
-    let itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
+    let itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('10');
 
     const reduceItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-dash-square');
     await reduceItemsBtn.trigger('click');
@@ -70,8 +70,8 @@ describe('flawTrackers', () => {
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
     expect(rowCount).toBe(5);
-    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
+    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('5');
 
     const increaseItemsBtn = subject.find('.trackers-toolbar .tracker-badges .btn .bi-plus-square');
     await increaseItemsBtn.trigger('click');
@@ -79,8 +79,8 @@ describe('flawTrackers', () => {
     trackersTableRows = subject.findAll('.affects-trackers .osim-tracker-card table tbody tr');
     rowCount = trackersTableRows.length;
     expect(rowCount).toBe(6);
-    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
+    itemsPerPageIndicator = subject.find('.trackers-toolbar .tracker-badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('10');
   });
 
   osimFullFlawTest('Show all button works properly', async ({ flaw }) => {
