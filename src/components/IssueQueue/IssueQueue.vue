@@ -36,7 +36,7 @@ const isOpenIssuesSelected = ref(false);
 const tableContainerEl = ref<HTMLDivElement | null>(null);
 const buttonRef = ref<HTMLButtonElement | null>(null);
 const isButtonVisible = useElementVisibility(buttonRef,
-  { rootMargin: '0px 0px 500px 0px', scrollTarget: tableContainerEl } as VisibilityOptions,
+  { rootMargin: '0px 0px 500px 0px', scrollTarget: tableContainerEl },
 );
 
 const filteredStates = computed(() => {
