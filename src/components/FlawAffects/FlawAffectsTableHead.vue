@@ -261,36 +261,41 @@ thead {
       }
 
       &:nth-of-type(5) {
-        // Affectedness
+        // PURL
         min-width: 16ch;
       }
 
       &:nth-of-type(6) {
+        // Affectedness
+        min-width: 16ch;
+      }
+
+      &:nth-of-type(7) {
         // Resolution
         min-width: 14ch;
       }
 
-      &:nth-of-type(7) {
+      &:nth-of-type(8) {
         // Impact
         min-width: 10ch;
       }
 
-      &:nth-of-type(8) {
+      &:nth-of-type(9) {
         // CVSS
         min-width: 6ch;
       }
 
-      &:nth-of-type(9) {
+      &:nth-of-type(10) {
         // Trackers
         min-width: 8ch;
       }
 
-      &:nth-of-type(10) {
+      &:nth-of-type(11) {
         // Actions
         min-width: 6ch;
       }
 
-      &:nth-of-type(11) {
+      &:nth-of-type(12) {
         //  Selection Indicator
         min-width: 0;
         max-width: 0;
