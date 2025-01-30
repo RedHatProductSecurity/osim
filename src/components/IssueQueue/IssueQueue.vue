@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { DateTime } from 'luxon';
-import { useElementVisibility } from '@vueuse/core';
+import { useElementVisibility, type UseElementVisibilityOptions } from '@vueuse/core';
 
 import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
 
@@ -10,6 +10,8 @@ import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import type { ZodFlawType } from '@/types';
+
+type VisibilityOptions = { rootMargin?: string } & UseElementVisibilityOptions;
 
 const props = defineProps<{
   isFinalPageFetched: boolean;
@@ -36,7 +38,7 @@ const isOpenIssuesSelected = ref(false);
 const tableContainerEl = ref<HTMLDivElement | null>(null);
 const buttonRef = ref<HTMLButtonElement | null>(null);
 const isButtonVisible = useElementVisibility(buttonRef,
-  { rootMargin: '0px 0px 500px 0px', scrollTarget: tableContainerEl },
+  { rootMargin: '0px 0px 500px 0px', scrollTarget: tableContainerEl } as VisibilityOptions,
 );
 
 const filteredStates = computed(() => {
