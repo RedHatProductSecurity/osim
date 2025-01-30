@@ -187,6 +187,7 @@ function addNewAffect() {
     delegated_resolution: '',
     ps_module: `NewModule-${newAffects.value.length}`,
     ps_component: `NewComponent-${newAffects.value.length}`,
+    purl: '',
     impact: '',
     cvss_scores: [{
       // affect: z.string().uuid(),

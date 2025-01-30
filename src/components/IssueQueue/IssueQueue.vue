@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { DateTime } from 'luxon';
-import { useElementVisibility, type UseElementVisibilityOptions } from '@vueuse/core';
+import { useElementVisibility } from '@vueuse/core';
 
 import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
 
@@ -10,8 +10,6 @@ import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import type { ZodFlawType } from '@/types';
-
-type VisibilityOptions = { rootMargin?: string } & UseElementVisibilityOptions;
 
 const props = defineProps<{
   isFinalPageFetched: boolean;
