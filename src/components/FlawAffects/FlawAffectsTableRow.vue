@@ -2,6 +2,7 @@
 import { computed, toRefs, watch } from 'vue';
 
 import { storeToRefs } from 'pinia';
+import { PackageURL } from 'packageurl-js';
 
 import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
 
@@ -66,6 +67,14 @@ const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
 };
 
 // Select Affects
+
+function componentFromPurl(purl: string) {
+  try {
+    return PackageURL.fromString(purl)?.name ?? null;
+  } catch (error) {
+    return null;
+  }
+}
 
 function handleToggle(affect: ZodAffectType) {
   if (isSelectable(affect)) {
@@ -171,7 +180,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         {{ affect.ps_module }}
       </span>
     </td>
-    <td>
+    <td v-if="!affect.purl">
       <input
         v-if="isBeingEdited(affect)"
         v-model="affect.ps_component"
@@ -180,6 +189,11 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       />
       <span v-else :title="affect.ps_component">
         {{ affect.ps_component }}
+      </span>
+    </td>
+    <td v-if="affect.purl">
+      <span :title="componentFromPurl(affect.purl) ?? ''">
+        {{ componentFromPurl(affect.purl) }}
       </span>
     </td>
     <td>
