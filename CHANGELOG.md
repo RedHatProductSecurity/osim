@@ -11,6 +11,9 @@
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 * Fix incorrect embargoed state of CVSS scores (`OSIDB-3861`)
+* Fix cutoff display issue with PURLs in affect table (`OSIDB-3946`)
+* Fix erroneous PURL validation error alert icon (`OSIDB-3947`)
+* Fix sending ps_component with when purl is set (`OSIDB-3860`)
 
 ## [2024.12.1]
 ### Fixed
