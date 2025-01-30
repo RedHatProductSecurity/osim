@@ -187,7 +187,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         v-if="isBeingEdited(affect)"
         v-model="affect.purl"
         class="form-control"
-        :class="{ 'is-invalid': error?.purl !== null }"
+        :class="{ 'is-invalid': error?.purl }"
         :title="error?.purl ?? null"
         @keydown="handleKeystroke($event, affect)"
       />
@@ -197,7 +197,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       >
         {{ affect.purl }}
       </span>
-      <span v-if="error?.purl !== null" class="invalid-feedback d-block text-wrap affect-field-error">
+      <span v-if="error?.purl" class="invalid-feedback d-block text-wrap affect-field-error">
         {{ error?.purl }}
       </span>
     </td>
