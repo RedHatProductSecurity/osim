@@ -29,9 +29,7 @@ export async function putAffects(affectObjects: any[]) {
     .catch(createCatchHandler('Error updating Affects:'));
 }
 
-type PurlXorComponent = { ps_component: never; purl?: string } | { ps_component: string; purl: never };
-type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'ps_component' | 'purl' | 'trackers'>
-  | PurlXorComponent;
+type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
 
 export async function postAffects(affectObjects: AffectPost[]) {
   return osidbFetch({

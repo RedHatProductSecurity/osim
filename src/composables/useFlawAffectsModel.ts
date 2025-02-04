@@ -164,7 +164,7 @@ export function useFlawAffectsModel() {
       ps_module: affect.ps_module,
       purl: affect.purl,
       // omit ps_component if purl is present
-      ps_component: affect.purl ? undefined : affect.ps_component,
+      ps_component: affect.purl ? '' : affect.ps_component,
       impact: affect.impact,
       embargoed: affect.embargoed || false,
       updated_dt: affect.updated_dt,
