@@ -2,6 +2,7 @@
 import { computed, toRefs, watch } from 'vue';
 
 import { storeToRefs } from 'pinia';
+import { PackageURL } from 'packageurl-js';
 
 import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
 
@@ -66,6 +67,14 @@ const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
 };
 
 // Select Affects
+
+function componentFromPurl(purl: string) {
+  try {
+    return PackageURL.fromString(purl)?.name ?? null;
+  } catch (error) {
+    return null;
+  }
+}
 
 function handleToggle(affect: ZodAffectType) {
   if (isSelectable(affect)) {
@@ -171,7 +180,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         {{ affect.ps_module }}
       </span>
     </td>
-    <td>
+    <td v-if="!affect.purl">
       <input
         v-if="isBeingEdited(affect)"
         v-model="affect.ps_component"
@@ -182,12 +191,17 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         {{ affect.ps_component }}
       </span>
     </td>
+    <td v-if="affect.purl">
+      <span :title="componentFromPurl(affect.purl) ?? ''">
+        {{ componentFromPurl(affect.purl) }}
+      </span>
+    </td>
     <td>
       <input
         v-if="isBeingEdited(affect)"
         v-model="affect.purl"
         class="form-control"
-        :class="{ 'is-invalid': error?.purl !== null }"
+        :class="{ 'is-invalid': error?.purl }"
         :title="error?.purl ?? null"
         @keydown="handleKeystroke($event, affect)"
       />
@@ -197,7 +211,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       >
         {{ affect.purl }}
       </span>
-      <span v-if="error?.purl !== null" class="invalid-feedback d-block text-wrap affect-field-error">
+      <span v-if="error?.purl" class="invalid-feedback d-block text-wrap affect-field-error">
         {{ error?.purl }}
       </span>
     </td>

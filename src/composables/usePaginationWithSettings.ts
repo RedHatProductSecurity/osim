@@ -24,15 +24,11 @@ export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: 
   } = options;
 
   function decreaseItemsPerPage() {
-    if (settings.value[setting] > minItemsPerPage) {
-      settings.value[setting]--;
-    }
+    settings.value[setting] = Math.max(settings.value[setting] - 5, minItemsPerPage);
   }
 
   function increaseItemsPerPage() {
-    if (settings.value[setting] < maxItemsPerPage) {
-      settings.value[setting]++;
-    }
+    settings.value[setting] = Math.min(settings.value[setting] + 5, maxItemsPerPage);
   }
 
   const totalPages = computed(() =>

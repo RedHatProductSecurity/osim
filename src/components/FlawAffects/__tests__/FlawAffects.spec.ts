@@ -5,12 +5,15 @@ import { createPinia, setActivePinia } from 'pinia';
 import { useRouter } from 'vue-router';
 import { flushPromises, VueWrapper } from '@vue/test-utils';
 
-import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test-suite-helpers';
+import { osimFullFlawTest, osimEmptyFlawTest, osimTestWithFlaw } from '@/components/__tests__/test-suite-helpers';
 import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
 import { useFlaw } from '@/composables/useFlaw';
+import { useFlawModel } from '@/composables/useFlawModel';
+import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
+import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 import { mountWithConfig, withSetup } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
@@ -21,6 +24,7 @@ vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
 vi.mock('@/composables/useFlaw');
 vi.mock('@/composables/useFlawModel');
+vi.mock('@/composables/useFetchFlaw');
 vi.mock('@/composables/useFlawAffectsModel');
 vi.mock('@/stores/AffectsEditingStore');
 
@@ -28,11 +32,19 @@ let pinia: ReturnType<typeof createPinia>;
 
 async function useMocks(flaw: ZodFlawType) {
   type ActualFlaw = typeof import('@/composables/useFlaw');
+  type ActualFlawModel = typeof import('@/composables/useFlawModel');
+  type ActualFlawFetch = typeof import('@/composables/useFetchFlaw');
   type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
   type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
 
   const { useFlaw: _useFlaw } =
     await vi.importActual<ActualFlaw>('@/composables/useFlaw');
+
+  const { useFlawModel: _useFlawModel } =
+    await vi.importActual<ActualFlawModel>('@/composables/useFlawModel');
+
+  const { useFetchFlaw: _useFetchFlaw } =
+    await vi.importActual<ActualFlawFetch>('@/composables/useFetchFlaw');
 
   const { useFlawAffectsModel: _useFlawAffectsModel } =
     await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
@@ -40,31 +52,39 @@ async function useMocks(flaw: ZodFlawType) {
   const { useAffectsEditingStore: _useAffectsEditingStore } =
     await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
 
-  const _flaw = _useFlaw();
-  _flaw.value = flaw;
-
-  return { _useFlaw, _useFlawAffectsModel, _useAffectsEditingStore };
+  return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
 }
 
-const mountFlawAffects = async (flaw: ZodFlawType, Component: Component) => {
+const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => {
   const {
     _useAffectsEditingStore,
+    _useFetchFlaw,
     _useFlaw,
     _useFlawAffectsModel,
-  } = await useMocks(flaw);
+    _useFlawModel,
+    flaw,
+  } = await useMocks(testFlaw);
+  const [[mockedFlaw, errors]] = withSetup(() => {
+    const mockedUseFlaw = _useFlaw();
+    mockedUseFlaw.flaw.value = flaw;
+    mockedUseFlaw.relatedFlaws.value = [flaw];
 
-  const [mockedFlaw] = withSetup(() => {
-    vi.mocked(useFlaw).mockReturnValue(_useFlaw());
+    vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
+    vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
     vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
-    return _useFlaw();
+    const mockedUseFlawModel = _useFlawModel(flaw, () => {});
+    vi.mocked(useFlawModel).mockReturnValue(mockedUseFlawModel);
+    // const errors = computed(() => mockedUseFlawModel.errors.value.affects);
+    const errors = mockedUseFlawModel.errors.value.affects;
+    return [mockedUseFlaw.flaw, errors];
   });
 
   return mountWithConfig(Component, {
     props: {
       embargoed: mockedFlaw.value.embargoed,
       relatedFlaws: [mockedFlaw.value],
-      errors: [],
+      errors,
     },
   });
 };
@@ -131,9 +151,7 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
 
     const reduceItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-dash-square');
-    for (let i = 0; i < 5; i++) {
-      await reduceItemsBtn.trigger('click');
-    }
+    await reduceItemsBtn.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
@@ -142,14 +160,27 @@ describe('flawAffects', () => {
     expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
 
     const increaseItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-plus-square');
-    for (let i = 0; i < 5; i++) {
-      await increaseItemsBtn.trigger('click');
-    }
+    await increaseItemsBtn.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
     expect(rowCount).toBe(6); itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
     expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
+  });
+
+  osimFullFlawTest('Show all button works properly', async () => {
+    let badgeButtons = subject.findAll('.badges div');
+    const showAllBtn = badgeButtons[1];
+    expect(badgeButtons.length).toBe(2);
+    expect(showAllBtn.text()).toBe('Show all affects (6)');
+
+    await showAllBtn.trigger('click');
+
+    const affectsTableRows = subject.findAll('.affects-management table tbody tr');
+    const rowCount = affectsTableRows.length;
+    expect(rowCount).toBe(6);
+    badgeButtons = subject.findAll('.badges div');
+    expect(badgeButtons.length).toBe(1);
   });
 
   osimFullFlawTest('Affects are selectable by clicking in the row', async () => {
@@ -257,17 +288,11 @@ describe('flawAffects', () => {
     expect(resolutionSelect.text()).toBe('');
   });
 
-  osimFullFlawTest('Validates affect PURLs when present', async () => {
+  const flawInvalidPurl = structuredClone(sampleFlawFull) as ZodFlawType;
+  flawInvalidPurl.affects[0].purl = 'invalid-purl';
+  osimTestWithFlaw(flawInvalidPurl)('Validates affect PURLs when present', async () => {
     const affectRow = subject.find('.affects-management table tbody tr');
-    const editButton = affectRow.find('button[title="Edit affect"]');
-    await editButton.trigger('click');
-
-    const affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
-    const purlField = affectsTableEditingRows[0].find('td:nth-of-type(5)');
-    const purlInput = purlField.find('input');
-    purlInput.setValue('invalid-purl');
-    await affectRow.find('button[title="Commit edit"]').trigger('click');
-
+    const purlField = affectRow.find('td:nth-of-type(5)');
     const purlInputError = purlField.find('.affect-field-error');
     expect(purlInputError.exists()).toBe(true);
   });

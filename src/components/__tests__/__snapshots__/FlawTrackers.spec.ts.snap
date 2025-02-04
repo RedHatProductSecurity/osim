@@ -12,7 +12,6 @@ exports[`flawTrackers > Correctly renders the component when there are not track
         <div data-v-89a61d08="" class="tracker-badges">
           <!--v-if-->
           <!--v-if-->
-          <!--v-if-->
         </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
@@ -53,7 +52,6 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
         <div data-v-89a61d08="" class="tracker-badges">
           <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <!--v-if-->
-          <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
         </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>
@@ -158,7 +156,6 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
         <div data-v-89a61d08="" class="tracker-badges">
           <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page: 10</span><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
           <!--v-if-->
-          <div data-v-89a61d08="" class="badge" title="Trackers displayed in current page"><span data-v-89a61d08="">Displaying 6</span></div>
         </div><button data-v-89a61d08="" type="button" class="btn btn-sm btn-info ms-auto"><i data-v-89a61d08="" class="bi bi-binoculars"></i> Show Trackers Manager </button>
       </div>
     </div>

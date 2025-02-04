@@ -3,9 +3,15 @@ import { ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
+const relatedFlaws = ref<ZodFlawType[]>([]);
+
+function resetFlaw() {
+  flaw.value = blankFlaw();
+  relatedFlaws.value = [];
+}
 
 export function useFlaw() {
-  return flaw;
+  return { flaw, relatedFlaws, resetFlaw };
 }
 
 export function blankFlaw(): ZodFlawType {

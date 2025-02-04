@@ -15,7 +15,10 @@ export type OsidbFetchCallbacks = {
   // afterFetch?: (response: Response) => Promise<void> | void;
 };
 
+type CacheOptions = 'default' | 'force-cache' | 'no-cache' | 'only-if-cached' | 'reload';
+
 export type OsidbGetFetchOptions = {
+  cache?: CacheOptions;
   data?: never;
   method: 'GET' | 'get';
   params?: Record<string, any>;
@@ -23,6 +26,7 @@ export type OsidbGetFetchOptions = {
 };
 
 export type OsidbPutPostFetchOptions = {
+  cache?: CacheOptions;
   data?: Record<string, any>;
   method: 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
@@ -30,6 +34,7 @@ export type OsidbPutPostFetchOptions = {
 };
 
 export type OsidbDeleteFetchOptions = {
+  cache?: never;
   data?: Record<string, any> | Record<string, any>[] | string[];
   method: 'DELETE' | 'delete';
   params?: never;
@@ -62,6 +67,7 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
       headers: await osimRequestHeaders(),
       mode: 'cors',
       credentials: 'include',
+      cache: config?.cache,
       body,
     });
   } catch (e) {

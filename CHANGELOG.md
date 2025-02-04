@@ -4,6 +4,10 @@
 ### Added
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
 * Show Flaw contributors table on edit view (`OSIDB-3806`)
+* Support PURLs in affected components (`OSIDB-3412`)
+* Increase step value for affects and trackers per page (`OSIDB-3508`)
+* Support showing all trackers/affects in single page (`OSIDB-3506`)
+
 
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
@@ -12,6 +16,9 @@
 ### Added
 * Support PURLs in affected components (`OSIDB-3412`)
 * Add suggestions on CWE Field (`OSIDB-3743`)
+* Fix cutoff display issue with PURLs in affect table (`OSIDB-3946`)
+* Fix erroneous PURL validation error alert icon (`OSIDB-3947`)
+* Fix sending ps_component with when purl is set (`OSIDB-3860`)
 
 ## [2024.12.1]
 ### Fixed
@@ -60,6 +67,7 @@
 
 ### Fixed
 * Corrected BZ link overlapping flaw promotion button (`OSIDB-3529`)
+* Refresh trackers after filing new trackers (`OSIDB-3483`)
 
 ### Changed
 * Allow empty impact on flaw (`OSIDB-3596`)

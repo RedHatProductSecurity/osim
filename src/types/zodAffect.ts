@@ -98,7 +98,7 @@ export const ZodAffectSchema = z.object({
       });
     }
   }),
-  ps_component: z.string().max(255), // TODO: Deprecate?
+  ps_component: z.string().max(255),
   ps_product: z.string().nullish(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
   trackers: z.array(TrackerSchema).or(z.array(z.any())),

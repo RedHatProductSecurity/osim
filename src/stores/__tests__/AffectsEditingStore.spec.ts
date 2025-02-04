@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { type Ref } from 'vue';
 
 import { describe, expect, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
@@ -16,11 +16,11 @@ vi.mock('@/composables/useFlaw');
 vi.mock('@/composables/useFlawAffectsModel');
 
 let pinia: ReturnType<typeof createPinia>;
-type FlawWithStore = [ReturnType<typeof useFlaw>, ReturnType<typeof useAffectsEditingStore>];
+type FlawWithStore = [Ref<ZodFlawType>, ReturnType<typeof useAffectsEditingStore>];
 
 function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
   const [[flaw, store]] = withSetup((): FlawWithStore => {
-    const flaw = useFlaw();
+    const { flaw } = useFlaw();
     flaw.value = testFlaw;
     useFlawAffectsModel();
     return [flaw, useAffectsEditingStore()];
@@ -29,20 +29,29 @@ function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
   return [flaw, store];
 }
 
+type ActualUseFlaw = typeof import('@/composables/useFlaw');
+type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
+
+async function useMocks(flaw: ZodFlawType) {
+  const { useFlaw: _useFlaw } =
+  await vi.importActual<ActualUseFlaw>('@/composables/useFlaw');
+  const { useFlawAffectsModel: _useFlawAffectsModel } =
+  await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
+  pinia = createPinia();
+  setActivePinia(pinia);
+  const mockedUseFlaw = _useFlaw();
+  mockedUseFlaw.flaw.value = flaw;
+  vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
+  vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
+}
+
 describe('useAffectsEditingStore Store', () => {
   // @ts-expect-error  flaw not defined
   beforeEach(async ({ flaw }) => {
     vi.clearAllMocks();
     vi.resetModules();
 
-    type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
-
-    const { useFlawAffectsModel: _useFlawAffectsModel } =
-      await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
-    pinia = createPinia();
-    setActivePinia(pinia);
-    vi.mocked(useFlaw).mockReturnValue(ref(flaw));
-    vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
+    await useMocks(flaw);
   });
 
   osimEmptyFlawTest('should initialize with empty arrays', async ({ flaw: testFlaw }) => {

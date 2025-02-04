@@ -42,6 +42,7 @@ describe('useRelatedFlawTrackers', () => {
       'fileTrackers',
       'synchronizeTrackerSelections',
       'addRelatedFlaw',
+      'refreshRelatedFlaws',
       'filterString',
       'isFilingTrackers',
       'trackersToFile',

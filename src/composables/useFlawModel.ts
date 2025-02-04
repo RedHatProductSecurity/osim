@@ -33,7 +33,7 @@ import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useFlawLabels } from './useFlawLabels';
 
 export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
-  const flaw = useFlaw();
+  const { flaw } = useFlaw();
   flaw.value = forFlaw;
 
   const isSaving = ref(false);

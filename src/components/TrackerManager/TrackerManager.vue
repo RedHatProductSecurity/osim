@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { toRefs, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import LowSeverityTrackersWarning from '@/components/LowSeverityTrackersWarning.vue';
 
 import type { UpdateStreamOsim, UpdateStreamSelections } from '@/composables/useSingleFlawTrackers';
 import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
+import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import TabsDynamic from '@/widgets/TabsDynamic/TabsDynamic.vue';
@@ -13,17 +14,11 @@ import { ImpactEnum } from '@/generated-client';
 
 const props = defineProps<{
   flaw: ZodFlawType;
-  relatedFlaws: ZodFlawType[];
   specificAffectsToTrack?: ZodAffectType[];
 }>();
 
-const emit = defineEmits<{
-  'affects-trackers:hide': [];
-  'affects-trackers:refresh': [];
-}>();
-
 const showLowSeverityTrackersWarning = ref(false);
-const { relatedFlaws } = toRefs(props);
+const { relatedFlaws } = useFlaw();
 
 const shouldApplyToRelated = ref(true);
 const shouldShowInspector = ref(false);
@@ -36,6 +31,7 @@ const {
   isFilingTrackers,
   isLoadingTrackers,
   multiFlawTrackers,
+  refreshRelatedFlaws,
   selectedStreams,
   synchronizeTrackerSelections,
   trackersToFile,
@@ -107,7 +103,7 @@ async function handleFileTrackers() {
     showLowSeverityTrackersWarning.value = true;
   } else {
     await fileTrackers();
-    emit('affects-trackers:refresh');
+    await refreshRelatedFlaws();
   }
 }
 
@@ -296,7 +292,16 @@ function hideLowSeverityTrackersWarning() {
                       </span>
                     </label>
                   </div>
-
+                  <div v-if="isLoadingTrackers" class="ms-2 mt-2">
+                    <span
+                      class="spinner-border spinner-border-sm me-1 text-info"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <!-- TODO: Remove when OSIDB-3961 is implemented -->
+                    <span class="ms-1">Refreshing trackers&hellip; (refresh may be required in some cases)</span>
+                  </div>
                   <button
                     v-if="trackersToFile.length"
                     type="button"
