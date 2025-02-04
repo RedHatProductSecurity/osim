@@ -12,6 +12,7 @@
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 * Fix incorrect embargoed state of CVSS scores (`OSIDB-3861`)
+* Prevent focus-loss when editing new affects by exempting them from auto-sort (`OSIDB-3972`)
 
 ### Added
 * Support PURLs in affected components (`OSIDB-3412`)

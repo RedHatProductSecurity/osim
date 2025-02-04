@@ -78,10 +78,9 @@ export function useFilterSortAffects() {
           order<ZodAffectType>(sortKey.value === 'ps_module' ? prop('ps_component') : prop('ps_module')),
         ];
 
-    return sortWith([
-      ascend((affect: ZodAffectType) => !affect.uuid ? 0 : 1),
-      ...comparators,
-    ])(affects);
+    const savedAffects = affects.filter(({ uuid }) => uuid);
+    const newAffects = affects.filter(({ uuid }) => !uuid);
+    return [...newAffects, ...sortWith(comparators)(savedAffects)];
   }
 
   function setAffectednessFilter(affectedness: string) {
