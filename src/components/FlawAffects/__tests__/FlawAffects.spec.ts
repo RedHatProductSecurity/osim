@@ -136,8 +136,8 @@ describe('flawAffects', () => {
     let affectsTableRows = subject.findAll('.affects-management table tbody tr');
     let rowCount = affectsTableRows.length;
     expect(rowCount).toBe(6);
-    let itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
+    let itemsPerPageIndicator = subject.find('.affects-toolbar .badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('10');
 
     const reduceItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-dash-square');
     await reduceItemsBtn.trigger('click');
@@ -145,16 +145,16 @@ describe('flawAffects', () => {
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
     expect(rowCount).toBe(5);
-    itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 5');
+    itemsPerPageIndicator = subject.find('.affects-toolbar .badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('5');
 
     const increaseItemsBtn = subject.find('.affects-toolbar .badges .btn .bi-plus-square');
     await increaseItemsBtn.trigger('click');
 
     affectsTableRows = subject.findAll('.affects-management table tbody tr');
     rowCount = affectsTableRows.length;
-    expect(rowCount).toBe(6); itemsPerPageIndicator = subject.find('.affects-toolbar .badges .btn span');
-    expect(itemsPerPageIndicator.text()).toBe('Per page: 10');
+    expect(rowCount).toBe(6); itemsPerPageIndicator = subject.find('.affects-toolbar .badges input');
+    expect((itemsPerPageIndicator.element as HTMLInputElement).value).toBe('10');
   });
 
   osimFullFlawTest('Show all button works properly', async () => {

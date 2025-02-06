@@ -17,9 +17,9 @@ type PaginationOptions = {
 export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: PaginationOptions) {
   const { settings } = storeToRefs(useSettingsStore());
   const {
-    maxItemsPerPage = 20,
+    maxItemsPerPage = 100,
     maxPagesToShow = 7,
-    minItemsPerPage = 5,
+    minItemsPerPage = 1,
     setting,
   } = options;
 
@@ -47,10 +47,21 @@ export function usePaginationWithSettings(itemsToPaginate: Ref<any[]>, options: 
     return itemsToPaginate.value.slice(start, end);
   });
 
+  function handlePerPageInput(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    if (target) {
+      const value = Number(target.value);
+      if (value && value <= maxItemsPerPage && value >= minItemsPerPage) {
+        settings.value[setting] = value;
+      }
+    }
+  };
+
   return {
     changePage,
     decreaseItemsPerPage,
     increaseItemsPerPage,
+    handlePerPageInput,
     currentPage,
     minItemsPerPage,
     maxItemsPerPage,
