@@ -13,6 +13,7 @@
 ### Fixed
 * Fix incorrect affects ordering by Impact and Resolution (`OSIDB-3480`)
 * Fix incorrect embargoed state of CVSS scores (`OSIDB-3861`)
+* Prevent focus-loss when editing new affects by exempting them from auto-sort (`OSIDB-3972`)
 
 ## [2024.12.1]
 ### Fixed
