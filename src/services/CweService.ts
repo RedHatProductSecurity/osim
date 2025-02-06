@@ -1,7 +1,7 @@
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { CWEMemberType } from '@/types/mitreCwe';
 
-const DATA_KEY = 'CWE:API-DATA';
+export const DATA_KEY = 'CWE:API-DATA';
 const VERSION_KEY = 'CWE:API-VERSION';
 
 interface CweViews {
@@ -15,9 +15,27 @@ interface CweViews {
 interface CweCategories {
   Categories: {
     ID: string;
+    MappingNotes: {
+      Usage: string;
+    };
     Name: string;
+    Relationships: Array<any>;
+    Status: string;
+    Summary: string;
   }[];
 }
+
+interface CweWeaknesses {
+  Weaknesses: {
+    Description: string;
+    ID: string;
+    MappingNotes: {
+      Usage: string;
+    };
+    Name: string;
+    Status: string;
+  }[];
+};
 
 export async function updateCWEData() {
   const baseUrl = osimRuntime.value.backends.mitre;
@@ -56,33 +74,50 @@ async function checkNewVersion(baseUrl: string): Promise<[string, boolean]> {
 }
 
 async function fetchAndCache(baseUrl: string) {
-  const cweIds = await fetchCweIds(baseUrl);
-  const cweData = await fetchCweNames(baseUrl, cweIds);
-  localStorage.setItem(DATA_KEY, JSON.stringify(cweData));
+  const cweView = await fetchCweView(baseUrl);
+  const cweCategories = await fetchCweCategories(baseUrl, cweView);
+  const cweWeaknesses = await fetchCweWeaknesses(baseUrl, cweCategories);
+  localStorage.setItem(DATA_KEY, JSON.stringify(cweWeaknesses));
   console.debug('✅ CWE API cache updated.');
 }
 
-async function fetchCweIds(baseUrl: string) {
+async function fetchCweView(baseUrl: string) {
   // 699 is the id for the "Software Development" CWE view
   const view = await fetch(`${baseUrl}/cwe/view/699`);
   if (!view.ok) {
     throw new Error('Failed to fetch CWE OpenAPI data');
   }
   const cweData: CweViews = await view.json();
-  const cweIds = cweData.Views[0].Members.map(member => member.CweID);
-  return cweIds;
+  const cweCategoryIds = cweData.Views[0].Members.map(member => member.CweID);
+  return cweCategoryIds;
 }
 
-async function fetchCweNames(baseUrl: string, cweIds: string[]) {
-  const detailedResponse = await fetch(`${baseUrl}/cwe/category/${cweIds.join(',')}`);
-  if (!detailedResponse.ok) {
+async function fetchCweCategories(baseUrl: string, cweCategoryIds: string[]) {
+  const response = await fetch(`${baseUrl}/cwe/category/${cweCategoryIds.join(',')}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch CWE categories data');
+  }
+
+  const cweCategoryData: CweCategories = await response.json();
+  const cweWeaknessIds = cweCategoryData.Categories.flatMap(member =>
+    member.Relationships.map(relationship => relationship.CweID),
+  );
+  return cweWeaknessIds;
+}
+
+async function fetchCweWeaknesses(baseUrl: string, cweIds: string[]) {
+  const response = await fetch(`${baseUrl}/cwe/weakness/${cweIds.join(',')}`);
+  if (!response.ok) {
     throw new Error('Failed to fetch detailed CWE data');
   }
 
-  const detailedData: CweCategories = await detailedResponse.json();
-  const customStructure: CWEMemberType[] = detailedData.Categories.map(category => ({
-    id: category.ID,
-    name: category.Name,
+  const cweWeaknessesData: CweWeaknesses = await response.json();
+  const cweWeaknesses: CWEMemberType[] = cweWeaknessesData.Weaknesses.map(weakness => ({
+    id: weakness.ID,
+    name: weakness.Name,
+    status: weakness.Status,
+    summary: weakness.Description,
+    usage: weakness.MappingNotes.Usage,
   }));
-  return customStructure;
+  return cweWeaknesses;
 }

@@ -17,6 +17,7 @@ import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors/FlawContributors.vue';
 import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
+import CweSelector from '@/components/CweSelector/CweSelector.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 
@@ -244,10 +245,9 @@ const createdDate = computed(() => {
               :allCvss="flaw.cvss_scores"
               :nistCvss="nvdCvss3String"
             />
-            <LabelEditable
+            <CweSelector
               v-model="flaw.cwe_id"
               label="CWE ID"
-              type="text"
               :error="errors.cwe_id"
             />
             <LabelSelect

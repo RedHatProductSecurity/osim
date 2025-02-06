@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cweSelector.vue > renders correctly 1`] = `
+"<div data-v-0e2ae48e="" data-v-478878c2="" class="osim-input ps-3 mb-2 mb-2">
+  <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if-->  <!--attrs: {{ $attrs }}--></span>
+    <div data-v-0e2ae48e="" class="col-9">
+      <!-- for invalid-tooltip positioning -->
+      <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
+        <!--<Transition name="flash-bg" :duration="2000">-->
+        <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+          <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
+            <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+          </div>
+        </transition-stub>
+        <div class="input-group position-relative" tabindex="-1" style="display: none;">
+          <!--v-if--><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button>
+        </div>
+        <!--v-if-->
+      </div>
+    </div>
+  </div>
+</div>"
+`;
