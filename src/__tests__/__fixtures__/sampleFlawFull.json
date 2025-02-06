@@ -30,6 +30,7 @@
             "ps_module": "openshift-1",
             "ps_product": null,
             "ps_component": "openshift-1-1",
+            "purl": "",
             "impact": "LOW",
             "trackers": [
                 {
@@ -113,6 +114,7 @@
             "ps_module": "openshift-2",
             "ps_product": null,
             "ps_component": "openshift-2-1",
+            "purl": "",
             "impact": "LOW",
             "trackers": [],
             "delegated_resolution": null,
@@ -130,6 +132,7 @@
             "ps_module": "openshift-3",
             "ps_product": null,
             "ps_component": "openshift-3-1",
+            "purl": "",
             "impact": "LOW",
             "trackers": [],
             "delegated_resolution": null,
@@ -147,6 +150,7 @@
             "ps_module": "openshift-4",
             "ps_product": null,
             "ps_component": "openshift-4-1",
+            "purl": "",
             "impact": "LOW",
             "trackers": [],
             "delegated_resolution": null,
@@ -164,6 +168,7 @@
             "ps_module": "openshift-5",
             "ps_product": null,
             "ps_component": "openshift-5-1",
+            "purl": "",
             "impact": "LOW",
             "trackers": [
                 {
@@ -214,6 +219,7 @@
             "ps_module": "openshift-6",
             "ps_product": null,
             "ps_component": "openshift-6-1",
+            "purl": "",
             "impact": "CRITICAL",
             "trackers": [],
             "delegated_resolution": null,

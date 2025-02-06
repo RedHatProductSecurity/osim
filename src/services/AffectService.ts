@@ -1,9 +1,10 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 import { osidbFetch } from '@/services/OsidbAuthService';
+import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
 
 import { beforeFetch } from './FlawService';
-// export async function putAffect(uuid: string, affectObject: ZodAffectType) {
+
 export async function putAffect(uuid: string, affectObject: any) {
   return osidbFetch({
     method: 'put',
@@ -28,8 +29,9 @@ export async function putAffects(affectObjects: any[]) {
     .catch(createCatchHandler('Error updating Affects:'));
 }
 
-// export async function postAffect(affectObject: ZodAffectType) {
-export async function postAffects(affectObjects: any[]) {
+type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
+
+export async function postAffects(affectObjects: AffectPost[]) {
   return osidbFetch({
     method: 'post',
     url: '/osidb/api/v1/affects/bulk',
@@ -63,7 +65,7 @@ export async function deleteAffects(affectUuids: string[]) {
 export async function putAffectCvssScore(
   affectId: string,
   cvssScoresId: string,
-  cvssScoreObject: unknown,
+  cvssScoreObject: ZodAffectCVSSType,
 ) {
   const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
@@ -85,7 +87,7 @@ export async function putAffectCvssScore(
 // "vector": "string",
 // "embargoed": true
 // }
-export async function postAffectCvssScore(affectId: string, cvssScoreObject: unknown) {
+export async function postAffectCvssScore(affectId: string, cvssScoreObject: ZodAffectCVSSType) {
   const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   return osidbFetch({
     method: 'post',

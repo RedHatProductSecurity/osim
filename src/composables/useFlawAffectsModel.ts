@@ -163,7 +163,8 @@ export function useFlawAffectsModel() {
       delegated_resolution: affect.delegated_resolution,
       ps_module: affect.ps_module,
       purl: affect.purl,
-      ps_component: affect.ps_component,
+      // omit ps_component if purl is present
+      ps_component: affect.purl ? '' : affect.ps_component,
       impact: affect.impact,
       embargoed: affect.embargoed || false,
       updated_dt: affect.updated_dt,

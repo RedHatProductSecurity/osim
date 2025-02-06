@@ -147,17 +147,17 @@ class FlawDetailPage(BasePage):
         "newAddAffectCommitBtn": ("XPATH", "//button[@title='Commit edit']"),
         "newAddAffectModuleInput": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/input"),
         "newAddAffectComponentInput": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/input"),
-        "newAddAffectAffectednessSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/select"),
-        "newAddAffectResolutionSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/select"),
-        "newAddAffectImpactSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
-        "newAddAffectCVSSInput": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/input"),
+        "newAddAffectAffectednessSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/select"),
+        "newAddAffectResolutionSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/select"),
+        "newAddAffectImpactSelect": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/select"),
+        "newAddAffectCVSSInput": ("XPATH", "(//tbody)[1]/tr[1]/td[9]/input"),
         "firstAffectCheckbox": ("XPATH", "(//tbody)[1]/tr[1]/td[1]/input"),
         "firstAffectModuleSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[3]/span"),
         "firstAffectComponentSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[4]/span"),
-        "firstAffectAffectednessSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[5]/span"),
-        "firstAffectResolutionSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/span"),
-        "firstAffectImpactSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/span"),
-        "firstAffectCVSSSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/span"),
+        "firstAffectAffectednessSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[6]/span"),
+        "firstAffectResolutionSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[7]/span"),
+        "firstAffectImpactSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[8]/span"),
+        "firstAffectCVSSSpan": ("XPATH", "(//tbody)[1]/tr[1]/td[9]/span"),
         "commitAllAffectChangesBtn": ("XPATH", "//button[@title='Commit changes on all affects being edited']"),
         "firstAffectRemoveBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Remove affect']"),
         "firstAffectRecoverBtn": ("XPATH", "(//tbody)[1]/tr[1]/td[last()]/button[@title='Recover affect']"),
@@ -596,12 +596,12 @@ class FlawDetailPage(BasePage):
             By.XPATH, f"(//tbody)[1]/tr[{row}]/td[last()]/button[@title='Commit edit']")
         module_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[3]/input")
         component_input = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[4]/input")
-        affectedness_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[5]/select")
-        resolution_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[6]/select")
-        impact_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[7]/select")
-        cvss_calculator_icon = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/div/i")
+        affectedness_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[6]/select")
+        resolution_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[7]/select")
+        impact_select = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/select")
+        cvss_calculator_icon = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{row}]/td[9]/div/i")
         erase_cvss_button = self.driver.find_element(
-            By.XPATH, f"(//tbody)[1]/tr[{row}]/td[8]/div/div/div/div/button[@class='erase-button input-group-text']")
+            By.XPATH, f"(//tbody)[1]/tr[{row}]/td[9]/div/div/div/div/button[@class='erase-button input-group-text']")
 
         # Set new affect inputs: PS module, PS component, CVSSv3
         self.clear_text_with_js(module_input)
@@ -642,10 +642,10 @@ class FlawDetailPage(BasePage):
     def get_affect_value(self, row=1):
         module = f"(//tbody)[1]/tr[{row}]/td[3]/span"
         component = f"(//tbody)[1]/tr[{row}]/td[4]/span"
-        affectedness = f"(//tbody)[1]/tr[{row}]/td[5]/span"
-        resolution = f"(//tbody)[1]/tr[{row}]/td[6]/span"
-        impact = f"(//tbody)[1]/tr[{row}]/td[7]/span"
-        cvss = f"(//tbody)[1]/tr[{row}]/td[8]/span"
+        affectedness = f"(//tbody)[1]/tr[{row}]/td[6]/span"
+        resolution = f"(//tbody)[1]/tr[{row}]/td[7]/span"
+        impact = f"(//tbody)[1]/tr[{row}]/td[8]/span"
+        cvss = f"(//tbody)[1]/tr[{row}]/td[9]/span"
 
         affect = Affect(
             module=self.driver.find_element(By.XPATH, module).get_text(),
@@ -890,7 +890,7 @@ class FlawDetailPage(BasePage):
         # get current module and affectedness
         module_list, affectedness_list = [], []
         for i in range(len(affects)):
-            current_affectedness = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[5]/span").text
+            current_affectedness = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[6]/span").text
             affectedness_list.append(current_affectedness)
             current_module = self.driver.find_element(By.XPATH, f"(//tbody)[1]/tr[{i+1}]/td[3]/span").text
             module_list.append(current_module)

@@ -33,6 +33,16 @@ export const osimFullFlawTest = test.extend<{ flaw: ZodFlawType }>({
   },
 });
 
+export function osimTestWithFlaw(withFlaw: ZodFlawType) {
+  return test.extend<{ flaw: ZodFlawType }>({
+    flaw: async ({}, use) => {
+      flaw = structuredClone(withFlaw) as ZodFlawType;
+      await use(flaw);
+      flaw = null;
+    },
+  });
+}
+
 export function mockAffect({ ps_component, ps_module }: { ps_component: string; ps_module: string }): ZodAffectType {
   return {
     ps_module,
