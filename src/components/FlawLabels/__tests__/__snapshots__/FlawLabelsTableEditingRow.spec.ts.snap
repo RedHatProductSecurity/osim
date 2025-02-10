@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`flawLabelsTableEditingRow > should render 1`] = `
+"<td data-v-627548cb=""><select data-v-627548cb="" class="form-select">
+    <option data-v-627548cb="" value="NEW">NEW</option>
+    <option data-v-627548cb="" value="REQ">REQ</option>
+    <option data-v-627548cb="" value="SKIP">SKIP</option>
+    <option data-v-627548cb="" value="DONE">DONE</option>
+  </select></td>
+<td data-v-627548cb="" class="text-decoration-line-through"><select data-v-627548cb="" class="form-select" required=""></select></td>
+<td data-v-627548cb="">
+  <flaw-labels-contributor-stub data-v-627548cb="" modelvalue=""></flaw-labels-contributor-stub>
+</td>
+<td data-v-627548cb="">
+  <div data-v-627548cb="" class="actions"><button data-v-627548cb="" type="button" class="btn btn-sm btn-dark" title="Save"><i data-v-627548cb="" class="bi bi-check2"></i></button><button data-v-627548cb="" type="button" class="btn btn-sm btn-dark" title="Cancel"><i data-v-627548cb="" class="bi bi-x"></i></button></div>
+</td>"
+`;

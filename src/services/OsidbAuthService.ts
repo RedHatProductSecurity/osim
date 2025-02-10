@@ -97,6 +97,10 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
     });
   }
 
+  if (response.status === 204) {
+    return { response, data: undefined };
+  }
+
   return { data: await response.json(), response };
 }
 
