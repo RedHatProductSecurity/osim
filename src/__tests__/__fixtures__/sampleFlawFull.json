@@ -386,6 +386,7 @@
             "parent_model": "flaw"
         }
     ],
+    "labels": [],
     "dt": "2024-01-17T22:31:19.131516Z",
     "revision": "b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c",
     "version": "3.5.2",

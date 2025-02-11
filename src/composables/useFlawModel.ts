@@ -30,6 +30,7 @@ import {
 } from '@/types';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
+import { useFlawLabels } from './useFlawLabels';
 
 export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const { flaw } = useFlaw();
@@ -48,6 +49,8 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     saveAffects,
     wereAffectsEditedOrAdded,
   } = useFlawAffectsModel();
+
+  const { areLabelsUpdated, updateLabels } = useFlawLabels();
 
   const router = useRouter();
   const committedFlaw = ref<null | ZodFlawType>(null);
@@ -166,6 +169,10 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
 
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(saveAffects);
+    }
+
+    if (areLabelsUpdated.value) {
+      queue.push(updateLabels);
     }
 
     try {

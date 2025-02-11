@@ -1,18 +1,12 @@
-import { toRaw, isRef, isReactive, isProxy, ref, toRef, watch, unref } from 'vue';
+import { toRaw, isRef, isReactive, isProxy, ref, unref, type Ref, type UnwrapRef } from 'vue';
 
 import { DateTime } from 'luxon';
 import * as R from 'ramda';
+import { watchOnce } from '@vueuse/core';
 
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
-
-export function watchedPropRef(prop: Record<string, any>, property: string, defaultValue: any) {
-  const reffedProp = toRef(prop, property);
-  const flexRef = reffedProp.value === undefined ? ref(defaultValue) : reffedProp;
-  watch(reffedProp, value => flexRef.value = value);
-  return flexRef;
-}
 
 export function unwrap(value: any): any {
   const unwrapped = toRaw(unref(value));
@@ -115,4 +109,17 @@ export function isAffectIn(affect: ZodAffectType, affects: ZodAffectType[]) {
 
 export function matcherForAffect(affect: ZodAffectType) {
   return (affectToMatch: ZodAffectType) => doAffectsMatch(affect, affectToMatch);
+}
+
+export function watchedRef<T>(): [Ref<T | undefined>, Ref<boolean>];
+export function watchedRef<T>(initialValue: T): [Ref<T>, Ref<boolean>];
+export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefined | UnwrapRef<T>)>, Ref<boolean>] {
+  const refValue = ref(initialValue);
+  const hasChanged = ref(false);
+
+  watchOnce(refValue, () => hasChanged.value = true);
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - TODO: this throws an error on `yarn type-check` but IDE is happy with it
+  return [refValue, hasChanged] as const;
 }

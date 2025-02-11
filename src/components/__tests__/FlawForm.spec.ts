@@ -43,6 +43,8 @@ vi.mock('@/composables/useTrackers', () => {
   };
 });
 
+vi.mock('@/services/LabelsService');
+
 const flawProps = (flaw: ZodFlawType, mode: 'create' | 'edit') => ({ flaw, mode, relatedFlaws: [flaw] });
 const flawEditModeProps = (flaw: ZodFlawType) => flawProps(flaw, 'edit');
 const flawCreateModeProps = (flaw: ZodFlawType) => flawProps(flaw, 'create');

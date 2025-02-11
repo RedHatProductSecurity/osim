@@ -314,6 +314,15 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </label>
+    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden">
+          <div data-v-5d530569="">
+            <p data-v-5d530569="">No available labels</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div data-v-76e7a15d="" class="col-6">
     <div data-v-d6c306ee="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
