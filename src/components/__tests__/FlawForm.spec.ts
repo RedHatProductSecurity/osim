@@ -474,6 +474,46 @@ describe('flawForm', () => {
     expect(bugzillaLink.exists()).toBe(false);
   });
 
+  osimFullFlawTest('should show a link to Jira if task_key exists', async ({ flaw }) => {
+    flaw.task_key = 'OSIM-1234';
+
+    vi.mock(import('@/services/JiraService'), async (importOriginal) => {
+      const actual = await importOriginal();
+      return {
+        ...actual,
+        jiraTaskUrl: () => 'http://jira-example.com',
+      };
+    });
+
+    const subject = mountWithProps(flawEditModeProps(flaw));
+
+    const flawLinks = subject.findAll('.osim-flaw-header-link > a');
+    expect(flawLinks.length).toBe(2);
+    expect(flawLinks[1].text()).contain('Jira');
+
+    vi.clearAllMocks();
+  });
+
+  osimFullFlawTest('should not show a link to Jira if task_key does not exists', async ({ flaw }) => {
+    flaw.task_key = '';
+
+    vi.mock(import('@/services/JiraService'), async (importOriginal) => {
+      const actual = await importOriginal();
+      return {
+        ...actual,
+        jiraTaskUrl: () => 'http://jira-example.com',
+      };
+    });
+
+    const subject = mountWithProps(flawEditModeProps(flaw));
+
+    const flawLinks = subject.findAll('.osim-flaw-header-link > a');
+    expect(flawLinks.length).toBe(1);
+    expect(flawLinks[0].text()).not.toContain('Jira');
+
+    vi.clearAllMocks();
+  });
+
   osimFullFlawTest('should show CreatedDate on Flaw Edit', async ({ flaw }) => {
     const subject = mountWithProps(flawEditModeProps(flaw));
     const createdAtField = subject
