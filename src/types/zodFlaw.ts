@@ -156,7 +156,7 @@ export const ZodFlawSchema = z.object({
   components: z.array(z.string().min(1).max(100)),
   title: z.string().min(4),
   owner: z.string().nullish(),
-  history: z.array(ZodHistoryItemSchema).nullish(),
+  history: z.array(z.any()).nullish(),
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only
   classification: ZodFlawClassification.nullish(),
