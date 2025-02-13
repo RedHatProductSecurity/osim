@@ -31,6 +31,7 @@ import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSource
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
+import { jiraTaskUrl } from '@/services/JiraService';
 
 const props = defineProps<{
   flaw: ZodFlawType;
@@ -175,15 +176,25 @@ const createdDate = computed(() => {
       >
         <div class="row osim-flaw-form-section pt-0">
           <div class="osim-flaw-form-header">
-            <div v-if="flaw.meta_attr?.bz_id" class="osim-flaw-header-link">
+            <div class="osim-flaw-header-link">
               <a
+                v-if="flaw.meta_attr?.bz_id"
                 :href="bugzillaLink"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
               </a>
+              <a
+                v-if="flaw.task_key"
+                :href="jiraTaskUrl(flaw.task_key)"
+                target="_blank"
+                :disabled="isSaving"
+              >
+                Open in Jira <i class="bi-box-arrow-up-right ms-2" />
+              </a>
             </div>
+
             <FlawAlertsList
               :flaw="flaw"
               class="col-12 osim-alerts-banner"
@@ -557,8 +568,10 @@ div.osim-content {
 
 .osim-flaw-header-link {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   right: 0;
-  top: 1rem;
+  top: 0.25rem;
   width: auto;
 }
 </style>
