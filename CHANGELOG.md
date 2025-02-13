@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2025.2.0]
 ### Added
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
 * Support PURLs in affected components (`OSIDB-3412`)
@@ -397,7 +397,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.2.0...HEAD
+[2025.2.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.1...v2025.2.0
 [2024.12.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...v2024.12.1
 [2024.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...v2024.12.0
 [2024.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.0...v2024.11.1
