@@ -19,9 +19,11 @@ import {
 import { footerHeight, footerTop } from '@/stores/responsive';
 
 import { updateCWEData } from './services/CweService';
+import { useToastStore } from './stores/ToastStore';
 
 setup();
 
+const { addToast } = useToastStore();
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
@@ -45,6 +47,12 @@ onMounted(() => {
   const ms15Minutes = 15 * 60 * 60 * 1000;
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
   updateRelativeOsimBuildDate();
+
+  addToast({
+    title: 'Privacy Notice',
+    body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
+    ' In some cases that information may be publicly visible.',
+  });
 });
 onBeforeUnmount(() => {
   clearInterval(buildDateIntervalId);
