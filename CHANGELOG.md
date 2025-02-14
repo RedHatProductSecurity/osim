@@ -1,5 +1,10 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Global privacy notice toast (`OSIDB-3997`)
+* Public comments privacy notice banner (`OSIDB-3997`)
+
 ## [2025.2.0]
 ### Added
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
