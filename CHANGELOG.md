@@ -4,6 +4,7 @@
 ### Added
 * Global privacy notice toast (`OSIDB-3997`)
 * Public comments privacy notice banner (`OSIDB-3997`)
+* Provide seconds in flaw history timestamps (`OSIDB-3958`)
 
 ## [2025.2.0]
 ### Added

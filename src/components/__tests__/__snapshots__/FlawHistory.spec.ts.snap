@@ -12,7 +12,7 @@ exports[`flawHistory > is shown if history present on flaw 1`] = `
       </div>
       <div data-v-f4fcc8d4="" class="mt-2">
         <div data-v-f4fcc8d4="" class="mt-2"><label data-v-f4fcc8d4="" class="mx-2 form-label w-100">
-            <div data-v-f4fcc8d4="" class="alert alert-info mb-1 p-2"><span data-v-f4fcc8d4="">2024-10-04 15:06 UTC - 1</span>
+            <div data-v-f4fcc8d4="" class="alert alert-info mb-1 p-2"><span data-v-f4fcc8d4="">2024-10-04 15:06:56 UTC - 1</span>
               <ul data-v-f4fcc8d4="" class="mb-2">
                 <li data-v-f4fcc8d4="">
                   <div data-v-f4fcc8d4="" class="ms-3 pb-0"><span data-v-f4fcc8d4="">Update</span><span data-v-f4fcc8d4="" class="fw-bold"> Owner</span><span data-v-f4fcc8d4="">:  </span><i data-v-f4fcc8d4="" class="bi bi-arrow-right"></i> noemail@example.com</div>

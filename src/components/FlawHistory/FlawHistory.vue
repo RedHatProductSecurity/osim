@@ -127,7 +127,7 @@ function clearFilters() {
             <template v-for="historyEntry in paginatedHistoryItems" :key="historyEntry.pgh_slug">
               <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
                 <span>
-                  {{ formatDateWithTimezone(historyEntry.pgh_created_at || '') }}
+                  {{ formatDateWithTimezone(historyEntry.pgh_created_at || '', true) }}
                   - {{ historyEntry.pgh_context?.user || 'System' }}
                 </span>
                 <ul class="mb-2">

@@ -70,6 +70,23 @@ describe('flawHistory', () => {
     expect(historyListItem?.text()).includes('Update Owner:');
   });
 
+  osimFullFlawTest('shows seconds, minutes, hours in timestamp', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(sampleHistoryItem());
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const historyEntry = subject.find('label:has(div.alert-info)');
+    expect(historyEntry?.text()).includes('15:06:56');
+  });
+
   it('filters history items based on date range', async () => {
     const mockHistory = [{
       pgh_created_at: '2024-10-04T15:00:00.000000Z',
