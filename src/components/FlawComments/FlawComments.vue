@@ -280,6 +280,9 @@ const clearSuggestions = (event: FocusEvent | KeyboardEvent | MouseEvent) => {
             tabindex="-1"
             @blur.capture="clearSuggestions"
           >
+            <div v-if="selectedTab === CommentType.Public" class="alert alert-warning">
+              Any information provided in this comment will be publicly visible on Bugzilla.
+            </div>
             <template v-if="!isInternalComment">
               <LabelTextarea v-model="newComment" :label="`New ${CommentType[selectedTab]} Comment`" />
             </template>
