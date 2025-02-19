@@ -65,9 +65,10 @@ export function formatDate(date: Date | string, includeTime: boolean): string {
   return DateTime.fromJSDate(jsDate, { zone: 'utc' }).toFormat(format);
 }
 
-export function formatDateWithTimezone(value: string) {
+export function formatDateWithTimezone(value: string, withSeconds = false): string {
+  const format = withSeconds ? 'yyyy-MM-dd HH:mm:ss ZZZZ' : 'yyyy-MM-dd HH:mm ZZZZ';
   return DateTime.fromISO(value, { setZone: true })
-    .toFormat('yyyy-MM-dd HH:mm ZZZZ');
+    .toFormat(format);
 }
 
 export function getSpecficCvssScore(scores: any[], issuer: string, version: string) {
