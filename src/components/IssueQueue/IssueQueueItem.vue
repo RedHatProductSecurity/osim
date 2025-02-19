@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { useToggle } from '@vueuse/core';
-
 import type { FilteredIssue } from './IssueQueue.vue';
 
-const { issue } = defineProps<{
+const { issue, showLabels } = defineProps<{
   issue: FilteredIssue;
+  showLabels: boolean;
 }>();
 
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
@@ -16,9 +15,7 @@ const { issue } = defineProps<{
 const nonIdFields: Exclude<keyof FilteredIssue, 'id'>[] =
   ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
 
-const hasBadges = computed(() => issue.embargoed || !!issue.labels?.length);
-const truncatedLabelCount = 4;
-const [showLabels, toggleShowLabels] = useToggle();
+const hasBadges = computed(() => issue.embargoed || (!!issue.labels?.length && showLabels));
 const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
   if (
     (a.state === 'REQ' && b.state !== 'REQ')
@@ -35,9 +32,6 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
 
   return a.label.localeCompare(b.label);
 }) ?? []);
-const truncatedLabels = computed(
-  () => showLabels.value ? sortedLabels.value : sortedLabels.value?.slice(0, truncatedLabelCount),
-);
 </script>
 
 <template>
@@ -67,32 +61,28 @@ const truncatedLabels = computed(
     class="osim-badge-lane"
     :class="$attrs.class"
   >
-    <td colspan="100%">
-      <div class="gap-1 d-flex">
+    <td colspan="1">
+      <div class="gap-1 d-flex flex-wrap">
         <span
           v-if="issue.embargoed"
           class="badge rounded-pill text-bg-danger border border-primary"
         >Embargoed</span>
-        <span
-          v-for="label in truncatedLabels"
-          :key="label.label"
-          class="badge rounded-pill text-capitalize border"
-          :class="{
-            'text-bg-warning fw-bold border-warning': label.state == 'REQ',
-            'text-bg-light-info border-info': label.state != 'REQ' && label.relevant,
-            'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
-          }"
-          :title="label.state == 'REQ' ? 'Requested' : ''"
-        >{{ label.label }}</span>
-        <i
-          v-if="(issue.labels?.length ?? 0) > truncatedLabelCount"
-          class="bi pe-1 cursor-pointer osim-show-all-labels"
-          :class="[showLabels ? 'bi-caret-left-fill' : 'bi-caret-right-fill']"
-          title="Show all labels"
-          @click="toggleShowLabels()"
-        />
+        <template v-if="showLabels">
+          <span
+            v-for="label in sortedLabels"
+            :key="label.label"
+            class="badge rounded-pill text-capitalize border"
+            :class="{
+              'text-bg-warning fw-bold border-warning': label.state == 'REQ',
+              'text-bg-light-info border-info': label.state != 'REQ' && label.relevant,
+              'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
+            }"
+            :title="label.state == 'REQ' ? 'Requested' : ''"
+          >{{ label.label }}</span>
+        </template>
       </div>
     </td>
+    <td colspan="90%"></td>
   </tr>
 </template>
 

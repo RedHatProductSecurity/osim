@@ -13,6 +13,7 @@ export const SettingsSchema = z.object({
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
   trackersPerPage: z.number(),
+  isHidingLabels: z.boolean().optional().default(false),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -23,8 +24,9 @@ const defaultValues: SettingsType = {
   showNotifications: false,
   affectsPerPage: 10,
   trackersPerPage: 10,
+  isHidingLabels: false,
 };
-const osimSettings = useStorage('OSIM::USER-SETTINGS', defaultValues);
+const osimSettings = useStorage('OSIM::USER-SETTINGS', structuredClone(defaultValues));
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const settings = ref<SettingsType>(osimSettings.value);
@@ -36,7 +38,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       settings.value = validatedSettings.data;
     }
   } else {
-    settings.value = defaultValues;
+    settings.value = structuredClone(defaultValues);
   }
 
   watch(settings, () => {
@@ -48,7 +50,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   }
 
   function $reset() {
-    settings.value = defaultValues;
+    settings.value = structuredClone(defaultValues);
   }
 
   return {
