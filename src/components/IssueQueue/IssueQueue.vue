@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { DateTime } from 'luxon';
 import { useElementVisibility } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 
 import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
 
@@ -10,6 +11,7 @@ import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import type { ZodFlawType } from '@/types';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const props = defineProps<{
   isFinalPageFetched: boolean;
@@ -20,6 +22,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 const userStore = useUserStore();
+const { settings } = storeToRefs(useSettingsStore());
 
 export type FilteredIssue = ReturnType<typeof relevantFields>;
 
@@ -139,6 +142,7 @@ watch(isButtonVisible, (isVisible) => {
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
+      <LabelCheckbox v-model="settings.isHidingLabels" label="Hide labels" class="d-inline-block" />
       <div v-if="isLoading" class="d-inline-block float-end">
         <span
           class="spinner-border spinner-border-sm"
@@ -181,6 +185,7 @@ watch(isButtonVisible, (isVisible) => {
           <template v-for="(relevantIssue, index) of issues" :key="relevantIssue.id">
             <IssueQueueItem
               :issue="relevantIssue"
+              :showLabels="!settings.isHidingLabels"
               :class="{
                 'osim-shaded': index % 2 === 0,
               }"

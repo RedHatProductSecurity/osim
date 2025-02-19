@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Settings } from 'luxon';
+import { flushPromises } from '@vue/test-utils';
 
 import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
 import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
@@ -7,6 +8,7 @@ import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 import { mountWithConfig } from '@/__tests__/helpers';
 import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import type { ZodFlawType } from '@/types';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 vi.mock('@/stores/UserStore', () => ({
   useUserStore: () => ({
@@ -213,7 +215,7 @@ describe('issueQueue', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('should truncate flaw labels', () => {
+  it('should not render flaw labels when isHidingLabels is true', async () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
@@ -221,22 +223,28 @@ describe('issueQueue', () => {
       } as ZodFlawType],
     });
 
-    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+    const store = useSettingsStore();
+    store.settings.isHidingLabels = true;
+    await flushPromises();
 
-    expect(labels.length).toBe(4);
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+    expect(labels.length).toBe(0);
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('should toggle flaw labels', async () => {
+  it('should render flaw labels when isHidingLabels is toggled', async () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
         labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', contributor: '' })),
       } as ZodFlawType],
     });
+    const store = useSettingsStore();
+    store.settings.isHidingLabels = true;
+    await flushPromises();
 
-    const toggleBtn = wrapper.findComponent(IssueQueueItem).find('i');
-    await toggleBtn.trigger('click');
+    const toggleBtn = wrapper.findAllComponents(LabelCheckbox)[2].find('input[type="checkbox"]');
+    await toggleBtn.setValue(false);
 
     const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
     expect(labels.length).toBe(10);

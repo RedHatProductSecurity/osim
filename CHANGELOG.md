@@ -6,6 +6,9 @@
 * Public comments privacy notice banner (`OSIDB-3997`)
 * Provide seconds in flaw history timestamps (`OSIDB-3958`)
 
+### Changed
+* Add a checkbox to hide/show flaw labels (`OSIDB-3991`)
+
 ## [2025.2.0]
 ### Added
 * Show Flaw Labels on Flaw List Component (`OSIDB-3805`)
