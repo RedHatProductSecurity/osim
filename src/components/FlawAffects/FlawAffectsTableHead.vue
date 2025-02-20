@@ -114,6 +114,9 @@ const {
           class="bi align-middle"
         />
       </th>
+      <th>
+        <span class="align-bottom me-1">Justification</span>
+      </th>
       <th @click="setSort('resolution')">
         <span class="align-bottom me-1">Resolution</span>
         <button
@@ -245,57 +248,61 @@ thead {
 
       // Editing State Icon
       &:nth-of-type(2) {
-        min-width: 1ch;
-        max-width: 1ch;
+        width: 2ch;
         padding: 0;
       }
 
       &:nth-of-type(3) {
         // Module
-        min-width: 12ch;
+        width: 18ch;
       }
 
       &:nth-of-type(4) {
         // Component
-        min-width: 10ch;
+        width: 18ch;
       }
 
       &:nth-of-type(5) {
         // PURL
-        min-width: 16ch;
+        width: 24ch;
       }
 
       &:nth-of-type(6) {
         // Affectedness
-        min-width: 16ch;
+        width: 16ch;
       }
 
       &:nth-of-type(7) {
-        // Resolution
-        min-width: 14ch;
+        // Justification
+        width: 24ch;
       }
 
       &:nth-of-type(8) {
-        // Impact
-        min-width: 10ch;
+        // Resolution
+        width: 16ch;
       }
 
       &:nth-of-type(9) {
+        // Impact
+        width: 16ch;
+      }
+
+      &:nth-of-type(10) {
         // CVSS
         min-width: 6ch;
       }
 
-      &:nth-of-type(10) {
+      &:nth-of-type(11) {
         // Trackers
-        min-width: 8ch;
+        width: 8ch;
       }
 
-      &:nth-of-type(11) {
+      &:nth-of-type(12) {
         // Actions
         min-width: 6ch;
       }
 
-      &:nth-of-type(12) {
+      &:nth-of-type(13) {
         //  Selection Indicator
         min-width: 0;
         max-width: 0;
