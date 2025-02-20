@@ -80,7 +80,18 @@ table {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 20vw;
+
+    span,
+    select,
+    input {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    select {
+      padding-right: 3ch;
+    }
   }
 }
 </style>
