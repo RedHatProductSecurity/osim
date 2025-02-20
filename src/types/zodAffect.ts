@@ -7,15 +7,18 @@ import {
   ResolutionEnum,
   IssuerEnum,
   ImpactEnum,
+  NotAffectedJustificationEnum,
 } from '../generated-client';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 
+const JustificationEnumWithBlank = { Empty: '', ...NotAffectedJustificationEnum } as const;
 const AffectednessEnumWithBlank = { Empty: '', ...AffectednessEnum } as const;
 const ResolutionEnumWithBlank = { Empty: '', ...ResolutionEnum } as const;
 
 export const affectImpacts = { ...ImpactEnum, Empty: '' } as const;
 export const affectResolutions = ResolutionEnumWithBlank;
 export const affectAffectedness = AffectednessEnumWithBlank;
+export const affectJustification = JustificationEnumWithBlank;
 
 type PossibleResolutions = Record<AffectednessEnum, Partial<typeof ResolutionEnumWithBlank>>;
 export const possibleAffectResolutions: PossibleResolutions = {
@@ -85,6 +88,7 @@ export const ZodAffectSchema = z.object({
   uuid: z.string().uuid().nullish(),
   flaw: z.string().nullish(),
   affectedness: z.nativeEnum(AffectednessEnumWithBlank).nullish(),
+  not_affected_justification: z.nativeEnum(JustificationEnumWithBlank).nullish(),
   resolution: z.nativeEnum(ResolutionEnumWithBlank).nullish(),
   ps_module: z.string().max(100),
   purl: z.string().nullish().superRefine((purl, zodContext) => {

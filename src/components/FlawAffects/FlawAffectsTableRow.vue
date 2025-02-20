@@ -10,6 +10,7 @@ import {
   affectImpacts,
   affectAffectedness,
   possibleAffectResolutions,
+  affectJustification,
   type ZodAffectType,
 } from '@/types/zodAffect';
 import { IssuerEnum } from '@/generated-client';
@@ -116,6 +117,8 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
   if (selectedValue === 'NOTAFFECTED') {
     affect.delegated_resolution = '';
     affect.resolution = '';
+  } else {
+    affect.not_affected_justification = '';
   }
 }
 </script>
@@ -145,29 +148,27 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       />
     </td>
     <td>
-      <div class="ps-1">
-        <i
-          v-if="isBeingEdited(affect)"
-          class="bi bi-pencil"
-          title="This affect is currently being edited"
-        />
-        <i
-          v-else-if="isNew"
-          class="bi bi-plus-lg"
-          title="This affect is set for creation on save"
-        />
-        <i
-          v-else-if="isModified"
-          class="bi bi-file-earmark-diff"
-          title="This affect has modifications to save"
-        />
-        <i
-          v-else-if="isRemoved"
-          class="bi bi-trash"
-          title="This affect is set for deletion on save"
-        />
-        <i v-else class="bi bi-database-check" title="This affect is saved" />
-      </div>
+      <i
+        v-if="isBeingEdited(affect)"
+        class="bi bi-pencil"
+        title="This affect is currently being edited"
+      />
+      <i
+        v-else-if="isNew"
+        class="bi bi-plus-lg"
+        title="This affect is set for creation on save"
+      />
+      <i
+        v-else-if="isModified"
+        class="bi bi-file-earmark-diff"
+        title="This affect has modifications to save"
+      />
+      <i
+        v-else-if="isRemoved"
+        class="bi bi-trash"
+        title="This affect is set for deletion on save"
+      />
+      <i v-else class="bi bi-database-check" title="This affect is saved" />
     </td>
     <td>
       <input
@@ -234,6 +235,28 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       </select>
       <span v-else>
         {{ affect.affectedness }}
+      </span>
+    </td>
+
+    <td>
+      <select
+        v-if="isBeingEdited(affect)"
+        v-model="affect.not_affected_justification"
+        class="form-select"
+        :disabled="affect.affectedness !== 'NOTAFFECTED'"
+        @keydown="handleKeystroke($event, affect)"
+      >
+        <option
+          v-for="justification in affectJustification"
+          :key="justification"
+          :value="justification"
+          :selected="justification === affect.not_affected_justification"
+        >
+          {{ justification }}
+        </option>
+      </select>
+      <span v-else :title="affect.not_affected_justification ?? ''">
+        {{ affect.not_affected_justification }}
       </span>
     </td>
     <td>
@@ -431,12 +454,13 @@ tr {
     }
 
     &:nth-of-type(2) {
-      padding: 0;
-      padding-left: 0.5rem;
-
       & > div {
         text-align: right;
       }
+    }
+
+    &:nth-of-type(7) {
+      max-width: 24ch;
     }
 
     input,
