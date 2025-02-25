@@ -186,8 +186,8 @@ function addNewAffect() {
     affectedness: 'NEW',
     resolution: '',
     delegated_resolution: '',
-    ps_module: `NewModule-${newAffects.value.length}`,
-    ps_component: `NewComponent-${newAffects.value.length}`,
+    ps_module: `Module${newAffects.value.length}`,
+    ps_component: `Component${newAffects.value.length}`,
     purl: '',
     impact: '',
     cvss_scores: [{
