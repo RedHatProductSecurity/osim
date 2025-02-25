@@ -54,6 +54,12 @@ const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
   results.value = [];
 };
 
+const onBlur = () => {
+  if (contributor.value === '') {
+    modelValue.value = '';
+  }
+};
+
 watchDebounced(contributor, onQueryChange, { debounce: 300 });
 </script>
 <template>
@@ -74,6 +80,7 @@ watchDebounced(contributor, onQueryChange, { debounce: 300 });
       type="text"
       class="form-control"
       :disabled="isLoading"
+      @blur="onBlur"
     >
     <button
       type="button"
