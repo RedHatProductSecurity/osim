@@ -99,7 +99,7 @@ onMounted(() => {
 watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
   isEmbargoed.value = initialFlaw?.embargoed;
-  onReset();
+  shouldCreateJiraTask.value = false;
 });
 
 const isEmbargoed = ref<boolean>(false);

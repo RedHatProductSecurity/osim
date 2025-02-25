@@ -7,6 +7,9 @@
 * Provide seconds in flaw history timestamps (`OSIDB-3958`)
 * Add justification field for not affected affects (`OSIDB-4009`)
 
+### Fixed
+* Fix infinite loop on flaw update (`OSIDB-4026`)
+
 ### Changed
 * Add a checkbox to hide/show flaw labels (`OSIDB-3991`)
 
