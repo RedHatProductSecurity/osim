@@ -36,6 +36,7 @@ const affectsEditingStore = useAffectsEditingStore();
 const {
   cancelAllChanges,
   commitAllChanges,
+  editAffect,
   editSelectedAffects,
   getAffectPriorEdit,
   isAffectSelected,
@@ -202,6 +203,7 @@ function addNewAffect() {
     trackers: [],
     alerts: [],
   });
+  editAffect(newAffects.value[0]);
 }
 
 // Remove affects
