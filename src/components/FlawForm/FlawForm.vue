@@ -269,7 +269,6 @@ const createdDate = computed(() => {
               :error="errors.source"
               :options-hidden="hiddenSources"
             />
-            <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
           </div>
 
           <div class="col-6">
@@ -393,6 +392,9 @@ const createdDate = computed(() => {
               @acknowledgment:delete="deleteAcknowledgment"
             />
           </div>
+        </div>
+        <div class="osim-flaw-form-section">
+          <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
         </div>
         <div class="osim-flaw-form-section">
           <FlawAffects

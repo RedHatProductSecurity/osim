@@ -31,7 +31,7 @@ const availableLabels = computed(() =>
     !Object.values(labels.value).some(({ label }) => label === contextLabel),
   ),
 );
-const [isExpanded, toggleExpanded] = useToggle(false);
+const [isExpanded, toggleExpanded] = useToggle(true);
 
 function handleNewLabel(label: ZodFlawLabelType) {
   newLabels.value.add(label.label);
@@ -61,7 +61,10 @@ function handleUndoDelete(label: ZodFlawLabelType) {
 }
 </script>
 <template>
-  <LabelCollapsible label="Contributors" :isExpanded @toggle-expanded="toggleExpanded()">
+  <LabelCollapsible :isExpanded @toggle-expanded="toggleExpanded()">
+    <template #label>
+      <span class="section-label">Contributors</span>
+    </template>
     <div v-if="!(Object.keys(labels).length || availableLabels.length)">
       <p>No available labels</p>
     </div>
@@ -163,6 +166,12 @@ function handleUndoDelete(label: ZodFlawLabelType) {
 </template>
 
 <style scoped lang="scss">
+.section-label {
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
 .table {
   --bs-table-bg: #eee;
 
