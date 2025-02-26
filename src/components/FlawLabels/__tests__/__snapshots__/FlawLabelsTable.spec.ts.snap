@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawLabelsTable > should handle add label 1`] = `
-"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
   <div data-v-4715e8e2="" class="ps-3 border-start">
-    <div data-v-4715e8e2="" class="visually-hidden">
+    <div data-v-4715e8e2="" class="">
       <table data-v-5d530569="" class="table table-striped table-hover">
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
@@ -44,9 +44,9 @@ exports[`flawLabelsTable > should handle add label 1`] = `
 `;
 
 exports[`flawLabelsTable > should handle delete label 1`] = `
-"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
   <div data-v-4715e8e2="" class="ps-3 border-start">
-    <div data-v-4715e8e2="" class="visually-hidden">
+    <div data-v-4715e8e2="" class="">
       <table data-v-5d530569="" class="table table-striped table-hover">
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
@@ -80,9 +80,9 @@ exports[`flawLabelsTable > should handle delete label 1`] = `
 `;
 
 exports[`flawLabelsTable > should handle edit label 1`] = `
-"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
   <div data-v-4715e8e2="" class="ps-3 border-start">
-    <div data-v-4715e8e2="" class="visually-hidden">
+    <div data-v-4715e8e2="" class="">
       <table data-v-5d530569="" class="table table-striped table-hover">
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
@@ -123,9 +123,9 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
 `;
 
 exports[`flawLabelsTable > should handle undo delete label 1`] = `
-"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
   <div data-v-4715e8e2="" class="ps-3 border-start">
-    <div data-v-4715e8e2="" class="visually-hidden">
+    <div data-v-4715e8e2="" class="">
       <table data-v-5d530569="" class="table table-striped table-hover">
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
@@ -158,9 +158,9 @@ exports[`flawLabelsTable > should handle undo delete label 1`] = `
 `;
 
 exports[`flawLabelsTable > should render flaw labels table 1`] = `
-"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Contributors</label></button>
+"<div data-v-4715e8e2="" data-v-5d530569="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
   <div data-v-4715e8e2="" class="ps-3 border-start">
-    <div data-v-4715e8e2="" class="visually-hidden">
+    <div data-v-4715e8e2="" class="">
       <table data-v-5d530569="" class="table table-striped table-hover">
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
