@@ -8,6 +8,9 @@
 * Add justification field for not affected affects (`OSIDB-4009`)
 * New affects are added in edit mode (`OSIDB-3953`)
 
+### Fixed
+* Fix infinite loop on flaw update (`OSIDB-4026`)
+
 ### Changed
 * Add a checkbox to hide/show flaw labels (`OSIDB-3991`)
 * Move contributors table next to affect section (`OSIDB-3995`)
