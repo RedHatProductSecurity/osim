@@ -10,13 +10,12 @@
 
 ### Fixed
 * Fix infinite loop on flaw update (`OSIDB-4026`)
-
-### Fixed
 * Flaw label contributor can now be removed (`OSIDB-4014`)
 
 ### Changed
 * Add a checkbox to hide/show flaw labels (`OSIDB-3991`)
 * Move contributors table next to affect section (`OSIDB-3995`)
+* Remove capitalization of labels in flaw queue view (`OSIDB-3994`)
 
 ## [2025.2.0]
 ### Added
