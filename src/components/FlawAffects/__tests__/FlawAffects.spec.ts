@@ -182,6 +182,21 @@ describe('flawAffects', () => {
     expect(badgeButtons.length).toBe(1);
   });
 
+  osimFullFlawTest('new affects are added in edit mode', async () => {
+    await flushPromises();
+
+    let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    expect(affectsTableEditingRows.length).toBe(0);
+
+    const actionBtns = subject.findAll('.affects-toolbar .affects-table-actions .btn');
+    const addAffectBtn = actionBtns.find(button => button.text() === 'Add New Affect');
+    addAffectBtn?.trigger('click');
+    await flushPromises();
+
+    affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
+    expect(affectsTableEditingRows.length).toBe(1);
+  });
+
   osimFullFlawTest('Affects are selectable by clicking in the row', async () => {
     let affectsTableSelectedRows = subject.findAll('.affects-management table tbody tr.selected');
     expect(affectsTableSelectedRows.length).toBe(0);

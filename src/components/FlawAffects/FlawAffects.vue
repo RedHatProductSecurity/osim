@@ -36,6 +36,7 @@ const affectsEditingStore = useAffectsEditingStore();
 const {
   cancelAllChanges,
   commitAllChanges,
+  editAffect,
   editSelectedAffects,
   getAffectPriorEdit,
   isAffectSelected,
@@ -185,8 +186,8 @@ function addNewAffect() {
     affectedness: 'NEW',
     resolution: '',
     delegated_resolution: '',
-    ps_module: `NewModule-${newAffects.value.length}`,
-    ps_component: `NewComponent-${newAffects.value.length}`,
+    ps_module: `Module${newAffects.value.length}`,
+    ps_component: `Component${newAffects.value.length}`,
     purl: '',
     impact: '',
     cvss_scores: [{
@@ -202,6 +203,7 @@ function addNewAffect() {
     trackers: [],
     alerts: [],
   });
+  editAffect(newAffects.value[0]);
 }
 
 // Remove affects
