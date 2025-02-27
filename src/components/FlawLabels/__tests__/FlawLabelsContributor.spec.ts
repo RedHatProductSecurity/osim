@@ -27,6 +27,14 @@ vi.mock('@/composables/useFlaw', () => ({
   }),
 }));
 
+const mountFlawLabelsContributor = (props = {}) => {
+  const wrapper = mountWithConfig(FlawLabelsContributor, { props: {
+    'onUpdate:modelValue': (e: string) => wrapper.setProps({ modelValue: e }),
+    ...props,
+  } });
+  return wrapper;
+};
+
 describe('flawLabelsContributor', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -37,16 +45,14 @@ describe('flawLabelsContributor', () => {
   });
 
   it('should render', () => {
-    const wrapper = mountWithConfig(FlawLabelsContributor);
+    const wrapper = mountFlawLabelsContributor();
 
     expect(wrapper.html()).toMatchSnapshot();
   });
 
   it('should assign the contributor on self assign', async () => {
-    const wrapper = mountWithConfig(FlawLabelsContributor, {
-      props: {
-        modelValue: 'skynet',
-      },
+    const wrapper = mountFlawLabelsContributor({
+      modelValue: 'not-skynet',
     });
 
     await wrapper.find('button').trigger('click');
@@ -55,9 +61,7 @@ describe('flawLabelsContributor', () => {
   });
 
   it('should assign the contributor on click', async () => {
-    const wrapper = mountWithConfig(FlawLabelsContributor, {
-      props: { 'onUpdate:modelValue': (e: string) => wrapper.setProps({ modelValue: e }) },
-    });
+    const wrapper = mountFlawLabelsContributor();
 
     await wrapper.find('input').setValue('skynet');
 
@@ -66,5 +70,25 @@ describe('flawLabelsContributor', () => {
     await wrapper.find('div.item').trigger('click');
 
     expect(wrapper.props('modelValue')).toBe('skynet');
+  });
+
+  it('should not allow arbitrary input', async () => {
+    const wrapper = mountFlawLabelsContributor({ modelValue: 'skynet' });
+
+    await wrapper.find('input').setValue('not-skynet');
+    await wrapper.find('input').trigger('blur');
+
+    expect(wrapper.props('modelValue')).toBe('skynet');
+  });
+
+  it('should allow empty input', async () => {
+    const wrapper = mountFlawLabelsContributor({
+      modelValue: 'skynet',
+    });
+
+    await wrapper.find('input').setValue('');
+    await wrapper.find('input').trigger('blur');
+
+    expect(wrapper.props('modelValue')).toBe('');
   });
 });
