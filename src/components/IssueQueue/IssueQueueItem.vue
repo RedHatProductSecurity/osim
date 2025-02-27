@@ -71,7 +71,7 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
           <span
             v-for="label in sortedLabels"
             :key="label.label"
-            class="badge rounded-pill text-capitalize border"
+            class="badge rounded-pill border"
             :class="{
               'text-bg-warning fw-bold border-warning': label.state == 'REQ',
               'text-bg-light-info border-info': label.state != 'REQ' && label.relevant,
