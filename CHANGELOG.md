@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2025.3.0]
 ### Added
 * Global privacy notice toast (`OSIDB-3997`)
 * Public comments privacy notice banner (`OSIDB-3997`)
@@ -10,8 +10,6 @@
 
 ### Fixed
 * Fix infinite loop on flaw update (`OSIDB-4026`)
-
-### Fixed
 * Flaw label contributor can now be removed (`OSIDB-4014`)
 
 ### Changed
@@ -415,7 +413,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.2.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.0...HEAD
+[2025.3.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.2.0...v2025.3.0
 [2025.2.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.1...v2025.2.0
 [2024.12.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...v2024.12.1
 [2024.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.11.1...v2024.12.0
