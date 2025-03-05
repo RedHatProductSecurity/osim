@@ -32,6 +32,29 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
 
   return a.label.localeCompare(b.label);
 }) ?? []);
+
+const labelColorMap: { [key: string]: string } = {
+  'ansible': '#FF9AFC',
+  'community': '#BD9EA3',
+  'devel-tools': '#FFFF9E',
+  'kernel': '#72CBD7',
+  'management': '#78E2B7',
+  'middleware': '#FFAC74',
+  'platforms': '#C39BFF',
+  'special-handling': '#D8FF89',
+  'cloud': '#A1CBF5',
+  'openshift': '#FFD574',
+  'other': '#86C770',
+  'rhel': '#FF7B7B',
+  'services': '#8292FF',
+};
+
+function getLabelColor(label: string, type: string): string {
+  if (type === 'context_based') {
+    return '#B9BCCB';
+  }
+  return labelColorMap[label] || '#FFFFFF';
+}
 </script>
 
 <template>
@@ -71,10 +94,11 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
           <span
             v-for="label in sortedLabels"
             :key="label.label"
-            class="badge rounded-pill text-capitalize border"
+            class="badge border"
+            :style="{ backgroundColor: getLabelColor(label.label, label.type) }"
             :class="{
               'text-bg-warning fw-bold border-warning': label.state == 'REQ',
-              'text-bg-light-info border-info': label.state != 'REQ' && label.relevant,
+              'text-black': label.state != 'REQ' && label.relevant,
               'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
             }"
             :title="label.state == 'REQ' ? 'Requested' : ''"
