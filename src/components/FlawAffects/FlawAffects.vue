@@ -11,15 +11,15 @@ import { useModal } from '@/composables/useModal';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
+import { newAffectCvss } from '@/composables/useCvssScores';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
-import type { ZodAffectType } from '@/types';
+import type { ZodAffectType, ZodFlawType } from '@/types';
 import { CVSS_V3 } from '@/constants';
+import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
-import { IssuerEnum } from '@/generated-client';
-import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { displayModes } from './flawAffectConstants';
 import { useFilterSortAffects } from './useFilterSortAffects';
@@ -187,16 +187,7 @@ function addNewAffect() {
     ps_component: `Component${newAffects.value.length}`,
     purl: '',
     impact: '',
-    cvss_scores: [{
-      // affect: z.string().uuid(),
-      cvss_version: CVSS_V3,
-      issuer: IssuerEnum.Rh,
-      comment: '',
-      score: null,
-      vector: '',
-      embargoed: props.embargoed,
-      alerts: [],
-    }],
+    cvss_scores: [newAffectCvss()],
     trackers: [],
     alerts: [],
   });

@@ -5,12 +5,12 @@ import { type ZodIssue } from 'zod';
 import { modifyPath } from 'ramda';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
-import { validateCvssVector } from '@/composables/useCvssCalculator';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
+import { useFlawLabels } from '@/composables/useFlawLabels';
 
 import {
   getFlawBugzillaLink,
@@ -31,17 +31,23 @@ import {
 import type { DeepMapValues, DeepNullable } from '@/utils/typeHelpers';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
-import { useFlawLabels } from './useFlawLabels';
 
 export function useFlawModel(onSaveSuccess: () => void) {
   const { flaw, isFlawUpdated } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
-  const cvssScoresModel = useFlawCvssScores(flaw);
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { flawRhCvss3, saveCvssScores, wasCvssModified } = cvssScoresModel;
+
+  const {
+    cvssVector,
+    cvssVersion,
+    saveCvssScores,
+    updateVector,
+    wasFlawCvssModified,
+  } = useCvssScores();
+
   const {
     affectsToDelete,
     removeAffects,
@@ -95,7 +101,7 @@ export function useFlawModel(onSaveSuccess: () => void) {
         .catch(createCatchHandler('Error creating Flaw'))
         .finally(async () => {
           if (flaw.value.uuid) {
-            if (wasCvssModified.value) {
+            if (wasFlawCvssModified.value) {
               await saveCvssScores()
                 .catch(createCatchHandler('Error saving CVSS scores after creating Flaw'));
             }
@@ -122,8 +128,8 @@ export function useFlawModel(onSaveSuccess: () => void) {
       });
     }
 
-    if (wasCvssModified) {
-      const validatedCVSS = validateCvssVector(flawRhCvss3.value.vector);
+    if (wasFlawCvssModified.value) {
+      const validatedCVSS = validateCvssVector(cvssVector.value, cvssVersion.value);
       if (validatedCVSS !== null) {
         addToast({
           title: 'CVSS Vector validation failed',
@@ -157,7 +163,8 @@ export function useFlawModel(onSaveSuccess: () => void) {
     if (isFlawUpdated.value) {
       queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
     }
-    if (wasCvssModified.value) {
+
+    if (wasFlawCvssModified.value) {
       queue.push(saveCvssScores);
     }
 
@@ -215,7 +222,7 @@ export function useFlawModel(onSaveSuccess: () => void) {
     createFlaw,
     updateFlaw,
     afterSaveSuccess,
-    ...cvssScoresModel,
+    updateVector,
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };
