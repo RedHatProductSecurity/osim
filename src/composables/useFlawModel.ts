@@ -39,10 +39,10 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
-  const cvssScoresModel = useFlawCvssScores(flaw);
+  const cvssScoresModel = useFlawCvssScores();
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { flawRhCvss3, saveCvssScores, wasCvssModified } = cvssScoresModel;
+  const { flawRhCvss, saveCvssScores, wasCvssModified } = cvssScoresModel;
   const {
     affectsToDelete,
     removeAffects,
@@ -126,7 +126,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     }
 
     if (wasCvssModified) {
-      const validatedCVSS = validateCvssVector(flawRhCvss3.value.vector);
+      const validatedCVSS = validateCvssVector(flawRhCvss.value.vector);
       if (validatedCVSS !== null) {
         addToast({
           title: 'CVSS Vector validation failed',

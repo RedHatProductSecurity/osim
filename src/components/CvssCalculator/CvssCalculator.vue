@@ -2,7 +2,8 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssCalculator from '@/components/CvssCalculator/CvssFactorButtons.vue';
+import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
+import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
 import {
   getFactors,
@@ -14,6 +15,12 @@ import {
 const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
 
+enum CvssVersion {
+  V3_1 = '3.1',
+  V4_0 = '4.0',
+}
+
+const currentCvssVersion = ref<CvssVersion>(CvssVersion.V3_1);
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
@@ -35,6 +42,7 @@ watch(() => cvssVector.value, () => {
 });
 
 function onInputFocus(event: FocusEvent) {
+  event.stopPropagation();
   isFocused.value = true;
   if (event.target !== cvssVectorInput.value.input) {
     cvssVectorInput.value.input.focus();
@@ -90,7 +98,20 @@ function highlightFactorValue(factor: null | string) {
     <div class="osim-input mb-2">
       <label class="label-group row">
         <span class="form-label col-3">
-          RH CVSSv3
+          RH CVSS
+          <select
+            v-model="currentCvssVersion"
+            class="ms-2"
+          >
+            <option
+              v-for="(cvssVersion, index) in CvssVersion"
+              :key="index"
+              :value="cvssVersion"
+              :selected="currentCvssVersion === cvssVersion"
+            >
+              {{ cvssVersion }}
+            </option>
+          </select>
         </span>
         <div class="input-wrapper col">
           <CvssVectorInput
@@ -106,6 +127,7 @@ function highlightFactorValue(factor: null | string) {
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
             @updateFactors="updateFactors(cvssVector)"
+            @click.prevent
           />
         </div>
         <div
@@ -126,15 +148,25 @@ function highlightFactorValue(factor: null | string) {
         <i class="bi bi-eraser"></i>
       </button>
     </div>
-    <CvssCalculator
+    <Cvss3Calculator
+      v-if="currentCvssVersion === CvssVersion.V3_1"
       v-model:cvssVector="cvssVector"
       v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused"
+      :isFocused="isFocused && currentCvssVersion === CvssVersion.V3_1"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
+    />
+    <Cvss4Calculator
+      v-else-if="currentCvssVersion === CvssVersion.V4_0"
+      v-model:cvssVector="cvssVector"
+      v-model:cvssScore="cvssScore"
+      v-model:cvssFactors="cvssFactors"
+      :highlightedFactor="highlightedFactor"
+      :highlightedFactorValue="highlightedFactorValue"
+      :isFocused="isFocused && currentCvssVersion === CvssVersion.V4_0"
     />
   </div>
 </template>
