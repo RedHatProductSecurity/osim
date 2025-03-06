@@ -76,7 +76,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
         <tr data-v-15d9c71d="" class="osim-badge-lane osim-shaded">
           <td data-v-15d9c71d="" colspan="1">
             <div data-v-15d9c71d="" class="gap-1 d-flex flex-wrap">
-              <!--v-if--><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-bg-warning fw-bold border-warning text-decoration-line-through text-bg-gray border-secondary" title="Requested">test-3</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test</span><span data-v-15d9c71d="" class="badge rounded-pill text-capitalize border text-decoration-line-through text-bg-gray border-secondary" title="">test-2</span>
+              <!--v-if--><span data-v-15d9c71d="" class="badge border text-bg-warning fw-bold border-warning text-decoration-line-through text-bg-gray border-secondary" style="background-color: rgb(255, 255, 255);" title="Requested">test-3</span><span data-v-15d9c71d="" class="badge border text-decoration-line-through text-bg-gray border-secondary" style="background-color: rgb(255, 255, 255);" title="">test</span><span data-v-15d9c71d="" class="badge border text-decoration-line-through text-bg-gray border-secondary" style="background-color: rgb(255, 255, 255);" title="">test-2</span>
             </div>
           </td>
           <td data-v-15d9c71d="" colspan="90%"></td>

@@ -1,5 +1,13 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Added colors to flaw list labels (`OSIDB-3992`)
+
+## [2025.3.1]
+### Fixed
+* Issue with affect justifications (`OSIDB-4075`)
+
 ## [2025.3.0]
 ### Added
 * Global privacy notice toast (`OSIDB-3997`)
