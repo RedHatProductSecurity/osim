@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssFactorButtons from '@/components/CvssCalculator/CvssFactorButtons.vue';
+import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 
 import {
   getFactors,
@@ -94,7 +94,7 @@ function highlightFactorValue(factor: null | string) {
   >
     <span>{{ cvssScore }}</span>
     <i class="bi bi-calculator-fill p-2" />
-    <CvssFactorButtons
+    <Cvss3Calculator
       v-model:cvssVector="cvssVector"
       v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
@@ -134,7 +134,7 @@ function highlightFactorValue(factor: null | string) {
           <i class="bi bi-eraser"></i>
         </button>
       </div>
-    </CvssFactorButtons>
+    </Cvss3Calculator>
   </div>
 </template>
 
