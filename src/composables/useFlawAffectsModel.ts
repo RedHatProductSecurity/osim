@@ -100,6 +100,9 @@ export function useFlawAffectsModel() {
   }
 
   function shouldUpsertAffectCvss(affect: ZodAffectType) {
+    if (!affect) {
+      console.error('useFlawAffectsModel::shouldUpsertAffectCvss() Affect is undefined');
+    };
     return affectRhCvss3(affect)?.vector && (didAffectCvssChange(affect) || !affect.uuid);
   }
 
