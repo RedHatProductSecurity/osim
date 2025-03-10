@@ -91,18 +91,22 @@ function getLabelColor(label: string, type: string): string {
           class="badge rounded-pill text-bg-danger border border-primary"
         >Embargoed</span>
         <template v-if="showLabels">
-          <span
+          <template
             v-for="label in sortedLabels"
             :key="label.label"
-            :style="{ backgroundColor: getLabelColor(label.label, label.type) }"
-            class="badge rounded-pill border"
-            :class="{
-              'text-bg-warning fw-bold border-warning': label.state == 'REQ',
-              'text-black': label.state != 'REQ' && label.relevant,
-              'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
-            }"
-            :title="label.state == 'REQ' ? 'Requested' : ''"
-          >{{ label.label }}</span>
+          >
+            <span
+              v-if="!label.contributor"
+              :style="{ backgroundColor: getLabelColor(label.label, label.type) }"
+              class="badge rounded-pill border"
+              :class="{
+                'text-bg-warning fw-bold border-warning': label.state == 'REQ',
+                'text-black': label.state != 'REQ' && label.relevant,
+                'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
+              }"
+              :title="label.state == 'REQ' ? 'Requested' : ''"
+            >{{ label.label }}</span>
+          </template>
         </template>
       </div>
     </td>
