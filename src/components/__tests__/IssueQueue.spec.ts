@@ -215,6 +215,23 @@ describe('issueQueue', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
+  it('should not render flaw labels that are already assigned', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: [
+          { label: 'test', state: 'REQ', contributor: 'test' },
+          { label: 'test-2', state: 'NEW', contributor: 'test-2' },
+        ],
+      } as ZodFlawType],
+    });
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+
+    expect(labels.length).toBe(0);
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
   it('should not render flaw labels when isHidingLabels is true', async () => {
     const wrapper = mountIssueQueue({
       issues: [{
