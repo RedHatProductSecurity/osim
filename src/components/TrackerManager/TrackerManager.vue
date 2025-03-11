@@ -8,6 +8,7 @@ import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
+import { trackerUrl } from '@/services/TrackerService';
 import TabsDynamic from '@/widgets/TabsDynamic/TabsDynamic.vue';
 import type { ZodAffectType, ZodFlawType } from '@/types';
 import { ImpactEnum } from '@/generated-client';
@@ -253,10 +254,17 @@ function hideLowSeverityTrackersWarning() {
                           title="Suggested Tracker"
                           class="ps-1"
                         >
-                          <i class="bi bi-box-arrow-in-right">
+                          <i class="bi bi-exclamation-circle">
                             <span class="visually-hidden"> Suggested Tracker </span>
                           </i>
                         </span>
+                        <a
+                          v-if="tracker.external_system_id"
+                          :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                          target="_blank"
+                          class="text-black"
+                          style="cursor: pointer"
+                        ><i class="ms-1 bi-box-arrow-up-right" /></a>
                       </span>
                     </label>
                   </div>
@@ -285,10 +293,17 @@ function hideLowSeverityTrackersWarning() {
                           title="Suggested Tracker"
                           class="ps-1"
                         >
-                          <i class="bi bi-box-arrow-in-right">
+                          <i class="bi bi-exclamation-circle">
                             <span class="visually-hidden"> Suggested Tracker </span>
                           </i>
                         </span>
+                        <a
+                          v-if="tracker.external_system_id"
+                          :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                          target="_blank"
+                          class="text-black"
+                          style="cursor: pointer"
+                        ><i class="ms-1 bi-box-arrow-up-right" /></a>
                       </span>
                     </label>
                   </div>
@@ -360,7 +375,14 @@ function hideLowSeverityTrackersWarning() {
                       :class="{'osim-suggested-tracker': tracker.selected}"
                     >
                       <span>{{ `${tracker.ps_update_stream}` }}</span>
-                      <span class="ms-2 fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                      <span class="fst-italic pe-1">{{ `${tracker.ps_component}` }}</span>
+                      <a
+                        v-if="tracker.external_system_id"
+                        :href="trackerUrl(tracker.type, tracker.external_system_id)"
+                        target="_blank"
+                        class="text-black"
+                        style="cursor: pointer"
+                      ><i class="ms-1 bi-box-arrow-up-right" /></a>
                       <span
                         v-if="tracker.selected"
                         title="Suggested Tracker"
