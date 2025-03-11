@@ -48,11 +48,14 @@ onMounted(() => {
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
   updateRelativeOsimBuildDate();
 
-  addToast({
-    title: 'Privacy Notice',
-    body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
-    ' In some cases that information may be publicly visible.',
-  });
+  if (!localStorage.getItem('privacyNoticeShown')) {
+    addToast({
+      title: 'Privacy Notice',
+      body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
+      ' In some cases that information may be publicly visible.',
+    });
+    localStorage.setItem('privacyNoticeShown', 'true');
+  }
 });
 onBeforeUnmount(() => {
   clearInterval(buildDateIntervalId);

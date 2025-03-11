@@ -1,5 +1,13 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Show privacy notice to users only once (`OSIDB-4077`)
+
+## [2025.3.1]
+### Fixed
+* Issue with affect justifications (`OSIDB-4075`)
+
 ## [2025.3.0]
 ### Added
 * Global privacy notice toast (`OSIDB-3997`)
