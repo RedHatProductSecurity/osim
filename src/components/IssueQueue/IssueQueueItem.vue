@@ -94,8 +94,8 @@ function getLabelColor(label: string, type: string): string {
           <span
             v-for="label in sortedLabels"
             :key="label.label"
-            class="badge border"
             :style="{ backgroundColor: getLabelColor(label.label, label.type) }"
+            class="badge rounded-pill border"
             :class="{
               'text-bg-warning fw-bold border-warning': label.state == 'REQ',
               'text-black': label.state != 'REQ' && label.relevant,
