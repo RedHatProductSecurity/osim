@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
+* Tacker links on tracker manager (`OSIDB-3595`)
 
 ### Changed
 * Show privacy notice to users only once (`OSIDB-4077`)
