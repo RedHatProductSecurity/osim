@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Added colors to flaw list labels (`OSIDB-3992`)
+
 ### Changed
 * Show privacy notice to users only once (`OSIDB-4077`)
 
