@@ -4,6 +4,9 @@
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
 
+### Fixed
+* Prevent flaw form UI rebasing screen bounds when using large input values (`OSIDB-4079`)
+
 ### Changed
 * Show privacy notice to users only once (`OSIDB-4077`)
 
