@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
+* Tacker links on tracker manager (`OSIDB-3595`)
 
 ### Fixed
 * Prevent flaw form UI rebasing screen bounds when using large input values (`OSIDB-4079`)
