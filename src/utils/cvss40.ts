@@ -13,8 +13,8 @@
  *
  * The "Round Half Up" method rounds a number to the nearest neighbor, rounding .5 away from zero.
  *
- * @param {number} value - The number to be rounded.
- * @param {number} [decimalPlaces=1] - The number of decimal places to round to (default is 1).
+ * @param value - The number to be rounded.
+ * @param [decimalPlaces=1] - The number of decimal places to round to (default is 1).
  * @return {number} - The rounded number to the specified number of decimal places.
  *
  * @example
@@ -23,8 +23,8 @@
  * roundToDecimalPlaces(6.748571428571428, 2); // returns 6.75
  * roundToDecimalPlaces(1.005, 2);            // returns 1.01
  */
-
-type Dict<T = any> = Record<string, T>;
+type DictKey = number | string | symbol;
+type Dict<K extends DictKey = string, T = any> = Record<K, T>;
 
 function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
   // Step 1: Shift the decimal point by multiplying with 10^decimalPlaces
@@ -53,7 +53,9 @@ function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
  * and computing equivalent classes for higher-level assessments.
  */
 
-const METRICS: Dict = {
+export type ThreatGroup = 'BASE' | 'ENVIRONMENTAL' | 'SUPPLEMENTAL' | 'THREAT';
+
+export const METRICS: Dict<ThreatGroup> = {
   // Base (11 metrics)
   BASE: {
     AV: ['N', 'A', 'L', 'P'],
@@ -74,10 +76,12 @@ const METRICS: Dict = {
   },
   // Environmental (14 metrics)
   ENVIRONMENTAL: {
-    CR: ['X', 'H', 'M', 'L'],
+    // Security Requirements
+    CR: ['X', 'H', 'M', 'L'], 
     IR: ['X', 'H', 'M', 'L'],
     AR: ['X', 'H', 'M', 'L'],
     MAV: ['X', 'N', 'A', 'L', 'P'],
+    // Modified Base Metrics
     MAC: ['X', 'L', 'H'],
     MAT: ['X', 'N', 'P'],
     MPR: ['X', 'N', 'L', 'H'],
@@ -102,7 +106,7 @@ const METRICS: Dict = {
 
 class Vector {
   static ALL_METRICS: Dict = Object.keys(METRICS).reduce((order, category) => {
-    return { ...order, ...METRICS[category] };
+    return { ...order, ...METRICS[category as ThreatGroup] };
   }, {});
 
   // Nomenclature base constant
@@ -118,16 +122,16 @@ class Vector {
      * This constructor initializes the metrics with their default values based on the CVSS v4.0 specification.
      * If a vector string is provided, it parses the string and updates the metrics accordingly.
      *
-     * @param {string} [vectorString=""] - Optional CVSS v4.0 vector string to initialize the metrics
+     * @param vectorString Optional CVSS v4.0 vector string to initialize the metrics
      * (e.g., "CVSS:4.0/AV:L/AC:L/PR:N/UI:R/...").
      */
   constructor(vectorString = '') {
     // Initialize the metrics
     const selected: Dict = {};
     for (const category in METRICS) {
-      for (const key in METRICS[category]) {
+      for (const key in METRICS[category as ThreatGroup]) {
         // Use the first value in the array of allowed values as the default
-        selected[key] = METRICS[category][key][0];
+        selected[key] = METRICS[category as ThreatGroup][key][0];
       }
     }
 
@@ -143,16 +147,16 @@ class Vector {
   }
 
   /**
-           * Gets the effective value for a given CVSS metric.
-           *
-           * This method determines the effective value of a metric, considering any
-           * modifications and defaults to the worst-case scenario for certain metrics.
-           * It checks if the metric has been overridden by an environmental metric and
-           * returns the appropriate value.
-           *
-           * @param {string} metric - The metric for which to get the effective value (e.g., "AV", "PR").
-           * @returns {string} - The effective metric value.
-           */
+   * Gets the effective value for a given CVSS metric.
+   *
+   * This method determines the effective value of a metric, considering any
+   * modifications and defaults to the worst-case scenario for certain metrics.
+   * It checks if the metric has been overridden by an environmental metric and
+   * returns the appropriate value.
+   *
+   * @param metric - The metric for which to get the effective value (e.g., "AV", "PR").
+   * @returns - The effective metric value.
+   */
   getEffectiveMetricValue(metric: string) {
     // Default worst-case scenarios for specific metrics
     const worstCaseDefaults: Dict = {
@@ -178,21 +182,21 @@ class Vector {
   }
 
   /**
-           * Updates the value of a specific CVSS metric and automatically refreshes the `raw` vector string.
-           *
-           * This method updates the value of the specified metric in the `metrics` object.
-           * After updating the metric, it updates the `raw` string by replacing the corresponding
-           * metric value in the existing string without reconstructing the entire string.
-           *
-           * Example usage:
-           * ```
-           * vector.updateMetric("AV", "L");
-           * console.log(vector.raw); // Output: "CVSS:4.0/AV:L/AC:L/..."
-           * ```
-           *
-           * @param {string} metric - The abbreviation of the metric to be updated (e.g., "AV", "AC").
-           * @param {string} value - The new value to assign to the metric (e.g., "L", "H").
-           */
+   * Updates the value of a specific CVSS metric and automatically refreshes the `raw` vector string.
+    *
+    * This method updates the value of the specified metric in the `metrics` object.
+    * After updating the metric, it updates the `raw` string by replacing the corresponding
+    * metric value in the existing string without reconstructing the entire string.
+    *
+    * Example usage:
+    * ```
+    * vector.updateMetric("AV", "L");
+    * console.log(vector.raw); // Output: "CVSS:4.0/AV:L/AC:L/..."
+    * ```
+    *
+    * @param metric - The abbreviation of the metric to be updated (e.g., "AV", "AC").
+    * @param value - The new value to assign to the metric (e.g., "L", "H").
+    */
   updateMetric(metric: string, value: number) {
     if (Object.prototype.hasOwnProperty.call(this.metrics, metric)) {
       this.metrics[metric] = value;
@@ -202,22 +206,22 @@ class Vector {
   }
 
   /**
-           * Updates the `metrics` object with values from a provided CVSS v4.0 vector string.
-           *
-           * This method parses a CVSS v4.0 vector string and updates the `metrics` object
-           * with the corresponding metric values. The method validates the vector string
-           * to ensure it adheres to the expected CVSS v4.0 format before processing.
-           *
-           * Example usage:
-           * ```
-           * vector.updateMetricsFromVectorString("CVSS:4.0/AV:L/AC:L/PR:N/UI:R/...");
-           * ```
-           *
-           * @param {string} vectorString - The CVSS v4.0 vector string to be parsed and applied
-           *                                (e.g., "CVSS:4.0/AV:L/AC:L/PR:N/UI:N/...").
-           * @throws {Error} - Throws an error if the vector string is invalid or does not
-           * conform to the expected format.
-           */
+   * Updates the `metrics` object with values from a provided CVSS v4.0 vector string.
+    *
+    * This method parses a CVSS v4.0 vector string and updates the `metrics` object
+    * with the corresponding metric values. The method validates the vector string
+    * to ensure it adheres to the expected CVSS v4.0 format before processing.
+    *
+    * Example usage:
+    * ```
+    * vector.updateMetricsFromVectorString("CVSS:4.0/AV:L/AC:L/PR:N/UI:R/...");
+    * ```
+    *
+    * @param vectorString - The CVSS v4.0 vector string to be parsed and applied
+    *                                (e.g., "CVSS:4.0/AV:L/AC:L/PR:N/UI:N/...").
+    * @throws {Error} - Throws an error if the vector string is invalid or does not
+    * conform to the expected format.
+    */
   updateMetricsFromVectorString(vector: string) {
     if (!vector) {
       throw new Error('The vector string cannot be null, undefined, or empty.');
@@ -247,11 +251,11 @@ class Vector {
     * it adheres to the expected format and values.
     * It verifies the presence of the "CVSS:4.0" prefix, the mandatory metrics, and their valid values.
     *
-    * @param {string} vector - The CVSS v4.0 vector string to validate
+    * @param vector - The CVSS v4.0 vector string to validate
     * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
-    * @returns {boolean} - Returns true if the vector is valid, otherwise false.
+    * @returns - Returns true if the vector is valid, otherwise false.
   */
-  validateStringVector(vector: string) {
+  validateStringVector(vector: string): boolean {
     const metrics = vector.split('/');
 
     // Check if the prefix is correct
@@ -298,13 +302,13 @@ class Vector {
   }
 
   /**
-           * Computes the equivalent classes for the given CVSS metrics.
-           *
-           * This method aggregates multiple detailed security metrics into a higher-level
-           * equivalent classes that represents the overall security posture.
-           *
-           * @returns {string} - The equivalent classes (e.g., "002201").
-           */
+   * Computes the equivalent classes for the given CVSS metrics.
+    *
+    * This method aggregates multiple detailed security metrics into a higher-level
+    * equivalent classes that represents the overall security posture.
+    *
+    * @returns - The equivalent classes (e.g., "002201").
+    */
   get equivalentClasses(): string {
     // Helper function to compute EQ1
     const computeEQ1 = () => {
@@ -403,14 +407,14 @@ class Vector {
   }
 
   /**
-           * Determines the CVSS nomenclature based on the metrics used in the vector.
-           *
-           * This method generates the nomenclature string by evaluating whether the vector includes
-           * threat and/or environmental metrics. The nomenclature helps to categorize the type of vector
-           * (e.g., "CVSS-B", "CVSS-BE", "CVSS-BT", "CVSS-BTE").
-           *
-           * @returns {string} - The CVSS nomenclature string.
-           */
+   * Determines the CVSS nomenclature based on the metrics used in the vector.
+   *
+   * This method generates the nomenclature string by evaluating whether the vector includes
+   * threat and/or environmental metrics. The nomenclature helps to categorize the type of vector
+   * (e.g., "CVSS-B", "CVSS-BE", "CVSS-BT", "CVSS-BTE").
+   *
+   * @returns - The CVSS nomenclature string.
+   */
   get nomenclature() {
     let nomenclature = Vector.BASE_NOMENCLATURE;
 
@@ -429,13 +433,13 @@ class Vector {
   }
 
   /**
-           * Dynamically generates the `raw` CVSS vector string based on the current state of `metrics`.
-           *
-           * This getter constructs the vector string from the `metrics` object, including only those metrics
-           * that are not set to "X". The string starts with "CVSS:4.0" followed by each metric and its value.
-           *
-           * @return {string} - The CVSS vector string in the format "CVSS:4.0/AV:N/AC:L/..."
-           */
+   * Dynamically generates the `raw` CVSS vector string based on the current state of `metrics`.
+    *
+    * This getter constructs the vector string from the `metrics` object, including only those metrics
+    * that are not set to "X". The string starts with "CVSS:4.0" followed by each metric and its value.
+    *
+    * @return {string} - The CVSS vector string in the format "CVSS:4.0/AV:N/AC:L/..."
+    */
   get raw() {
     // Construct the vector string dynamically based on the current state of `metrics`
     const baseString = 'CVSS:4.0';
@@ -447,20 +451,20 @@ class Vector {
   }
 
   /**
-           * Generates a detailed breakdown of equivalent classes with their associated severity levels.
-           *
-           * This method analyzes a vector string representing various dimensions of a vulnerability
-           * (known as macrovectors) and maps them to their corresponding human-readable severity levels
-           * ("High", "Medium", "Low").
-           *
-           * @example
-           * const breakdown = vectorInstance.severityBreakdown();
-           * console.log(breakdown["Exploitability"]); // Outputs: "Medium"
-           * console.log(breakdown["Complexity"]); // Outputs: "High"
-           *
-           * @returns {Object} An object where each key is a metric description and
-           * each value is the corresponding severity level.
-           */
+   * Generates a detailed breakdown of equivalent classes with their associated severity levels.
+    *
+    * This method analyzes a vector string representing various dimensions of a vulnerability
+    * (known as macrovectors) and maps them to their corresponding human-readable severity levels
+    * ("High", "Medium", "Low").
+    *
+    * @example
+    * const breakdown = vectorInstance.severityBreakdown();
+    * console.log(breakdown["Exploitability"]); // Outputs: "Medium"
+    * console.log(breakdown["Complexity"]); // Outputs: "High"
+    *
+    * @returns An object where each key is a metric description and
+    * each value is the corresponding severity level.
+    */
   get severityBreakdown() {
     const macroVector = this.equivalentClasses;
 
@@ -511,7 +515,7 @@ class Vector {
  * console.log(vuln.vector.raw); // Output the raw vector
  * @class
  */
-class CVSS40 {
+export class CVSS40 {
   //  Lookup table of macro vectors and their pre-computed equivalent classes value.
   static LOOKUP_TABLE: Dict = {
     '000000': 10,
@@ -788,7 +792,7 @@ class CVSS40 {
 
   // The following defines the index of each metric's values.
   // It is used when looking for the highest vector part of the
-  static MAX_COMPOSED: Dict<Dict> = {
+  static MAX_COMPOSED: Dict<string, Dict> = {
     // EQ1
     eq1: {
       0: ['AV:N/PR:N/UI:N/'],
@@ -837,7 +841,7 @@ class CVSS40 {
   };
 
   // max severity distances in EQs MacroVectors (+1)
-  static MAX_SEVERITY: Dict<Dict> = {
+  static MAX_SEVERITY: Dict<string, Dict> = {
     eq1: {
       0: 1,
       1: 4,
@@ -865,7 +869,7 @@ class CVSS40 {
   };
 
   // combinations produced by the MacroVector respective highest
-  static METRIC_LEVELS: Dict<Dict> = {
+  static METRIC_LEVELS: Dict<string, Dict> = {
     AV: { N: 0.0, A: 0.1, L: 0.2, P: 0.3 },
     PR: { N: 0.0, L: 0.1, H: 0.2 },
     UI: { N: 0.0, P: 0.1, A: 0.2 },
@@ -888,20 +892,20 @@ class CVSS40 {
   vector: Vector;
 
   /**
-           * Constructs a CVSS40 object and initializes its properties.
-           *
-           * This constructor validates the provided CVSS v4.0 vector string against the CVSS v4.0 specification,
-           * extracts the metrics from the vector string, computes the equivalent classes,
-           * and calculates the score.
-           *
-           * For detailed information on the CVSS v4.0 specification, refer to:
-           * https://www.first.org/cvss/v4.0/specification-document
-           *
-           * @param {string} vectorString - The CVSS v4.0 vector string
-           * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
-           *                                Defaults to an empty string if not provided.
-           * @throws {Error} - Throws an error if the vector string is invalid according to the CVSS v4.0 schema.
-           */
+   * Constructs a CVSS40 object and initializes its properties.
+    *
+    * This constructor validates the provided CVSS v4.0 vector string against the CVSS v4.0 specification,
+    * extracts the metrics from the vector string, computes the equivalent classes,
+    * and calculates the score.
+    *
+    * For detailed information on the CVSS v4.0 specification, refer to:
+    * https://www.first.org/cvss/v4.0/specification-document
+    *
+    * @param vectorString - The CVSS v4.0 vector string
+    * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
+    *                                Defaults to an empty string if not provided.
+    * @throws {Error} - Throws an error if the vector string is invalid according to the CVSS v4.0 schema.
+    */
   constructor(input: any = '') {
     if (input instanceof Vector) {
       // If the input is a Vector object, use it directly
@@ -921,27 +925,27 @@ class CVSS40 {
   }
 
   /**
-           * Calculates the CVSS v4.0 score for the given vector.
-           *
-           * This method follows the CVSS v4.0 specification to determine the score for a given vector.
-           * It handles the case where there is no impact on the system by returning a score of 0.0.
-           * Otherwise, it calculates the score based on the maximal scoring differences (MSD) for each EQ
-           * (Equivalency) and the severity distances from the highest severity vector in the same MacroVector.
-           *
-           * The process involves the following steps:
-           * 1. Determine the maximal scoring difference (MSD) for each EQ by computing the difference between
-           *    the current MacroVector and the next lower MacroVector.
-           * 2. Retrieve the highest severity vectors for each EQ and compute the severity distances from the
-           *    to-be-scored vector.
-           * 3. Calculate the current severity distances for each EQ and determine the proportion of the distance.
-           * 4. Compute the mean of the proportional distances.
-           * 5. Subtract the mean distance from the score of the highest severity vector to obtain the final score.
-           *
-           * For detailed information on the CVSS v4.0 specification, refer to:
-           * https://www.first.org/cvss/v4.0/specification-document
-           *
-           * @returns {number} - The calculated CVSS v4.0 score, rounded to one decimal place.
-           */
+   * Calculates the CVSS v4.0 score for the given vector.
+    *
+    * This method follows the CVSS v4.0 specification to determine the score for a given vector.
+    * It handles the case where there is no impact on the system by returning a score of 0.0.
+    * Otherwise, it calculates the score based on the maximal scoring differences (MSD) for each EQ
+    * (Equivalency) and the severity distances from the highest severity vector in the same MacroVector.
+    *
+    * The process involves the following steps:
+    * 1. Determine the maximal scoring difference (MSD) for each EQ by computing the difference between
+    *    the current MacroVector and the next lower MacroVector.
+    * 2. Retrieve the highest severity vectors for each EQ and compute the severity distances from the
+    *    to-be-scored vector.
+    * 3. Calculate the current severity distances for each EQ and determine the proportion of the distance.
+    * 4. Compute the mean of the proportional distances.
+    * 5. Subtract the mean distance from the score of the highest severity vector to obtain the final score.
+    *
+    * For detailed information on the CVSS v4.0 specification, refer to:
+    * https://www.first.org/cvss/v4.0/specification-document
+    *
+    * @returns - The calculated CVSS v4.0 score, rounded to one decimal place.
+    */
   calculateScore() {
     // Constants
     // When CIA triad is None
@@ -1056,7 +1060,7 @@ class CVSS40 {
     const current_severity_distance_eq2 = distances['AC'] + distances['AT'];
     const current_severity_distance_eq3eq6 = distances['VC'] + distances['VI'] + distances['VA'] + distances['CR'] + distances['IR'] + distances['AR'];
     const current_severity_distance_eq4 = distances['SC'] + distances['SI'] + distances['SA'];
-    const current_severity_distance_eq5 = 0; // EQ5 is always 0 in this context
+    // const current_severity_distance_eq5 = 0; // EQ5 is always 0 in this context
 
     // if the next lower macro score do not exist the result is Nan
     // Rename to maximal scoring difference (aka MSD)
@@ -1145,16 +1149,16 @@ class CVSS40 {
   }
 
   /**
-           * Calculates the severity distances between the effective metric values and the extracted metric values
-           * for a given maximum vector.
-           *
-           * This method computes the difference between the effective value of each metric in the CVSS vector and
-           * the corresponding value in the provided maximum vector. The differences are stored in an object where
-           * the keys are the metric names and the values are the calculated distances.
-           *
-           * @param {string} maxVector - The maximum vector string representing the highest severity levels.
-           * @returns {object} - An object with keys as metric names and values as the calculated severity distances.
-           */
+   * Calculates the severity distances between the effective metric values and the extracted metric values
+    * for a given maximum vector.
+    *
+    * This method computes the difference between the effective value of each metric in the CVSS vector and
+    * the corresponding value in the provided maximum vector. The differences are stored in an object where
+    * the keys are the metric names and the values are the calculated distances.
+    *
+    * @param maxVector - The maximum vector string representing the highest severity levels.
+    * @returns - An object with keys as metric names and values as the calculated severity distances.
+    */
   calculateSeverityDistances(maxVector: string) {
     const distances: Dict = {};
     for (const metric in CVSS40.METRIC_LEVELS) {
@@ -1167,18 +1171,18 @@ class CVSS40 {
   }
 
   /**
-           * Calculates the qualitative severity rating based on the CVSS score.
-           *
-           * The rating is determined according to the following scale:
-           * - None: 0.0
-           * - Low: 0.1 - 3.9
-           * - Medium: 4.0 - 6.9
-           * - High: 7.0 - 8.9
-           * - Critical: 9.0 - 10.0
-           *
-           * @param {number} score - The CVSS score.
-           * @returns {string} - The qualitative severity rating.
-           */
+   * Calculates the qualitative severity rating based on the CVSS score.
+    *
+    * The rating is determined according to the following scale:
+    * - None: 0.0
+    * - Low: 0.1 - 3.9
+    * - Medium: 4.0 - 6.9
+    * - High: 7.0 - 8.9
+    * - Critical: 9.0 - 10.0
+    *
+    * @param score - The CVSS score.
+    * @returns - The qualitative severity rating.
+    */
   calculateSeverityRating(score: number) {
     if (score === 0.0) {
       return 'None';
@@ -1195,15 +1199,15 @@ class CVSS40 {
   }
 
   /**
-           * Extracts the value of a specified metric from a given string.
-           *
-           * This method finds the value of the specified metric within the provided string.
-           * The metric value is expected to be followed by a colon and may be terminated by a slash.
-           *
-           * @param {string} metric - The metric to extract the value for.
-           * @param {string} str - The string containing the metric and its value.
-           * @returns {string} - The extracted metric value.
-           */
+   * Extracts the value of a specified metric from a given string.
+    *
+    * This method finds the value of the specified metric within the provided string.
+    * The metric value is expected to be followed by a colon and may be terminated by a slash.
+    *
+    * @param metric - The metric to extract the value for.
+    * @param str - The string containing the metric and its value.
+    * @returns - The extracted metric value.
+    */
   extractValueMetric(metric: string, str: string) {
     const metricIndex = str.indexOf(metric) + metric.length + 1;
     const extracted = str.slice(metricIndex);
@@ -1211,22 +1215,23 @@ class CVSS40 {
   }
 
   /**
-           * Utility method to get the maximum vectors for a given equivalency (EQ) number.
-           *
-           * This method retrieves the highest severity vectors corresponding to the provided
-           * EQ number based on the lookup table.
-           *
-           * @param {string} macroVector - The macro vector string representing the equivalent classes.
-           * @param {number} eqNumber - The EQ number to look up (1-based index).
-           * @returns {Array} - An array of highest severity vectors for the given EQ number.
-           * @throws {Error} - Throws an error if the lookup key is not found for the given EQ number.
-           */
+   * Utility method to get the maximum vectors for a given equivalency (EQ) number.
+    *
+    * This method retrieves the highest severity vectors corresponding to the provided
+    * EQ number based on the lookup table.
+    *
+    * @param macroVector - The macro vector string representing the equivalent classes.
+    * @param eqNumber - The EQ number to look up (1-based index).
+    * @returns - An array of highest severity vectors for the given EQ number.
+    * @throws {Error} - Throws an error if the lookup key is not found for the given EQ number.
+    */
   getMaxSeverityVectorsForEQ(macroVector: string, eqNumber: number) {
     return CVSS40.MAX_COMPOSED['eq' + eqNumber][macroVector[eqNumber - 1]];
   }
 }
 
-export const CVSS4Metrics = {
+// UI Data
+export const CVSS4MetricsForUI = {
   'Base Metrics': {
     fill: 'supplier',
     metric_groups: {
