@@ -104,7 +104,7 @@ function getLabelColor(label: string, type: string): string {
                 'text-black': label.state != 'REQ' && label.relevant,
                 'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
               }"
-              :title="label.state == 'REQ' ? 'Requested' : ''"
+              :title="label.state === 'REQ' ? 'Requested' : ''"
             >{{ label.label }}</span>
           </template>
         </template>
