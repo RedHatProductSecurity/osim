@@ -201,7 +201,7 @@ const createdDate = computed(() => {
               @expandFocusedComponent="expandFocusedComponent"
             />
           </div>
-          <div :id="flaw.uuid" class="col-6">
+          <div :id="flaw.uuid" class="col-6 flaw-form-subdivision">
             <LabelEditable
               v-model="flaw.title"
               label="Title"
@@ -270,8 +270,7 @@ const createdDate = computed(() => {
               :options-hidden="hiddenSources"
             />
           </div>
-
-          <div class="col-6">
+          <div class="col-6 flaw-form-subdivision">
             <IssueFieldState
               v-if="mode === 'edit'"
               :classification="flaw.classification"
@@ -462,6 +461,10 @@ form.osim-flaw-form :deep(*) {
   .osim-flaw-form-header {
     min-height: 3rem;
     margin-block: 0.5rem;
+  }
+
+  .flaw-form-subdivision {
+    max-width: 100ch;
   }
 }
 
