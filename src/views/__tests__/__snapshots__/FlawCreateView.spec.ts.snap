@@ -13,7 +13,7 @@ exports[`flawCreateView > should render 1`] = `
             </div>
             <!--v-if-->
           </div>
-          <div data-v-76e7a15d="" id="" class="col-6"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+          <div data-v-76e7a15d="" id="" class="col-6 flaw-form-subdivision"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
               <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
                 <!--v-if-->
                 <!-- for invalid-tooltip positioning -->
@@ -256,7 +256,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
             </label>
           </div>
-          <div data-v-76e7a15d="" class="col-6">
+          <div data-v-76e7a15d="" class="col-6 flaw-form-subdivision">
             <!--v-if--><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
               <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
                 <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
