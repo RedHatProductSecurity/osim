@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2025.3.2]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
 * Tacker links on tracker manager (`OSIDB-3595`)
@@ -429,7 +429,9 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.2...HEAD
+[2025.3.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.1...v2025.3.2
+[2025.3.1]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.0...v2025.3.1
 [2025.3.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.2.0...v2025.3.0
 [2025.2.0]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.1...v2025.2.0
 [2024.12.1]: https://github.com/RedHatProductSecurity/osim/compare/v2024.12.0...v2024.12.1
