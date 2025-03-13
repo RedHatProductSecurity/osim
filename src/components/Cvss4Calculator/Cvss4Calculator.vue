@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useCvss4Selections } from '@/composables/useCvss4';
+import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4';
 
 import { CVSS4MetricsForUI, MetricNamesWithValues } from '@/utils/cvss40';
 
+const { error, score, vectorString } = useCvss4Calculations();
 const { cvss4Selections } = useCvss4Selections();
 function setMetric(category: string, metric: string, value: string) {
   console.log(category, metric, value);
@@ -12,19 +13,25 @@ function setMetric(category: string, metric: string, value: string) {
 </script>
 
 <template>
-  <h2>aslkfdj</h2>
-  {{ cvss4Selections }}
+  <h2>CVSS4 Calculator</h2>
+  <details>
+    <summary>Score: {{ score ?? 'null' }} {{ vectorString }}</summary>
+    <pre>
+      {{ JSON.stringify(cvss4Selections, undefined, 2) }}
+    </pre>
+  </details>
+  <p v-if="error">Errors: {{ error }}</p>
   <div v-for="(category, categoryName) in CVSS4MetricsForUI" :key="categoryName">
     {{ categoryName }}
-    <div v-for="(metricGroup, groupName) in category.metric_groups" :key="metric">
+    <div v-for="(metricGroup, groupName) in category.metric_groups" :key="groupName">
       - {{ groupName }}
-      <div v-for="metric in metricGroup" :key="metric">
+      <div v-for="metric in metricGroup as Record<string, any>" :key="metric">
         {{ metric.short }}
         <button
           v-for="{tooltip, value}, metricName in metric.options"
           :key="metricName"
           :title="tooltip"
-          :class="{ selected: cvss4Selections[MetricNamesWithValues[categoryName]][metric.short] === value }"
+          :class="{ selected: cvss4Selections?.[MetricNamesWithValues?.[categoryName]]?.[metric.short] === value }"
           @click="setMetric(MetricNamesWithValues[categoryName], metric.short, value)"
         >
           {{ metricName }}</button>
@@ -42,4 +49,3 @@ function setMetric(category: string, metric: string, value: string) {
   background: green;
 }
 </style>
-@/composables/useCvss4

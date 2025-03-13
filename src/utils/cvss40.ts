@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-classes */
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable max-len */
 // Copyright FIRST, Red Hat, and contributors
@@ -53,9 +54,9 @@ function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
  * and computing equivalent classes for higher-level assessments.
  */
 
-export type ThreatGroup = 'BASE' | 'ENVIRONMENTAL' | 'SUPPLEMENTAL' | 'THREAT';
+export type MetricsGroup = 'BASE' | 'ENVIRONMENTAL' | 'SUPPLEMENTAL' | 'THREAT';
 
-export const METRICS: Dict<ThreatGroup> = {
+export const METRICS: Dict<MetricsGroup> = {
   // Base (11 metrics)
   BASE: {
     AV: ['N', 'A', 'L', 'P'],
@@ -104,15 +105,16 @@ export const METRICS: Dict<ThreatGroup> = {
   },
 };
 
-class Vector {
+export class Vector {
   static ALL_METRICS: Dict = Object.keys(METRICS).reduce((order, category) => {
-    return { ...order, ...METRICS[category as ThreatGroup] };
+    return { ...order, ...METRICS[category as MetricsGroup] };
   }, {});
 
   // Nomenclature base constant
   static BASE_NOMENCLATURE = 'CVSS-B';
 
-  metrics: Dict;
+  metricsSelections: Dict = {};
+  error: null | string = null;
 
   // CVSS40 metrics with defaults values at first key
 
@@ -125,24 +127,30 @@ class Vector {
      * @param vectorString Optional CVSS v4.0 vector string to initialize the metrics
      * (e.g., "CVSS:4.0/AV:L/AC:L/PR:N/UI:R/...").
      */
-  constructor(vectorString = '') {
-    // Initialize the metrics
-    const selected: Dict = {};
+  constructor(vectorString = '', selections: Dict = {}) {
+    this.updateVector(vectorString, selections);
+  }
+
+  updateVector(vectorString = '', selections: Dict = {}) {
+    this.updateMetricSelections(selections);
+
+    const _vectorString = vectorString || this.raw;
+
+    this.updateMetricsFromVectorString(_vectorString);
+  }
+
+  /**
+   * Allow external selections object to determine selections
+   */
+
+  updateMetricSelections(selections: Dict) {
     for (const category in METRICS) {
-      for (const key in METRICS[category as ThreatGroup]) {
+      for (const key in METRICS[category as MetricsGroup]) {
         // Use the first value in the array of allowed values as the default
-        selected[key] = METRICS[category as ThreatGroup][key][0];
+        // selections[key] = METRICS[category as MetricsGroup][key][0];
+        this.metricsSelections[key] = selections?.[category as MetricsGroup]?.[key]
+        ?? METRICS[category as MetricsGroup][key][0];
       }
-    }
-
-    this.metrics = selected;
-
-    if (vectorString) {
-      // Remove any leading '#' symbol
-      if (vectorString.startsWith('#')) {
-        vectorString = vectorString.slice(1);
-      }
-      this.updateMetricsFromVectorString(vectorString);
     }
   }
 
@@ -167,18 +175,18 @@ class Vector {
     };
 
     // Check if the metric has a worst-case default
-    if (this.metrics[metric] === 'X' && Object.prototype.hasOwnProperty.call(worstCaseDefaults, metric)) {
+    if (this.metricsSelections[metric] === 'X' && Object.prototype.hasOwnProperty.call(worstCaseDefaults, metric)) {
       return worstCaseDefaults[metric];
     }
 
     // Check for environmental metrics that overwrite score values
     const modifiedMetric = 'M' + metric;
-    if (Object.prototype.hasOwnProperty.call(this.metrics, modifiedMetric) && this.metrics[modifiedMetric] !== 'X') {
-      return this.metrics[modifiedMetric];
+    if (Object.prototype.hasOwnProperty.call(this.metricsSelections, modifiedMetric) && this.metricsSelections[modifiedMetric] !== 'X') {
+      return this.metricsSelections[modifiedMetric];
     }
 
     // Return the selected value for the metric
-    return this.metrics[metric];
+    return this.metricsSelections[metric];
   }
 
   /**
@@ -198,8 +206,8 @@ class Vector {
     * @param value - The new value to assign to the metric (e.g., "L", "H").
     */
   updateMetric(metric: string, value: number) {
-    if (Object.prototype.hasOwnProperty.call(this.metrics, metric)) {
-      this.metrics[metric] = value;
+    if (Object.prototype.hasOwnProperty.call(this.metricsSelections, metric)) {
+      this.metricsSelections[metric] = value;
     } else {
       console.error(`Metric ${metric} not found.`);
     }
@@ -219,17 +227,16 @@ class Vector {
     *
     * @param vectorString - The CVSS v4.0 vector string to be parsed and applied
     *                                (e.g., "CVSS:4.0/AV:L/AC:L/PR:N/UI:N/...").
-    * @throws {Error} - Throws an error if the vector string is invalid or does not
-    * conform to the expected format.
     */
   updateMetricsFromVectorString(vector: string) {
+    this.error = '';
+
     if (!vector) {
-      throw new Error('The vector string cannot be null, undefined, or empty.');
+      this.error = ('The vector string cannot be null, undefined, or empty.');
     }
 
-    // Validate the CVSS v4.0 string vector
     if (!this.validateStringVector(vector)) {
-      throw new Error('Invalid CVSS v4.0 vector: ' + vector);
+      this.error = ('Invalid CVSS v4.0 vector: ' + vector);
     }
 
     const metrics = vector.split('/');
@@ -240,7 +247,7 @@ class Vector {
     // Iterate through each metric component and update the corresponding metric in the `metrics` object
     for (const metric of metrics) {
       const [key, value] = metric.split(':');
-      this.metrics[key] = value;
+      this.metricsSelections[key] = value;
     }
   }
 
@@ -256,6 +263,7 @@ class Vector {
     * @returns - Returns true if the vector is valid, otherwise false.
   */
   validateStringVector(vector: string): boolean {
+    console.log('validating', vector);
     const metrics = vector.split('/');
 
     // Check if the prefix is correct
@@ -418,8 +426,8 @@ class Vector {
   get nomenclature() {
     let nomenclature = Vector.BASE_NOMENCLATURE;
 
-    const hasThreatMetrics = Object.keys(METRICS.THREAT).some(key => this.metrics[key] !== 'X');
-    const hasEnvironmentalMetrics = Object.keys(METRICS.ENVIRONMENTAL).some(key => this.metrics[key] !== 'X');
+    const hasThreatMetrics = Object.keys(METRICS.THREAT).some(key => this.metricsSelections[key] !== 'X');
+    const hasEnvironmentalMetrics = Object.keys(METRICS.ENVIRONMENTAL).some(key => this.metricsSelections[key] !== 'X');
 
     if (hasThreatMetrics) {
       nomenclature += 'T';
@@ -443,7 +451,7 @@ class Vector {
   get raw() {
     // Construct the vector string dynamically based on the current state of `metrics`
     const baseString = 'CVSS:4.0';
-    const metricEntries = Object.entries(this.metrics)
+    const metricEntries = Object.entries(this.metricsSelections)
       .filter(([, value]) => value !== 'X') // Filter out metrics with value "X"
       .map(([key, value]) => `/${key}:${value}`)
       .join('');
@@ -889,7 +897,8 @@ export class CVSS40 {
 
   score: number;
   severity: string;
-  vector: Vector;
+  vector: Vector = new Vector();
+  error: string = '';
 
   /**
    * Constructs a CVSS40 object and initializes its properties.
@@ -904,7 +913,6 @@ export class CVSS40 {
     * @param vectorString - The CVSS v4.0 vector string
     * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
     *                                Defaults to an empty string if not provided.
-    * @throws {Error} - Throws an error if the vector string is invalid according to the CVSS v4.0 schema.
     */
   constructor(input: any = '') {
     if (input instanceof Vector) {
@@ -914,13 +922,14 @@ export class CVSS40 {
       // If the input is a string, create a new Vector object from the string
       this.vector = new Vector(input);
     } else {
-      throw new TypeError('Invalid input type for CVSS40 constructor. Expected a string or a Vector object.');
+      this.error = ('Invalid input type for CVSS40 constructor. Expected a string or a Vector object.');
     }
 
-    // Calculate the score
-    this.score = this.calculateScore();
+    this.updateScore();
+  }
 
-    // Save the severity
+  updateScore() {
+    this.score = this.calculateScore();
     this.severity = this.calculateSeverityRating(this.score);
   }
 
@@ -1029,6 +1038,8 @@ export class CVSS40 {
       this.getMaxSeverityVectorsForEQ(equivalentClasses, 4),
       this.getMaxSeverityVectorsForEQ(equivalentClasses, 5),
     ];
+
+    if (eqMaxes.includes(undefined)) return 0;
 
     // Compose maximum vectors
     const maxVectors = [];
