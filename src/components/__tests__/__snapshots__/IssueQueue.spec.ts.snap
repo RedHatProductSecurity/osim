@@ -1,5 +1,56 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`issueQueue > should not render flaw labels that are already assigned 1`] = `
+"<div data-v-48717bcb="" class="osim-content container-fluid osim-issue-queue">
+  <div data-v-48717bcb="" class="osim-incident-filter">
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
+    <!--v-if--><span data-v-48717bcb="" class="float-end"> Loaded 1 of 10</span>
+  </div>
+  <div data-v-48717bcb="" class="osim-incident-list">
+    <table data-v-48717bcb="" class="table align-middle">
+      <thead data-v-48717bcb="" class="sticky-top">
+        <!-- <thead class=""> -->
+        <tr data-v-48717bcb="">
+          <th data-v-48717bcb="">ID <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+        </tr>
+      </thead>
+      <tbody data-v-48717bcb="" class="table-group-divider">
+        <tr data-v-15d9c71d="" class="osim-issue-queue-item osim-shaded">
+          <td data-v-15d9c71d="" class="osim-issue-title pb-0"><a data-v-15d9c71d="" href="/flaws/CVE-2903-0092" class="">CVE-2903-0092</a></td>
+          <td data-v-15d9c71d="" class="pb-0">MODERATE</td>
+          <td data-v-15d9c71d="" class="pb-0">2021-07-29</td>
+          <td data-v-15d9c71d="" class="pb-0">title</td>
+          <td data-v-15d9c71d="" class="pb-0">NEW</td>
+          <td data-v-15d9c71d="" class="pb-0">test@redhat.com</td>
+          <!--<td>{{ issue.assigned }}</td>-->
+        </tr>
+        <tr data-v-15d9c71d="" class="osim-badge-lane osim-shaded">
+          <td data-v-15d9c71d="" colspan="1">
+            <div data-v-15d9c71d="" class="gap-1 d-flex flex-wrap">
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </div>
+          </td>
+          <td data-v-15d9c71d="" colspan="90%"></td>
+        </tr>
+      </tbody>
+    </table><button data-v-48717bcb="" class="btn btn-primary" type="button">
+      <!--v-if--><span data-v-48717bcb=""> Load More Flaws </span>
+    </button>
+    <!--v-if-->
+    <!--v-if-->
+  </div>
+</div>"
+`;
+
 exports[`issueQueue > should not render flaw labels when isHidingLabels is true 1`] = `
 "<div data-v-48717bcb="" class="osim-content container-fluid osim-issue-queue">
   <div data-v-48717bcb="" class="osim-incident-filter">
