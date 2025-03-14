@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4';
+import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
 
-import { CVSS4MetricsForUI, MetricNamesWithValues } from '@/utils/cvss40';
+import { MetricNamesWithValues } from '@/utils/cvss40';
+
+import { CVSS4MetricsForUI } from './cvss4-ui-contants';
 
 const { error, score, vectorString } = useCvss4Calculations();
+
 const { cvss4Selections } = useCvss4Selections();
+
 function setMetric(category: string, metric: string, value: string) {
-  console.log(category, metric, value);
   cvss4Selections.value[category][metric] = value;
-  console.log(cvss4Selections.value);
 }
 </script>
 
@@ -49,3 +51,4 @@ function setMetric(category: string, metric: string, value: string) {
   background: green;
 }
 </style>
+@/composables/useCvss4Calculator
