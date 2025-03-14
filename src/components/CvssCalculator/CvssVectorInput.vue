@@ -88,6 +88,8 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
 }
 
 .vector-input {
+  min-height: 38px;
+
   .invalid-tooltip {
     display: none;
     margin-top: -4px;

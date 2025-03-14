@@ -25,8 +25,7 @@ export function useCvss4Calculations() {
   const cvss4ClassInstance = new CVSS40(vectorForParse);
   const error = computed(() => cvss4ClassInstance.error + cvss4ClassInstance.vector.error);
   const score = ref(cvss4ClassInstance.score);
-
-  const vectorString = computed(() => cvss4ClassInstance.vector.raw);
+  const vectorString = ref(cvss4ClassInstance.vector.raw);
 
   const selectionsFlattened = computed(() => flattenSelections(cvss4Selections.value));
 
@@ -44,7 +43,9 @@ export function useCvss4Calculations() {
     cvss4ClassInstance.vector.updateMetricSelections(selections);
     cvss4ClassInstance.updateScore();
     score.value = cvss4ClassInstance.score;
+    vectorString.value = cvss4ClassInstance.vector.raw;
   });
+
   return {
     error,
     vectorString,
