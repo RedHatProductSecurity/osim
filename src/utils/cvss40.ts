@@ -149,6 +149,7 @@ export class Vector {
         // Use the first value in the array of allowed values as the default
         // selections[key] = METRICS[category as MetricsGroup][key][0];
         this.metricsSelections[key] = selections?.[category as MetricsGroup]?.[key]
+        ?? selections?.[key]
         ?? METRICS[category as MetricsGroup][key][0];
       }
     }
@@ -895,8 +896,8 @@ export class CVSS40 {
     E: { U: 0.2, P: 0.1, A: 0 },
   };
 
-  score: number;
-  severity: string;
+  score!: number;
+  severity!: string;
   vector: Vector = new Vector();
   error: string = '';
 
@@ -1039,7 +1040,9 @@ export class CVSS40 {
       this.getMaxSeverityVectorsForEQ(equivalentClasses, 5),
     ];
 
-    if (eqMaxes.includes(undefined)) return 0;
+    if (eqMaxes.includes(undefined)) {
+      return 0;
+    };
 
     // Compose maximum vectors
     const maxVectors = [];

@@ -15,17 +15,8 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
   );
 
 const cvss4Selections = ref(
-  deepMap((value) => {
-    const isArray = Array.isArray(value);
-    // console.log(value, isArray);
-    return isArray ? value?.[1] || value : value;
-  }, METRICS,
-  ),
+  deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
 );
-
-console.log(cvss4Selections.value);
-
-// const vectorString = ref('');
 
 export function useCvss4Calculations() {
   const vectorForParse = new Vector();
@@ -50,7 +41,6 @@ export function useCvss4Calculations() {
   }
 
   watch(selectionsFlattened, (selections) => {
-    // vectorForParse.updateMetricSelections(selections);
     cvss4ClassInstance.vector.updateMetricSelections(selections);
     cvss4ClassInstance.updateScore();
     score.value = cvss4ClassInstance.score;
