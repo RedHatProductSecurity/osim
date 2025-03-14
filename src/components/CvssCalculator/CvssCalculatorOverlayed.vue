@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssFactorButtons from '@/components/CvssCalculator/CvssFactorButtons.vue';
+import CvssFactorButtons from '@/components/CvssCalculator/Cvss3FactorButtons.vue';
 
 import {
   getFactors,
