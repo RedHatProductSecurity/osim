@@ -1,4 +1,13 @@
 /* eslint-disable max-len */
+export enum MetricNamesWithValues {
+  'Base Metrics' = 'BASE',
+  'Environmental (Modified Base Metrics)' = 'ENVIRONMENTAL',
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  'Environmental (Security Requirements)' = 'ENVIRONMENTAL',
+  'Supplemental Metrics' = 'SUPPLEMENTAL',
+  'Threat Metrics' = 'THREAT',
+}
+
 // UI Data
 export const CVSS4MetricsForUI = {
   'Base Metrics': {
