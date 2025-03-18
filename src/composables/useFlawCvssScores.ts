@@ -1,13 +1,16 @@
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { groupWith, equals } from 'ramda';
 
 import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import type { ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
 import { DEFAULT_CVSS_VERSION } from '@/constants';
 import type { Nullable } from '@/utils/typeHelpers';
+
+import { useFlaw } from './useFlaw';
+
+const { flaw } = useFlaw();
 
 export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Nist]: 'NVD',
@@ -20,7 +23,7 @@ const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
-export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
+export function useFlawCvssScores() {
   function getCvssData(issuer: string) {
     return flaw.value.cvss_scores.find(
       assessment => (assessment.issuer === issuer && assessment.cvss_version === cvssVersion.value)

@@ -1,14 +1,23 @@
 import { z } from 'zod';
 
+import { CVSS40 } from '@/utils/cvss40';
+
 export const cvssVectorSchema = z.union([
   z.string().length(44, { message: 'Incomplete Cvss Vector. There are factors missing.' }),
   z.string().length(0).nullable()]);
 
 export function validateCvssVector(cvssVector: null | string | undefined) {
-  const parseResult = cvssVectorSchema.safeParse(cvssVector);
-  if (parseResult.success === false) {
-    return parseResult.error.errors[0].message;
+  if (cvssVector?.includes('CVSS:3.1')) {
+    const parseResult = cvssVectorSchema.safeParse(cvssVector);
+    if (parseResult.success === false) {
+      return parseResult.error.errors[0].message;
+    }
   }
+
+  if (cvssVector?.includes('CVSS:4.0') && new CVSS40(cvssVector).error) {
+    return new CVSS40(cvssVector).error;
+  }
+
   return null;
 }
 

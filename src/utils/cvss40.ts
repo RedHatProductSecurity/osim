@@ -1243,13 +1243,3 @@ export class CVSS40 {
     return CVSS40.MAX_COMPOSED['eq' + eqNumber][macroVector[eqNumber - 1]];
   }
 }
-
-export enum MetricNamesWithValues {
-  'Base Metrics' = 'BASE',
-  'Environmental (Modified Base Metrics)' = 'ENVIRONMENTAL',
-  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
-  'Environmental (Security Requirements)' = 'ENVIRONMENTAL',
-  'Supplemental Metrics' = 'SUPPLEMENTAL',
-  'Threat Metrics' = 'THREAT',
-}
-
