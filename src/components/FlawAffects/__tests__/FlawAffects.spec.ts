@@ -15,7 +15,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
-import { mountWithConfig, withSetup } from '@/__tests__/helpers';
+import { mountWithConfig, withSetup, importActual } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types';
@@ -31,26 +31,15 @@ vi.mock('@/stores/AffectsEditingStore');
 let pinia: ReturnType<typeof createPinia>;
 
 async function useMocks(flaw: ZodFlawType) {
-  type ActualFlaw = typeof import('@/composables/useFlaw');
-  type ActualFlawModel = typeof import('@/composables/useFlawModel');
-  type ActualFlawFetch = typeof import('@/composables/useFetchFlaw');
-  type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
-  type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
+  const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
 
-  const { useFlaw: _useFlaw } =
-    await vi.importActual<ActualFlaw>('@/composables/useFlaw');
+  const { useFlawModel: _useFlawModel } = await importActual('@/composables/useFlawModel');
 
-  const { useFlawModel: _useFlawModel } =
-    await vi.importActual<ActualFlawModel>('@/composables/useFlawModel');
+  const { useFetchFlaw: _useFetchFlaw } = await importActual('@/composables/useFetchFlaw');
 
-  const { useFetchFlaw: _useFetchFlaw } =
-    await vi.importActual<ActualFlawFetch>('@/composables/useFetchFlaw');
+  const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
 
-  const { useFlawAffectsModel: _useFlawAffectsModel } =
-    await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
-
-  const { useAffectsEditingStore: _useAffectsEditingStore } =
-    await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
+  const { useAffectsEditingStore: _useAffectsEditingStore } = await importActual('@/stores/AffectsEditingStore');
 
   return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
 }

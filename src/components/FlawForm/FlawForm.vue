@@ -62,6 +62,7 @@ const {
   cancelAddReference,
   commentsByType,
   createFlaw,
+  cvssVersion,
   deleteAcknowledgment,
   deleteReference,
   errors,
@@ -70,14 +71,19 @@ const {
   flawReferences,
   flawRhCvss3,
   highlightedNvdCvss3String,
+  flawRhCvss,
+  highlightedNvdCvssString,
+  internalComments,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
   isValid,
   loadInternalComments,
-  nvdCvss3String,
+  nvdCvssString,
   osimLink,
-  rhCvss3String,
+  privateComments,
+  publicComments,
+  rhCvssString,
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
@@ -262,19 +268,17 @@ const createdDate = computed(() => {
               :withBlank="true"
             />
             <CvssCalculator
-              :id="flawRhCvss3.uuid"
-              v-model:cvss-vector="flawRhCvss3.vector"
-              v-model:cvss-score="flawRhCvss3.score"
+              :id="flawRhCvss.uuid"
             />
             <CvssSection
-              :highlightedNvdCvss3String
+              :highlightedNvdCvssString
               :shouldDisplayEmailNistForm
               :cveId="flaw.cve_id"
               :summary="flaw.comment_zero"
               :bugzilla="bugzillaLink"
-              :cvss="rhCvss3String"
+              :cvss="rhCvssString"
               :allCvss="flaw.cvss_scores"
-              :nistCvss="nvdCvss3String"
+              :nistCvss="nvdCvssString"
             />
             <CweSelector
               v-model="flaw.cwe_id"
