@@ -245,9 +245,6 @@ const createdDate = computed(() => {
             />
             <CvssCalculator
               :id="flawRhCvss.uuid"
-              v-model:cvss-vector="flawRhCvss.vector"
-              v-model:cvss-score="flawRhCvss.score"
-              v-model:cvssVersion="cvssVersion"
             />
             <CvssSection
               :highlightedNvdCvssString

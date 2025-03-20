@@ -4,6 +4,7 @@ import { watch } from 'vue';
 import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
@@ -14,10 +15,9 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
-
 const { error, score, vectorString } = useCvss4Calculations();
+const { cvssScore, cvssVector, updateVector } = useFlawCvssScores();
+
 const { cvss4Selections } = useCvss4Selections();
 
 function setMetric(category: string, metric: string, value: string) {
@@ -28,9 +28,7 @@ watch(score, (newScore) => {
   cvssScore.value = newScore;
 });
 
-watch(vectorString, (newVectorString) => {
-  cvssVector.value = newVectorString;
-});
+watch(vectorString, updateVector);
 </script>
 
 <template>

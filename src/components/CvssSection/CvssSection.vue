@@ -15,7 +15,7 @@ const props = defineProps<{
   bugzilla: string;
   cveId: null | string;
   cvss: string;
-  highlightedNvdCvss3String: { char: null | string; isHighlighted: boolean }[][];
+  highlightedNvdCvssString: { char: null | string; isHighlighted: boolean }[][];
   nistCvss: string;
   shouldDisplayEmailNistForm: boolean;
   summary: string;

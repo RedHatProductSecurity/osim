@@ -5,6 +5,7 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import {
   getFactors,
   calculateScore,
@@ -14,9 +15,7 @@ import {
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
-const cvssVersion = defineModel<null | string | undefined>('cvssVersion');
+const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
@@ -27,7 +26,8 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
+    // cvssVector.value = newCvssVector;
+    updateVector(newCvssVector ?? '');
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
@@ -53,8 +53,10 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  cvssScore.value = null;
-  cvssVector.value = null;
+  // cvssScore.value = null;
+  // cvssVector.value = null;
+  updateScore(null);
+  updateVector(null);
   cvssFactors.value = {};
 }
 
@@ -70,7 +72,8 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  updateScore(calculateScore(cvssFactors.value) ?? -1);
+  // cvssScore.value = calculateScore(cvssFactors.value);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -147,8 +150,6 @@ function highlightFactorValue(factor: null | string) {
     </div>
     <Cvss3Calculator
       v-if="cvssVersion === CvssVersions.V3"
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
@@ -158,8 +159,6 @@ function highlightFactorValue(factor: null | string) {
     />
     <Cvss4Calculator
       v-else-if="cvssVersion === CvssVersions.V4"
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
