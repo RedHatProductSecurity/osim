@@ -8,7 +8,7 @@ import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
-import { router, withSetup } from '@/__tests__/helpers';
+import { importActual, router, withSetup } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
@@ -29,14 +29,9 @@ function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
   return [flaw, store];
 }
 
-type ActualUseFlaw = typeof import('@/composables/useFlaw');
-type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
-
 async function useMocks(flaw: ZodFlawType) {
-  const { useFlaw: _useFlaw } =
-  await vi.importActual<ActualUseFlaw>('@/composables/useFlaw');
-  const { useFlawAffectsModel: _useFlawAffectsModel } =
-  await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
+  const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
+  const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
   pinia = createPinia();
   setActivePinia(pinia);
   const mockedUseFlaw = _useFlaw();

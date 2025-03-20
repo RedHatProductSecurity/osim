@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from 'vue';
 
-import type { ValueOf, Nullable } from '@/utils/typeHelpers';
+import type { ValueOf, Nullable } from '@/types';
 import { getTrackersForFlaws, type TrackersPost, fileTrackingFor } from '@/services/TrackerService';
 import { affectResolutions, type ZodAffectType, type ZodTrackerType } from '@/types/zodAffect';
 import { matchModuleComponent } from '@/utils/helpers';
