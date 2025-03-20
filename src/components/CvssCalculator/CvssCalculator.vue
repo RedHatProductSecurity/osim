@@ -5,6 +5,7 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import {
   getFactors,
   calculateScore,
@@ -12,15 +13,10 @@ import {
   validateCvssVector,
 } from '@/composables/useCvssCalculator';
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
+import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-enum CvssVersion {
-  V3_1 = '3.1',
-  V4_0 = '4.0',
-}
+const { cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
 
-const currentCvssVersion = ref<CvssVersion>(CvssVersion.V3_1);
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
@@ -30,7 +26,8 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
+    // cvssVector.value = newCvssVector;
+    updateVector(newCvssVector ?? '');
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
@@ -56,8 +53,10 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  cvssScore.value = null;
-  cvssVector.value = null;
+  // cvssScore.value = null;
+  // cvssVector.value = null;
+  updateScore(null);
+  updateVector(null);
   cvssFactors.value = {};
 }
 
@@ -73,7 +72,8 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
+  // cvssScore.value = calculateScore(cvssFactors.value);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -100,24 +100,22 @@ function highlightFactorValue(factor: null | string) {
         <span class="form-label col-3">
           RH CVSS
           <select
-            v-model="currentCvssVersion"
+            v-model="cvssVersion"
             class="ms-2"
           >
             <option
-              v-for="(cvssVersion, index) in CvssVersion"
+              v-for="(version, index) in CvssVersions"
               :key="index"
-              :value="cvssVersion"
-              :selected="currentCvssVersion === cvssVersion"
+              :value="version"
+              :selected="cvssVersion === version"
             >
-              {{ cvssVersion }}
+              {{ CvssVersionDisplayMap[version] }}
             </option>
           </select>
         </span>
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssVector="cvssVector"
-            :cvssScore="cvssScore"
             :cvssFactors="cvssFactors"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
@@ -149,24 +147,20 @@ function highlightFactorValue(factor: null | string) {
       </button>
     </div>
     <Cvss3Calculator
-      v-if="currentCvssVersion === CvssVersion.V3_1"
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
+      v-if="cvssVersion === CvssVersions.V3"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused && currentCvssVersion === CvssVersion.V3_1"
+      :isFocused="isFocused && cvssVersion === CvssVersions.V3"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
     />
     <Cvss4Calculator
-      v-else-if="currentCvssVersion === CvssVersion.V4_0"
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
+      v-else-if="cvssVersion === CvssVersions.V4"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused && currentCvssVersion === CvssVersion.V4_0"
+      :isFocused="isFocused && cvssVersion === CvssVersions.V4"
     />
   </div>
 </template>
