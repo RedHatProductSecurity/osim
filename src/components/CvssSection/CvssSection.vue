@@ -15,7 +15,8 @@ const props = defineProps<{
   bugzilla: string;
   cveId: null | string;
   cvss: string;
-  highlightedNvdCvss3String: { char: null | string; isHighlighted: boolean }[][];
+  cvssVersion: string;
+  highlightedNvdCvssString: { char: null | string; isHighlighted: boolean }[][];
   nistCvss: string;
   shouldDisplayEmailNistForm: boolean;
   summary: string;
@@ -37,7 +38,7 @@ function cvssDisplay(score: string, vector: string, version: string) {
 
 <template>
   <div>
-    <LabelDiv label="NVD CVSSv3" class="mb-2">
+    <LabelDiv :label="'NVD CVSS ' + cvssVersion" class="mb-2">
       <template v-if="otherCvss && otherCvss.length > 0" #labelSlot>
         <button
           class="btn btn-sm me-auto border-0"
@@ -51,7 +52,7 @@ function cvssDisplay(score: string, vector: string, version: string) {
       <div class="d-flex flex-row">
         <div class="form-control text-break h-auto" :class="shouldDisplayEmailNistForm ? 'rounded-0' : ''">
           <template v-if="cvss">
-            <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+            <template v-for="(chars, index) in highlightedNvdCvssString" :key="index">
               <span v-if="chars[0].isHighlighted" class="text-primary">
                 {{ chars.map(c => c.char).join('') }}
               </span>

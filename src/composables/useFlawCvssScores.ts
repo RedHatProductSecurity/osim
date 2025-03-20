@@ -23,41 +23,41 @@ const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
+function getCvssData(issuer: string, version: string) {
+  return flaw.value.cvss_scores.find(
+    assessment => (assessment.issuer === issuer && assessment.cvss_version === version),
+  )
+  || {
+    score: null,
+    vector: null,
+    comment: '',
+    cvss_version: version,
+    created_dt: null,
+    uuid: null,
+  };
+}
+
 export function useFlawCvssScores() {
-  function getCvssData(issuer: string) {
-    return flaw.value.cvss_scores.find(
-      assessment => (assessment.issuer === issuer && assessment.cvss_version === cvssVersion.value)
-      || assessment.issuer === issuer,
-    );
-  }
-
-  function getRHCvssData() {
-    return getCvssData(IssuerEnum.Rh)
-      || {
-        score: null,
-        vector: null,
-        comment: '',
-        cvss_version: cvssVersion.value,
-        created_dt: null,
-        uuid: null,
-      };
-  }
-
   const wasCvssModified = ref(false);
 
-  const flawRhCvss = ref(getRHCvssData());
+  const flawRhCvss = ref(getCvssData(IssuerEnum.Rh, cvssVersion.value));
   const initialFlawRhCvss = deepCopyFromRaw(flawRhCvss.value);
+
+  watch(() => cvssVersion.value, () => {
+    flawRhCvss.value = getCvssData(IssuerEnum.Rh, cvssVersion.value);
+    wasCvssModified.value = false;
+  });
 
   watch(flawRhCvss, () => {
     wasCvssModified.value = !equals(initialFlawRhCvss, flawRhCvss.value);
   }, { deep: true });
 
   watch(() => flaw.value, () => {
-    flawRhCvss.value = getRHCvssData();
+    flawRhCvss.value = getCvssData(IssuerEnum.Rh, cvssVersion.value);
     wasCvssModified.value = false;
   });
 
-  const flawNvdCvss = computed(() => getCvssData(IssuerEnum.Nist));
+  const flawNvdCvss = ref(getCvssData(IssuerEnum.Nist, cvssVersion.value));
 
   const nvdCvssString = computed(() => {
     const values = [formatScore(flawNvdCvss.value?.score), flawNvdCvss.value?.vector].filter(Boolean);

@@ -1,23 +1,42 @@
 <script setup lang="ts">
-import { CVSS4MetricsForUI } from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-contants';
+import { watch, watchEffect } from 'vue';
+
+import { MetricNamesWithValues, CVSS4MetricsForUI }
+  from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
 import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import { MetricNamesWithValues } from '@/utils/cvss40';
 
-defineProps<{
+const props = defineProps<{
+  cvssVersion: string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
+const cvssVector = defineModel<null | string | undefined>('cvssVector');
+const cvssScore = defineModel<null | number | undefined>('cvssScore');
+
 const { error, score, vectorString } = useCvss4Calculations();
 const { cvss4Selections } = useCvss4Selections();
+
+watchEffect(() => {
+  cvssVector.value = vectorString.value;
+  cvssScore.value = score.value;
+});
 
 function setMetric(category: string, metric: string, value: string) {
   cvss4Selections.value[category][metric] = value;
 }
+
+watch(() => vectorString.value, (newVectorString) => {
+  cvssVector.value = newVectorString;
+});
+
+watch(() => score.value, (newScore) => {
+  cvssScore.value = newScore;
+});
 </script>
 
 <template>

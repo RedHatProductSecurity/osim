@@ -264,7 +264,6 @@ export class Vector {
     * @returns - Returns true if the vector is valid, otherwise false.
   */
   validateStringVector(vector: string): boolean {
-    console.log('validating', vector);
     const metrics = vector.split('/');
 
     // Check if the prefix is correct
