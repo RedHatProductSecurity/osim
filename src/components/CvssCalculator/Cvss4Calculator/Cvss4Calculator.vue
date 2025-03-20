@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { CVSS4MetricsForUI } from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-contants';
+import { watch } from 'vue';
 
+import { MetricNamesWithValues, CVSS4MetricsForUI }
+  from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
+
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import { MetricNamesWithValues } from '@/utils/cvss40';
 
 defineProps<{
   highlightedFactor: null | string;
@@ -12,7 +15,13 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const { error, score, vectorString } = useCvss4Calculations();
+const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
+const { updateScore, updateVector } = useFlawCvssScores();
+
+// TODO: Move these into composable
+watch(cvss4Score, updateScore);
+watch(cvss4Vector, updateVector);
+
 const { cvss4Selections } = useCvss4Selections();
 
 function setMetric(category: string, metric: string, value: string) {
@@ -28,10 +37,10 @@ function setMetric(category: string, metric: string, value: string) {
   >
     <template #body>
       <div
-        class="p-4 pt-2"
+        class="p-4 pt-2 cvss-calculator"
       >
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
-          <b class="me-2">{{ score }}</b>{{ vectorString }}
+          <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
         <div
           v-for="(category, categoryName) in CVSS4MetricsForUI"

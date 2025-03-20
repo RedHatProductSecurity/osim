@@ -10,6 +10,7 @@ import {
   factorSeverities,
   weights,
 } from '@/composables/useCvssCalculator';
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 
 defineProps<{
   highlightedFactor: null | string;
@@ -17,8 +18,6 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
 const cvssFactors = defineModel<Record<string, string>>('cvssFactors', { default: () => ({}) });
 
 const emit = defineEmits<{
@@ -26,9 +25,11 @@ const emit = defineEmits<{
   highlightFactorValue: [factor: null | string];
 }>();
 
+const { cvssVector, updateScore, updateVector } = useFlawCvssScores();
+
 function updateFactors(newCvssVector: null | string | undefined) {
-  if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
+  if (cvssVector.value !== newCvssVector && newCvssVector) {
+    updateVector(newCvssVector);
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
@@ -45,7 +46,7 @@ function factorButton(id: string, key: string) {
   }
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
   updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 </script>
 

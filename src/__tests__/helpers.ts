@@ -79,3 +79,9 @@ export const mountWithConfig: MountConfig = (
     plugins: plugins ?? [createTestingPinia(), router],
   },
 });
+
+export function importActual(path: string) {
+  const imported = import(path);
+  type Imported = Awaited<typeof imported>;
+  return vi.importActual<Imported>(path);
+}
