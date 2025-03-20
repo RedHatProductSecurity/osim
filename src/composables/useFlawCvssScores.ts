@@ -1,3 +1,4 @@
+/* _eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 
 import { groupWith, equals } from 'ramda';
@@ -5,12 +6,64 @@ import { groupWith, equals } from 'ramda';
 import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
-import { DEFAULT_CVSS_VERSION } from '@/constants';
-import type { Nullable } from '@/utils/typeHelpers';
+import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
+import type { Nullable, ZodFlawCVSSType } from '@/types';
 
+import { useCvss4Calculations } from './useCvss4Calculator';
 import { useFlaw } from './useFlaw';
 
 const { flaw } = useFlaw();
+
+function useGlobals() {
+  const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
+
+  const rhCvssScores = ref(initializedRhCvss());
+
+  const flawRhCvss = computed(() => rhCvssScores.value[cvssVersion.value]);
+
+  function selectedCvssData(issuer: IssuerEnum) {
+    return getCvssData(issuer, cvssVersion.value);
+  }
+
+  function initializedRhCvss() {
+    return Object.fromEntries(
+      Object.values(CvssVersions).map(version => [
+        version,
+        getCvssData(IssuerEnum.Rh, version) ?? blankCvss(version)],
+      ),
+    );
+  }
+
+  function getCvssData(issuer: string, version: string) {
+    return flaw.value.cvss_scores.find(
+      cvss => (cvss.issuer === issuer && cvss.cvss_version === version)
+      || cvss.issuer === issuer,
+    );
+  }
+
+  function blankCvss(version: string) {
+    return {
+      score: null,
+      vector: null,
+      comment: '',
+      cvss_version: version,
+      issuer: IssuerEnum.Rh,
+      created_dt: null,
+      uuid: null,
+    } as ZodFlawCVSSType;
+  }
+
+  return {
+    cvssVersion,
+    rhCvssScores,
+    flawRhCvss,
+    selectedCvssData,
+    initializedRhCvss,
+  };
+}
+
+const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
+const { cvss4Vector, cvss4Score } = useCvss4Calculations();
 
 export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Nist]: 'NVD',
@@ -19,33 +72,11 @@ export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Osv]: 'OSV',
 };
 
-const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
-
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
 export function useFlawCvssScores() {
-  function getCvssData(issuer: string) {
-    return flaw.value.cvss_scores.find(
-      assessment => (assessment.issuer === issuer && assessment.cvss_version === cvssVersion.value)
-      || assessment.issuer === issuer,
-    );
-  }
-
-  function getRHCvssData() {
-    return getCvssData(IssuerEnum.Rh)
-      || {
-        score: null,
-        vector: null,
-        comment: '',
-        cvss_version: cvssVersion.value,
-        created_dt: null,
-        uuid: null,
-      };
-  }
-
   const wasCvssModified = ref(false);
 
-  const flawRhCvss = ref(getRHCvssData());
   const initialFlawRhCvss = deepCopyFromRaw(flawRhCvss.value);
 
   watch(flawRhCvss, () => {
@@ -53,11 +84,11 @@ export function useFlawCvssScores() {
   }, { deep: true });
 
   watch(() => flaw.value, () => {
-    flawRhCvss.value = getRHCvssData();
+    rhCvssScores.value = initializedRhCvss();
     wasCvssModified.value = false;
   });
 
-  const flawNvdCvss = computed(() => getCvssData(IssuerEnum.Nist));
+  const flawNvdCvss = computed(() => selectedCvssData(IssuerEnum.Nist));
 
   const nvdCvssString = computed(() => {
     const values = [formatScore(flawNvdCvss.value?.score), flawNvdCvss.value?.vector].filter(Boolean);
@@ -65,8 +96,14 @@ export function useFlawCvssScores() {
   });
 
   const rhCvssString = computed(() => {
-    const values = [formatScore(flawRhCvss.value?.score), flawRhCvss.value?.vector].filter(Boolean);
-    return values.join(' ');
+    if (flawRhCvss.value.cvss_version === CvssVersions.V3) {
+      const values = [formatScore(flawRhCvss.value?.score), flawRhCvss.value?.vector].filter(Boolean);
+      return values.join(' ');
+    }
+    if (flawRhCvss.value.cvss_version === CvssVersions.V4) {
+      return cvss4Score.value + ' ' + cvss4Vector.value;
+    }
+    return '-';
   });
 
   const shouldDisplayEmailNistForm = computed(() => {
@@ -133,8 +170,20 @@ export function useFlawCvssScores() {
     return postFlawCvssScores(flaw.value.uuid, requestBody);
   }
 
+  function updateVector(vector: string) {
+    flawRhCvss.value.vector = vector;
+  }
+
+  function updateScore(score: number) {
+    flawRhCvss.value.score = score;
+  }
+
   return {
+    updateVector,
+    updateScore,
     cvssVersion,
+    cvssVector: computed(() => flawRhCvss.value.vector),
+    cvssScore: computed(() => flawRhCvss.value.score),
     wasCvssModified,
     rhCvssString,
     flawRhCvss,

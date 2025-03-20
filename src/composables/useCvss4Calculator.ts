@@ -5,6 +5,7 @@ import { map } from 'ramda';
 
 import { CVSS40, Vector, METRICS } from '@/utils/cvss40';
 import { isNonArrayObject } from '@/utils/helpers';
+import type { Dict } from '@/types';
 
 const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any =>
   map(
@@ -18,14 +19,15 @@ const cvss4Selections = ref(
   deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
 );
 
+const vectorForParse = new Vector();
+const cvss4ClassInstance = new CVSS40(vectorForParse);
+const cvss4Score = ref(cvss4ClassInstance.score);
+const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
+
 export function useCvss4Calculations() {
-  const vectorForParse = new Vector();
   vectorForParse.updateMetricSelections(cvss4Selections.value);
 
-  const cvss4ClassInstance = new CVSS40(vectorForParse);
   const error = computed(() => cvss4ClassInstance.error + cvss4ClassInstance.vector.error);
-  const score = ref(cvss4ClassInstance.score);
-  const vectorString = ref(cvss4ClassInstance.vector.raw);
 
   const selectionsFlattened = computed(() => flattenSelections(cvss4Selections.value));
 
@@ -39,17 +41,19 @@ export function useCvss4Calculations() {
       }, {} as Record<string, any>);
   }
 
-  watch(selectionsFlattened, (selections) => {
+  watch(selectionsFlattened, updateCvssFromSelections);
+
+  function updateCvssFromSelections(selections: Dict<string, any>) {
     cvss4ClassInstance.vector.updateMetricSelections(selections);
     cvss4ClassInstance.updateScore();
-    score.value = cvss4ClassInstance.score;
-    vectorString.value = cvss4ClassInstance.vector.raw;
-  });
+    cvss4Score.value = cvss4ClassInstance.score;
+    cvss4Vector.value = cvss4ClassInstance.vector.raw;
+  }
 
   return {
     error,
-    vectorString,
-    score,
+    cvss4Vector,
+    cvss4Score,
   };
 }
 
