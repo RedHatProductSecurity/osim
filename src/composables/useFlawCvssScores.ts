@@ -1,3 +1,4 @@
+/* _eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 
 import { groupWith, equals } from 'ramda';
@@ -6,27 +7,64 @@ import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/s
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
-import type { Nullable } from '@/utils/typeHelpers';
-import type { ZodFlawCVSSType } from '@/types';
+import type { Nullable, ZodFlawCVSSType } from '@/types';
 
 import { useCvss4Calculations } from './useCvss4Calculator';
 import { useFlaw } from './useFlaw';
 
 const { flaw } = useFlaw();
-const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
-const flawRhCvss = ref<ZodFlawCVSSType>(getCvssData(IssuerEnum.Rh, cvssVersion.value));
-const { vectorString } = useCvss4Calculations();
 
-function blankCvss(version: string) {
+function useGlobals() {
+  const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
+
+  const rhCvssScores = ref(initializedRhCvss());
+
+  const flawRhCvss = computed(() => rhCvssScores.value[cvssVersion.value]);
+
+  function selectedCvssData(issuer: IssuerEnum) {
+    return getCvssData(issuer, cvssVersion.value);
+  }
+
+  function initializedRhCvss() {
+    return Object.fromEntries(
+      Object.values(CvssVersions).map(version => [
+        version,
+        getCvssData(IssuerEnum.Rh, version) ?? blankCvss(version)],
+      ),
+    );
+  }
+
+  function getCvssData(issuer: string, version: string) {
+    return flaw.value.cvss_scores.find(
+      cvss => (cvss.issuer === issuer && cvss.cvss_version === version)
+      || cvss.issuer === issuer,
+    );
+  }
+
+  function blankCvss(version: string) {
+    return {
+      score: null,
+      vector: null,
+      comment: '',
+      cvss_version: version,
+      issuer: IssuerEnum.Rh,
+      created_dt: null,
+      uuid: null,
+    } as ZodFlawCVSSType;
+  }
+
   return {
-    score: null,
-    vector: null,
-    comment: '',
-    cvss_version: version,
-    created_dt: null,
-    uuid: null,
-  } as ZodFlawCVSSType;
+    cvssVersion,
+    rhCvssScores,
+    flawRhCvss,
+    selectedCvssData,
+    initializedRhCvss,
+  };
 }
+
+const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
+const { cvss4Vector, cvss4Score } = useCvss4Calculations();
+
 export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Nist]: 'NVD',
   [IssuerEnum.Rh]: 'RH',
@@ -36,25 +74,7 @@ export const issuerLabels: Record<string, string> = {
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
-function getCvssData(issuer: string, version: string) {
-  return flaw.value.cvss_scores.find(
-    cvss => (cvss.issuer === issuer && cvss.cvss_version === version)
-    || cvss.issuer === issuer,
-  ) ?? blankCvss(version);
-}
 export function useFlawCvssScores() {
-  watch(cvssVersion, () => {
-    flawRhCvss.value = getRHCvssData() as ZodFlawCVSSType;
-  });
-
-  function selectedCvssData(issuer: IssuerEnum) {
-    return getCvssData(issuer, cvssVersion.value);
-  }
-
-  function getRHCvssData() {
-    return selectedCvssData(IssuerEnum.Rh)
-      || blankCvss(cvssVersion.value);
-  }
   const wasCvssModified = ref(false);
 
   const initialFlawRhCvss = deepCopyFromRaw(flawRhCvss.value);
@@ -64,7 +84,7 @@ export function useFlawCvssScores() {
   }, { deep: true });
 
   watch(() => flaw.value, () => {
-    flawRhCvss.value = getRHCvssData();
+    rhCvssScores.value = initializedRhCvss();
     wasCvssModified.value = false;
   });
 
@@ -81,7 +101,7 @@ export function useFlawCvssScores() {
       return values.join(' ');
     }
     if (flawRhCvss.value.cvss_version === CvssVersions.V4) {
-      return vectorString.value;
+      return cvss4Score.value + ' ' + cvss4Vector.value;
     }
     return '-';
   });
