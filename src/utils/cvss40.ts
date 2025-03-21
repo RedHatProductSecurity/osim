@@ -24,8 +24,7 @@
  * roundToDecimalPlaces(6.748571428571428, 2); // returns 6.75
  * roundToDecimalPlaces(1.005, 2);            // returns 1.01
  */
-type DictKey = number | string | symbol;
-type Dict<K extends DictKey = string, T = any> = Record<K, T>;
+import type { Dict } from "@/types";
 
 function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
   // Step 1: Shift the decimal point by multiplying with 10^decimalPlaces
