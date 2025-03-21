@@ -51,7 +51,7 @@ function cvssDisplay(score: string, vector: string, version: string) {
       <div class="d-flex flex-row">
         <div class="form-control text-break h-auto" :class="shouldDisplayEmailNistForm ? 'rounded-0' : ''">
           <template v-if="cvss">
-            <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+            <template v-for="(chars, index) in highlightedNvdCvssString" :key="index">
               <span v-if="chars[0].isHighlighted" class="text-primary">
                 {{ chars.map(c => c.char).join('') }}
               </span>

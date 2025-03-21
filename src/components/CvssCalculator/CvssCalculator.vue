@@ -15,7 +15,7 @@ import {
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
+const { cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
@@ -116,8 +116,6 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssVector="cvssVector"
-            :cvssScore="cvssScore"
             :cvssFactors="cvssFactors"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"

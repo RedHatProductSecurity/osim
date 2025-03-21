@@ -25,7 +25,7 @@ const emit = defineEmits<{
   highlightFactorValue: [factor: null | string];
 }>();
 
-const { cvssScore, cvssVector, updateScore, updateVector } = useFlawCvssScores();
+const { cvssVector, updateScore, updateVector } = useFlawCvssScores();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector && newCvssVector) {
