@@ -23,6 +23,8 @@ import { useToastStore } from './stores/ToastStore';
 
 setup();
 
+console.log("EDGE BUILD 12:18EST")
+
 const { addToast } = useToastStore();
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
