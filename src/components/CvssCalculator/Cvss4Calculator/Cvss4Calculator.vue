@@ -40,7 +40,7 @@ function setMetric(category: string, metric: string, value: string) {
         class="p-4 pt-2"
       >
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
-          <b class="me-2">{{ score }}</b>{{ cvss4Vector }}
+          <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
         <div
           v-for="(category, categoryName) in CVSS4MetricsForUI"
