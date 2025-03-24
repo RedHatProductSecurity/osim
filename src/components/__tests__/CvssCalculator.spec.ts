@@ -33,6 +33,7 @@ describe('cvssCalculator', () => {
   });
 
   it('shows calculator on input focus', async () => {
+    console.log('subject', subject.html());
     await subject.find('.vector-input').trigger('focus');
     expect(subject.find('.cvss-calculator').classes('visually-hidden')).toBe(false);
   });

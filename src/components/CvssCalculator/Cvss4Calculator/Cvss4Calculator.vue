@@ -16,7 +16,7 @@ defineProps<{
 }>();
 
 const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
-const { cvssScore, cvssVector, updateScore, updateVector } = useFlawCvssScores();
+const { updateScore, updateVector } = useFlawCvssScores();
 
 // TODO: Move these into composable
 watch(cvss4Score, updateScore);
@@ -37,10 +37,10 @@ function setMetric(category: string, metric: string, value: string) {
   >
     <template #body>
       <div
-        class="p-4 pt-2"
+        class="p-4 pt-2 cvss-calculator"
       >
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
-          <b class="me-2">{{ score }}</b>{{ cvss4Vector }}
+          <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
         <div
           v-for="(category, categoryName) in CVSS4MetricsForUI"

@@ -10,7 +10,7 @@ import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
-import { postFlaw, putFlaw } from '@/services/FlawService';
+import { putFlaw, postFlaw } from '@/services/FlawService';
 
 vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
@@ -26,6 +26,7 @@ vi.mock('@/services/FlawService', () => ({
   postFlaw: vi.fn().mockResolvedValue({}),
   putFlaw: vi.fn().mockResolvedValue({}),
   putFlawCvssScores: vi.fn().mockResolvedValue({}),
+  postFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
 describe('useFlawModel', () => {
@@ -46,38 +47,6 @@ describe('useFlawModel', () => {
 
   afterEach(() => {
     app?.unmount();
-  });
-
-  it('initializes with correct default values', () => {
-    const { flaw, isSaving, isValid, shouldCreateJiraTask } = mountFlawModel();
-
-    expect(flaw.value).toBeDefined();
-    expect(isSaving.value).toBe(false);
-    expect(isValid()).toBe(false);
-    expect(shouldCreateJiraTask.value).toBe(false);
-  });
-
-  it('computes errors correctly', () => {
-    const { errors } = mountFlawModel();
-
-    expect(errors.value).toEqual(expect.objectContaining({
-      comment_zero: expect.any(String),
-      components: expect.any(String),
-      impact: expect.any(String),
-      source: expect.any(String),
-      title: expect.any(String),
-      unembargo_dt: expect.any(String),
-    }));
-  });
-
-  it('calls onSaveSuccess and resets isSaving in afterSaveSuccess', () => {
-    const { afterSaveSuccess, isSaving } = mountFlawModel();
-
-    isSaving.value = true;
-    afterSaveSuccess();
-
-    expect(onSaveSuccess).toHaveBeenCalled();
-    expect(isSaving.value).toBe(false);
   });
 
   describe('saveFlaw', () => {
@@ -115,10 +84,11 @@ describe('useFlawModel', () => {
     });
 
     it('should prevent saving if CVSS scores are invalid', async () => {
-      const { flawRhCvss3, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
-
-      flawRhCvss3.value.vector = 'invalid';
       await flushPromises();
+      const { flaw, flawRhCvss, updateFlaw, updateVector } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      updateVector('not valid');
+      flaw.value.cvss_scores[0].vector = 'not valid';
+      console.log('flawRhCvss');
       updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();

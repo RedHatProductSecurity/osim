@@ -1,13 +1,13 @@
-/* _eslint-disable unicorn/consistent-function-scoping */
+/* eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 
-import { groupWith, equals } from 'ramda';
+import { equals, groupWith } from 'ramda';
 
-import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import { deepCopyFromRaw } from '@/utils/helpers';
-import { IssuerEnum } from '@/generated-client';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
-import type { Nullable, ZodFlawCVSSType } from '@/types';
+import { IssuerEnum } from '@/generated-client';
+import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
+import type { Dict, Nullable, ZodFlawCVSSType } from '@/types';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 import { useCvss4Calculations } from './useCvss4Calculator';
 import { useFlaw } from './useFlaw';
@@ -20,24 +20,25 @@ function useGlobals() {
   const rhCvssScores = ref(initializedRhCvss());
 
   const flawRhCvss = computed(() => rhCvssScores.value[cvssVersion.value]);
-
+  watch(() => flaw.value.updated_dt, () => {
+    rhCvssScores.value = initializedRhCvss();
+  });
   function selectedCvssData(issuer: IssuerEnum) {
     return getCvssData(issuer, cvssVersion.value);
   }
 
-  function initializedRhCvss() {
+  function initializedRhCvss(): Dict<string, ZodFlawCVSSType> {
     return Object.fromEntries(
       Object.values(CvssVersions).map(version => [
         version,
-        getCvssData(IssuerEnum.Rh, version) ?? blankCvss(version)],
-      ),
+        getCvssData(IssuerEnum.Rh, version) ?? blankCvss(version),
+      ]),
     );
   }
 
   function getCvssData(issuer: string, version: string) {
     return flaw.value.cvss_scores.find(
-      cvss => (cvss.issuer === issuer && cvss.cvss_version === version)
-      || cvss.issuer === issuer,
+      cvss => (cvss.issuer === issuer && cvss.cvss_version === version),
     );
   }
 
@@ -62,8 +63,8 @@ function useGlobals() {
   };
 }
 
-const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
-const { cvss4Vector, cvss4Score } = useCvss4Calculations();
+export const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
+const { cvss4Score, cvss4Vector } = useCvss4Calculations();
 
 export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Nist]: 'NVD',
@@ -148,26 +149,34 @@ export function useFlawCvssScores() {
   });
 
   async function saveCvssScores() {
-    if (flawRhCvss.value?.created_dt) {
+    const queue = [];
+    for (const cvssData of Object.values(rhCvssScores.value)) {
+      // Update logic, if the CVSS score already exists in OSIDB
+      if (cvssData.created_dt) {
       // Handle existing CVSS score
-      if (flawRhCvss.value?.vector === null && flawRhCvss.value?.uuid != null) {
-        return deleteFlawCvssScores(flaw.value.uuid, flawRhCvss.value.uuid);
+        if (cvssData.vector === null && cvssData.uuid != null) {
+          queue.push(deleteFlawCvssScores(flaw.value.uuid, cvssData.uuid));
+        } else if (cvssData.vector !== null) {
+          // Update embargoed state from parent flaw
+          cvssData.embargoed = flaw.value.embargoed;
+          queue.push(putFlawCvssScores(flaw.value.uuid, cvssData.uuid || '', cvssData));
+        }
+      // Handle new CVSS score, since it does not exist in OSIDB yet
+      } else if (cvssData.vector !== null) {
+        const requestBody = {
+          // "score":  is recalculated based on the vector by OSIDB and does not need to be included
+          comment: cvssData.comment,
+          cvss_version: cvssData.cvss_version,
+          issuer: IssuerEnum.Rh,
+          vector: cvssData.vector,
+          embargoed: flaw.value.embargoed,
+        };
+        queue.push(postFlawCvssScores(flaw.value.uuid, requestBody));
       }
-      // Update embargoed state from parent flaw
-      flawRhCvss.value.embargoed = flaw.value.embargoed;
-      return putFlawCvssScores(flaw.value.uuid, flawRhCvss.value.uuid || '', flawRhCvss.value);
+      // Handle newly created CVSS score
     }
 
-    // Handle newly created CVSS score
-    const requestBody = {
-      // "score":  is recalculated based on the vector by OSIDB and does not need to be included
-      comment: flawRhCvss.value?.comment,
-      cvss_version: cvssVersion.value,
-      issuer: IssuerEnum.Rh,
-      vector: flawRhCvss.value?.vector,
-      embargoed: flaw.value.embargoed,
-    };
-    return postFlawCvssScores(flaw.value.uuid, requestBody);
+    return Promise.all(queue);
   }
 
   function updateVector(vector: string) {

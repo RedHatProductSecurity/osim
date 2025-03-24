@@ -213,7 +213,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     createFlaw,
     updateFlaw,
     afterSaveSuccess,
-    ...cvssScoresModel,
+    ...cvssScoresModel, // TODO: remove this
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };

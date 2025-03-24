@@ -72,7 +72,7 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   updateFactors(formatFactors(cvssFactors.value));
-  updateScore(calculateScore(cvssFactors.value) ?? -1);
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
   // cvssScore.value = calculateScore(cvssFactors.value);
 }
 
