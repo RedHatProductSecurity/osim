@@ -144,12 +144,12 @@ export class Vector {
 
   updateMetricSelections(selections: Dict) {
     for (const category in METRICS) {
-      for (const key in METRICS[category as MetricsGroup]) {
+      for (const metricFactor in METRICS[category as MetricsGroup]) {
         // Use the first value in the array of allowed values as the default
         // selections[key] = METRICS[category as MetricsGroup][key][0];
-        this.metricsSelections[key] = selections?.[category as MetricsGroup]?.[key]
-        ?? selections?.[key]
-        ?? METRICS[category as MetricsGroup][key][0];
+        this.metricsSelections[metricFactor] = selections?.[category as MetricsGroup]?.[metricFactor]
+        ?? selections?.[metricFactor]
+        ?? METRICS[category as MetricsGroup][metricFactor][0];
       }
     }
   }
@@ -263,7 +263,6 @@ export class Vector {
     * @returns - Returns true if the vector is valid, otherwise false.
   */
   validateStringVector(vector: string): boolean {
-    console.log('validating', vector);
     const metrics = vector.split('/');
 
     // Check if the prefix is correct
