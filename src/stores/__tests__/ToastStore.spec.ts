@@ -15,6 +15,7 @@ describe('toastStore', () => {
   });
 
   it('addToast', () => {
+    settingsStore.settings.privacyNoticeShown = true;
     settingsStore.settings.showNotifications = true;
 
     const toast: ToastNew = { body: 'Test Toast' };
