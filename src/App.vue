@@ -20,10 +20,15 @@ import { footerHeight, footerTop } from '@/stores/responsive';
 
 import { updateCWEData } from './services/CweService';
 import { useToastStore } from './stores/ToastStore';
+import { useSettingsStore } from './stores/SettingsStore';
 
 setup();
 
+const settingsStore = useSettingsStore();
 const { addToast } = useToastStore();
+
+const settings = ref(settingsStore.settings);
+
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
@@ -48,13 +53,13 @@ onMounted(() => {
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
   updateRelativeOsimBuildDate();
 
-  if (!localStorage.getItem('privacyNoticeShown')) {
+  if (!settings.value.privacyNoticeShown) {
     addToast({
       title: 'Privacy Notice',
       body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
       ' In some cases that information may be publicly visible.',
     });
-    localStorage.setItem('privacyNoticeShown', 'true');
+    settings.value.privacyNoticeShown = true;
   }
 });
 onBeforeUnmount(() => {
