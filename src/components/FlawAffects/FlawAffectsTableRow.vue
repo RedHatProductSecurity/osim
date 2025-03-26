@@ -403,6 +403,7 @@ tr {
   height: 39.2px;
 
   td {
+    max-width: 24ch;
     transition:
       background-color 0.5s,
       color 0.5s,

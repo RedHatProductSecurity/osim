@@ -14,6 +14,7 @@ export const SettingsSchema = z.object({
   affectsPerPage: z.number(),
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
+  privacyNoticeShown: z.boolean().default(false),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -25,6 +26,7 @@ const defaultValues: SettingsType = {
   affectsPerPage: 10,
   trackersPerPage: 10,
   isHidingLabels: false,
+  privacyNoticeShown: false,
 };
 const osimSettings = useStorage('OSIM::USER-SETTINGS', structuredClone(defaultValues));
 

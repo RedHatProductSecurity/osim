@@ -20,12 +20,17 @@ import { footerHeight, footerTop } from '@/stores/responsive';
 
 import { updateCWEData } from './services/CweService';
 import { useToastStore } from './stores/ToastStore';
+import { useSettingsStore } from './stores/SettingsStore';
 
 setup();
 
-console.log("EDGE BUILD 12:18EST")
+console.log('EDGE BUILD 12:18EST');
 
+const settingsStore = useSettingsStore();
 const { addToast } = useToastStore();
+
+const settings = ref(settingsStore.settings);
+
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
@@ -50,11 +55,14 @@ onMounted(() => {
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
   updateRelativeOsimBuildDate();
 
-  addToast({
-    title: 'Privacy Notice',
-    body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
-    ' In some cases that information may be publicly visible.',
-  });
+  if (!settings.value.privacyNoticeShown) {
+    addToast({
+      title: 'Privacy Notice',
+      body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
+      ' In some cases that information may be publicly visible.',
+    });
+    settings.value.privacyNoticeShown = true;
+  }
 });
 onBeforeUnmount(() => {
   clearInterval(buildDateIntervalId);
