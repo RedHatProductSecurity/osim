@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
 
-import { useSettingsStore, type SettingsType } from '../SettingsStore';
+import { useSettingsStore, type SettingsType } from '@/stores/SettingsStore';
 
 const initialState: SettingsType = {
   bugzillaApiKey: '',
@@ -39,6 +39,7 @@ describe('settingsStore', () => {
       affectsPerPage: 1337,
       trackersPerPage: 1337,
       isHidingLabels: !initialState.isHidingLabels,
+      privacyNoticeShown: false,
     };
 
     settingsStore.settings = settings;

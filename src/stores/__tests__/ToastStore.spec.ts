@@ -2,22 +2,15 @@ import { createPinia, setActivePinia } from 'pinia';
 
 import { useToastStore, type ToastNew } from '@/stores/ToastStore';
 
-import { useSettingsStore } from '../SettingsStore';
-
 describe('toastStore', () => {
   let toastStore: ReturnType<typeof useToastStore>;
-  let settingsStore: ReturnType<typeof useSettingsStore>;
 
   beforeEach(() => {
     setActivePinia(createPinia());
-    settingsStore = useSettingsStore();
     toastStore = useToastStore();
   });
 
   it('addToast', () => {
-    settingsStore.settings.privacyNoticeShown = true;
-    settingsStore.settings.showNotifications = true;
-
     const toast: ToastNew = { body: 'Test Toast' };
 
     toastStore.addToast(toast);
