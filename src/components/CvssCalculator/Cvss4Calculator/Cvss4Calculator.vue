@@ -16,7 +16,7 @@ defineProps<{
 }>();
 
 const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
-const { cvssScore, cvssVector, updateScore, updateVector } = useFlawCvssScores();
+const { updateScore, updateVector } = useFlawCvssScores();
 
 // TODO: Move these into composable
 watch(cvss4Score, updateScore);

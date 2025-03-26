@@ -115,9 +115,9 @@ describe('useFlawModel', () => {
     });
 
     it('should prevent saving if CVSS scores are invalid', async () => {
-      const { flawRhCvss3, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { flawRhCvss, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
 
-      flawRhCvss3.value.vector = 'invalid';
+      flawRhCvss.value.vector = 'invalid';
       await flushPromises();
       updateFlaw();
 

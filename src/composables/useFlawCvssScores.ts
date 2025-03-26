@@ -1,4 +1,4 @@
-/* _eslint-disable unicorn/consistent-function-scoping */
+/* eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 
 import { equals, groupWith } from 'ramda';

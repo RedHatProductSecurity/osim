@@ -29,9 +29,6 @@ const { cvssVector, updateScore, updateVector } = useFlawCvssScores();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector && newCvssVector) {
-  // if (cvssVector.value !== newCvssVector ) {
-    // cvssVector.value = newCvssVector;
-    // updateVector(newCvssVector ?? '');
     updateVector(newCvssVector);
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
@@ -49,8 +46,7 @@ function factorButton(id: string, key: string) {
   }
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
   updateFactors(formatFactors(cvssFactors.value));
-  // cvssScore.value = calculateScore(cvssFactors.value);
-  updateScore(calculateScore(cvssFactors.value) ?? -1)
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 </script>
 
