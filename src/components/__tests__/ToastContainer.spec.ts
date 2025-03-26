@@ -52,7 +52,7 @@ describe('toastContainer', () => {
       },
     });
     const toastElements = subject.findAllComponents(Toast);
-    expect(toastElements.length).toBe(2);
+    expect(toastElements.length).toBe(3);
     const clearAllButton = subject.find('.osim-toast-container-clear button');
     expect(clearAllButton.exists()).toBeTruthy();
     await clearAllButton.trigger('click');

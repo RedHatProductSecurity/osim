@@ -22,7 +22,7 @@ describe('toastStore', () => {
 
     toastStore.addToast(toast);
 
-    expect(toastStore.toasts).toHaveLength(1);
+    expect(toastStore.toasts).toHaveLength(2);
     expect(toastStore.toasts[0].isFresh).toBe(true);
   });
 

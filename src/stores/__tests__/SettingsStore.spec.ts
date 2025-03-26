@@ -39,6 +39,7 @@ describe('settingsStore', () => {
       affectsPerPage: 1337,
       trackersPerPage: 1337,
       isHidingLabels: !initialState.isHidingLabels,
+      privacyNoticeShown: false,
     };
 
     settingsStore.settings = settings;
