@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import LowSeverityTrackersWarning from '@/components/LowSeverityTrackersWarning.vue';
 
@@ -111,6 +111,14 @@ async function handleFileTrackers() {
 function hideLowSeverityTrackersWarning() {
   showLowSeverityTrackersWarning.value = false;
 }
+
+// This is to disabled on the trackers according to the delayed tracker refresh
+// Can be removed once the timeout on useRelatedFlawTrackers is removed
+const disabledActions = ref(true);
+onMounted(async () => {
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  disabledActions.value = false;
+});
 </script>
 
 <template>
@@ -198,6 +206,7 @@ function hideLowSeverityTrackersWarning() {
                   </h5>
                   <button
                     type="button"
+                    :disabled="disabledActions"
                     class="btn btn-white btn-outline-dark-info btn-sm mx-2"
                     @click="handleSetAll(tabProps, true)"
                   >
@@ -207,6 +216,7 @@ function hideLowSeverityTrackersWarning() {
                   </button>
                   <button
                     type="button"
+                    :disabled="disabledActions"
                     class="btn btn-white btn-outline-dark-info btn-sm me-2"
                     @click="handleSetAll(tabProps, false)"
                   >
@@ -221,6 +231,7 @@ function hideLowSeverityTrackersWarning() {
                     <input
                       v-model="shouldApplyToRelated"
                       type="checkbox"
+                      :disabled="disabledActions"
                       class="form-check-input info focus-ring focus-ring-info"
                     />
                     <span class="form-check-label">
@@ -240,6 +251,7 @@ function hideLowSeverityTrackersWarning() {
                       <input
                         :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
+                        :disabled="disabledActions"
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
@@ -279,6 +291,7 @@ function hideLowSeverityTrackersWarning() {
                       <input
                         :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
+                        :disabled="disabledActions"
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
@@ -321,6 +334,7 @@ function hideLowSeverityTrackersWarning() {
                     v-if="trackersToFile.length"
                     type="button"
                     class="btn btn-sm btn-dark-info text-white mt-2 me-2"
+                    :disabled="disabledActions"
                     @click="shouldShowInspector = !shouldShowInspector"
                   >
                     <i
@@ -347,7 +361,7 @@ function hideLowSeverityTrackersWarning() {
                   <button
                     type="button"
                     class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2"
-                    :disabled="!trackersToFile.length || isFilingTrackers"
+                    :disabled="!trackersToFile.length || isFilingTrackers || disabledActions"
                     @click="handleFileTrackers"
                   >
                     <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
