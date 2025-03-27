@@ -154,7 +154,7 @@ export function useRelatedFlawTrackers(
         selectedRelatedFlaws.value[index].affects = relatedFlaws.value[relatedIndex].affects;
       }
     });
-    updateMultiFlawTrackers(affectsBySelectedFlawId.value, true);
+    updateMultiFlawTrackers(affectsBySelectedFlawId.value, false);
   }, { deep: true });
 
   function updateMultiFlawTrackers(affectsById: Record<string, ZodAffectType[]>, shouldOverwrite = false) {
@@ -191,6 +191,7 @@ export function useRelatedFlawTrackers(
     if (shouldFileAsMultiFlaw.value) {
       try {
         await fileTrackingFor(trackersToFile.value);
+        updateMultiFlawTrackers(affectsBySelectedFlawId.value, true);
       } catch (error) {
         errors.push(error);
       } finally {
