@@ -206,7 +206,7 @@ onMounted(async () => {
                   </h5>
                   <button
                     type="button"
-                    :disabled="disabledActions"
+                    :disabled="disabledActions || isLoadingTrackers"
                     class="btn btn-white btn-outline-dark-info btn-sm mx-2"
                     @click="handleSetAll(tabProps, true)"
                   >
@@ -216,7 +216,7 @@ onMounted(async () => {
                   </button>
                   <button
                     type="button"
-                    :disabled="disabledActions"
+                    :disabled="disabledActions || isLoadingTrackers"
                     class="btn btn-white btn-outline-dark-info btn-sm me-2"
                     @click="handleSetAll(tabProps, false)"
                   >
@@ -231,7 +231,7 @@ onMounted(async () => {
                     <input
                       v-model="shouldApplyToRelated"
                       type="checkbox"
-                      :disabled="disabledActions"
+                      :disabled="disabledActions || isLoadingTrackers"
                       class="form-check-input info focus-ring focus-ring-info"
                     />
                     <span class="form-check-label">
@@ -251,7 +251,7 @@ onMounted(async () => {
                       <input
                         :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
-                        :disabled="disabledActions"
+                        :disabled="disabledActions || isLoadingTrackers"
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
@@ -291,7 +291,7 @@ onMounted(async () => {
                       <input
                         :checked="tabProps.trackerSelections.get(tracker)"
                         type="checkbox"
-                        :disabled="disabledActions"
+                        :disabled="disabledActions || isLoadingTrackers"
                         class="osim-tracker form-check-input"
                         @input="updateSelection(tabProps.trackerSelections, tracker)"
                       />
@@ -334,7 +334,7 @@ onMounted(async () => {
                     v-if="trackersToFile.length"
                     type="button"
                     class="btn btn-sm btn-dark-info text-white mt-2 me-2"
-                    :disabled="disabledActions"
+                    :disabled="disabledActions || isLoadingTrackers"
                     @click="shouldShowInspector = !shouldShowInspector"
                   >
                     <i
@@ -361,7 +361,7 @@ onMounted(async () => {
                   <button
                     type="button"
                     class="btn btn-sm btn-dark-info text-white osim-file-trackers mt-2"
-                    :disabled="!trackersToFile.length || isFilingTrackers || disabledActions"
+                    :disabled="!trackersToFile.length || isFilingTrackers || disabledActions || isLoadingTrackers"
                     @click="handleFileTrackers"
                   >
                     <i v-if="!isFilingTrackers" class="bi bi-archive"></i>
