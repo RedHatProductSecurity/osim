@@ -1,5 +1,12 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Disable tracker actions when loading/refreshing (`OSIDB-4021`)
+
+### Fix
+* Tracker selections are restores after loading/refreshing (`OSIDB-4021`)
+
 ## [2025.3.2]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
