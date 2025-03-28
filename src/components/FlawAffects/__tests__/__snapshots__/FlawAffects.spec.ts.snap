@@ -853,7 +853,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                         <div data-v-f682b1b0="" class="row mb-3">
                           <div data-v-f682b1b0="" class="col-6">
                             <div data-v-f682b1b0="" class="ms-2 pe-2">
-                              <h5 data-v-f682b1b0="" class="pt-4 d-inline-block"> Unfiled </h5><button data-v-f682b1b0="" type="button" class="btn btn-white btn-outline-dark-info btn-sm mx-2"><i data-v-f682b1b0="" class="bi bi-check-all"></i> Select All</button><button data-v-f682b1b0="" type="button" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-f682b1b0="" class="bi bi-eraser"></i> Deselect All</button>
+                              <h5 data-v-f682b1b0="" class="pt-4 d-inline-block"> Unfiled </h5><button data-v-f682b1b0="" type="button" disabled="" class="btn btn-white btn-outline-dark-info btn-sm mx-2"><i data-v-f682b1b0="" class="bi bi-check-all"></i> Select All</button><button data-v-f682b1b0="" type="button" disabled="" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-f682b1b0="" class="bi bi-eraser"></i> Deselect All</button>
                               <!--v-if-->
                             </div>
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
@@ -1271,7 +1271,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                         <div data-v-f682b1b0="" class="row mb-3">
                           <div data-v-f682b1b0="" class="col-6">
                             <div data-v-f682b1b0="" class="ms-2 pe-2">
-                              <h5 data-v-f682b1b0="" class="pt-4 d-inline-block"> Unfiled </h5><button data-v-f682b1b0="" type="button" class="btn btn-white btn-outline-dark-info btn-sm mx-2"><i data-v-f682b1b0="" class="bi bi-check-all"></i> Select All</button><button data-v-f682b1b0="" type="button" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-f682b1b0="" class="bi bi-eraser"></i> Deselect All</button>
+                              <h5 data-v-f682b1b0="" class="pt-4 d-inline-block"> Unfiled </h5><button data-v-f682b1b0="" type="button" disabled="" class="btn btn-white btn-outline-dark-info btn-sm mx-2"><i data-v-f682b1b0="" class="bi bi-check-all"></i> Select All</button><button data-v-f682b1b0="" type="button" disabled="" class="btn btn-white btn-outline-dark-info btn-sm me-2"><i data-v-f682b1b0="" class="bi bi-eraser"></i> Deselect All</button>
                               <!--v-if-->
                             </div>
                             <div data-v-f682b1b0="" class="osim-tracker-list-container ms-3 mt-2 pb-3">
