@@ -37,7 +37,7 @@ function setMetric(category: string, metric: string, value: string) {
   >
     <template #body>
       <div
-        class="p-4 pt-2"
+        class="p-4 pt-2 cvss-calculator"
       >
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
           <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
