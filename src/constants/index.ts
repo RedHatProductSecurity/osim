@@ -20,7 +20,7 @@ export const CvssVersionDisplayMap: { [key in CvssVersions]: string } = {
   [CvssVersions.V4]: '4.0',
 };
 
-export const DEFAULT_CVSS_VERSION = CvssVersions.V4;
+export const DEFAULT_CVSS_VERSION = CvssVersions.V3;
 
 export const allowedSources = [
   '',
