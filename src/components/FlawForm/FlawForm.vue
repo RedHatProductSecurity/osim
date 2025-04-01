@@ -21,6 +21,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -62,35 +63,36 @@ const {
   cancelAddReference,
   commentsByType,
   createFlaw,
-  cvssVersion,
   deleteAcknowledgment,
   deleteReference,
   errors,
   flaw,
   flawAcknowledgments,
   flawReferences,
-  flawRhCvss3,
-  highlightedNvdCvss3String,
-  flawRhCvss,
-  highlightedNvdCvssString,
   internalComments,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
   isValid,
   loadInternalComments,
-  nvdCvssString,
   osimLink,
   privateComments,
   publicComments,
-  rhCvssString,
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
-  shouldDisplayEmailNistForm,
+  systemComments,
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel(props.flaw, onSaveSuccess);
+
+const {
+  flawRhCvss,
+  highlightedNvdCvssString,
+  nvdCvssString,
+  rhCvssString,
+  shouldDisplayEmailNistForm,
+} = useCvssScores();
 
 const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;
@@ -268,7 +270,7 @@ const createdDate = computed(() => {
               :withBlank="true"
             />
             <CvssCalculator
-              :id="flawRhCvss.uuid"
+              :uuid="flawRhCvss.uuid"
             />
             <CvssSection
               :highlightedNvdCvssString

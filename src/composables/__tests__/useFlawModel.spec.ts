@@ -2,13 +2,14 @@ import type { App } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 
+import { useCvssScores } from '@/composables/useCvssScores';
 import { useFlawModel } from '@/composables/useFlawModel';
-import { blankFlaw } from '@/composables/useFlaw';
+import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
-import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
-import { withSetup, router } from '@/__tests__/helpers';
+import { withSetup, importActual } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';
 
@@ -20,6 +21,13 @@ vi.mock('@/composables/useFlawAttributionsModel', () => ({
   useFlawAttributionsModel: vi.fn(),
 }));
 
+vi.mock('@/composables/useFlawAffectsModel', () => ({
+  useFlawAffectsModel: vi.fn().mockReturnValue({
+    updateAffectCvss: vi.fn(),
+    affectsToDelete: { value: [] },
+  }),
+}));
+
 vi.mock('@/services/FlawService', () => ({
   getFlawBugzillaLink: vi.fn().mockResolvedValue({}),
   getFlawOsimLink: vi.fn().mockResolvedValue({}),
@@ -29,20 +37,39 @@ vi.mock('@/services/FlawService', () => ({
   postFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
+vi.mock('@/composables/useCvssScores');
+vi.mock('@/composables/useFlaw', async (importOriginal) => {
+  const { ref } = await import('vue');
+  const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
+  return {
+    ...await importOriginal(),
+    useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }),
+  };
+});
+
 describe('useFlawModel', () => {
-  const onSaveSuccess = vi.fn();
   let app: App;
 
   const mountFlawModel = (flaw: ZodFlawType = blankFlaw()) => {
     const pinia = createTestingPinia();
-    const plugins = [router, pinia];
-    const [composable, _app] = withSetup(() => useFlawModel(flaw, onSaveSuccess), plugins);
+    vi.unmock('@/composables/useFlawAffectsModel');
+    const [composable, _app] = withSetup(async () => {
+      const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
+      _useFlaw().flaw.value = flaw;
+      vi.mocked(useFlaw).mockReturnValue(_useFlaw());
+      const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
+      const { useCvssScores: _useCvssScores } = await importActual('@/composables/useCvssScores');
+      vi.doMock('@/composables/useFlawAffectsModel', _useFlawAffectsModel);
+      vi.mocked(useCvssScores).mockReturnValue(_useCvssScores());
+      const flawModel = useFlawModel(flaw, () => {});
+      return flawModel;
+    }, [pinia]);
     app = _app;
     return composable;
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(() => {
@@ -50,24 +77,24 @@ describe('useFlawModel', () => {
   });
 
   describe('saveFlaw', () => {
-    it('should prevent creating if not valid', () => {
-      const { createFlaw } = mountFlawModel();
+    it('should prevent creating if not valid', async () => {
+      const { createFlaw } = await mountFlawModel();
 
       createFlaw();
 
       expect(postFlaw).not.toHaveBeenCalled();
     });
 
-    it('should prevent updating if not valid', () => {
-      const { updateFlaw } = mountFlawModel();
+    it('should prevent updating if not valid', async () => {
+      const { updateFlaw } = await mountFlawModel();
 
       updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();
     });
 
-    it('should call postFlaw on createFlaw', () => {
-      const { createFlaw } = mountFlawModel(sampleFlawRequired as ZodFlawType);
+    it('should call postFlaw on createFlaw', async () => {
+      const { createFlaw } = await mountFlawModel(sampleFlawRequired as ZodFlawType);
 
       createFlaw();
 
@@ -75,7 +102,7 @@ describe('useFlawModel', () => {
     });
 
     it('should call putFlaw on updateFlaw', async () => {
-      const { flaw, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { flaw, updateFlaw } = await mountFlawModel(sampleFlawFull as ZodFlawType);
       flaw.value.title = 'altered';
       await flushPromises();
       await updateFlaw();
@@ -84,11 +111,9 @@ describe('useFlawModel', () => {
     });
 
     it('should prevent saving if CVSS scores are invalid', async () => {
-      await flushPromises();
-      const { flaw, flawRhCvss, updateFlaw, updateVector } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { updateFlaw, updateVector } = await mountFlawModel(sampleFlawFull as ZodFlawType);
       updateVector('not valid');
-      flaw.value.cvss_scores[0].vector = 'not valid';
-      console.log('flawRhCvss');
+      await flushPromises();
       updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();
