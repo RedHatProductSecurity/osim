@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import {
   formatFactor,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 const props = defineProps<{
-  cvssFactors: Record<string, string>;
+  cvss3Factors: Record<string, string>;
+  cvssScore: null | number;
   error: null | string;
   highlightedFactor: null | string;
   isFocused: boolean;
@@ -19,8 +19,6 @@ const emit = defineEmits<{
   onInputBlur: [event: FocusEvent];
   onInputFocus: [event: FocusEvent];
 }>();
-
-const { cvssScore } = useFlawCvssScores();
 
 const input = ref();
 
@@ -63,9 +61,9 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
       class="osim-cvss-score"
       :style="isFocused ? {color: 'white'} : {color: 'black'}"
     >
-      {{ cvssScore != null ? `${cvssScore} ` : '' }}
+      {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>
-    <template v-for="(value, key) in cvssFactors" :key="key">
+    <template v-for="(value, key) in cvss3Factors" :key="key">
       <span
         v-if="value"
         :style="isFocused && key.toString() !== 'CVSS'
