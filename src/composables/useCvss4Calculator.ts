@@ -26,14 +26,6 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
     , object,
   );
 
-const cvss4Selections = ref(
-  deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
-);
-
-const vectorForParse = new Vector();
-const cvss4ClassInstance = new CVSS40(vectorForParse);
-const cvss4Score = ref(cvss4ClassInstance.score);
-const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
 function flattenSelections(selections: Record<string, any>) {
   return Object.values(selections).reduce(
     (selections: Record<string, any>, metrics) => {
@@ -43,50 +35,61 @@ function flattenSelections(selections: Record<string, any>) {
       return selections;
     }, {} as Record<string, any>);
 }
-export function useCvss4Calculations() {
+export function useCvss4Calculator() {
+  const vectorForParse = new Vector();
+  const cvss4ClassInstance = new CVSS40(vectorForParse);
+  const cvss4Score = ref(cvss4ClassInstance.score);
+  const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
+  const cvss4Selections = ref(
+    deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
+  );
+
   vectorForParse.updateMetricSelections(cvss4Selections.value);
 
-  const error = computed(() => cvss4ClassInstance.error + cvss4ClassInstance.vector.error);
+  const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);
+  const error = computed(() => errors.value.length > 0 ? errors.value.join(' ') : null);
 
-  const selectionsFlattened = computed({
-    get() {
-      return flattenSelections(cvss4Selections.value);
-    },
-    set(selections) {
-      for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
-        for (const [metricFactor, metricValue] of Object.entries(selections)) {
-          if ((metrics as Dict)[metricFactor]) {
-            cvss4Selections.value[metricGroup][metricFactor] = metricValue;
-          }
-        }
-      }
-    },
-  });
+  watch(cvss4Selections, updateCvssFromSelections, { deep: true });
 
-  watch(selectionsFlattened, updateCvssFromSelections);
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
     if (cvss4Data && cvss4Data.vector) {
-      console.log('cvss4Data.vector', cvss4Data.vector);
       cvss4ClassInstance.vector.updateVector(cvss4Data.vector);
-      selectionsFlattened.value = cvss4ClassInstance.vector.metricsSelections;
+      updateUiSelections(cvss4ClassInstance.vector.metricsSelections);
     }
   }, { immediate: true });
 
+  function updateUiSelections(selections: Dict<string, any>) {
+    for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
+      for (const [metricFactor, metricValue] of Object.entries(selections)) {
+        if ((metrics as Dict)[metricFactor]) {
+          cvss4Selections.value[metricGroup][metricFactor] = metricValue;
+        }
+      }
+    }
+  }
+
   function updateCvssFromSelections(selections: Dict<string, any>) {
     cvss4ClassInstance.vector.updateMetricSelections(selections);
+    updateUiSelections(selections);
     cvss4ClassInstance.updateScore();
     cvss4Score.value = cvss4ClassInstance.score;
     cvss4Vector.value = cvss4ClassInstance.vector.raw;
   }
 
+  function setMetric(category: string, metric: string, value: string) {
+    if (metric in cvss4Selections.value[category]) {
+      cvss4Selections.value[category][metric] = value;
+    } else {
+      console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
+    }
+  }
+
   return {
     error,
-    cvss4Vector,
+    cvss4Selections,
     cvss4Score,
+    cvss4Vector,
+    setMetric,
   };
-}
-
-export function useCvss4Selections() {
-  return { cvss4Selections };
 }

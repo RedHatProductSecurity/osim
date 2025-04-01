@@ -4,29 +4,41 @@ import { watch } from 'vue';
 import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
-import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
+// import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
+import type { ZodAffectType } from '@/types';
 
-defineProps<{
+const props = defineProps<{
+  affect?: ZodAffectType;
+  cvss4Score: null | number;
+  cvss4Selections: any;
+  cvss4Vector: null | string;
+  // cvss4Selections:  Record<string, Record<string, string>>;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
-const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
-const { updateScore, updateVector } = useFlawCvssScores();
+const emit = defineEmits<{
+  'update:cvssScore': [value: null | number];
+  'update:cvssVector': [value: null | string];
+  'update:setMetric': [category: string, metric: string, value: string];
+}>();
 
-// TODO: Move these into composable
-watch(cvss4Score, updateScore);
-watch(cvss4Vector, updateVector);
+// const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvssScores(props?.affect);
 
-const { cvss4Selections } = useCvss4Selections();
-
-function setMetric(category: string, metric: string, value: string) {
-  cvss4Selections.value[category][metric] = value;
+function updateCvss4Score(newCvss4Score: null | number | undefined) {
+  emit('update:cvssScore', newCvss4Score ?? null);
 }
+
+function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
+  emit('update:cvssVector', newCvss4Vector ?? null);
+}
+
+// TODO: Move these into composable?
+watch(() => props.cvss4Score, updateCvss4Score);
+watch(() => props.cvss4Vector, updateCvss4Vector);
 </script>
 
 <template>
@@ -42,25 +54,26 @@ function setMetric(category: string, metric: string, value: string) {
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
           <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
-        <div
+        <details
           v-for="(category, categoryName) in CVSS4MetricsForUI"
           :key="categoryName"
+          :open="categoryName === 'Base Metrics'"
           class="my-2 border bg-light-gray"
         >
-          <div class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</div>
+          <summary class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</summary>
           <div class="p-3 justify-content-between">
             <div
               v-for="(metricGroup, groupName) in category.metric_groups"
               :key="groupName"
               class="p-2"
             >
-              <span
+              <!-- <span
                 v-if="groupName"
                 class="fw-bold"
                 style="border-bottom: 1px solid; width: 35%; border-color: gray;"
               >
                 {{ groupName }}
-              </span>
+              </span> -->
               <div class="p-2">
                 <div
                   v-for="(metric, metricName) in metricGroup as Record<string, any>"
@@ -87,7 +100,7 @@ function setMetric(category: string, metric: string, value: string) {
                     :class="{
                       selected: cvss4Selections?.[MetricNamesWithValues?.[categoryName]]?.[metric.short] === value
                     }"
-                    @click="setMetric(MetricNamesWithValues[categoryName], metric.short, value)"
+                    @click="emit('update:setMetric',MetricNamesWithValues[categoryName], metric.short, value)"
                   >
                     {{ optionName }}
                   </button>
@@ -97,7 +110,7 @@ function setMetric(category: string, metric: string, value: string) {
               </div>
             </div>
           </div>
-        </div>
+        </details>
       </div>
     </template>
   </Modal>

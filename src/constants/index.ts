@@ -1,3 +1,5 @@
+import { IssuerEnum } from '@/generated-client';
+
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 export enum CvssVersions {
@@ -8,7 +10,7 @@ export enum CvssVersions {
 export const CVSS_V3 = CvssVersions.V3;
 export const CVSS_V4 = CvssVersions.V4;
 
-export const CvssVersionDisplayMap: { [key in CvssVersions]: string } = {
+export const CvssVersionDisplayMap: { [_key in CvssVersions]: string } = {
   [CvssVersions.V3]: '3.1',
   [CvssVersions.V4]: '4.0',
 };
@@ -60,4 +62,12 @@ export const commentTooltips: Record<CommentType, string> = {
   [CommentType.Private]: 'Bugzilla Private - These comments are visible to Red Hat associates.',
   [CommentType.Internal]: 'Jira Internal - These comments are visible to team members with required permissions.',
   [CommentType.System]: 'Bugzilla System - These are auto-generated private comments.',
+};
+
+export const issuerLabels: Record<string, string> = {
+  [IssuerEnum.Nist]: 'NVD',
+  [IssuerEnum.Rh]: 'RH',
+  [IssuerEnum.Cveorg]: 'CVEOrg',
+  [IssuerEnum.Osv]: 'OSV',
+  [IssuerEnum.Cisa]: 'CISA',
 };
