@@ -5,13 +5,12 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
 import {
   getFactors,
   calculateScore,
   formatFactors,
-  validateCvssVector,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
@@ -26,17 +25,13 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    // cvssVector.value = newCvssVector;
     updateVector(newCvssVector ?? '');
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 
-updateFactors(cvssVector.value);
-
-watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-});
+watch(() => cvssVector.value, updateFactors, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
   event.stopPropagation();
@@ -53,8 +48,6 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  // cvssScore.value = null;
-  // cvssVector.value = null;
   updateScore(null);
   updateVector(null);
   cvssFactors.value = {};

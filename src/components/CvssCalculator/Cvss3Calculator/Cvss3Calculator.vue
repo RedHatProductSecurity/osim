@@ -9,7 +9,7 @@ import {
   formatFactors,
   factorSeverities,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 
 defineProps<{

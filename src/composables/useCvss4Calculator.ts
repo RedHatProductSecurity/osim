@@ -43,10 +43,11 @@ function flattenSelections(selections: Record<string, any>) {
       return selections;
     }, {} as Record<string, any>);
 }
-export function useCvss4Calculations() {
+export function useCvss4Calculator() {
   vectorForParse.updateMetricSelections(cvss4Selections.value);
 
-  const error = computed(() => cvss4ClassInstance.error + cvss4ClassInstance.vector.error);
+  const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);
+  const error = computed(() => errors.value.length > 0 ? errors.value.join(' ') : null);
 
   const selectionsFlattened = computed({
     get() {
@@ -67,7 +68,6 @@ export function useCvss4Calculations() {
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
     if (cvss4Data && cvss4Data.vector) {
-      console.log('cvss4Data.vector', cvss4Data.vector);
       cvss4ClassInstance.vector.updateVector(cvss4Data.vector);
       selectionsFlattened.value = cvss4ClassInstance.vector.metricsSelections;
     }

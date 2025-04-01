@@ -1,13 +1,12 @@
 /* eslint-disable no-empty-pattern */
 import { test } from 'vitest';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
+import sampleFlawEmpty from '@test-fixtures/sampleFlawEmpty.json';
 
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import type { ZodFlawType, ZodAffectType } from '@/types';
-import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-
-import sampleFlawEmpty from './__fixtures__/sampleFlawEmpty.json';
 
 let flaw: null | ZodFlawType = null;
 export const osimEmptyFlawTest = test.extend<{ flaw: ZodFlawType }>({

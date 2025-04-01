@@ -5,7 +5,7 @@ import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
-import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
+import { useCvss4Selections, useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 
@@ -15,7 +15,7 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
+const { cvss4Score, cvss4Vector } = useCvss4Calculator();
 const { updateScore, updateVector } = useFlawCvssScores();
 
 // TODO: Move these into composable
@@ -42,25 +42,26 @@ function setMetric(category: string, metric: string, value: string) {
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
           <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
-        <div
+        <details
           v-for="(category, categoryName) in CVSS4MetricsForUI"
           :key="categoryName"
+          :open="categoryName === 'Base Metrics'"
           class="my-2 border bg-light-gray"
         >
-          <div class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</div>
+          <summary class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</summary>
           <div class="p-3 justify-content-between">
             <div
               v-for="(metricGroup, groupName) in category.metric_groups"
               :key="groupName"
               class="p-2"
             >
-              <span
+              <!-- <span
                 v-if="groupName"
                 class="fw-bold"
                 style="border-bottom: 1px solid; width: 35%; border-color: gray;"
               >
                 {{ groupName }}
-              </span>
+              </span> -->
               <div class="p-2">
                 <div
                   v-for="(metric, metricName) in metricGroup as Record<string, any>"
@@ -97,7 +98,7 @@ function setMetric(category: string, metric: string, value: string) {
               </div>
             </div>
           </div>
-        </div>
+        </details>
       </div>
     </template>
   </Modal>

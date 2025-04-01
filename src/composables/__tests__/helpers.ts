@@ -1,22 +1,25 @@
-import { useFlaw } from '@/composables/useFlaw';
-import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
-import { importActual } from '@/__tests__/helpers';
+import type { VitestUtils } from 'vitest';
 
-// describe('useFlawCvssScores', () => {
-//   // @ts-expect-error  flaw not defined
-//   beforeEach(async ({ flaw }) => {
-export function useTestCvss4Calculations() {
-  return async function beforeEach({ flaw }: { flaw: any }) {
-    vi.resetModules();
-    vi.clearAllMocks();
-    const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
-    // const { useCvssCalculator: _useCvss3Calculator } =
-    // await vi.importActual<UseCvss3CalculatorDynamicImport>('@/composables/useCvssCalculator');
-    const mockedUseFlaw = _useFlaw();
-    mockedUseFlaw.flaw.value = flaw;
-    vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
-    const { useCvss4Calculations: _useCvss4Calculations } =
-      await importActual('@/composables/useCvss4Calculator');
-    vi.mocked(useCvss4Calculations).mockReturnValue(_useCvss4Calculations());
+import { importActual } from '@/__tests__/helpers';
+import type { Dict, ZodFlawType } from '@/types';
+
+type Imported = Awaited<ReturnType<typeof importActual>>;
+
+export async function mockModules(modulePaths: Dict, _vi: VitestUtils) {
+  const modules: Record<string, Imported> = {};
+  for (const [moduleName, path] of Object.entries(modulePaths)) {
+    const module = await importActual(path);
+    modules[moduleName as string] = module[moduleName as string] ?? module;
+    _vi.doMock(path, module[moduleName as string]);
+  }
+
+  return modules;
+}
+
+export function useMockFlawWithModules(flaw: ZodFlawType, _vi: VitestUtils) {
+  return async (modules: Dict) => {
+    const mockedModules = await mockModules(modules, _vi);
+    mockedModules.useFlaw().flaw.value = flaw;
+    return mockedModules;
   };
 }

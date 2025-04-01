@@ -1,3 +1,5 @@
+import { IssuerEnum } from '@/generated-client';
+
 export enum CommentType {
   Public,
   Private,
@@ -54,3 +56,10 @@ export const allowedSources = [
   'UBUNTU',
   'UPSTREAM',
 ];
+
+export const issuerLabels: Record<string, string> = {
+  [IssuerEnum.Nist]: 'NVD',
+  [IssuerEnum.Rh]: 'RH',
+  [IssuerEnum.Cveorg]: 'CVEOrg',
+  [IssuerEnum.Osv]: 'OSV',
+};
