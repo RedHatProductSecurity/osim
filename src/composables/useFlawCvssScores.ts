@@ -1,4 +1,4 @@
-/* _eslint-disable unicorn/consistent-function-scoping */
+/* eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 
 import { equals, groupWith } from 'ramda';
@@ -63,7 +63,7 @@ function useGlobals() {
   };
 }
 
-const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
+export const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
 const { cvss4Score, cvss4Vector } = useCvss4Calculations();
 
 export const issuerLabels: Record<string, string> = {
@@ -151,7 +151,7 @@ export function useFlawCvssScores() {
   async function saveCvssScores() {
     const queue = [];
     for (const cvssData of Object.values(rhCvssScores.value)) {
-      console.log('cvssData', cvssData);
+      // Update logic, if the CVSS score already exists in OSIDB
       if (cvssData.created_dt) {
       // Handle existing CVSS score
         if (cvssData.vector === null && cvssData.uuid != null) {
@@ -161,7 +161,8 @@ export function useFlawCvssScores() {
           cvssData.embargoed = flaw.value.embargoed;
           queue.push(putFlawCvssScores(flaw.value.uuid, cvssData.uuid || '', cvssData));
         }
-      } else {
+      // Handle new CVSS score, since it does not exist in OSIDB yet
+      } else if (cvssData.vector !== null) {
         const requestBody = {
           // "score":  is recalculated based on the vector by OSIDB and does not need to be included
           comment: cvssData.comment,

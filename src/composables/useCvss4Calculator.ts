@@ -2,13 +2,13 @@ import { ref, watch, computed } from 'vue';
 
 import { map } from 'ramda';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import { IssuerEnum } from '@/generated-client';
 import { CVSS40, Vector, METRICS } from '@/utils/cvss40';
 import { isNonArrayObject } from '@/utils/helpers';
 import type { Dict } from '@/types';
 import { CvssVersions } from '@/constants';
-
-import { useFlaw } from './useFlaw';
 
 const { flaw } = useFlaw();
 
@@ -45,8 +45,6 @@ function flattenSelections(selections: Record<string, any>) {
 }
 export function useCvss4Calculations() {
   vectorForParse.updateMetricSelections(cvss4Selections.value);
-
-
 
   const error = computed(() => cvss4ClassInstance.error + cvss4ClassInstance.vector.error);
 

@@ -24,7 +24,7 @@
  * roundToDecimalPlaces(6.748571428571428, 2); // returns 6.75
  * roundToDecimalPlaces(1.005, 2);            // returns 1.01
  */
-import type { Dict } from "@/types";
+import type { Dict } from '@/types';
 
 function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
   // Step 1: Shift the decimal point by multiplying with 10^decimalPlaces
@@ -897,7 +897,7 @@ export class CVSS40 {
   score!: number;
   severity!: string;
   vector: Vector = new Vector();
-  error: string = '';
+  error: null | string = null;
 
   /**
    * Constructs a CVSS40 object and initializes its properties.
@@ -913,15 +913,13 @@ export class CVSS40 {
     * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
     *                                Defaults to an empty string if not provided.
     */
-  constructor(input: any = '') {
+  constructor(input: null | string | Vector = '') {
     if (input instanceof Vector) {
       // If the input is a Vector object, use it directly
       this.vector = input;
     } else if (typeof input === 'string') {
       // If the input is a string, create a new Vector object from the string
       this.vector = new Vector(input);
-    } else {
-      this.error = ('Invalid input type for CVSS40 constructor. Expected a string or a Vector object.');
     }
 
     this.updateScore();

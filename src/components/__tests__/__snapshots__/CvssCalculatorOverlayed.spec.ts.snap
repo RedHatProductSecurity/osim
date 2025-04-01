@@ -2,11 +2,11 @@
 
 exports[`cvssCalculatorOverlayed > mounts and renders correctly 1`] = `
 "<div data-v-b418eb65="" tabindex="0"><span data-v-b418eb65=""></span><i data-v-b418eb65="" class="bi bi-calculator-fill p-2"></i>
-  <div data-v-707feb84="" data-v-b418eb65="" class="cvss-calculator overlayed overlayed">
+  <div data-v-707feb84="" data-v-b418eb65="" class="cvss-calculator overlayed overlayed" cvssvector="">
     <div data-v-707feb84="" class="p-3">
       <div data-v-b418eb65="" class="osim-input">
         <div data-v-b418eb65="" class="input-wrapper col">
-          <div data-v-1d5c2355="" data-v-b418eb65="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input vector-input" style="height: 30.8px;" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;"></span>
+          <div data-v-1d5c2355="" data-v-b418eb65="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input vector-input" cvssvector="" style="height: 30.8px;" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;"></span>
             <!--v-if-->
             <!--v-if-->
             <!--v-if-->
