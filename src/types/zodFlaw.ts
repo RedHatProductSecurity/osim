@@ -2,9 +2,9 @@ import { nativeEnum, z } from 'zod';
 import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
-import type { ValueOf } from '@/utils/typeHelpers';
 import { loadCweData } from '@/services/CweService';
 import { CommentType } from '@/constants';
+import type { ValueOf } from '@/types';
 
 import {
   NistCvssValidationEnum,

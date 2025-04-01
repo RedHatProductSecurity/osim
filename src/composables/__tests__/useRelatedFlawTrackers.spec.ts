@@ -1,15 +1,13 @@
 import { ref, type Ref } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
-
-import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
+import sampleTrackersQueryResult from '@test-fixtures/sampleTrackersQueryResult.json';
+import * as flawJson from '@test-fixtures/sampleFlawTrackers.json';
 
 import { useRelatedFlawTrackers } from '@/composables/useRelatedFlawTrackers';
 
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
 import type { ZodFlawType } from '@/types';
-
-import * as flawJson from '../../components/__tests__/__fixtures__/sampleFlawTrackers.json';
 
 const flaw = flawJson as ZodFlawType;
 
