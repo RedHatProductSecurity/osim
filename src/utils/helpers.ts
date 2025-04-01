@@ -78,7 +78,7 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 }
 
 export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
-  return score.issuer === IssuerEnum.Rh && score.cvss_version === CVSS_V3;
+  return score?.issuer === IssuerEnum.Rh && score?.cvss_version === CVSS_V3;
 }
 
 export function affectRhCvss3(affect: ZodAffectType) {
