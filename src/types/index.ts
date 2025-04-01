@@ -1,3 +1,9 @@
+import type { ZodFlawCVSSType, ZodFlawType } from '@/types/zodFlaw';
+import type { ZodAffectCVSSType, ZodAffectType } from '@/types/zodAffect';
+
+export type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
+export type CvssEntity = ZodAffectType | ZodFlawType;
+
 export type {
   AffectCVSSSchemaType,
   AffectSchemaType,
