@@ -3,14 +3,14 @@ import { computed, ref, watch } from 'vue';
 
 import { equals, groupWith } from 'ramda';
 
+import { useFlaw } from '@/composables/useFlaw';
+import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
+
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
 import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
 import type { Dict, Nullable, ZodFlawCVSSType } from '@/types';
 import { deepCopyFromRaw } from '@/utils/helpers';
-
-import { useCvss4Calculations } from './useCvss4Calculator';
-import { useFlaw } from './useFlaw';
 
 const { flaw } = useFlaw();
 
