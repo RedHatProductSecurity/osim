@@ -1,5 +1,5 @@
 import { useFlaw } from '@/composables/useFlaw';
-import { useCvss4Calculations } from '@/composables/useCvss4Calculations';
+import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
 import { importActual } from '@/__tests__/helpers';
 
 // describe('useFlawCvssScores', () => {
