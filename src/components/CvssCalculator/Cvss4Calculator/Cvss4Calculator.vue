@@ -42,12 +42,13 @@ function setMetric(category: string, metric: string, value: string) {
         <div class="my-4 sticky-top p-2 bg-secondary text-white">
           <b class="me-2">{{ cvss4Score }}</b>{{ cvss4Vector }}
         </div>
-        <div
+        <details
           v-for="(category, categoryName) in CVSS4MetricsForUI"
           :key="categoryName"
+          open
           class="my-2 border bg-light-gray"
         >
-          <div class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</div>
+          <summary class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</summary>
           <div class="p-3 justify-content-between">
             <div
               v-for="(metricGroup, groupName) in category.metric_groups"
@@ -97,7 +98,7 @@ function setMetric(category: string, metric: string, value: string) {
               </div>
             </div>
           </div>
-        </div>
+        </details>
       </div>
     </template>
   </Modal>
