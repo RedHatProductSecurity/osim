@@ -45,7 +45,7 @@ function setMetric(category: string, metric: string, value: string) {
         <details
           v-for="(category, categoryName) in CVSS4MetricsForUI"
           :key="categoryName"
-          open
+          :open="categoryName === 'Base Metrics'"
           class="my-2 border bg-light-gray"
         >
           <summary class="fw-bold px-3 py-2 bg-secondary text-white">{{ categoryName }}</summary>
