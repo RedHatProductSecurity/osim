@@ -54,13 +54,13 @@ function setMetric(category: string, metric: string, value: string) {
               :key="groupName"
               class="p-2"
             >
-              <span
+              <!-- <span
                 v-if="groupName"
                 class="fw-bold"
                 style="border-bottom: 1px solid; width: 35%; border-color: gray;"
               >
                 {{ groupName }}
-              </span>
+              </span> -->
               <div class="p-2">
                 <div
                   v-for="(metric, metricName) in metricGroup as Record<string, any>"
