@@ -9,11 +9,11 @@ import { putFlawCvssScores } from '@/services/FlawService';
 
 vi.mock('@/services/FlawService');
 vi.mock('@/composables/useFlaw');
-vi.mock('@/composables/useCvssCalculator');
+vi.mock('@/composables/useCvss3Calculator');
 vi.mock('@/composables/useCvss4Calculator');
 
 type UseFlawDynamicImport = typeof import('@/composables/useFlaw');
-// type UseCvss3CalculatorDynamicImport = typeof import('@/composables/useCvssCalculator');
+// type UseCvss3CalculatorDynamicImport = typeof import('@/composables/useCvss3Calculator');
 type UseCvss4CalculatorDynamicImport = typeof import('@/composables/useCvss4Calculator');
 
 describe('useFlawCvssScores', () => {
@@ -22,8 +22,8 @@ describe('useFlawCvssScores', () => {
     vi.resetModules();
     vi.clearAllMocks();
     const { useFlaw: _useFlaw } = await vi.importActual<UseFlawDynamicImport>('@/composables/useFlaw');
-    // const { useCvssCalculator: _useCvss3Calculator } =
-    // await vi.importActual<UseCvss3CalculatorDynamicImport>('@/composables/useCvssCalculator');
+    // const { useCvss3Calculator: _useCvss3Calculator } =
+    // await vi.importActual<UseCvss3CalculatorDynamicImport>('@/composables/useCvss3Calculator');
     const mockedUseFlaw = _useFlaw();
     mockedUseFlaw.flaw.value = flaw;
     vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);

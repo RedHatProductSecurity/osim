@@ -2,15 +2,36 @@
 import { computed, ref, watch } from 'vue';
 
 import { equals, groupWith } from 'ramda';
+import { z } from 'zod';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
 
+import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
 import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
 import type { Dict, Nullable, ZodFlawCVSSType } from '@/types';
 import { deepCopyFromRaw } from '@/utils/helpers';
+
+export function validateCvssVector(cvssVector: null | string | undefined) {
+  if (cvssVersion.value === CvssVersions.V3) {
+    const cvss3VectorSchema = z.union([
+      z.string().length(44, { message: 'Incomplete CVSS3.1 Vector. There are factors missing.' }),
+      z.string().length(0).nullable(),
+    ]);
+    const parseResult = cvss3VectorSchema.safeParse(cvssVector);
+    if (parseResult.success === false) {
+      return parseResult.error.errors[0].message;
+    }
+  }
+
+  if (cvssVersion.value === CvssVersions.V4) {
+    return new CVSS40(cvssVector).error;
+  }
+
+  return null;
+}
 
 const { flaw } = useFlaw();
 
@@ -65,13 +86,6 @@ function useGlobals() {
 
 export const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
 const { cvss4Score, cvss4Vector } = useCvss4Calculations();
-
-export const issuerLabels: Record<string, string> = {
-  [IssuerEnum.Nist]: 'NVD',
-  [IssuerEnum.Rh]: 'RH',
-  [IssuerEnum.Cveorg]: 'CVEOrg',
-  [IssuerEnum.Osv]: 'OSV',
-};
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
@@ -179,11 +193,11 @@ export function useFlawCvssScores() {
     return Promise.all(queue);
   }
 
-  function updateVector(vector: string) {
+  function updateVector(vector: null | string) {
     flawRhCvss.value.vector = vector;
   }
 
-  function updateScore(score: number) {
+  function updateScore(score: null | number) {
     flawRhCvss.value.score = score;
   }
 
