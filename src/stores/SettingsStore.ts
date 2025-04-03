@@ -1,8 +1,8 @@
-import { ref, watch } from 'vue';
-
 import { defineStore } from 'pinia';
 import { z } from 'zod';
-import { useStorage } from '@vueuse/core';
+import { useLocalStorage } from '@vueuse/core';
+
+import { useToastStore } from './ToastStore';
 
 export const SettingsSchema = z.object({
   // bugzillaApiKey: z.string().length(
@@ -28,11 +28,11 @@ const defaultValues: SettingsType = {
   isHidingLabels: false,
   privacyNoticeShown: false,
 };
-const osimSettings = useStorage('OSIM::USER-SETTINGS', structuredClone(defaultValues));
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
-  const settings = ref<SettingsType>(osimSettings.value);
-  // const settings = useSessionStorage(_settingsStoreKey, {} as SettingsType);
+  const { addToast } = useToastStore();
+
+  const settings = useLocalStorage('OSIM::USER-SETTINGS', structuredClone(defaultValues));
 
   const validatedSettings = SettingsSchema.safeParse(settings.value);
   if (validatedSettings.success) {
@@ -43,12 +43,19 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     settings.value = structuredClone(defaultValues);
   }
 
-  watch(settings, () => {
-    osimSettings.value = settings.value;
-  });
+  if (!settings.value.privacyNoticeShown) {
+    addToast({
+      title: 'Privacy Notice',
+      body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
+      ' In some cases that information may be publicly visible.',
+    });
+    settings.value.privacyNoticeShown = true;
+  }
 
-  function save(newSettings: SettingsType) {
-    settings.value = { ...newSettings };
+  // This is to remove previous privacy notice shown flag
+  // Can be removed in future versions, when we are sure that all users have updated to the latest version
+  if (localStorage.getItem('privacyNoticeShown')) {
+    localStorage.removeItem('privacyNoticeShown');
   }
 
   function $reset() {
@@ -57,7 +64,6 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   return {
     $reset,
-    save,
     settings,
   };
 });

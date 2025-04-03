@@ -15,13 +15,14 @@ describe('toastStore', () => {
   });
 
   it('addToast', () => {
+    settingsStore.settings.privacyNoticeShown = true;
     settingsStore.settings.showNotifications = true;
 
     const toast: ToastNew = { body: 'Test Toast' };
 
     toastStore.addToast(toast);
 
-    expect(toastStore.toasts).toHaveLength(1);
+    expect(toastStore.toasts).toHaveLength(2);
     expect(toastStore.toasts[0].isFresh).toBe(true);
   });
 

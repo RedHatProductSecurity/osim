@@ -11,7 +11,7 @@ const initialState: SettingsType = {
   affectsPerPage: 10,
   trackersPerPage: 10,
   isHidingLabels: false,
-  privacyNoticeShown: false,
+  privacyNoticeShown: true,
 };
 
 // While not used in this file, store below depends on global pinia test instance
@@ -42,7 +42,7 @@ describe('settingsStore', () => {
       privacyNoticeShown: false,
     };
 
-    settingsStore.save(settings);
+    settingsStore.settings = settings;
 
     expect(settingsStore.settings).toEqual(settings);
   });
