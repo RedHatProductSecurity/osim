@@ -5,7 +5,7 @@ import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import {
   formatFactor,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 const props = defineProps<{
   cvssFactors: Record<string, string>;

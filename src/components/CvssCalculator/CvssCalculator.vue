@@ -5,13 +5,12 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
 import {
   getFactors,
   calculateScore,
   formatFactors,
-  validateCvssVector,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 

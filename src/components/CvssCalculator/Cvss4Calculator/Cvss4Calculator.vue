@@ -15,7 +15,7 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const { cvss4Score, cvss4Vector, error } = useCvss4Calculations();
+const { cvss4Score, cvss4Vector } = useCvss4Calculations();
 const { updateScore, updateVector } = useFlawCvssScores();
 
 // TODO: Move these into composable

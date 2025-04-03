@@ -8,8 +8,8 @@ import {
   getFactors,
   calculateScore,
   formatFactors,
-  validateCvssVector,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
+import { validateCvssVector } from '@/composables/useFlawCvssScores';
 
 const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
@@ -96,8 +96,6 @@ function highlightFactorValue(factor: null | string) {
     <i class="bi bi-calculator-fill p-2" />
     <Cvss3Calculator
       v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
-      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused"
@@ -109,8 +107,6 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssVector="cvssVector"
-            :cvssScore="cvssScore"
             :cvssFactors="cvssFactors"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"

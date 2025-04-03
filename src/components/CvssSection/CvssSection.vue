@@ -3,11 +3,9 @@ import { computed, ref } from 'vue';
 
 import CvssNISTForm from '@/components/CvssNISTForm/CvssNISTForm.vue';
 
-import { issuerLabels } from '@/composables/useFlawCvssScores';
-
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import { IssuerEnum } from '@/generated-client';
-import { CVSS_V3 } from '@/constants';
+import { CVSS_V3, issuerLabels } from '@/constants';
 import type { ZodFlawCVSSType } from '@/types';
 
 const props = defineProps<{
