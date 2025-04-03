@@ -1,10 +1,11 @@
 import { mount } from '@vue/test-utils';
-import { acknowledgments } from '@test-fixtures/sampleFlawFull.json';
+import flawSample from '@test-fixtures/sampleFlawFull.json';
 
 import IssueFieldAcknowledgments from '@/components/IssueFieldAcknowledgments/IssueFieldAcknowledgments.vue';
 
 import type { ZodFlawAcknowledgmentType } from '@/types/zodFlaw';
 
+const { acknowledgments } = flawSample;
 const mountIssueFieldAcknowledgments =
 (mode: InstanceType<typeof IssueFieldAcknowledgments>['$props']['mode'] = 'edit') => mount(IssueFieldAcknowledgments, {
   props: {
