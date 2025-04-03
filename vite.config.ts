@@ -40,6 +40,7 @@ export default defineConfig(() => ({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@test-fixtures': fileURLToPath(new URL('./src/__tests__/__fixtures__', import.meta.url)),
       '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
 
       // supresses externalized Module warnings

@@ -6,8 +6,8 @@ import { createTestingPinia } from '@pinia/testing';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { blankFlaw } from '@/composables/useFlaw';
 
-import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';
@@ -85,9 +85,8 @@ describe('useFlawModel', () => {
 
     it('should prevent saving if CVSS scores are invalid', async () => {
       await flushPromises();
-      const { flaw, flawRhCvss, updateFlaw, updateVector } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { updateFlaw, updateVector } = mountFlawModel(sampleFlawFull as ZodFlawType);
       updateVector('not valid');
-      flaw.value.cvss_scores[0].vector = 'not valid';
       console.log('flawRhCvss');
       updateFlaw();
 

@@ -1,6 +1,6 @@
 import { flushPromises } from '@vue/test-utils';
 
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { getFlaw } from '@/services/FlawService';
 

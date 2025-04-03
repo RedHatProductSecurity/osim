@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { createLabel, deleteLabel, fetchLabels, updateLabel } from '@/services/LabelsService';
 import { FlawLabelTypeEnum, type ZodFlawLabelType, type ZodFlawType } from '@/types/zodFlaw';
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 import { StateEnum } from '@/generated-client';
 
 import { useFlawLabels } from '../useFlawLabels';

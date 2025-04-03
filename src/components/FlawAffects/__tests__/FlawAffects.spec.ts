@@ -4,9 +4,10 @@ import { describe, expect } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useRouter } from 'vue-router';
 import { flushPromises, VueWrapper } from '@vue/test-utils';
+import sampleTrackersQueryResult from '@test-fixtures/sampleTrackersQueryResult.json';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
 
 import { osimFullFlawTest, osimEmptyFlawTest, osimTestWithFlaw } from '@/components/__tests__/test-suite-helpers';
-import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawModel } from '@/composables/useFlawModel';
