@@ -4,25 +4,43 @@ import { useFlaw } from '@/composables/useFlaw';
 import { importActual } from '@/__tests__/helpers';
 import type { Dict, ZodFlawType } from '@/types';
 
-export function useViMocks(modulePaths: [string, string][]) {
-  for (const [, path] of modulePaths) {
-    vi.mock(path);
-  };
-  return async function useActualImports() {
-    const mocks: Dict = {};
-    for (const [moduleName, path] of modulePaths) {
-      const _moduleName = `_${moduleName}`;
-      const module = await importActual(path);
-      mocks[_moduleName as string] = module[moduleName as string];
-    }
-    return mocks;
-  };
+// export function mockModules(modulePaths: Dict, _vi) {
+//   for (const [, path] of Object.entries(modulePaths)) {
+//     console.log('mocking', path);
+//     _vi.doMock(path);
+//   };
+//   async function actualImports() {
+//     const mocks: Record<string, Awaited<ReturnType<typeof importActual>>> = {};
+//     for (const [moduleName, path] of Object.entries(modulePaths)) {
+//       const _moduleName = `_${moduleName}`;
+//       const module = await importActual(path);
+//       mocks[_moduleName as string] = module[moduleName as string];
+//     }
+//     return mocks;
+//   }
+//   return { actualImports };
+// }
+
+export async function mockModules(modulePaths: Dict, _vi) {
+  // for (const [, path] of Object.entries(modulePaths)) {
+  //   console.log('mocking', path);
+  // };
+  // async function actualImports() {
+  const mocks: Record<string, Awaited<ReturnType<typeof importActual>>> = {};
+  for (const [moduleName, path] of Object.entries(modulePaths)) {
+    const _moduleName = `_${moduleName}`;
+    const module = await importActual(path);
+    mocks[_moduleName as string] = module[moduleName as string];
+    _vi.doMock(path, module[moduleName as string]);
+  }
+  // }
+  return mocks;
+  // return { actualImports };
 }
 
 // export async function autoMocks(paths: string[]) {
 //   for (const path of paths) {
 //     const module = await import(path);
-
 
 //   }
 // }
@@ -42,4 +60,3 @@ export function createBeforeEach() {
     vi.mocked(useCvss4Calculator).mockReturnValue(_useCvss4Calculator());
   };
 }
-D;
