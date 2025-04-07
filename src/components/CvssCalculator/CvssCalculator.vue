@@ -25,17 +25,13 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    // cvssVector.value = newCvssVector;
     updateVector(newCvssVector ?? '');
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 
-updateFactors(cvssVector.value);
-
-watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-});
+watch(() => cvssVector.value, updateFactors, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
   event.stopPropagation();
@@ -52,8 +48,6 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  // cvssScore.value = null;
-  // cvssVector.value = null;
   updateScore(null);
   updateVector(null);
   cvssFactors.value = {};

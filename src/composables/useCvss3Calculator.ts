@@ -52,7 +52,7 @@ export const getFactorColor = (weight: number, isHovered: boolean = false, highl
 // Calculates score
 export function calculateScore(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
-  return Number.isNaN(score) || Object.values(factors).includes('') ? null : score;
+  return (Number.isNaN(score) || Object.values(factors).includes('')) ? null : score;
 }
 
 // Calculates base score

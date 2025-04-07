@@ -32,12 +32,10 @@ function updateFactors(newCvssVector: null | string | undefined) {
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
 
-updateFactors(cvssVector.value);
-
 watch(() => cvssVector.value, () => {
   updateFactors(cvssVector.value);
   emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
-});
+}, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
   isFocused.value = true;

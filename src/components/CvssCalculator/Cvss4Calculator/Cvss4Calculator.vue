@@ -5,7 +5,7 @@ import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
-import { useCvss4Selections, useCvss4Calculations } from '@/composables/useCvss4Calculator';
+import { useCvss4Selections, useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 
@@ -15,7 +15,7 @@ defineProps<{
   isFocused: boolean;
 }>();
 
-const { cvss4Score, cvss4Vector } = useCvss4Calculations();
+const { cvss4Score, cvss4Vector } = useCvss4Calculator();
 const { updateScore, updateVector } = useFlawCvssScores();
 
 // TODO: Move these into composable

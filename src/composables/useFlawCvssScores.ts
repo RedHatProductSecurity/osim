@@ -5,7 +5,7 @@ import { equals, groupWith } from 'ramda';
 import { z } from 'zod';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
+import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
@@ -85,7 +85,7 @@ function useGlobals() {
 }
 
 export const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
-const { cvss4Score, cvss4Vector } = useCvss4Calculations();
+const { cvss4Score, cvss4Vector } = useCvss4Calculator();
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 

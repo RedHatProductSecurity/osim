@@ -43,7 +43,7 @@ function flattenSelections(selections: Record<string, any>) {
       return selections;
     }, {} as Record<string, any>);
 }
-export function useCvss4Calculations() {
+export function useCvss4Calculator() {
   vectorForParse.updateMetricSelections(cvss4Selections.value);
 
   const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);

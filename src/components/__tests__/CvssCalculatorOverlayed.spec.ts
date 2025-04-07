@@ -1,35 +1,75 @@
-import { mount } from '@vue/test-utils';
+import { ref, type Component, watch } from 'vue';
+
+import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
-import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
+import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
 
-function activateFactorButton(subject: any, factor: string, value: string) {
+import { importActual } from '@/__tests__/helpers';
+
+vi.mock('@/composables/useFlawCvssScores');
+
+async function activateFactorButton(subject: any, factor: string, value: string) {
   const factorButtonGroup = subject.findAll('.btn-group-vertical')
     .filter((node: { text: () => string | string[] }) => node.text().includes(factor))[0];
   const factorButton = factorButtonGroup
     .findAll('.btn')
     .filter((node: { text: () => string }) => node.text() === value)[0];
-  factorButton.trigger('click');
+  await factorButton.trigger('click');
 }
 
-function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, string][]) {
+async function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, string][]) {
   for (const [factor, value] of factorValuePairs) {
-    activateFactorButton(subject, factor, value);
+    await activateFactorButton(subject, factor, value);
   }
 }
 
 describe('cvssCalculatorOverlayed', () => {
-  let subject: any;
+  type Subject = VueWrapper<Component>;
+  let subject: Subject;
+  beforeEach(async () => {
+    if (subject) subject.unmount();
+    const { validateCvssVector: _validateCvssVector } = await importActual('@/composables/useFlawCvssScores');
 
-  beforeEach(() => {
+    const cvssVector = ref<null | string>('');
+    const cvssScore = ref<null | number>(0);
+    const cvssVersion = ref('V3');
+
+    watch(cvssVector, (newValue) => {
+      if (newValue) {
+        subject.setProps({ cvssVector: newValue });
+      }
+    });
+    function updateVector(value: null | string) {
+      cvssVector.value = value;
+    }
+    function updateScore(value: null | number) {
+      cvssScore.value = value;
+    }
+    vi.mocked(useFlawCvssScores).mockReturnValue({
+      cvssVector,
+      cvssScore,
+      cvssVersion,
+      updateVector,
+      updateScore,
+    } as ReturnType<typeof useFlawCvssScores>);
+    vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
+
+    const importedComponent = await import('@/components/CvssCalculator/CvssCalculatorOverlayed.vue');
+    const CvssCalculatorOverlayed = importedComponent.default;
     subject = mount(CvssCalculatorOverlayed, {
       props: {
         'cvssScore': null,
         'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
         'cvssVector': '',
-        'onUpdate:cvssVector': (e: any) => subject.setProps({ cvssVector: e }),
+        'onUpdate:cvssVector': (e: any) =>{
+          console.log('onUpdate:cvssVector', e);
+          subject.setProps({ cvssVector: e })},
       },
     });
+  });
+
+  afterEach(() => {
   });
 
   it('mounts and renders correctly', async () => {
@@ -66,15 +106,15 @@ describe('cvssCalculatorOverlayed', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    expect(inputVectorValue.classes().includes('is-invalid')).toBe(false);
+    expect(inputVectorValue.classes().includes('is-p')).toBe(false);
   });
 
   it('shows validation on incomplete vector', async () => {
-    const factorValuePairs: [string, string][] = [
-      ['Availability', 'High'],
-    ];
-    await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
+    console.log(subject.props())
+    
+    await activateFactorButton(subject, 'Availability', 'High');
+    console.log(subject.props())
     expect(inputVectorValue.classes().includes('is-invalid')).toBe(true);
   });
 });

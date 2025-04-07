@@ -2,7 +2,7 @@ import { osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlaw } from '@/composables/useFlaw';
-import { useCvss4Calculations } from '@/composables/useCvss4Calculator';
+import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import { IssuerEnum } from '@/generated-client';
 import { putFlawCvssScores } from '@/services/FlawService';
@@ -27,9 +27,9 @@ describe('useFlawCvssScores', () => {
     const mockedUseFlaw = _useFlaw();
     mockedUseFlaw.flaw.value = flaw;
     vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
-    const { useCvss4Calculations: _useCvss4Calculations } =
+    const { useCvss4Calculator: _useCvss4Calculator } =
       await vi.importActual<UseCvss4CalculatorDynamicImport>('@/composables/useCvss4Calculator');
-    vi.mocked(useCvss4Calculations).mockReturnValue(_useCvss4Calculations());
+    vi.mocked(useCvss4Calculator).mockReturnValue(_useCvss4Calculator());
   });
 
   osimFullFlawTest('should return an object', ({ flaw }) => {
