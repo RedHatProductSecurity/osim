@@ -3,8 +3,6 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { mockAffect, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
-// import { useFlaw } from '@/composables/useFlaw';
-// import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { mockModules } from '@/composables/__tests__/helpers';
 
 import { IssuerEnum } from '@/generated-client';
@@ -19,25 +17,16 @@ vi.mock('@/stores/ToastStore', () => ({
   })),
 }));
 
-// const { actualImports } =
-// vi.mock('@/composables/useFlaw');
 vi.mock('@/services/AffectService');
-// vi.mock('@/composables/useFlawAffectsModel');
-
 vi.mock('@/services/FlawService');
 
 async function useMockedModel(flaw: ZodFlawType) {
-  // console.log(vi.mocked(useFlaw));
-
   const { _useFlaw, _useFlawAffectsModel } = await mockModules({
     useFlaw: '@/composables/useFlaw',
     useFlawAffectsModel: '@/composables/useFlawAffectsModel',
   }, vi);
-  // vi.mocked(useFlaw, { partial: true }).mockReturnValue({ flaw: ref(flaw) });
   const mockedUseFlaw = _useFlaw();
   mockedUseFlaw.flaw.value = flaw;
-  // vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
-  // const { flaw: flawRef } = useFlaw();
   const model = _useFlawAffectsModel();
 
   return { model, flawRef: mockedUseFlaw.flaw };
