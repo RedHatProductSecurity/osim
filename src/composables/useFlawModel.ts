@@ -5,12 +5,12 @@ import { modifyPath } from 'ramda';
 import type { ZodIssue } from 'zod';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
 import { validateCvssVector } from '@/composables/useCvssCalculator';
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 
 import {
   getFlawBugzillaLink,
@@ -39,10 +39,9 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
-  const cvssScoresModel = useFlawCvssScores(flaw);
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { flawRhCvss3, saveCvssScores, wasCvssModified } = cvssScoresModel;
+  const { flawRhCvss, saveCvssScores, wasCvssModified } = useFlawCvssScores();
   const {
     affectsToDelete,
     removeAffects,
@@ -126,7 +125,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     }
 
     if (wasCvssModified) {
-      const validatedCVSS = validateCvssVector(flawRhCvss3.value.vector);
+      const validatedCVSS = validateCvssVector(flawRhCvss.value.vector);
       if (validatedCVSS !== null) {
         addToast({
           title: 'CVSS Vector validation failed',
@@ -213,7 +212,6 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     createFlaw,
     updateFlaw,
     afterSaveSuccess,
-    ...cvssScoresModel,
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
     ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
   };

@@ -12,7 +12,7 @@ const revealSensitive = ref<SensitiveFormInput>('password');
 const settings = ref(settingsStore.settings);
 
 const onSubmit = (values: SettingsType) => {
-  settingsStore.save(values);
+  settingsStore.settings = values;
 };
 
 const isValid = ref({

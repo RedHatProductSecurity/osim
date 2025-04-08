@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import {
   formatFactor,
   weights,
@@ -8,8 +9,6 @@ import {
 
 const props = defineProps<{
   cvssFactors: Record<string, string>;
-  cvssScore: null | number | undefined;
-  cvssVector: null | string | undefined;
   error: null | string;
   highlightedFactor: null | string;
   isFocused: boolean;
@@ -20,6 +19,8 @@ const emit = defineEmits<{
   onInputBlur: [event: FocusEvent];
   onInputFocus: [event: FocusEvent];
 }>();
+
+const { cvssScore } = useFlawCvssScores();
 
 const input = ref();
 
@@ -88,6 +89,8 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
 }
 
 .vector-input {
+  min-height: 38px;
+
   .invalid-tooltip {
     display: none;
     margin-top: -4px;

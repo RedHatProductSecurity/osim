@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import RedHatLogo from '@/components/icons/RedHatLogo.vue';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 
 import { RouterLink } from 'vue-router';
 import { useElementBounding } from '@vueuse/core';
@@ -18,7 +18,7 @@ import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
-const { toasts } = useToastStore();
+const { addToast, toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
 const { submitQuickSearch } = useSearchParams();
 // const {height: headerHeight} = useElementSize(
@@ -60,6 +60,17 @@ const usernameDisplay = computed(() => {
     username += ` | ${userStore.jiraUsername}`;
   }
   return username;
+});
+
+onMounted(() => {
+  if (!settings.privacyNoticeShown) {
+    addToast({
+      title: 'Privacy Notice',
+      body: 'OSIM transmits input information externally to Bugzilla for the purpose of retrieving bug data.' +
+      ' In some cases that information may be publicly visible.',
+    });
+    settings.privacyNoticeShown = true;
+  }
 });
 </script>
 

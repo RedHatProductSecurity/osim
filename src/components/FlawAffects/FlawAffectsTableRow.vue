@@ -4,8 +4,6 @@ import { computed, toRefs, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { PackageURL } from 'packageurl-js';
 
-import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
-
 import {
   affectImpacts,
   affectAffectedness,
@@ -20,6 +18,8 @@ import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 const props = defineProps<{
   affect: ZodAffectType;
+  affectCalculatorIndex: number;
+  affectIndex: number;
   error: null | Record<string, any>;
   isLast: boolean;
   isModified: boolean;
@@ -28,6 +28,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  'affect:openCalculator': [affectIndex: number];
   'affect:recover': [value: ZodAffectType];
   'affect:remove': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
@@ -300,22 +301,18 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       </span>
     </td>
     <td>
-      <CvssCalculatorOverlayed
-        v-if="isBeingEdited(affect)"
-        :id="affectCvss(affect)?.uuid"
-        :cvssVector="affectCvss(affect)?.vector"
-        :cvssScore="affectCvss(affect)?.score"
-        @updateAffectCvss="(vectorValue, scoreValue) => emit(
-          'affect:updateCvss',
-          affect,
-          vectorValue,
-          scoreValue,
-          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
-        )"
-      />
-      <span v-else :title="affectCvss(affect)?.vector || ''">
+      <span :title="affectCvss(affect)?.vector || ''">
         {{ affectCvss(affect)?.score || '' }}
       </span>
+      <i
+        :class="['bi bi-calculator-fill p-1 rounded']"
+        :style="{
+          border: '2px solid black',
+          cursor: 'pointer',
+          'border-color': affectIndex === currentCalculatorIndex && isBeingEdited(affect) ? '#73480b' : 'transparent'
+        }"
+        @click.stop="isBeingEdited(affect) && emit('affect:openCalculator', affectIndex)"
+      />
     </td>
     <td>
       <div class="affect-tracker-cell">

@@ -30,6 +30,7 @@ describe('toastContainer', () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: true,
+        privacyNoticeShown: true,
       },
     };
     const toastStore = useToastStore(pinia);
@@ -51,7 +52,7 @@ describe('toastContainer', () => {
       },
     });
     const toastElements = subject.findAllComponents(Toast);
-    expect(toastElements.length).toBe(2);
+    expect(toastElements.length).toBe(3);
     const clearAllButton = subject.find('.osim-toast-container-clear button');
     expect(clearAllButton.exists()).toBeTruthy();
     await clearAllButton.trigger('click');
@@ -69,6 +70,7 @@ describe('toastContainer', () => {
       settings: {
         ...settingStore.$state.settings,
         showNotifications: true,
+        privacyNoticeShown: true,
       },
     };
     subject = mount(ToastContainer, {
@@ -113,6 +115,8 @@ describe('toastContainer', () => {
           ],
         },
       });
+
+      settingStore.settings.privacyNoticeShown = true;
       const toastElements = subject.findAllComponents(Toast);
       expect(toastElements.length).toBe(1);
       vi.advanceTimersByTime(12000);
