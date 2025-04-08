@@ -106,15 +106,6 @@ function setMetric(category: string, metric: string, value: string) {
 
 <style scoped lang="scss">
 .cvss-calculator {
-  &.overlayed {
-    display: block;
-    transform: translateX(-25ch);
-    background-color: #525252;
-    border-radius: 10px;
-    z-index: 5;
-    position: absolute;
-  }
-
   .osim-input {
     display: flex;
     width: 100%;

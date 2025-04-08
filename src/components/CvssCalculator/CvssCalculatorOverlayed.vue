@@ -13,6 +13,7 @@ import {
 
 const cvssVector = defineModel<null | string | undefined>('cvssVector');
 const cvssScore = defineModel<null | number | undefined>('cvssScore');
+const affectCalculatorIndex = defineModel<number>('affectCalculatorIndex', { default: -1 });
 
 const emit = defineEmits<{
   updateAffectCvss: [vector: string, score: null | number];
@@ -39,16 +40,16 @@ watch(() => cvssVector.value, () => {
   emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
 });
 
-function onInputFocus(event: FocusEvent) {
-  isFocused.value = true;
-  if (event.target !== cvssVectorInput.value.input) {
-    cvssVectorInput.value.input.focus();
-  }
-}
+// function onInputFocus(event: FocusEvent) {
+//   isFocused.value = true;
+//   if (event.target !== cvssVectorInput.value.input) {
+//     cvssVectorInput.value.input.focus();
+//   }
+// }
 
 function onInputBlur(event: FocusEvent) {
   if (event.relatedTarget !== cvssDiv.value) {
-    isFocused.value = false;
+    affectCalculatorIndex.value = -1;
   }
 }
 
@@ -89,19 +90,16 @@ function highlightFactorValue(factor: null | string) {
   <div
     ref="cvssDiv"
     tabindex="0"
-    @focus="onInputFocus"
+    class="overlayed"
     @paste="handlePaste"
   >
-    <span>{{ cvssScore }}</span>
-    <i class="bi bi-calculator-fill p-2" />
     <Cvss3Calculator
       v-model:cvssVector="cvssVector"
       v-model:cvssScore="cvssScore"
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused"
-      class="overlayed"
+      :isFocused="affectCalculatorIndex > -1"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
     >
@@ -116,8 +114,6 @@ function highlightFactorValue(factor: null | string) {
             :highlightedFactor="highlightedFactor"
             :error="error"
             class="vector-input"
-            style="height: 30.8px;"
-            @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
             @updateFactors="updateFactors(cvssVector)"
@@ -139,6 +135,12 @@ function highlightFactorValue(factor: null | string) {
 </template>
 
 <style scoped lang="scss">
+.overlayed {
+  display: block;
+  background-color: #525252;
+  border-radius: 10px;
+}
+
 .osim-input {
   display: inline-flex;
   width: 100%;
@@ -148,6 +150,7 @@ function highlightFactorValue(factor: null | string) {
     margin-inline: 0;
 
     .vector-input {
+      min-height: 30.8px;
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
       padding: 0.15rem 0.5rem;
