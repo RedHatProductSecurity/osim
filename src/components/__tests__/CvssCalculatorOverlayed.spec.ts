@@ -63,7 +63,6 @@ describe('cvssCalculatorOverlayed', () => {
         'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
         'cvssVector': '',
         'onUpdate:cvssVector': (e: any) =>{
-          console.log('onUpdate:cvssVector', e);
           subject.setProps({ cvssVector: e })},
       },
     });
@@ -111,10 +110,7 @@ describe('cvssCalculatorOverlayed', () => {
 
   it('shows validation on incomplete vector', async () => {
     const inputVectorValue = subject.find('.vector-input');
-    console.log(subject.props())
-    
     await activateFactorButton(subject, 'Availability', 'High');
-    console.log(subject.props())
     expect(inputVectorValue.classes().includes('is-invalid')).toBe(true);
   });
 });

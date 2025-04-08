@@ -10,6 +10,7 @@ import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
 import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useFlawLabels } from '@/composables/useFlawLabels';
 
 import {
   getFlawBugzillaLink,
@@ -29,7 +30,6 @@ import {
 } from '@/types';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
-import { useFlawLabels } from './useFlawLabels';
 
 export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const { flaw } = useFlaw();
@@ -40,7 +40,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const shouldCreateJiraTask = ref(false);
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { flawRhCvss, saveCvssScores, wasCvssModified, updateVector } = useFlawCvssScores();
+  const { flawRhCvss, saveCvssScores, updateVector, wasCvssModified } = useFlawCvssScores();
   const {
     affectsToDelete,
     removeAffects,

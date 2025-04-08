@@ -3,13 +3,13 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { mockAffect, osimFullFlawTest } from '@/components/__tests__/test-suite-helpers';
 
-import { mockModules } from '@/composables/__tests__/helpers';
-
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import type { ZodFlawType } from '@/types';
 import { postAffects, deleteAffects } from '@/services/AffectService';
 import { getFlaw } from '@/services/FlawService';
+
+import { useMockFlawWithModules } from './helpers';
 
 vi.mock('@/stores/ToastStore', () => ({
   useToastStore: vi.fn(() => ({
@@ -20,31 +20,25 @@ vi.mock('@/stores/ToastStore', () => ({
 vi.mock('@/services/AffectService');
 vi.mock('@/services/FlawService');
 
-async function useMockedModel(flaw: ZodFlawType) {
-  const { _useFlaw, _useFlawAffectsModel } = await mockModules({
-    useFlaw: '@/composables/useFlaw',
-    useFlawAffectsModel: '@/composables/useFlawAffectsModel',
-  }, vi);
-  const mockedUseFlaw = _useFlaw();
-  mockedUseFlaw.flaw.value = flaw;
-  const model = _useFlawAffectsModel();
-
-  return { model, flawRef: mockedUseFlaw.flaw };
-}
+const makeMocksWith = async (flaw: ZodFlawType) => await useMockFlawWithModules(flaw, vi)({
+  useFlaw: '@/composables/useFlaw',
+  useFlawAffectsModel: '@/composables/useFlawAffectsModel',
+});
 
 describe('useFlawAffectsModel', () => {
   beforeAll(async () => {
     setActivePinia(createTestingPinia());
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  // afterEach(() => {
+  //   vi.clearAllMocks();
+  // });
 
   osimFullFlawTest('should return the expected values', async ({ flaw }) => {
-    const { model } = await useMockedModel(flaw);
-    expect(model).toBeDefined();
-    expect(model).toBeInstanceOf(Object);
+    const { useFlawAffectsModel } = await makeMocksWith(flaw);
+    const composable = useFlawAffectsModel();
+    expect(composable).toBeDefined();
+    expect(composable).toBeInstanceOf(Object);
 
     [
       'addAffect',
@@ -60,17 +54,15 @@ describe('useFlawAffectsModel', () => {
       'modifiedAffects',
       'wereAffectsEditedOrAdded',
     ].forEach((key) => {
-      expect(model).toHaveProperty(key);
+      expect(composable).toHaveProperty(key);
     });
   });
 
-  osimFullFlawTest('should add an affect', async ({ flaw }) => {
-    const { flawRef } = await useMockedModel(flaw);
-
-    const { model } = await useMockedModel(flaw);
-
-    const { addAffect, wereAffectsEditedOrAdded } = model;
-    const initialAffectsCount = flawRef.value.affects.length;
+  osimFullFlawTest('should add an affect', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { addAffect, wereAffectsEditedOrAdded } = useFlawAffectsModel();
+    const { flaw } = useFlaw();
+    const initialAffectsCount = flaw.value.affects.length;
 
     addAffect({
       embargoed: false,
@@ -85,39 +77,45 @@ describe('useFlawAffectsModel', () => {
     });
 
     expect(wereAffectsEditedOrAdded.value).toBe(true);
-    expect(flawRef.value.affects.length).toBe(initialAffectsCount + 1);
+    expect(flaw.value.affects.length).toBe(initialAffectsCount + 1);
   });
 
-  osimFullFlawTest('should remove an affect', async ({ flaw }) => {
-    const { flawRef, model } = await useMockedModel(flaw);
-    const { affectsToDelete, removeAffect } = model;
+  osimFullFlawTest('should remove an affect', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
 
-    removeAffect(flawRef.value.affects[0]);
+    const { flaw } = useFlaw();
+    const { affectsToDelete, removeAffect } = useFlawAffectsModel();
+
+    removeAffect(flaw.value.affects[0]);
 
     expect(affectsToDelete.value.length).toBe(1);
   });
 
-  osimFullFlawTest('should update an affect', async ({ flaw }) => {
-    const { flawRef, model } = await useMockedModel(flaw);
-    const { modifiedAffects, wereAffectsEditedOrAdded } = model;
-    flawRef.value.affects[0].impact = 'CRITICAL';
+  osimFullFlawTest('should update an affect', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    const { modifiedAffects, wereAffectsEditedOrAdded } = useFlawAffectsModel();
+
+    flaw.value.affects[0].impact = 'CRITICAL';
 
     expect(modifiedAffects.value.length).toBe(1);
     expect(wereAffectsEditedOrAdded.value).toBe(true);
   });
 
-  osimFullFlawTest('should update an affect CVSS', async ({ flaw }) => {
-    const { flawRef, model } = await useMockedModel(flaw);
-    const { updateAffectCvss, wereAffectsEditedOrAdded } = model;
+  osimFullFlawTest('should update an affect CVSS', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    const { updateAffectCvss, wereAffectsEditedOrAdded } = useFlawAffectsModel();
 
-    updateAffectCvss(flawRef.value.affects[0], 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', 7.8, -1);
+    updateAffectCvss(flaw.value.affects[0], 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', 7.8, -1);
 
     expect(wereAffectsEditedOrAdded.value).toBe(true);
   });
 
-  osimFullFlawTest('should delete an affect CVSS', async ({ flaw }) => {
-    const { flawRef, model } = await useMockedModel(flaw);
-    flawRef.value.affects[0].cvss_scores.push({
+  osimFullFlawTest('should delete an affect CVSS', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    flaw.value.affects[0].cvss_scores.push({
       issuer: IssuerEnum.Rh,
       cvss_version: CVSS_V3,
       score: 7.8,
@@ -125,18 +123,19 @@ describe('useFlawAffectsModel', () => {
       uuid: '123',
       alerts: [],
     });
-    const { affectCvssToDelete, updateAffectCvss, wereAffectsEditedOrAdded } = model;
+    const { affectCvssToDelete, updateAffectCvss, wereAffectsEditedOrAdded } = useFlawAffectsModel();
 
-    updateAffectCvss(flawRef.value.affects[0], '', null, 0);
+    updateAffectCvss(flaw.value.affects[0], '', null, 0);
 
     expect(wereAffectsEditedOrAdded.value).toBe(true);
-    expect(affectCvssToDelete.value).toHaveProperty(flawRef.value.affects[0].uuid!);
-    expect(affectCvssToDelete.value[flawRef.value.affects[0].uuid!]).toBe('123');
+    expect(affectCvssToDelete.value).toHaveProperty(flaw.value.affects[0].uuid!);
+    expect(affectCvssToDelete.value[flaw.value.affects[0].uuid!]).toBe('123');
   });
 
-  osimFullFlawTest('should delete an affect CVSS', async ({ flaw }) => {
-    const { flawRef, model } = await useMockedModel(flaw);
-    flawRef.value.affects[0].cvss_scores.push({
+  osimFullFlawTest('should delete an affect CVSS', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    flaw.value.affects[0].cvss_scores.push({
       issuer: IssuerEnum.Rh,
       cvss_version: CVSS_V3,
       score: 7.8,
@@ -144,18 +143,20 @@ describe('useFlawAffectsModel', () => {
       uuid: '123',
       alerts: [],
     });
-    const { affectCvssToDelete, updateAffectCvss, wereAffectsEditedOrAdded } = model;
+    const { affectCvssToDelete, updateAffectCvss, wereAffectsEditedOrAdded } = useFlawAffectsModel();
 
-    updateAffectCvss(flawRef.value.affects[0], '', null, 0);
+    updateAffectCvss(flaw.value.affects[0], '', null, 0);
 
     expect(wereAffectsEditedOrAdded.value).toBe(true);
-    expect(affectCvssToDelete.value).toHaveProperty(flawRef.value.affects[0].uuid!);
-    expect(affectCvssToDelete.value[flawRef.value.affects[0].uuid!]).toBe('123');
+    expect(affectCvssToDelete.value).toHaveProperty(flaw.value.affects[0].uuid!);
+    expect(affectCvssToDelete.value[flaw.value.affects[0].uuid!]).toBe('123');
   });
 
-  osimFullFlawTest('should recover an affect', async ({ flaw }) => {
-    const { flawRef, model: { affectsToDelete, recoverAffect } } = await useMockedModel(flaw);
-    const affect = flawRef.value.affects[0];
+  osimFullFlawTest('should recover an affect', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    const { affectsToDelete, recoverAffect } = useFlawAffectsModel();
+    const affect = flaw.value.affects[0];
 
     affectsToDelete.value.push(affect);
 
@@ -164,28 +165,33 @@ describe('useFlawAffectsModel', () => {
     expect(affectsToDelete.value.length).toBe(0);
   });
 
-  osimFullFlawTest('should remove affects', async ({ flaw }) => {
-    const { flawRef, model: { removeAffects } } = await useMockedModel(flaw);
-    const affectsToDelete = flawRef.value.affects.map(({ uuid }: { uuid: string }) => uuid);
-    flawRef.value.affects.splice(0, flawRef.value.affects.length);
+  osimFullFlawTest('should remove affects', async ({ flaw: _flaw }) => {
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { flaw } = useFlaw();
+    const { removeAffects } = useFlawAffectsModel();
+    const affectsToDelete = flaw.value.affects.map(({ uuid }: { uuid: string }) => uuid);
+    flaw.value.affects.splice(0, flaw.value.affects.length);
     removeAffects();
 
     expect(deleteAffects).toHaveBeenCalledWith(affectsToDelete);
-    expect(flawRef.value.affects.length).toBe(0);
+    expect(flaw.value.affects.length).toBe(0);
   });
 
-  osimFullFlawTest('should save new affects', async ({ flaw }) => {
-    vi.mocked(getFlaw).mockResolvedValue(flaw);
-    const { flawRef, model } = await useMockedModel(flaw);
+  osimFullFlawTest('should save new affects', async ({ flaw: _flaw }) => {
+    vi.mocked(getFlaw).mockResolvedValue(_flaw);
+
+    const { useFlaw, useFlawAffectsModel } = await makeMocksWith(_flaw);
+    const { saveAffects, wereAffectsEditedOrAdded } = useFlawAffectsModel();
+    const { flaw } = useFlaw();
     const fakeAffect = mockAffect({ ps_component: 'component1', ps_module: 'module1' });
-    flawRef.value.affects.push(fakeAffect);
+    flaw.value.affects.push(fakeAffect);
 
     vi.mocked(postAffects).mockResolvedValue({ data:
       { results:
-      [...flawRef.value.affects, fakeAffect] } });
+      [...flaw.value.affects, fakeAffect] } });
 
-    expect(model.wereAffectsEditedOrAdded.value).toBe(true);
-    await model.saveAffects();
+    expect(wereAffectsEditedOrAdded.value).toBe(true);
+    await saveAffects();
     expect(postAffects).toHaveBeenCalled();
   });
 });

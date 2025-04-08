@@ -1,16 +1,25 @@
 import type { VitestUtils } from 'vitest';
 
 import { importActual } from '@/__tests__/helpers';
-import type { Dict } from '@/types';
+import type { Dict, ZodFlawType } from '@/types';
+
+type Imported = Awaited<ReturnType<typeof importActual>>;
 
 export async function mockModules(modulePaths: Dict, _vi: VitestUtils) {
-  const mocks: Record<string, Awaited<ReturnType<typeof importActual>>> = {};
+  const modules: Record<string, Imported> = {};
   for (const [moduleName, path] of Object.entries(modulePaths)) {
-    const _moduleName = `_${moduleName}`;
     const module = await importActual(path);
-    mocks[_moduleName as string] = module[moduleName as string];
+    modules[moduleName as string] = module[moduleName as string] ?? module;
     _vi.doMock(path, module[moduleName as string]);
   }
 
-  return mocks;
+  return modules;
+}
+
+export function useMockFlawWithModules(flaw: ZodFlawType, _vi: VitestUtils) {
+  return async (modules: Dict) => {
+    const mockedModules = await mockModules(modules, _vi);
+    mockedModules.useFlaw().flaw.value = flaw;
+    return mockedModules;
+  };
 }
