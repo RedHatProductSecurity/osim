@@ -87,7 +87,6 @@ describe('useFlawModel', () => {
       await flushPromises();
       const { updateFlaw, updateVector } = mountFlawModel(sampleFlawFull as ZodFlawType);
       updateVector('not valid');
-      console.log('flawRhCvss');
       updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();

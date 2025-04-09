@@ -68,7 +68,6 @@ export function useCvss4Calculator() {
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
     if (cvss4Data && cvss4Data.vector) {
-      console.log('cvss4Data.vector', cvss4Data.vector);
       cvss4ClassInstance.vector.updateVector(cvss4Data.vector);
       selectionsFlattened.value = cvss4ClassInstance.vector.metricsSelections;
     }

@@ -11,7 +11,7 @@ const updatedLabels = ref<Set<string>>(new Set<string>());
 const deletedLabels = ref<Set<string>>(new Set<string>());
 
 export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
-  if (initialLabels) {
+  if (initialLabels && toValue(initialLabels)?.length) {
     labels.value = toValue(initialLabels).reduce((acc: Record<string, ZodFlawLabelType>, label) => {
       acc[label.label] = label;
       return acc;
