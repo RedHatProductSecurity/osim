@@ -1,8 +1,8 @@
 /* eslint-disable no-empty-pattern */
 import { test } from 'vitest';
-import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
-import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
-import sampleFlawEmpty from '@test-fixtures/sampleFlawEmpty.json';
+import * as sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
+import * as sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
+import * as sampleFlawEmpty from '@test-fixtures/sampleFlawEmpty.json';
 
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';

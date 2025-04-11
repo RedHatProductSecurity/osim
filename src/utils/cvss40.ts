@@ -1060,6 +1060,7 @@ export class CVSS40 {
     for (const vector of maxVectors) {
       distances = this.calculateSeverityDistances(vector);
       if (Object.values(distances).every(distance => distance >= 0)) {
+        // TODO: maxVector is not used in the calculation, consider removal
         maxVector = vector;
         break;
       }

@@ -14,9 +14,9 @@ import {
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
+const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
 
-const error = computed(() => validateCvssVector(cvssVector.value));
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 
@@ -24,11 +24,12 @@ const cvssDiv = ref();
 const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
+  cvssFactors.value = getFactors(newCvssVector ?? '');
+
   if (cvssVector.value !== newCvssVector) {
     updateVector(newCvssVector ?? '');
+    updateScore(calculateScore(cvssFactors.value) ?? 0);
   }
-  cvssFactors.value = getFactors(newCvssVector ?? '');
-  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 
 watch(() => cvssVector.value, updateFactors, { immediate: true });
@@ -110,6 +111,7 @@ function highlightFactorValue(factor: null | string) {
           <CvssVectorInput
             ref="cvssVectorInput"
             :cvssFactors="cvssFactors"
+            :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
             :error="error"
@@ -145,6 +147,11 @@ function highlightFactorValue(factor: null | string) {
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
+      :cvssScore="cvssScore"
+      :cvssVector="cvssVector ?? null"
+      class="overlayed"
+      @update:cvssScore="updateScore"
+      @update:cvssVector="updateVector"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
     />

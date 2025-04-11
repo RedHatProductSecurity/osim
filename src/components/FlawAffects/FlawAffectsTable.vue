@@ -2,14 +2,13 @@
 import { computed } from 'vue';
 
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
+import FlawAffectsTableHead from '@/components/FlawAffects/FlawAffectsTableHead.vue';
+import { displayModes } from '@/components/FlawAffects/flawAffectConstants';
 
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import type { ZodAffectType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
-
-import { displayModes } from './flawAffectConstants';
-import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
 
 defineProps<{
   errors: null | Record<string, any>;
