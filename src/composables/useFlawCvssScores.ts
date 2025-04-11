@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
+import type { ComputedRef } from 'vue';
 
 import { equals, groupWith } from 'ramda';
 import { z } from 'zod';
@@ -11,8 +12,24 @@ import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
 import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
-import type { Dict, Nullable, ZodFlawCVSSType } from '@/types';
+import type { Dict, Nullable, ZodAffectCVSSType, ZodFlawCVSSType } from '@/types';
 import { deepCopyFromRaw } from '@/utils/helpers';
+
+export const {
+  affectCvssScores,
+  cvssVersion,
+  flawRhCvss,
+  rhFlawCvssByVersion,
+  rhFlawCvssScores,
+  selectedCvssData,
+} = useGlobals();
+
+const { cvss4Score, cvss4Vector } = useCvss4Calculator();
+type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
+
+function filterCvssData(issuer: string, version: string) {
+  return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
+}
 
 export function validateCvssVector(cvssVector: null | string | undefined) {
   if (cvssVersion.value === CvssVersions.V3) {
@@ -38,32 +55,37 @@ const { flaw } = useFlaw();
 function useGlobals() {
   const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
 
-  const rhCvssScores = ref(initializedRhCvss());
+  const rhFlawCvssScores = ref(rhFlawCvssByVersion());
 
-  const flawRhCvss = computed(() => rhCvssScores.value[cvssVersion.value]);
-  watch(() => flaw.value.updated_dt, () => {
-    rhCvssScores.value = initializedRhCvss();
+  const flawRhCvss = computed<ZodFlawCVSSType>(() => rhFlawCvssScores.value[cvssVersion.value]);
+
+  const affectCvssScores = computed(() => {
+    const scores = flaw.value.affects.flatMap(affect => affect.cvss_scores ?? []);
+    return scores.filter(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
   });
+
+  watch(() => flaw.value.updated_dt, () => {
+    rhFlawCvssScores.value = rhFlawCvssByVersion();
+  });
+
   function selectedCvssData(issuer: IssuerEnum) {
-    return getCvssData(issuer, cvssVersion.value);
+    return getFlawCvssData(issuer, cvssVersion.value);
   }
 
-  function initializedRhCvss(): Dict<string, ZodFlawCVSSType> {
+  function rhFlawCvssByVersion(): Dict<string, ZodFlawCVSSType> {
     return Object.fromEntries(
       Object.values(CvssVersions).map(version => [
         version,
-        getCvssData(IssuerEnum.Rh, version) ?? blankCvss(version),
+        getFlawCvssData(IssuerEnum.Rh, version) ?? blankFlawCvss(version),
       ]),
     );
   }
 
-  function getCvssData(issuer: string, version: string) {
-    return flaw.value.cvss_scores.find(
-      cvss => (cvss.issuer === issuer && cvss.cvss_version === version),
-    );
+  function getFlawCvssData(issuer: string, version: string) {
+    return flaw.value.cvss_scores.find(filterCvssData(issuer, version));
   }
 
-  function blankCvss(version: string) {
+  function blankFlawCvss(version: string) {
     return {
       score: null,
       vector: null,
@@ -77,15 +99,13 @@ function useGlobals() {
 
   return {
     cvssVersion,
-    rhCvssScores,
+    rhFlawCvssScores,
     flawRhCvss,
     selectedCvssData,
-    initializedRhCvss,
+    rhFlawCvssByVersion,
+    affectCvssScores,
   };
-}
-
-export const { cvssVersion, flawRhCvss, initializedRhCvss, rhCvssScores, selectedCvssData } = useGlobals();
-const { cvss4Score, cvss4Vector } = useCvss4Calculator();
+};
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
@@ -99,7 +119,7 @@ export function useFlawCvssScores() {
   }, { deep: true });
 
   watch(() => flaw.value, () => {
-    rhCvssScores.value = initializedRhCvss();
+    rhFlawCvssScores.value = rhFlawCvssByVersion();
     wasCvssModified.value = false;
   });
 
@@ -164,7 +184,7 @@ export function useFlawCvssScores() {
 
   async function saveCvssScores() {
     const queue = [];
-    for (const cvssData of Object.values(rhCvssScores.value)) {
+    for (const cvssData of Object.values(rhFlawCvssScores.value)) {
       // Update logic, if the CVSS score already exists in OSIDB
       if (cvssData.created_dt) {
       // Handle existing CVSS score
@@ -193,12 +213,34 @@ export function useFlawCvssScores() {
     return Promise.all(queue);
   }
 
-  function updateVector(vector: null | string) {
-    flawRhCvss.value.vector = vector;
+  function lookupCvss(uuid: string): ComputedRef<ZodAffectCVSSType | ZodFlawCVSSType> | null {
+    if (uuid === flaw.value.uuid) {
+      return flawRhCvss;
+    }
+    const affect = flaw.value.affects.find(affect => affect.uuid === uuid);
+    if (affect) {
+      const cvss = affect.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
+      if (!cvss) {
+        console.error('CVSS not found for affect:', affect.uuid);
+        return null;
+      }
+      return computed(() => cvss);
+    }
+    console.error('Flaw/Affect not found with id:', uuid);
+    return null;
   }
 
-  function updateScore(score: null | number) {
-    flawRhCvss.value.score = score;
+  function updateScore(uuid: string, score: null | number) {
+    const flawOrAffectCvss = lookupCvss(uuid);
+    if (flawOrAffectCvss) {
+      flawOrAffectCvss.value.score = score;
+    }
+  }
+  function updateVector(uuid: string, vector: null | string) {
+    const flawOrAffectCvss = lookupCvss(uuid);
+    if (flawOrAffectCvss) {
+      flawOrAffectCvss.value.vector = vector;
+    }
   }
 
   return {
