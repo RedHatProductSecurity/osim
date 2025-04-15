@@ -18,6 +18,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 export const {
   affectCvssScores,
   cvssVersion,
+  flaw,
   flawRhCvss,
   rhFlawCvssByVersion,
   rhFlawCvssScores,
@@ -50,9 +51,9 @@ export function validateCvssVector(cvssVector: null | string | undefined) {
   return null;
 }
 
-const { flaw } = useFlaw();
-
 function useGlobals() {
+  const { flaw } = useFlaw();
+
   const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
 
   const rhFlawCvssScores = ref(rhFlawCvssByVersion());
@@ -104,6 +105,7 @@ function useGlobals() {
     selectedCvssData,
     rhFlawCvssByVersion,
     affectCvssScores,
+    flaw,
   };
 };
 
