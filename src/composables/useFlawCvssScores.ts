@@ -22,18 +22,6 @@ import type {
   Cvss,
 } from '@/types';
 
-export const {
-  affectCvssScores,
-  cvssVersion,
-  flaw,
-  flawRhCvss,
-  rhFlawCvssByVersion,
-  rhFlawCvssScores,
-  selectedCvssData,
-} = useGlobals();
-
-const { cvss4Score, cvss4Vector } = useCvss4Calculator();
-
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
 }
@@ -51,8 +39,8 @@ export function newAffectCvss(isEmbargoed: boolean, cvssVersion?: CvssVersions) 
   };
 }
 
-export function validateCvssVector(cvssVector: null | string | undefined) {
-  if (cvssVersion.value === CvssVersions.V3) {
+export function validateCvssVector(cvssVector: null | string | undefined, version: CvssVersions) {
+  if (version === CvssVersions.V3) {
     const cvss3VectorSchema = z.union([
       z.string().length(44, { message: 'Incomplete CVSS3.1 Vector. There are factors missing.' }),
       z.string().length(0).nullable(),
@@ -63,7 +51,7 @@ export function validateCvssVector(cvssVector: null | string | undefined) {
     }
   }
 
-  if (cvssVersion.value === CvssVersions.V4) {
+  if (version === CvssVersions.V4) {
     return new CVSS40(cvssVector).error;
   }
 
@@ -73,7 +61,7 @@ export function validateCvssVector(cvssVector: null | string | undefined) {
 function useGlobals() {
   const { flaw } = useFlaw();
 
-  const cvssVersion = ref<string>(DEFAULT_CVSS_VERSION);
+  const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
   const rhFlawCvssScores = ref(rhFlawCvssByVersion());
 
@@ -131,13 +119,24 @@ function useGlobals() {
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
 export function useFlawCvssScores(cvssEntity?: CvssEntity) {
+  const {
+    cvssVersion,
+    flaw,
+    flawRhCvss,
+    rhFlawCvssByVersion,
+    rhFlawCvssScores,
+    selectedCvssData,
+  } = useGlobals();
+
+  const { cvss4Score, cvss4Vector } = useCvss4Calculator();
+
   const entity: CvssEntity = cvssEntity ?? flaw.value;
   const wasCvssModified = ref(false);
 
   const matchAffect = matcherForAffect(entity as ZodAffectType);
   const maybeAffect = flaw.value.affects.find(matchAffect);
   const maybeCvss = maybeAffect?.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
-  console.log('🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛')
+  console.log('🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛');
   console.log('maybeCvss', maybeCvss, maybeAffect, entity.uuid !== flaw.value.uuid);
   if (entity.uuid !== flaw.value.uuid && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss(flaw.value.embargoed));
@@ -255,7 +254,8 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
         console.error('CVSS not found for affect:', affect);
         return null;
       }
-      console.log('affect found but not CVSS')
+      console.log('affect found but not CVSS');
+      return computed(() => cvss);
     }
     console.error('Flaw/Affect not found for:', entity);
     return null;

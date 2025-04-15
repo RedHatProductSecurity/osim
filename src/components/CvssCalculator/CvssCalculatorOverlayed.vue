@@ -17,9 +17,9 @@ const props = defineProps<{
   affect?: ZodAffectType;
 }>();
 
-const { cvssScore, cvssVector, updateScore, updateVector } = useFlawCvssScores(props.affect);
+const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores(props.affect);
 
-const error = computed(() => validateCvssVector(cvssVector.value));
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 

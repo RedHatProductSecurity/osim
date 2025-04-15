@@ -24,11 +24,15 @@ import type { ZodFlawType } from '@/types';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
-vi.mock('@/composables/useFlaw');
+vi.mock('@/composables/useFlaw', async () => {
+  const { ref } = await import('vue');
+  const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
+  return { useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }) };
+});
 vi.mock('@/composables/useFlawModel');
 vi.mock('@/composables/useFetchFlaw');
 vi.mock('@/composables/useFlawCvssScores');
-vi.mock('@/composables/useCvss4Calculator', () => ({}));
+// vi.mock('@/composables/useCvss4Calculator');
 vi.mock('@/composables/useFlawAffectsModel');
 vi.mock('@/stores/AffectsEditingStore');
 
@@ -36,8 +40,8 @@ let pinia: ReturnType<typeof createPinia>;
 
 async function useMocks(flaw: ZodFlawType) {
   const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
-  const { useFlawModel: _useFlawModel } = await importActual('@/composables/useFlawModel');
   const { useFlawCvssScores: _useFlawCvssScores } = await importActual('@/composables/useFlawCvssScores');
+  const { useFlawModel: _useFlawModel } = await importActual('@/composables/useFlawModel');
   const { useFetchFlaw: _useFetchFlaw } = await importActual('@/composables/useFetchFlaw');
   const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
 
@@ -52,6 +56,7 @@ async function useMocks(flaw: ZodFlawType) {
     _useAffectsEditingStore,
     _useFetchFlaw,
     _useFlawCvssScores,
+    // _useCvss4Calculator,
     flaw,
   };
 }
@@ -75,9 +80,9 @@ const mountFlawAffects = (Component: Component, mocks: Awaited<ReturnType<typeof
     vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
     vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
+    vi.mocked(useFlawCvssScores).mockReturnValue(_useFlawCvssScores());
     const mockedUseFlawModel = _useFlawModel(flaw, () => {});
     vi.mocked(useFlawModel).mockReturnValue(mockedUseFlawModel);
-    vi.mocked(useFlawCvssScores).mockReturnValue(_useFlawCvssScores());
     // vi.mocked(useCvss4Calculator).mockReturnValue(_useCvss4Calculator());
     // vi.mocked(useCvss3Calculator). (_useCvss3Calculator());
     const errors = mockedUseFlawModel.errors.value.affects;
