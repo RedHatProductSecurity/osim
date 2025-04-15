@@ -12,7 +12,10 @@ import {
 } from '@/composables/useCvss3Calculator';
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 
-defineProps<{
+import type { ZodAffectType } from '@/types';
+
+const props = defineProps<{
+  affect?: ZodAffectType;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
@@ -25,7 +28,7 @@ const emit = defineEmits<{
   highlightFactorValue: [factor: null | string];
 }>();
 
-const { cvssVector, updateScore, updateVector } = useFlawCvssScores();
+const { cvssVector, updateScore, updateVector } = useFlawCvssScores(props.affect);
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector && newCvssVector) {
@@ -44,6 +47,7 @@ function factorButton(id: string, key: string) {
   if (!cvssFactors.value['CVSS']) {
     cvssFactors.value['CVSS'] = '3.1';
   }
+
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
   updateFactors(formatFactors(cvssFactors.value));
   updateScore(calculateScore(cvssFactors.value) ?? 0);

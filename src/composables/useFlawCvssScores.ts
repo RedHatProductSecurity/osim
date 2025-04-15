@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import { computed, ref, watch } from 'vue';
 import type { ComputedRef } from 'vue';
 
@@ -8,12 +7,20 @@ import { z } from 'zod';
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
+import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
 import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
-import type { Dict, Nullable, ZodAffectCVSSType, ZodFlawCVSSType } from '@/types';
-import { deepCopyFromRaw } from '@/utils/helpers';
+import type {
+  Dict,
+  Nullable,
+  ZodAffectType,
+  ZodAffectCVSSType,
+  ZodFlawCVSSType,
+  CvssEntity,
+  Cvss,
+} from '@/types';
 
 export const {
   affectCvssScores,
@@ -26,10 +33,22 @@ export const {
 } = useGlobals();
 
 const { cvss4Score, cvss4Vector } = useCvss4Calculator();
-type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
 
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
+}
+
+export function newAffectCvss(isEmbargoed: boolean, cvssVersion?: CvssVersions) {
+  return {
+    // affect: z.string().uuid(),
+    cvss_version: cvssVersion ?? DEFAULT_CVSS_VERSION,
+    issuer: IssuerEnum.Rh,
+    comment: '',
+    score: null,
+    vector: null,
+    embargoed: isEmbargoed,
+    alerts: [],
+  };
 }
 
 export function validateCvssVector(cvssVector: null | string | undefined) {
@@ -111,8 +130,18 @@ function useGlobals() {
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
-export function useFlawCvssScores() {
+export function useFlawCvssScores(cvssEntity?: CvssEntity) {
+  const entity: CvssEntity = cvssEntity ?? flaw.value;
   const wasCvssModified = ref(false);
+
+  const matchAffect = matcherForAffect(entity as ZodAffectType);
+  const maybeAffect = flaw.value.affects.find(matchAffect);
+  const maybeCvss = maybeAffect?.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
+  console.log('🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛🐛')
+  console.log('maybeCvss', maybeCvss, maybeAffect, entity.uuid !== flaw.value.uuid);
+  if (entity.uuid !== flaw.value.uuid && maybeAffect && !maybeCvss) {
+    maybeAffect.cvss_scores.push(newAffectCvss(flaw.value.embargoed));
+  }
 
   const initialFlawRhCvss = deepCopyFromRaw(flawRhCvss.value);
 
@@ -215,31 +244,31 @@ export function useFlawCvssScores() {
     return Promise.all(queue);
   }
 
-  function lookupCvss(uuid: string): ComputedRef<ZodAffectCVSSType | ZodFlawCVSSType> | null {
-    if (uuid === flaw.value.uuid) {
+  function lookupCvss(entity: CvssEntity): ComputedRef<ZodAffectCVSSType | ZodFlawCVSSType> | null {
+    if (entity.uuid === flaw.value.uuid) {
       return flawRhCvss;
     }
-    const affect = flaw.value.affects.find(affect => affect.uuid === uuid);
+    const affect = flaw.value.affects.find(matchAffect);
     if (affect) {
       const cvss = affect.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
       if (!cvss) {
-        console.error('CVSS not found for affect:', affect.uuid);
+        console.error('CVSS not found for affect:', affect);
         return null;
       }
-      return computed(() => cvss);
+      console.log('affect found but not CVSS')
     }
-    console.error('Flaw/Affect not found with id:', uuid);
+    console.error('Flaw/Affect not found for:', entity);
     return null;
   }
 
-  function updateScore(uuid: string, score: null | number) {
-    const flawOrAffectCvss = lookupCvss(uuid);
+  function updateScore(score: null | number) {
+    const flawOrAffectCvss = lookupCvss(entity);
     if (flawOrAffectCvss) {
       flawOrAffectCvss.value.score = score;
     }
   }
-  function updateVector(uuid: string, vector: null | string) {
-    const flawOrAffectCvss = lookupCvss(uuid);
+  function updateVector(vector: null | string) {
+    const flawOrAffectCvss = lookupCvss(entity);
     if (flawOrAffectCvss) {
       flawOrAffectCvss.value.vector = vector;
     }

@@ -9,14 +9,15 @@ import {
   calculateScore,
   formatFactors,
 } from '@/composables/useCvss3Calculator';
-import { validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
+import type { ZodAffectType } from '@/types';
 
-const emit = defineEmits<{
-  updateAffectCvss: [vector: string, score: null | number];
+const props = defineProps<{
+  affect?: ZodAffectType;
 }>();
+
+const { cvssScore, cvssVector, updateScore, updateVector } = useFlawCvssScores(props.affect);
 
 const error = computed(() => validateCvssVector(cvssVector.value));
 const cvssFactors = ref<Record<string, string>>({});
@@ -27,14 +28,14 @@ const cvssVectorInput = ref();
 
 function updateFactors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    emit('updateAffectCvss', newCvssVector || '', calculateScore(cvssFactors.value) || null);
+    updateCvss(newCvssVector);
   }
   cvssFactors.value = getFactors(newCvssVector ?? '');
 }
 
 watch(() => cvssVector.value, () => {
   updateFactors(cvssVector.value);
-  emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
+  updateCvss(cvssVector.value);
 }, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
@@ -51,8 +52,8 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  cvssScore.value = null;
-  emit('updateAffectCvss', '', null);
+  updateScore(null);
+  updateVector(null);
   cvssFactors.value = {};
 }
 
@@ -68,7 +69,14 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  updateScore(calculateScore(cvssFactors.value));
+  updateVector(maybeCvss);
+}
+
+function updateCvss(vector: null | string = null) {
+  updateFactors(vector);
+  updateScore(calculateScore(cvssFactors.value));
+  updateVector(vector);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -97,6 +105,7 @@ function highlightFactorValue(factor: null | string) {
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused"
+      :affect="affect"
       class="overlayed"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
@@ -106,6 +115,7 @@ function highlightFactorValue(factor: null | string) {
           <CvssVectorInput
             ref="cvssVectorInput"
             :cvssFactors="cvssFactors"
+            :cvssScore="cvssScore"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
             :error="error"

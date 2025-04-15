@@ -8,19 +8,33 @@ import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useCvss4Selections, useCvss4Calculator } from '@/composables/useCvss4Calculator';
 
 import Modal from '@/widgets/Modal/Modal.vue';
+import type { ZodAffectType } from '@/types';
 
-defineProps<{
+const props = defineProps<{
+  affect?: ZodAffectType;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
 const { cvss4Score, cvss4Vector } = useCvss4Calculator();
-const { updateScore, updateVector } = useFlawCvssScores();
+const { updateScore, updateVector } = useFlawCvssScores(props.affect);
+
+function updateCvss4Score(newCvss4Score: null | number | undefined) {
+  if (cvss4Score.value !== newCvss4Score) {
+    updateScore(newCvss4Score ?? null);
+  }
+}
+
+function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
+  if (cvss4Vector.value !== newCvss4Vector) {
+    updateVector(newCvss4Vector ?? null);
+  }
+}
 
 // TODO: Move these into composable
-watch(cvss4Score, updateScore);
-watch(cvss4Vector, updateVector);
+watch(cvss4Score, updateCvss4Score);
+watch(cvss4Vector, updateCvss4Vector);
 
 const { cvss4Selections } = useCvss4Selections();
 

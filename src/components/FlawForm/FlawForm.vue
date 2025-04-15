@@ -247,7 +247,7 @@ const createdDate = computed(() => {
               :withBlank="true"
             />
             <CvssCalculator
-              :id="flawRhCvss.uuid"
+              :uuid="flawRhCvss.uuid"
             />
             <CvssSection
               :highlightedNvdCvssString

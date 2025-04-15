@@ -134,7 +134,7 @@ exports[`flawForm > mounts and renders 1`] = `
     <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
       <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSS <select data-v-ffda1b6f="" class="ms-2"><option data-v-ffda1b6f="" selected="" value="V3">3.1</option><option data-v-ffda1b6f="" value="V4">4.0</option></select></span>
           <div data-v-ffda1b6f="" class="input-wrapper col">
-            <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">0 </span>
+            <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
               <!--v-if-->
               <!--v-if-->
               <!--v-if-->
@@ -615,7 +615,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>
@@ -639,7 +647,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>
@@ -663,7 +679,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>
@@ -687,7 +711,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>
@@ -711,7 +743,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>
@@ -735,7 +775,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
-              <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+              <td data-v-cf2e7c24="">
+                <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+          'affect:updateCvss',
+          affect,
+          vectorValue,
+          scoreValue,
+          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+        )" --><span data-v-cf2e7c24="" title=""></span>
+              </td>
               <td data-v-cf2e7c24="">
                 <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
               </td>

@@ -73,7 +73,7 @@ exports[`flawCreateView > should render 1`] = `
             <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
               <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSS <select data-v-ffda1b6f="" class="ms-2"><option data-v-ffda1b6f="" selected="" value="V3">3.1</option><option data-v-ffda1b6f="" value="V4">4.0</option></select></span>
                   <div data-v-ffda1b6f="" class="input-wrapper col">
-                    <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">0 </span>
+                    <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
                       <!--v-if-->
                       <!--v-if-->
                       <!--v-if-->
