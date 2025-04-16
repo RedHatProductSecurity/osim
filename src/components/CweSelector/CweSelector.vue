@@ -4,7 +4,7 @@ import { ref, onMounted, nextTick } from 'vue';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import type { CWEMemberType } from '@/types/mitreCwe';
-import { DATA_KEY } from '@/services/CweService';
+import { loadCweData } from '@/services/CweService';
 
 withDefaults(defineProps<{
   error?: string;
@@ -22,17 +22,6 @@ const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
 const selectedIndex = ref(-1);
 
-const loadCweData = () => {
-  const data = localStorage.getItem(DATA_KEY);
-  if (data) {
-    try {
-      cweData.value = JSON.parse(data);
-    } catch (e) {
-      console.error('CWESelector:loadCweData() Failed to parse CWE data:', e);
-    }
-  }
-};
-
 const filterSuggestions = (query: string) => {
   queryRef.value = query;
   const queryParts = query.toLowerCase().split(/(->|\(|\)|\|)/);
@@ -40,13 +29,13 @@ const filterSuggestions = (query: string) => {
 
   suggestions.value = cweData.value.filter(
     (cwe: CWEMemberType) =>
-      cwe.id.toLowerCase().includes(lastQueryPart)
-      || `CWE-${cwe.id}`.toLowerCase().includes(lastQueryPart)
-      || cwe.name.toLowerCase().includes(lastQueryPart)
-      || cwe.status.toLowerCase().includes(lastQueryPart)
-      || cwe.usage.toLowerCase().includes(lastQueryPart),
+      !/disallowed|prohibited/i.test(cwe.usage) && (
+        cwe.id.toLowerCase().includes(lastQueryPart)
+        || `CWE-${cwe.id}`.toLowerCase().includes(lastQueryPart)
+        || cwe.name.toLowerCase().includes(lastQueryPart)
+        || cwe.status.toLowerCase().includes(lastQueryPart)
+        || cwe.usage.toLowerCase().includes(lastQueryPart)),
   );
-
   if (suggestions.value.length === 0) {
     suggestions.value = cweData.value;
   }
@@ -81,10 +70,11 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 };
 
-onMounted(loadCweData);
+onMounted(() => {
+  cweData.value = loadCweData();
+});
 
 const usageClassMap: { [key: string]: string } = {
-  'prohibited': 'text-bg-primary',
   'allowed': 'text-bg-success',
   'allowed-with-review': 'text-bg-danger',
   'discouraged': 'text-bg-warning',
@@ -114,8 +104,8 @@ const getUsageClass = (usage: string) => {
           v-for="(cwe, index) in suggestions"
           :key="index"
           class="item gap-1 d-flex justify-content-between"
-          :class="{'selected': index === selectedIndex }"
-          @click.prevent.stop="handleSuggestionClick(abort, `CWE-${cwe.id}`)"
+          :class="{'selected': index === selectedIndex, 'disabled': cwe.isDiscouraged }"
+          @click.prevent.stop="!cwe.isDiscouraged && handleSuggestionClick(abort, `CWE-${cwe.id}`)"
           @mouseenter="selectedIndex = index"
         >
           <span class="flex-1">{{ `CWE-${cwe.id} ` }}</span>
@@ -137,8 +127,16 @@ const getUsageClass = (usage: string) => {
 </template>
 
 <style scoped lang="scss">
-.item.selected {
-  background-color: #dee2e6;
+.item {
+  &.selected {
+    background-color: #dee2e6;
+  }
+
+  &.disabled {
+    background-color: #e9ecef;
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
 }
 
 .dropdown-header {

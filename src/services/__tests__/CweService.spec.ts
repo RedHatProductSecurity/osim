@@ -19,6 +19,9 @@ describe('cweService', () => {
         status: 'Draft',
         summary: 'for testing',
         usage: 'approved',
+        category: '122',
+        isDiscouraged: false,
+        isProhibited: false,
       };
       localStorage.setItem(DATA_KEY, JSON.stringify([cwe]));
 
