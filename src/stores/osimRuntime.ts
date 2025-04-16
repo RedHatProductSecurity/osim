@@ -42,7 +42,7 @@ const OsimRuntime = z.object({
   error: z.string().default(''),
   readOnly: z.boolean().default(false),
 });
-type OsimRuntime = z.infer<typeof OsimRuntime>;
+export type OsimRuntime = z.infer<typeof OsimRuntime>;
 
 const runtime = ref<OsimRuntime>({
   env: 'dev',

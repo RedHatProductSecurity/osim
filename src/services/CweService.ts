@@ -37,6 +37,19 @@ interface CweWeaknesses {
   }[];
 };
 
+export function loadCweData(): CWEMemberType[] {
+  const data = localStorage.getItem(DATA_KEY);
+  let cweData: CWEMemberType[] = [];
+
+  try {
+    cweData = JSON.parse(data || '[]');
+  } catch (e) {
+    console.error('CweService:loadCweData() Failed to parse CWE data:', e);
+  }
+
+  return cweData;
+};
+
 export async function updateCWEData() {
   const baseUrl = osimRuntime.value.backends.mitre;
   try {
