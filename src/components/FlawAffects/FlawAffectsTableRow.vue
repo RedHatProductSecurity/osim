@@ -304,7 +304,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         v-if="isBeingEdited(affect)"
         :affect="affect"
       />
-        <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
+      <!-- @updateAffectCvss="(vectorValue, scoreValue) => emit(
           'affect:updateCvss',
           affect,
           vectorValue,

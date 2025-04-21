@@ -78,11 +78,6 @@ const { flaw } = useFlaw();
 
 const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
-// const affectCvssScores = computed(() => {
-//   const scores = flaw.value.affects.flatMap(affect => affect.cvss_scores ?? []);
-//   return scores.filter(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
-// });
-
 function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
   return 'flaw' in maybeAffect;
 }
@@ -118,8 +113,6 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
   const rhCvssScores = ref(rhCvssByVersion());
 
   const flawOrAffect = cvssEntity ? computed(() => cvssEntity) : flaw;
-  const flawOrAffectCvss = computed(() => flawOrAffect.value.cvss_scores.find(
-    filterCvssData(IssuerEnum.Rh, cvssVersion.value)));
 
   const flawRhCvss = computed<ZodFlawCVSSType>(() => rhFlawCvssScores.value[cvssVersion.value]);
   const rhCvss = computed<Cvss>(() => rhCvssScores.value[cvssVersion.value]);
@@ -133,22 +126,14 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
     maybeAffect.cvss_scores.push(newAffectCvss(flaw.value.embargoed));
   }
 
-  const initialFlawRhCvss = deepCopyFromRaw(flawRhCvss.value);
   const initialRhCvss = deepCopyFromRaw(rhCvss.value);
-
-  // watch(flawRhCvss, () => {
-  //   wasCvssModified.value = !equals(initialFlawRhCvss, flawRhCvss.value);
-  //   console.log('flaw changee');
-  // }, { deep: true });
 
   // may not be needed since this is handled in flawaffects model?
   watch(rhCvss, () => {
     wasCvssModified.value = !equals(initialRhCvss, rhCvss.value);
-    console.log('changee');
   }, { deep: true });
 
   watch(() => flaw.value, () => {
-    // rhFlawCvssScores.value = rhFlawCvssByVersion();
     rhCvssScores.value = rhCvssByVersion();
     wasCvssModified.value = false;
   });
@@ -156,65 +141,6 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();
   });
-
-  // const flawNvdCvss = computed(() => getCvssData(flaw.value, IssuerEnum.Nist, cvssVersion.value));
-
-  // const nvdCvssString = computed(() => {
-  //   const values = [formatScore(flawNvdCvss.value?.score), flawNvdCvss.value?.vector].filter(Boolean);
-  //   return values.join(' ') || '-';
-  // });
-
-  // const rhCvssString = computed(() => {
-  //   if (flawRhCvss.value.cvss_version === CvssVersions.V3) {
-  //     const values = [formatScore(flawRhCvss.value?.score), flawRhCvss.value?.vector].filter(Boolean);
-  //     return values.join(' ');
-  //   }
-  //   if (flawRhCvss.value.cvss_version === CvssVersions.V4) {
-  //     return cvss4Score.value + ' ' + cvss4Vector.value;
-  //   }
-  //   return '-';
-  // });
-
-  // const shouldDisplayEmailNistForm = computed(() => {
-  //   if (rhCvssString.value === '' || nvdCvssString.value === '-') {
-  //     return false;
-  //   }
-  //   if (flawRhCvss.value.comment) {
-  //     return true;
-  //   }
-  //   return `${rhCvssString.value}` !== `${nvdCvssString.value}`;
-  // });
-
-  // const highlightedNvdCvssString = computed(() => {
-  //   if (!flawNvdCvss.value?.vector
-  //     || flawNvdCvss.value?.vector === '-'
-  //     || !flawRhCvss.value?.vector) {
-  //     return [[{ char: '-', isHighlighted: false }]];
-  //   }
-
-  //   const result = [];
-  //   const nvdCvssValue = flawNvdCvss.value?.vector || '-';
-  //   const cvssValue = flawRhCvss.value?.vector || '-';
-  //   const maxLength = Math.max(nvdCvssValue.length, cvssValue.length);
-
-  //   if (formatScore(flawNvdCvss.value?.score) !== formatScore(flawRhCvss.value?.score)) {
-  //     result.push(
-  //       { char: formatScore(flawNvdCvss.value?.score), isHighlighted: true },
-  //       { char: ' ', isHighlighted: false },
-  //     );
-  //   }
-
-  //   for (let i = 0; i < maxLength; i++) {
-  //     const charFromFlaw = i < nvdCvssValue.length ? nvdCvssValue[i] : '';
-  //     const charFromCvss = i < cvssValue.length ? cvssValue[i] : '';
-  //     result.push({
-  //       char: charFromFlaw,
-  //       isHighlighted: shouldDisplayEmailNistForm.value && charFromFlaw !== charFromCvss,
-  //     });
-  //   }
-
-  //   return groupWith((a, b) => a.isHighlighted === b.isHighlighted, result);
-  // });
 
   async function saveCvssScores() {
     const queue = [];

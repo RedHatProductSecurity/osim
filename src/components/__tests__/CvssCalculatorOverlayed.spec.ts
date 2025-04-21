@@ -62,8 +62,9 @@ describe('cvssCalculatorOverlayed', () => {
         'cvssScore': null,
         'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
         'cvssVector': '',
-        'onUpdate:cvssVector': (e: any) =>{
-          subject.setProps({ cvssVector: e })},
+        'onUpdate:cvssVector': (e: any) => {
+          subject.setProps({ cvssVector: e });
+        },
       },
     });
   });
