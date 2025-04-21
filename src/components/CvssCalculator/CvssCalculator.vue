@@ -111,7 +111,7 @@ function highlightFactorValue(factor: null | string) {
           <CvssVectorInput
             ref="cvssVectorInput"
             :cvssFactors="cvssFactors"
-            :cvssScore="cvssScore"
+            :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
             :error="error"
@@ -148,7 +148,7 @@ function highlightFactorValue(factor: null | string) {
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
       :cvssScore="cvssScore"
-      :cvssVector="cvssVector"
+      :cvssVector="cvssVector ?? null"
       class="overlayed"
       @update:cvssScore="updateScore"
       @update:cvssVector="updateVector"

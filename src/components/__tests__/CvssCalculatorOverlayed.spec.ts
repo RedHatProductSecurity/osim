@@ -1,5 +1,6 @@
 import { ref, type Component, watch } from 'vue';
 
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
 import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 
@@ -59,6 +60,7 @@ describe('cvssCalculatorOverlayed', () => {
     const CvssCalculatorOverlayed = importedComponent.default;
     subject = mount(CvssCalculatorOverlayed, {
       props: {
+        'affect': sampleFlawFull.affects[0],
         'cvssScore': null,
         'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
         'cvssVector': '',
