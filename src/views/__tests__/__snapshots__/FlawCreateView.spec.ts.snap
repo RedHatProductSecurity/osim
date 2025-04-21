@@ -88,7 +88,7 @@ exports[`flawCreateView > should render 1`] = `
                   </div>
                   <!--v-if-->
                 </label><button data-v-ffda1b6f="" tabindex="-1" type="button" disabled="" class="erase-button input-group-text"><i data-v-ffda1b6f="" class="bi bi-eraser"></i></button></div>
-              <div data-v-707feb84="" data-v-ffda1b6f="" class="cvss-calculator visually-hidden">
+              <div data-v-707feb84="" data-v-ffda1b6f="" class="cvss-calculator visually-hidden overlayed overlayed">
                 <div data-v-707feb84="" class="p-3">
                   <div data-v-707feb84="" class="osim-input mx-0">
                     <div data-v-707feb84="" class="mx-auto">

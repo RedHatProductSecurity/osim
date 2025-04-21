@@ -2,12 +2,12 @@ import type { App } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
+import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { blankFlaw } from '@/composables/useFlaw';
 
-import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
-import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';

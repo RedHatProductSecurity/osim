@@ -7,6 +7,7 @@ import type { ZodFlawType } from '@/types';
 import { useMockFlawWithModules } from './helpers';
 
 vi.mock('@/services/FlawService');
+
 const useMockedModel = async (flaw: ZodFlawType) => await useMockFlawWithModules(flaw, vi)({
   useFlaw: '@/composables/useFlaw',
   useCvss4Calculator: '@/composables/useCvss4Calculator',
@@ -18,7 +19,7 @@ describe('useFlawCvssScores', () => {
     const { useFlawCvssScores } = await useMockedModel(flaw);
     const composable = useFlawCvssScores();
     expect(composable).toBeInstanceOf(Object);
-    expect(Object.keys(composable)).toHaveLength(12);
+    expect(Object.keys(composable)).toHaveLength(13);
   });
 
   describe('shouldDisplayEmailNistForm', () => {

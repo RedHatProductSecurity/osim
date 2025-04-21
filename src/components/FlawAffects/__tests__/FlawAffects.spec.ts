@@ -97,8 +97,10 @@ const mountFlawAffects = (Component: Component, mocks: Awaited<ReturnType<typeof
     },
     global: {
       stubs: {
-        CvssCalculatorOverlayed: true,
-        CvssVectorInput: true,
+        // CvssCalculatorOverlayed: true,
+        // CvssVectorInput: true,
+        // TabsDynamic: true,
+        // Toast: true,
       },
     },
   });

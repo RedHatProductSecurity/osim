@@ -10,12 +10,12 @@ import {
   factorSeverities,
   weights,
 } from '@/composables/useCvss3Calculator';
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 
 import type { ZodAffectType } from '@/types';
 
 const props = defineProps<{
   affect?: ZodAffectType;
+  cvssVector: null | string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
@@ -24,24 +24,20 @@ const props = defineProps<{
 const cvssFactors = defineModel<Record<string, string>>('cvssFactors', { default: () => ({}) });
 
 const emit = defineEmits<{
-  highlightFactor: [factor: null | string];
-  highlightFactorValue: [factor: null | string];
+  'highlightFactor': [factor: null | string];
+  'highlightFactorValue': [factor: null | string];
+  'update:cvssScore': [value: null | number];
+  'update:cvssVector': [value: null | string];
 }>();
 
-const { cvssVector, updateScore, updateVector } = useFlawCvssScores(props.affect);
-
 function updateFactors(newCvssVector: null | string | undefined) {
-  if (cvssVector.value !== newCvssVector && newCvssVector) {
-    updateVector(newCvssVector);
-  }
   cvssFactors.value = getFactors(newCvssVector ?? '');
+  if (props.cvssVector !== newCvssVector) {
+    emit('update:cvssVector', newCvssVector ?? null);
+  }
 }
 
-updateFactors(cvssVector.value);
-
-watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-});
+watch(() => props.cvssVector, updateFactors, { immediate: true });
 
 function factorButton(id: string, key: string) {
   if (!cvssFactors.value['CVSS']) {
@@ -50,7 +46,7 @@ function factorButton(id: string, key: string) {
 
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
   updateFactors(formatFactors(cvssFactors.value));
-  updateScore(calculateScore(cvssFactors.value) ?? 0);
+  emit('update:cvssScore', calculateScore(cvssFactors.value) ?? 0);
 }
 </script>
 

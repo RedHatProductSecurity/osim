@@ -14,7 +14,7 @@ import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvss
 import type { ZodAffectType } from '@/types';
 
 const props = defineProps<{
-  affect?: ZodAffectType;
+  affect: ZodAffectType;
 }>();
 
 const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores(props.affect);
@@ -101,12 +101,16 @@ function highlightFactorValue(factor: null | string) {
     <span>{{ cvssScore }}</span>
     <i class="bi bi-calculator-fill p-2" />
     <Cvss3Calculator
-      v-model:cvssVector="cvssVector"
+      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused"
+      :cvssScore="cvssScore"
+      :cvssVector="cvssVector"
       :affect="affect"
       class="overlayed"
+      @update:cvssScore="updateScore"
+      @update:cvssVector="updateVector"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
     >

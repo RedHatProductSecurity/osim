@@ -62,7 +62,7 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
       class="osim-cvss-score"
       :style="isFocused ? {color: 'white'} : {color: 'black'}"
     >
-      {{ cvssScore != null ? `${cvssScore} ` : '' }}
+      {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>
     <template v-for="(value, key) in cvssFactors" :key="key">
       <span

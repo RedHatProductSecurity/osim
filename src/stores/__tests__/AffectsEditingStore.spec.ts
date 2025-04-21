@@ -12,7 +12,11 @@ import { importActual, router, withSetup } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
-vi.mock('@/composables/useFlaw');
+vi.mock('@/composables/useFlaw', async () => {
+  const { ref } = await import('vue');
+  const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
+  return { useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }) };
+});
 vi.mock('@/composables/useFlawAffectsModel');
 
 let pinia: ReturnType<typeof createPinia>;
