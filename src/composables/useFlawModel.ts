@@ -40,7 +40,15 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const shouldCreateJiraTask = ref(false);
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
-  const { cvssVector, cvssVersion, saveCvssScores, updateVector, wasCvssModified } = useFlawCvssScores();
+
+  const {
+    cvssVector,
+    cvssVersion,
+    saveCvssScores,
+    updateVector,
+    wasFlawCvssModified,
+  } = useFlawCvssScores();
+
   const {
     affectsToDelete,
     removeAffects,
@@ -96,7 +104,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
         .catch(createCatchHandler('Error creating Flaw'))
         .finally(async () => {
           if (flaw.value.uuid) {
-            if (wasCvssModified.value) {
+            if (wasFlawCvssModified.value) {
               await saveCvssScores()
                 .catch(createCatchHandler('Error saving CVSS scores after creating Flaw'));
             }
@@ -123,7 +131,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
       });
     }
 
-    if (wasCvssModified) {
+    if (wasFlawCvssModified.value) {
       const validatedCVSS = validateCvssVector(cvssVector.value, cvssVersion.value);
       if (validatedCVSS !== null) {
         addToast({
@@ -157,7 +165,8 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
 
     queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
 
-    if (wasCvssModified.value) {
+    console.log('was cvss changed?', wasFlawCvssModified.value);
+    if (wasFlawCvssModified.value) {
       queue.push(saveCvssScores);
     }
 

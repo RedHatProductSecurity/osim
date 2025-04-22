@@ -147,6 +147,11 @@ function highlightFactorValue(factor: null | string) {
 </template>
 
 <style scoped lang="scss">
+:deep(.overlayed.cvss-calculator) {
+  left: unset;
+  right: 0;
+}
+
 .osim-input {
   display: inline-flex;
   width: 100%;
