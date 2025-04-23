@@ -40,7 +40,7 @@ exports[`flawCreateView > should render 1`] = `
             </label>
             <div data-v-76e7a15d="" class="row">
               <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-                  <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
+                  <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3"><span data-v-76e7a15d=""> CVE ID </span></span>
                     <!--v-if-->
                     <!-- for invalid-tooltip positioning -->
                     <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
