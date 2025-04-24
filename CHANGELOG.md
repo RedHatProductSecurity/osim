@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Validate Discouraged an Prohibited CWE usage (`OSIDB-4172`)
+
 ## [2025.3.2]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
