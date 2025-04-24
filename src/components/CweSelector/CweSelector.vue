@@ -29,13 +29,13 @@ const filterSuggestions = (query: string) => {
 
   suggestions.value = cweData.value.filter(
     (cwe: CWEMemberType) =>
-      !/disallowed|prohibited/i.test(cwe.usage) && (
-        cwe.id.toLowerCase().includes(lastQueryPart)
-        || `CWE-${cwe.id}`.toLowerCase().includes(lastQueryPart)
-        || cwe.name.toLowerCase().includes(lastQueryPart)
-        || cwe.status.toLowerCase().includes(lastQueryPart)
-        || cwe.usage.toLowerCase().includes(lastQueryPart)),
+      cwe.id.toLowerCase().includes(lastQueryPart)
+      || `CWE-${cwe.id}`.toLowerCase().includes(lastQueryPart)
+      || cwe.name.toLowerCase().includes(lastQueryPart)
+      || cwe.status.toLowerCase().includes(lastQueryPart)
+      || cwe.usage.toLowerCase().includes(lastQueryPart),
   );
+
   if (suggestions.value.length === 0) {
     suggestions.value = cweData.value;
   }
@@ -71,7 +71,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 };
 
 onMounted(() => {
-  cweData.value = loadCweData();
+  cweData.value = loadCweData().filter(({ isProhibited }) => !isProhibited);
 });
 
 const usageClassMap: { [key: string]: string } = {
@@ -112,7 +112,13 @@ const getUsageClass = (usage: string) => {
           <span class="flex-3">{{ `${cwe.name}. ` }}</span>
           <span class="badge flex-1" :class="getUsageClass(cwe.usage)">{{ `${cwe.usage}` }}</span>
           <div class="flex-1">
-            <i v-show="cwe.summary" class="icon bi-info-circle" :title="cwe.summary" />
+            <i
+              v-show="cwe.summary"
+              class="icon bi-info-circle"
+              :title="(cwe.isDiscouraged
+                ? `Usage of this CWE is discouraged, use another from the same class (${cwe.category})\n\n`
+                : '') + cwe.summary"
+            />
             <a
               :href="`https://cwe.mitre.org/data/definitions/${cwe.id}.html`"
               class="icon"

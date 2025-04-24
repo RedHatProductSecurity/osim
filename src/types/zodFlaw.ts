@@ -269,16 +269,20 @@ export const ZodFlawSchema = z.object({
   }
 
   if (zodFlaw.cwe_id) {
-    const member = loadCweData().find(member => `CWE-${member.id}` === zodFlaw.cwe_id);
-    if (member && /discouraged|disallowed|prohibited/i.test(member.usage)) {
-      let msg = `CWE-${member.id} is ${member.usage}`;
+    const cweData = loadCweData();
+    zodFlaw.cwe_id?.match(/CWE-\d+/gi)?.forEach((flawCWE) => {
+      cweData
+        .filter(member => `CWE-${member.id}` === flawCWE && (member.isProhibited || member.isDiscouraged))
+        .forEach((member) => {
+          let msg = `CWE-${member.id} is ${member.usage.toLowerCase()}`;
 
-      if (member.usage.toLowerCase() === 'discouraged') {
-        msg += ' please use a child weakness';
-      }
+          if (member.usage.toLowerCase() === 'discouraged') {
+            msg += `, use another under the same CWE class (${member.category})`;
+          }
 
-      raiseIssue(msg, ['cwe_id']);
-    }
+          raiseIssue(msg, ['cwe_id']);
+        });
+    });
   }
 });
 
