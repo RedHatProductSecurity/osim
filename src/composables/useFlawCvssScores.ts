@@ -24,9 +24,6 @@ import type {
 } from '@/types';
 
 // TODO: Autofill cvss4 from cvss3
-// TODO: fix flaw CVSS not saving
-
-
 
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
@@ -84,26 +81,23 @@ const { flaw } = useFlaw();
 const { updateAffectCvss } = useFlawAffectsModel();
 
 const wasFlawCvssModified = ref(false);
-const rhFlawCvssScores = ref(rhFlawCvssByVersion());
+const rhFlawCvssScores = computed(() => Object.fromEntries(
+  Object.values(CvssVersions).map(version => [
+    version,
+    getCvssData(flaw.value, IssuerEnum.Rh, version) as ZodFlawCVSSType ?? newFlawCvss(version),
+  ]),
+));
 const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
 function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
   return 'flaw' in maybeAffect;
 }
 
-function rhFlawCvssByVersion(): Dict<string, ZodFlawCVSSType> {
-  return Object.fromEntries(
-    Object.values(CvssVersions).map(version => [
-      version,
-      getCvssData(flaw.value, IssuerEnum.Rh, version) as ZodFlawCVSSType ?? newFlawCvss(version),
-    ]),
-  );
-}
-
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
 export function useFlawCvssScores(cvssEntity?: CvssEntity) {
-
+  const wasCvssModified = ref(false);
+  const rhCvssScores = ref(rhCvssByVersion());
 
   function rhCvssByVersion(): Dict<string, Cvss> {
     const entity: CvssEntity = cvssEntity ?? flaw.value;
@@ -114,33 +108,28 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
           : newFlawCvss(version);
         const cvss = getCvssData(entity, IssuerEnum.Rh, version) ?? fallback;
         return [version, cvss];
-      },
-      ),
-    );
+      }));
   }
 
   const entity: CvssEntity = cvssEntity ?? flaw.value;
-
-  const rhCvssScores = ref(rhCvssByVersion());
-
   const flawOrAffect = cvssEntity ? computed(() => cvssEntity) : flaw;
 
   const flawRhCvss = computed<ZodFlawCVSSType>(() => rhFlawCvssScores.value[cvssVersion.value]);
   const rhCvss = computed<Cvss>(() => rhCvssScores.value[
     isAffect(entity) ? CvssVersions.V3 : cvssVersion.value
   ]);
-  const wasCvssModified = ref(false);
 
   const matchAffect = matcherForAffect(entity as ZodAffectType);
   const maybeAffect = flaw.value.affects.find(matchAffect);
   const maybeCvss = maybeAffect?.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
-  if (entity.uuid !== flaw.value.uuid && maybeAffect && !maybeCvss) {
+
+  if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss(flaw.value.embargoed));
   }
 
   const initialRhCvss = deepCopyFromRaw(rhCvss.value);
 
-  watch(rhCvss, (thing) => {
+  watch(rhCvss, () => {
     wasCvssModified.value = !equals(initialRhCvss, rhCvss.value);
     if (!wasCvssModified.value) {
       if (!isAffect(entity)) {
@@ -149,8 +138,6 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
       return;
     }
     if (!isAffect(entity)) {
-      console.log(thing, 'thing', rhCvss.value.score, rhCvss.value.vector, rhFlawCvssScores.value);
-
       wasFlawCvssModified.value = true;
       flawRhCvss.value.score = rhCvss.value.score ?? null;
       flawRhCvss.value.vector = rhCvss.value.vector ?? null;
@@ -175,10 +162,8 @@ export function useFlawCvssScores(cvssEntity?: CvssEntity) {
 
   async function saveCvssScores() {
     const queue = [];
-    console.log(Object.values(rhFlawCvssScores.value));
     for (const cvssData of Object.values(rhFlawCvssScores.value)) {
       // Update logic, if the CVSS score already exists in OSIDB
-      console.log('cvssData', cvssData);
       if (cvssData.created_dt) {
       // Handle existing CVSS score
         if (cvssData.vector === null && cvssData.uuid != null) {
@@ -253,7 +238,7 @@ function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
   });
 
   const shouldDisplayEmailNistForm = computed(() => {
-    if (rhCvssString.value === '' || nvdCvssString.value === '-') {
+    if (['', '-'].includes(rhCvssString.value) || ['', '-'].includes(nvdCvssString.value)) {
       return false;
     }
     if (flawRhCvss.value.comment) {
