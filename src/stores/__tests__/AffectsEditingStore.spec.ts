@@ -8,7 +8,7 @@ import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
-import { importActual, router, withSetup } from '@/__tests__/helpers';
+import { importActual, withSetup } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
@@ -17,7 +17,15 @@ vi.mock('@/composables/useFlaw', async () => {
   const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
   return { useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }) };
 });
-vi.mock('@/composables/useFlawAffectsModel');
+
+vi.mock('@/composables/useFlawCvssScores');
+
+vi.mock('@/composables/useFlawAffectsModel', () => ({
+  useFlawAffectsModel: vi.fn().mockReturnValue({
+    updateAffectCvss: vi.fn(),
+    affectsToDelete: { value: [] },
+  }),
+}));
 
 let pinia: ReturnType<typeof createPinia>;
 type FlawWithStore = [Ref<ZodFlawType>, ReturnType<typeof useAffectsEditingStore>];
@@ -29,7 +37,7 @@ function flawWithStore(testFlaw: ZodFlawType): FlawWithStore {
     useFlawAffectsModel();
     return [flaw, useAffectsEditingStore()];
   },
-  [pinia, router]);
+  [pinia]);
   return [flaw, store];
 }
 
