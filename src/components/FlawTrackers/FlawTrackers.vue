@@ -66,7 +66,9 @@ const filteredTrackers = computed(() => {
   return props.displayedTrackers.filter((tracker) => {
     const matchesStatusFilter =
       statusFilter.value.length === 0 || statusFilter.value.includes(tracker.status?.toUpperCase() || 'EMPTY');
-    return matchesStatusFilter;
+    const matchesSearchboxFilter =
+      !searchboxFilter.value || searchboxResult.value.includes(tracker);
+    return matchesStatusFilter && matchesSearchboxFilter;
   });
 });
 
@@ -77,6 +79,15 @@ const trackerStatuses = computed(() => {
 });
 
 const statusFilter = ref<string[]>([]);
+
+const searchboxFilter = ref('');
+
+const searchboxResult = computed(() => {
+  return props.displayedTrackers.filter(
+    tracker => tracker.ps_component.includes(searchboxFilter.value)
+    || tracker.ps_module.includes(searchboxFilter.value),
+  );
+});
 
 function toggleFilter(filterArray: Ref<string[]>, item: string) {
   const index = filterArray.value.indexOf(item);
@@ -91,6 +102,7 @@ function toggleStatusFilter(status: string) {
   toggleFilter(statusFilter, status);
 }
 
+// Pagination
 const {
   changePage,
   currentPage,
@@ -143,6 +155,13 @@ const tableTrackers = computed(() => {
             <i class="bi bi-arrow-right fs-5" />
           </button>
         </div>
+        <input
+          v-model="searchboxFilter"
+          type="text"
+          class="form-control border border-info focus-ring m-2 mb-1 p-1"
+          style="width: 35ch;"
+          placeholder="Filter Modules/Components..."
+        />
         <div class="trackers-toolbar p-2 pt-1">
           <div class="tracker-badges">
             <div

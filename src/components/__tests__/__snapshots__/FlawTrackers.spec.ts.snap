@@ -7,7 +7,7 @@ exports[`flawTrackers > Correctly renders the component when there are not track
       <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
-      <!--v-if-->
+      <!--v-if--><input data-v-89a61d08="" type="text" class="form-control border border-info focus-ring m-2 mb-1 p-1" style="width: 35ch;" placeholder="Filter Modules/Components...">
       <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
         <div data-v-89a61d08="" class="tracker-badges">
           <!--v-if-->
@@ -47,7 +47,7 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
       <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
-      <!--v-if-->
+      <!--v-if--><input data-v-89a61d08="" type="text" class="form-control border border-info focus-ring m-2 mb-1 p-1" style="width: 35ch;" placeholder="Filter Modules/Components...">
       <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
         <div data-v-89a61d08="" class="tracker-badges">
           <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page:</span><input data-v-89a61d08="" type="text" class="form-control mx-2" value="10"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>
@@ -151,7 +151,7 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
       <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
         <h5 data-v-89a61d08="" class="m-0">Trackers</h5>
       </div>
-      <!--v-if-->
+      <!--v-if--><input data-v-89a61d08="" type="text" class="form-control border border-info focus-ring m-2 mb-1 p-1" style="width: 35ch;" placeholder="Filter Modules/Components...">
       <div data-v-89a61d08="" class="trackers-toolbar p-2 pt-1">
         <div data-v-89a61d08="" class="tracker-badges">
           <div data-v-89a61d08="" class="per-page-btn btn btn-sm badge"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce trackers per page"></i><span data-v-89a61d08="" class="mx-2 my-auto">Per page:</span><input data-v-89a61d08="" type="text" class="form-control mx-2" value="10"><i data-v-89a61d08="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase trackers per page"></i></div>

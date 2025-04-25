@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Add searchbox filter on trackers table (`OSIDB-4062`)
+
 ## [2025.3.2]
 ### Added
 * Added colors to flaw list labels (`OSIDB-3992`)
