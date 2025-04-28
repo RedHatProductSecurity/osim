@@ -9,7 +9,7 @@ import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
-import { withSetup, router, importActual } from '@/__tests__/helpers';
+import { withSetup, importActual } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';
 
@@ -48,31 +48,28 @@ vi.mock('@/composables/useFlaw', async (importOriginal) => {
 });
 
 describe('useFlawModel', () => {
-  const onSaveSuccess = vi.fn();
   let app: App;
 
   const mountFlawModel = (flaw: ZodFlawType = blankFlaw()) => {
     const pinia = createTestingPinia();
-    const plugins = [router, pinia];
+    vi.unmock('@/composables/useFlawAffectsModel');
     const [composable, _app] = withSetup(async () => {
-      vi.unmock('@/composables/useFlawAffectsModel');
       const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
       _useFlaw().flaw.value = flaw;
       vi.mocked(useFlaw).mockReturnValue(_useFlaw());
       const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
       const { useFlawCvssScores: _useFlawCvssScores } = await importActual('@/composables/useFlawCvssScores');
-      // vi.doMock('@/composables/useFlawAffectsModel', async og => await og());
       vi.doMock('@/composables/useFlawAffectsModel', _useFlawAffectsModel);
       vi.mocked(useFlawCvssScores).mockReturnValue(_useFlawCvssScores());
-      const flawModel = useFlawModel(flaw, onSaveSuccess);
+      const flawModel = useFlawModel(flaw, () => {});
       return flawModel;
-    }, plugins);
+    }, [pinia]);
     app = _app;
     return composable;
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(() => {

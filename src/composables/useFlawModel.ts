@@ -165,7 +165,6 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
 
     queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
 
-    console.log('was cvss changed?', wasFlawCvssModified.value);
     if (wasFlawCvssModified.value) {
       queue.push(saveCvssScores);
     }

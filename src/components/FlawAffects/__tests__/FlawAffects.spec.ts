@@ -32,8 +32,12 @@ vi.mock('@/composables/useFlaw', async () => {
 vi.mock('@/composables/useFlawModel');
 vi.mock('@/composables/useFetchFlaw');
 vi.mock('@/composables/useFlawCvssScores');
-// vi.mock('@/composables/useCvss4Calculator');
-vi.mock('@/composables/useFlawAffectsModel');
+vi.mock('@/composables/useFlawAffectsModel', () => ({
+  useFlawAffectsModel: vi.fn().mockReturnValue({
+    updateAffectCvss: vi.fn(),
+    affectsToDelete: { value: [] },
+  }),
+}));
 vi.mock('@/stores/AffectsEditingStore');
 
 let pinia: ReturnType<typeof createPinia>;
@@ -209,7 +213,7 @@ describe('flawAffects', () => {
 
     const actionBtns = subject.findAll('.affects-toolbar .affects-table-actions .btn');
     const addAffectBtn = actionBtns.find(button => button.text() === 'Add New Affect');
-    addAffectBtn?.trigger('click');
+    await addAffectBtn?.trigger('click');
     await flushPromises();
 
     affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');

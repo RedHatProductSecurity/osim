@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores(props.affect);
 
-const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value) ?? null);
 const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 
