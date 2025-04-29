@@ -23,7 +23,7 @@ import type {
   Cvss,
 } from '@/types';
 
-// TODO: Autofill cvss4 from cvss3
+import { getFactors as parseCvss3Factors } from './useCvss3Calculator';
 
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
@@ -149,6 +149,12 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
         entity.cvss_scores.findIndex(cvss => cvss.uuid == maybeCvss?.uuid),
       );
     }
+    if (cvssVersion.value === CvssVersions.V4) {
+      rhCvssScores.value[CvssVersions.V3].vector = convertVectorTo(rhCvss.value.vector, CvssVersions.V3);
+    }
+    if (cvssVersion.value === CvssVersions.V3) {
+      rhCvssScores.value[CvssVersions.V4].vector = convertVectorTo(rhCvss.value.vector, CvssVersions.V4);
+    }
   }, { deep: true });
 
   watch(() => flaw.value.updated_dt, () => {
@@ -196,6 +202,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   }
   function updateVector(vector: null | string) {
     rhCvss.value.vector = vector;
+    console.log(rhCvss, 'update function')
   }
 
   const cvssVector = computed(() => rhCvss.value.vector);
@@ -284,4 +291,16 @@ function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
     highlightedNvdCvssString,
     shouldDisplayEmailNistForm,
   };
+}
+
+function convertVectorTo(vector: null | string | undefined, toVersion: CvssVersions) {
+  if (!vector && vector !== '') return null;
+  if (toVersion === CvssVersions.V3) {
+    const partialParse = parseCvss3Factors(vector);
+    console.log(partialParse);
+  }
+  if (toVersion === CvssVersions.V4) {
+
+  }
+  return '';
 }
