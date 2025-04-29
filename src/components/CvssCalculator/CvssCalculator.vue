@@ -161,6 +161,8 @@ function highlightFactorValue(factor: null | string) {
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V4"
+      @update:cvssScore="updateScore"
+      @update:cvssVector="updateVector"
     />
   </div>
 </template>
