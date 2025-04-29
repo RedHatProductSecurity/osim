@@ -1,8 +1,8 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2025.4.0]
 ### Added
-* Validate Discouraged an Prohibited CWE usage (`OSIDB-4172`)
+* Validate Discouraged an Prohibited CWE usage (`OSIDB-4127`)
 
 ### Fixed
 * Fixed inconsistent local storage cached values (`OSIDB-4129`)
@@ -438,7 +438,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.4.0...HEAD
+[2025.4.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.2...v2025.4.0
 [2025.3.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.1...v2025.3.2
 [2025.3.1]: https://github.com/RedHatProductSecurity/osim/compare/v2025.3.0...v2025.3.1
 [2025.3.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.2.0...v2025.3.0
