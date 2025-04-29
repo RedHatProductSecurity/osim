@@ -37,6 +37,19 @@ interface CweWeaknesses {
   }[];
 };
 
+export function loadCweData(): CWEMemberType[] {
+  const data = localStorage.getItem(DATA_KEY);
+  let cweData: CWEMemberType[] = [];
+
+  try {
+    cweData = JSON.parse(data || '[]');
+  } catch (e) {
+    console.error('CweService:loadCweData() Failed to parse CWE data:', e);
+  }
+
+  return cweData;
+};
+
 export async function updateCWEData() {
   const baseUrl = osimRuntime.value.backends.mitre;
   try {
@@ -47,6 +60,12 @@ export async function updateCWEData() {
 
     const [version, isNew] = await checkNewVersion(baseUrl);
     if (!isNew) {
+      // TODO: OSIDB-4127 remove once all users have updated structure (or mitre released a new version)
+      if (loadCweData().some(member => !Object.hasOwn(member, 'category'))) {
+        // Force update to add new computed fields
+        console.debug('Recreate stale CWE data');
+        fetchAndCache(baseUrl);
+      }
       console.debug('✅ CWE API cache is up-to-date.');
       return;
     }
@@ -99,14 +118,24 @@ async function fetchCweCategories(baseUrl: string, cweCategoryIds: string[]) {
   }
 
   const cweCategoryData: CweCategories = await response.json();
-  const cweWeaknessIds = cweCategoryData.Categories.flatMap(member =>
-    member.Relationships.map(relationship => relationship.CweID),
-  );
+  const cweWeaknessIds = cweCategoryData.Categories.reduce(
+    (weaknessess, category) =>
+      ({
+        ...weaknessess,
+        ...category.Relationships.reduce(
+          (categoryWeaknessess, relationship) =>
+            ({
+              ...categoryWeaknessess,
+              [relationship.CweID]: category.ID,
+            }),
+          {}),
+      }),
+    {} as Record<string, string>);
   return cweWeaknessIds;
 }
 
-async function fetchCweWeaknesses(baseUrl: string, cweIds: string[]) {
-  const response = await fetch(`${baseUrl}/cwe/weakness/${cweIds.join(',')}`);
+async function fetchCweWeaknesses(baseUrl: string, cweIds: Record<string, string>) {
+  const response = await fetch(`${baseUrl}/cwe/weakness/${Object.keys(cweIds).join(',')}`);
   if (!response.ok) {
     throw new Error('Failed to fetch detailed CWE data');
   }
@@ -118,6 +147,9 @@ async function fetchCweWeaknesses(baseUrl: string, cweIds: string[]) {
     status: weakness.Status,
     summary: weakness.Description,
     usage: weakness.MappingNotes.Usage,
+    category: cweIds[weakness.ID],
+    isDiscouraged: weakness.MappingNotes.Usage.toLowerCase() === 'discouraged',
+    isProhibited: /disallowed|prohibited/i.test(weakness.MappingNotes.Usage),
   }));
   return cweWeaknesses;
 }

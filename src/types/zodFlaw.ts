@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
 import type { ValueOf } from '@/utils/typeHelpers';
+import { loadCweData } from '@/services/CweService';
 
 import {
   MajorIncidentStateEnum,
@@ -265,6 +266,23 @@ export const ZodFlawSchema = z.object({
       'Affected component cannot be registered on the affected module twice',
       ['affects', `${affect.index}`, 'ps_component'],
     );
+  }
+
+  if (zodFlaw.cwe_id) {
+    const cweData = loadCweData();
+    zodFlaw.cwe_id?.match(/CWE-\d+/gi)?.forEach((flawCWE) => {
+      cweData
+        .filter(member => `CWE-${member.id}` === flawCWE && (member.isProhibited || member.isDiscouraged))
+        .forEach((member) => {
+          let msg = `CWE-${member.id} is ${member.usage.toLowerCase()}`;
+
+          if (member.usage.toLowerCase() === 'discouraged') {
+            msg += `, use another under the same CWE class (${member.category})`;
+          }
+
+          raiseIssue(msg, ['cwe_id']);
+        });
+    });
   }
 });
 

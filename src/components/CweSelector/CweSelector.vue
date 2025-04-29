@@ -4,7 +4,7 @@ import { ref, onMounted, nextTick } from 'vue';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import type { CWEMemberType } from '@/types/mitreCwe';
-import { DATA_KEY } from '@/services/CweService';
+import { loadCweData } from '@/services/CweService';
 
 withDefaults(defineProps<{
   error?: string;
@@ -21,17 +21,6 @@ const queryRef = ref('');
 const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
 const selectedIndex = ref(-1);
-
-const loadCweData = () => {
-  const data = localStorage.getItem(DATA_KEY);
-  if (data) {
-    try {
-      cweData.value = JSON.parse(data);
-    } catch (e) {
-      console.error('CWESelector:loadCweData() Failed to parse CWE data:', e);
-    }
-  }
-};
 
 const filterSuggestions = (query: string) => {
   queryRef.value = query;
@@ -81,10 +70,11 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 };
 
-onMounted(loadCweData);
+onMounted(() => {
+  cweData.value = loadCweData().filter(({ isProhibited }) => !isProhibited);
+});
 
 const usageClassMap: { [key: string]: string } = {
-  'prohibited': 'text-bg-primary',
   'allowed': 'text-bg-success',
   'allowed-with-review': 'text-bg-danger',
   'discouraged': 'text-bg-warning',
@@ -114,15 +104,21 @@ const getUsageClass = (usage: string) => {
           v-for="(cwe, index) in suggestions"
           :key="index"
           class="item gap-1 d-flex justify-content-between"
-          :class="{'selected': index === selectedIndex }"
-          @click.prevent.stop="handleSuggestionClick(abort, `CWE-${cwe.id}`)"
+          :class="{'selected': index === selectedIndex, 'disabled': cwe.isDiscouraged }"
+          @click.prevent.stop="!cwe.isDiscouraged && handleSuggestionClick(abort, `CWE-${cwe.id}`)"
           @mouseenter="selectedIndex = index"
         >
           <span class="flex-1">{{ `CWE-${cwe.id} ` }}</span>
           <span class="flex-3">{{ `${cwe.name}. ` }}</span>
           <span class="badge flex-1" :class="getUsageClass(cwe.usage)">{{ `${cwe.usage}` }}</span>
           <div class="flex-1">
-            <i v-show="cwe.summary" class="icon bi-info-circle" :title="cwe.summary" />
+            <i
+              v-show="cwe.summary"
+              class="icon bi-info-circle"
+              :title="(cwe.isDiscouraged
+                ? `Usage of this CWE is discouraged, use another from the same class (${cwe.category})\n\n`
+                : '') + cwe.summary"
+            />
             <a
               :href="`https://cwe.mitre.org/data/definitions/${cwe.id}.html`"
               class="icon"
@@ -137,8 +133,16 @@ const getUsageClass = (usage: string) => {
 </template>
 
 <style scoped lang="scss">
-.item.selected {
-  background-color: #dee2e6;
+.item {
+  &.selected {
+    background-color: #dee2e6;
+  }
+
+  &.disabled {
+    background-color: #e9ecef;
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
 }
 
 .dropdown-header {
