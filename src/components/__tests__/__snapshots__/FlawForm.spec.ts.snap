@@ -101,7 +101,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </label>
     <div data-v-76e7a15d="" class="row">
       <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-          <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">CVE ID</span>
+          <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3"><a data-v-76e7a15d="" href="https://access.redhat.com/security/cve/CVE-2024-1234" target="_blank" rel="noopener noreferrer"> CVE ID <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a></span>
             <!--v-if-->
             <!-- for invalid-tooltip positioning -->
             <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">

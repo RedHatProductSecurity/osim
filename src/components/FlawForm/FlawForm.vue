@@ -220,7 +220,21 @@ const createdDate = computed(() => {
                   type="text"
                   label="CVE ID"
                   :error="errors.cve_id"
-                />
+                >
+                  <template #label>
+                    <a
+                      v-if="!isEmbargoed && flaw.cve_id"
+                      :href="`https://access.redhat.com/security/cve/${flaw.cve_id}`"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      CVE ID <i class="bi-box-arrow-up-right ms-2" />
+                    </a>
+                    <span v-else>
+                      CVE ID
+                    </span>
+                  </template>
+                </LabelEditable>
               </div>
               <div
                 v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
@@ -348,7 +362,6 @@ const createdDate = computed(() => {
                   <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
                 </select>
               </span>
-
             </template>
           </LabelTextarea>
           <LabelTextarea

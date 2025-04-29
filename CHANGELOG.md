@@ -6,6 +6,7 @@
 
 ### Fixed
 * Fixed inconsistent local storage cached values (`OSIDB-4129`)
+* Added CVE ID link on flaw form (`OSIDB-3118`) 
 
 ## [2025.3.2]
 ### Added
