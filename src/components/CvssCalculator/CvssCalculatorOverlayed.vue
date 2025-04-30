@@ -9,7 +9,7 @@ import {
   calculateScore,
   formatFactors,
 } from '@/composables/useCvss3Calculator';
-import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 
 import type { ZodAffectType } from '@/types';
 
@@ -17,7 +17,7 @@ const props = defineProps<{
   affect: ZodAffectType;
 }>();
 
-const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores(props.affect);
+const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores(props.affect);
 
 const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value) ?? null);
 const cvssFactors = ref<Record<string, string>>({});

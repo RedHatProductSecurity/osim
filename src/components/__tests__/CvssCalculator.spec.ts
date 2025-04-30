@@ -5,11 +5,11 @@ import { describe, it, expect } from 'vitest';
 
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 
-import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 
 import { importActual } from '@/__tests__/helpers';
 
-vi.mock('@/composables/useFlawCvssScores');
+vi.mock('@/composables/useCvssScores');
 
 async function activateFactorButton(subject: any, factor: string, value: string) {
   const factorButtonGroup = subject.findAll('.btn-group-vertical')
@@ -31,7 +31,7 @@ describe('cvssCalculator', () => {
 
   beforeEach(async () => {
     if (subject) subject.unmount();
-    const { validateCvssVector: _validateCvssVector } = await importActual('@/composables/useFlawCvssScores');
+    const { validateCvssVector: _validateCvssVector } = await importActual('@/composables/useCvssScores');
 
     const cvssVector = ref<null | string>('');
     const cvssScore = ref<null | number>(0);
@@ -42,13 +42,13 @@ describe('cvssCalculator', () => {
     function updateScore(value: null | number) {
       cvssScore.value = value;
     }
-    vi.mocked(useFlawCvssScores).mockReturnValue({
+    vi.mocked(useCvssScores).mockReturnValue({
       cvssVector,
       cvssScore,
       cvssVersion,
       updateVector,
       updateScore,
-    } as ReturnType<typeof useFlawCvssScores>);
+    } as ReturnType<typeof useCvssScores>);
     vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
     subject = mount(CvssCalculator, { error: null });
   });

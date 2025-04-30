@@ -13,28 +13,28 @@ const useMockedModel = async (flaw: ZodFlawType) => await useMockFlawWithModules
   useFlawAffectsModel: '@/composables/useFlawAffectsModel',
   useCvss3Calculator: '@/composables/useCvss3Calculator',
   useCvss4Calculator: '@/composables/useCvss4Calculator',
-  useFlawCvssScores: '@/composables/useFlawCvssScores',
+  useCvssScores: '@/composables/useCvssScores',
 });
 
-describe('useFlawCvssScores', () => {
+describe('useCvssScores', () => {
   osimFullFlawTest('should return an object', async ({ flaw }) => {
-    const { useFlawCvssScores } = await useMockedModel(flaw);
-    const composable = useFlawCvssScores();
+    const { useCvssScores } = await useMockedModel(flaw);
+    const composable = useCvssScores();
     expect(composable).toBeInstanceOf(Object);
     expect(Object.keys(composable)).toHaveLength(14);
   });
 
   describe('shouldDisplayEmailNistForm', () => {
     osimEmptyFlawTest('should be false when flaw does not have scores', async ({ flaw }) => {
-      const { useFlawCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useFlawCvssScores();
+      const { useCvssScores } = await useMockedModel(flaw);
+      const { shouldDisplayEmailNistForm } = useCvssScores();
 
       expect(shouldDisplayEmailNistForm.value).toBeFalsy();
     });
 
     osimFullFlawTest('should be true when flaw has different scores', async ({ flaw }) => {
-      const { useFlawCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useFlawCvssScores();
+      const { useCvssScores } = await useMockedModel(flaw);
+      const { shouldDisplayEmailNistForm } = useCvssScores();
 
       expect(shouldDisplayEmailNistForm.value).toBeTruthy();
     });
@@ -42,8 +42,8 @@ describe('useFlawCvssScores', () => {
     osimFullFlawTest('should be false when flaw has the same scores and no comment', async ({ flaw }) => {
       flaw.cvss_scores[0].comment = '';
       flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
-      const { useFlawCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useFlawCvssScores();
+      const { useCvssScores } = await useMockedModel(flaw);
+      const { shouldDisplayEmailNistForm } = useCvssScores();
 
       expect(shouldDisplayEmailNistForm.value).toBeFalsy();
     });
@@ -51,8 +51,8 @@ describe('useFlawCvssScores', () => {
     osimFullFlawTest('should be true when scores have comments', async ({ flaw }) => {
       flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
       flaw.cvss_scores[0].comment = 'This is a comment';
-      const { useFlawCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useFlawCvssScores();
+      const { useCvssScores } = await useMockedModel(flaw);
+      const { shouldDisplayEmailNistForm } = useCvssScores();
 
       expect(shouldDisplayEmailNistForm.value).toBeTruthy();
     });
@@ -61,8 +61,8 @@ describe('useFlawCvssScores', () => {
   osimFullFlawTest('should match flaw embargo status', async ({ flaw }) => {
     flaw.cvss_scores.forEach(score => score.embargoed = true);
     flaw.embargoed = false;
-    const { useFlawCvssScores } = await useMockedModel(flaw);
-    const { saveCvssScores } = useFlawCvssScores();
+    const { useCvssScores } = await useMockedModel(flaw);
+    const { saveCvssScores } = useCvssScores();
 
     saveCvssScores();
 

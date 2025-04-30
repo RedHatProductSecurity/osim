@@ -9,7 +9,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
-import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 import { useFlawLabels } from '@/composables/useFlawLabels';
 
 import {
@@ -47,7 +47,7 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
     saveCvssScores,
     updateVector,
     wasFlawCvssModified,
-  } = useFlawCvssScores();
+  } = useCvssScores();
 
   const {
     affectsToDelete,

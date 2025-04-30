@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+// import { useCvssScores } from '@/composables/useCvssScores';
 import {
   formatFactor,
   weights,

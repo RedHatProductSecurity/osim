@@ -21,7 +21,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -86,7 +86,7 @@ const {
   nvdCvssString,
   rhCvssString,
   shouldDisplayEmailNistForm,
-} = useFlawCvssScores();
+} = useCvssScores();
 
 const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;

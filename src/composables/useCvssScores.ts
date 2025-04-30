@@ -95,7 +95,7 @@ function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
-export function useFlawCvssScores(cvssEntity?: CvssEntity) {
+export function useCvssScores(cvssEntity?: CvssEntity) {
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
 

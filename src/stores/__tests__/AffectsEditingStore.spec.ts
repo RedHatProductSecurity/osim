@@ -18,7 +18,7 @@ vi.mock('@/composables/useFlaw', async () => {
   return { useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }) };
 });
 
-vi.mock('@/composables/useFlawCvssScores');
+vi.mock('@/composables/useCvssScores');
 
 vi.mock('@/composables/useFlawAffectsModel', () => ({
   useFlawAffectsModel: vi.fn().mockReturnValue({

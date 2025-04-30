@@ -11,7 +11,7 @@ import { useModal } from '@/composables/useModal';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
-import { newAffectCvss } from '@/composables/useFlawCvssScores';
+import { newAffectCvss } from '@/composables/useCvssScores';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';

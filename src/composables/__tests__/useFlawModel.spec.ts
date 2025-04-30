@@ -5,7 +5,7 @@ import { createTestingPinia } from '@pinia/testing';
 import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
 import sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 
-import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
+import { useCvssScores } from '@/composables/useCvssScores';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
@@ -37,7 +37,7 @@ vi.mock('@/services/FlawService', () => ({
   postFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
-vi.mock('@/composables/useFlawCvssScores');
+vi.mock('@/composables/useCvssScores');
 vi.mock('@/composables/useFlaw', async (importOriginal) => {
   const { ref } = await import('vue');
   const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
@@ -58,9 +58,9 @@ describe('useFlawModel', () => {
       _useFlaw().flaw.value = flaw;
       vi.mocked(useFlaw).mockReturnValue(_useFlaw());
       const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
-      const { useFlawCvssScores: _useFlawCvssScores } = await importActual('@/composables/useFlawCvssScores');
+      const { useCvssScores: _useCvssScores } = await importActual('@/composables/useCvssScores');
       vi.doMock('@/composables/useFlawAffectsModel', _useFlawAffectsModel);
-      vi.mocked(useFlawCvssScores).mockReturnValue(_useFlawCvssScores());
+      vi.mocked(useCvssScores).mockReturnValue(_useCvssScores());
       const flawModel = useFlawModel(flaw, () => {});
       return flawModel;
     }, [pinia]);

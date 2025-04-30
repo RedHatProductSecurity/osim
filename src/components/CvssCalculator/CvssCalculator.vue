@@ -5,7 +5,7 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useFlawCvssScores, validateCvssVector } from '@/composables/useFlawCvssScores';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 import {
   getFactors,
   calculateScore,
@@ -14,7 +14,7 @@ import {
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useFlawCvssScores();
+const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores();
 
 const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
 const cvssFactors = ref<Record<string, string>>({});
