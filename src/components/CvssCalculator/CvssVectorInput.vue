@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+// import { useCvssScores } from '@/composables/useCvssScores';
 import {
   formatFactor,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 const props = defineProps<{
   cvssFactors: Record<string, string>;
-  cvssScore: null | number | undefined;
-  cvssVector: null | string | undefined;
+  cvssScore: null | number;
   error: null | string;
   highlightedFactor: null | string;
   isFocused: boolean;
@@ -62,7 +62,7 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
       class="osim-cvss-score"
       :style="isFocused ? {color: 'white'} : {color: 'black'}"
     >
-      {{ cvssScore != null ? `${cvssScore} ` : '' }}
+      {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>
     <template v-for="(value, key) in cvssFactors" :key="key">
       <span
@@ -88,6 +88,8 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
 }
 
 .vector-input {
+  min-height: 38px;
+
   .invalid-tooltip {
     display: none;
     margin-top: -4px;

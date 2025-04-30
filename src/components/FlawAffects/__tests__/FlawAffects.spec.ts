@@ -4,77 +4,91 @@ import { describe, expect } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useRouter } from 'vue-router';
 import { flushPromises, VueWrapper } from '@vue/test-utils';
+import * as sampleTrackersQueryResult from '@test-fixtures/sampleTrackersQueryResult.json';
+import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
 
 import { osimFullFlawTest, osimEmptyFlawTest, osimTestWithFlaw } from '@/components/__tests__/test-suite-helpers';
-import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
+// import * as useCvss3Calculator from '@/composables/useCvss3Calculator';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
+import { useCvssScores } from '@/composables/useCvssScores';
 
-import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
-import { mountWithConfig, withSetup } from '@/__tests__/helpers';
+import { mountWithConfig, withSetup, importActual } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
 import type { ZodFlawType } from '@/types';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
-vi.mock('@/composables/useFlaw');
+vi.mock('@/composables/useFlaw', async () => {
+  const { ref } = await import('vue');
+  const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
+  return { useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }) };
+});
 vi.mock('@/composables/useFlawModel');
 vi.mock('@/composables/useFetchFlaw');
-vi.mock('@/composables/useFlawAffectsModel');
+vi.mock('@/composables/useCvssScores');
+vi.mock('@/composables/useFlawAffectsModel', () => ({
+  useFlawAffectsModel: vi.fn().mockReturnValue({
+    updateAffectCvss: vi.fn(),
+    affectsToDelete: { value: [] },
+  }),
+}));
 vi.mock('@/stores/AffectsEditingStore');
 
 let pinia: ReturnType<typeof createPinia>;
 
 async function useMocks(flaw: ZodFlawType) {
-  type ActualFlaw = typeof import('@/composables/useFlaw');
-  type ActualFlawModel = typeof import('@/composables/useFlawModel');
-  type ActualFlawFetch = typeof import('@/composables/useFetchFlaw');
-  type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
-  type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
+  const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
+  const { useCvssScores: _useCvssScores } = await importActual('@/composables/useCvssScores');
+  const { useFlawModel: _useFlawModel } = await importActual('@/composables/useFlawModel');
+  const { useFetchFlaw: _useFetchFlaw } = await importActual('@/composables/useFetchFlaw');
+  const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
 
-  const { useFlaw: _useFlaw } =
-    await vi.importActual<ActualFlaw>('@/composables/useFlaw');
+  const { useAffectsEditingStore: _useAffectsEditingStore } = await importActual('@/stores/AffectsEditingStore');
 
-  const { useFlawModel: _useFlawModel } =
-    await vi.importActual<ActualFlawModel>('@/composables/useFlawModel');
+  // const { useCvss4Calculator: _useCvss4Calculator } = await importActual('@/composables/useCvss4Calculator');
 
-  const { useFetchFlaw: _useFetchFlaw } =
-    await vi.importActual<ActualFlawFetch>('@/composables/useFetchFlaw');
-
-  const { useFlawAffectsModel: _useFlawAffectsModel } =
-    await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
-
-  const { useAffectsEditingStore: _useAffectsEditingStore } =
-    await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
-
-  return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
+  return {
+    _useFlaw,
+    _useFlawModel,
+    _useFlawAffectsModel,
+    _useAffectsEditingStore,
+    _useFetchFlaw,
+    _useCvssScores,
+    // _useCvss4Calculator,
+    flaw,
+  };
 }
 
-const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => {
+const mountFlawAffects = (Component: Component, mocks: Awaited<ReturnType<typeof useMocks>>) => {
   const {
     _useAffectsEditingStore,
+    _useCvssScores,
+    // _useCvss4Calculator,
     _useFetchFlaw,
     _useFlaw,
     _useFlawAffectsModel,
     _useFlawModel,
     flaw,
-  } = await useMocks(testFlaw);
+  } = mocks;
   const [[mockedFlaw, errors]] = withSetup(() => {
     const mockedUseFlaw = _useFlaw();
     mockedUseFlaw.flaw.value = flaw;
     mockedUseFlaw.relatedFlaws.value = [flaw];
-
     vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
     vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
     vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
+    vi.mocked(useCvssScores).mockReturnValue(_useCvssScores());
     const mockedUseFlawModel = _useFlawModel(flaw, () => {});
     vi.mocked(useFlawModel).mockReturnValue(mockedUseFlawModel);
+    // vi.mocked(useCvss4Calculator).mockReturnValue(_useCvss4Calculator());
+    // vi.mocked(useCvss3Calculator). (_useCvss3Calculator());
     const errors = mockedUseFlawModel.errors.value.affects;
     return [mockedUseFlaw.flaw, errors];
   });
@@ -84,6 +98,14 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
       embargoed: mockedFlaw.value.embargoed,
       relatedFlaws: [mockedFlaw.value],
       errors,
+    },
+    global: {
+      stubs: {
+        // CvssCalculatorOverlayed: true,
+        // CvssVectorInput: true,
+        // TabsDynamic: true,
+        // Toast: true,
+      },
     },
   });
 };
@@ -101,10 +123,11 @@ describe('flawAffects', () => {
     vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
     vi.mocked(getNextAccessToken).mockResolvedValue('mocked-access-token');
     vi.mocked(useRouter);
+    await flushPromises();
+    const mocks = await useMocks(flaw);
     const importedComponent = await import('@/components/FlawAffects/FlawAffects.vue');
     const FlawAffects = importedComponent.default;
-    await flushPromises();
-    subject = await mountFlawAffects(flaw, FlawAffects);
+    subject = mountFlawAffects(FlawAffects, mocks);
   });
 
   afterAll(() => {
@@ -190,7 +213,7 @@ describe('flawAffects', () => {
 
     const actionBtns = subject.findAll('.affects-toolbar .affects-table-actions .btn');
     const addAffectBtn = actionBtns.find(button => button.text() === 'Add New Affect');
-    addAffectBtn?.trigger('click');
+    await addAffectBtn?.trigger('click');
     await flushPromises();
 
     affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');

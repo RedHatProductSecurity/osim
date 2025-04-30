@@ -9,43 +9,44 @@ import {
   formatFactors,
   factorSeverities,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
-defineProps<{
+import type { ZodAffectType } from '@/types';
+
+const props = defineProps<{
+  affect?: ZodAffectType;
+  cvssVector: null | string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
 const cvssFactors = defineModel<Record<string, string>>('cvssFactors', { default: () => ({}) });
 
 const emit = defineEmits<{
-  highlightFactor: [factor: null | string];
-  highlightFactorValue: [factor: null | string];
+  'highlightFactor': [factor: null | string];
+  'highlightFactorValue': [factor: null | string];
+  'update:cvssScore': [value: null | number];
+  'update:cvssVector': [value: null | string];
 }>();
 
 function updateFactors(newCvssVector: null | string | undefined) {
-  if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
-  }
   cvssFactors.value = getFactors(newCvssVector ?? '');
+  if (props.cvssVector !== newCvssVector) {
+    emit('update:cvssVector', newCvssVector ?? null);
+  }
 }
 
-updateFactors(cvssVector.value);
-
-watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-});
+watch(() => props.cvssVector, updateFactors, { immediate: true });
 
 function factorButton(id: string, key: string) {
   if (!cvssFactors.value['CVSS']) {
     cvssFactors.value['CVSS'] = '3.1';
   }
+
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
   updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  emit('update:cvssScore', calculateScore(cvssFactors.value) ?? 0);
 }
 </script>
 
@@ -121,7 +122,7 @@ function factorButton(id: string, key: string) {
 .cvss-calculator {
   &.overlayed {
     display: block;
-    transform: translateX(-25ch);
+    left: 5ch;
     background-color: #525252;
     border-radius: 10px;
     z-index: 5;

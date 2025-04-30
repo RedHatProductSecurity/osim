@@ -3,11 +3,9 @@ import { computed, ref } from 'vue';
 
 import CvssNISTForm from '@/components/CvssNISTForm/CvssNISTForm.vue';
 
-import { issuerLabels } from '@/composables/useFlawCvssScores';
-
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import { IssuerEnum } from '@/generated-client';
-import { CVSS_V3 } from '@/constants';
+import { CVSS_V3, issuerLabels } from '@/constants';
 import type { ZodFlawCVSSType } from '@/types';
 
 const props = defineProps<{
@@ -15,7 +13,7 @@ const props = defineProps<{
   bugzilla: string;
   cveId: null | string;
   cvss: string;
-  highlightedNvdCvss3String: { char: null | string; isHighlighted: boolean }[][];
+  highlightedNvdCvssString: { char: null | string; isHighlighted: boolean }[][];
   nistCvss: string;
   shouldDisplayEmailNistForm: boolean;
   summary: string;
@@ -51,7 +49,7 @@ function cvssDisplay(score: string, vector: string, version: string) {
       <div class="d-flex flex-row">
         <div class="form-control text-break h-auto" :class="shouldDisplayEmailNistForm ? 'rounded-0' : ''">
           <template v-if="cvss">
-            <template v-for="(chars, index) in highlightedNvdCvss3String" :key="index">
+            <template v-for="(chars, index) in highlightedNvdCvssString" :key="index">
               <span v-if="chars[0].isHighlighted" class="text-primary">
                 {{ chars.map(c => c.char).join('') }}
               </span>
