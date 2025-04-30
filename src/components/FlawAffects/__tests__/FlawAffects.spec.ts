@@ -12,7 +12,6 @@ import { osimFullFlawTest, osimEmptyFlawTest, osimTestWithFlaw } from '@/compone
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
-// import * as useCvss3Calculator from '@/composables/useCvss3Calculator';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useCvssScores } from '@/composables/useCvssScores';
 
@@ -51,8 +50,6 @@ async function useMocks(flaw: ZodFlawType) {
 
   const { useAffectsEditingStore: _useAffectsEditingStore } = await importActual('@/stores/AffectsEditingStore');
 
-  // const { useCvss4Calculator: _useCvss4Calculator } = await importActual('@/composables/useCvss4Calculator');
-
   return {
     _useFlaw,
     _useFlawModel,
@@ -60,7 +57,6 @@ async function useMocks(flaw: ZodFlawType) {
     _useAffectsEditingStore,
     _useFetchFlaw,
     _useCvssScores,
-    // _useCvss4Calculator,
     flaw,
   };
 }
@@ -69,7 +65,6 @@ const mountFlawAffects = (Component: Component, mocks: Awaited<ReturnType<typeof
   const {
     _useAffectsEditingStore,
     _useCvssScores,
-    // _useCvss4Calculator,
     _useFetchFlaw,
     _useFlaw,
     _useFlawAffectsModel,
@@ -100,12 +95,7 @@ const mountFlawAffects = (Component: Component, mocks: Awaited<ReturnType<typeof
       errors,
     },
     global: {
-      stubs: {
-        // CvssCalculatorOverlayed: true,
-        // CvssVectorInput: true,
-        // TabsDynamic: true,
-        // Toast: true,
-      },
+      stubs: {},
     },
   });
 };

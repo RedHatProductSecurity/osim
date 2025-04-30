@@ -26,14 +26,6 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
     , object,
   );
 
-const cvss4Selections = ref(
-  deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
-);
-
-const vectorForParse = new Vector();
-const cvss4ClassInstance = new CVSS40(vectorForParse);
-const cvss4Score = ref(cvss4ClassInstance.score);
-const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
 function flattenSelections(selections: Record<string, any>) {
   return Object.values(selections).reduce(
     (selections: Record<string, any>, metrics) => {
@@ -44,6 +36,14 @@ function flattenSelections(selections: Record<string, any>) {
     }, {} as Record<string, any>);
 }
 export function useCvss4Calculator() {
+  const vectorForParse = new Vector();
+  const cvss4ClassInstance = new CVSS40(vectorForParse);
+  const cvss4Score = ref(cvss4ClassInstance.score);
+  const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
+  const cvss4Selections = ref(
+    deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
+  );
+
   vectorForParse.updateMetricSelections(cvss4Selections.value);
 
   const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);
@@ -80,13 +80,19 @@ export function useCvss4Calculator() {
     cvss4Vector.value = cvss4ClassInstance.vector.raw;
   }
 
+  function setMetric(category: string, metric: string, value: string) {
+    if (metric in cvss4Selections.value[category]) {
+      cvss4Selections.value[category][metric] = value;
+    } else {
+      console.debug('metric', metric, 'not in', category, '. value', value, 'not assigned');
+    }
+  }
+
   return {
     error,
-    cvss4Vector,
+    cvss4Selections,
     cvss4Score,
+    cvss4Vector,
+    setMetric,
   };
-}
-
-export function useCvss4Selections() {
-  return { cvss4Selections };
 }

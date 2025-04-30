@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
+import { getFactors as parseCvss3Factors, calculateScore } from '@/composables/useCvss3Calculator';
 
 import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
@@ -22,8 +23,6 @@ import type {
   CvssEntity,
   Cvss,
 } from '@/types';
-
-import { getFactors as parseCvss3Factors } from './useCvss3Calculator';
 
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
@@ -79,6 +78,7 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
 
 const { flaw } = useFlaw();
 const { updateAffectCvss } = useFlawAffectsModel();
+const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvss4Calculator();
 
 const wasFlawCvssModified = ref(false);
 const rhFlawCvssScores = computed(() => Object.fromEntries(
@@ -202,30 +202,43 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   }
   function updateVector(vector: null | string) {
     rhCvss.value.vector = vector;
-    console.log(rhCvss, 'update function')
+    console.log(rhCvss, 'update function');
   }
 
   const cvssVector = computed(() => rhCvss.value.vector);
   const cvssScore = computed(() => rhCvss.value.score);
+  const cvssFactors = ref<Record<string, string>>({});
+  function updateFactors(newCvssVector: null | string | undefined) {
+    cvssFactors.value = parseCvss3Factors(newCvssVector ?? '');
+
+    if (cvssVector.value !== newCvssVector) {
+      updateVector(newCvssVector ?? '');
+      updateScore(calculateScore(cvssFactors.value) ?? 0);
+    }
+  }
 
   return {
     updateVector,
+    updateFactors,
     updateScore,
+    cvssFactors,
     cvssVersion,
     cvssVector,
+    cvss4Score,
+    cvss4Selections,
+    cvss4Vector,
     cvssScore,
     wasCvssModified,
     wasFlawCvssModified,
     flawRhCvss,
     rhCvss,
     saveCvssScores,
+    setMetric,
     ...useFlawCvssStrings(flawRhCvss),
   };
 }
 
 function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
-  const { cvss4Score, cvss4Vector } = useCvss4Calculator();
-
   const flawNvdCvss = computed(() => getCvssData(flaw.value, IssuerEnum.Nist, cvssVersion.value));
 
   const nvdCvssString = computed(() => {
@@ -239,7 +252,8 @@ function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
       return values.join(' ');
     }
     if (flawRhCvss.value.cvss_version === CvssVersions.V4) {
-      return cvss4Score.value + ' ' + cvss4Vector.value;
+      const { score, vector } = flawRhCvss.value;
+      return score + ' ' + vector;
     }
     return '-';
   });
@@ -296,11 +310,18 @@ function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
 function convertVectorTo(vector: null | string | undefined, toVersion: CvssVersions) {
   if (!vector && vector !== '') return null;
   if (toVersion === CvssVersions.V3) {
-    const partialParse = parseCvss3Factors(vector);
-    console.log(partialParse);
+    for (const factor in cvss4Selections.value) {
+      parseCvss3Factors(vector);
+    }
   }
-  if (toVersion === CvssVersions.V4) {
 
+  if (toVersion === CvssVersions.V4) {
+    const factors = parseCvss3Factors(vector);
+    console.log(factors);
+    for (const factor in factors) {
+      if (factor === 'CVSS') continue;
+      setMetric('BASE', factor, factors[factor]);
+    }
   }
   return '';
 }

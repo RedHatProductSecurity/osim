@@ -4,12 +4,13 @@ import { watch } from 'vue';
 import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
-import { useCvss4Selections, useCvss4Calculator } from '@/composables/useCvss4Calculator';
+// import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { ZodAffectType } from '@/types';
 
-defineProps<{
+const props = defineProps<{
   affect?: ZodAffectType;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
@@ -21,7 +22,8 @@ const emit = defineEmits<{
   'update:cvssVector': [value: null | string];
 }>();
 
-const { cvss4Score, cvss4Vector } = useCvss4Calculator();
+// const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvss4Calculator();
+const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvssScores(props?.affect);
 
 function updateCvss4Score(newCvss4Score: null | number | undefined) {
   emit('update:cvssScore', newCvss4Score ?? null);
@@ -35,11 +37,6 @@ function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
 watch(cvss4Score, updateCvss4Score);
 watch(cvss4Vector, updateCvss4Vector);
 
-const { cvss4Selections } = useCvss4Selections();
-
-function setMetric(category: string, metric: string, value: string) {
-  cvss4Selections.value[category][metric] = value;
-}
 </script>
 
 <template>

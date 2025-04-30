@@ -14,23 +14,13 @@ import {
 
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores();
+const { cvssFactors, cvssScore, cvssVector, cvssVersion, updateFactors, updateScore, updateVector } = useCvssScores();
 
 const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
-const cvssFactors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 
 const cvssDiv = ref();
 const cvssVectorInput = ref();
-
-function updateFactors(newCvssVector: null | string | undefined) {
-  cvssFactors.value = getFactors(newCvssVector ?? '');
-
-  if (cvssVector.value !== newCvssVector) {
-    updateVector(newCvssVector ?? '');
-    updateScore(calculateScore(cvssFactors.value) ?? 0);
-  }
-}
 
 watch(() => cvssVector.value, updateFactors, { immediate: true });
 
@@ -67,7 +57,6 @@ function handlePaste(e: ClipboardEvent) {
 
   updateFactors(formatFactors(cvssFactors.value));
   updateScore(calculateScore(cvssFactors.value) ?? 0);
-  // cvssScore.value = calculateScore(cvssFactors.value);
 }
 
 const highlightedFactor = ref<null | string>(null);
