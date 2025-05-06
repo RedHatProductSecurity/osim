@@ -5,13 +5,16 @@ import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
 // import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
-import { useCvssScores } from '@/composables/useCvssScores';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { ZodAffectType } from '@/types';
 
 const props = defineProps<{
   affect?: ZodAffectType;
+  cvss4Score: null | number;
+  cvss4Selections: any;
+  cvss4Vector: null | string;
+  // cvss4Selections:  Record<string, Record<string, string>>;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
@@ -20,10 +23,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:cvssScore': [value: null | number];
   'update:cvssVector': [value: null | string];
+  'update:setMetric': [category: string, metric: string, value: string];
 }>();
 
-// const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvss4Calculator();
-const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvssScores(props?.affect);
+// const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvssScores(props?.affect);
 
 function updateCvss4Score(newCvss4Score: null | number | undefined) {
   emit('update:cvssScore', newCvss4Score ?? null);
@@ -34,9 +37,8 @@ function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
 }
 
 // TODO: Move these into composable?
-watch(cvss4Score, updateCvss4Score);
-watch(cvss4Vector, updateCvss4Vector);
-
+watch(() => props.cvss4Score, updateCvss4Score);
+watch(() => props.cvss4Vector, updateCvss4Vector);
 </script>
 
 <template>
@@ -98,7 +100,7 @@ watch(cvss4Vector, updateCvss4Vector);
                     :class="{
                       selected: cvss4Selections?.[MetricNamesWithValues?.[categoryName]]?.[metric.short] === value
                     }"
-                    @click="setMetric(MetricNamesWithValues[categoryName], metric.short, value)"
+                    @click="emit('update:setMetric',MetricNamesWithValues[categoryName], metric.short, value)"
                   >
                     {{ optionName }}
                   </button>

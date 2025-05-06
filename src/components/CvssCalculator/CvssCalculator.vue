@@ -1,28 +1,41 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed,
+  ref } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
+import { useCvssScores,
+  validateCvssVector } from '@/composables/useCvssScores';
 import {
   getFactors,
   calculateScore,
   formatFactors,
 } from '@/composables/useCvss3Calculator';
 
-import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
+import { CvssVersions,
+  CvssVersionDisplayMap } from '@/constants';
 
-const { cvssFactors, cvssScore, cvssVector, cvssVersion, updateFactors, updateScore, updateVector } = useCvssScores();
+const { cvss3Factors,
+  cvss4Score,
+  cvss4Selections,
+  cvss4Vector,
+  cvssScore,
+  cvssVector,
+  cvssVersion,
+  setMetric,
+  updateFactors,
+  updateScore,
+  updateVector,
+} = useCvssScores();
 
-const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
+const error = computed(() => validateCvssVector(cvssVector.value,
+  cvssVersion.value));
 const isFocused = ref(false);
 
 const cvssDiv = ref();
 const cvssVectorInput = ref();
-
-watch(() => cvssVector.value, updateFactors, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
   event.stopPropagation();
@@ -41,7 +54,7 @@ function onInputBlur(event: FocusEvent) {
 function reset() {
   updateScore(null);
   updateVector(null);
-  cvssFactors.value = {};
+  cvss3Factors.value = {};
 }
 
 function handlePaste(e: ClipboardEvent) {
@@ -52,11 +65,11 @@ function handlePaste(e: ClipboardEvent) {
 
   updateFactors(maybeCvss);
   if (!getFactors(maybeCvss)['CVSS']) {
-    cvssFactors.value['CVSS'] = '3.1';
+    cvss3Factors.value['CVSS'] = '3.1';
   }
 
-  updateFactors(formatFactors(cvssFactors.value));
-  updateScore(calculateScore(cvssFactors.value) ?? 0);
+  updateFactors(formatFactors(cvss3Factors.value));
+  updateScore(calculateScore(cvss3Factors.value) ?? 0);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -87,7 +100,8 @@ function highlightFactorValue(factor: null | string) {
             class="ms-2"
           >
             <option
-              v-for="(version, index) in CvssVersions"
+              v-for="(version,
+                      index) in CvssVersions"
               :key="index"
               :value="version"
               :selected="cvssVersion === version"
@@ -99,7 +113,7 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssFactors="cvssFactors"
+            :cvss3Factors="cvss3Factors"
             :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
@@ -132,7 +146,7 @@ function highlightFactorValue(factor: null | string) {
     </div>
     <Cvss3Calculator
       v-if="cvssVersion === CvssVersions.V3"
-      v-model:cvssFactors="cvssFactors"
+      v-model:cvss3Factors="cvss3Factors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
@@ -146,12 +160,16 @@ function highlightFactorValue(factor: null | string) {
     />
     <Cvss4Calculator
       v-else-if="cvssVersion === CvssVersions.V4"
-      v-model:cvssFactors="cvssFactors"
+      v-model:cvss3Factors="cvss3Factors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V4"
+      :cvss4Score="cvss4Score"
+      :cvss4Vector="cvss4Vector"
+      :cvss4Selections="cvss4Selections"
       @update:cvssScore="updateScore"
       @update:cvssVector="updateVector"
+      @update:setMetric="setMetric"
     />
   </div>
 </template>

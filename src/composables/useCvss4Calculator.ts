@@ -49,42 +49,41 @@ export function useCvss4Calculator() {
   const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);
   const error = computed(() => errors.value.length > 0 ? errors.value.join(' ') : null);
 
-  const selectionsFlattened = computed({
-    get() {
-      return flattenSelections(cvss4Selections.value);
-    },
-    set(selections) {
-      for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
-        for (const [metricFactor, metricValue] of Object.entries(selections)) {
-          if ((metrics as Dict)[metricFactor]) {
-            cvss4Selections.value[metricGroup][metricFactor] = metricValue;
-          }
-        }
-      }
-    },
-  });
+  watch(cvss4Selections, updateCvssFromSelections, { deep: true });
 
-  watch(selectionsFlattened, updateCvssFromSelections);
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
     if (cvss4Data && cvss4Data.vector) {
       cvss4ClassInstance.vector.updateVector(cvss4Data.vector);
-      selectionsFlattened.value = cvss4ClassInstance.vector.metricsSelections;
+      updateUiSelections(cvss4ClassInstance.vector.metricsSelections);
     }
   }, { immediate: true });
 
+  function updateUiSelections(selections: Dict<string, any>) {
+    for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
+      for (const [metricFactor, metricValue] of Object.entries(selections)) {
+        if ((metrics as Dict)[metricFactor]) {
+          cvss4Selections.value[metricGroup][metricFactor] = metricValue;
+        }
+      }
+    }
+  }
+
   function updateCvssFromSelections(selections: Dict<string, any>) {
     cvss4ClassInstance.vector.updateMetricSelections(selections);
+    updateUiSelections(selections);
     cvss4ClassInstance.updateScore();
     cvss4Score.value = cvss4ClassInstance.score;
     cvss4Vector.value = cvss4ClassInstance.vector.raw;
+    console.log('🕊️🕊️ CVSS4: Updating to', cvss4Score.value, cvss4Vector.value);
   }
 
   function setMetric(category: string, metric: string, value: string) {
     if (metric in cvss4Selections.value[category]) {
       cvss4Selections.value[category][metric] = value;
+      console.log('🕊️ Just set', metric, 'to', cvss4Selections.value[category][metric]);
     } else {
-      console.debug('metric', metric, 'not in', category, '. value', value, 'not assigned');
+      console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
     }
   }
 

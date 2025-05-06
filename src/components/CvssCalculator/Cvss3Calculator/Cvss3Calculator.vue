@@ -21,7 +21,7 @@ const props = defineProps<{
   isFocused: boolean;
 }>();
 
-const cvssFactors = defineModel<Record<string, string>>('cvssFactors', { default: () => ({}) });
+const cvss3Factors = defineModel<Record<string, string>>('cvss3Factors', { default: () => ({}) });
 
 const emit = defineEmits<{
   'highlightFactor': [factor: null | string];
@@ -31,7 +31,7 @@ const emit = defineEmits<{
 }>();
 
 function updateFactors(newCvssVector: null | string | undefined) {
-  cvssFactors.value = getFactors(newCvssVector ?? '');
+  cvss3Factors.value = getFactors(newCvssVector ?? '');
   if (props.cvssVector !== newCvssVector) {
     emit('update:cvssVector', newCvssVector ?? null);
   }
@@ -40,13 +40,13 @@ function updateFactors(newCvssVector: null | string | undefined) {
 watch(() => props.cvssVector, updateFactors, { immediate: true });
 
 function factorButton(id: string, key: string) {
-  if (!cvssFactors.value['CVSS']) {
-    cvssFactors.value['CVSS'] = '3.1';
+  if (!cvss3Factors.value['CVSS']) {
+    cvss3Factors.value['CVSS'] = '3.1';
   }
 
-  cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
-  updateFactors(formatFactors(cvssFactors.value));
-  emit('update:cvssScore', calculateScore(cvssFactors.value) ?? 0);
+  cvss3Factors.value[id] = cvss3Factors.value[id] === key ? '' : key;
+  updateFactors(formatFactors(cvss3Factors.value));
+  emit('update:cvssScore', calculateScore(cvss3Factors.value) ?? 0);
 }
 </script>
 
@@ -87,16 +87,16 @@ function factorButton(id: string, key: string) {
                     tabindex="-1"
                     type="button"
                     class="btn lh-sm"
-                    :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
+                    :class="cvss3Factors[col.id] === button.key ? 'osim-factor-highlight' : ''"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
                     :style="
-                      cvssFactors[col.id] === button.key
+                      cvss3Factors[col.id] === button.key
                         || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
                           getFactorColor(weights[col.id][button.key], false, highlightedFactor) : {
                           backgroundColor: '#E0E0E0',
-                          color: (cvssFactors[col.id] === button.key
+                          color: (cvss3Factors[col.id] === button.key
                             && factorSeverities[col.id][button.key] !== 'Bad')
                             ? 'white'
                             : 'inherit'
