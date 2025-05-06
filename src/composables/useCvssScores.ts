@@ -181,6 +181,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     rhCvssScores.value = rhCvssByVersion();
     wasCvssModified.value = false;
   });
+
   function synchronizeFactors() {
     const vector = rhCvss.value.vector || ''; // as string;
 
@@ -188,21 +189,35 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       const parsedFactors = parseCvss3Factors(vector);
       for (const factor in parsedFactors) {
         if (factor === 'CVSS') continue;
+
+        if (factor === 'UI' && parsedFactors[factor]) {
+          // CVSS3 just has N or R for UI metrics, where as CVSS4 has A, P, N for UI metrics
+          cvss3Factors.value[factor] = parsedFactors[factor] === 'N' ? 'N' : 'R';
+          continue;
+        }
+
         if (parsedFactors[factor]) {
           cvss3Factors.value[factor] = parsedFactors[factor];
         }
       }
     }
+
     if (cvssVersion.value === CvssVersions.V3) {
       const factors = parseCvss3Factors(vector);
       for (const factor in factors) {
         if (factor === 'CVSS' || factors[factor] === '') continue;
+
+        // CVSS4 has 2 metrics A, P, N for UI metrics, and only a value of N can be mapped to its corresponding
+        // metric factor in CVSS3; A and P would be correct translations of R, but this must be chosen by the user
+        if (factor === 'UI' && factors[factor] === 'R') continue;
+
         setMetric('BASE', factor, factors[factor]);
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
       rhCvssScores.value[CvssVersions.V4].score = cvss4Score.value;
     }
   }
+
   async function saveCvssScores() {
     const queue = [];
     for (const cvssData of Object.values(rhFlawCvssScores.value)) {
