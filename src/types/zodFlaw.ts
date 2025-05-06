@@ -97,7 +97,7 @@ export type FlawCVSSSchemaType = typeof FlawCVSSSchema;
 export const FlawCVSSSchema = z.object({
   comment: z.string().nullable(),
   cvss_version: z.string(),
-  flaw: z.string().uuid(),
+  flaw: z.string().uuid().nullish(),
   issuer: z.nativeEnum(IssuerEnum),
   score: z.number().nullable(), // $float
   uuid: z.string().uuid().nullable(), // read-only
