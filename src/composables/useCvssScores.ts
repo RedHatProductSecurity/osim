@@ -28,8 +28,6 @@ import type {
   ZodFlawType,
 } from '@/types';
 
-// Concerns: Is local state a problem?
-
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
 }
@@ -196,11 +194,9 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       }
     }
     if (cvssVersion.value === CvssVersions.V3) {
-      // rhCvssScores.value[CvssVersions.V4].vector = convertVectorTo(rhCvss.value.vector, CvssVersions.V4);
       const factors = parseCvss3Factors(vector);
       for (const factor in factors) {
         if (factor === 'CVSS' || factors[factor] === '') continue;
-        // cvss4Selections.value['BASE'][factor] = factors[factor];
         setMetric('BASE', factor, factors[factor]);
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
