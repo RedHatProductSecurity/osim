@@ -28,8 +28,6 @@ import type {
   ZodFlawType,
 } from '@/types';
 
-// Concerns: Is local state a problem?
-
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
 }
@@ -38,15 +36,15 @@ function getCvssData(entity: CvssEntity, issuer: string, version: string): Cvss 
   return entity.cvss_scores?.find(filterCvssData(issuer, version));
 }
 
-export function newAffectCvss(isEmbargoed: boolean, cvssVersion?: CvssVersions) {
+export function newAffectCvss(cvssVersion?: CvssVersions) {
   return {
     // affect: z.string().uuid(),
     score: null,
     vector: null,
     comment: '',
-    cvss_version: cvssVersion ?? DEFAULT_CVSS_VERSION,
+    cvss_version: cvssVersion ?? DEFAULT_CVSS_VERSION, // TODO: change when affect CVSS4 is supported
     issuer: IssuerEnum.Rh,
-    embargoed: isEmbargoed,
+    embargoed: flaw.value.embargoed,
     alerts: [],
   } as ZodAffectCVSSType;
 }
@@ -58,6 +56,7 @@ function newFlawCvss(version: string = DEFAULT_CVSS_VERSION) {
     comment: '',
     cvss_version: version,
     issuer: IssuerEnum.Rh,
+    embargoed: flaw.value.embargoed,
     created_dt: null,
     uuid: null,
   } as ZodFlawCVSSType;
@@ -112,9 +111,9 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     for (const version of Object.values(CvssVersions)) {
       if (getCvssData(entity, IssuerEnum.Rh, version)) continue;
       if (isAffect(entity)) {
-        (entity as ZodAffectType).cvss_scores.push(newAffectCvss(flaw.value.embargoed, version));
+        (entity as ZodAffectType).cvss_scores?.push(newAffectCvss(version));
       } else {
-        (entity as ZodFlawType).cvss_scores.push(newFlawCvss(version));
+        (entity as ZodFlawType).cvss_scores?.push(newFlawCvss(version));
       }
     }
 
@@ -144,7 +143,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   const cvss3Factors = ref<Record<string, string>>({});
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
-    maybeAffect.cvss_scores.push(newAffectCvss(flaw.value.embargoed));
+    maybeAffect.cvss_scores.push(newAffectCvss());
   }
 
   const initialRhCvss = deepCopyFromRaw(rhCvss.value);
@@ -182,6 +181,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     rhCvssScores.value = rhCvssByVersion();
     wasCvssModified.value = false;
   });
+
   function synchronizeFactors() {
     const vector = rhCvss.value.vector || ''; // as string;
 
@@ -189,30 +189,35 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       const parsedFactors = parseCvss3Factors(vector);
       for (const factor in parsedFactors) {
         if (factor === 'CVSS') continue;
+
+        if (factor === 'UI' && parsedFactors[factor]) {
+          // CVSS3 just has N or R for UI metrics, where as CVSS4 has A, P, N for UI metrics
+          cvss3Factors.value[factor] = parsedFactors[factor] === 'N' ? 'N' : 'R';
+          continue;
+        }
+
         if (parsedFactors[factor]) {
-          console.log(factor, parsedFactors[factor]);
           cvss3Factors.value[factor] = parsedFactors[factor];
         }
       }
     }
+
     if (cvssVersion.value === CvssVersions.V3) {
-      // rhCvssScores.value[CvssVersions.V4].vector = convertVectorTo(rhCvss.value.vector, CvssVersions.V4);
       const factors = parseCvss3Factors(vector);
       for (const factor in factors) {
         if (factor === 'CVSS' || factors[factor] === '') continue;
-        // cvss4Selections.value['BASE'][factor] = factors[factor];
+
+        // CVSS4 has 2 metrics A, P, N for UI metrics, and only a value of N can be mapped to its corresponding
+        // metric factor in CVSS3; A and P would be correct translations of R, but this must be chosen by the user
+        if (factor === 'UI' && factors[factor] === 'R') continue;
+
         setMetric('BASE', factor, factors[factor]);
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
       rhCvssScores.value[CvssVersions.V4].score = cvss4Score.value;
-      console.log('setting other score: CVSS4', cvss4Score.value, cvss4Vector.value);
     }
-    console.log(
-      'vectors:',
-      rhCvssScores.value[CvssVersions.V3].vector,
-      rhCvssScores.value[CvssVersions.V4].vector,
-    );
   }
+
   async function saveCvssScores() {
     const queue = [];
     for (const cvssData of Object.values(rhFlawCvssScores.value)) {

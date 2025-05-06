@@ -35,6 +35,9 @@ exports[`flawForm > mounts and renders 1`] = `
                       </div></span>
                     </div>
                   </div>
+                  <div>
+                    <div><span><!--v-if--></span></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -179,7 +182,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
     <div data-v-76e7a15d="">
       <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
-        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><button class="btn btn-sm me-auto border-0" type="button" title="Show all available CVSS versions and issuers"><i class="bi bi-caret-right" style="font-size: 2.25ch;"></i></button> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <div class="d-flex flex-row">
               <div class="form-control text-break h-auto rounded-0"><span class="text-primary">4.0</span> CVSS:3.1/AV:N/AC:H/PR:<span class="text-primary">E</span>/UI:N/S:U/C:<span class="text-primary">N</span>/I:<span class="text-primary">L</span>/A:<span class="text-primary">R</span></div>
