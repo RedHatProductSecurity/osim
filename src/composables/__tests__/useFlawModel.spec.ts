@@ -94,7 +94,7 @@ describe('useFlawModel', () => {
     });
 
     it('should call postFlaw on createFlaw', async () => {
-      const { createFlaw, flaw } = await mountFlawModel(sampleFlawRequired as ZodFlawType);
+      const { createFlaw } = await mountFlawModel(sampleFlawRequired as ZodFlawType);
 
       createFlaw();
 

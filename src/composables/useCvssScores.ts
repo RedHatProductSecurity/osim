@@ -191,7 +191,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       for (const factor in parsedFactors) {
         if (factor === 'CVSS') continue;
         if (parsedFactors[factor]) {
-          console.log(factor, parsedFactors[factor]);
           cvss3Factors.value[factor] = parsedFactors[factor];
         }
       }
@@ -206,13 +205,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
       rhCvssScores.value[CvssVersions.V4].score = cvss4Score.value;
-      console.log('setting other score: CVSS4', cvss4Score.value, cvss4Vector.value);
     }
-    console.log(
-      'vectors:',
-      rhCvssScores.value[CvssVersions.V3].vector,
-      rhCvssScores.value[CvssVersions.V4].vector,
-    );
   }
   async function saveCvssScores() {
     const queue = [];
