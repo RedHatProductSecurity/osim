@@ -11,7 +11,32 @@ exports[`flawCreateView > should render 1`] = `
               <!--v-if-->
               <!--v-if-->
             </div>
-            <!--v-if-->
+            <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><!--v-if--><!--v-if--></span></button>
+              <div data-v-4715e8e2="" class="ps-3 border-start">
+                <div data-v-4715e8e2="" class="visually-hidden">
+                  <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><!--v-if--></span></span></button>
+                    <div data-v-4715e8e2="" class="ps-3 border-start">
+                      <div data-v-4715e8e2="" class="visually-hidden">
+                        <div>
+                          <!--v-if-->
+                        </div>
+                        <div>
+                          <!--v-if-->
+                        </div>
+                        <div>
+                          <div><span><!--v-if--></span><span><!--v-if--></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--v-if-->
+                  <!--v-if-->
+                  <!--v-if-->
+                  <!--v-if-->
+                  <!--v-if-->
+                </div>
+              </div>
+            </div>
           </div>
           <div data-v-76e7a15d="" id="" class="col-6 flaw-form-subdivision"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
               <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
@@ -127,7 +152,7 @@ exports[`flawCreateView > should render 1`] = `
             </div>
             <div data-v-76e7a15d="">
               <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
-                <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+                <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><button class="btn btn-sm me-auto border-0" type="button" title="Show all available CVSS versions and issuers"><i class="bi bi-caret-right" style="font-size: 2.25ch;"></i></button> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
                   <div data-v-0e2ae48e="" class="col-9">
                     <div class="d-flex flex-row">
                       <div class="form-control text-break h-auto"><span>-</span></div>

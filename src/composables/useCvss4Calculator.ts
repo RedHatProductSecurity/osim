@@ -75,13 +75,11 @@ export function useCvss4Calculator() {
     cvss4ClassInstance.updateScore();
     cvss4Score.value = cvss4ClassInstance.score;
     cvss4Vector.value = cvss4ClassInstance.vector.raw;
-    console.log('🕊️🕊️ CVSS4: Updating to', cvss4Score.value, cvss4Vector.value);
   }
 
   function setMetric(category: string, metric: string, value: string) {
     if (metric in cvss4Selections.value[category]) {
       cvss4Selections.value[category][metric] = value;
-      console.log('🕊️ Just set', metric, 'to', cvss4Selections.value[category][metric]);
     } else {
       console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
     }

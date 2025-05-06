@@ -35,6 +35,16 @@ describe('cvssCalculator', () => {
 
     const cvssVector = ref<null | string>('');
     const cvssScore = ref<null | number>(0);
+    const cvss3Factors = ref<Record<string, string>>({
+      AV: '',
+      AC: '',
+      PR: '',
+      UI: '',
+      S: '',
+      C: '',
+      I: '',
+      A: '',
+    });
     const cvssVersion = ref('V3');
     function updateVector(value: null | string) {
       cvssVector.value = value;
@@ -46,6 +56,7 @@ describe('cvssCalculator', () => {
       cvssVector,
       cvssScore,
       cvssVersion,
+      cvss3Factors,
       updateVector,
       updateScore,
     } as ReturnType<typeof useCvssScores>);
