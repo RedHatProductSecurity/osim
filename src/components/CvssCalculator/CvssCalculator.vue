@@ -26,7 +26,7 @@ const { cvss3Factors,
   cvssVersion,
   setMetric,
   shouldSyncCvssFactors,
-  updateFactors,
+  updateCvss3Factors,
   updateScore,
   updateVector,
 } = useCvssScores();
@@ -64,12 +64,12 @@ function handlePaste(e: ClipboardEvent) {
     return;
   }
 
-  updateFactors(maybeCvss);
+  updateCvss3Factors(maybeCvss);
   if (!getFactors(maybeCvss)['CVSS']) {
     cvss3Factors.value['CVSS'] = '3.1';
   }
 
-  updateFactors(formatFactors(cvss3Factors.value));
+  updateCvss3Factors(formatFactors(cvss3Factors.value));
   updateScore(calculateScore(cvss3Factors.value) ?? 0);
 }
 
@@ -107,8 +107,7 @@ function highlightFactorValue(factor: null | string) {
             class="ms-2"
           >
             <option
-              v-for="(version,
-                      index) in CvssVersions"
+              v-for="(version, index) in CvssVersions"
               :key="index"
               :value="version"
               :selected="cvssVersion === version"
@@ -140,7 +139,7 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateFactors="updateFactors(cvssVector)"
+            @updateCvss3Factors="updateCvss3Factors(cvssVector)"
             @click.prevent
           />
         </div>

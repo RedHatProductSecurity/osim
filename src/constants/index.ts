@@ -1,4 +1,5 @@
 import { IssuerEnum } from '@/generated-client';
+import type { Dict } from '@/types';
 
 export enum CommentType {
   Public,
@@ -20,6 +21,20 @@ export const CVSS_V4 = CvssVersions.V4;
 export const CvssVersionDisplayMap: { [_key in CvssVersions]: string } = {
   [CvssVersions.V3]: '3.1',
   [CvssVersions.V4]: '4.0',
+};
+
+export const CorrespondingCvssFactors: Dict = {
+  AV: 'AV',
+  AC: 'AC',
+  PR: 'PR',
+  UI: 'UI',
+  S: 'S',
+  C: 'VC',
+  I: 'SI',
+  A: 'VA',
+  VC: 'C',
+  SI: 'I',
+  VA: 'A',
 };
 
 export const DEFAULT_CVSS_VERSION = CvssVersions.V3;

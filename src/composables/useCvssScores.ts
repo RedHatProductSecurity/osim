@@ -10,11 +10,12 @@ import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 import {
   getFactors as parseCvss3Factors,
   calculateScore as calculateCvss3Score,
+  formatFactors,
 } from '@/composables/useCvss3Calculator';
 
 import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
-import { CvssVersions, DEFAULT_CVSS_VERSION } from '@/constants';
+import { CvssVersionDisplayMap, CvssVersions, DEFAULT_CVSS_VERSION, CorrespondingCvssFactors } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
 import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
 import type {
@@ -176,7 +177,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     wasFlawCvssModified.value = false;
   });
 
-  watch(cvssVector, updateFactors, { immediate: true });
+  watch(cvssVector, updateCvss3Factors, { immediate: true });
 
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();
@@ -187,18 +188,23 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     const vector = rhCvss.value.vector || ''; // as string;
 
     if (cvssVersion.value === CvssVersions.V4) {
-      const parsedFactors = parseCvss3Factors(vector);
-      for (const factor in parsedFactors) {
-        if (factor === 'CVSS') continue;
+      const cvss4Metrics = cvss4Selections.value.BASE;
+      for (const [metric, v4Value] of Object.entries(cvss4Metrics)) {
+        if (metric === 'CVSS') continue;
+        const factor: string = CorrespondingCvssFactors[metric] ?? metric;
 
-        if (factor === 'UI' && parsedFactors[factor]) {
+        if (metric === 'UI') {
           // CVSS3 just has N or R for UI metrics, where as CVSS4 has A, P, N for UI metrics
-          cvss3Factors.value[factor] = parsedFactors[factor] === 'N' ? 'N' : 'R';
+          cvss3Factors.value[factor] = v4Value === 'N' ? 'N' : 'R';
           continue;
         }
 
-        if (parsedFactors[factor]) {
-          cvss3Factors.value[factor] = parsedFactors[factor];
+        if (factor in cvss3Factors.value) {
+          cvss3Factors.value[factor] = v4Value as string;
+          rhCvssScores.value[CvssVersions.V3].vector = formatFactors({
+            ...cvss3Factors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
+          });
+          rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvss3Factors.value);
         }
       }
     }
@@ -212,7 +218,8 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
         // metric factor in CVSS3; A and P would be correct translations of R, but this must be chosen by the user
         if (factor === 'UI' && factors[factor] === 'R') continue;
 
-        setMetric('BASE', factor, factors[factor]);
+        const metric: string = CorrespondingCvssFactors[factor] ?? factor;
+        setMetric('BASE', metric, factors[factor]);
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
       rhCvssScores.value[CvssVersions.V4].score = cvss4Score.value;
@@ -257,18 +264,23 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     rhCvss.value.vector = vector;
   }
 
-  function updateFactors(newCvssVector: null | string | undefined) {
+  function updateCvss3Factors(newCvssVector: null | string | undefined) {
     cvss3Factors.value = parseCvss3Factors(newCvssVector ?? '');
+    console.log('watcher', cvss3Factors.value);
 
-    if (cvssVector.value !== newCvssVector) {
+    if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V3) {
       updateVector(newCvssVector ?? '');
       updateScore(calculateCvss3Score(cvss3Factors.value) ?? 0);
+    }
+    if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V4) {
+      updateVector(cvss4Vector.value);
+      updateScore(cvss4Score.value);
     }
   }
 
   return {
     updateVector,
-    updateFactors,
+    updateCvss3Factors,
     updateScore,
     cvss3Factors,
     cvssVersion,

@@ -30,14 +30,14 @@ const emit = defineEmits<{
   'update:cvssVector': [value: null | string];
 }>();
 
-function updateFactors(newCvssVector: null | string | undefined) {
+function updateCvss3Factors(newCvssVector: null | string | undefined) {
   cvss3Factors.value = getFactors(newCvssVector ?? '');
   if (props.cvssVector !== newCvssVector) {
     emit('update:cvssVector', newCvssVector ?? null);
   }
 }
 
-watch(() => props.cvssVector, updateFactors, { immediate: true });
+watch(() => props.cvssVector, updateCvss3Factors, { immediate: true });
 
 function factorButton(id: string, key: string) {
   if (!cvss3Factors.value['CVSS']) {
@@ -45,7 +45,7 @@ function factorButton(id: string, key: string) {
   }
 
   cvss3Factors.value[id] = cvss3Factors.value[id] === key ? '' : key;
-  updateFactors(formatFactors(cvss3Factors.value));
+  updateCvss3Factors(formatFactors(cvss3Factors.value));
   emit('update:cvssScore', calculateScore(cvss3Factors.value) ?? 0);
 }
 </script>

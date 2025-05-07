@@ -26,7 +26,7 @@ const isFocused = ref(false);
 const cvssDiv = ref();
 const cvssVectorInput = ref();
 
-function updateFactors(newCvssVector: null | string | undefined) {
+function updateCvss3Factors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
     updateCvss(newCvssVector);
   }
@@ -34,7 +34,7 @@ function updateFactors(newCvssVector: null | string | undefined) {
 }
 
 watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
+  updateCvss3Factors(cvssVector.value);
   updateCvss(cvssVector.value);
 }, { immediate: true });
 
@@ -63,18 +63,18 @@ function handlePaste(e: ClipboardEvent) {
     return;
   }
 
-  updateFactors(maybeCvss);
+  updateCvss3Factors(maybeCvss);
   if (!getFactors(maybeCvss)['CVSS']) {
     cvss3Factors.value['CVSS'] = '3.1';
   }
 
-  updateFactors(formatFactors(cvss3Factors.value));
+  updateCvss3Factors(formatFactors(cvss3Factors.value));
   updateScore(calculateScore(cvss3Factors.value));
   updateVector(maybeCvss);
 }
 
 function updateCvss(vector: null | string = null) {
-  updateFactors(vector);
+  updateCvss3Factors(vector);
   updateScore(calculateScore(cvss3Factors.value));
   updateVector(vector);
 }
@@ -128,7 +128,7 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateFactors="updateFactors(cvssVector)"
+            @updateCvss3Factors="updateCvss3Factors(cvssVector)"
           />
         </div>
         <button
