@@ -26,22 +26,13 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
     , object,
   );
 
-function flattenSelections(selections: Record<string, any>) {
-  return Object.values(selections).reduce(
-    (selections: Record<string, any>, metrics) => {
-      Object.entries(metrics as Record<string, any>).forEach(([key, value]) => {
-        selections[key] = value;
-      });
-      return selections;
-    }, {} as Record<string, any>);
-}
 export function useCvss4Calculator() {
   const vectorForParse = new Vector();
   const cvss4ClassInstance = new CVSS40(vectorForParse);
   const cvss4Score = ref(cvss4ClassInstance.score);
   const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
   const cvss4Selections = ref(
-    deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
+    deepMap(value => Array.isArray(value) ? null : value, METRICS),
   );
 
   vectorForParse.updateMetricSelections(cvss4Selections.value);

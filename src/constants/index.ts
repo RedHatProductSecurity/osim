@@ -1,4 +1,5 @@
 import { IssuerEnum } from '@/generated-client';
+import type { Dict } from '@/types';
 
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
@@ -13,6 +14,22 @@ export const CVSS_V4 = CvssVersions.V4;
 export const CvssVersionDisplayMap: { [_key in CvssVersions]: string } = {
   [CvssVersions.V3]: '3.1',
   [CvssVersions.V4]: '4.0',
+};
+
+export const CorrespondingCvssFactors: Dict = {
+  AV: 'AV',
+  AC: 'AC',
+  PR: 'PR',
+  UI: 'UI',
+  S: 'S',
+  // CVSS 3 to 4
+  C: 'VC',
+  I: 'SI',
+  A: 'VA',
+  // CVSS 4 to 3
+  VC: 'C',
+  SI: 'I',
+  VA: 'A',
 };
 
 export const DEFAULT_CVSS_VERSION = CvssVersions.V3;

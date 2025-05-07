@@ -21,7 +21,7 @@ describe('useCvssScores', () => {
     const { useCvssScores } = await useMockedModel(flaw);
     const composable = useCvssScores();
     expect(composable).toBeInstanceOf(Object);
-    expect(Object.keys(composable)).toHaveLength(20);
+    expect(Object.keys(composable)).toHaveLength(21);
   });
 
   describe('shouldDisplayEmailNistForm', () => {

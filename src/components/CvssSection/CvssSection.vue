@@ -5,7 +5,7 @@ import CvssNISTForm from '@/components/CvssNISTForm/CvssNISTForm.vue';
 
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import { IssuerEnum } from '@/generated-client';
-import { CVSS_V3, issuerLabels } from '@/constants';
+import { CVSS_V3, CVSS_V4, CvssVersions, issuerLabels } from '@/constants';
 import type { ZodFlawCVSSType } from '@/types';
 
 const props = defineProps<{
@@ -22,9 +22,11 @@ const props = defineProps<{
 const showAllCvss = ref(false);
 
 const otherCvss = computed(() => props.allCvss.filter(cvssItem =>
-  (
-    !(cvssItem.cvss_version === CVSS_V3 && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist))
-  )));
+  !(
+    [CVSS_V3, CVSS_V4].includes(cvssItem.cvss_version as CvssVersions)
+    && (cvssItem.issuer === IssuerEnum.Rh || cvssItem.issuer === IssuerEnum.Nist)
+  ),
+));
 
 function cvssDisplay(score: string, vector: string, version: string) {
   return vector.includes('CVSS')
