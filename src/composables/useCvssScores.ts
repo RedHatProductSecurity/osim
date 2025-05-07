@@ -85,6 +85,7 @@ const { flaw } = useFlaw();
 const { updateAffectCvss } = useFlawAffectsModel();
 
 const wasFlawCvssModified = ref(false);
+const shouldSyncCvssFactors = ref(true);
 const rhFlawCvssScores = computed(() => Object.fromEntries(
   Object.values(CvssVersions).map(version => [
     version,
@@ -168,7 +169,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
         entity.cvss_scores.findIndex(cvss => cvss.uuid == maybeCvss?.uuid),
       );
     }
-    synchronizeFactors();
+    if (shouldSyncCvssFactors.value) synchronizeFactors();
   }, { deep: true });
 
   watch(() => flaw.value.updated_dt, () => {
@@ -282,6 +283,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     rhCvss,
     saveCvssScores,
     setMetric,
+    shouldSyncCvssFactors,
     ...useFlawCvssStrings(flawRhCvss),
   };
 }

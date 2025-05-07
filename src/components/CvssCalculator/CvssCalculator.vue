@@ -14,8 +14,8 @@ import {
   formatFactors,
 } from '@/composables/useCvss3Calculator';
 
-import { CvssVersions,
-  CvssVersionDisplayMap } from '@/constants';
+import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
+import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
 const { cvss3Factors,
   cvss4Score,
@@ -25,6 +25,7 @@ const { cvss3Factors,
   cvssVector,
   cvssVersion,
   setMetric,
+  shouldSyncCvssFactors,
   updateFactors,
   updateScore,
   updateVector,
@@ -94,7 +95,13 @@ function highlightFactorValue(factor: null | string) {
     <div class="osim-input mb-2">
       <label class="label-group row">
         <span class="form-label col-3">
-          RH CVSS
+          <img
+            :src="RedHatIconSvg"
+            alt="Red Hat Logo"
+            width="24px"
+            class="me-2"
+          />
+          CVSS
           <select
             v-model="cvssVersion"
             class="ms-2"
@@ -109,6 +116,16 @@ function highlightFactorValue(factor: null | string) {
               {{ CvssVersionDisplayMap[version] }}
             </option>
           </select>
+          <i
+            class="bi bi-repeat"
+            title="Synchronize factors between CVSS3 and CVSS4"
+            style="cursor: help; height: 24px; width: 24px; stroke: black;"
+          ></i>
+          <input
+            v-model="shouldSyncCvssFactors"
+            type="checkbox"
+            class="form-check-input"
+          />
         </span>
         <div class="input-wrapper col">
           <CvssVectorInput
