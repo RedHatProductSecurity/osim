@@ -14,18 +14,19 @@ import {
   formatFactors,
 } from '@/composables/useCvss3Calculator';
 
-import { CvssVersions,
-  CvssVersionDisplayMap } from '@/constants';
+import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
+import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvss3Factors,
-  cvss4Score,
+const { cvss4Score,
   cvss4Selections,
   cvss4Vector,
+  cvssFactors,
   cvssScore,
   cvssVector,
   cvssVersion,
   setMetric,
-  updateFactors,
+  shouldSyncCvssFactors,
+  updateCvss3Factors,
   updateScore,
   updateVector,
 } = useCvssScores();
@@ -54,7 +55,7 @@ function onInputBlur(event: FocusEvent) {
 function reset() {
   updateScore(null);
   updateVector(null);
-  cvss3Factors.value = {};
+  cvssFactors.value = {};
 }
 
 function handlePaste(e: ClipboardEvent) {
@@ -63,13 +64,13 @@ function handlePaste(e: ClipboardEvent) {
     return;
   }
 
-  updateFactors(maybeCvss);
+  updateCvss3Factors(maybeCvss);
   if (!getFactors(maybeCvss)['CVSS']) {
-    cvss3Factors.value['CVSS'] = '3.1';
+    cvssFactors.value['CVSS'] = '3.1';
   }
 
-  updateFactors(formatFactors(cvss3Factors.value));
-  updateScore(calculateScore(cvss3Factors.value) ?? 0);
+  updateCvss3Factors(formatFactors(cvssFactors.value));
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -92,16 +93,21 @@ function highlightFactorValue(factor: null | string) {
     @paste="handlePaste"
   >
     <div class="osim-input mb-2">
-      <label class="label-group row">
-        <span class="form-label col-3">
-          RH CVSS
+      <label class="label-group row" aria-role="red-hat-cvss">
+        <span class="form-label col-3 pe-1">
+          <img
+            :src="RedHatIconSvg"
+            alt="Red Hat Logo"
+            width="24px"
+            class="me-2"
+          />
+          CVSS
           <select
             v-model="cvssVersion"
             class="ms-2"
           >
             <option
-              v-for="(version,
-                      index) in CvssVersions"
+              v-for="(version, index) in CvssVersions"
               :key="index"
               :value="version"
               :selected="cvssVersion === version"
@@ -109,11 +115,22 @@ function highlightFactorValue(factor: null | string) {
               {{ CvssVersionDisplayMap[version] }}
             </option>
           </select>
+          <span class="bg-light rounded ms-2 px-2" title="Synchronize factors between CVSS3 and CVSS4">
+            <i
+              class="bi bi-repeat me-1"
+              style="cursor: help; height: 24px; width: 24px; stroke: black; vertical-align: middle;"
+            ></i>
+            <input
+              v-model="shouldSyncCvssFactors"
+              type="checkbox"
+              class="form-check-input"
+            />
+          </span>
         </span>
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvss3Factors="cvss3Factors"
+            :cvssFactors="cvssFactors"
             :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
@@ -122,7 +139,7 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateFactors="updateFactors(cvssVector)"
+            @updateCvss3Factors="updateCvss3Factors(cvssVector)"
             @click.prevent
           />
         </div>
@@ -146,7 +163,7 @@ function highlightFactorValue(factor: null | string) {
     </div>
     <Cvss3Calculator
       v-if="cvssVersion === CvssVersions.V3"
-      v-model:cvss3Factors="cvss3Factors"
+      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
@@ -160,7 +177,7 @@ function highlightFactorValue(factor: null | string) {
     />
     <Cvss4Calculator
       v-else-if="cvssVersion === CvssVersions.V4"
-      v-model:cvss3Factors="cvss3Factors"
+      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V4"

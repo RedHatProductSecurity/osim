@@ -7,7 +7,7 @@ import {
 } from '@/composables/useCvss3Calculator';
 
 const props = defineProps<{
-  cvss3Factors: Record<string, string>;
+  cvssFactors: Record<string, string>;
   cvssScore: null | number;
   error: null | string;
   highlightedFactor: null | string;
@@ -63,7 +63,7 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
     >
       {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>
-    <template v-for="(value, key) in cvss3Factors" :key="key">
+    <template v-for="(value, key) in cvssFactors" :key="key">
       <span
         v-if="value"
         :style="isFocused && key.toString() !== 'CVSS'
