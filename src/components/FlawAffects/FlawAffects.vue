@@ -189,7 +189,7 @@ function addNewAffect() {
     ps_component: `Component${newAffects.value.length}`,
     purl: '',
     impact: '',
-    cvss_scores: [newAffectCvss(props.embargoed)],
+    cvss_scores: [newAffectCvss()],
     trackers: [],
     alerts: [],
   });
