@@ -67,13 +67,6 @@ watch(() => props.cvss4Vector, updateCvss4Vector);
               :key="groupName"
               class="p-2"
             >
-              <!-- <span
-                v-if="groupName"
-                class="fw-bold"
-                style="border-bottom: 1px solid; width: 35%; border-color: gray;"
-              >
-                {{ groupName }}
-              </span> -->
               <div class="p-2">
                 <div
                   v-for="(metric, metricName) in metricGroup as Record<string, any>"
