@@ -93,7 +93,7 @@ function highlightFactorValue(factor: null | string) {
     @paste="handlePaste"
   >
     <div class="osim-input mb-2">
-      <label class="label-group row">
+      <label class="label-group row" aria-role="red-hat-cvss">
         <span class="form-label col-3 pe-1">
           <img
             :src="RedHatIconSvg"

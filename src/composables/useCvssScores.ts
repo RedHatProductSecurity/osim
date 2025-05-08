@@ -140,8 +140,8 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   const maybeAffect = flaw.value.affects.find(matchAffect);
   const maybeCvss = maybeAffect?.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
 
-  const cvssVector = computed(() => rhCvss.value.vector);
-  const cvssScore = computed(() => rhCvss.value.score);
+  const cvssVector = computed(() => rhCvss.value?.vector);
+  const cvssScore = computed(() => rhCvss.value?.score);
   const cvss3Factors = ref<Record<string, string>>({});
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
@@ -266,7 +266,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   function updateCvss3Factors(newCvssVector: null | string | undefined) {
     cvss3Factors.value = parseCvss3Factors(newCvssVector ?? '');
-    console.log('watcher', cvss3Factors.value);
 
     if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V3) {
       updateVector(newCvssVector ?? '');
