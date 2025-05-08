@@ -1,17 +1,3 @@
-import { z } from 'zod';
-
-export const cvssVectorSchema = z.union([
-  z.string().length(44, { message: 'Incomplete Cvss Vector. There are factors missing.' }),
-  z.string().length(0).nullable()]);
-
-export function validateCvssVector(cvssVector: null | string | undefined) {
-  const parseResult = cvssVectorSchema.safeParse(cvssVector);
-  if (parseResult.success === false) {
-    return parseResult.error.errors[0].message;
-  }
-  return null;
-}
-
 // Format factor for vector display
 export function formatFactor(key: string, value: string) {
   return key === 'CVSS' ? `${key}:${value}` : `/${key}:${value}`;
@@ -66,7 +52,7 @@ export const getFactorColor = (weight: number, isHovered: boolean = false, highl
 // Calculates score
 export function calculateScore(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
-  return Number.isNaN(score) || Object.values(factors).includes('') ? null : score;
+  return (Number.isNaN(score) || Object.values(factors).includes('')) ? null : score;
 }
 
 // Calculates base score

@@ -1,15 +1,19 @@
-import { ref } from 'vue';
+import * as sampleFlawRequired from '@test-fixtures/sampleFlawRequired.json';
 
 import { createLabel, deleteLabel, fetchLabels, updateLabel } from '@/services/LabelsService';
-import { FlawLabelTypeEnum, type ZodFlawLabelType, type ZodFlawType } from '@/types/zodFlaw';
-import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
+import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
 import { StateEnum } from '@/generated-client';
 
-import { useFlawLabels } from '../useFlawLabels';
-import { useFlaw } from '../useFlaw';
+import { useMockFlawWithModules } from './helpers';
 
 vi.mock('@/services/LabelsService');
-vi.mock('../useFlaw');
+
+const useMocks = async () => await useMockFlawWithModules(sampleFlawRequired, vi)({
+  useFlaw: '@/composables/useFlaw',
+  useFlawLabels: '@/composables/useFlawLabels',
+});
+type MockTypes = Awaited<ReturnType<typeof useMocks>>;
+type UseFlawLabels = MockTypes['useFlawLabels'];
 
 describe('useFlawLabels', () => {
   const baseLabel: ZodFlawLabelType = {
@@ -19,15 +23,9 @@ describe('useFlawLabels', () => {
     relevant: true,
   };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(useFlaw, { partial: true }).mockReturnValue({
-      flaw: ref({ ...sampleFlawRequired, uuid: 'test-uuid' } as ZodFlawType),
-    });
-  });
-
-  it('initializes labels correctly', () => {
+  it('initializes labels correctly', async () => {
     const initialLabels = [baseLabel];
+    const { useFlawLabels } = await useMocks();
     const { areLabelsUpdated, deletedLabels, labels, newLabels, updatedLabels } = useFlawLabels(initialLabels);
 
     expect(labels.value).toEqual({ [baseLabel.label]: baseLabel });
@@ -37,18 +35,20 @@ describe('useFlawLabels', () => {
     expect(areLabelsUpdated.value).toBe(false);
   });
 
-  it.each<[keyof Pick<ReturnType<typeof useFlawLabels>, 'deletedLabels' | 'newLabels' | 'updatedLabels'>, string]>([
+  it.each<[keyof Pick<ReturnType<UseFlawLabels>, 'deletedLabels' | 'newLabels' | 'updatedLabels'>, string]>([
     ['newLabels', 'new-label'],
     ['updatedLabels', 'updated-label'],
     ['deletedLabels', 'deleted-label'],
-  ])('computes %s correctly', (key, label) => {
+  ])('computes %s correctly', async (key, label) => {
+    const { useFlawLabels } = await useMocks();
     const { areLabelsUpdated, [key]: labels } = useFlawLabels();
 
     labels.value.add(label);
     expect(areLabelsUpdated.value).toBe(true);
   });
 
-  it('identifies new, updated, and deleted labels correctly', () => {
+  it('identifies new, updated, and deleted labels correctly', async () => {
+    const { useFlawLabels } = await useMocks();
     const { deletedLabels, isDeletedLabel, isNewLabel, isUpdatedLabel, newLabels, updatedLabels } = useFlawLabels();
 
     newLabels.value.add('new-label');
@@ -61,6 +61,7 @@ describe('useFlawLabels', () => {
   });
 
   it('updates labels correctly', async () => {
+    const { useFlawLabels } = await useMocks();
     const { deletedLabels, newLabels, updatedLabels, updateLabels } = useFlawLabels([
       { ...baseLabel, label: 'new-label' },
       { ...baseLabel, label: 'updated-label' },
@@ -70,15 +71,16 @@ describe('useFlawLabels', () => {
     newLabels.value.add('new-label');
     updatedLabels.value.add('updated-label');
     deletedLabels.value.add('deleted-label');
-
+    const testUuid = sampleFlawRequired.uuid;
     await updateLabels();
 
-    expect(createLabel).toHaveBeenCalledWith('test-uuid', { ...baseLabel, label: 'new-label' });
-    expect(updateLabel).toHaveBeenCalledWith('test-uuid', { ...baseLabel, label: 'updated-label' });
-    expect(deleteLabel).toHaveBeenCalledWith('test-uuid', { ...baseLabel, label: 'deleted-label' });
+    expect(createLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'new-label' });
+    expect(updateLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'updated-label' });
+    expect(deleteLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'deleted-label' });
   });
 
   it('loads context labels correctly', async () => {
+    const { useFlawLabels } = await useMocks();
     const { loadContextLabels } = useFlawLabels();
     const mockLabels = [
       { ...baseLabel, name: 'context-label' },
