@@ -17,10 +17,10 @@ import {
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvssFactors,
-  cvss4Score,
+const { cvss4Score,
   cvss4Selections,
   cvss4Vector,
+  cvssFactors,
   cvssScore,
   cvssVector,
   cvssVersion,
