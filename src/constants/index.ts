@@ -29,9 +29,11 @@ export const CorrespondingCvssFactors: Dict = {
   PR: 'PR',
   UI: 'UI',
   S: 'S',
+  // CVSS 3 to 4
   C: 'VC',
   I: 'SI',
   A: 'VA',
+  // CVSS 4 to 3
   VC: 'C',
   SI: 'I',
   VA: 'A',
