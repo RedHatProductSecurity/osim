@@ -32,7 +32,7 @@ export function useCvss4Calculator() {
   const cvss4Score = ref(cvss4ClassInstance.score);
   const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
   const cvss4Selections = ref(
-    deepMap(value => Array.isArray(value) ? value?.[0] || value : value, METRICS),
+    deepMap(value => Array.isArray(value) ? null : value, METRICS),
   );
 
   vectorForParse.updateMetricSelections(cvss4Selections.value);
