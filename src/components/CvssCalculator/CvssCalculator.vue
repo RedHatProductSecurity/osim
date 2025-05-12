@@ -17,7 +17,7 @@ import {
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvss3Factors,
+const { cvssFactors,
   cvss4Score,
   cvss4Selections,
   cvss4Vector,
@@ -55,7 +55,7 @@ function onInputBlur(event: FocusEvent) {
 function reset() {
   updateScore(null);
   updateVector(null);
-  cvss3Factors.value = {};
+  cvssFactors.value = {};
 }
 
 function handlePaste(e: ClipboardEvent) {
@@ -66,11 +66,11 @@ function handlePaste(e: ClipboardEvent) {
 
   updateCvss3Factors(maybeCvss);
   if (!getFactors(maybeCvss)['CVSS']) {
-    cvss3Factors.value['CVSS'] = '3.1';
+    cvssFactors.value['CVSS'] = '3.1';
   }
 
-  updateCvss3Factors(formatFactors(cvss3Factors.value));
-  updateScore(calculateScore(cvss3Factors.value) ?? 0);
+  updateCvss3Factors(formatFactors(cvssFactors.value));
+  updateScore(calculateScore(cvssFactors.value) ?? 0);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -130,7 +130,7 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvss3Factors="cvss3Factors"
+            :cvssFactors="cvssFactors"
             :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
@@ -163,7 +163,7 @@ function highlightFactorValue(factor: null | string) {
     </div>
     <Cvss3Calculator
       v-if="cvssVersion === CvssVersions.V3"
-      v-model:cvss3Factors="cvss3Factors"
+      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
@@ -177,7 +177,7 @@ function highlightFactorValue(factor: null | string) {
     />
     <Cvss4Calculator
       v-else-if="cvssVersion === CvssVersions.V4"
-      v-model:cvss3Factors="cvss3Factors"
+      v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused && cvssVersion === CvssVersions.V4"

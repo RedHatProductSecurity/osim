@@ -142,7 +142,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   const cvssVector = computed(() => rhCvss.value?.vector);
   const cvssScore = computed(() => rhCvss.value?.score);
-  const cvss3Factors = ref<Record<string, string>>({});
+  const cvssFactors = ref<Record<string, string>>({});
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
@@ -195,16 +195,16 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
         if (metric === 'UI') {
           // CVSS3 just has N or R for UI metrics, where as CVSS4 has A, P, N for UI metrics
-          cvss3Factors.value[factor] = v4Value === 'N' ? 'N' : 'R';
+          cvssFactors.value[factor] = v4Value === 'N' ? 'N' : 'R';
           continue;
         }
 
-        if (factor in cvss3Factors.value) {
-          cvss3Factors.value[factor] = v4Value as string;
+        if (factor in cvssFactors.value) {
+          cvssFactors.value[factor] = v4Value as string;
           rhCvssScores.value[CvssVersions.V3].vector = formatFactors({
-            ...cvss3Factors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
+            ...cvssFactors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
           });
-          rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvss3Factors.value);
+          rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvssFactors.value);
         }
       }
     }
@@ -265,11 +265,11 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   }
 
   function updateCvss3Factors(newCvssVector: null | string | undefined) {
-    cvss3Factors.value = parseCvss3Factors(newCvssVector ?? '');
+    cvssFactors.value = parseCvss3Factors(newCvssVector ?? '');
 
     if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V3) {
       updateVector(newCvssVector ?? '');
-      updateScore(calculateCvss3Score(cvss3Factors.value) ?? 0);
+      updateScore(calculateCvss3Score(cvssFactors.value) ?? 0);
     }
     if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V4) {
       updateVector(cvss4Vector.value);
@@ -281,7 +281,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     updateVector,
     updateCvss3Factors,
     updateScore,
-    cvss3Factors,
+    cvssFactors,
     cvssVersion,
     cvssVector,
     cvss4Score,
