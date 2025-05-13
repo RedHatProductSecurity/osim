@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Show CVE ID on page title (`OSIDB-3715`)
+
 ## [2025.4.0]
 ### Added
 * Validate Discouraged an Prohibited CWE usage (`OSIDB-4127`)
