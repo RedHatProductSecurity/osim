@@ -36,13 +36,11 @@ watch(() => props.cvss4Vector, updateCvss4Vector);
 </script>
 
 <template>
-  <div
-    class="p-4 pt-2 cvss-calculator"
-  >
-    <div class="my-4 sticky-top p-2 bg-secondary text-white">
+  <div class="p-4 pt-2 cvss-calculator">
+    <p class="mb-0 px-2 bg-light-gray">
       <b class="me-2">{{ cvss4Score }}</b>
       {{ cvss4Vector }}
-    </div>
+    </p>
     <div
       v-for="(category, categoryName) in CVSS4MetricsForUI"
       :key="categoryName"
