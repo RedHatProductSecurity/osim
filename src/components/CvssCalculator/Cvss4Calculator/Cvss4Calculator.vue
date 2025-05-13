@@ -4,7 +4,6 @@ import { watch } from 'vue';
 import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
-
 import type { ZodAffectType } from '@/types';
 
 const props = defineProps<{
