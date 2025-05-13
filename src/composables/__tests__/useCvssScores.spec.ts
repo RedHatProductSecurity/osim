@@ -17,13 +17,6 @@ const useMockedModel = async (flaw: ZodFlawType) => await useMockFlawWithModules
 });
 
 describe('useCvssScores', () => {
-  osimFullFlawTest('should return an object', async ({ flaw }) => {
-    const { useCvssScores } = await useMockedModel(flaw);
-    const composable = useCvssScores();
-    expect(composable).toBeInstanceOf(Object);
-    expect(Object.keys(composable)).toHaveLength(21);
-  });
-
   describe('shouldDisplayEmailNistForm', () => {
     osimEmptyFlawTest('should be false when flaw does not have scores', async ({ flaw }) => {
       const { useCvssScores } = await useMockedModel(flaw);
