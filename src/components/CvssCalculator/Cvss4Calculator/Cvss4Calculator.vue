@@ -44,7 +44,7 @@ watch(() => props.cvss4Vector, updateCvss4Vector);
     <div
       v-for="(category, categoryName) in CVSS4MetricsForUI"
       :key="categoryName"
-      class="my-2 bg-light-gray"
+      class="mb-2 bg-light-gray"
     >
       <div
         v-if="categoryName === 'Base Metrics'"
