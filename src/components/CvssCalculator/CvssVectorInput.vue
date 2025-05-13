@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import {
-  formatFactor,
-  weights,
-} from '@/composables/useCvss3Calculator';
+import { formatFactor, weights } from '@/composables/useCvss3Calculator';
 
 const props = defineProps<{
   cvssFactors: Record<string, string>;
