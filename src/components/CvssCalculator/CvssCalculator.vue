@@ -1,29 +1,25 @@
 <script setup lang="ts">
-import { computed,
-  ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useCvssScores,
-  validateCvssVector } from '@/composables/useCvssScores';
-import {
-  getFactors,
-  calculateScore,
-  formatFactors,
-} from '@/composables/useCvss3Calculator';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
+import { getFactors, calculateScore, formatFactors } from '@/composables/useCvss3Calculator';
 
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
 
-const { cvss4Score,
+const {
+  cvss4Score,
   cvss4Selections,
   cvss4Vector,
   cvssFactors,
   cvssScore,
   cvssVector,
   cvssVersion,
+  parseVectorV4String,
   setMetric,
   shouldSyncCvssFactors,
   updateCvss3Factors,
@@ -31,8 +27,7 @@ const { cvss4Score,
   updateVector,
 } = useCvssScores();
 
-const error = computed(() => validateCvssVector(cvssVector.value,
-  cvssVersion.value));
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
 const isFocused = ref(false);
 
 const cvssDiv = ref();
@@ -64,13 +59,20 @@ function handlePaste(e: ClipboardEvent) {
     return;
   }
 
-  updateCvss3Factors(maybeCvss);
-  if (!getFactors(maybeCvss)['CVSS']) {
-    cvssFactors.value['CVSS'] = '3.1';
+  if (cvssVersion.value === CvssVersions.V4) {
+    const vector = (!maybeCvss.match(/^CVSS:4\.0\//)) ? `CVSS:4.0/${maybeCvss}` : maybeCvss;
+    parseVectorV4String(vector);
   }
 
-  updateCvss3Factors(formatFactors(cvssFactors.value));
-  updateScore(calculateScore(cvssFactors.value) ?? 0);
+  if (cvssVersion.value === CvssVersions.V3) {
+    updateCvss3Factors(maybeCvss);
+    if (!getFactors(maybeCvss)['CVSS']) {
+      cvssFactors.value['CVSS'] = '3.1';
+    }
+
+    updateCvss3Factors(formatFactors(cvssFactors.value));
+    updateScore(calculateScore(cvssFactors.value) ?? 0);
+  }
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -169,7 +171,6 @@ function highlightFactorValue(factor: null | string) {
       :isFocused="isFocused && cvssVersion === CvssVersions.V3"
       :cvssScore="cvssScore"
       :cvssVector="cvssVector ?? null"
-      class="overlayed"
       @update:cvssScore="updateScore"
       @update:cvssVector="updateVector"
       @highlightFactor="highlightFactor"

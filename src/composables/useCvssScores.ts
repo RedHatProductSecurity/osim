@@ -102,7 +102,7 @@ function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
 export function useCvssScores(cvssEntity?: CvssEntity) {
-  const { cvss4Score, cvss4Selections, cvss4Vector, setMetric } = useCvss4Calculator();
+  const { cvss4Score, cvss4Selections, cvss4Vector, parseVectorV4String, setMetric } = useCvss4Calculator();
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
 
@@ -293,6 +293,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     wasFlawCvssModified,
     flawRhCvss,
     rhCvss,
+    parseVectorV4String,
     saveCvssScores,
     setMetric,
     shouldSyncCvssFactors,

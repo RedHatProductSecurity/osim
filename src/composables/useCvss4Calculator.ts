@@ -45,15 +45,19 @@ export function useCvss4Calculator() {
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
     if (cvss4Data && cvss4Data.vector) {
-      cvss4ClassInstance.vector.updateVector(cvss4Data.vector);
-      updateUiSelections(cvss4ClassInstance.vector.metricsSelections);
+      parseVectorV4String(cvss4Data.vector);
     }
   }, { immediate: true });
+
+  function parseVectorV4String(vector: string) {
+    cvss4ClassInstance.vector.updateVector(vector);
+    updateUiSelections(cvss4ClassInstance.vector.metricsSelections);
+  }
 
   function updateUiSelections(selections: Dict<string, any>) {
     for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
       for (const [metricFactor, metricValue] of Object.entries(selections)) {
-        if ((metrics as Dict)[metricFactor]) {
+        if (metricFactor in (metrics as Dict)) {
           cvss4Selections.value[metricGroup][metricFactor] = metricValue;
         }
       }
@@ -81,6 +85,7 @@ export function useCvss4Calculator() {
     cvss4Selections,
     cvss4Score,
     cvss4Vector,
+    parseVectorV4String,
     setMetric,
   };
 }
