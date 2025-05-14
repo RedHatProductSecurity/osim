@@ -83,7 +83,6 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
 }
 
 const { flaw } = useFlaw();
-const { updateAffectCvss } = useFlawAffectsModel();
 
 const wasFlawCvssModified = ref(false);
 const shouldSyncCvssFactors = ref(true);
@@ -102,6 +101,7 @@ function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
 
 export function useCvssScores(cvssEntity?: CvssEntity) {
+  const { updateAffectCvss } = useFlawAffectsModel();
   const { cvss4Score, cvss4Selections, cvss4Vector, parseVectorV4String, setMetric } = useCvss4Calculator();
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
