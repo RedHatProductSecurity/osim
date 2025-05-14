@@ -10,9 +10,9 @@ import { isNonArrayObject } from '@/utils/helpers';
 import type { Dict } from '@/types';
 import { CvssVersions } from '@/constants';
 
-const { flaw } = useFlaw();
-
 function rhCvss4_0() {
+  const { flaw } = useFlaw();
+
   return flaw.value.cvss_scores.find(
     cvss => cvss.issuer === IssuerEnum.Rh && cvss.cvss_version === CvssVersions.V4,
   );
@@ -27,6 +27,8 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
   );
 
 export function useCvss4Calculator() {
+  const { flaw } = useFlaw();
+
   const vectorForParse = new Vector();
   const cvss4ClassInstance = new CVSS40(vectorForParse);
   const cvss4Score = ref(cvss4ClassInstance.score);

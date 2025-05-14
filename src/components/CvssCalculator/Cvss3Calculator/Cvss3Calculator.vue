@@ -11,10 +11,7 @@ import {
   weights,
 } from '@/composables/useCvss3Calculator';
 
-import type { ZodAffectType } from '@/types';
-
 const props = defineProps<{
-  affect?: ZodAffectType;
   cvssVector: null | string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
@@ -122,7 +119,7 @@ function factorButton(id: string, key: string) {
 .cvss-calculator {
   &.overlayed {
     display: block;
-    left: 5ch;
+    right: 5ch;
     background-color: #525252;
     border-radius: 10px;
     z-index: 5;
