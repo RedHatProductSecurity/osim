@@ -13,28 +13,9 @@ import { withSetup, importActual } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';
 
-vi.mock('@/composables/useFlawCommentsModel', () => ({
-  useFlawCommentsModel: vi.fn(),
-}));
-
-vi.mock('@/composables/useFlawAttributionsModel', () => ({
-  useFlawAttributionsModel: vi.fn(),
-}));
-
-vi.mock('@/composables/useFlawAffectsModel', () => ({
-  useFlawAffectsModel: vi.fn().mockReturnValue({
-    updateAffectCvss: vi.fn(),
-    affectsToDelete: { value: [] },
-  }),
-}));
-
 vi.mock('@/services/FlawService', () => ({
-  getFlawBugzillaLink: vi.fn().mockResolvedValue({}),
-  getFlawOsimLink: vi.fn().mockResolvedValue({}),
   postFlaw: vi.fn().mockResolvedValue({}),
   putFlaw: vi.fn().mockResolvedValue({}),
-  putFlawCvssScores: vi.fn().mockResolvedValue({}),
-  postFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock('@/composables/useCvssScores');
@@ -52,14 +33,11 @@ describe('useFlawModel', () => {
 
   const mountFlawModel = (flaw: ZodFlawType = blankFlaw()) => {
     const pinia = createTestingPinia();
-    vi.unmock('@/composables/useFlawAffectsModel');
     const [composable, _app] = withSetup(async () => {
       const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
       _useFlaw().flaw.value = flaw;
       vi.mocked(useFlaw).mockReturnValue(_useFlaw());
-      const { useFlawAffectsModel: _useFlawAffectsModel } = await importActual('@/composables/useFlawAffectsModel');
       const { useCvssScores: _useCvssScores } = await importActual('@/composables/useCvssScores');
-      vi.doMock('@/composables/useFlawAffectsModel', _useFlawAffectsModel);
       vi.mocked(useCvssScores).mockReturnValue(_useCvssScores());
       const flawModel = useFlawModel(flaw, () => {});
       return flawModel;

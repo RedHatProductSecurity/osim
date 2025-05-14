@@ -29,6 +29,10 @@ import type {
   ZodFlawType,
 } from '@/types';
 
+const wasFlawCvssModified = ref(false);
+const shouldSyncCvssFactors = ref(true);
+const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
+
 function filterCvssData(issuer: string, version: string) {
   return (cvss: Cvss) => (cvss.issuer === issuer && cvss.cvss_version === version);
 }
@@ -38,6 +42,8 @@ function getCvssData(entity: CvssEntity, issuer: string, version: string): Cvss 
 }
 
 export function newAffectCvss(cvssVersion?: CvssVersions) {
+  const { flaw } = useFlaw();
+
   return {
     // affect: z.string().uuid(),
     score: null,
@@ -51,6 +57,8 @@ export function newAffectCvss(cvssVersion?: CvssVersions) {
 }
 
 function newFlawCvss(version: string = DEFAULT_CVSS_VERSION) {
+  const { flaw } = useFlaw();
+
   return {
     score: null,
     vector: null,
@@ -82,26 +90,24 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
   return null;
 }
 
-const { flaw } = useFlaw();
-const { updateAffectCvss } = useFlawAffectsModel();
-
-const wasFlawCvssModified = ref(false);
-const shouldSyncCvssFactors = ref(true);
-const rhFlawCvssScores = computed(() => Object.fromEntries(
-  Object.values(CvssVersions).map(version => [
-    version,
-    getCvssData(flaw.value, IssuerEnum.Rh, version) as ZodFlawCVSSType ?? newFlawCvss(version),
-  ]),
-));
-const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
-
 function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
   return 'flaw' in maybeAffect;
 }
 
-const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
+function formatScore(score: Nullable<number>) {
+  return score?.toFixed(1) ?? '';
+}
 
 export function useCvssScores(cvssEntity?: CvssEntity) {
+  const { flaw } = useFlaw();
+
+  const rhFlawCvssScores = computed(() => Object.fromEntries(
+    Object.values(CvssVersions).map(version => [
+      version,
+      getCvssData(flaw.value, IssuerEnum.Rh, version) as ZodFlawCVSSType ?? newFlawCvss(version),
+    ]),
+  ));
+  const { updateAffectCvss } = useFlawAffectsModel();
   const { cvss4Score, cvss4Selections, cvss4Vector, parseVectorV4String, setMetric } = useCvss4Calculator();
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
@@ -302,6 +308,8 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 }
 
 function useFlawCvssStrings(flawRhCvss: ComputedRef<ZodFlawCVSSType>) {
+  const { flaw } = useFlaw();
+
   const flawNvdCvss = computed(() => getCvssData(flaw.value, IssuerEnum.Nist, cvssVersion.value));
 
   const nvdCvssString = computed(() => {
