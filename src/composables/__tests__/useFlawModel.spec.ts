@@ -14,12 +14,8 @@ import type { ZodFlawType } from '@/types';
 import { putFlaw, postFlaw } from '@/services/FlawService';
 
 vi.mock('@/services/FlawService', () => ({
-  getFlawBugzillaLink: vi.fn().mockResolvedValue({}),
-  getFlawOsimLink: vi.fn().mockResolvedValue({}),
   postFlaw: vi.fn().mockResolvedValue({}),
   putFlaw: vi.fn().mockResolvedValue({}),
-  putFlawCvssScores: vi.fn().mockResolvedValue({}),
-  postFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock('@/composables/useCvssScores');
