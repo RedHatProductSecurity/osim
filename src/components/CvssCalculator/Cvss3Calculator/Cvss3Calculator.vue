@@ -122,7 +122,7 @@ function factorButton(id: string, key: string) {
 .cvss-calculator {
   &.overlayed {
     display: block;
-    left: 5ch;
+    right: 5ch;
     background-color: #525252;
     border-radius: 10px;
     z-index: 5;
