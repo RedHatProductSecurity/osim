@@ -479,8 +479,6 @@ tr {
   }
 
   &:hover {
-    filter: brightness(0.9);
-
     td {
       border-color: #707070bf;
     }
