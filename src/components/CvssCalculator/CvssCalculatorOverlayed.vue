@@ -147,7 +147,6 @@ function highlightFactorValue(factor: null | string) {
 </template>
 
 <style scoped lang="scss">
-
 .osim-input {
   display: inline-flex;
   width: 100%;
