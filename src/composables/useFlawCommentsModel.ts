@@ -27,23 +27,26 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
 
   const publicComments = computed<ZodFlawCommentType[]>(
     () => orderCommentsByDate(
-      flaw.value.comments.filter(filterFunctions.Public)).map(c => ({ ...c, type: CommentType.Public })),
+      flaw.value.comments.filter(filterFunctions.Public)).map(c => ({ ...c, type: CommentType.Public }),
+    ),
   );
   const privateComments = computed<ZodFlawCommentType[]>(
     () => orderCommentsByDate(
-      flaw.value.comments.filter(filterFunctions.Private)).map(c => ({ ...c, type: CommentType.Private })),
+      flaw.value.comments.filter(filterFunctions.Private)).map(c => ({ ...c, type: CommentType.Private }),
+    ),
   );
   const systemComments = computed<ZodFlawCommentType[]>(
     () => orderCommentsByDate(
-      flaw.value.comments.filter(filterFunctions.System)).map(c => ({ ...c, type: CommentType.System })),
+      flaw.value.comments.filter(filterFunctions.System)).map(c => ({ ...c, type: CommentType.System }),
+    ),
   );
 
   const commentsByType = computed<Record<CommentType, ZodFlawCommentType[]>>(() => {
     return {
-      [CommentType.Public]: publicComments.value.map(c => ({ ...c, type: CommentType.Public })),
-      [CommentType.Private]: privateComments.value.map(c => ({ ...c, type: CommentType.Private })),
-      [CommentType.System]: systemComments.value.map(c => ({ ...c, type: CommentType.System })),
-      [CommentType.Internal]: internalComments.value.map(c => ({ ...c, type: CommentType.Internal })),
+      [CommentType.Public]: publicComments.value,
+      [CommentType.Private]: privateComments.value,
+      [CommentType.System]: systemComments.value,
+      [CommentType.Internal]: internalComments.value,
     };
   });
 
@@ -62,7 +65,8 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
           internalCommentsAvailable.value = true;
         }
         if (res.data.comments.length >= 0) {
-          internalComments.value = parseJiraComments(res.data.comments);
+          internalComments.value = parseJiraComments(res.data.comments)
+            .map(c => ({ ...c, type: CommentType.Internal }));
         }
       })
       .catch((res) => {

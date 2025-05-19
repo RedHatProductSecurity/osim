@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
+
 import { jiraTaskUrl } from '@/services/JiraService';
+import { useSettingsStore } from '@/stores/SettingsStore';
 import { CommentType } from '@/types';
 
 defineProps<{
@@ -12,13 +15,13 @@ defineProps<{
   showBugzillaLink: boolean;
   showJiraLink: boolean;
   taskKey: null | string | undefined;
-  unifiedView: boolean;
 }>();
 
 const emit = defineEmits<{
   startNewComment: [type: CommentType];
-  toggleView: [];
 }>();
+
+const { settings } = storeToRefs(useSettingsStore());
 </script>
 
 <template>
@@ -74,11 +77,9 @@ const emit = defineEmits<{
     </div>
     <div class="form-check form-switch ms-auto" style="font-size: 18px">
       <input
-        id="singleViewSwitch"
+        v-model="settings['singleCommentsView']"
         class="form-check-input"
         type="checkbox"
-        :value="unifiedView"
-        @click="emit('toggleView')"
       >
       <label class="form-check-label" for="singleViewSwitch" style="user-select: none;">Unified view</label>
     </div>

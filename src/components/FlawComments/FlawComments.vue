@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
+import { storeToRefs } from 'pinia';
+
 import CommentList from '@/components/FlawComments/CommentList.vue';
 import CommentsToolbar from '@/components/FlawComments/CommentsToolbar.vue';
 import NewCommentForm from '@/components/FlawComments/NewCommentForm.vue';
@@ -10,6 +12,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { CommentType, commentTooltips } from '@/constants';
 import { orderCommentsByDate } from '@/utils/helpers';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const props = defineProps<{
   bugzillaLink: string;
@@ -26,6 +29,7 @@ const emit = defineEmits<{
 }>();
 
 const userStore = useUserStore();
+const { settings } = storeToRefs(useSettingsStore());
 
 const newCommentType = ref<CommentType>(CommentType.Public);
 const isAddingNewComment = ref(false);
@@ -41,7 +45,6 @@ const handleTabChange = (index: number) => {
   selectedTab.value = index;
 };
 
-const unifiedView = ref(false);
 const unifiedComments = computed(
   () => orderCommentsByDate(Object.values(props.commentsByType).flat()),
 );
@@ -72,7 +75,7 @@ const newCommentAllowed = computed(() =>
         selectedTab.value !== CommentType.System
         && (props.internalCommentsAvailable || selectedTab.value !== CommentType.Internal)
       )
-      || (unifiedView.value))
+      || (settings.value['singleCommentsView']))
   ),
 );
 
@@ -97,18 +100,15 @@ const showJiraLink = computed(() =>
       :showJiraLink
       :isSaving
       :taskKey
-      :unifiedView
       :isAddingNewComment
       :newCommentType
       :internalCommentsAvailable
-      @toggleView="unifiedView = !unifiedView"
       @startNewComment="(type) => startNewComment(type)"
     />
     <div v-if="!internalCommentsAvailable && settings['unifiedCommentsView']" class="alert alert-danger">
       Internal comments not available
     </div>
     <NewCommentForm
-      :unifiedView
       :taskKey
       :isAddingNewComment
       :isSaving
@@ -118,7 +118,7 @@ const showJiraLink = computed(() =>
       @cancelComment="() => isAddingNewComment = false"
     />
     <Tabs
-      v-if="!unifiedView"
+      v-if="!settings['singleCommentsView']"
       :labels="commentLabels"
       :default="0"
       :tooltips="Object.values(commentTooltips)"

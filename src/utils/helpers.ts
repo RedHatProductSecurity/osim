@@ -125,6 +125,7 @@ export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefin
   return [refValue, hasChanged] as const;
 }
 
+// Note that Array .sort function will modify input array
 export function orderCommentsByDate<T extends ZodFlawCommentType>(comments: T[]): T[] {
   return comments.sort((a, b) => {
     const dateA = DateTime.fromISO(a.created_dt ?? '');
