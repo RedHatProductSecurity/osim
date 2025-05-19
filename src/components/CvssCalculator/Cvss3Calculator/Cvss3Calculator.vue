@@ -11,10 +11,7 @@ import {
   weights,
 } from '@/composables/useCvss3Calculator';
 
-import type { ZodAffectType } from '@/types';
-
 const props = defineProps<{
-  affect?: ZodAffectType;
   cvssVector: null | string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
