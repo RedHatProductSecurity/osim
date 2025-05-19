@@ -6,7 +6,7 @@ import { watchOnce } from '@vueuse/core';
 
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
-import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
+import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType } from '@/types';
 
 export function unwrap(value: any): any {
   const unwrapped = toRaw(unref(value));
@@ -123,4 +123,18 @@ export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefin
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - TODO: this throws an error on `yarn type-check` but IDE is happy with it
   return [refValue, hasChanged] as const;
+}
+
+export function orderCommentsByDate<T extends ZodFlawCommentType>(comments: T[]): T[] {
+  return comments.sort((a, b) => {
+    const dateA = DateTime.fromISO(a.created_dt ?? '');
+    const dateB = DateTime.fromISO(b.created_dt ?? '');
+    if (dateA < dateB) {
+      return 1;
+    }
+    if (dateA > dateB) {
+      return -1;
+    }
+    return 0;
+  });
 }

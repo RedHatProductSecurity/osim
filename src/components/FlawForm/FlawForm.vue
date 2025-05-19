@@ -60,6 +60,7 @@ const {
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
+  commentsByType,
   createFlaw,
   deleteAcknowledgment,
   deleteReference,
@@ -69,7 +70,6 @@ const {
   flawReferences,
   flawRhCvss3,
   highlightedNvdCvss3String,
-  internalComments,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
@@ -77,14 +77,11 @@ const {
   loadInternalComments,
   nvdCvss3String,
   osimLink,
-  privateComments,
-  publicComments,
   rhCvss3String,
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
   shouldDisplayEmailNistForm,
-  systemComments,
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel(props.flaw, onSaveSuccess);
@@ -427,12 +424,9 @@ const createdDate = computed(() => {
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
           <FlawComments
-            :publicComments
-            :privateComments
-            :internalComments
+            :commentsByType
             :internalCommentsAvailable
             :isLoadingInternalComments
-            :systemComments
             :taskKey="flaw.task_key || ''"
             :bugzillaLink
             :isSaving

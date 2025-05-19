@@ -3,7 +3,9 @@ import { computed, ref, type Ref } from 'vue';
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 import { postFlawComment } from '@/services/FlawService';
-import { CommentType, SYSTEM_EMAIL } from '@/constants';
+import { SYSTEM_EMAIL } from '@/constants';
+import { CommentType } from '@/types';
+import { orderCommentsByDate } from '@/utils/helpers';
 
 type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>;
 type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
@@ -14,14 +16,36 @@ const filterFunctions: OsidbCommentFilterFunctions = {
   System: (comment: any) => comment.creator === SYSTEM_EMAIL,
 };
 
+export function CommentTypeDisplay(type: CommentType | undefined) {
+  return type !== undefined ? CommentType[type] : '';
+}
+
 export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boolean>, afterSaveSuccess: () => void) {
   const internalCommentsAvailable = ref(false);
   const isLoadingInternalComments = ref(false);
   const internalComments = ref<ZodFlawCommentType[]>([]);
 
-  const publicComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.Public));
-  const privateComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.Private));
-  const systemComments = computed<ZodFlawCommentType[]>(() => flaw.value.comments.filter(filterFunctions.System));
+  const publicComments = computed<ZodFlawCommentType[]>(
+    () => orderCommentsByDate(
+      flaw.value.comments.filter(filterFunctions.Public)).map(c => ({ ...c, type: CommentType.Public })),
+  );
+  const privateComments = computed<ZodFlawCommentType[]>(
+    () => orderCommentsByDate(
+      flaw.value.comments.filter(filterFunctions.Private)).map(c => ({ ...c, type: CommentType.Private })),
+  );
+  const systemComments = computed<ZodFlawCommentType[]>(
+    () => orderCommentsByDate(
+      flaw.value.comments.filter(filterFunctions.System)).map(c => ({ ...c, type: CommentType.System })),
+  );
+
+  const commentsByType = computed<Record<CommentType, ZodFlawCommentType[]>>(() => {
+    return {
+      [CommentType.Public]: publicComments.value.map(c => ({ ...c, type: CommentType.Public })),
+      [CommentType.Private]: privateComments.value.map(c => ({ ...c, type: CommentType.Private })),
+      [CommentType.System]: systemComments.value.map(c => ({ ...c, type: CommentType.System })),
+      [CommentType.Internal]: internalComments.value.map(c => ({ ...c, type: CommentType.Internal })),
+    };
+  });
 
   function loadInternalComments() {
     isLoadingInternalComments.value = true;
@@ -99,6 +123,7 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
     internalComments,
     systemComments,
     addFlawComment,
+    commentsByType,
     loadInternalComments,
     isLoadingInternalComments,
     internalCommentsAvailable,

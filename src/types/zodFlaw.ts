@@ -1,9 +1,10 @@
-import { z } from 'zod';
+import { nativeEnum, z } from 'zod';
 import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
 import type { ValueOf } from '@/utils/typeHelpers';
 import { loadCweData } from '@/services/CweService';
+import { CommentType } from '@/constants';
 
 import {
   NistCvssValidationEnum,
@@ -131,6 +132,7 @@ export const ZodFlawCommentSchema = z.object({
   created_dt: zodOsimDateTime().nullish(),
   updated_dt: zodOsimDateTime().nullish(),
   alerts: z.array(ZodAlertSchema).default([]),
+  type: nativeEnum(CommentType).optional(),
 });
 
 export type ZodFlawHistoryItemType = z.infer<typeof ZodHistoryItemSchema>;
