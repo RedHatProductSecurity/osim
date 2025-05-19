@@ -63,12 +63,12 @@ export const METRICS: Dict<MetricsGroup> = {
     AT: ['N', 'P'],
     PR: ['N', 'L', 'H'],
     UI: ['N', 'P', 'A'],
-    VC: ['N', 'L', 'H'],
-    VI: ['N', 'L', 'H'],
-    VA: ['N', 'L', 'H'],
-    SC: ['N', 'L', 'H'],
-    SI: ['N', 'L', 'H'],
-    SA: ['N', 'L', 'H'],
+    VC: ['N', 'L', 'H'].reverse(),
+    VI: ['N', 'L', 'H'].reverse(),
+    VA: ['N', 'L', 'H'].reverse(),
+    SC: ['N', 'L', 'H'].reverse(),
+    SI: ['N', 'L', 'H'].reverse(),
+    SA: ['N', 'L', 'H'].reverse(),
   },
   // Threat (1 metric)
   THREAT: {
