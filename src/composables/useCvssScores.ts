@@ -191,10 +191,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
   }, { deep: true });
 
-  watch(cvssVector, (vector) => {
-    if (cvssVersion.value === CvssVersions.V4) return;
-  });
-
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();
     wasCvssModified.value = false;
