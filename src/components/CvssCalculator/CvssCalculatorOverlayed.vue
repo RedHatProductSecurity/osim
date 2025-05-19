@@ -5,9 +5,9 @@ import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 
 import {
-  getFactors,
-  calculateScore,
-  formatFactors,
+  parseCvss3Factors,
+  calculateCvss3Score,
+  formatCvss3Factors,
 } from '@/composables/useCvss3Calculator';
 import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 
@@ -30,7 +30,7 @@ function updateCvss3Factors(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
     updateCvss(newCvssVector);
   }
-  cvssFactors.value = getFactors(newCvssVector ?? '');
+  cvssFactors.value = parseCvss3Factors(newCvssVector ?? '');
 }
 
 watch(() => cvssVector.value, () => {
@@ -64,18 +64,18 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   updateCvss3Factors(maybeCvss);
-  if (!getFactors(maybeCvss)['CVSS']) {
+  if (!parseCvss3Factors(maybeCvss)['CVSS']) {
     cvssFactors.value['CVSS'] = '3.1';
   }
 
-  updateCvss3Factors(formatFactors(cvssFactors.value));
-  updateScore(calculateScore(cvssFactors.value));
+  updateCvss3Factors(formatCvss3Factors(cvssFactors.value));
+  updateScore(calculateCvss3Score(cvssFactors.value));
   updateVector(maybeCvss);
 }
 
 function updateCvss(vector: null | string = null) {
   updateCvss3Factors(vector);
-  updateScore(calculateScore(cvssFactors.value));
+  updateScore(calculateCvss3Score(cvssFactors.value));
   updateVector(vector);
 }
 

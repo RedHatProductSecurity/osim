@@ -7,11 +7,7 @@ import { z } from 'zod';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
-import {
-  getFactors as parseCvss3Factors,
-  calculateScore as calculateCvss3Score,
-  formatFactors,
-} from '@/composables/useCvss3Calculator';
+import { parseCvss3Factors, calculateCvss3Score, formatCvss3Factors } from '@/composables/useCvss3Calculator';
 
 import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
@@ -211,7 +207,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
         if (factor in cvssFactors.value) {
           cvssFactors.value[factor] = v4Value as string;
-          rhCvssScores.value[CvssVersions.V3].vector = formatFactors({
+          rhCvssScores.value[CvssVersions.V3].vector = formatCvss3Factors({
             ...cvssFactors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
           });
           rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvssFactors.value);

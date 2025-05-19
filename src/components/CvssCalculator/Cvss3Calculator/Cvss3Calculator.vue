@@ -3,10 +3,10 @@ import { watch } from 'vue';
 
 import {
   calculatorButtons,
-  getFactors,
+  parseCvss3Factors,
   getFactorColor,
-  calculateScore,
-  formatFactors,
+  calculateCvss3Score,
+  formatCvss3Factors,
   factorSeverities,
   weights,
 } from '@/composables/useCvss3Calculator';
@@ -28,7 +28,7 @@ const emit = defineEmits<{
 }>();
 
 function updateCvss3Factors(newCvssVector: null | string | undefined) {
-  cvssFactors.value = getFactors(newCvssVector ?? '');
+  cvssFactors.value = parseCvss3Factors(newCvssVector ?? '');
   if (props.cvssVector !== newCvssVector) {
     emit('update:cvssVector', newCvssVector ?? null);
   }
@@ -42,8 +42,8 @@ function factorButton(id: string, key: string) {
   }
 
   cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
-  updateCvss3Factors(formatFactors(cvssFactors.value));
-  emit('update:cvssScore', calculateScore(cvssFactors.value) ?? 0);
+  updateCvss3Factors(formatCvss3Factors(cvssFactors.value));
+  emit('update:cvssScore', calculateCvss3Score(cvssFactors.value) ?? 0);
 }
 </script>
 

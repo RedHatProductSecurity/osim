@@ -4,7 +4,7 @@ export function formatFactor(key: string, value: string) {
 }
 
 // Get vector string from factors
-export function formatFactors(factors: Record<string, string>) {
+export function formatCvss3Factors(factors: Record<string, string>) {
   let vector = '';
   for (const key in factors) {
     if (factors[key]) {
@@ -15,7 +15,7 @@ export function formatFactors(factors: Record<string, string>) {
 }
 
 // Get factor values from vector
-export function getFactors(cvssVector: string) {
+export function parseCvss3Factors(cvssVector: string) {
   const factors: Record<string, string> = {};
   if (!cvssVector) {
     for (const key in factorPatterns) {
@@ -50,7 +50,7 @@ export const getFactorColor = (weight: number, isHovered: boolean = false, highl
 };
 
 // Calculates score
-export function calculateScore(factors: Record<string, string>) {
+export function calculateCvss3Score(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
   return (Number.isNaN(score) || Object.values(factors).includes('')) ? null : score;
 }

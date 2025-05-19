@@ -31,11 +31,11 @@ export const CorrespondingCvssFactors: Dict = {
   S: 'S',
   // CVSS 3 to 4
   C: 'VC',
-  I: 'SI',
+  I: 'VI',
   A: 'VA',
   // CVSS 4 to 3
   VC: 'C',
-  SI: 'I',
+  VI: 'I',
   VA: 'A',
 };
 

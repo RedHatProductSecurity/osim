@@ -6,26 +6,12 @@ defineProps<{
   cvss4Score: null | number;
   cvss4Selections: any;
   cvss4Vector: null | string;
-  highlightedFactor: null | string;
-  highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
 const emit = defineEmits<{
   'update:setMetric': [category: string, metric: string, value: string];
 }>();
-
-// function updateCvss4Score(newCvss4Score: null | number | undefined) {
-//   emit('update:cvssScore', newCvss4Score ?? null);
-// }
-
-// function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
-//   emit('update:cvssVector', newCvss4Vector ?? null);
-// }
-
-// // TODO: Move these into composable?
-// watch(() => props.cvss4Score, updateCvss4Score);
-// watch(() => props.cvss4Vector, updateCvss4Vector);
 </script>
 
 <template>
@@ -57,7 +43,6 @@ const emit = defineEmits<{
             >
               <button
                 class="btn-group-header btn btn-secondary fw-bold lh-sm border"
-                :class="{ 'osim-factor-highlight': metric.id === highlightedFactor}"
                 style="max-height: 27.5px;"
                 disabled
               >

@@ -6,7 +6,7 @@ import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Ca
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
 import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
-import { getFactors, calculateScore, formatFactors } from '@/composables/useCvss3Calculator';
+import { parseCvss3Factors, calculateCvss3Score, formatCvss3Factors } from '@/composables/useCvss3Calculator';
 
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
@@ -66,12 +66,12 @@ function handlePaste(e: ClipboardEvent) {
 
   if (cvssVersion.value === CvssVersions.V3) {
     updateCvss3Factors(maybeCvss);
-    if (!getFactors(maybeCvss)['CVSS']) {
+    if (!parseCvss3Factors(maybeCvss)['CVSS']) {
       cvssFactors.value['CVSS'] = '3.1';
     }
 
-    updateCvss3Factors(formatFactors(cvssFactors.value));
-    updateScore(calculateScore(cvssFactors.value) ?? 0);
+    updateCvss3Factors(formatCvss3Factors(cvssFactors.value));
+    updateScore(calculateCvss3Score(cvssFactors.value) ?? 0);
   }
 }
 
@@ -168,7 +168,7 @@ function highlightFactorValue(factor: null | string) {
       v-model:cvssFactors="cvssFactors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused && cvssVersion === CvssVersions.V3"
+      :isFocused="isFocused"
       :cvssScore="cvssScore"
       :cvssVector="cvssVector ?? null"
       @update:cvssScore="updateScore"
@@ -178,10 +178,7 @@ function highlightFactorValue(factor: null | string) {
     />
     <Cvss4Calculator
       v-else-if="cvssVersion === CvssVersions.V4"
-      v-model:cvssFactors="cvssFactors"
-      :highlightedFactor="highlightedFactor"
-      :highlightedFactorValue="highlightedFactorValue"
-      :isFocused="isFocused && cvssVersion === CvssVersions.V4"
+      :isFocused="isFocused"
       :cvss4Score="cvss4Score"
       :cvss4Vector="cvss4Vector"
       :cvss4Selections="cvss4Selections"
