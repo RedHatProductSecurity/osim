@@ -1,3 +1,9 @@
+import { ref } from 'vue';
+
+export function useCvss3Calculator() {
+  return { cvss3Factors: ref<Record<string, string>>({}) };
+}
+
 // Format factor for vector display
 export function formatFactor(key: string, value: string) {
   return key === 'CVSS' ? `${key}:${value}` : `/${key}:${value}`;
