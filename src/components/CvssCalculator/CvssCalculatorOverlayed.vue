@@ -11,16 +11,17 @@ import {
 } from '@/composables/useCvss3Calculator';
 import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 
+import { CvssVersions } from '@/constants';
 import type { ZodAffectType } from '@/types';
 
 const props = defineProps<{
   affect: ZodAffectType;
 }>();
 
-const { cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores(props.affect);
+const { cvss3Factors, cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores(props.affect);
 
 const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value) ?? null);
-const cvss3Factors = ref<Record<string, string>>({});
+// const cvss3Factors = ref<Record<string, string>>({});
 const isFocused = ref(false);
 
 const cvssDiv = ref();
@@ -119,6 +120,8 @@ function highlightFactorValue(factor: null | string) {
           <CvssVectorInput
             ref="cvssVectorInput"
             :cvss3Factors="cvss3Factors"
+            :selectedVersion="CvssVersions.V3"
+            :cvss4Vector="null"
             :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
@@ -128,7 +131,6 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateUsingV3Vector="updateUsingV3Vector(cvssVector)"
           />
         </div>
         <button
