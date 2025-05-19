@@ -124,3 +124,7 @@ export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefin
   // @ts-ignore - TODO: this throws an error on `yarn type-check` but IDE is happy with it
   return [refValue, hasChanged] as const;
 }
+
+export function regexCVSS(keys: string[]) {
+  return keys.map(key => new RegExp(`(?<=^|\\/)${key}:(?<${key}>[^/]+)`));
+}
