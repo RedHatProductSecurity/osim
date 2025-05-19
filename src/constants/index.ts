@@ -1,5 +1,3 @@
-import { CommentType } from '@/types';
-
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 export const CVSS_V3 = 'V3';
@@ -37,6 +35,13 @@ export const allowedSources = [
   'UBUNTU',
   'UPSTREAM',
 ];
+
+export enum CommentType {
+  Public,
+  Private,
+  Internal,
+  System,
+}
 
 export const commentTooltips: Record<CommentType, string> = {
   [CommentType.Public]: 'Bugzilla Public - These comments are visible to everyone.',

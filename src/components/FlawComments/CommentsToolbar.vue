@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 
 import { jiraTaskUrl } from '@/services/JiraService';
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { CommentType } from '@/types';
+import { CommentType } from '@/constants';
 
 defineProps<{
   bugzillaLink: string;
@@ -77,6 +77,7 @@ const { settings } = storeToRefs(useSettingsStore());
     </div>
     <div class="form-check form-switch ms-auto" style="font-size: 18px">
       <input
+        id="singleViewSwitch"
         v-model="settings['singleCommentsView']"
         class="form-check-input"
         type="checkbox"

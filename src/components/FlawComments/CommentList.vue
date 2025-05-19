@@ -5,9 +5,8 @@ import sanitizeHtml from 'sanitize-html';
 import { CommentTypeDisplay } from '@/composables/useFlawCommentsModel';
 
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
-import { CommentType } from '@/types';
+import { CommentType, commentTooltips } from '@/constants';
 import { jiraUserUrl } from '@/services/JiraService';
-import { commentTooltips } from '@/constants';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 defineProps<{

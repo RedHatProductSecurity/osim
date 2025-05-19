@@ -3,8 +3,7 @@ import { computed, ref, type Ref } from 'vue';
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 import { postFlawComment } from '@/services/FlawService';
-import { SYSTEM_EMAIL } from '@/constants';
-import { CommentType } from '@/types';
+import { SYSTEM_EMAIL, CommentType } from '@/constants';
 import { orderCommentsByDate } from '@/utils/helpers';
 
 type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>;
