@@ -1,10 +1,20 @@
+import { type ComputedRef, ref, watch } from 'vue';
+
+export function useCvss3Calculator(vector: ComputedRef<string>) {
+  const cvss3Factors = ref<Record<string, string>>({});
+  watch(vector, (newVector) => {
+    cvss3Factors.value = parseCvss3Factors(newVector);
+  }, { immediate: true });
+  return { cvss3Factors };
+}
+
 // Format factor for vector display
 export function formatFactor(key: string, value: string) {
   return key === 'CVSS' ? `${key}:${value}` : `/${key}:${value}`;
 }
 
 // Get vector string from factors
-export function formatFactors(factors: Record<string, string>) {
+export function formatCvss3Factors(factors: Record<string, string>) {
   let vector = '';
   for (const key in factors) {
     if (factors[key]) {
@@ -15,7 +25,7 @@ export function formatFactors(factors: Record<string, string>) {
 }
 
 // Get factor values from vector
-export function getFactors(cvssVector: string) {
+export function parseCvss3Factors(cvssVector: string) {
   const factors: Record<string, string> = {};
   if (!cvssVector) {
     for (const key in factorPatterns) {
@@ -50,7 +60,7 @@ export const getFactorColor = (weight: number, isHovered: boolean = false, highl
 };
 
 // Calculates score
-export function calculateScore(factors: Record<string, string>) {
+export function calculateCvss3Score(factors: Record<string, string>) {
   const score = calculateBaseScore(factors);
   return (Number.isNaN(score) || Object.values(factors).includes('')) ? null : score;
 }
