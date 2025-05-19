@@ -152,7 +152,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   const cvssVector = computed(() => rhCvss.value?.vector);
   const cvssScore = computed(() => rhCvss.value?.score);
-  const { cvss3Factors } = useCvss3Calculator();
+  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3].vector ?? ''));
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
@@ -190,6 +190,10 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   watch(cvss3Factors, () => {
     updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
   }, { deep: true });
+
+  watch(cvssVector, (vector) => {
+    if (cvssVersion.value === CvssVersions.V4) return;
+  });
 
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();

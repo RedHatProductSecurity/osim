@@ -1,7 +1,11 @@
-import { ref } from 'vue';
+import { type ComputedRef, ref, watch } from 'vue';
 
-export function useCvss3Calculator() {
-  return { cvss3Factors: ref<Record<string, string>>({}) };
+export function useCvss3Calculator(vector: ComputedRef<string>) {
+  const cvss3Factors = ref<Record<string, string>>({});
+  watch(vector, (newVector) => {
+    cvss3Factors.value = parseCvss3Factors(newVector);
+  }, { immediate: true });
+  return { cvss3Factors };
 }
 
 // Format factor for vector display
