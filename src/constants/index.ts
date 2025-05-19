@@ -1,9 +1,4 @@
-export enum CommentType {
-  Public,
-  Private,
-  Internal,
-  System,
-}
+import { CommentType } from '@/types';
 
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
@@ -42,3 +37,10 @@ export const allowedSources = [
   'UBUNTU',
   'UPSTREAM',
 ];
+
+export const commentTooltips: Record<CommentType, string> = {
+  [CommentType.Public]: 'Bugzilla Public - This comments are visible to everyone.',
+  [CommentType.Private]: 'Bugzilla Private - This comments are visible to Red Hat associates.',
+  [CommentType.Internal]: 'Jira Internal - This comments are visible to team members with required permissions.',
+  [CommentType.System]: 'Bugzilla System - This are auto-generated private comments.',
+};

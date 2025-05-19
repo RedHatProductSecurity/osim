@@ -3,7 +3,8 @@ import { computed, ref, type Ref } from 'vue';
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 import { postFlawComment } from '@/services/FlawService';
-import { CommentType, SYSTEM_EMAIL } from '@/constants';
+import { SYSTEM_EMAIL } from '@/constants';
+import type { CommentType } from '@/types';
 
 type OsidbCommentFilter = Exclude<keyof typeof CommentType, 'Internal'>;
 type OsidbCommentFilterFunctions = Record<OsidbCommentFilter, (comment: ZodFlawCommentType) => boolean>;
