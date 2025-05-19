@@ -8,9 +8,10 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 import {
-  getFactors as parseCvss3Factors,
-  calculateScore as calculateCvss3Score,
-  formatFactors,
+  parseCvss3Factors,
+  calculateCvss3Score,
+  formatCvss3Factors,
+  useCvss3Calculator,
 } from '@/composables/useCvss3Calculator';
 
 import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
@@ -30,7 +31,7 @@ import type {
 } from '@/types';
 
 const wasFlawCvssModified = ref(false);
-const shouldSyncCvssFactors = ref(true);
+const shouldSyncVectors = ref(true);
 const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
 function filterCvssData(issuer: string, version: string) {
@@ -148,7 +149,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   const cvssVector = computed(() => rhCvss.value?.vector);
   const cvssScore = computed(() => rhCvss.value?.score);
-  const cvssFactors = ref<Record<string, string>>({});
+  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3]?.vector ?? ''));
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
@@ -176,18 +177,28 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
         entity.cvss_scores.findIndex(cvss => cvss.uuid == maybeCvss?.uuid),
       );
     }
-    if (shouldSyncCvssFactors.value) synchronizeFactors();
+    if (shouldSyncVectors.value) synchronizeFactors();
   }, { deep: true });
 
   watch(() => flaw.value.updated_dt, () => {
     wasFlawCvssModified.value = false;
   });
 
-  watch(cvssVector, updateCvss3Factors, { immediate: true });
+  watch(cvss3Factors, () => {
+    updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
+  }, { deep: true });
 
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();
     wasCvssModified.value = false;
+  });
+
+  watch(cvss4Score, (score) => {
+    if (cvssVersion.value === CvssVersions.V4) updateScore(score);
+  });
+
+  watch(cvss4Vector, (vector) => {
+    if (cvssVersion.value === CvssVersions.V4) updateVector(vector);
   });
 
   function synchronizeFactors() {
@@ -202,16 +213,16 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
         if (metric === 'UI' && v4Value !== null) {
           // CVSS3 just has N or R for UI metrics, where as CVSS4 has A, P, N for UI metrics
-          cvssFactors.value[factor] = v4Value === 'N' ? 'N' : 'R';
+          cvss3Factors.value[factor] = v4Value === 'N' ? 'N' : 'R';
           continue;
         }
 
-        if (factor in cvssFactors.value) {
-          cvssFactors.value[factor] = v4Value as string;
-          rhCvssScores.value[CvssVersions.V3].vector = formatFactors({
-            ...cvssFactors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
+        if (factor in cvss3Factors.value && v4Value !== null) {
+          cvss3Factors.value[factor] = v4Value as string;
+          rhCvssScores.value[CvssVersions.V3].vector = formatCvss3Factors({
+            ...cvss3Factors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
           });
-          rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvssFactors.value);
+          rhCvssScores.value[CvssVersions.V3].score = calculateCvss3Score(cvss3Factors.value);
         }
       }
     }
@@ -267,28 +278,24 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   function updateScore(score: null | number) {
     rhCvss.value.score = score;
   }
+
   function updateVector(vector: null | string) {
     rhCvss.value.vector = vector;
   }
 
-  function updateCvss3Factors(newCvssVector: null | string | undefined) {
-    cvssFactors.value = parseCvss3Factors(newCvssVector ?? '');
-
-    if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V3) {
-      updateVector(newCvssVector ?? '');
-      updateScore(calculateCvss3Score(cvssFactors.value) ?? 0);
-    }
-    if (cvssVector.value !== newCvssVector && cvssVersion.value === CvssVersions.V4) {
-      updateVector(cvss4Vector.value);
-      updateScore(cvss4Score.value);
-    }
+  function updateUsingV3Vector(newCvssVector: null | string | undefined) {
+    // Should this just update V3 instead of returnin if v4
+    if (cvssVersion.value === CvssVersions.V4) return;
+    updateVector(newCvssVector ?? '');
+    const factors = parseCvss3Factors(newCvssVector ?? '');
+    updateScore(calculateCvss3Score(factors) ?? 0);
   }
 
   return {
     updateVector,
-    updateCvss3Factors,
+    updateUsingV3Vector,
     updateScore,
-    cvssFactors,
+    cvss3Factors,
     cvssVersion,
     cvssVector,
     cvss4Score,
@@ -302,7 +309,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     parseVectorV4String,
     saveCvssScores,
     setMetric,
-    shouldSyncCvssFactors,
+    shouldSyncVectors,
     ...useFlawCvssStrings(flawRhCvss),
   };
 }
