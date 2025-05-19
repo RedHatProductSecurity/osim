@@ -3,9 +3,8 @@ import { DateTime } from 'luxon';
 import sanitizeHtml from 'sanitize-html';
 
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
-import { CommentType } from '@/types';
+import { CommentType, commentTooltips } from '@/constants';
 import { jiraUserUrl } from '@/services/JiraService';
-import { commentTooltips } from '@/constants';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 defineProps<{

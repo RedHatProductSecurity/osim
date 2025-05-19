@@ -34,10 +34,3 @@ export type {
 export type {
   ZodAlertType,
 } from '@/types/zodShared';
-
-export enum CommentType {
-  Public,
-  Private,
-  Internal,
-  System,
-}

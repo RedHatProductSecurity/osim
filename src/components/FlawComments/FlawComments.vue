@@ -11,8 +11,7 @@ import { orderCommentsByDate } from '@/utils/helpers';
 import Tabs from '@/widgets/Tabs/Tabs.vue';
 import { useUserStore } from '@/stores/UserStore';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
-import { CommentType } from '@/types';
-import { commentTooltips } from '@/constants';
+import { CommentType, commentTooltips } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
 const props = defineProps<{

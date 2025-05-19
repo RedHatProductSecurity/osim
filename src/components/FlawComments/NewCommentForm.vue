@@ -10,7 +10,7 @@ import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import { searchJiraUsers } from '@/services/JiraService';
 import DropDown from '@/widgets/DropDown/DropDown.vue';
 import JiraUser from '@/widgets/JiraUser/JiraUser.vue';
-import { CommentType } from '@/types';
+import { CommentType } from '@/constants';
 
 const props = defineProps<{
   internalCommentsAvailable: boolean;
