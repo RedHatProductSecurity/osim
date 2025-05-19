@@ -185,8 +185,6 @@ function highlightFactorValue(factor: null | string) {
       :cvss4Score="cvss4Score"
       :cvss4Vector="cvss4Vector"
       :cvss4Selections="cvss4Selections"
-      @update:cvssScore="updateScore"
-      @update:cvssVector="updateVector"
       @update:setMetric="setMetric"
     />
   </div>

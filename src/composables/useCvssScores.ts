@@ -190,6 +190,9 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     wasCvssModified.value = false;
   });
 
+  watch(cvss4Score, updateScore);
+  watch(cvss4Vector, updateVector);
+
   function synchronizeFactors() {
     const vector = rhCvss.value.vector || '';
 

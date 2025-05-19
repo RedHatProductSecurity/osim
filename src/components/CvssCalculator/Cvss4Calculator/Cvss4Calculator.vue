@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-
 import { MetricNamesWithValues, CVSS4MetricsForUI }
   from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
-import type { ZodAffectType } from '@/types';
-
-const props = defineProps<{
-  affect?: ZodAffectType;
+defineProps<{
   cvss4Score: null | number;
   cvss4Selections: any;
   cvss4Vector: null | string;
@@ -17,22 +12,20 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:cvssScore': [value: null | number];
-  'update:cvssVector': [value: null | string];
   'update:setMetric': [category: string, metric: string, value: string];
 }>();
 
-function updateCvss4Score(newCvss4Score: null | number | undefined) {
-  emit('update:cvssScore', newCvss4Score ?? null);
-}
+// function updateCvss4Score(newCvss4Score: null | number | undefined) {
+//   emit('update:cvssScore', newCvss4Score ?? null);
+// }
 
-function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
-  emit('update:cvssVector', newCvss4Vector ?? null);
-}
+// function updateCvss4Vector(newCvss4Vector: null | string | undefined) {
+//   emit('update:cvssVector', newCvss4Vector ?? null);
+// }
 
-// TODO: Move these into composable?
-watch(() => props.cvss4Score, updateCvss4Score);
-watch(() => props.cvss4Vector, updateCvss4Vector);
+// // TODO: Move these into composable?
+// watch(() => props.cvss4Score, updateCvss4Score);
+// watch(() => props.cvss4Vector, updateCvss4Vector);
 </script>
 
 <template>
