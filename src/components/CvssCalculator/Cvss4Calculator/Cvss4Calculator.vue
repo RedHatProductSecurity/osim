@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { MetricNamesWithValues, CVSS4MetricsForUI }
-  from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
+import {
+  MetricNamesWithValues,
+  CVSS4MetricsForUI,
+} from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
+
+import { METRICS, type MetricsGroup } from '@/utils/cvss40.ts';
 
 defineProps<{
   cvss4Score: null | number;
@@ -12,14 +16,28 @@ defineProps<{
 const emit = defineEmits<{
   'update:setMetric': [category: string, metric: string, value: string];
 }>();
+
+function metricValueColor(group: MetricsGroup, metric: string, value: string, isSelected: boolean) {
+  const metricValuesCount = METRICS[group][metric].length;
+  const metricPosition = METRICS[group][metric].indexOf(value);
+  const weight = metricPosition / (metricValuesCount - 1);
+
+  const hue = weight * 80; // red being 0, 80 being green
+  const alpha = 1;
+  const sat = isSelected ? 100 : 30;
+
+  const hslForText = `hsla(${hue}, ${sat}%, 35%, ${alpha})`;
+  const hslForBackground = `hsla(${hue}, ${sat}%, 95%, ${alpha})`;
+  return {
+    'color': hslForText,
+    'background-color': hslForBackground,
+    'border-color': isSelected ? `${hslForText} !important` : undefined,
+  };
+};
 </script>
 
 <template>
   <div class="p-4 pt-2 cvss-calculator">
-    <p class="mb-0 px-2 bg-light-gray">
-      <b class="me-2">{{ cvss4Score }}</b>
-      {{ cvss4Vector }}
-    </p>
     <div
       v-for="(category, categoryName) in CVSS4MetricsForUI"
       :key="categoryName"
@@ -38,8 +56,7 @@ const emit = defineEmits<{
             <div
               v-for="(metric, metricName) in metricGroup as Record<string, any>"
               :key="metricName"
-              class="p-2 btn-group-vertical btn-group-sm osim-factor-severity-select"
-              style="vertical-align: top;"
+              class="p-1 btn-group-horizontal btn-group-sm osim-factor-severity-select"
             >
               <button
                 class="btn-group-header btn btn-secondary fw-bold lh-sm border"
@@ -55,6 +72,12 @@ const emit = defineEmits<{
                 type="button"
                 class="btn factor-btn lh-sm border"
                 style="max-height: 27.5px;"
+                :style="metricValueColor(
+                  MetricNamesWithValues[categoryName],
+                  metric.short,
+                  value,
+                  cvss4Selections?.[MetricNamesWithValues?.[categoryName]]?.[metric.short] === value,
+                )"
                 :title="tooltip"
                 :class="{
                   selected: cvss4Selections?.[MetricNamesWithValues?.[categoryName]]?.[metric.short] === value
@@ -84,51 +107,9 @@ const emit = defineEmits<{
     position: absolute;
   }
 
-  .osim-input {
-    display: flex;
-    width: 100%;
-
-    .row-group {
-      display: flex;
-      flex-direction: row;
-      margin-block: 10px;
-
-      .col-group {
-        display: flex;
-        flex-direction: column;
-        margin-inline: 5px;
-        width: 100%;
-
-        .btn-group-header {
-          background-color: #1f1f1f !important;
-          color: white;
-          border: 0;
-          padding-block: 7.5px;
-          font-weight: 600;
-
-          &.osim-factor-highlight {
-            background-color: hsl(200deg 100% 95%) !important;
-            color: hsl(200deg 100% 35%) !important;
-          }
-        }
-
-        .btn,
-        .btn:hover {
-          border: 1px;
-          margin: auto;
-        }
-
-        &:hover .osim-factor-highlight {
-          background-color: hsl(200deg 100% 95%) !important;
-          color: hsl(200deg 100% 35%) !important;
-        }
-      }
-    }
+  .factor-btn.selected {
+    border-style: solid;
+    border-width: 3px;
   }
-}
-
-.factor-btn.selected {
-  background-color: gray;
-  color: white;
 }
 </style>
