@@ -4,7 +4,7 @@ import {
   CVSS4MetricsForUI,
 } from '@/components/CvssCalculator/Cvss4Calculator/cvss4-ui-constants';
 
-import { METRICS, type MetricsGroup } from '@/utils/cvss40.ts';
+import { METRICS, type MetricsGroup } from '@/utils/cvss40';
 
 defineProps<{
   cvss4Score: null | number;
