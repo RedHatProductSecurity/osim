@@ -18,7 +18,6 @@ const props = defineProps<{
   isSaving: boolean;
   newCommentType: CommentType;
   taskKey: null | string | undefined;
-  unifiedView: boolean;
 }>();
 
 const emit = defineEmits<{

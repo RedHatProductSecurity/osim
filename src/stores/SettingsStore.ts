@@ -15,6 +15,7 @@ export const SettingsSchema = z.object({
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
+  singleCommentsView: z.boolean().default(false),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -27,6 +28,7 @@ const defaultValues: SettingsType = {
   trackersPerPage: 10,
   isHidingLabels: false,
   privacyNoticeShown: false,
+  singleCommentsView: false,
 };
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
@@ -50,12 +52,6 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       ' In some cases that information may be publicly visible.',
     });
     settings.value.privacyNoticeShown = true;
-  }
-
-  // This is to remove previous privacy notice shown flag
-  // Can be removed in future versions, when we are sure that all users have updated to the latest version
-  if (localStorage.getItem('privacyNoticeShown')) {
-    localStorage.removeItem('privacyNoticeShown');
   }
 
   function $reset() {
