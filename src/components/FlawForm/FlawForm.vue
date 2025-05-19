@@ -87,7 +87,6 @@ const {
 } = useFlawModel(props.flaw, onSaveSuccess);
 
 const {
-  flawRhCvss,
   highlightedNvdCvssString,
   nvdCvssString,
   rhCvssString,
@@ -269,9 +268,7 @@ const createdDate = computed(() => {
               :error="errors.impact"
               :withBlank="true"
             />
-            <CvssCalculator
-              :uuid="flawRhCvss.uuid"
-            />
+            <CvssCalculator />
             <CvssSection
               :highlightedNvdCvssString
               :shouldDisplayEmailNistForm

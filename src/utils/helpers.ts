@@ -139,3 +139,7 @@ export function orderCommentsByDate<T extends ZodFlawCommentType>(comments: T[])
     return 0;
   });
 }
+
+export function regexCVSS(keys: string[]) {
+  return keys.map(key => new RegExp(`(?<=^|\\/)${key}:(?<${key}>[^/]+)`));
+}

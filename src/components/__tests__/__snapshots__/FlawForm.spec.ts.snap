@@ -139,6 +139,7 @@ exports[`flawForm > mounts and renders 1`] = `
           <div data-v-ffda1b6f="" class="input-wrapper col">
             <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
               <!--v-if-->
+              <!--v-if-->
             </div>
           </div>
           <!--v-if-->

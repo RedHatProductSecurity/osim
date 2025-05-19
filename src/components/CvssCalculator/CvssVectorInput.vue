@@ -3,12 +3,16 @@ import { ref } from 'vue';
 
 import { formatFactor, weights } from '@/composables/useCvss3Calculator';
 
+import { CvssVersions } from '@/constants';
+
 const props = defineProps<{
-  cvssFactors: Record<string, string>;
+  cvss3Factors: Record<string, string>;
+  cvss4Vector: null | string;
   cvssScore: null | number;
   error: null | string;
   highlightedFactor: null | string;
   isFocused: boolean;
+  selectedVersion: CvssVersions;
 }>();
 
 const emit = defineEmits<{
@@ -60,9 +64,9 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
     >
       {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>
-    <template v-for="(value, key) in cvssFactors" :key="key">
+    <template v-for="(value, key) in cvss3Factors" :key="key">
       <span
-        v-if="value"
+        v-if="value && selectedVersion === CvssVersions.V3"
         :style="isFocused && key.toString() !== 'CVSS'
           ? getFactorColor(weights[key][value], key === highlightedFactor)
           : (isFocused ? {color: 'white'} : {color: 'black'})"
@@ -70,6 +74,13 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
         @mouseleave="emit('highlightFactor',null)"
       >
         {{ formatFactor(key.toString(), value) }}
+      </span>
+    </template>
+    <template v-if="selectedVersion === CvssVersions.V4">
+      <span
+        :style="isFocused ? {color: 'white'} : {color: 'black'}"
+      >
+        {{ cvss4Vector }}
       </span>
     </template>
     <div v-if="error" class="invalid-tooltip">

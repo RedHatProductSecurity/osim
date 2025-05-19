@@ -1,4 +1,4 @@
-import { ref, type Component, watch } from 'vue';
+import { type Component } from 'vue';
 
 import sampleFlawFull from '@test-fixtures/sampleFlawFull.json';
 import { VueWrapper, mount } from '@vue/test-utils';
@@ -29,49 +29,26 @@ describe('cvssCalculatorOverlayed', () => {
   type Subject = VueWrapper<Component>;
   let subject: Subject;
   beforeEach(async () => {
-    if (subject) subject.unmount();
-    const { validateCvssVector: _validateCvssVector } = await importActual('@/composables/useCvssScores');
-
-    const cvssVector = ref<null | string>('');
-    const cvssScore = ref<null | number>(0);
-    const cvssVersion = ref('V3');
-
-    watch(cvssVector, (newValue) => {
-      if (newValue) {
-        subject.setProps({ cvssVector: newValue });
-      }
-    });
-    function updateVector(value: null | string) {
-      cvssVector.value = value;
-    }
-    function updateScore(value: null | number) {
-      cvssScore.value = value;
-    }
-    vi.mocked(useCvssScores).mockReturnValue({
-      cvssVector,
-      cvssScore,
-      cvssVersion,
-      updateVector,
-      updateScore,
-    } as ReturnType<typeof useCvssScores>);
+    const {
+      useCvssScores: _useCvssScores,
+      validateCvssVector: _validateCvssVector,
+    } = await importActual('@/composables/useCvssScores');
+    vi.mocked(useCvssScores).mockImplementation(_useCvssScores);
     vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
 
     const importedComponent = await import('@/components/CvssCalculator/CvssCalculatorOverlayed.vue');
     const CvssCalculatorOverlayed = importedComponent.default;
     subject = mount(CvssCalculatorOverlayed, {
       props: {
-        'affect': sampleFlawFull.affects[0],
-        'cvssScore': null,
-        'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
-        'cvssVector': '',
-        'onUpdate:cvssVector': (e: any) => {
-          subject.setProps({ cvssVector: e });
-        },
+        affect: sampleFlawFull.affects[0],
       },
     });
   });
 
   afterEach(() => {
+    vi.resetAllMocks();
+    vi.resetModules();
+    subject?.unmount();
   });
 
   it('mounts and renders correctly', async () => {
