@@ -24,6 +24,7 @@ const emit = defineEmits<{
 
 function factorButton(id: string, key: string) {
   if (!cvss3Factors.value['CVSS']) {
+    console.log('BULLSHIT ALARAM WEEEOOOHHH CVSS not set, setting to 3.1');
     cvss3Factors.value['CVSS'] = '3.1';
   }
 

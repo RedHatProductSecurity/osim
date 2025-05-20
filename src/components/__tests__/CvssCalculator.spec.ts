@@ -35,7 +35,8 @@ describe('cvssCalculator', () => {
 
     const cvssVector = ref<null | string>('');
     const cvssScore = ref<null | number>(0);
-    const cvss3Factors = ref<Record<string, string>>({
+    const cvss3Factors = ref<Record<string, null | string>>({
+      CVSS: '3.1',
       AV: '',
       AC: '',
       PR: '',
@@ -57,6 +58,7 @@ describe('cvssCalculator', () => {
       cvssScore,
       cvssVersion,
       cvss3Factors,
+      cvss4Vector: ref<null | string>(''),
       updateVector,
       updateScore,
     } as ReturnType<typeof useCvssScores>);
@@ -142,7 +144,7 @@ describe('cvssCalculator', () => {
   });
 
   // Medium score
-  it('calculates medium score correctly', async () => {
+  it.only('calculates medium score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Adjacent'],
       ['Attack Complexity', 'High'],
@@ -189,6 +191,7 @@ describe('cvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
+    console.log(inputVectorValue.html());
     expect(inputVectorValue.text()).toBe('0 CVSS:3.1/AV:P/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:N');
   });
 

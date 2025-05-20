@@ -80,9 +80,6 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
     ]);
     const parseResult = cvss3VectorSchema.safeParse(cvssVector);
     if (parseResult.success === false) {
-      console.log(cvssVector?.length, ' chars found in ', cvssVector);
-      console.log('CVSS3.1 vector error', parseResult.error.errors[0].message);
-      console.log('All results:', parseResult);
       return parseResult.error.errors[0].message;
     }
   }
@@ -288,7 +285,9 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   function updateUsingV3Vector(newCvssVector: null | string | undefined) {
     // Should this just update V3 instead of returnin if v4
+    console.log('Updating CVSS3 vector', newCvssVector);
     if (cvssVersion.value === CvssVersions.V4) return;
+    console.log('Updating CVSS3 vector', newCvssVector);
     updateVector(newCvssVector ?? '');
     const factors = parseCvss3Factors(newCvssVector ?? '');
     updateScore(calculateCvss3Score(factors) ?? 0);
