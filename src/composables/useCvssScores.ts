@@ -149,7 +149,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   const cvssVector = computed(() => rhCvss.value?.vector);
   const cvssScore = computed(() => rhCvss.value?.score);
-  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3].vector ?? ''));
+  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3]?.vector ?? ''));
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
@@ -285,9 +285,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   function updateUsingV3Vector(newCvssVector: null | string | undefined) {
     // Should this just update V3 instead of returnin if v4
-    console.log('Updating CVSS3 vector', newCvssVector);
     if (cvssVersion.value === CvssVersions.V4) return;
-    console.log('Updating CVSS3 vector', newCvssVector);
     updateVector(newCvssVector ?? '');
     const factors = parseCvss3Factors(newCvssVector ?? '');
     updateScore(calculateCvss3Score(factors) ?? 0);

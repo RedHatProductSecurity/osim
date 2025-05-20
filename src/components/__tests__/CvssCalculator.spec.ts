@@ -12,9 +12,9 @@ import { importActual } from '@/__tests__/helpers';
 vi.mock('@/composables/useCvssScores');
 
 async function activateFactorButton(subject: any, factor: string, value: string) {
-  const factorButtonGroup = subject.findAll('.btn-group-vertical')
+  const factorButtonGroup = await subject.findAll('.btn-group-vertical')
     .filter((node: { text: () => string | string[] }) => node.text().includes(factor))[0];
-  const factorButton = factorButtonGroup
+  const factorButton = await factorButtonGroup
     .findAll('.btn')
     .find((node: { text: () => string }) => node.text() === value);
   await factorButton.trigger('click');
@@ -22,7 +22,9 @@ async function activateFactorButton(subject: any, factor: string, value: string)
 
 async function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, string][]) {
   for (const [factor, value] of factorValuePairs) {
+    await subject.vm.$nextTick();
     await activateFactorButton(subject, factor, value);
+    await subject.vm.$nextTick();
   }
 }
 
@@ -30,40 +32,19 @@ describe('cvssCalculator', () => {
   let subject: any;
 
   beforeEach(async () => {
-    if (subject) subject.unmount();
-    const { validateCvssVector: _validateCvssVector } = await importActual('@/composables/useCvssScores');
-
-    const cvssVector = ref<null | string>('');
-    const cvssScore = ref<null | number>(0);
-    const cvss3Factors = ref<Record<string, null | string>>({
-      CVSS: '3.1',
-      AV: '',
-      AC: '',
-      PR: '',
-      UI: '',
-      S: '',
-      C: '',
-      I: '',
-      A: '',
-    });
-    const cvssVersion = ref('V3');
-    function updateVector(value: null | string) {
-      cvssVector.value = value;
-    }
-    function updateScore(value: null | number) {
-      cvssScore.value = value;
-    }
-    vi.mocked(useCvssScores).mockReturnValue({
-      cvssVector,
-      cvssScore,
-      cvssVersion,
-      cvss3Factors,
-      cvss4Vector: ref<null | string>(''),
-      updateVector,
-      updateScore,
-    } as ReturnType<typeof useCvssScores>);
+    const {
+      useCvssScores: _useCvssScores,
+      validateCvssVector: _validateCvssVector,
+    } = await importActual('@/composables/useCvssScores');
+    vi.mocked(useCvssScores).mockImplementation(_useCvssScores);
     vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
     subject = mount(CvssCalculator, { error: null });
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+    vi.resetModules();
+    subject?.unmount();
   });
 
   it('shows calculator on input focus', async () => {
@@ -139,12 +120,13 @@ describe('cvssCalculator', () => {
       ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
+    await subject.vm.$nextTick();
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toBe('7.5 CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:H/A:H');
   });
 
   // Medium score
-  it.only('calculates medium score correctly', async () => {
+  it('calculates medium score correctly', async () => {
     const factorValuePairs: [string, string][] = [
       ['Attack Vector', 'Adjacent'],
       ['Attack Complexity', 'High'],
@@ -191,7 +173,6 @@ describe('cvssCalculator', () => {
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
     const inputVectorValue = subject.find('.vector-input');
-    console.log(inputVectorValue.html());
     expect(inputVectorValue.text()).toBe('0 CVSS:3.1/AV:P/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:N');
   });
 
