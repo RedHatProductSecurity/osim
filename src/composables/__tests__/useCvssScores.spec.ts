@@ -1,33 +1,45 @@
 import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test-suite-helpers';
 
+import { useFlaw } from '@/composables/useFlaw';
+import { useCvssScores } from '@/composables/useCvssScores';
+
 import { IssuerEnum } from '@/generated-client';
 import { putFlawCvssScores } from '@/services/FlawService';
 import type { ZodFlawType } from '@/types';
-
-import { useMockFlawWithModules } from './helpers';
+import { importActual, withSetup } from '@/__tests__/helpers';
 
 vi.mock('@/services/FlawService');
-
-const useMockedModel = async (flaw: ZodFlawType) => await useMockFlawWithModules(flaw, vi)({
-  useFlaw: '@/composables/useFlaw',
-  useFlawAffectsModel: '@/composables/useFlawAffectsModel',
-  useCvss3Calculator: '@/composables/useCvss3Calculator',
-  useCvss4Calculator: '@/composables/useCvss4Calculator',
-  useCvssScores: '@/composables/useCvssScores',
+vi.mock('@/composables/useCvssScores');
+vi.mock('@/composables/useFlaw', async (importOriginal) => {
+  const { ref } = await import('vue');
+  const flaw = (await import('@test-fixtures/sampleFlawFull.json')).default;
+  return {
+    ...await importOriginal(),
+    useFlaw: vi.fn().mockReturnValue({ flaw: ref(flaw) }),
+  };
 });
-
+const composeCvssScoresWith = (flaw: ZodFlawType) => {
+  const [composable] = withSetup(async () => {
+    const { useFlaw: _useFlaw } = await importActual('@/composables/useFlaw');
+    _useFlaw().flaw.value = flaw;
+    vi.mocked(useFlaw).mockReturnValue(_useFlaw());
+    const { useCvssScores: _useCvssScores } = await importActual('@/composables/useCvssScores');
+    const mockedModel = _useCvssScores();
+    vi.mocked(useCvssScores).mockReturnValue(mockedModel);
+    return mockedModel;
+  }, []);
+  return composable;
+};
 describe('useCvssScores', () => {
   describe('shouldDisplayEmailNistForm', () => {
     osimEmptyFlawTest('should be false when flaw does not have scores', async ({ flaw }) => {
-      const { useCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useCvssScores();
+      const { shouldDisplayEmailNistForm } = await composeCvssScoresWith(flaw);
 
       expect(shouldDisplayEmailNistForm.value).toBeFalsy();
     });
 
     osimFullFlawTest('should be true when flaw has different scores', async ({ flaw }) => {
-      const { useCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useCvssScores();
+      const { shouldDisplayEmailNistForm } = await composeCvssScoresWith(flaw);
 
       expect(shouldDisplayEmailNistForm.value).toBeTruthy();
     });
@@ -35,8 +47,7 @@ describe('useCvssScores', () => {
     osimFullFlawTest('should be false when flaw has the same scores and no comment', async ({ flaw }) => {
       flaw.cvss_scores[0].comment = '';
       flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
-      const { useCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useCvssScores();
+      const { shouldDisplayEmailNistForm } = await composeCvssScoresWith(flaw);
 
       expect(shouldDisplayEmailNistForm.value).toBeFalsy();
     });
@@ -44,8 +55,7 @@ describe('useCvssScores', () => {
     osimFullFlawTest('should be true when scores have comments', async ({ flaw }) => {
       flaw.cvss_scores[1] = { ...flaw.cvss_scores[0], issuer: IssuerEnum.Nist };
       flaw.cvss_scores[0].comment = 'This is a comment';
-      const { useCvssScores } = await useMockedModel(flaw);
-      const { shouldDisplayEmailNistForm } = useCvssScores();
+      const { shouldDisplayEmailNistForm } = await composeCvssScoresWith(flaw);
 
       expect(shouldDisplayEmailNistForm.value).toBeTruthy();
     });
@@ -54,8 +64,7 @@ describe('useCvssScores', () => {
   osimFullFlawTest('should match flaw embargo status', async ({ flaw }) => {
     flaw.cvss_scores.forEach(score => score.embargoed = true);
     flaw.embargoed = false;
-    const { useCvssScores } = await useMockedModel(flaw);
-    const { saveCvssScores } = useCvssScores();
+    const { saveCvssScores } = await composeCvssScoresWith(flaw);
 
     saveCvssScores();
 
