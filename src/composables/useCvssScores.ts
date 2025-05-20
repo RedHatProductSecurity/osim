@@ -80,9 +80,6 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
     ]);
     const parseResult = cvss3VectorSchema.safeParse(cvssVector);
     if (parseResult.success === false) {
-      console.log(cvssVector?.length, ' chars found in ', cvssVector);
-      console.log('CVSS3.1 vector error', parseResult.error.errors[0].message);
-      console.log('All results:', parseResult);
       return parseResult.error.errors[0].message;
     }
   }
@@ -152,7 +149,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   const cvssVector = computed(() => rhCvss.value?.vector);
   const cvssScore = computed(() => rhCvss.value?.score);
-  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3].vector ?? ''));
+  const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3]?.vector ?? ''));
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
