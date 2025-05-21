@@ -131,7 +131,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
         const cvss = getCvssData(entity, IssuerEnum.Rh, version);
         return [version, cvss as Cvss];
       }));
-    console.log(isAffect(entity) ? 'Affect' : 'Flaw',object, entity);
     return object;
   }
 
