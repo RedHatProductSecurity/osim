@@ -33,12 +33,12 @@ export function useCvss4Calculator() {
     deepMap(value => Array.isArray(value) ? null : value, METRICS),
   );
   const cvss4Vector = computed(() => {
-    const string = Object.values(cvss4Selections.value).flatMap((group: any) =>
+    const vector = Object.values(cvss4Selections.value).flatMap((group: any) =>
       Object.entries(group)
         .filter(([, value]) => value !== null)
         .map(([metric, value]) => `${metric}:${value}`),
     ).join('/');
-    return `CVSS:4.0/${filterRawString(string)}`;
+    return `CVSS:4.0/${vector}`;
   });
   const cvss4Score = computed(() => new CVSS40(cvss4Vector.value).score);
 
@@ -48,10 +48,6 @@ export function useCvss4Calculator() {
   });
 
   const errorV4 = computed(() => errorsV4.value.join('. ') || null);
-
-  watch(cvss4Vector, (vector) => {
-    console.log(new CVSS40(vector));
-  });
 
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
@@ -73,19 +69,11 @@ export function useCvss4Calculator() {
   }
 
   function setMetric(category: string, metric: string, value: string) {
-    console.log('setmetric');
     if (metric in cvss4Selections.value[category]) {
       cvss4Selections.value[category][metric] = value;
     } else {
       console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
     }
-  }
-
-  function filterRawString(vector: string) {
-    return vector.split('/').filter((ratedMetric) => {
-      const metric = ratedMetric.split(':')[0];
-      return ![null, undefined].includes(cvss4Selections.value['BASE'][metric]);
-    }).join('/');
   }
 
   return {
