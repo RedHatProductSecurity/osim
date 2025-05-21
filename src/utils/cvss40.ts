@@ -891,7 +891,7 @@ export class CVSS40 {
     E: { U: 0.2, P: 0.1, A: 0 },
   };
 
-  score!: number;
+  score!: null | number;
   severity!: string;
   vector: Vector = new Vector();
   error: string = '';
@@ -1195,7 +1195,9 @@ export class CVSS40 {
     * @param score - The CVSS score.
     * @returns - The qualitative severity rating.
     */
-  calculateSeverityRating(score: number) {
+  calculateSeverityRating(score: null | number) {
+    if (score === null) return 'Unknown';
+
     if (score === 0.0) {
       return 'None';
     } else if (score >= 0.1 && score <= 3.9) {
