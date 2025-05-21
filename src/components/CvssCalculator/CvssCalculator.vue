@@ -21,6 +21,7 @@ const {
   cvssVersion,
   errorV4,
   parseVectorV4String,
+  reset,
   setMetric,
   shouldSyncVectors,
   updateScore,
@@ -51,12 +52,6 @@ function onInputBlur(event: FocusEvent) {
   if (event.relatedTarget !== cvssDiv.value) {
     isFocused.value = false;
   }
-}
-
-function reset() {
-  updateScore(null);
-  updateVector(null);
-  cvss3Factors.value = {};
 }
 
 function handlePaste(e: ClipboardEvent) {

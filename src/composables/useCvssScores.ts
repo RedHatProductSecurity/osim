@@ -282,6 +282,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   function updateVector(vector: null | string) {
     rhCvss.value.vector = vector;
+    if (cvssVersion.value === CvssVersions.V4 && vector === null) parseVectorV4String(null);
   }
 
   function updateUsingV3Vector(newCvssVector: null | string | undefined) {
@@ -290,6 +291,12 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     updateVector(newCvssVector ?? '');
     const factors = parseCvss3Factors(newCvssVector ?? '');
     updateScore(calculateCvss3Score(factors) ?? 0);
+  }
+
+  function reset() {
+    updateVector(null);
+    updateScore(null);
+    cvss3Factors.value = {};
   }
 
   return {
@@ -307,6 +314,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     wasFlawCvssModified,
     flawRhCvss,
     rhCvss,
+    reset,
     parseVectorV4String,
     saveCvssScores,
     setMetric,
