@@ -92,7 +92,7 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
 }
 
 function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
-  return 'flaw' in maybeAffect;
+  return 'ps_component' in maybeAffect;
 }
 
 function formatScore(score: Nullable<number>) {
@@ -116,9 +116,9 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   function rhCvssByVersion(): Dict<string, Cvss> {
     const entity: CvssEntity = cvssEntity ?? flaw.value;
 
-    // Supply blank-slate CVSS objects if no scores exist
     for (const version of Object.values(CvssVersions)) {
       if (getCvssData(entity, IssuerEnum.Rh, version)) continue;
+      // Supply blank-slate CVSS objects if no scores exist
       if (isAffect(entity)) {
         (entity as ZodAffectType).cvss_scores?.push(newAffectCvss(version));
       } else {
@@ -126,11 +126,13 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       }
     }
 
-    return Object.fromEntries(
+    const object = Object.fromEntries(
       Object.values(CvssVersions).map((version) => {
         const cvss = getCvssData(entity, IssuerEnum.Rh, version);
         return [version, cvss as Cvss];
       }));
+    console.log(isAffect(entity) ? 'Affect' : 'Flaw',object, entity);
+    return object;
   }
 
   const entity: CvssEntity = cvssEntity ?? flaw.value;
