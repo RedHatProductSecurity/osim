@@ -5,7 +5,7 @@ import { map } from 'ramda';
 import { useFlaw } from '@/composables/useFlaw';
 
 import { IssuerEnum } from '@/generated-client';
-import { CVSS40, Vector, METRICS } from '@/utils/cvss40';
+import { CVSS40, METRICS } from '@/utils/cvss40';
 import { isNonArrayObject } from '@/utils/helpers';
 import type { Dict } from '@/types';
 import { CvssVersions } from '@/constants';
@@ -29,20 +29,25 @@ const deepMap = (transform: (arg: any) => any, object: Record<string, any>): any
 export function useCvss4Calculator() {
   const { flaw } = useFlaw();
 
-  const vectorForParse = new Vector();
-  const cvss4ClassInstance = new CVSS40(vectorForParse);
-  const cvss4Score = ref(cvss4ClassInstance.score);
-  const cvss4Vector = ref(cvss4ClassInstance.vector.raw);
   const cvss4Selections = ref(
     deepMap(value => Array.isArray(value) ? null : value, METRICS),
   );
+  const cvss4Vector = computed(() => {
+    const vector = Object.values(cvss4Selections.value).flatMap((group: any) =>
+      Object.entries(group)
+        .filter(([, value]) => value !== null)
+        .map(([metric, value]) => `${metric}:${value}`),
+    ).join('/');
+    return `CVSS:4.0/${vector}`;
+  });
+  const cvss4Score = computed(() => new CVSS40(cvss4Vector.value).score);
 
-  vectorForParse.updateMetricSelections(cvss4Selections.value);
+  const errorsV4 = computed(() => {
+    const _cvss = new CVSS40(cvss4Vector.value);
+    return [_cvss.error, _cvss.vector.error].filter(Boolean);
+  });
 
-  const errors = computed(() => [cvss4ClassInstance.error, cvss4ClassInstance.vector.error]);
-  const error = computed(() => errors.value.length > 0 ? errors.value.join(' ') : null);
-
-  watch(cvss4Selections, updateCvssFromSelections, { deep: true });
+  const errorV4 = computed(() => errorsV4.value.join('. ') || null);
 
   watch(flaw, () => {
     const cvss4Data = rhCvss4_0();
@@ -51,39 +56,31 @@ export function useCvss4Calculator() {
     }
   }, { immediate: true });
 
-  function parseVectorV4String(vector: string) {
-    cvss4ClassInstance.vector.updateVector(vector);
-    updateUiSelections(cvss4ClassInstance.vector.metricsSelections);
-  }
+  function parseVectorV4String(vector: null | string) {
+    const parsedMetrics = vector === null
+      ? null
+      : Object.fromEntries(vector.split('/').map(metric => metric.split(':')));
 
-  function updateUiSelections(selections: Dict<string, any>) {
-    for (const [metricGroup, metrics] of Object.entries(cvss4Selections.value)) {
-      for (const [metricFactor, metricValue] of Object.entries(selections)) {
-        if (metricFactor in (metrics as Dict)) {
-          cvss4Selections.value[metricGroup][metricFactor] = metricValue;
+    for (const [category, metrics] of Object.entries(cvss4Selections.value)) {
+      for (const metricFactor of Object.keys((metrics as Dict))) {
+        if (parsedMetrics === null) {
+          cvss4Selections.value[category][metricFactor] = null;
+        } else if (metricFactor in parsedMetrics) {
+          cvss4Selections.value[category][metricFactor] = parsedMetrics[metricFactor];
         }
       }
     }
   }
 
-  function updateCvssFromSelections(selections: Dict<string, any>) {
-    cvss4ClassInstance.vector.updateMetricSelections(selections);
-    updateUiSelections(selections);
-    cvss4ClassInstance.updateScore();
-    cvss4Score.value = cvss4ClassInstance.score;
-    cvss4Vector.value = cvss4ClassInstance.vector.raw;
-  }
-
-  function setMetric(category: string, metric: string, value: string) {
+  function setMetric(category: string, metric: string, value: null | string) {
     if (metric in cvss4Selections.value[category]) {
-      cvss4Selections.value[category][metric] = value;
-    } else {
-      console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
+      const shouldToggle = cvss4Selections.value[category][metric] === value;
+      cvss4Selections.value[category][metric] = shouldToggle ? null : value;
     }
   }
 
   return {
-    error,
+    errorV4,
     cvss4Selections,
     cvss4Score,
     cvss4Vector,
