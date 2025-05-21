@@ -92,7 +92,7 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
 }
 
 function isAffect(maybeAffect: CvssEntity): maybeAffect is ZodAffectType {
-  return 'flaw' in maybeAffect;
+  return 'ps_component' in maybeAffect;
 }
 
 function formatScore(score: Nullable<number>) {
@@ -109,16 +109,16 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     ]),
   ));
   const { updateAffectCvss } = useFlawAffectsModel();
-  const { cvss4Score, cvss4Selections, cvss4Vector, parseVectorV4String, setMetric } = useCvss4Calculator();
+  const { cvss4Score, cvss4Selections, cvss4Vector, errorV4, parseVectorV4String, setMetric } = useCvss4Calculator();
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
 
   function rhCvssByVersion(): Dict<string, Cvss> {
     const entity: CvssEntity = cvssEntity ?? flaw.value;
 
-    // Supply blank-slate CVSS objects if no scores exist
     for (const version of Object.values(CvssVersions)) {
       if (getCvssData(entity, IssuerEnum.Rh, version)) continue;
+      // Supply blank-slate CVSS objects if no scores exist
       if (isAffect(entity)) {
         (entity as ZodAffectType).cvss_scores?.push(newAffectCvss(version));
       } else {
@@ -126,11 +126,12 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       }
     }
 
-    return Object.fromEntries(
+    const object = Object.fromEntries(
       Object.values(CvssVersions).map((version) => {
         const cvss = getCvssData(entity, IssuerEnum.Rh, version);
         return [version, cvss as Cvss];
       }));
+    return object;
   }
 
   const entity: CvssEntity = cvssEntity ?? flaw.value;
@@ -217,7 +218,8 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
           continue;
         }
 
-        if (factor in cvss3Factors.value && v4Value !== null) {
+        if (factor in cvss3Factors.value) {
+          if (cvssScore.value !== null && v4Value === null) continue;
           cvss3Factors.value[factor] = v4Value as string;
           rhCvssScores.value[CvssVersions.V3].vector = formatCvss3Factors({
             ...cvss3Factors.value, CVSS: CvssVersionDisplayMap[CvssVersions.V3],
@@ -229,15 +231,16 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
     if (cvssVersion.value === CvssVersions.V3) {
       const factors = parseCvss3Factors(vector);
-      for (const factor in factors) {
-        if (factor === 'CVSS' || factors[factor] === '') continue;
+      for (const [factor, value] of Object.entries(factors)) {
+        if (factor === 'CVSS' || value === '') continue;
+        const correspondingMetric: string = CorrespondingCvssFactors[factor];
+        if (!correspondingMetric) continue;
 
         // CVSS4 has 2 metrics A, P, N for UI metrics, and only a value of N can be mapped to its corresponding
         // metric factor in CVSS3; A and P would be correct translations of R, but this must be chosen by the user
-        if (factor === 'UI' && [null, 'R'].includes(factors[factor])) continue;
+        const factorValue = (factor === 'UI' && value === 'R') ? null : value;
 
-        const metric: string = CorrespondingCvssFactors[factor] ?? factor;
-        setMetric('BASE', metric, factors[factor]);
+        cvss4Selections.value['BASE'][correspondingMetric] = factorValue;
       }
       rhCvssScores.value[CvssVersions.V4].vector = cvss4Vector.value;
       rhCvssScores.value[CvssVersions.V4].score = cvss4Score.value;
@@ -249,7 +252,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     for (const cvssData of Object.values(rhFlawCvssScores.value)) {
       // Update logic, if the CVSS score already exists in OSIDB
       if (cvssData.created_dt) {
-      // Handle existing CVSS score
+        // Handle existing CVSS score
         if (cvssData.vector === null && cvssData.uuid != null) {
           queue.push(deleteFlawCvssScores(flaw.value.uuid, cvssData.uuid));
         } else if (cvssData.vector !== null && cvssData.uuid) {
@@ -257,7 +260,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
           cvssData.embargoed = flaw.value.embargoed;
           queue.push(putFlawCvssScores(flaw.value.uuid, cvssData.uuid, cvssData));
         }
-      // Handle new CVSS score, since it does not exist in OSIDB yet
+        // Handle new CVSS score, since it does not exist in OSIDB yet
       } else if (cvssData.vector !== null) {
         const requestBody = {
           // "score":  is recalculated based on the vector by OSIDB and does not need to be included
@@ -281,14 +284,22 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   function updateVector(vector: null | string) {
     rhCvss.value.vector = vector;
+    if (cvssVersion.value === CvssVersions.V4 && vector === null) parseVectorV4String(null);
+    if (cvssVersion.value === CvssVersions.V3 && vector === null) cvss3Factors.value = {};
   }
 
   function updateUsingV3Vector(newCvssVector: null | string | undefined) {
     // Should this just update V3 instead of returnin if v4
     if (cvssVersion.value === CvssVersions.V4) return;
+
     updateVector(newCvssVector ?? '');
     const factors = parseCvss3Factors(newCvssVector ?? '');
     updateScore(calculateCvss3Score(factors) ?? 0);
+  }
+
+  function reset() {
+    updateVector(null);
+    updateScore(null);
   }
 
   return {
@@ -306,11 +317,13 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     wasFlawCvssModified,
     flawRhCvss,
     rhCvss,
+    reset,
     parseVectorV4String,
     saveCvssScores,
     setMetric,
     shouldSyncVectors,
     ...useFlawCvssStrings(flawRhCvss),
+    errorV4,
   };
 }
 
