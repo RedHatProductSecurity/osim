@@ -19,6 +19,7 @@ const {
   cvssScore,
   cvssVector,
   cvssVersion,
+  errorV4,
   parseVectorV4String,
   setMetric,
   shouldSyncVectors,
@@ -27,7 +28,7 @@ const {
   updateVector,
 } = useCvssScores();
 
-const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value));
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value) || errorV4.value);
 const isFocused = ref(false);
 
 const cvssDiv = ref();

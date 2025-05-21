@@ -109,7 +109,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     ]),
   ));
   const { updateAffectCvss } = useFlawAffectsModel();
-  const { cvss4Score, cvss4Selections, cvss4Vector, parseVectorV4String, setMetric } = useCvss4Calculator();
+  const { cvss4Score, cvss4Selections, cvss4Vector, errorV4, parseVectorV4String, setMetric } = useCvss4Calculator();
   const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
 
@@ -311,6 +311,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     setMetric,
     shouldSyncVectors,
     ...useFlawCvssStrings(flawRhCvss),
+    errorV4,
   };
 }
 
