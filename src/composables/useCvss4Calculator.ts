@@ -56,23 +56,26 @@ export function useCvss4Calculator() {
     }
   }, { immediate: true });
 
-  function parseVectorV4String(vector: string) {
-    const parsedMetrics = Object.fromEntries(vector.split('/').map(metric => metric.split(':')));
+  function parseVectorV4String(vector: null | string) {
+    const parsedMetrics = vector === null
+      ? null
+      : Object.fromEntries(vector.split('/').map(metric => metric.split(':')));
 
     for (const [category, metrics] of Object.entries(cvss4Selections.value)) {
       for (const metricFactor of Object.keys((metrics as Dict))) {
-        if (metricFactor in parsedMetrics) {
+        if (parsedMetrics === null) {
+          cvss4Selections.value[category][metricFactor] = null;
+        } else if (metricFactor in parsedMetrics) {
           cvss4Selections.value[category][metricFactor] = parsedMetrics[metricFactor];
         }
       }
     }
   }
 
-  function setMetric(category: string, metric: string, value: string) {
+  function setMetric(category: string, metric: string, value: null | string) {
     if (metric in cvss4Selections.value[category]) {
-      cvss4Selections.value[category][metric] = value;
-    } else {
-      console.debug('🚨 Failed to set metric: ', metric, 'not in', category, '. value', value, 'not assigned');
+      const shouldToggle = cvss4Selections.value[category][metric] === value;
+      cvss4Selections.value[category][metric] = shouldToggle ? null : value;
     }
   }
 

@@ -6,7 +6,7 @@ import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Ca
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
 import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
-import { parseCvss3Factors, calculateCvss3Score, formatCvss3Factors } from '@/composables/useCvss3Calculator';
+import { parseCvss3Factors } from '@/composables/useCvss3Calculator';
 
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
@@ -21,10 +21,10 @@ const {
   cvssVersion,
   errorV4,
   parseVectorV4String,
+  reset,
   setMetric,
   shouldSyncVectors,
   updateScore,
-  updateUsingV3Vector,
   updateVector,
 } = useCvssScores();
 
@@ -53,12 +53,6 @@ function onInputBlur(event: FocusEvent) {
   }
 }
 
-function reset() {
-  updateScore(null);
-  updateVector(null);
-  cvss3Factors.value = {};
-}
-
 function handlePaste(e: ClipboardEvent) {
   const maybeCvss = e.clipboardData?.getData('text');
   if (!maybeCvss) {
@@ -71,13 +65,13 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   if (cvssVersion.value === CvssVersions.V3) {
-    updateUsingV3Vector(maybeCvss); // TODO: Remove?
     if (!parseCvss3Factors(maybeCvss)['CVSS']) {
       cvss3Factors.value['CVSS'] = '3.1';
     }
-
-    updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
-    updateScore(calculateCvss3Score(cvss3Factors.value) ?? 0);
+    const factors = parseCvss3Factors(maybeCvss);
+    for (const [factor, value] of Object.entries(factors)) {
+      if (value) cvss3Factors.value[factor] = value;
+    };
   }
 }
 
@@ -138,12 +132,12 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvss4Vector="cvss4Vector"
-            :cvss3Factors="cvss3Factors"
+            :cvss4Vector
+            :cvss3Factors
             :cvssScore="cvssScore ?? null"
-            :isFocused="isFocused"
-            :highlightedFactor="highlightedFactor"
-            :error="error"
+            :isFocused
+            :highlightedFactor
+            :error
             :selectedVersion="cvssVersion"
             class="vector-input"
             @onInputFocus="onInputFocus"
