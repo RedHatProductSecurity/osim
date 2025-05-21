@@ -1,5 +1,10 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Add an unified view for all comment types  (`OSIDB-3467`)
+* Support changing between display modes in comment section  (`OSIDB-3467`)
+
 ## [2025.4.0]
 ### Added
 * Validate Discouraged an Prohibited CWE usage (`OSIDB-4127`)
