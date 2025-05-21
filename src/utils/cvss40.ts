@@ -144,12 +144,12 @@ export class Vector {
 
   updateMetricSelections(selections: Dict) {
     for (const category in METRICS) {
-      for (const metricFactor in METRICS[category as MetricsGroup]) {
+      for (const key in METRICS[category as MetricsGroup]) {
         // Use the first value in the array of allowed values as the default
-        // selections[key] = METRICS[category as MetricsGroup][key][0];
-        this.metricsSelections[metricFactor] = selections?.[category as MetricsGroup]?.[metricFactor]
-        ?? selections?.[metricFactor]
-        ?? METRICS[category as MetricsGroup][metricFactor][0];
+        const _default = category !== 'BASE' ? METRICS[category as MetricsGroup][key][0] : null;
+        this.metricsSelections[key] = selections?.[category as MetricsGroup]?.[key]
+        ?? selections?.[key]
+        ?? _default;
       }
     }
   }
@@ -199,7 +199,7 @@ export class Vector {
     * Example usage:
     * ```
     * vector.updateMetric("AV", "L");
-    * console.log(vector.raw); // Output: "CVSS:4.0/AV:L/AC:L/..."
+    * (vector.raw); // Output: "CVSS:4.0/AV:L/AC:L/..."
     * ```
     *
     * @param metric - The abbreviation of the metric to be updated (e.g., "AV", "AC").
@@ -209,7 +209,7 @@ export class Vector {
     if (Object.prototype.hasOwnProperty.call(this.metricsSelections, metric)) {
       this.metricsSelections[metric] = value;
     } else {
-      console.error(`Metric ${metric} not found.`);
+      this.error = `Metric ${metric} not found.`;
     }
   }
 
@@ -232,11 +232,11 @@ export class Vector {
     this.error = '';
 
     if (!vector) {
-      this.error = ('The vector string cannot be null, undefined, or empty.');
+      this.error = 'The vector string cannot be null, undefined, or empty.';
     }
 
     if (!this.validateStringVector(vector)) {
-      this.error = ('Invalid CVSS v4.0 vector: ' + vector);
+      this.error = 'Invalid CVSS v4.0 vector: ' + vector;
     }
 
     const metrics = vector.split('/');
@@ -267,7 +267,7 @@ export class Vector {
 
     // Check if the prefix is correct
     if (metrics.shift() !== 'CVSS:4.0') {
-      console.error('Error: invalid vector, missing CVSS v4.0 prefix from vector: ' + vector);
+      this.error = 'Error: invalid vector, missing CVSS v4.0 prefix from vector: ' + vector;
       return false;
     }
 
@@ -279,7 +279,7 @@ export class Vector {
 
       // Check if there are too many metric values
       if (!expectedMetrics[mandatoryMetricIndex]) {
-        console.error('Error: invalid vector, too many metric values');
+        this.error = 'Error: invalid vector, too many metric values';
         return false;
       }
 
@@ -287,7 +287,7 @@ export class Vector {
       while (expectedMetrics[mandatoryMetricIndex] && expectedMetrics[mandatoryMetricIndex][0] !== key) {
         // Check for missing mandatory metrics
         if (mandatoryMetricIndex < 11) {
-          console.error('Error: invalid vector, missing mandatory metrics');
+          this.error = 'Error: invalid vector, missing mandatory metrics';
           return false;
         }
         mandatoryMetricIndex++;
@@ -295,10 +295,7 @@ export class Vector {
 
       // Check if the value is valid for the given metric
       if (!expectedMetrics[mandatoryMetricIndex][1].includes(value)) {
-        console.error(
-          `Error: invalid vector, for key ${key}, value ${value} is not in`
-          + `${expectedMetrics[mandatoryMetricIndex][1]}`,
-        );
+        this.error = `Error: invalid vector, for key ${key}, value ${value} is not in ${expectedMetrics[mandatoryMetricIndex][1]}`;
         return false;
       }
 
@@ -451,7 +448,7 @@ export class Vector {
     // Construct the vector string dynamically based on the current state of `metrics`
     const baseString = 'CVSS:4.0';
     const metricEntries = Object.entries(this.metricsSelections)
-      .filter(([, value]) => value !== 'X') // Filter out metrics with value "X"
+      .filter(([, value]) => value && value !== 'X') // Filter out metrics with value "X"
       .map(([key, value]) => `/${key}:${value}`)
       .join('');
     return baseString + metricEntries;
@@ -466,8 +463,8 @@ export class Vector {
     *
     * @example
     * const breakdown = vectorInstance.severityBreakdown();
-    * console.log(breakdown["Exploitability"]); // Outputs: "Medium"
-    * console.log(breakdown["Complexity"]); // Outputs: "High"
+    * (breakdown["Exploitability"]); // Outputs: "Medium"
+    * (breakdown["Complexity"]); // Outputs: "High"
     *
     * @returns An object where each key is a metric description and
     * each value is the corresponding severity level.
@@ -516,10 +513,10 @@ export class Vector {
  *
  * @example
  * let vuln = new CVSS40("CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N/E:A/MAV:A");
- * console.log(vuln.score);  // Output the computed CVSS score (8.7)
- * console.log(vuln.severity); // Output the severity rating (High)
- * console.log(vuln.vector.nomenclature); // Output the corresponding nomenclature (CVSS-BTE)
- * console.log(vuln.vector.raw); // Output the raw vector
+ * (vuln.score);  // Output the computed CVSS score (8.7)
+ * (vuln.severity); // Output the severity rating (High)
+ * (vuln.vector.nomenclature); // Output the corresponding nomenclature (CVSS-BTE)
+ * (vuln.vector.raw); // Output the raw vector
  * @class
  */
 export class CVSS40 {
@@ -894,10 +891,10 @@ export class CVSS40 {
     E: { U: 0.2, P: 0.1, A: 0 },
   };
 
-  score!: number;
+  score!: null | number;
   severity!: string;
   vector: Vector = new Vector();
-  error: null | string = null;
+  error: string = '';
 
   /**
    * Constructs a CVSS40 object and initializes its properties.
@@ -913,13 +910,17 @@ export class CVSS40 {
     * (e.g., "CVSS:4.0/AV:L/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:A/MAV:A/AU:N/R:A").
     *                                Defaults to an empty string if not provided.
     */
-  constructor(input: null | string | Vector = '') {
+  constructor(input: any = '') {
     if (input instanceof Vector) {
       // If the input is a Vector object, use it directly
       this.vector = input;
     } else if (typeof input === 'string') {
       // If the input is a string, create a new Vector object from the string
       this.vector = new Vector(input);
+    } else if (input === null) {
+      this.vector = new Vector('');
+    } else {
+      this.error = `Invalid input ${input.constructor} type for CVSS40 constructor. Expected a string or a Vector object.`;
     }
 
     this.updateScore();
@@ -1156,7 +1157,7 @@ export class CVSS40 {
     // 3. The score of the vector is the score of the MacroVector
     //    (i.e. the score of the highest severity vector) minus the mean
     //    distance so computed. This score is rounded to one decimal place.
-    return roundToDecimalPlaces(Math.max(0, Math.min(10, value - meanDistance)), 1);
+    return roundToDecimalPlaces(Math.max(0, Math.min(10, value - meanDistance)), 1) || null;
   }
 
   /**
@@ -1194,7 +1195,9 @@ export class CVSS40 {
     * @param score - The CVSS score.
     * @returns - The qualitative severity rating.
     */
-  calculateSeverityRating(score: number) {
+  calculateSeverityRating(score: null | number) {
+    if (score === null) return 'Unknown';
+
     if (score === 0.0) {
       return 'None';
     } else if (score >= 0.1 && score <= 3.9) {
