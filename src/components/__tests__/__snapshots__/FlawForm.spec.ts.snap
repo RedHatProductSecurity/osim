@@ -341,13 +341,11 @@ exports[`flawForm > mounts and renders 1`] = `
         <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="APPROVED">
             <!--v-if-->
             <option data-v-001a00e0="" value=""></option>
-            <option data-v-001a00e0="" value="REQUESTED">REQUESTED</option>
-            <option data-v-001a00e0="" value="REJECTED">REJECTED</option>
-            <option data-v-001a00e0="" selected="" value="APPROVED">APPROVED</option>
-            <option data-v-001a00e0="" value="CISA_APPROVED">CISA_APPROVED</option>
-            <option data-v-001a00e0="" value="MINOR">MINOR</option>
-            <option data-v-001a00e0="" value="ZERO_DAY">ZERO_DAY</option>
-            <option data-v-001a00e0="" value="INVALID">INVALID</option>
+            <option data-v-001a00e0="" selected="" value="APPROVED">Major Incident Approved</option>
+            <option data-v-001a00e0="" value="CISA_APPROVED">Exploits (KEV) Approved</option>
+            <option data-v-001a00e0="" value="MINOR">Minor Incident Approved</option>
+            <option data-v-001a00e0="" value="REQUESTED">Major Incident Requested</option>
+            <option data-v-001a00e0="" value="REJECTED">Major Incident Rejected</option>
           </select>
           <!--v-if-->
         </div>

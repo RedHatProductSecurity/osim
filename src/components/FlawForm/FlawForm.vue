@@ -27,7 +27,13 @@ import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
-import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSources } from '@/types/zodFlaw';
+import {
+  type ZodFlawType,
+  MajorIncidentStateEnumWithBlank,
+  descriptionRequiredStates,
+  flawImpactEnum,
+  flawSources,
+} from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
@@ -60,7 +66,6 @@ const {
   errors,
   flaw,
   flawAcknowledgments,
-  flawIncidentStates,
   flawReferences,
   flawRhCvss3,
   highlightedNvdCvss3String,
@@ -296,7 +301,7 @@ const createdDate = computed(() => {
             <LabelSelect
               v-model="flaw.major_incident_state"
               label="Incident State"
-              :options="flawIncidentStates"
+              :options="MajorIncidentStateEnumWithBlank"
               :error="errors.major_incident_state"
             />
             <LabelEditable
