@@ -1,51 +1,33 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-
 import {
   calculatorButtons,
-  getFactors,
   getFactorColor,
-  calculateScore,
-  formatFactors,
   factorSeverities,
   weights,
-} from '@/composables/useCvssCalculator';
+} from '@/composables/useCvss3Calculator';
 
 defineProps<{
+  cvssVector: null | string;
   highlightedFactor: null | string;
   highlightedFactorValue: null | string;
   isFocused: boolean;
 }>();
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
-const cvssFactors = defineModel<Record<string, string>>('cvssFactors', { default: () => ({}) });
+const cvss3Factors = defineModel<Record<string, string>>('cvss3Factors', { default: () => ({}) });
 
 const emit = defineEmits<{
-  highlightFactor: [factor: null | string];
-  highlightFactorValue: [factor: null | string];
+  'highlightFactor': [factor: null | string];
+  'highlightFactorValue': [factor: null | string];
+  'update:cvssScore': [value: null | number];
+  'update:cvssVector': [value: null | string];
 }>();
 
-function updateFactors(newCvssVector: null | string | undefined) {
-  if (cvssVector.value !== newCvssVector) {
-    cvssVector.value = newCvssVector;
-  }
-  cvssFactors.value = getFactors(newCvssVector ?? '');
-}
-
-updateFactors(cvssVector.value);
-
-watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-});
-
 function factorButton(id: string, key: string) {
-  if (!cvssFactors.value['CVSS']) {
-    cvssFactors.value['CVSS'] = '3.1';
+  if (!cvss3Factors.value['CVSS']) {
+    cvss3Factors.value['CVSS'] = '3.1';
   }
-  cvssFactors.value[id] = cvssFactors.value[id] === key ? '' : key;
-  updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+
+  cvss3Factors.value[id] = cvss3Factors.value[id] === key ? '' : key;
 }
 </script>
 
@@ -86,16 +68,16 @@ function factorButton(id: string, key: string) {
                     tabindex="-1"
                     type="button"
                     class="btn lh-sm"
-                    :class="cvssFactors[col.id] === button.key ? 'osim-factor-highlight' : ''"
+                    :class="cvss3Factors[col.id] === button.key ? 'osim-factor-highlight' : ''"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     :title="`${factorSeverities[col.id][button.key]}: ${button.info}`"
                     :style="
-                      cvssFactors[col.id] === button.key
+                      cvss3Factors[col.id] === button.key
                         || highlightedFactorValue === `${rowIndex}${colIndex}${btnIndex}` ?
                           getFactorColor(weights[col.id][button.key], false, highlightedFactor) : {
                           backgroundColor: '#E0E0E0',
-                          color: (cvssFactors[col.id] === button.key
+                          color: (cvss3Factors[col.id] === button.key
                             && factorSeverities[col.id][button.key] !== 'Bad')
                             ? 'white'
                             : 'inherit'
@@ -121,7 +103,7 @@ function factorButton(id: string, key: string) {
 .cvss-calculator {
   &.overlayed {
     display: block;
-    transform: translateX(-25ch);
+    right: 5ch;
     background-color: #525252;
     border-radius: 10px;
     z-index: 5;

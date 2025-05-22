@@ -1,115 +1,65 @@
-import { type Component } from 'vue';
+import { ref, type Component } from 'vue';
 
 import { describe, expect } from 'vitest';
-import { createPinia, setActivePinia } from 'pinia';
-import { useRouter } from 'vue-router';
 import { flushPromises, VueWrapper } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import * as sampleTrackersQueryResult from '@test-fixtures/sampleTrackersQueryResult.json';
+import { ascend } from 'ramda';
 
-import { osimFullFlawTest, osimEmptyFlawTest, osimTestWithFlaw } from '@/components/__tests__/test-suite-helpers';
-import sampleTrackersQueryResult from '@/components/__tests__/__fixtures__/sampleTrackersQueryResult.json';
+import { osimFullFlawTest, osimEmptyFlawTest } from '@/components/__tests__/test-suite-helpers';
+import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { useFlawModel } from '@/composables/useFlawModel';
-import { useFetchFlaw } from '@/composables/useFetchFlaw';
-import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
-import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
-import { mountWithConfig, withSetup } from '@/__tests__/helpers';
+import { mountWithConfig } from '@/__tests__/helpers';
 import { getTrackersForFlaws } from '@/services/TrackerService';
-import { getNextAccessToken } from '@/services/OsidbAuthService';
-import type { ZodFlawType } from '@/types';
+
+import { useFilterSortAffects } from '../useFilterSortAffects';
 
 vi.mock('@/services/OsidbAuthService');
 vi.mock('@/services/TrackerService');
-vi.mock('@/composables/useFlaw');
+vi.mock('@/composables/useFlaw', () =>
+  ({ useFlaw: vi.fn().mockReturnValue({ flaw: {}, relatedFlaws: [] }) }),
+);
 vi.mock('@/composables/useFlawModel');
-vi.mock('@/composables/useFetchFlaw');
-vi.mock('@/composables/useFlawAffectsModel');
-vi.mock('@/stores/AffectsEditingStore');
-
-let pinia: ReturnType<typeof createPinia>;
-
-async function useMocks(flaw: ZodFlawType) {
-  type ActualFlaw = typeof import('@/composables/useFlaw');
-  type ActualFlawModel = typeof import('@/composables/useFlawModel');
-  type ActualFlawFetch = typeof import('@/composables/useFetchFlaw');
-  type ActualAffectsModel = typeof import('@/composables/useFlawAffectsModel');
-  type ActualEditingStore = typeof import('@/stores/AffectsEditingStore');
-
-  const { useFlaw: _useFlaw } =
-    await vi.importActual<ActualFlaw>('@/composables/useFlaw');
-
-  const { useFlawModel: _useFlawModel } =
-    await vi.importActual<ActualFlawModel>('@/composables/useFlawModel');
-
-  const { useFetchFlaw: _useFetchFlaw } =
-    await vi.importActual<ActualFlawFetch>('@/composables/useFetchFlaw');
-
-  const { useFlawAffectsModel: _useFlawAffectsModel } =
-    await vi.importActual<ActualAffectsModel>('@/composables/useFlawAffectsModel');
-
-  const { useAffectsEditingStore: _useAffectsEditingStore } =
-    await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
-
-  return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
-}
-
-const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => {
-  const {
-    _useAffectsEditingStore,
-    _useFetchFlaw,
-    _useFlaw,
-    _useFlawAffectsModel,
-    _useFlawModel,
-    flaw,
-  } = await useMocks(testFlaw);
-  const [[mockedFlaw, errors]] = withSetup(() => {
-    const mockedUseFlaw = _useFlaw();
-    mockedUseFlaw.flaw.value = flaw;
-    mockedUseFlaw.relatedFlaws.value = [flaw];
-
-    vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
-    vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
-    vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
-    vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
-    const mockedUseFlawModel = _useFlawModel(flaw, () => {});
-    vi.mocked(useFlawModel).mockReturnValue(mockedUseFlawModel);
-    const errors = mockedUseFlawModel.errors.value.affects;
-    return [mockedUseFlaw.flaw, errors];
-  });
-
-  return mountWithConfig(Component, {
-    props: {
-      embargoed: mockedFlaw.value.embargoed,
-      relatedFlaws: [mockedFlaw.value],
-      errors,
-    },
-  });
-};
+vi.mock('@/composables/useFetchFlaw', async importOriginal => ({
+  ...await importOriginal<typeof import('@/composables/useFetchFlaw')>(),
+}));
 
 type Subject = VueWrapper<Component>;
 let subject: Subject;
 
 describe('flawAffects', () => {
   // @ts-expect-error - flaw is not defined property
-  beforeEach(async ({ flaw }) => {
-    vi.clearAllMocks();
-    vi.resetModules();
-    pinia = createPinia();
-    setActivePinia(pinia);
-    vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
-    vi.mocked(getNextAccessToken).mockResolvedValue('mocked-access-token');
-    vi.mocked(useRouter);
-    const importedComponent = await import('@/components/FlawAffects/FlawAffects.vue');
-    const FlawAffects = importedComponent.default;
-    await flushPromises();
-    subject = await mountFlawAffects(flaw, FlawAffects);
-  });
+  beforeEach(({ flaw }) => {
+    // We need to reset localStorage as it is used by SettingsStore and it leaks between tests
+    localStorage.clear();
 
-  afterAll(() => {
-    vi.resetAllMocks();
-    vi.resetModules();
+    vi.mocked(getTrackersForFlaws).mockResolvedValue(sampleTrackersQueryResult);
+    vi.mocked(useFlaw, { partial: true }).mockReturnValue({ flaw: ref(flaw), relatedFlaws: ref([flaw]) });
+
+    // Because this composable has all this variables in the "module scope",
+    // they persist between tests, so we need to manually reset them.
+
+    const affectsFilters = useFilterSortAffects();
+    affectsFilters.selectedModules.value = [];
+    affectsFilters.impactFilters.value = [];
+    affectsFilters.resolutionFilters.value = [];
+    affectsFilters.affectednessFilters.value = [];
+    affectsFilters.sortKey.value = 'ps_module';
+    affectsFilters.sortOrder.value = ascend;
+
+    subject = mountWithConfig(FlawAffects, {
+      props: {
+        errors: [],
+        relatedFlaws: [flaw],
+        embargoed: flaw.embargoed,
+      },
+    },
+    // Since we have some logic inside the stores, we need the actions to execute
+    // otherwise we'll need to provide implementation for AffetsEditingStore
+    [createTestingPinia({ stubActions: false })],
+    );
   });
 
   osimEmptyFlawTest('Correctly renders the component when there are no affects to display',
@@ -183,14 +133,12 @@ describe('flawAffects', () => {
   });
 
   osimFullFlawTest('new affects are added in edit mode', async () => {
-    await flushPromises();
-
     let affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
     expect(affectsTableEditingRows.length).toBe(0);
 
     const actionBtns = subject.findAll('.affects-toolbar .affects-table-actions .btn');
     const addAffectBtn = actionBtns.find(button => button.text() === 'Add New Affect');
-    addAffectBtn?.trigger('click');
+    await addAffectBtn?.trigger('click');
     await flushPromises();
 
     affectsTableEditingRows = subject.findAll('.affects-management table tbody tr.editing');
@@ -330,9 +278,15 @@ describe('flawAffects', () => {
     expect(justificationSelect.attributes()).not.toHaveProperty('disabled');
   });
 
-  const flawInvalidPurl = structuredClone(sampleFlawFull) as ZodFlawType;
-  flawInvalidPurl.affects[0].purl = 'invalid-purl';
-  osimTestWithFlaw(flawInvalidPurl)('Validates affect PURLs when present', async () => {
+  osimFullFlawTest('Validates affect PURLs when present', async ({ flaw }) => {
+    subject = mountWithConfig(FlawAffects, {
+      props: {
+        errors: [{ purl: 'Invalid' }],
+        relatedFlaws: [flaw],
+        embargoed: flaw.embargoed,
+      },
+    },
+    );
     const affectRow = subject.find('.affects-management table tbody tr');
     const purlField = affectRow.find('td:nth-of-type(5)');
     const purlInputError = purlField.find('.affect-field-error');

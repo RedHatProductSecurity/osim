@@ -41,9 +41,9 @@ export function deepCopyFromRaw<T extends Record<string, any>>(sourceObj: T): T 
 
 type DeepMappable = any[] | Record<string, any>;
 
-const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
-const isNonArrayObject = (value: any) => R.is(Object, value) && !R.is(Array, value);
-const isDeepMappable = (value: DeepMappable) => isNonEmptyArray(value) || isNonArrayObject(value);
+export const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
+export const isNonArrayObject = (value: any) => R.is(Object, value) && !R.is(Array, value);
+export const isDeepMappable = (value: DeepMappable) => isNonEmptyArray(value) || isNonArrayObject(value);
 
 export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any =>
   R.map(
@@ -78,7 +78,7 @@ export function getSpecficCvssScore(scores: any[], issuer: string, version: stri
 }
 
 export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
-  return score.issuer === IssuerEnum.Rh && score.cvss_version === CVSS_V3;
+  return score?.issuer === IssuerEnum.Rh && score?.cvss_version === CVSS_V3;
 }
 
 export function affectRhCvss3(affect: ZodAffectType) {
@@ -123,4 +123,8 @@ export function watchedRef<T>(initialValue?: T): [Ref<(T | undefined) | (undefin
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - TODO: this throws an error on `yarn type-check` but IDE is happy with it
   return [refValue, hasChanged] as const;
+}
+
+export function regexCVSS(keys: string[]) {
+  return keys.map(key => new RegExp(`(?<=^|\\/)${key}:(?<${key}>[^/]+)`));
 }
