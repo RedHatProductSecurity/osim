@@ -88,6 +88,9 @@ const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;
 
 onMounted(() => {
+  if (props.flaw.cve_id) {
+    document.title = document.title.replace('Flaw Details', props.flaw.cve_id);
+  }
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
   isEmbargoed.value = initialFlaw?.embargoed;
   if (draftFlaw) {
