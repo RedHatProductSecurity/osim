@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Renamed Incident states (`OSIDB-3850`)
+
 ## [2025.4.0]
 ### Added
 * Validate Discouraged an Prohibited CWE usage (`OSIDB-4127`)
