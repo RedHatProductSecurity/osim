@@ -5,6 +5,7 @@
 - [ ] Commits consolidated
 - [ ] Changelog updated
 - [ ] Test cases added/updated
+- [ ] Integration tests updated
 - [ ] Jira ticket updated
 
 ## Summary:

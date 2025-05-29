@@ -27,7 +27,13 @@ import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
-import { type ZodFlawType, descriptionRequiredStates, flawImpactEnum, flawSources } from '@/types/zodFlaw';
+import {
+  type ZodFlawType,
+  MajorIncidentStateEnumWithBlank,
+  descriptionRequiredStates,
+  flawImpactEnum,
+  flawSources,
+} from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
@@ -60,7 +66,6 @@ const {
   errors,
   flaw,
   flawAcknowledgments,
-  flawIncidentStates,
   flawReferences,
   flawRhCvss3,
   highlightedNvdCvss3String,
@@ -88,6 +93,9 @@ const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;
 
 onMounted(() => {
+  if (props.flaw.cve_id) {
+    document.title = props.flaw.cve_id;
+  }
   initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
   isEmbargoed.value = initialFlaw?.embargoed;
   if (draftFlaw) {
@@ -220,7 +228,21 @@ const createdDate = computed(() => {
                   type="text"
                   label="CVE ID"
                   :error="errors.cve_id"
-                />
+                >
+                  <template #label>
+                    <a
+                      v-if="!isEmbargoed && flaw.cve_id"
+                      :href="`https://access.redhat.com/security/cve/${flaw.cve_id}`"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      CVE ID <i class="bi-box-arrow-up-right ms-2" />
+                    </a>
+                    <span v-else>
+                      CVE ID
+                    </span>
+                  </template>
+                </LabelEditable>
               </div>
               <div
                 v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
@@ -282,7 +304,7 @@ const createdDate = computed(() => {
             <LabelSelect
               v-model="flaw.major_incident_state"
               label="Incident State"
-              :options="flawIncidentStates"
+              :options="MajorIncidentStateEnumWithBlank"
               :error="errors.major_incident_state"
             />
             <LabelEditable
@@ -348,7 +370,6 @@ const createdDate = computed(() => {
                   <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
                 </select>
               </span>
-
             </template>
           </LabelTextarea>
           <LabelTextarea

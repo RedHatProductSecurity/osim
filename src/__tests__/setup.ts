@@ -1,6 +1,8 @@
 import { enableAutoUnmount } from '@vue/test-utils';
 import { setupServer } from 'msw/node';
 
+import type { OsimRuntime } from '@/stores/osimRuntime';
+
 vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   const { ref } = await import('vue');
   const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
@@ -14,7 +16,7 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
       revision: '1',
       version: '1.0.0',
     }),
-    osimRuntime: ref({
+    osimRuntime: ref<OsimRuntime>({
       readOnly: false,
       env: 'test',
       osimVersion: { rev: '1', tag: '1.0.0', timestamp: new Date('2024-08-29T14:00:00Z').toISOString() },
@@ -26,6 +28,7 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
         jira: '',
         errata: '',
         jiraDisplay: '',
+        mitre: '',
       },
     }),
   });

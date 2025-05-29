@@ -3,22 +3,31 @@ import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
 import type { ValueOf } from '@/utils/typeHelpers';
+import { loadCweData } from '@/services/CweService';
 
 import {
-  MajorIncidentStateEnum,
   NistCvssValidationEnum,
   RequiresCveDescriptionEnum,
   SourceBe0Enum,
   IssuerEnum,
   FlawReferenceType,
   StateEnum,
+  MajorIncidentStateEnum,
 } from '../generated-client';
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const Source521EnumWithBlank = { '': '', ...SourceBe0Enum } as const;
-export const MajorIncidentStateEnumWithBlank = { '': '', ...MajorIncidentStateEnum } as const;
+// TODO: Remove once OSIDB-3959 is resolved
+export const MajorIncidentStateEnumWithBlank = {
+  '': '',
+  'Major Incident Approved': MajorIncidentStateEnum.Approved,
+  'Exploits (KEV) Approved': MajorIncidentStateEnum.CisaApproved,
+  'Minor Incident Approved': MajorIncidentStateEnum.Minor,
+  'Major Incident Requested': MajorIncidentStateEnum.Requested,
+  'Major Incident Rejected': MajorIncidentStateEnum.Rejected,
+} as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
 export const flawSources = Object.values(Source521EnumWithBlank);
@@ -176,7 +185,7 @@ export const ZodFlawSchema = z.object({
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
   mitigation: z.string().nullish(),
-  major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullish(),
+  major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullable(),
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
   affects: z.array(ZodAffectSchema), // read-only
   comments: z.array(ZodFlawCommentSchema),
@@ -265,6 +274,23 @@ export const ZodFlawSchema = z.object({
       'Affected component cannot be registered on the affected module twice',
       ['affects', `${affect.index}`, 'ps_component'],
     );
+  }
+
+  if (zodFlaw.cwe_id) {
+    const cweData = loadCweData();
+    zodFlaw.cwe_id?.match(/CWE-\d+/gi)?.forEach((flawCWE) => {
+      cweData
+        .filter(member => `CWE-${member.id}` === flawCWE && (member.isProhibited || member.isDiscouraged))
+        .forEach((member) => {
+          let msg = `CWE-${member.id} is ${member.usage.toLowerCase()}`;
+
+          if (member.usage.toLowerCase() === 'discouraged') {
+            msg += `, use another under the same CWE class (${member.category})`;
+          }
+
+          raiseIssue(msg, ['cwe_id']);
+        });
+    });
   }
 });
 
