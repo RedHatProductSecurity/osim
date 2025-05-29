@@ -280,7 +280,7 @@ describe('flawComments', () => {
 
   it('should not render tabs if unified view is set', async () => {
     const store = useSettingsStore();
-    store.settings.singleCommentsView = true;
+    store.settings.unifiedCommentsView = true;
     await flushPromises();
 
     const tabs = subject.find('.nav-tabs');

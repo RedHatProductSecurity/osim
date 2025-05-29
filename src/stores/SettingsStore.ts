@@ -15,7 +15,7 @@ export const SettingsSchema = z.object({
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
-  singleCommentsView: z.boolean().default(false),
+  unifiedCommentsView: z.boolean().default(false),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -28,7 +28,7 @@ const defaultValues: SettingsType = {
   trackersPerPage: 10,
   isHidingLabels: false,
   privacyNoticeShown: false,
-  singleCommentsView: false,
+  unifiedCommentsView: false,
 };
 
 export const useSettingsStore = defineStore('SettingsStore', () => {

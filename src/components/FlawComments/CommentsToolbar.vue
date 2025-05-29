@@ -78,7 +78,7 @@ const { settings } = storeToRefs(useSettingsStore());
     <div class="form-check form-switch ms-auto" style="font-size: 18px">
       <input
         id="singleViewSwitch"
-        v-model="settings['singleCommentsView']"
+        v-model="settings['unifiedCommentsView']"
         class="form-check-input"
         type="checkbox"
       >

@@ -75,7 +75,7 @@ const newCommentAllowed = computed(() =>
         selectedTab.value !== CommentType.System
         && (props.internalCommentsAvailable || selectedTab.value !== CommentType.Internal)
       )
-      || (settings.value['singleCommentsView']))
+      || (settings.value['unifiedCommentsView']))
   ),
 );
 
@@ -118,7 +118,7 @@ const showJiraLink = computed(() =>
       @cancelComment="() => isAddingNewComment = false"
     />
     <Tabs
-      v-if="!settings['singleCommentsView']"
+      v-if="!settings['unifiedCommentsView']"
       :labels="commentLabels"
       :default="0"
       :tooltips="Object.values(commentTooltips)"
