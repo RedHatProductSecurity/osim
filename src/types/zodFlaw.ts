@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { DateTime } from 'luxon';
 
 import { cveRegex } from '@/utils/helpers';
-import type { ValueOf } from '@/utils/typeHelpers';
 import { loadCweData } from '@/services/CweService';
+import type { ValueOf } from '@/types';
 
 import {
   NistCvssValidationEnum,
@@ -105,7 +105,7 @@ export type FlawCVSSSchemaType = typeof FlawCVSSSchema;
 export const FlawCVSSSchema = z.object({
   comment: z.string().nullable(),
   cvss_version: z.string(),
-  flaw: z.string().uuid(),
+  flaw: z.string().uuid().nullish(),
   issuer: z.nativeEnum(IssuerEnum),
   score: z.number().nullable(), // $float
   uuid: z.string().uuid().nullable(), // read-only

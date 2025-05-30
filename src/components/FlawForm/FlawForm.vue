@@ -21,6 +21,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -67,27 +68,29 @@ const {
   flaw,
   flawAcknowledgments,
   flawReferences,
-  flawRhCvss3,
-  highlightedNvdCvss3String,
   internalComments,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
   isValid,
   loadInternalComments,
-  nvdCvss3String,
   osimLink,
   privateComments,
   publicComments,
-  rhCvss3String,
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
-  shouldDisplayEmailNistForm,
   systemComments,
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel(props.flaw, onSaveSuccess);
+
+const {
+  highlightedNvdCvssString,
+  nvdCvssString,
+  rhCvssString,
+  shouldDisplayEmailNistForm,
+} = useCvssScores();
 
 const { draftFlaw } = useDraftFlawStore();
 let initialFlaw: ZodFlawType;
@@ -264,20 +267,16 @@ const createdDate = computed(() => {
               :error="errors.impact"
               :withBlank="true"
             />
-            <CvssCalculator
-              :id="flawRhCvss3.uuid"
-              v-model:cvss-vector="flawRhCvss3.vector"
-              v-model:cvss-score="flawRhCvss3.score"
-            />
+            <CvssCalculator />
             <CvssSection
-              :highlightedNvdCvss3String
+              :highlightedNvdCvssString
               :shouldDisplayEmailNistForm
               :cveId="flaw.cve_id"
               :summary="flaw.comment_zero"
               :bugzilla="bugzillaLink"
-              :cvss="rhCvss3String"
+              :cvss="rhCvssString"
               :allCvss="flaw.cvss_scores"
-              :nistCvss="nvdCvss3String"
+              :nistCvss="nvdCvssString"
             />
             <CweSelector
               v-model="flaw.cwe_id"
