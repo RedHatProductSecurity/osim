@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import sanitizeHtml from 'sanitize-html';
 import * as marked from 'marked';
@@ -13,7 +13,9 @@ const { closeModal, isModalOpen, openModal } = useModal();
 const html = ref({ header: '', body: '' });
 
 function fetchChangeLog() {
-  return fetch('/CHANGELOG.md')
+  const scriptEl = document.head.querySelector('script[src]') as HTMLScriptElement;
+  const buildString = scriptEl?.src?.match(/\/index-(\w+)\.js/)?.[1];
+  return fetch(`/CHANGELOG.md?build=${buildString}`)
     .then(response => response.text())
     .then(async (text) => {
       const parsedCleanHtml = await marked.parse(sanitizeHtml(text));
@@ -29,8 +31,7 @@ function fetchChangeLog() {
       html.value.body = htmlAsDom.body.outerHTML || '';
     });
 }
-
-fetchChangeLog();
+onMounted(fetchChangeLog);
 </script>
 
 <template>
