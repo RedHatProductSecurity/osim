@@ -13,6 +13,11 @@
 ### Changed
 * Renamed Incident states (`OSIDB-3850`)
 
+### Added
+* Support CVSS versions 3 & 4
+  * Optional score syncronization
+  * New CVSS4 Calculator UI
+
 ## [2025.4.0]
 ### Added
 * Validate Discouraged an Prohibited CWE usage (`OSIDB-4127`)
