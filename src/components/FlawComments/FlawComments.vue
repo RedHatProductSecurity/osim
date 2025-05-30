@@ -88,6 +88,16 @@ const showBugzillaLink = computed(() =>
 const showJiraLink = computed(() =>
   props.internalCommentsAvailable && props.commentsByType[CommentType.Internal].length > 0,
 );
+
+const tabsTooltips = computed(() => {
+  const defaultTooltips = Object.values(commentTooltips);
+  if (props.internalCommentsAvailable) {
+    return defaultTooltips;
+  } else {
+    defaultTooltips[CommentType.Internal] = 'Internal comments not available';
+    return defaultTooltips;
+  }
+});
 </script>
 
 <template>
@@ -121,7 +131,8 @@ const showJiraLink = computed(() =>
       v-if="!settings['unifiedCommentsView']"
       :labels="commentLabels"
       :default="0"
-      :tooltips="Object.values(commentTooltips)"
+      :disabled="!internalCommentsAvailable ? [2] : []"
+      :tooltips="tabsTooltips"
       @tab-change="handleTabChange"
     >
       <template #tab-content>
@@ -134,9 +145,6 @@ const showJiraLink = computed(() =>
             >
               <span class="visually-hidden">Loading...</span>
             </span>
-            <div v-else-if="!internalCommentsAvailable && selectedTab === CommentType.Internal">
-              Internal comments not available
-            </div>
             <div v-else-if="commentsByType[selectedTab]?.length === 0">
               No {{ CommentType[selectedTab].toLowerCase() }} comments
             </div>
