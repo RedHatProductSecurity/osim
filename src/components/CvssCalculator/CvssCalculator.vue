@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
-import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
+import { useCvssScores } from '@/composables/useCvssScores';
 import { parseCvss3Factors } from '@/composables/useCvss3Calculator';
 
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
@@ -19,7 +19,7 @@ const {
   cvssScore,
   cvssVector,
   cvssVersion,
-  errorV4,
+  error,
   parseVectorV4String,
   reset,
   setMetric,
@@ -27,12 +27,6 @@ const {
   updateScore,
   updateVector,
 } = useCvssScores();
-
-const error = computed(() => {
-  const errors = [validateCvssVector(cvssVector.value, cvssVersion.value)];
-  if (cvssVersion.value === CvssVersions.V4) errors.push(errorV4.value);
-  return errors.filter(Boolean).join('. ') || null;
-});
 
 const isFocused = ref(false);
 

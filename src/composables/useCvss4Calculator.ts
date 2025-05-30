@@ -38,12 +38,14 @@ export function useCvss4Calculator() {
         .filter(([, value]) => value !== null)
         .map(([metric, value]) => `${metric}:${value}`),
     ).join('/');
-    return `CVSS:4.0/${vector}`;
+    return vector.length ? `CVSS:4.0/${vector}` : null;
   });
-  const cvss4Score = computed(() => new CVSS40(cvss4Vector.value).score);
+  const cvssClass = computed(() => new CVSS40(cvss4Vector.value));
+  const cvss4Score = computed(() => (cvss4Vector.value === null || errorV4.value) ? null : cvssClass.value.score);
 
   const errorsV4 = computed(() => {
-    const _cvss = new CVSS40(cvss4Vector.value);
+    if (!cvss4Vector.value) return [];
+    const _cvss = cvssClass.value;
     return [_cvss.error, _cvss.vector.error].filter(Boolean);
   });
 

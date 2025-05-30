@@ -206,7 +206,7 @@ export class Vector {
     * @param value - The new value to assign to the metric (e.g., "L", "H").
     */
   updateMetric(metric: string, value: number) {
-    if (Object.prototype.hasOwnProperty.call(this.metricsSelections, metric)) {
+    if (metric in this.metricsSelections) {
       this.metricsSelections[metric] = value;
     } else {
       this.error = `Metric ${metric} not found.`;
@@ -235,9 +235,7 @@ export class Vector {
       this.error = 'The vector string cannot be null, undefined, or empty.';
     }
 
-    if (!this.validateStringVector(vector)) {
-      this.error = 'Invalid CVSS v4.0 vector: ' + vector;
-    }
+    this.validateStringVector(vector);
 
     const metrics = vector.split('/');
 
@@ -263,43 +261,28 @@ export class Vector {
     * @returns - Returns true if the vector is valid, otherwise false.
   */
   validateStringVector(vector: string): boolean {
-    const metrics = vector.split('/');
+    const metrics = Object.fromEntries(vector.split('/').map(metric => metric.split(':')));
 
-    // Check if the prefix is correct
-    if (metrics.shift() !== 'CVSS:4.0') {
-      this.error = 'Error: invalid vector, missing CVSS v4.0 prefix from vector: ' + vector;
+    if (metrics.CVSS !== '4.0') {
+      this.error = 'Error: missing/incorrect V4 prefix';
       return false;
     }
 
-    const expectedMetrics = Object.entries(Vector.ALL_METRICS);
-    let mandatoryMetricIndex = 0;
+    const mandatoryMetrics = Object.keys(METRICS.BASE);
+    const expectedMetrics: Dict = Object.entries(Vector.ALL_METRICS);
 
-    for (const metric of metrics) {
-      const [key, value] = metric.split(':');
+    const missingMetrics = mandatoryMetrics.filter(metric => !(metric in metrics));
 
-      // Check if there are too many metric values
-      if (!expectedMetrics[mandatoryMetricIndex]) {
-        this.error = 'Error: invalid vector, too many metric values';
+    if (missingMetrics.length) {
+      this.error = 'Error: missing mandatory metrics: ' + missingMetrics.join(', ');
+      return false;
+    }
+
+    for (const [key, value] of Object.entries(metrics)) {
+      if (expectedMetrics[key] && !expectedMetrics[key].includes(value)) {
+        this.error = 'Error: invalid value for metric ' + key + ': ' + value;
         return false;
       }
-
-      // Find the current expected metric
-      while (expectedMetrics[mandatoryMetricIndex] && expectedMetrics[mandatoryMetricIndex][0] !== key) {
-        // Check for missing mandatory metrics
-        if (mandatoryMetricIndex < 11) {
-          this.error = 'Error: invalid vector, missing mandatory metrics';
-          return false;
-        }
-        mandatoryMetricIndex++;
-      }
-
-      // Check if the value is valid for the given metric
-      if (!expectedMetrics[mandatoryMetricIndex][1].includes(value)) {
-        this.error = `Error: invalid vector, for key ${key}, value ${value} is not in ${expectedMetrics[mandatoryMetricIndex][1]}`;
-        return false;
-      }
-
-      mandatoryMetricIndex++;
     }
 
     return true;

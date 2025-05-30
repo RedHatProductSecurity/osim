@@ -9,15 +9,6 @@ exports[`cvssCalculatorOverlayed > mounts and renders correctly 1`] = `
           <div data-v-1d5c2355="" data-v-b418eb65="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input vector-input" style="height: 30.8px;" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;">0 </span>
             <!--v-if-->
             <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if-->
           </div>
         </div><button data-v-b418eb65="" tabindex="-1" type="button" disabled="" class="erase-button input-group-text"><i data-v-b418eb65="" class="bi bi-eraser"></i></button>
       </div>
