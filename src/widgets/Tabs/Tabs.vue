@@ -24,13 +24,17 @@ const selectTab = (index: number) => {
 <template>
   <div>
     <ul class="nav nav-tabs">
-      <li v-for="(label,index) in labels" :key="index" class="nav-item">
+      <li
+        v-for="(label,index) in labels"
+        :key="index"
+        :title="tooltips[index]"
+        class="nav-item"
+      >
         <button
           type="button"
           class="nav-link"
           :class="{ 'active': activeTabIndex === index }"
           :disabled="disabled?.includes(index)"
-          :title="tooltips[index]"
           @click="selectTab(index)"
         >
           {{ label }}

@@ -7,7 +7,7 @@ import { blankFlaw } from '@/composables/useFlaw';
 
 import { getJiraComments, postJiraComment } from '@/services/JiraService';
 import { postFlawComment } from '@/services/FlawService';
-import { SYSTEM_EMAIL } from '@/constants';
+import { CommentType, SYSTEM_EMAIL } from '@/constants';
 import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
 
 vi.mock('@/services/JiraService');
@@ -46,21 +46,23 @@ describe('useFlawCommentsModel', () => {
     flaw.value.comments = [{ is_private: false } as ZodFlawCommentType];
     const { publicComments } = useFlawCommentsModel(flaw, isSaving, afterSaveSuccess);
 
-    expect(publicComments.value).toEqual([{ is_private: false }]);
+    expect(publicComments.value).toEqual([{ is_private: false, type: CommentType.Public }]);
   });
 
   it('should filter private comments correctly', () => {
     flaw.value.comments = [{ is_private: true, creator: 'user@example.com' } as ZodFlawCommentType];
     const { privateComments } = useFlawCommentsModel(flaw, isSaving, afterSaveSuccess);
 
-    expect(privateComments.value).toEqual([{ is_private: true, creator: 'user@example.com' }]);
+    expect(privateComments.value).toEqual(
+      [{ is_private: true, type: CommentType.Private, creator: 'user@example.com' }],
+    );
   });
 
   it('should filter system comments correctly', () => {
     flaw.value.comments = [{ creator: SYSTEM_EMAIL } as ZodFlawCommentType];
     const { systemComments } = useFlawCommentsModel(flaw, isSaving, afterSaveSuccess);
 
-    expect(systemComments.value).toEqual([{ creator: SYSTEM_EMAIL }]);
+    expect(systemComments.value).toEqual([{ creator: SYSTEM_EMAIL, type: CommentType.System }]);
   });
 
   it('should load internal comments when task_key is present', async () => {
@@ -79,7 +81,9 @@ describe('useFlawCommentsModel', () => {
     await flushPromises();
 
     expect(internalCommentsAvailable.value).toBe(true);
-    expect(internalComments.value).toEqual([{ creator: 'author', created_dt: 'date', text: 'body' }]);
+    expect(internalComments.value).toEqual(
+      [{ creator: 'author', created_dt: 'date', text: 'body', type: CommentType.Internal }],
+    );
     expect(isLoadingInternalComments.value).toBe(false);
   });
 
