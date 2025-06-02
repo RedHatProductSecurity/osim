@@ -14,6 +14,7 @@ export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Rh]: 'RH',
   [IssuerEnum.Cveorg]: 'CVEOrg',
   [IssuerEnum.Osv]: 'OSV',
+  [IssuerEnum.Cisa]: 'CISA',
 };
 
 const formatScore = (score: Nullable<number>) => score?.toFixed(1) ?? '';
