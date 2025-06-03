@@ -7,6 +7,9 @@
 * Add searchbox filter on trackers table (`OSIDB-4062`)
 * Show CVE ID on page title (`OSIDB-3715`)
 
+### Fixed
+* Display CISA as an Issuer (`OSIDB-4279`)
+
 ### Changed
 * Renamed Incident states (`OSIDB-3850`)
 
