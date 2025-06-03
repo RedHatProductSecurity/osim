@@ -12,6 +12,7 @@ const initialState: SettingsType = {
   trackersPerPage: 10,
   isHidingLabels: false,
   privacyNoticeShown: true,
+  unifiedCommentsView: false,
 };
 
 // While not used in this file, store below depends on global pinia test instance
@@ -40,6 +41,7 @@ describe('settingsStore', () => {
       trackersPerPage: 1337,
       isHidingLabels: !initialState.isHidingLabels,
       privacyNoticeShown: false,
+      unifiedCommentsView: false,
     };
 
     settingsStore.settings = settings;
