@@ -148,9 +148,15 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   const maybeAffect = flaw.value.affects.find(matchAffect);
   const maybeCvss = maybeAffect?.cvss_scores.find(filterCvssData(IssuerEnum.Rh, cvssVersion.value));
 
-  const cvssVector = computed(() => rhCvss.value?.vector);
-  const cvssScore = computed(() => rhCvss.value?.score);
+  const cvssVector = computed(() => rhCvss.value?.vector ? rhCvss.value?.vector : null);
+  const cvssScore = computed(() => rhCvss.value?.score ?? null);
   const { cvss3Factors } = useCvss3Calculator(computed(() => rhCvssScores.value[CvssVersions.V3]?.vector ?? ''));
+
+  const error = computed(() => {
+    const errors = [validateCvssVector(cvssVector.value, cvssVersion.value)];
+    if (cvssVersion.value === CvssVersions.V4) errors.push(errorV4.value);
+    return errors.filter(Boolean).join('. ') || null;
+  });
 
   if (isAffect(entity) && maybeAffect && !maybeCvss) {
     maybeAffect.cvss_scores.push(newAffectCvss());
@@ -323,7 +329,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     setMetric,
     shouldSyncVectors,
     ...useFlawCvssStrings(flawRhCvss),
-    errorV4,
+    error,
   };
 }
 
