@@ -31,7 +31,7 @@ import type {
 } from '@/types';
 
 const wasFlawCvssModified = ref(false);
-const shouldSyncVectors = ref(true);
+const shouldSyncVectors = ref(false);
 const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
 function filterCvssData(issuer: string, version: string) {
