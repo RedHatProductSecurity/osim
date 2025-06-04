@@ -1,0 +1,42 @@
+{
+    "uuid": "75432788-8d59-4f9f-9fbb-e983e3ebd053",
+    "cve_id": "",
+    "impact": "",
+    "components": [],
+    "title": "",
+    "trackers": [],
+    "comment_zero": "",
+    "cve_description": "",
+    "requires_cve_description": "",
+    "statement": "",
+    "cwe_id": "",
+    "unembargo_dt": "",
+    "source": "",
+    "reported_dt": "",
+    "mitigation": "",
+    "major_incident_state": "",
+    "nist_cvss_validation": "",
+    "affects": [],
+    "comments": [],
+    "meta_attr": {
+        "bz_id": ""
+    },
+    "acknowledgments": [],
+    "references": [],
+    "cvss_scores": [],
+    "embargoed": false,
+    "created_dt": "2021-09-13T09:09:38Z",
+    "updated_dt": "2023-12-06T17:12:21Z",
+    "classification": {
+        "workflow": "DEFAULT",
+        "state": "NEW"
+    },
+    "owner": "",
+    "task_key": "",
+    "team_id": "",
+    "alerts": [],
+    "dt": "2024-01-17T22:31:19.131516Z",
+    "revision": "b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c",
+    "version": "3.5.2",
+    "env": "stage"
+}
