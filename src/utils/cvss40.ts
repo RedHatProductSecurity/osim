@@ -26,20 +26,9 @@
  */
 import type { Dict } from '@/types';
 
-function roundToDecimalPlaces(value: number, decimalPlaces = 1) {
-  // Step 1: Shift the decimal point by multiplying with 10^decimalPlaces
-  const factor = Math.pow(10, decimalPlaces);
-
-  // Step 2: Apply the ROUND_HALF_UP logic by rounding to the nearest integer
-  // After shifting the decimal point
-  const shiftedValue = value * factor;
-  const roundedValue = Math.round(shiftedValue);
-
-  // Step 3: Shift the decimal point back by dividing with the same factor
-  const result = roundedValue / factor;
-
-  // Step 4: Ensure the result has the correct number of decimal places
-  return Number.parseFloat(result.toFixed(decimalPlaces));
+function roundToDecimalPlaces(value: number) {
+  const EPSILON = Math.pow(10, -6);
+  return Math.round((value + EPSILON) * 10) / 10;
 }
 
 /**
@@ -205,7 +194,7 @@ export class Vector {
     * @param metric - The abbreviation of the metric to be updated (e.g., "AV", "AC").
     * @param value - The new value to assign to the metric (e.g., "L", "H").
     */
-  updateMetric(metric: string, value: number) {
+  updateMetric(metric: string, value: string) {
     if (metric in this.metricsSelections) {
       this.metricsSelections[metric] = value;
     } else {
@@ -1140,7 +1129,7 @@ export class CVSS40 {
     // 3. The score of the vector is the score of the MacroVector
     //    (i.e. the score of the highest severity vector) minus the mean
     //    distance so computed. This score is rounded to one decimal place.
-    return roundToDecimalPlaces(Math.max(0, Math.min(10, value - meanDistance)), 1) || null;
+    return roundToDecimalPlaces(Math.max(0, Math.min(10, value - meanDistance))) || null;
   }
 
   /**
@@ -1159,6 +1148,7 @@ export class CVSS40 {
     for (const metric in CVSS40.METRIC_LEVELS) {
       const effectiveMetricValue = this.vector.getEffectiveMetricValue(metric);
       const extractedMetricValue = this.extractValueMetric(metric, maxVector);
+      // Floating point errors can emerge here
       distances[metric] = CVSS40.METRIC_LEVELS[metric][effectiveMetricValue]
       - CVSS40.METRIC_LEVELS[metric][extractedMetricValue];
     }
