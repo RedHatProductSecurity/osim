@@ -24,6 +24,7 @@ defineEmits<{
   <label class="osim-input mb-2 ps-3">
     <div class="row">
       <span v-if="label" class="form-label col-3">
+        <slot name="labelSlot" />
         {{ label }}
       </span>
       <div class="col-9">

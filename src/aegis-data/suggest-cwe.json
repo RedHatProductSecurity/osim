@@ -1,0 +1,10 @@
+{
+  "cve_id": "CVE-2025-0725",
+  "title": "Buffer Overflow in libcurl via zlib Integer Overflow",
+  "components": [
+    "libcurl"
+  ],
+  "explanation": "This vulnerability exhibits characteristics of both CWE-190 (Integer Overflow) and CWE-119 (Buffer Overflow). The primary weakness is CWE-190 (Integer Overflow) which leads to a buffer overflow condition. The vulnerability occurs when libcurl processes gzip-compressed HTTP responses using an older version of zlib (1.2.0.3 or older). The integer overflow in the decompression process subsequently causes a buffer overflow, making this a classic example of an integer overflow leading to a buffer overflow vulnerability. The integer overflow is the root cause that enables the buffer overflow condition.",
+  "confidence": 0.95,
+  "impact": "CWE-190"
+}

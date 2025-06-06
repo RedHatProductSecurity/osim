@@ -1,0 +1,10 @@
+{
+  "cve_id": "CVE-2025-0725",
+  "title": "Buffer Overflow in libcurl via zlib Integer Overflow",
+  "components": [
+    "libcurl"
+  ],
+  "explanation": "",
+  "confidence": 1.0,
+  "contains_PII": false
+}

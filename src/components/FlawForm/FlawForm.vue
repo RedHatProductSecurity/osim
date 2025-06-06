@@ -3,6 +3,7 @@ import { computed, ref, watch, onMounted } from 'vue';
 
 import { DateTime } from 'luxon';
 
+import AegisSuggestion from '@/components/Aegis/AegisSuggestion.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
 import CveRequestForm from '@/components/CveRequestForm/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
@@ -260,7 +261,19 @@ const createdDate = computed(() => {
               :options="flawImpactEnum"
               :error="errors.impact"
               :withBlank="true"
-            />
+            >
+              <template #labelSlot>
+                <AegisSuggestion
+                  title="Low"
+                  :confidence="95"
+                  disabledTooltip="Suggest Impact"
+                  content="Buffer Overflow in libcurl via zlib Integer Overflow"
+                  enabledTooltip="Suggestion applied"
+                  :enabled="false"
+                  btnText="Apply"
+                />
+              </template>
+            </LabelSelect>
             <CvssCalculator
               :id="flawRhCvss3.uuid"
               v-model:cvss-vector="flawRhCvss3.vector"
@@ -359,6 +372,17 @@ const createdDate = computed(() => {
           >
             <template #label>
               <span class="form-label col-3 osim-folder-tab-label">
+                <AegisSuggestion
+                  title="libcurl HTTP Decompression Buffer Overflow"
+                  :confidence="95"
+                  disabledTooltip="Suggest Impact"
+                  content="A flaw was found in libcurl's HTTP response decompression handling.
+                    This vulnerability allows remote attackers to trigger a buffer overflow via specially
+                    crafted HTTP responses when automatic gzip decompression is enabled."
+                  enabledTooltip="Suggestion applied"
+                  :enabled="false"
+                  btnText="Apply"
+                />
                 Description
               </span>
               <span class="col-3 ps-2">
@@ -375,7 +399,25 @@ const createdDate = computed(() => {
             placeholder="Statement Text ..."
             :error="errors.statement"
             class="col-6 px-4 py-2"
-          />
+          >
+            <template #label>
+              <span class="form-label col-3 osim-folder-tab-label">
+                <AegisSuggestion
+                  title="Buffer Overflow in libcurl via zlib Integer Overflow"
+                  :confidence="95"
+                  disabledTooltip="REwrite statement"
+                  content="A buffer overflow vulnerability was identified in libcurl when processing
+                  HTTP responses with automaticgzip decompression enabled via CURLOPT_ACCEPT_ENCODING.
+                  The flaw occurs due to an integer overflow in zlib versions 1.2.0.3 and older,
+                  which could be exploited by an attacker through specially crafted HTTP responses."
+                  enabledTooltip="Suggestion applied"
+                  :enabled="false"
+                  btnText="Apply"
+                />
+                Statement
+              </span>
+            </template>
+          </LabelTextarea>
           <LabelTextarea
             v-model="flaw.mitigation"
             label="Mitigation"

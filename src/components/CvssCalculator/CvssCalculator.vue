@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
+import AegisSuggestion from '@/components/Aegis/AegisSuggestion.vue';
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import CvssCalculator from '@/components/CvssCalculator/CvssFactorButtons.vue';
 
@@ -90,6 +91,21 @@ function highlightFactorValue(factor: null | string) {
     <div class="osim-input mb-2">
       <label class="label-group row">
         <span class="form-label col-3">
+          <AegisSuggestion
+            title="This CVE is not applicable to any supported version of Red Hat Enterprise Linux since RHEL-4."
+            :confidence="95"
+            disabledTooltip="Explain CVSS Diff"
+            content="The significant difference between Red Hat's CVSS score (0.0) and NVD's score (7.5)
+            is due to Red Hat's determination that this vulnerability is not applicable
+            to any supported versions of Red Hat Enterprise Linux since RHEL-4.
+            The vulnerability only affects systems using zlib 1.2.0.3 or older,
+            which is not present in supported Red Hat products.
+            NVD's higher score reflects the potential impact of the vulnerability in general,
+            without considering specific vendor implementations or version constraints."
+            enabledTooltip="Suggestion applied"
+            :enabled="false"
+            btnText="Apply"
+          />
           RH CVSSv3
         </span>
         <div class="input-wrapper col">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   error?: string;
-  label: string;
+  label?: string;
   loading?: boolean;
 }>();
 </script>

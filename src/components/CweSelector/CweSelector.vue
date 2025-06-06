@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 
+import AegisSuggestion from '@/components/Aegis/AegisSuggestion.vue';
+
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import type { CWEMemberType } from '@/types/mitreCwe';
@@ -85,7 +87,18 @@ const getUsageClass = (usage: string) => {
 </script>
 
 <template>
-  <LabelDiv :label class="mb-2">
+  <LabelDiv class="mb-2" :label>
+    <template #labelSlot>
+      <AegisSuggestion
+        title="CWE-190"
+        :confidence="95"
+        disabledTooltip="Suggest CWE"
+        content="Buffer Overflow in libcurl via zlib Integer Overflow"
+        enabledTooltip="Suggestion applied"
+        :enabled="false"
+        btnText="Apply"
+      />
+    </template>
     <EditableTextWithSuggestions
       v-model="modelValue"
       :error

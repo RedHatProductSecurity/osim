@@ -1,0 +1,13 @@
+{
+  "cve_id": "CVE-2025-0725",
+  "title": "Buffer Overflow in libcurl via zlib Integer Overflow",
+  "components": [
+    "libcurl"
+  ],
+  "original_statement": [
+    "This CVE is not applicable to any supported version of Red Hat Enterprise Linux since RHEL-4."
+  ],
+  "explanation": "The original statement only indicates non-applicability without providing any context about the vulnerability. The rewritten statement improves upon this by:\n\n1. Clearly stating the vulnerability type (buffer overflow)\n2. Identifying the specific trigger condition (gzip decompression)\n3. Specifying the affected component (libcurl) and its interaction with zlib\n4. Including version information for context\n5. Maintaining Red Hat's perspective while providing more technical detail\n6. Adding the attack vector information (HTTP responses)",
+  "confidence": 0.95,
+  "statement": "A buffer overflow vulnerability was identified in libcurl when processing HTTP responses with automatic gzip decompression enabled via CURLOPT_ACCEPT_ENCODING. The flaw occurs due to an integer overflow in zlib versions 1.2.0.3 and older, which could be exploited by an attacker through specially crafted HTTP responses. This vulnerability is not applicable to supported versions of Red Hat Enterprise Linux as they use newer versions of zlib."
+}

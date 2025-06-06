@@ -1,0 +1,12 @@
+{
+  "cve_id": "CVE-2025-0725",
+  "title": "Buffer Overflow in libcurl via zlib Integer Overflow",
+  "redhat_cvss_score": "0.0",
+  "nvd_cvss_score": "7.5",
+  "components": [
+    "libcurl"
+  ],
+  "explanation": "The significant difference between Red Hat's CVSS score (0.0) and NVD's score (7.5) is due to Red Hat's determination that this vulnerability is not applicable to any supported versions of Red Hat Enterprise Linux since RHEL-4. The vulnerability only affects systems using zlib 1.2.0.3 or older, which is not present in supported Red Hat products. NVD's higher score reflects the potential impact of the vulnerability in general, without considering specific vendor implementations or version constraints. Red Hat's score accurately reflects the actual risk to their supported products, which is effectively zero since the vulnerable component versions are not present in their ecosystem.",
+  "confidence": 0.95,
+  "redhat_statement": "This CVE is not applicable to any supported version of Red Hat Enterprise Linux since RHEL-4."
+}

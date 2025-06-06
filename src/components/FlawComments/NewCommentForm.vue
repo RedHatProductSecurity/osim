@@ -3,6 +3,8 @@ import { nextTick, computed, ref } from 'vue';
 
 import { isDefined, watchDebounced } from '@vueuse/core';
 
+import AegisSuggestion from '@/components/Aegis/AegisSuggestion.vue';
+
 import { createCatchHandler } from '@/composables/service-helpers';
 
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -141,7 +143,22 @@ function commentTypeString(type: CommentType | undefined): string {
       Any information provided in this comment will be publicly visible on Bugzilla.
     </div>
     <template v-if="!isInternalComment">
-      <LabelTextarea v-model="newComment" :label="`New ${commentTypeString(newCommentType)} Comment`" />
+      <LabelTextarea v-model="newComment" :label="`New ${commentTypeString(newCommentType)} Comment`">
+        <template #label>
+          <span class="form-label col-3 osim-folder-tab-label">
+            <AegisSuggestion
+              title="Identified 1 PII entity"
+              :confidence="95"
+              disabledTooltip="Identify PII"
+              content="email address"
+              enabledTooltip=""
+              :enabled="false"
+              btnText="Remove PII"
+            />
+            New Public Comment
+          </span>
+        </template>
+      </LabelTextarea>
     </template>
     <template v-if="isInternalComment && internalCommentsAvailable">
       <LabelTextarea
@@ -152,7 +169,11 @@ function commentTypeString(type: CommentType | undefined): string {
         :loading="isLoadingSuggestions"
         @keydown="clearSuggestions"
         @click="clearSuggestions"
-      />
+      >
+        <template #label>
+          <i class="bi bi-x-diamond" title="Identify PII" />
+        </template>
+      </LabelTextarea>
       <DropDown
         v-if="suggestions.length > 0"
         :style="{ width: 'auto', left: caretPos[0], top: caretPos[1], right: 'auto' }"
