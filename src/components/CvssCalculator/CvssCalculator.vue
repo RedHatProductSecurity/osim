@@ -200,7 +200,7 @@ function highlightFactorValue(factor: null | string) {
     }
 
     .input-wrapper {
-      z-index: 15;
+      z-index: 3;
       padding-inline: 0;
       margin-inline: 0;
     }
