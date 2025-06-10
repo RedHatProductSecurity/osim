@@ -1,6 +1,6 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # App build stage
-FROM registry.access.redhat.com/ubi9/nodejs-20 AS dev
+FROM registry.access.redhat.com/ubi9/nodejs-20:9.6 AS dev
 RUN npm install -g yarn
 COPY . .
 RUN yarn
@@ -14,7 +14,7 @@ RUN --mount=target=/mnt \
     "$(date --utc --date=@"$(git show --quiet --format=%ct)" +%FT%TZ)"
 
 # Nginx service stage
-FROM registry.access.redhat.com/ubi9/ubi-minimal AS nginx-base
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6 AS nginx-base
 
 EXPOSE 8080
 ENV OSIM_ENV=dev
