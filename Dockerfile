@@ -21,7 +21,10 @@ ENV OSIM_ENV=dev
 
 STOPSIGNAL SIGQUIT
 
-RUN microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx \
+# Upgrade base packages
+RUN microdnf --refresh --best --nodocs --noplugins --setopt install_weak_deps=0 -y upgrade \
+# Install Nginx and clean up
+    && microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx \
     && microdnf clean all \
 # Set up unprivileged nginx
     && sed -i '/^user nginx;$/d' /etc/nginx/nginx.conf \
