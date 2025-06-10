@@ -85,7 +85,7 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
   }
 
   if (version === CvssVersions.V4) {
-    return new CVSS40(cvssVector).error;
+    return new CVSS40(cvssVector).error || null;
   }
 
   return null;
