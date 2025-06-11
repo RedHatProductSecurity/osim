@@ -15,6 +15,7 @@ export const SettingsSchema = z.object({
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
+  affectsColumnWidths: z.array(z.number()).default([]),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -27,6 +28,7 @@ const defaultValues: SettingsType = {
   trackersPerPage: 10,
   isHidingLabels: false,
   privacyNoticeShown: false,
+  affectsColumnWidths: [],
 };
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
