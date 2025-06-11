@@ -394,7 +394,6 @@ tr {
   height: 39.2px;
 
   td {
-    max-width: 24ch;
     transition:
       background-color 0.5s,
       color 0.5s,
@@ -449,10 +448,6 @@ tr {
       & > div {
         text-align: right;
       }
-    }
-
-    &:nth-of-type(7) {
-      max-width: 24ch;
     }
 
     input,
