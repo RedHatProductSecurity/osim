@@ -16,6 +16,8 @@ export const SettingsSchema = z.object({
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
   unifiedCommentsView: z.boolean().default(false),
+  affectsColumnWidths: z.array(z.number()).default([]),
+  trackersColumnWidths: z.array(z.number()).default([]),
 });
 
 export type SettingsType = z.infer<typeof SettingsSchema>;
@@ -29,6 +31,8 @@ const defaultValues: SettingsType = {
   isHidingLabels: false,
   privacyNoticeShown: false,
   unifiedCommentsView: false,
+  affectsColumnWidths: [],
+  trackersColumnWidths: [],
 };
 
 export const useSettingsStore = defineStore('SettingsStore', () => {

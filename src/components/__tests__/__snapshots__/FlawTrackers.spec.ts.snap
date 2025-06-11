@@ -16,7 +16,7 @@ exports[`flawTrackers > Correctly renders the component when there are not track
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
             <th data-v-89a61d08="">Bug ID</th>
@@ -56,7 +56,7 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
             <th data-v-89a61d08="">Bug ID</th>
@@ -160,7 +160,7 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
             <th data-v-89a61d08="">Bug ID</th>

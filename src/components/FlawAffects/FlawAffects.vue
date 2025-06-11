@@ -610,6 +610,8 @@ const displayedTrackers = computed(() => {
   }
 
   .affects-management {
+    max-width: 100%;
+
     .pagination-controls {
       display: flex;
 
