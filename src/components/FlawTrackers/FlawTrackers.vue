@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 
 import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager/TrackerManager.vue';
 
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
+import { useTableResize } from '@/composables/useTableResize';
 
 import { formatDate } from '@/utils/helpers';
 import type { ZodTrackerType, ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { trackerUrl } from '@/services/TrackerService';
+
+import { trackersColumns } from './trackersColumns';
 
 type TrackerWithModule = { ps_component: string; ps_module: string } & ZodTrackerType;
 
@@ -118,6 +121,24 @@ const {
 
 const tableTrackers = computed(() => {
   return showAllTrackers.value ? filteredTrackers.value : paginatedTrackers.value;
+});
+
+const { settings: userSettings } = useSettingsStore();
+
+const trackersHeaderRowRef = ref<HTMLTableRowElement | null>(null);
+
+const { columnWidths: trackersColumnWidths, startResize } = useTableResize(
+  userSettings.trackersColumnWidths,
+  trackersHeaderRowRef,
+  {
+    minColumnWidth: 50,
+    maxColumnWidth: 500,
+    maxTableWidth: 1800,
+  },
+);
+
+watch(trackersColumnWidths.value, () => {
+  userSettings.trackersColumnWidths = trackersColumnWidths.value;
 });
 </script>
 
@@ -227,74 +248,69 @@ const tableTrackers = computed(() => {
       >
         <table class="table table-striped table-info mb-0">
           <thead>
-            <tr>
-              <th>Bug ID</th>
-              <th>Module</th>
-              <th>Component</th>
-              <th>Product Stream</th>
-              <th>
-                <span class="align-bottom me-1">Status</span>
-                <button
-                  id="status-filter"
-                  type="button"
-                  class="btn btn-sm border-0 p-0"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="outside"
-                  aria-expanded="false"
-                  @contextmenu.prevent="statusFilter = []"
-                >
+            <tr ref="trackersHeaderRowRef">
+              <th
+                v-for="column in trackersColumns"
+                :key="column.key"
+                :style="{ width: settings.trackersColumnWidths[column.index] + 'px' }"
+                :class="{ 'cursor-pointer': column.sortable }"
+                @click="column.sortable ? setSort(column.key as sortKeys) : undefined"
+              >
+                <template v-if="column.hasFilter">
+                  <span class="align-bottom me-1">{{ column.label }}</span>
+                  <button
+                    id="status-filter"
+                    type="button"
+                    class="btn btn-sm border-0 p-0"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
+                    aria-expanded="false"
+                    @contextmenu.prevent="statusFilter = []"
+                  >
+                    <i
+                      class="bi"
+                      :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
+                      :title="statusFilter.length !== 0 ? 'Filtering by some statuses' : ''"
+                    />
+                  </button>
+                  <ul
+                    class="dropdown-menu"
+                    aria-labelledby="status-filter"
+                  >
+                    <template v-for="status in trackerStatuses" :key="status">
+                      <li><a
+                        href="#"
+                        class="btn py-0 dropdown-item"
+                        @click.prevent="toggleStatusFilter(status)"
+                      >
+                        <input
+                          type="checkbox"
+                          class="form-check-input me-2"
+                          :checked="statusFilter.includes(status)"
+                          @click.stop="toggleStatusFilter(status)"
+                        />
+                        <span>{{ status.toUpperCase() }}</span>
+                      </a></li>
+                    </template>
+                  </ul>
+                </template>
+                <template v-else-if="column.sortable">
+                  {{ column.label }}
                   <i
+                    :class="{
+                      'opacity-0': sortKey !== column.key,
+                      'bi-caret-down-fill': sortOrder === descend,
+                      'bi-caret-up-fill': sortOrder !== descend,
+                    }"
                     class="bi"
-                    :class="statusFilter.length === 0 ? 'bi-funnel' : 'bi-funnel-fill'"
-                    :title="statusFilter.length !== 0 ? 'Filtering by some statuses' : ''"
                   />
-                </button>
-                <ul
-                  class="dropdown-menu"
-                  aria-labelledby="status-filter"
-                >
-                  <template v-for="status in trackerStatuses" :key="status">
-                    <li><a
-                      href="#"
-                      class="btn py-0 dropdown-item"
-                      @click.prevent="toggleStatusFilter(status)"
-                    >
-                      <input
-                        type="checkbox"
-                        class="form-check-input me-2"
-                        :checked="statusFilter.includes(status)"
-                        @click.stop="toggleStatusFilter(status)"
-                      />
-                      <span>{{ status.toUpperCase() }}</span>
-                    </a></li>
-                  </template>
-                </ul>
-              </th>
-              <th>Resolution</th>
-              <th
-                @click="setSort('created_dt')"
-              >
-                Created date
-                <i
-                  :class="{
-                    'opacity-0': sortKey !== 'created_dt',
-                    'bi-caret-down-fill': sortOrder === descend,
-                    'bi-caret-up-fill': sortOrder !== descend,
-                  }"
-                  class="bi"
-                />
-              </th>
-              <th
-                @click="setSort('updated_dt')"
-              >
-                Updated date
-                <i
-                  :class="{
-                    'opacity-0': sortKey !== 'updated_dt',
-                    'bi-caret-down-fill': sortOrder === descend,
-                    'bi-caret-up-fill': sortOrder !== descend,
-                  }"
-                  class="bi"
+                </template>
+                <template v-else>
+                  {{ column.label }}
+                </template>
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, column.index)"
                 />
               </th>
             </tr>
@@ -421,19 +437,35 @@ const tableTrackers = computed(() => {
         z-index: 10;
       }
 
-      tr th {
+      th {
+        position: relative;
         user-select: none;
+        text-wrap: nowrap;
 
-        #status-filter .bi {
-          font-size: 1rem;
+        .trackers-resizer {
+          position: absolute;
+          padding: 0;
+          background-color: #212529;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 6px;
+          border-inline: 1px solid #212529;
+          cursor: col-resize;
+          z-index: 1;
         }
 
-        &:nth-of-type(7) {
-          cursor: pointer;
-        }
+        tr th {
+          user-select: none;
 
-        &:nth-of-type(8) {
-          cursor: pointer;
+          #status-filter .bi {
+            font-size: 1rem;
+          }
+
+          &:nth-of-type(7),
+          &:nth-of-type(8) {
+            cursor: pointer;
+          }
         }
       }
     }
