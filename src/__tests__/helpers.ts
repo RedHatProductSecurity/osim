@@ -86,3 +86,7 @@ export async function importActual(path: string) {
   type Imported = Awaited<typeof imported>;
   return vi.importActual<Imported>(path);
 }
+
+export const createMouseEvent = (type: string, clientX: number) => {
+  return new MouseEvent(type, { clientX, bubbles: true, cancelable: true });
+};
