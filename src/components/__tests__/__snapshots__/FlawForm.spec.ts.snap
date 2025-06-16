@@ -560,7 +560,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
           </div>
         </div>
-        <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1" selectedmodules="">
+        <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1">
           <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
             <tr data-v-3026e75d="">
               <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>

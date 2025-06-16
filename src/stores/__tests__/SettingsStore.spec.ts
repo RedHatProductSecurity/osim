@@ -13,6 +13,8 @@ const initialState: SettingsType = {
   isHidingLabels: false,
   privacyNoticeShown: true,
   unifiedCommentsView: false,
+  affectsColumnWidths: [],
+  trackersColumnWidths: [],
 };
 
 // While not used in this file, store below depends on global pinia test instance
@@ -42,6 +44,8 @@ describe('settingsStore', () => {
       isHidingLabels: !initialState.isHidingLabels,
       privacyNoticeShown: false,
       unifiedCommentsView: false,
+      affectsColumnWidths: [],
+      trackersColumnWidths: [],
     };
 
     settingsStore.settings = settings;

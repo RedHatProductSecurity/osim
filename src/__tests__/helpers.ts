@@ -80,3 +80,7 @@ export const mountWithConfig: MountConfig = (
     plugins: plugins ?? [createTestingPinia(), router],
   },
 });
+
+export const createMouseEvent = (type: string, clientX: number) => {
+  return new MouseEvent(type, { clientX, bubbles: true, cancelable: true });
+};
