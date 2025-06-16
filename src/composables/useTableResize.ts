@@ -28,7 +28,7 @@ export function useTableResize(
   const startResize = (event: MouseEvent, index: number) => {
     resizingColIndex.value = index;
     initialMouseX.value = event.clientX;
-    initialColWidth.value = (event.target as HTMLElement).parentElement!.offsetWidth;
+    initialColWidth.value = columnWidths.value[index];
 
     if (index + 1 < columnWidths.value.length && columnWidths.value[index + 1] !== undefined) {
       nextColInitialWidth.value = columnWidths.value[index + 1];
@@ -91,6 +91,14 @@ export function useTableResize(
 
   return {
     startResize,
+    endResize,
     columnWidths,
+
+    // Expose internal states for easier testing
+    totalColumnWidth,
+    resizingColIndex,
+    initialMouseX,
+    initialColWidth,
+    nextColInitialWidth,
   };
 }
