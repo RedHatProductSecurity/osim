@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 
 import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager/TrackerManager.vue';
 
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
+import { useTableResize } from '@/composables/useTableResize';
 
 import { formatDate } from '@/utils/helpers';
 import type { ZodTrackerType, ZodFlawType } from '@/types';
@@ -119,6 +120,24 @@ const {
 const tableTrackers = computed(() => {
   return showAllTrackers.value ? filteredTrackers.value : paginatedTrackers.value;
 });
+
+const { settings: userSettings } = useSettingsStore();
+
+const trackersHeaderRowRef = ref<HTMLTableRowElement | null>(null);
+
+const { columnWidths: trackersColumnWidths, startResize } = useTableResize(
+  userSettings.trackersColumnWidths,
+  trackersHeaderRowRef,
+  {
+    minColumnWidth: 50,
+    maxColumnWidth: 500,
+    maxTableWidth: 1800,
+  },
+);
+
+watch(trackersColumnWidths.value, () => {
+  userSettings.trackersColumnWidths = trackersColumnWidths.value;
+});
 </script>
 
 <template>
@@ -227,12 +246,36 @@ const tableTrackers = computed(() => {
       >
         <table class="table table-striped table-info mb-0">
           <thead>
-            <tr>
-              <th>Bug ID</th>
-              <th>Module</th>
-              <th>Component</th>
-              <th>Product Stream</th>
-              <th>
+            <tr ref="trackersHeaderRowRef">
+              <th :style="{ width: settings.trackersColumnWidths[0] + 'px' }">
+                Bug ID
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 0)"
+                />
+              </th>
+              <th :style="{ width: settings.trackersColumnWidths[1] + 'px' }">
+                Module
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 1)"
+                />
+              </th>
+              <th :style="{ width: settings.trackersColumnWidths[2] + 'px' }">
+                Component
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 2)"
+                />
+              </th>
+              <th :style="{ width: settings.trackersColumnWidths[3] + 'px' }">
+                Product Stream
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 3)"
+                />
+              </th>
+              <th :style="{ width: settings.trackersColumnWidths[4] + 'px' }">
                 <span class="align-bottom me-1">Status</span>
                 <button
                   id="status-filter"
@@ -269,9 +312,20 @@ const tableTrackers = computed(() => {
                     </a></li>
                   </template>
                 </ul>
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 4)"
+                />
               </th>
-              <th>Resolution</th>
+              <th :style="{ width: settings.trackersColumnWidths[5] + 'px' }">
+                Resolution
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 5)"
+                />
+              </th>
               <th
+                :style="{ width: settings.trackersColumnWidths[6] + 'px' }"
                 @click="setSort('created_dt')"
               >
                 Created date
@@ -283,8 +337,13 @@ const tableTrackers = computed(() => {
                   }"
                   class="bi"
                 />
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 6)"
+                />
               </th>
               <th
+                :style="{ width: settings.trackersColumnWidths[7] + 'px' }"
                 @click="setSort('updated_dt')"
               >
                 Updated date
@@ -295,6 +354,10 @@ const tableTrackers = computed(() => {
                     'bi-caret-up-fill': sortOrder !== descend,
                   }"
                   class="bi"
+                />
+                <div
+                  class="trackers-resizer"
+                  @mousedown="startResize($event, 7)"
                 />
               </th>
             </tr>
@@ -421,19 +484,38 @@ const tableTrackers = computed(() => {
         z-index: 10;
       }
 
-      tr th {
+      th {
+        position: relative;
         user-select: none;
+        text-wrap: nowrap;
 
-        #status-filter .bi {
-          font-size: 1rem;
+        .trackers-resizer {
+          position: absolute;
+          padding: 0;
+          background-color: #212529;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 6px;
+          border-inline: 1px solid #212529;
+          cursor: col-resize;
+          z-index: 1;
         }
 
-        &:nth-of-type(7) {
-          cursor: pointer;
-        }
+        tr th {
+          user-select: none;
 
-        &:nth-of-type(8) {
-          cursor: pointer;
+          #status-filter .bi {
+            font-size: 1rem;
+          }
+
+          &:nth-of-type(7) {
+            cursor: pointer;
+          }
+
+          &:nth-of-type(8) {
+            cursor: pointer;
+          }
         }
       }
     }
