@@ -74,6 +74,7 @@ function isNewAffect(affect: ZodAffectType) {
 
 table {
   border-collapse: separate;
+  table-layout: fixed;
 
   &:deep(td) {
     white-space: nowrap;
