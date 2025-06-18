@@ -2,6 +2,17 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "6.4.0"
+    "version": "6.4.0",
+    "generators": {
+      "OSIDB": {
+        "generatorName": "typescript-fetch",
+        "output": "src/generated-client",
+        "inputSpec": "openapi.yml",
+        "additionalProperties": {
+          "supportsES6": "true",
+          "withoutRuntimeChecks": true
+        }
+      }
+    }
   }
 }
