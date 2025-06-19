@@ -30,7 +30,6 @@
     "@mrmarble/djangoql-completion": "^0.8.3",
     "@popperjs/core": "^2.11.8",
     "@vueuse/core": "^12.3.0",
-    "axios": "^1.7.4",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.3",
     "jwt-decode": "^3.1.2",
