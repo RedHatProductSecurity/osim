@@ -302,16 +302,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     <td>
       <CvssCalculatorOverlayed
         v-if="isBeingEdited(affect)"
-        :id="affectCvss(affect)?.uuid"
-        :cvssVector="affectCvss(affect)?.vector"
-        :cvssScore="affectCvss(affect)?.score"
-        @updateAffectCvss="(vectorValue, scoreValue) => emit(
-          'affect:updateCvss',
-          affect,
-          vectorValue,
-          scoreValue,
-          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
-        )"
+        :affect="affect"
       />
       <span v-else :title="affectCvss(affect)?.vector || ''">
         {{ affectCvss(affect)?.score || '' }}
@@ -488,8 +479,6 @@ tr {
   }
 
   &:hover {
-    filter: brightness(0.9);
-
     td {
       border-color: #707070bf;
     }
