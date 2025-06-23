@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-
 import { descend } from 'ramda';
-
-import { useTableResize } from '@/composables/useTableResize';
 
 import {
   affectImpacts,
@@ -11,7 +7,6 @@ import {
   affectResolutions,
 } from '@/types/zodAffect';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
-import { useSettingsStore } from '@/stores/SettingsStore';
 
 import { useFilterSortAffects } from './useFilterSortAffects';
 
@@ -33,30 +28,12 @@ const {
   isIndeterminateSelection,
   toggleMultipleAffectSelections,
 } = useAffectsEditingStore();
-
-const { settings } = useSettingsStore();
-
-const headerRowRef = ref<HTMLTableRowElement | null>(null);
-
-const { columnWidths: affectsColumnWidths, startResize } = useTableResize(
-  settings.affectsColumnWidths,
-  headerRowRef,
-  {
-    minColumnWidth: 50,
-    maxColumnWidth: 500,
-    maxTableWidth: 1800,
-  },
-);
-
-watch(affectsColumnWidths.value, () => {
-  settings.affectsColumnWidths = affectsColumnWidths.value;
-});
 </script>
 
 <template>
   <thead class="sticky-top table-dark">
-    <tr ref="headerRowRef">
-      <th id="select-column-header" :style="{ width: settings.affectsColumnWidths[0] + 'px' }">
+    <tr>
+      <th>
         <input
           type="checkbox"
           class="form-check-input"
@@ -66,23 +43,11 @@ watch(affectsColumnWidths.value, () => {
           :checked="areAllAffectsSelected && areAllAffectsSelectable"
           @change="toggleMultipleAffectSelections"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 0)"
-        />
       </th>
-      <th id="state-column-header" :style="{ width: settings.affectsColumnWidths[1] + 'px' }">
+      <th>
         <!-- State -->
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 1)"
-        />
       </th>
-      <th
-        id="module-column-header"
-        :style="{ width: settings.affectsColumnWidths[2] + 'px' }"
-        @click="setSort('ps_module')"
-      >
+      <th @click="setSort('ps_module')">
         Module
         <i
           :class="{
@@ -92,16 +57,8 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 2)"
-        />
       </th>
-      <th
-        id="component-column-header"
-        :style="{ width: settings.affectsColumnWidths[3] + 'px' }"
-        @click="setSort('ps_component')"
-      >
+      <th @click="setSort('ps_component')">
         Component
         <i
           :class="{
@@ -111,26 +68,9 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 3)"
-        />
       </th>
-      <th
-        id="purl-column-header"
-        :style="{ width: settings.affectsColumnWidths[4] + 'px' }"
-      >
-        PURL
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 4)"
-        />
-      </th>
-      <th
-        id="affectedness-column-header"
-        :style="{ width: settings.affectsColumnWidths[5] + 'px' }"
-        @click="setSort('affectedness')"
-      >
+      <th>PURL</th>
+      <th @click="setSort('affectedness')">
         <span class="align-bottom me-1">Affectedness</span>
         <button
           id="affectedness-filter"
@@ -165,10 +105,6 @@ watch(affectsColumnWidths.value, () => {
             </a></li>
           </template>
         </ul>
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 5)"
-        />
         <i
           :class="{
             'opacity-0': sortKey !== 'affectedness',
@@ -178,21 +114,10 @@ watch(affectsColumnWidths.value, () => {
           class="bi align-middle"
         />
       </th>
-      <th
-        id="justification-column-header"
-        :style="{ width: settings.affectsColumnWidths[6] + 'px' }"
-      >
+      <th>
         <span class="align-bottom me-1">Justification</span>
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 6)"
-        />
       </th>
-      <th
-        id="resolution-column-header"
-        :style="{ width: settings.affectsColumnWidths[7] + 'px' }"
-        @click="setSort('resolution')"
-      >
+      <th @click="setSort('resolution')">
         <span class="align-bottom me-1">Resolution</span>
         <button
           id="resolution-filter"
@@ -235,16 +160,8 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi align-middle"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 7)"
-        />
       </th>
-      <th
-        id="impact-column-header"
-        :style="{ width: settings.affectsColumnWidths[8] + 'px' }"
-        @click="setSort('impact')"
-      >
+      <th @click="setSort('impact')">
         <span class="align-bottom me-1">Impact</span>
         <button
           id="impact-filter"
@@ -287,16 +204,8 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi align-middle"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 8)"
-        />
       </th>
-      <th
-        id="cvss-column-header"
-        :style="{ width: settings.affectsColumnWidths[9] + 'px' }"
-        @click="setSort('cvss_scores')"
-      >
+      <th @click="setSort('cvss_scores')">
         CVSS
         <i
           :class="{
@@ -306,16 +215,8 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 9)"
-        />
       </th>
-      <th
-        id="trackers-column-header"
-        :style="{ width: settings.affectsColumnWidths[10] + 'px' }"
-        @click="setSort('trackers')"
-      >
+      <th @click="setSort('trackers')">
         Trackers
         <i
           :class="{
@@ -325,18 +226,8 @@ watch(affectsColumnWidths.value, () => {
           }"
           class="bi"
         />
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 10)"
-        />
       </th>
-      <th id="actions-column-header" :style="{ width: settings.affectsColumnWidths[11] + 'px' }">
-        Actions
-        <div
-          class="affect-resizer"
-          @mousedown="startResize($event, 11)"
-        />
-      </th>
+      <th>Actions</th>
     </tr>
   </thead>
 </template>
@@ -350,18 +241,6 @@ thead {
       position: relative;
       user-select: none;
       text-wrap: nowrap;
-
-      .affect-resizer {
-        position: absolute;
-        background-color: #707070;
-        right: 0;
-        top: 0;
-        height: 100%;
-        width: 6px;
-        border-inline: 1px solid #707070;
-        cursor: col-resize;
-        z-index: 1;
-      }
 
       &:not(:nth-of-type(10), :nth-of-type(2)) {
         cursor: pointer;

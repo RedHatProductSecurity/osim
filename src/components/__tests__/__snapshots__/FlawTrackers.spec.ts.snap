@@ -16,28 +16,28 @@ exports[`flawTrackers > Correctly renders the component when there are not track
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
-            <th data-v-89a61d08="" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
           </tr>
         </thead>
@@ -66,31 +66,31 @@ exports[`flawTrackers > Correctly renders the component when there are trackers 
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
-            <th data-v-89a61d08="" style="width: 0px;" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
                 <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
                 <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
               </ul>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
           </tr>
         </thead>
@@ -180,31 +180,31 @@ exports[`flawTrackers > Displays embedded trackers manager 1`] = `
       </div>
     </div>
     <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-      <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+      <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
         <thead data-v-89a61d08="">
           <tr data-v-89a61d08="">
-            <th data-v-89a61d08="" style="width: 0px;" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
               <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
                 <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
                 <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
               </ul>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
-            <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-              <div data-v-89a61d08="" class="trackers-resizer"></div>
+            <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+              <div class="resizer"></div>
             </th>
           </tr>
         </thead>

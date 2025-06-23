@@ -44,37 +44,37 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1" selectedmodules="">
+    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1" selectedmodules="">
       <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
         <tr data-v-3026e75d="">
-          <th data-v-3026e75d="" id="select-column-header" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="state-column-header" style="width: 0px;">
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">
             <!-- State -->
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="module-column-header" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="component-column-header" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="purl-column-header" style="width: 0px;"> PURL <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">PURL<div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="affectedness-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul>
-            <div data-v-3026e75d="" class="affect-resizer"></div><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="justification-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="resolution-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
@@ -84,9 +84,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="impact-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
@@ -94,15 +94,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="cvss-column-header" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="trackers-column-header" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="actions-column-header" style="width: 0px;"> Actions <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">Actions<div class="resizer"></div>
           </th>
         </tr>
       </thead>
@@ -270,31 +270,31 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
       <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-        <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
           <thead data-v-89a61d08="">
             <tr data-v-89a61d08="">
-              <th data-v-89a61d08="" style="width: 0px;" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                 <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
                 </ul>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
             </tr>
           </thead>
@@ -405,37 +405,37 @@ exports[`flawAffects > Correctly renders the component when there are no affects
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1 mb-0" selectedmodules="">
+    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1 mb-0" selectedmodules="">
       <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
         <tr data-v-3026e75d="">
-          <th data-v-3026e75d="" id="select-column-header" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table" checked="">
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table" checked="">
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="state-column-header" style="width: 0px;">
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">
             <!-- State -->
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="module-column-header" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="component-column-header" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="purl-column-header" style="width: 0px;"> PURL <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">PURL<div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="affectedness-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul>
-            <div data-v-3026e75d="" class="affect-resizer"></div><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="justification-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="resolution-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
@@ -445,9 +445,9 @@ exports[`flawAffects > Correctly renders the component when there are no affects
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="impact-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
@@ -455,15 +455,15 @@ exports[`flawAffects > Correctly renders the component when there are no affects
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="cvss-column-header" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="trackers-column-header" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="actions-column-header" style="width: 0px;"> Actions <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">Actions<div class="resizer"></div>
           </th>
         </tr>
       </thead>
@@ -485,28 +485,28 @@ exports[`flawAffects > Correctly renders the component when there are no affects
         </div>
       </div>
       <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-        <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
           <thead data-v-89a61d08="">
             <tr data-v-89a61d08="">
-              <th data-v-89a61d08="" class="" style="width: 0px;">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="" style="width: 0px;">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="" style="width: 0px;">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="" style="width: 0px;">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                 <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter"></ul>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="" style="width: 0px;">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="cursor-pointer" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" class="cursor-pointer" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
             </tr>
           </thead>
@@ -571,37 +571,37 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="icon-btn btn btn-sm text-white" title="Edit all selected affects"><i data-v-2d3c4208="" class="bi bi-pencil"></i></button><button data-v-2d3c4208="" type="button" class="icon-btn btn btn-sm text-white" title="Remove all selected affects"><i data-v-2d3c4208="" class="bi bi-trash"></i></button><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1" selectedmodules="">
+    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1" selectedmodules="">
       <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
         <tr data-v-3026e75d="">
-          <th data-v-3026e75d="" id="select-column-header" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="state-column-header" style="width: 0px;">
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">
             <!-- State -->
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="module-column-header" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="component-column-header" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="purl-column-header" style="width: 0px;"> PURL <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">PURL<div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="affectedness-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul>
-            <div data-v-3026e75d="" class="affect-resizer"></div><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="justification-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="resolution-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
@@ -611,9 +611,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="impact-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
@@ -621,15 +621,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="cvss-column-header" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="trackers-column-header" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="actions-column-header" style="width: 0px;"> Actions <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">Actions<div class="resizer"></div>
           </th>
         </tr>
       </thead>
@@ -797,31 +797,31 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
       <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-        <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
           <thead data-v-89a61d08="">
             <tr data-v-89a61d08="">
-              <th data-v-89a61d08="" style="width: 0px;" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                 <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
                 </ul>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
             </tr>
           </thead>
@@ -1023,37 +1023,37 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1" selectedmodules="">
+    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1" selectedmodules="">
       <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
         <tr data-v-3026e75d="">
-          <th data-v-3026e75d="" id="select-column-header" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table">
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="state-column-header" style="width: 0px;">
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">
             <!-- State -->
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="module-column-header" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="component-column-header" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="purl-column-header" style="width: 0px;"> PURL <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">PURL<div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="affectedness-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul>
-            <div data-v-3026e75d="" class="affect-resizer"></div><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="justification-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Justification</span>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="resolution-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
@@ -1063,9 +1063,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="impact-column-header" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
             <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
@@ -1073,15 +1073,15 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
               <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
             </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="cvss-column-header" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="trackers-column-header" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
-            <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;"> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i>
+            <div class="resizer"></div>
           </th>
-          <th data-v-3026e75d="" id="actions-column-header" style="width: 0px;"> Actions <div data-v-3026e75d="" class="affect-resizer"></div>
+          <th data-v-3026e75d="" class="resizable" style="width: 0px;">Actions<div class="resizer"></div>
           </th>
         </tr>
       </thead>
@@ -1249,31 +1249,31 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </div>
       </div>
       <div data-v-89a61d08="" class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark">
-        <table data-v-89a61d08="" class="table table-striped table-info mb-0">
+        <table data-v-89a61d08="" class="trackers-table table table-striped table-info mb-0">
           <thead data-v-89a61d08="">
             <tr data-v-89a61d08="">
-              <th data-v-89a61d08="" style="width: 0px;" class="">Bug ID<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Bug ID<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Module<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Module<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Component<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Component<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Product Stream<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Product Stream<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class=""><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;"><span data-v-89a61d08="" class="align-bottom me-1">Status</span><button data-v-89a61d08="" id="status-filter" type="button" class="btn btn-sm border-0 p-0" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-89a61d08="" class="bi bi-funnel" title=""></i></button>
                 <ul data-v-89a61d08="" class="dropdown-menu" aria-labelledby="status-filter">
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">NEW</span></a></li>
                   <li data-v-89a61d08=""><a data-v-89a61d08="" href="#" class="btn py-0 dropdown-item"><input data-v-89a61d08="" type="checkbox" class="form-check-input me-2"><span data-v-89a61d08="">CLOSED</span></a></li>
                 </ul>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="">Resolution<div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="resizable" style="width: 0px;">Resolution<div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Created date <i data-v-89a61d08="" class="bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
-              <th data-v-89a61d08="" style="width: 0px;" class="cursor-pointer">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
-                <div data-v-89a61d08="" class="trackers-resizer"></div>
+              <th data-v-89a61d08="" class="cursor-pointer resizable" style="width: 0px;">Updated date <i data-v-89a61d08="" class="opacity-0 bi-caret-up-fill bi"></i>
+                <div class="resizer"></div>
               </th>
             </tr>
           </thead>

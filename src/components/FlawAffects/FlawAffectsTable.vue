@@ -7,8 +7,10 @@ import { displayModes } from '@/components/FlawAffects/flawAffectConstants';
 
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
+import vResizableTableColumns from '@/directives/resizableTableColumns';
 import type { ZodAffectType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 defineProps<{
   errors: null | Record<string, any>;
@@ -38,10 +40,15 @@ function isModified(affect: ZodAffectType) {
 function isNewAffect(affect: ZodAffectType) {
   return newAffects.value.includes(affect);
 }
+const { settings } = useSettingsStore();
 </script>
 
 <template>
-  <table class="table align-middle table-striped mt-1" :class="{'mb-0': totalPages === 0}">
+  <table
+    v-resizableTableColumns="settings.affectsColumnWidths"
+    class="affects-table table align-middle table-striped mt-1"
+    :class="{'mb-0': totalPages === 0}"
+  >
     <FlawAffectsTableHead />
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affectIndex">

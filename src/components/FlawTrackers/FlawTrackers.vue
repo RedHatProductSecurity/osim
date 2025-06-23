@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 
 import { ascend, descend, sortWith } from 'ramda';
 
 import TrackerManager from '@/components/TrackerManager/TrackerManager.vue';
 
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
-import { useTableResize } from '@/composables/useTableResize';
 
+import vResizableTableColumns from '@/directives/resizableTableColumns';
 import { formatDate } from '@/utils/helpers';
 import type { ZodTrackerType, ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
@@ -124,22 +124,6 @@ const tableTrackers = computed(() => {
 });
 
 const { settings: userSettings } = useSettingsStore();
-
-const trackersHeaderRowRef = ref<HTMLTableRowElement | null>(null);
-
-const { columnWidths: trackersColumnWidths, startResize } = useTableResize(
-  userSettings.trackersColumnWidths,
-  trackersHeaderRowRef,
-  {
-    minColumnWidth: 50,
-    maxColumnWidth: 500,
-    maxTableWidth: 1800,
-  },
-);
-
-watch(trackersColumnWidths.value, () => {
-  userSettings.trackersColumnWidths = trackersColumnWidths.value;
-});
 </script>
 
 <template>
@@ -246,13 +230,15 @@ watch(trackersColumnWidths.value, () => {
       <div
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <table class="table table-striped table-info mb-0">
+        <table
+          v-resizableTableColumns="userSettings.trackersColumnWidths"
+          class="trackers-table table table-striped table-info mb-0"
+        >
           <thead>
-            <tr ref="trackersHeaderRowRef">
+            <tr>
               <th
                 v-for="column in trackersColumns"
                 :key="column.key"
-                :style="{ width: settings.trackersColumnWidths[column.index] + 'px' }"
                 :class="{ 'cursor-pointer': column.sortable }"
                 @click="column.sortable ? setSort(column.key as sortKeys) : undefined"
               >
@@ -308,10 +294,6 @@ watch(trackersColumnWidths.value, () => {
                 <template v-else>
                   {{ column.label }}
                 </template>
-                <div
-                  class="trackers-resizer"
-                  @mousedown="startResize($event, column.index)"
-                />
               </th>
             </tr>
           </thead>
@@ -441,19 +423,6 @@ watch(trackersColumnWidths.value, () => {
         position: relative;
         user-select: none;
         text-wrap: nowrap;
-
-        .trackers-resizer {
-          position: absolute;
-          padding: 0;
-          background-color: #212529;
-          right: 0;
-          top: 0;
-          height: 100%;
-          width: 6px;
-          border-inline: 1px solid #212529;
-          cursor: col-resize;
-          z-index: 1;
-        }
 
         tr th {
           user-select: none;
