@@ -351,7 +351,7 @@ class FlawDetailPage(BasePage):
         if "" in all_values:
             all_values.remove("")
         if all_values:
-            updated_value = all_values[-1]
+            updated_value = "REDHAT" if "REDHAT" in all_values else all_values[0]
             field_select.select_element_by_text(updated_value)
         else:
             updated_value = current_value
