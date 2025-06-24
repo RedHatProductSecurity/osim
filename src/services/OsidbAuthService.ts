@@ -28,7 +28,7 @@ export type OsidbGetFetchOptions = {
 export type OsidbPutPostFetchOptions = {
   cache?: CacheOptions;
   data?: Record<string, any>;
-  method: 'POST' | 'post' | 'PUT' | 'put';
+  method: 'PATCH' | 'patch' | 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
   url: string;
 };

@@ -34,6 +34,18 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   });
 });
 
+// Mock API key service to prevent actual API calls during tests
+vi.mock('@/services/ApiKeyService', () => ({
+  notifyApiKeyUnset: vi.fn(),
+  saveApiKeysToBackend: vi.fn().mockResolvedValue(undefined),
+  getApiKeysFromBackend: vi.fn().mockResolvedValue({
+    jira: null,
+    bugzilla: null,
+  }),
+  IntegrationTokensResponse: {},
+  IntegrationTokensPatchRequest: {},
+}));
+
 // Automatically unmount components after each test
 enableAutoUnmount(afterEach);
 
