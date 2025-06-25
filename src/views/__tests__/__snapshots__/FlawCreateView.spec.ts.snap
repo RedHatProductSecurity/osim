@@ -73,7 +73,7 @@ exports[`flawCreateView > should render 1`] = `
             <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
               <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSSv3 </span>
                   <div data-v-ffda1b6f="" class="input-wrapper col">
-                    <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
+                    <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
                       <!--v-if-->
                       <!--v-if-->
                       <!--v-if-->
@@ -126,7 +126,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
             </div>
             <div data-v-76e7a15d="">
-              <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
+              <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2">
                 <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
                   <div data-v-0e2ae48e="" class="col-9">
                     <div class="d-flex flex-row">
@@ -138,7 +138,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
               <!--v-if-->
             </div>
-            <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+            <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
               <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
                 <div data-v-0e2ae48e="" class="col-9">
                   <!-- for invalid-tooltip positioning -->
@@ -290,7 +290,7 @@ exports[`flawCreateView > should render 1`] = `
                 <!--v-if-->
               </div>
             </label>
-            <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+            <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
               <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
                 <div data-v-0e2ae48e="" class="col-9">
                   <div data-v-cbe7eb54="">
@@ -302,7 +302,7 @@ exports[`flawCreateView > should render 1`] = `
                 </div>
               </div>
             </div>
-            <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+            <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
               <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
                 <div data-v-0e2ae48e="" class="col-9">
                   <!-- for invalid-tooltip positioning -->

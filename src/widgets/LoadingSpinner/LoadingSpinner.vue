@@ -2,10 +2,6 @@
 export default {
   name: 'LoadingSpinner',
   props: {
-    loading: {
-      type: Boolean,
-      required: true,
-    },
     type: {
       type: String,
       required: true,

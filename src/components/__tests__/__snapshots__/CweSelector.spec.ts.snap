@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`cweSelector.vue > renders correctly 1`] = `
-"<div data-v-0e2ae48e="" data-v-478878c2="" class="osim-input ps-3 mb-2 mb-2">
+"<div data-v-0e2ae48e="" data-v-478878c2="" class="osim-input ps-3 mb-2">
   <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if-->  <!--attrs: {{ $attrs }}--></span>
     <div data-v-0e2ae48e="" class="col-9">
       <!-- for invalid-tooltip positioning -->

@@ -61,7 +61,6 @@ const { settings } = storeToRefs(useSettingsStore());
         :href="bugzillaLink"
         target="_blank"
         class="btn tab-btn border border-secondary"
-        :disabled="isSaving"
       >
         View in Bugzilla
       </a>
@@ -70,7 +69,6 @@ const { settings } = storeToRefs(useSettingsStore());
         :href="taskKey ? jiraTaskUrl(taskKey) : '#'"
         target="_blank"
         class="btn tab-btn border border-secondary"
-        :disabled="isSaving"
       >
         View in Jira
       </a>

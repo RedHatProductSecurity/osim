@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`changelog > should render 1`] = `
-"<div data-v-1716f29f="" class="osim-changelog" attrs="$attrs"><a data-v-1716f29f="" href="#" class="m-0 p-0"><span data-v-1716f29f="" class="badge bg-success rounded-pill">🪵 OSIM CHANGELOG 🪵</span></a>
+"<div data-v-1716f29f="" class="osim-changelog"><a data-v-1716f29f="" href="#" class="m-0 p-0"><span data-v-1716f29f="" class="badge bg-success rounded-pill">🪵 OSIM CHANGELOG 🪵</span></a>
   <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
     <!--v-if-->
   </transition-stub>

@@ -3,9 +3,9 @@
 exports[`issueQueue > should not render flaw labels that are already assigned 1`] = `
 "<div data-v-48717bcb="" class="osim-content container-fluid osim-issue-queue">
   <div data-v-48717bcb="" class="osim-incident-filter">
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
     <!--v-if--><span data-v-48717bcb="" class="float-end"> Loaded 1 of 10</span>
   </div>
   <div data-v-48717bcb="" class="osim-incident-list">
@@ -54,9 +54,9 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
 exports[`issueQueue > should not render flaw labels when isHidingLabels is true 1`] = `
 "<div data-v-48717bcb="" class="osim-content container-fluid osim-issue-queue">
   <div data-v-48717bcb="" class="osim-incident-filter">
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox" checked=""><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox" checked=""><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
     <!--v-if--><span data-v-48717bcb="" class="float-end"> Loaded 1 of 10</span>
   </div>
   <div data-v-48717bcb="" class="osim-incident-list">
@@ -96,9 +96,9 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
 exports[`issueQueue > should render flaw labels 1`] = `
 "<div data-v-48717bcb="" class="osim-content container-fluid osim-issue-queue">
   <div data-v-48717bcb="" class="osim-incident-filter">
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
-    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>
+    <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Hide labels</span></label></div>
     <!--v-if--><span data-v-48717bcb="" class="float-end"> Loaded 1 of 10</span>
   </div>
   <div data-v-48717bcb="" class="osim-incident-list">

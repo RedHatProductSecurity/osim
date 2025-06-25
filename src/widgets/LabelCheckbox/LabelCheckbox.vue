@@ -4,6 +4,10 @@ defineProps<{
 }>();
 
 const modelValue = defineModel<boolean | undefined>();
+
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
 
 <template>

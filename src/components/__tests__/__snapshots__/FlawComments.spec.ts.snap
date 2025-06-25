@@ -4,7 +4,7 @@ exports[`flawComments > correctly display private comments 1`] = `
 "<section data-v-0b679fcf="" class="osim-comments">
   <h4 data-v-0b679fcf="">Comments</h4>
   <div data-v-0b679fcf="" class="d-flex mb-4 sticky-top p-3 ps-0 border-bottom align-items-center" style="background-color: white;">
-    <div class="d-flex gap-2"><button type="button" class="btn btn-secondary"> Add Public Comment </button><button type="button" class="btn btn-secondary"> Add Private Comment </button><button type="button" class="btn btn-secondary" disabled=""> Add Internal Comment </button><a href="sampleBzLink" target="_blank" class="btn tab-btn border border-secondary" disabled="false"> View in Bugzilla </a>
+    <div class="d-flex gap-2"><button type="button" class="btn btn-secondary"> Add Public Comment </button><button type="button" class="btn btn-secondary"> Add Private Comment </button><button type="button" class="btn btn-secondary" disabled=""> Add Internal Comment </button><a href="sampleBzLink" target="_blank" class="btn tab-btn border border-secondary"> View in Bugzilla </a>
       <!--v-if-->
     </div>
     <div class="form-check form-switch ms-auto" style="font-size: 18px;"><input id="singleViewSwitch" class="form-check-input" type="checkbox"><label class="form-check-label" for="singleViewSwitch" style="user-select: none;">Unified view</label></div>

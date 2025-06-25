@@ -214,7 +214,7 @@
           <tbody>
             <tr>
               <td>string</td>
-              <td nowrap><code>"this is a string"</code></td>
+              <td><code>"this is a string"</code></td>
               <td>
                 Strings must be enclosed in double quotes, like
                 <code>"this"</code>. If your string contains double quote
@@ -224,7 +224,7 @@
             </tr>
             <tr>
               <td>int</td>
-              <td nowrap><code>42</code>, <code>0</code>, <code>-9000</code></td>
+              <td><code>42</code>, <code>0</code>, <code>-9000</code></td>
               <td>
                 Integer numbers are just digits with optional unary minus. If
                 you're typing big numbers please don't use thousand separators,
@@ -233,7 +233,7 @@
             </tr>
             <tr>
               <td>float</td>
-              <td nowrap>
+              <td>
                 <code>3.14</code>, <code>-0.5</code>, <code>5.972e24</code>
               </td>
               <td>
@@ -245,7 +245,7 @@
             </tr>
             <tr>
               <td>bool</td>
-              <td nowrap>
+              <td>
                 <code>True</code>, <code>False</code>
               </td>
               <td>
@@ -258,7 +258,7 @@
             </tr>
             <tr>
               <td>date</td>
-              <td nowrap>
+              <td>
                 <code>"2017-02-28"</code>
               </td>
               <td>
@@ -268,7 +268,7 @@
             </tr>
             <tr>
               <td>datetime</td>
-              <td nowrap>
+              <td>
                 <code>"2017-02-28 14:53"</code><br>
                 <code>"2017-02-28 14:53:07"</code>
               </td>
@@ -282,7 +282,7 @@
             </tr>
             <tr>
               <td>null</td>
-              <td nowrap>
+              <td>
                 <code>None</code>
               </td>
               <td>

@@ -67,7 +67,6 @@ const remove = (index: number) => {
 <template>
   <LabelDiv
     label="Contributors"
-    tabindex="99"
     class="mb-2"
     @click.prevent="onFocus"
     @blur.capture="onBlur"
