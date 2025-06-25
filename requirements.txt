@@ -1,4 +1,4 @@
-selenium
+selenium==4.31.0
 behave
 requests
 selenium-page-factory
