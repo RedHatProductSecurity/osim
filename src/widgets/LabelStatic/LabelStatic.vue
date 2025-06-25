@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-  error?: string;
   hasTopLabelStyle?: boolean;
   label: string;
   modelValue: null | number | string | undefined;

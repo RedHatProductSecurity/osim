@@ -9,7 +9,6 @@ import {
 const props = defineProps<{
   cvssFactors: Record<string, string>;
   cvssScore: null | number | undefined;
-  cvssVector: null | string | undefined;
   error: null | string;
   highlightedFactor: null | string;
   isFocused: boolean;
@@ -53,8 +52,6 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
       'text-cursor': isFocused,
     }"
     class="vector-input form-control"
-    v-bind="$attrs"
-    focused
     @focus="emit('onInputFocus', $event);"
     @blur="emit('onInputBlur', $event)"
   >

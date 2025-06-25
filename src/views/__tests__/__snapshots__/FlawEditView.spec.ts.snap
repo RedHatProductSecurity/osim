@@ -20,7 +20,7 @@ exports[`flawEditView > should render error message when \`getFlaw\` fails 1`] =
 
 exports[`flawEditView > should render flaw edit form 1`] = `
 "<main data-v-fc54c7d5="">
-  <flaw-form-stub data-v-fc54c7d5="" flaw="[object Object]" relatedflaws="" mode="edit"></flaw-form-stub>
+  <flaw-form-stub data-v-fc54c7d5="" flaw="[object Object]" mode="edit"></flaw-form-stub>
   <!--v-if-->
   <!--v-if-->
 </main>"

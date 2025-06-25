@@ -53,7 +53,6 @@ function factorButton(id: string, key: string) {
   <div
     class="cvss-calculator"
     :class="{ 'visually-hidden': !isFocused, 'mt-2': cvssVector, }"
-    v-bind="$attrs"
   >
     <div class="p-3">
       <slot />

@@ -17,4 +17,10 @@
       "DOM.Iterable"
     ],
   },
+  "vueCompilerOptions": {
+    "strictTemplates": true,
+    "dataAttributes": [
+      "data-*",
+    ]
+  }
 }

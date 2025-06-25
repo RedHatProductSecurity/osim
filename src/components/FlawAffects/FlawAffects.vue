@@ -14,7 +14,7 @@ import { useFlaw } from '@/composables/useFlaw';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
-import type { ZodAffectType, ZodFlawType } from '@/types';
+import type { ZodAffectType } from '@/types';
 import { CVSS_V3 } from '@/constants';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
@@ -27,7 +27,6 @@ import { useFilterSortAffects } from './useFilterSortAffects';
 const props = defineProps<{
   embargoed: boolean;
   errors: null | Record<string, any>;
-  relatedFlaws: ZodFlawType[];
 }>();
 
 const { flaw } = useFlaw();
@@ -511,7 +510,6 @@ const displayedTrackers = computed(() => {
       <FlawAffectsTable
         v-model:affects="tableAffects"
         :errors="errors"
-        :selectedModules="selectedModules"
         :totalPages="totalPages"
         @affects:display-mode="setDisplayMode"
         @affect:remove="handleRemove"
@@ -528,9 +526,7 @@ const displayedTrackers = computed(() => {
     </div>
     <FlawTrackers
       :flaw="flaw"
-      :relatedFlaws="relatedFlaws"
       :displayedTrackers="displayedTrackers"
-      :affectsNotBeingDeleted="flaw.affects"
       :allTrackersCount="allTrackers.length"
       @affects:refresh="refreshAffects"
     />
@@ -544,7 +540,6 @@ const displayedTrackers = computed(() => {
             @click="closeManageTrackersModal"
           />
           <TrackerManager
-            :relatedFlaws="relatedFlaws"
             :flaw="flaw"
             :specificAffectsToTrack="specificAffectsToTrack"
           />

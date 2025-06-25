@@ -302,7 +302,6 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     <td>
       <CvssCalculatorOverlayed
         v-if="isBeingEdited(affect)"
-        :id="affectCvss(affect)?.uuid"
         :cvssVector="affectCvss(affect)?.vector"
         :cvssScore="affectCvss(affect)?.score"
         @updateAffectCvss="(vectorValue, scoreValue) => emit(

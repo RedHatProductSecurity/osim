@@ -150,6 +150,10 @@ export default tseslint.config(
       'vue/multiline-html-element-content-newline': 'off',
       'vue/singleline-html-element-content-newline': 'off',
       'vue/v-on-event-hyphenation': 'off',
+      'vue/no-unused-properties': 'error',
+      'vue/no-undef-properties': 'error',
+      'vue/no-mutating-props': 'error',
+      'vue/no-duplicate-attr-inheritance': 'error',
     },
   },
   {

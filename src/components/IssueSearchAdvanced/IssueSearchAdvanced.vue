@@ -212,7 +212,7 @@ function deleteSavedSearch() {
     <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div v-show="queryFilterVisible" class="input-group my-1">
-        <div type="button" class="query-input form-control bg-secondary text-white">
+        <div class="query-input form-control bg-secondary text-white">
           <span class="my-auto">Query Filter</span>
           <button class="btn btn-sm text-white" type="button" @click="queryGuideModal.openModal()">
             <i class="bi bi-question-circle-fill fs-5" aria-label="hide query filter" />

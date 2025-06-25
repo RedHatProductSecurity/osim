@@ -18,7 +18,6 @@ const props = defineProps<{
   allTrackersCount: number;
   displayedTrackers: TrackerWithModule[];
   flaw: ZodFlawType;
-  relatedFlaws: ZodFlawType[];
 }>();
 
 const settingsStore = useSettingsStore();
@@ -331,7 +330,6 @@ const tableTrackers = computed(() => {
         </div>
         <TrackerManager
           v-if="showTrackerManager"
-          :relatedFlaws="relatedFlaws"
           :flaw="flaw"
         />
       </div>

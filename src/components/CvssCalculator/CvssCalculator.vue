@@ -95,7 +95,6 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssVector="cvssVector"
             :cvssScore="cvssScore"
             :cvssFactors="cvssFactors"
             :isFocused="isFocused"
@@ -105,7 +104,6 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateFactors="updateFactors(cvssVector)"
           />
         </div>
         <div

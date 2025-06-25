@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { TextareaHTMLAttributes } from 'vue';
 
 withDefaults(defineProps<{
   disabled?: boolean;
@@ -7,7 +8,7 @@ withDefaults(defineProps<{
   label: string;
   loading?: boolean;
   modelValue: null | string | undefined;
-}>(), {
+} & /* @vue-ignore */ TextareaHTMLAttributes>(), {
   error: '',
   disabled: false,
 });

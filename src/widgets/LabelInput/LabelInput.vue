@@ -39,6 +39,10 @@ const props = withDefaults(
 defineEmits<{
   'update:modelValue': [value: string | undefined];
 }>();
+
+defineOptions({
+  inheritAttrs: false,
+});
 const type = computed<string>(() => props.type ?? 'text');
 </script>
 

@@ -109,7 +109,6 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssVector="cvssVector"
             :cvssScore="cvssScore"
             :cvssFactors="cvssFactors"
             :isFocused="isFocused"

@@ -42,7 +42,6 @@ import { jiraTaskUrl } from '@/services/JiraService';
 const props = defineProps<{
   flaw: ZodFlawType;
   mode: 'create' | 'edit';
-  relatedFlaws: ZodFlawType[];
 }>();
 
 const emit = defineEmits<{
@@ -194,7 +193,6 @@ const createdDate = computed(() => {
                 v-if="flaw.task_key"
                 :href="jiraTaskUrl(flaw.task_key)"
                 target="_blank"
-                :disabled="isSaving"
               >
                 Open in Jira <i class="bi-box-arrow-up-right ms-2" />
               </a>
@@ -262,7 +260,6 @@ const createdDate = computed(() => {
               :withBlank="true"
             />
             <CvssCalculator
-              :id="flawRhCvss3.uuid"
               v-model:cvss-vector="flawRhCvss3.vector"
               v-model:cvss-score="flawRhCvss3.score"
             />
@@ -335,7 +332,6 @@ const createdDate = computed(() => {
               v-if="mode === 'edit'"
               :modelValue="createdDate"
               label="Created Date"
-              type="text"
             />
             <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
             <CvssExplainForm v-if="shouldDisplayEmailNistForm" v-model="flaw" />
@@ -416,10 +412,8 @@ const createdDate = computed(() => {
         <div class="osim-flaw-form-section">
           <FlawAffects
             v-if="mode === 'edit'"
-            v-model:flaw="flaw"
             :errors="errors.affects"
             :embargoed="flaw.embargoed"
-            :relatedFlaws="relatedFlaws"
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

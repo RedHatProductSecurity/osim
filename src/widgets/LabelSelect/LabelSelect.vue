@@ -18,6 +18,10 @@ withDefaults(
 defineEmits<{
   'update:modelValue': [value: string | undefined];
 }>();
+
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
 
 <template>

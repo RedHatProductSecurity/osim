@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const { resetFlaw } = useFlaw();
 
-const { didFetchFail, fetchFlaw, flaw, relatedFlaws } = useFetchFlaw();
+const { didFetchFail, fetchFlaw, flaw } = useFetchFlaw();
 
 watch(() => props.id, fetchFlaw, { immediate: true });
 
@@ -27,7 +27,6 @@ const isLoading = computed(() => !flaw.value && !didFetchFail);
       v-if="flaw?.uuid"
       :key="`${flaw.uuid}-${flaw.updated_dt}`"
       v-model:flaw="flaw"
-      :relatedFlaws="relatedFlaws"
       mode="edit"
       @refresh:flaw="fetchFlaw(id)"
     />
