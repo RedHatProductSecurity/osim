@@ -24,7 +24,6 @@ const _userStoreKey = 'UserStore';
 
 const loginResponse = z.object({
   access: z.string(),
-  refresh: z.string(),
   env: z.string(),
   detail: z.string().optional(), // detail error message
 });
@@ -40,7 +39,6 @@ const whoamiResponse = z.object({
 type WhoamiType = z.infer<typeof whoamiResponse>;
 
 const userStoreLocalStorage = z.object({
-  refresh: z.string(),
   env: z.string(),
   whoami: whoamiResponse.nullable(),
   jiraUsername: z.string(),
@@ -48,7 +46,7 @@ const userStoreLocalStorage = z.object({
 export type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 const _userStoreSession = useLocalStorage(
-  _userStoreKey, { refresh: '', env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage,
+  _userStoreKey, { env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage,
 );
 
 async function updateJiraUsername() {
@@ -60,13 +58,12 @@ async function updateJiraUsername() {
   }
 }
 
-function setTokens(refresh_: string, env_: string) {
-  _userStoreSession.value.refresh = refresh_;
+function setTokens(env_: string) {
   _userStoreSession.value.env = env_;
 }
 
 function $reset() {
-  setTokens('', '');
+  setRefreshToken('');
   _userStoreSession.value.whoami = null;
   _userStoreSession.value.jiraUsername = '';
 }
@@ -74,23 +71,7 @@ function $reset() {
 export const useUserStore = defineStore('UserStore', () => {
   const settingsStore = useSettingsStore();
 
-  const refresh = computed<string>(() => {
-    return _userStoreSession.value.refresh;
-  });
-
-  const jwtRefresh = computed<JwtPayload | null>(() => {
-    if (!_userStoreSession.value.refresh) {
-      return null;
-    }
-    try {
-      return jwtDecode(_userStoreSession.value.refresh);
-    } catch (e) {
-      console.debug('UserStore: refresh token not a valid JWT', refresh.value, e);
-    }
-    return null;
-  });
-
-  const accessToken = ref<string>();
+  const accessToken = ref<null | string>();
   const isAccessTokenExpired = () => {
     try {
       const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
@@ -105,20 +86,21 @@ export const useUserStore = defineStore('UserStore', () => {
     return _userStoreSession.value.whoami || null;
   });
   const userName = computed(() => {
-    if (_userStoreSession.value.refresh === '') {
+    if (!accessToken.value) {
       return 'Not Logged In';
     }
     if (_userStoreSession.value.whoami != null) {
       return _userStoreSession.value.whoami.email ?? _userStoreSession.value.whoami.username;
     }
-    let sub = jwtRefresh.value?.sub;
-    if (sub == null) {
-      sub = 'Current User';
+    try {
+      const decoded = jwtDecode<JwtPayload>(accessToken.value);
+      return decoded.sub ?? 'Current User';
+    } catch (e) {
+      return 'Current User';
     }
-    return sub;
   });
   const userEmail = computed(() => {
-    if (_userStoreSession.value.refresh === '') {
+    if (!accessToken.value) {
       return '';
     }
     return _userStoreSession.value.whoami?.email ?? '';
@@ -168,8 +150,8 @@ export const useUserStore = defineStore('UserStore', () => {
         if (parsedLoginResponse.detail) {
           throw new Error(parsedLoginResponse.detail);
         }
-        _userStoreSession.value.refresh = parsedLoginResponse.refresh;
         _userStoreSession.value.env = parsedLoginResponse.env;
+        accessToken.value = parsedLoginResponse.access;
         return parsedLoginResponse.access;
       })
       .then((access) => {
@@ -199,6 +181,8 @@ export const useUserStore = defineStore('UserStore', () => {
   function logout() {
     // clearInterval(refreshInterval);
     $reset();
+    accessToken.value = null;
+    _userStoreSession.value.isLoggedIn = false;
 
     // router.push({name: 'login'});
     // return Promise.resolve()
@@ -212,12 +196,16 @@ export const useUserStore = defineStore('UserStore', () => {
   }
 
   const isAuthenticated = computed<boolean>(() => {
-    const now = Date.now();
-    const refreshExp = jwtRefresh.value?.exp;
-    if (refreshExp != null) {
-      return now < refreshExp * 1000;
+    if (!accessToken.value) {
+      return false;
     }
-    return false;
+    try {
+      const decoded = jwtDecode<JwtPayload>(accessToken.value);
+      const now = Date.now() / 1000; // Convert to seconds
+      return decoded.exp != null && now < decoded.exp;
+    } catch (e) {
+      return false;
+    }
   });
 
   // Watch authentication changes from other tabs
@@ -261,10 +249,8 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   return {
-    refresh,
     accessToken,
     isAccessTokenExpired,
-    jwtRefresh,
     whoami,
     userName,
     userEmail,
