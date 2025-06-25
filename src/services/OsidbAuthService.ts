@@ -132,43 +132,39 @@ function queryStringFromParams(params: Record<string, any>) {
 }
 
 export async function getNextAccessToken() {
-  // Moving this to module scope results in "cannot access before initialization" -
-  // probably a vite or typescript bug
-  const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
   const userStore = useUserStore();
-  let response;
+
+  // If we have a valid access token, return it
   if (userStore.accessToken && !userStore.isAccessTokenExpired()) {
     return userStore.accessToken;
   }
+
+  // Try to refresh the access token using GET /auth/token/refresh with credentials: 'include'
+  const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
+
   try {
-    const fetchResponse = await fetch(url, {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+    const response = await fetch(url, {
+      method: 'GET',
       credentials: 'include',
-      body: JSON.stringify({
-        refresh: userStore.refresh,
-      }),
+      cache: 'no-cache',
     });
-    response = await fetchResponse.json();
+
+    if (!response.ok) {
+      throw new Error(`Failed to refresh token: ${response.status} ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    const parsedResponse = RefreshResponse.parse(responseData);
+
+    // Update the access token in the store
+    userStore.accessToken = parsedResponse.access;
+
+    return parsedResponse.access;
   } catch (e) {
+    console.error('OsidbAuthService::getNextAccessToken() Error refreshing access token', e);
     return userStore.logout()
       .finally(() => {
-        throw new Error('Refresh token expired');
-      });
-  }
-  try {
-    const responseBody = response;
-    const parsedBody = RefreshResponse.parse(responseBody);
-    userStore.accessToken = parsedBody.access;
-    return parsedBody.access;
-  } catch (e) {
-    console.error('OsidbAuthService::getNextAccessToken() Error getting access token', e);
-    return userStore.logout()
-      .finally(() => {
-        throw new Error('Unable to parse next access token');
+        throw new Error('Unable to refresh access token');
       });
   }
 }
