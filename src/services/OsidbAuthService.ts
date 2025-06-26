@@ -139,7 +139,6 @@ export async function getNextAccessToken() {
     return userStore.accessToken;
   }
 
-  // Try to refresh the access token using GET /auth/token/refresh with credentials: 'include'
   const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
 
   try {
@@ -158,6 +157,7 @@ export async function getNextAccessToken() {
 
     // Update the access token in the store
     userStore.accessToken = parsedResponse.access;
+    userStore.isLoggedIn = true;
 
     return parsedResponse.access;
   } catch (e) {

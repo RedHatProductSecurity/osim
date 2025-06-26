@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 
 import { DateTime } from 'luxon';
-import { RouterView } from 'vue-router';
 import { useElementBounding } from '@vueuse/core';
 
 import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
@@ -18,7 +17,7 @@ import { footerHeight, footerTop } from '@/stores/responsive';
 import { OsimRuntimeStatus } from '@/types/zodOsim';
 import { updateCWEData } from '@/services/CweService';
 
-watch(osimRuntimeStatus, () => {
+watch(osimRuntimeStatus, async () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
     updateCWEData();
