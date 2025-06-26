@@ -158,6 +158,7 @@ export async function getNextAccessToken() {
 
     // Update the access token in the store
     userStore.accessToken = parsedResponse.access;
+    userStore.isLoggedIn = true;
 
     return parsedResponse.access;
   } catch (e) {
