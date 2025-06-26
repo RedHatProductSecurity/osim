@@ -74,8 +74,13 @@ export const mountWithConfig: MountConfig = (
     directives: {
       osimLoading: vi.fn(),
       imask: vi.fn(),
+      resizableTableColumns: vi.fn(),
       ...options?.global?.directives,
     },
     plugins: plugins ?? [createTestingPinia(), router],
   },
 });
+
+export const createMouseEvent = (type: string, clientX: number) => {
+  return new MouseEvent(type, { clientX, bubbles: true, cancelable: true });
+};
