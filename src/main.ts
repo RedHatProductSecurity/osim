@@ -8,6 +8,7 @@ import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirectiv
 
 import App from './App.vue';
 import router from './router';
+import { setup } from './stores/osimRuntime';
 
 import './scss/index.scss';
 import './assets/main.css';
@@ -20,5 +21,6 @@ app.use(pinia);
 app.use(router);
 app.directive('osim-loading', LoadingAnimationDirective);
 app.directive('imask', IMaskDirective as Directive);
+setup();
 
 app.mount('#app');

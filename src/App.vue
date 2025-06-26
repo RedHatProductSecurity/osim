@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 
 import { DateTime } from 'luxon';
-import { RouterView } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
 import { useElementBounding } from '@vueuse/core';
 
 import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
@@ -10,7 +10,6 @@ import ChangeLog from '@/components/ChangeLog/ChangeLog.vue';
 import Navbar from '@/components/Navbar/Navbar.vue';
 
 import {
-  setup,
   osidbHealth,
   osimRuntime,
   osimRuntimeStatus,
@@ -19,15 +18,37 @@ import {
 import { footerHeight, footerTop } from '@/stores/responsive';
 
 import { updateCWEData } from './services/CweService';
+import { useUserStore } from './stores/UserStore';
+import { getNextAccessToken } from './services/OsidbAuthService';
 
-setup();
+// setup();
 
-watch(osimRuntimeStatus, () => {
+const router = useRouter();
+
+watch(osimRuntimeStatus, async () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
+    handleTokenRefresh();
     updateRelativeOsimBuildDate();
     updateCWEData();
   }
 });
+
+async function handleTokenRefresh() {
+  const userStore = useUserStore();
+  console.log(userStore.isLoggedIn, router.currentRoute.value.name);
+  if (
+    userStore.isLoggedIn
+    && router.currentRoute.value.name !== 'logout'
+    && router.currentRoute.value.name !== 'login'
+  ) {
+    try {
+      console.log('Router: Refreshing access token');
+      await getNextAccessToken();
+    } catch (error) {
+      console.error('Router: Failed to refresh access token during navigation', error);
+    }
+  }
+}
 
 const elFooter = ref<HTMLElement | null>(null);
 const { height: footerHeight_, top: footerTop_ } = useElementBounding(elFooter);
