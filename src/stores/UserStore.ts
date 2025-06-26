@@ -42,11 +42,12 @@ const userStoreLocalStorage = z.object({
   env: z.string(),
   whoami: whoamiResponse.nullable(),
   jiraUsername: z.string(),
+  isLoggedIn: z.boolean(),
 });
 export type UserStoreLocalStorage = z.infer<typeof userStoreLocalStorage>;
 
 const _userStoreSession = useLocalStorage(
-  _userStoreKey, { env: '', whoami: null, jiraUsername: '' } as UserStoreLocalStorage,
+  _userStoreKey, { env: '', whoami: null, jiraUsername: '', isLoggedIn: false } as UserStoreLocalStorage,
 );
 
 async function updateJiraUsername() {
@@ -152,6 +153,7 @@ export const useUserStore = defineStore('UserStore', () => {
         }
         _userStoreSession.value.env = parsedLoginResponse.env;
         accessToken.value = parsedLoginResponse.access;
+        _userStoreSession.value.isLoggedIn = true;
         return parsedLoginResponse.access;
       })
       .then((access) => {
@@ -249,6 +251,7 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   return {
+    isLoggedIn: _userStoreSession.value.isLoggedIn,
     accessToken,
     isAccessTokenExpired,
     whoami,
