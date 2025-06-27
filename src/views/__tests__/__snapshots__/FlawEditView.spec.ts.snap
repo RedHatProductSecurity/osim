@@ -7,8 +7,8 @@ exports[`flawEditView > should render error message when \`getFlaw\` fails 1`] =
     <div data-v-fc54c7d5="" class="row justify-content-around">
       <div data-v-fc54c7d5="" class="m-5 col-lg-6 col-md-8 col-sm-12">
         <div data-v-fc54c7d5="" class="alert alert-warning" role="alert"> Flaw some_fake_uuid not found. <div data-v-fc54c7d5="" class="mt-4">
-            <router-link-stub data-v-fc54c7d5="" to="/flaws/new" replace="false" custom="false" ariacurrentvalue="page" class="btn btn-primary me-3"></router-link-stub>
-            <router-link-stub data-v-fc54c7d5="" to="/" replace="false" custom="false" ariacurrentvalue="page" class="btn btn-primary"></router-link-stub>
+            <router-link-stub data-v-fc54c7d5="" to="/flaws/new" replace="false" custom="false" ariacurrentvalue="page" viewtransition="false" class="btn btn-primary me-3"></router-link-stub>
+            <router-link-stub data-v-fc54c7d5="" to="/" replace="false" custom="false" ariacurrentvalue="page" viewtransition="false" class="btn btn-primary"></router-link-stub>
           </div>
         </div>
       </div>

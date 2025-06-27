@@ -7,8 +7,10 @@ import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
 import type { ZodAffectType } from '@/types';
 import { useToastStore } from '@/stores/ToastStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
+import { getAffects } from '@/services/AffectService';
 
 const isFetchingRelatedFlaws = ref(false);
+const isFetchingAffects = ref(false);
 
 export function useFetchFlaw() {
   const { flaw, relatedFlaws, resetFlaw } = useFlaw();
@@ -29,13 +31,28 @@ export function useFetchFlaw() {
     }
   }
 
+  async function fetchFlawAffects(flawCveOrId: string) {
+    try {
+      isFetchingAffects.value = true;
+      const affectsResponse = await getAffects(flawCveOrId);
+      flaw.value.affects = affectsResponse.data.results;
+    } catch (error) {
+      console.error('useFetchRelatedFlaws::fetchRelatedFlaws()', error);
+      throw error;
+    } finally {
+      isFetchingAffects.value = false;
+    }
+  }
+
   async function fetchFlaw(flawCveOrId: string) {
     try {
+      didFetchFail.value = false;
       const fetchedFlaw = await getFlaw(flawCveOrId);
       resetInitialAffects();
-      flaw.value = Object.assign({}, fetchedFlaw);
-      await fetchRelatedFlaws(fetchedFlaw.affects);
+      flaw.value = Object.assign({ affects: [] }, fetchedFlaw);
       history.replaceState(null, '', `/flaws/${(fetchedFlaw.cve_id || fetchedFlaw.uuid)}`);
+      await fetchFlawAffects(flawCveOrId);
+      await fetchRelatedFlaws(flaw.value.affects);
     } catch (error) {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
@@ -52,9 +69,11 @@ export function useFetchFlaw() {
   return {
     relatedFlaws,
     isFetchingRelatedFlaws,
+    isFetchingAffects,
     fetchRelatedFlaws,
     flaw,
     fetchFlaw,
     didFetchFail,
+
   };
 }
