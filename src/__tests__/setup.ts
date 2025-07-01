@@ -1,22 +1,22 @@
 import { enableAutoUnmount } from '@vue/test-utils';
 import { setupServer } from 'msw/node';
 
-import type { OsimRuntime } from '@/stores/osimRuntime';
+import { OsimRuntimeStatus, type OsimRuntimeType } from '@/types/zodOsim';
 
 vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   const { ref } = await import('vue');
   const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
 
   return ({
-    OsimRuntimeStatus: osimRuntime.OsimRuntimeStatus,
+    OsimRuntimeStatus: osimRuntime.osimRuntimeStatus.value,
     setup: vi.fn(),
-    osimRuntimeStatus: ref(osimRuntime.OsimRuntimeStatus.READY),
+    osimRuntimeStatus: ref(OsimRuntimeStatus.READY),
     osidbHealth: ref({
       env: 'test',
       revision: '1',
       version: '1.0.0',
     }),
-    osimRuntime: ref<OsimRuntime>({
+    osimRuntime: ref<OsimRuntimeType>({
       readOnly: false,
       env: 'test',
       osimVersion: { rev: '1', tag: '1.0.0', timestamp: new Date('2024-08-29T14:00:00Z').toISOString() },

@@ -10,17 +10,13 @@ import ChangeLog from '@/components/ChangeLog/ChangeLog.vue';
 import Navbar from '@/components/Navbar/Navbar.vue';
 
 import {
-  setup,
   osidbHealth,
   osimRuntime,
   osimRuntimeStatus,
-  OsimRuntimeStatus,
 } from '@/stores/osimRuntime';
 import { footerHeight, footerTop } from '@/stores/responsive';
-
-import { updateCWEData } from './services/CweService';
-
-setup();
+import { OsimRuntimeStatus } from '@/types/zodOsim';
+import { updateCWEData } from '@/services/CweService';
 
 watch(osimRuntimeStatus, () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
