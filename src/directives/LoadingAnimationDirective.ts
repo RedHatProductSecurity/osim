@@ -19,7 +19,7 @@ function createLoaderElement(element: HTMLElement) {
   element.prepend(spinner);
 }
 
-function updateLoaderElement(el: HTMLElement, binding: DirectiveBinding) {
+function updateLoaderElement(el: HTMLElement, binding: DirectiveBinding<boolean, keyof typeof definedArgs>) {
   const loader = loaders.get(el);
   if (!loader) {
     return;

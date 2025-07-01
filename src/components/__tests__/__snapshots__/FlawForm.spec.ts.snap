@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawForm > mounts and renders 1`] = `
-"<form data-v-76e7a15d="" class="osim-flaw-form">
+"<form data-v-76e7a15d="" class="osim-flaw-form" relatedflaws="[object Object]">
   <div data-v-76e7a15d="" class="osim-content container-fluid">
     <div data-v-76e7a15d="" class="row px-4 my-3">
       <div data-v-76e7a15d="" class="row osim-flaw-form-section pt-0">
@@ -131,10 +131,10 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </label>
-    <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0" id="db265f8e-f7f6-4e96-b61f-8dea783e79c7">
+    <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
       <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row"><span data-v-ffda1b6f="" class="form-label col-3"> RH CVSSv3 </span>
           <div data-v-ffda1b6f="" class="input-wrapper col">
-            <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input vector-input" focused=""><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
+            <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
               <!--v-if-->
             </div>
           </div>
@@ -178,7 +178,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </div>
     <div data-v-76e7a15d="">
-      <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2 mb-2">
+      <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2">
         <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <div class="d-flex flex-row">
@@ -199,7 +199,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
       <!--v-if-->
     </div>
-    <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+    <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
       <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
         <div data-v-0e2ae48e="" class="col-9">
           <!-- for invalid-tooltip positioning -->
@@ -319,7 +319,7 @@ exports[`flawForm > mounts and renders 1`] = `
   </div>
   <div data-v-76e7a15d="" class="col-6 flaw-form-subdivision">
     <div data-v-d6c306ee="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
-      <div data-v-0e2ae48e="" data-v-d6c306ee="" class="osim-input ps-3 osim-workflow-state-display mb-2 osim-workflow-state-display mb-2" type="text">
+      <div data-v-0e2ae48e="" data-v-d6c306ee="" class="osim-input ps-3 osim-workflow-state-display mb-2">
         <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <div data-v-d6c306ee="" class="d-flex"><span data-v-d6c306ee="" class="form-control rounded-0">NEW</span>
@@ -369,7 +369,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
       </div>
     </label>
-    <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+    <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
       <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
         <div data-v-0e2ae48e="" class="col-9">
           <div data-v-cbe7eb54="">
@@ -383,7 +383,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 mb-2">
+    <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
       <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
         <div data-v-0e2ae48e="" class="col-9">
           <!-- for invalid-tooltip positioning -->
@@ -402,7 +402,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
-    <div data-v-b341c440="" data-v-76e7a15d="" class="osim-static-label osim-input mb-2 ps-3" type="text">
+    <div data-v-b341c440="" data-v-76e7a15d="" class="osim-static-label osim-input mb-2 ps-3">
       <div data-v-b341c440="" class="row"><span data-v-b341c440="" class="form-label col-3">Created Date</span>
         <div data-v-b341c440="" class="col-9"><span data-v-b341c440="" class="form-control">2021-09-13 09:09 UTC</span></div>
       </div>
@@ -516,7 +516,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section" flaw="[object Object]">
+    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
         <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
@@ -559,7 +559,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
           </div>
         </div>
-        <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1" selectedmodules="">
+        <table data-v-93f0c720="" data-v-2d3c4208="" class="table align-middle table-striped mt-1">
           <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
             <tr data-v-3026e75d="">
               <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
@@ -604,7 +604,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </tr>
           </thead>
           <tbody data-v-93f0c720="">
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
@@ -628,7 +628,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
@@ -652,7 +652,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
@@ -676,7 +676,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
@@ -700,7 +700,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
@@ -724,7 +724,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" title="" isselected="false">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
@@ -752,7 +752,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         </table>
         <!--v-if-->
       </div>
-      <div data-v-89a61d08="" data-v-2d3c4208="" affectsnotbeingdeleted="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]">
+      <div data-v-89a61d08="" data-v-2d3c4208="">
         <div data-v-89a61d08="" class="affects-trackers">
           <div data-v-89a61d08="" class="bg-dark rounded-top-2 text-info">
             <div data-v-89a61d08="" class="affect-trackers-heading d-flex p-1 pt-2 px-3">
@@ -867,7 +867,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     <section data-v-0b679fcf="" data-v-76e7a15d="" class="osim-comments">
       <h4 data-v-0b679fcf="">Comments</h4>
       <div data-v-0b679fcf="" class="d-flex mb-4 sticky-top p-3 ps-0 border-bottom align-items-center" style="background-color: white;">
-        <div class="d-flex gap-2"><button type="button" class="btn btn-secondary"> Add Public Comment </button><button type="button" class="btn btn-secondary"> Add Private Comment </button><button type="button" class="btn btn-secondary" disabled=""> Add Internal Comment </button><a href="/show_bug.cgi?id=1984541" target="_blank" class="btn tab-btn border border-secondary" disabled="false"> View in Bugzilla </a>
+        <div class="d-flex gap-2"><button type="button" class="btn btn-secondary"> Add Public Comment </button><button type="button" class="btn btn-secondary"> Add Private Comment </button><button type="button" class="btn btn-secondary" disabled=""> Add Internal Comment </button><a href="/show_bug.cgi?id=1984541" target="_blank" class="btn tab-btn border border-secondary"> View in Bugzilla </a>
           <!--v-if-->
         </div>
         <div class="form-check form-switch ms-auto" style="font-size: 18px;"><input id="singleViewSwitch" class="form-check-input" type="checkbox"><label class="form-check-label" for="singleViewSwitch" style="user-select: none;">Unified view</label></div>

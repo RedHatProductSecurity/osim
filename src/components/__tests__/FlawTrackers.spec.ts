@@ -27,7 +27,6 @@ describe('flawTrackers', () => {
   osimRequiredFlawTest('Correctly renders the component when there are not trackers to display', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: [],
       allTrackersCount: 0,
     });
@@ -37,7 +36,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Correctly renders the component when there are trackers to display', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -50,7 +48,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Per page setting correctly changes the table page items number', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -86,7 +83,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Show all button works properly', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -110,7 +106,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Trackers can be sorted by clicking on the date field columns', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -135,7 +130,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Trackers can be filtered by status', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -160,7 +154,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Trackers display functional external links', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -178,7 +171,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Tracker modules table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -193,7 +185,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Tracker ps_stream table cell have correct tooltip', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
@@ -208,7 +199,6 @@ describe('flawTrackers', () => {
   osimFullFlawTest('Displays embedded trackers manager', async ({ flaw }) => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
-      relatedFlaws: [flaw as ZodFlawType],
       displayedTrackers: flaw.affects
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),

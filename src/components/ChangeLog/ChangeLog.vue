@@ -34,7 +34,7 @@ fetchChangeLog();
 </script>
 
 <template>
-  <div class="osim-changelog" attrs="$attrs">
+  <div class="osim-changelog">
     <a href="#" class="m-0 p-0" @click.prevent="openModal">
       <span class="badge bg-success rounded-pill">🪵 OSIM CHANGELOG 🪵</span>
     </a>

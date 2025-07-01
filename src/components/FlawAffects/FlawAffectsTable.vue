@@ -6,7 +6,6 @@ import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vu
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 
 import type { ZodAffectType } from '@/types';
-import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 import { displayModes } from './flawAffectConstants';
 import FlawAffectsTableHead from './FlawAffectsTableHead.vue';
@@ -25,8 +24,6 @@ const emit = defineEmits<{
   'affect:updateCvss': [affect: ZodAffectType, newVector: string, newScore: null | number, cvssScoreIndex: number];
   'affects:display-mode': [value: displayModes];
 }>();
-
-const { selectedAffects } = useAffectsEditingStore();
 
 const { isAffectBeingRemoved, modifiedAffects } = useFlawAffectsModel();
 
@@ -52,7 +49,6 @@ function isNewAffect(affect: ZodAffectType) {
           :isRemoved="isAffectBeingRemoved(affect)"
           :isModified="isModified(affect)"
           :isNew="isNewAffect(affect)"
-          :isSelected="selectedAffects.includes(affect)"
           :isLast="affectIndex === affects.length - 1"
           @affect:remove="emit('affect:remove', affect)"
           @affect:toggle-selection="emit('affect:toggle-selection', affect)"
