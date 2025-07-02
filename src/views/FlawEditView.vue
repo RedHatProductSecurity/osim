@@ -62,15 +62,3 @@ const isLoading = computed(() => !flaw.value && !didFetchFail);
   padding-top: 0.5rem;
 }
 </style>
-<!--
-
-Workflow:
-1: Load flaw
-2: Flaw -> component
-3: Component
-    edit
-    save
-4: component -> view
-5: view submits
-
--->

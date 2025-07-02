@@ -161,6 +161,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   z-index: 1091;
+
   /* --bs-toast-zindex + 1 */
 }
 
