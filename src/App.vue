@@ -45,7 +45,17 @@ onMounted(() => {
   const ms15Minutes = 15 * 60 * 60 * 1000;
   buildDateIntervalId = setInterval(updateRelativeOsimBuildDate, ms15Minutes);
   updateRelativeOsimBuildDate();
+  const favicon: HTMLLinkElement | null = document.querySelector('head link[rel=\'icon\']');
+  if (!favicon) return;
+  if (location.origin.includes('/localhost')) {
+    favicon.href = '/favicon-local.png';
+  } else if (location.origin.includes('/osim-stage.')) {
+    favicon.href = '/favicon-stage.png';
+  } else if (location.origin.includes('/osim-uat.')) {
+    favicon.href = '/favicon-uat.png';
+  }
 });
+
 onBeforeUnmount(() => {
   clearInterval(buildDateIntervalId);
 });
@@ -150,7 +160,9 @@ onBeforeUnmount(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1091; /* --bs-toast-zindex + 1 */
+  z-index: 1091;
+
+  /* --bs-toast-zindex + 1 */
 }
 
 .osim-status-bar > * {

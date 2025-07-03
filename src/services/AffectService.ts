@@ -1,9 +1,21 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
+import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
 
 import { beforeFetch } from './FlawService';
+
+export async function getAffects(cveOrUuid: string) {
+  const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
+  return osidbFetch({
+    method: 'get',
+    url: '/osidb/api/v1/affects',
+    params: {
+      [field]: cveOrUuid,
+    },
+  });
+}
 
 export async function putAffect(uuid: string, affectObject: any) {
   return osidbFetch({
@@ -30,7 +42,6 @@ export async function putAffects(affectObjects: any[]) {
 }
 
 type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
-
 export async function postAffects(affectObjects: AffectPost[]) {
   return osidbFetch({
     method: 'post',

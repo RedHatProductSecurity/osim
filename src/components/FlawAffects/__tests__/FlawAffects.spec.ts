@@ -82,7 +82,6 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
   return mountWithConfig(Component, {
     props: {
       embargoed: mockedFlaw.value.embargoed,
-      relatedFlaws: [mockedFlaw.value],
       errors,
     },
   });
