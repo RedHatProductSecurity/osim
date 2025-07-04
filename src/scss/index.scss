@@ -10,9 +10,9 @@
 @import './bootstrap-customization';
 
 // Other required imports
-@import '../node_modules/bootstrap/scss/maps';
-@import '../node_modules/bootstrap/scss/mixins';
-@import '../node_modules/bootstrap/scss/root';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/root';
 
 // Import Bootstrap
 @import 'bootstrap/scss/bootstrap';

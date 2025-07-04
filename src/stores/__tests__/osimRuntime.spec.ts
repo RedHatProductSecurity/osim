@@ -1,6 +1,9 @@
 import { http, HttpResponse } from 'msw';
 
 import { server } from '@/__tests__/setup';
+import { OsimRuntimeStatus } from '@/types/zodOsim';
+
+import { configureBackends, osimRuntime, osimRuntimeStatus } from '../osimRuntime';
 
 vi.unmock('@/stores/osimRuntime');
 
@@ -27,10 +30,9 @@ describe('osimRuntime', () => {
     vi.spyOn(console, 'debug').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
-
+    window.__osim_runtime = runtime;
     server.use(
-      http.get('/runtime.json', () => HttpResponse.json(runtime)),
-      http.get('http://localhost:3000/osidb/osidb/healthy', () => HttpResponse.json(osidbHealth)),
+      http.get(`http://localhost:3000/osidb/osidb/healthy`, () => HttpResponse.json(osidbHealth)),
     );
   });
 
@@ -39,34 +41,21 @@ describe('osimRuntime', () => {
   });
 
   it('should fetch runtime info', async () => {
-    const { osimRuntime, OsimRuntimeStatus, osimRuntimeStatus, setup } = await import('../osimRuntime');
-
-    await setup();
+    await configureBackends();
 
     expect(osimRuntimeStatus.value).toBe(OsimRuntimeStatus.READY);
     expect(osimRuntime.value).toEqual(runtime);
     expect(osidbHealth).toEqual(osidbHealth);
   });
 
-  it('can only be setup once', async () => {
-    const { setup } = await import('../osimRuntime');
-
-    await setup();
-    await setup();
-
-    expect(console.warn).toHaveBeenCalledTimes(1);
-  });
-
   it('should fetch version from github if not available', async () => {
-    const { osimRuntime, OsimRuntimeStatus, osimRuntimeStatus, setup } = await import('../osimRuntime');
-    const runtimeWithoutVersion = { ...runtime, osimVersion: { rev: '', tag: '', timestamp: '' } };
     server.use(
-      http.get('/runtime.json', () => HttpResponse.json(runtimeWithoutVersion)),
-      http.get('https://api.github.com/repos/RedHatProductSecurity/osim/commits/main',
-        () => HttpResponse.json({ sha: '1234567' })),
+      http.get('https://api.github.com/repos/RedHatProductSecurity/osim/commits/main', () => HttpResponse.json({ sha: '1234567' })),
     );
+    const runtimeWithoutVersion = { ...runtime, osimVersion: { rev: '', tag: '', timestamp: '' } };
+    window.__osim_runtime = runtimeWithoutVersion;
 
-    await setup();
+    await configureBackends();
 
     expect(osimRuntimeStatus.value).toBe(OsimRuntimeStatus.READY);
     expect(osimRuntime.value).toEqual({ ...runtimeWithoutVersion,
@@ -78,10 +67,9 @@ describe('osimRuntime', () => {
   });
 
   it('should set status to ERROR if osidb is not healthy', async () => {
-    const { osimRuntime, OsimRuntimeStatus, osimRuntimeStatus, setup } = await import('../osimRuntime');
     server.use(http.get('http://localhost:3000/osidb/osidb/healthy', () => HttpResponse.error()));
 
-    await setup();
+    await configureBackends();
 
     expect(osimRuntimeStatus.value).toBe(OsimRuntimeStatus.ERROR);
     expect(osimRuntime.value.error)

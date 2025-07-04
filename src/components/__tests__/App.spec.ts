@@ -1,10 +1,9 @@
-import type { Ref } from 'vue';
-
 import { shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
 import App from '@/App.vue';
-import { OsimRuntimeStatus, osimRuntimeStatus } from '@/stores/osimRuntime';
+import { osimRuntimeStatus } from '@/stores/osimRuntime';
+import { OsimRuntimeStatus } from '@/types/zodOsim';
 
 const mountApp = () => shallowMount(App, {
   global: {
@@ -32,7 +31,8 @@ describe('app', () => {
   });
 
   it('renders the App component when OSIDB is NOT READY', () => {
-    (osimRuntimeStatus as Ref<OsimRuntimeStatus>).value = OsimRuntimeStatus.ERROR;
+    vi.mocked(osimRuntimeStatus).value = OsimRuntimeStatus.ERROR;
+
     const wrapper = mountApp();
 
     expect(wrapper.find('.osim-backend-error').exists()).toBe(true);
