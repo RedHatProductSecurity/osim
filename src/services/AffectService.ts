@@ -7,7 +7,7 @@ import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
 import { beforeFetch } from './FlawService';
 
 export async function getAffects(cveOrUuid: string) {
-  const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
+  const field = isCveValid(cveOrUuid) ? 'flaw__cve_id' : 'flaw__uuid';
   return osidbFetch({
     method: 'get',
     url: '/osidb/api/v1/affects',
