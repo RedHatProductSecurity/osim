@@ -106,6 +106,7 @@ export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<
     params: {
       include_meta_attr: 'bz_id',
       include_history: 'true',
+      exclude_fields: 'affects',
     },
   }).then(response => response.data);
 }

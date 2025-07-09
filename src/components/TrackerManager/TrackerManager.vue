@@ -174,7 +174,7 @@ function hideLowSeverityTrackersWarning() {
               <div class="alert alert-danger">
                 <h5>Untrackable Affects</h5>
                 <p>
-                  These affects do not have available trackers. This may indicate an issue with product defintions.
+                  These affects do not have available trackers. This may indicate an issue with product definitions.
                   Please contact the OSIDB/OSIM team for assistance.
                 </p>
                 <div class="osim-tracker-list">

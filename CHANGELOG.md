@@ -1,5 +1,10 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
+
+
 ## [2025.6.0]
 ### Added
 * Add an unified view for all comment types  (`OSIDB-3467`)

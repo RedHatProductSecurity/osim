@@ -6,6 +6,13 @@ import { getFlaw } from '@/services/FlawService';
 
 import FlawEditView from '../FlawEditView.vue';
 
+vi.mock('@/services/JiraService', () => ({
+  getJiraIssue: vi.fn().mockResolvedValue({}),
+  searchJiraUsers: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock('@/services/OsidbAuthService');
+
 vi.mock('@/services/FlawService', async (importOriginal) => {
   return ({
     ...await importOriginal<typeof import('@/services/FlawService')>(),
@@ -13,6 +20,12 @@ vi.mock('@/services/FlawService', async (importOriginal) => {
   });
 });
 
+vi.mock('@/services/AffectService', async (importOriginal) => {
+  return ({
+    ...await importOriginal<typeof import('@/services/AffectService')>(),
+    getAffects: vi.fn().mockResolvedValue({ data: { results: sampleFlawRequired.affects } }),
+  });
+});
 vi.mock('@/components/FlawForm.vue');
 
 const mountFlawEditView = () => mountWithConfig(FlawEditView, {
@@ -38,7 +51,6 @@ describe('flawEditView', () => {
 
   it('should call `getFlaw` when mounted', () => {
     mountFlawEditView();
-
     expect(getFlaw).toHaveBeenNthCalledWith(1, 'some_fake_uuid');
   });
 
