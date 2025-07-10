@@ -274,9 +274,9 @@ exports[`flawCreateView > should render 1`] = `
             </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
               <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
                 <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
-                  <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2024-09-24</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
-                  <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2024-09-24"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
-                  <!--v-if-->
+                  <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control is-invalid">2025-07-10</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
+                  <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control is-invalid" type="text" value="2025-07-10"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
+                  <div class="invalid-tooltip">Reported date cannot be in the future.</div>
                 </div>
                 <!--v-if-->
               </div>
