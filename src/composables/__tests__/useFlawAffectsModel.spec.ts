@@ -70,7 +70,6 @@ describe('useFlawAffectsModel', () => {
       'affectsToDelete',
       'affectCvssToDelete',
       'initialAffects',
-      'refreshAffects',
       'modifiedAffects',
       'wereAffectsEditedOrAdded',
     ].forEach((key) => {
