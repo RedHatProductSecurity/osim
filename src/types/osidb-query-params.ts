@@ -5,745 +5,746 @@
  * Query parameters for GET /osidb/api/v1/affects
  */
 export type GetOsidbApiV1AffectsQueryParams = {
-  affectedness?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  cvss_scores__comment?: string;
-  cvss_scores__created_dt?: string;
-  cvss_scores__created_dt__date?: string;
-  cvss_scores__created_dt__date__gte?: string;
-  cvss_scores__created_dt__date__lte?: string;
-  cvss_scores__created_dt__gt?: string;
-  cvss_scores__created_dt__gte?: string;
-  cvss_scores__created_dt__lt?: string;
-  cvss_scores__created_dt__lte?: string;
-  cvss_scores__cvss_version?: string;
-  cvss_scores__issuer?: string;
-  cvss_scores__score?: string;
-  cvss_scores__updated_dt?: string;
-  cvss_scores__updated_dt__date?: string;
-  cvss_scores__updated_dt__date__gte?: string;
-  cvss_scores__updated_dt__date__lte?: string;
-  cvss_scores__updated_dt__gt?: string;
-  cvss_scores__updated_dt__gte?: string;
-  cvss_scores__updated_dt__lt?: string;
-  cvss_scores__updated_dt__lte?: string;
-  cvss_scores__uuid?: string;
-  cvss_scores__vector?: string;
-  embargoed?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  flaw__components?: string; // Multiple values may be separated by commas.
-  flaw__created_dt?: string;
-  flaw__created_dt__date?: string;
-  flaw__created_dt__date__gte?: string;
-  flaw__created_dt__date__lte?: string;
-  flaw__created_dt__gt?: string;
-  flaw__created_dt__gte?: string;
-  flaw__created_dt__lt?: string;
-  flaw__created_dt__lte?: string;
-  flaw__cve_id?: string;
-  flaw__cwe_id?: string;
-  flaw__embargoed?: string;
-  flaw__impact?: string;
-  flaw__reported_dt?: string;
-  flaw__reported_dt__date?: string;
-  flaw__reported_dt__date__gte?: string;
-  flaw__reported_dt__date__lte?: string;
-  flaw__reported_dt__gt?: string;
-  flaw__reported_dt__gte?: string;
-  flaw__reported_dt__lt?: string;
-  flaw__reported_dt__lte?: string;
-  flaw__source?: string;
-  flaw__unembargo_dt?: string;
-  flaw__updated_dt?: string;
-  flaw__updated_dt__date?: string;
-  flaw__updated_dt__date__gte?: string;
-  flaw__updated_dt__date__lte?: string;
-  flaw__updated_dt__gt?: string;
-  flaw__updated_dt__gte?: string;
-  flaw__updated_dt__lt?: string;
-  flaw__updated_dt__lte?: string;
-  flaw__uuid?: string;
-  impact?: string;
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_history?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  order?: string; // Ordering
-  ps_component?: string;
-  ps_module?: string;
-  resolution?: string;
-  trackers__created_dt?: string;
-  trackers__created_dt__date?: string;
-  trackers__created_dt__date__gte?: string;
-  trackers__created_dt__date__lte?: string;
-  trackers__created_dt__gt?: string;
-  trackers__created_dt__gte?: string;
-  trackers__created_dt__lt?: string;
-  trackers__created_dt__lte?: string;
-  trackers__embargoed?: string;
-  trackers__external_system_id?: string;
-  trackers__ps_update_stream?: string;
-  trackers__resolution?: string;
-  trackers__status?: string;
-  trackers__type?: string;
-  trackers__updated_dt?: string;
-  trackers__updated_dt__date?: string;
-  trackers__updated_dt__date__gte?: string;
-  trackers__updated_dt__date__lte?: string;
-  trackers__updated_dt__gt?: string;
-  trackers__updated_dt__gte?: string;
-  trackers__updated_dt__lt?: string;
-  trackers__updated_dt__lte?: string;
-  trackers__uuid?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
+  'affectedness'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'cvss_scores__comment'?: string;
+  'cvss_scores__created_dt'?: string;
+  'cvss_scores__created_dt__date'?: string;
+  'cvss_scores__created_dt__date__gte'?: string;
+  'cvss_scores__created_dt__date__lte'?: string;
+  'cvss_scores__created_dt__gt'?: string;
+  'cvss_scores__created_dt__gte'?: string;
+  'cvss_scores__created_dt__lt'?: string;
+  'cvss_scores__created_dt__lte'?: string;
+  'cvss_scores__cvss_version'?: string;
+  'cvss_scores__issuer'?: string;
+  'cvss_scores__score'?: string;
+  'cvss_scores__updated_dt'?: string;
+  'cvss_scores__updated_dt__date'?: string;
+  'cvss_scores__updated_dt__date__gte'?: string;
+  'cvss_scores__updated_dt__date__lte'?: string;
+  'cvss_scores__updated_dt__gt'?: string;
+  'cvss_scores__updated_dt__gte'?: string;
+  'cvss_scores__updated_dt__lt'?: string;
+  'cvss_scores__updated_dt__lte'?: string;
+  'cvss_scores__uuid'?: string;
+  'cvss_scores__vector'?: string;
+  'embargoed'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'flaw__components'?: string; // Multiple values may be separated by commas.
+  'flaw__created_dt'?: string;
+  'flaw__created_dt__date'?: string;
+  'flaw__created_dt__date__gte'?: string;
+  'flaw__created_dt__date__lte'?: string;
+  'flaw__created_dt__gt'?: string;
+  'flaw__created_dt__gte'?: string;
+  'flaw__created_dt__lt'?: string;
+  'flaw__created_dt__lte'?: string;
+  'flaw__cve_id'?: string;
+  'flaw__cwe_id'?: string;
+  'flaw__embargoed'?: string;
+  'flaw__impact'?: string;
+  'flaw__reported_dt'?: string;
+  'flaw__reported_dt__date'?: string;
+  'flaw__reported_dt__date__gte'?: string;
+  'flaw__reported_dt__date__lte'?: string;
+  'flaw__reported_dt__gt'?: string;
+  'flaw__reported_dt__gte'?: string;
+  'flaw__reported_dt__lt'?: string;
+  'flaw__reported_dt__lte'?: string;
+  'flaw__source'?: string;
+  'flaw__unembargo_dt'?: string;
+  'flaw__updated_dt'?: string;
+  'flaw__updated_dt__date'?: string;
+  'flaw__updated_dt__date__gte'?: string;
+  'flaw__updated_dt__date__lte'?: string;
+  'flaw__updated_dt__gt'?: string;
+  'flaw__updated_dt__gte'?: string;
+  'flaw__updated_dt__lt'?: string;
+  'flaw__updated_dt__lte'?: string;
+  'flaw__uuid'?: string;
+  'impact'?: string;
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_history'?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'order'?: string; // Ordering  
+  'ps_component'?: string;
+  'ps_module'?: string;
+  'resolution'?: string;
+  'trackers__created_dt'?: string;
+  'trackers__created_dt__date'?: string;
+  'trackers__created_dt__date__gte'?: string;
+  'trackers__created_dt__date__lte'?: string;
+  'trackers__created_dt__gt'?: string;
+  'trackers__created_dt__gte'?: string;
+  'trackers__created_dt__lt'?: string;
+  'trackers__created_dt__lte'?: string;
+  'trackers__embargoed'?: string;
+  'trackers__external_system_id'?: string;
+  'trackers__ps_update_stream'?: string;
+  'trackers__resolution'?: string;
+  'trackers__status'?: string;
+  'trackers__type'?: string;
+  'trackers__updated_dt'?: string;
+  'trackers__updated_dt__date'?: string;
+  'trackers__updated_dt__date__gte'?: string;
+  'trackers__updated_dt__date__lte'?: string;
+  'trackers__updated_dt__gt'?: string;
+  'trackers__updated_dt__gte'?: string;
+  'trackers__updated_dt__lt'?: string;
+  'trackers__updated_dt__lte'?: string;
+  'trackers__uuid'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/affects/{affect_id}/cvss_scores
  */
 export type GetOsidbApiV1AffectsByAffect_idCvss_scoresQueryParams = {
-  comment?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  cvss_version?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  issuer?: string;
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  score?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
-  vector?: string;
+  'comment'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'cvss_version'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'issuer'?: string;
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'score'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
+  'vector'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/affects/{affect_id}/cvss_scores/{id}
  */
 export type GetOsidbApiV1AffectsByAffect_idCvss_scoresByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/affects/{uuid}
  */
 export type GetOsidbApiV1AffectsByUuidQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_history?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_history'?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/alerts
  */
 export type GetOsidbApiV1AlertsQueryParams = {
-  alert_type?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  limit?: string; // Number of results to return per page.
-  name?: string; // Retrieve only Alerts with the specified name, which is given by the model's validation process.
-  offset?: string; // The initial index from which to return the results.
-  parent_model?: string; // Retrieve only Alerts related to the specified model, e.g. flaw or affect.
-  parent_uuid?: string; // Retrieve only Alerts related to a model with the given UUID.
-  uuid?: string;
+  'alert_type'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'limit'?: string; // Number of results to return per page.
+  'name'?: string; // Retrieve only Alerts with the specified name, which is given by the model's validation process.
+  'offset'?: string; // The initial index from which to return the results.
+  'parent_model'?: string; // Retrieve only Alerts related to the specified model, e.g. flaw or affect.
+  'parent_uuid'?: string; // Retrieve only Alerts related to a model with the given UUID.
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/alerts/{uuid}
  */
 export type GetOsidbApiV1AlertsByUuidQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/audit
  */
 export type GetOsidbApiV1AuditQueryParams = {
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  pgh_created_at?: string;
-  pgh_label?: string;
-  pgh_obj_model?: string;
-  pgh_slug?: string;
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'pgh_created_at'?: string;
+  'pgh_label'?: string;
+  'pgh_obj_model'?: string;
+  'pgh_slug'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws
  */
 export type GetOsidbApiV1FlawsQueryParams = {
-  acknowledgments__affiliation?: string;
-  acknowledgments__created_dt?: string;
-  acknowledgments__created_dt__date?: string;
-  acknowledgments__created_dt__date__gte?: string;
-  acknowledgments__created_dt__date__lte?: string;
-  acknowledgments__created_dt__gt?: string;
-  acknowledgments__created_dt__gte?: string;
-  acknowledgments__created_dt__lt?: string;
-  acknowledgments__created_dt__lte?: string;
-  acknowledgments__from_upstream?: string;
-  acknowledgments__name?: string;
-  acknowledgments__updated_dt?: string;
-  acknowledgments__updated_dt__date?: string;
-  acknowledgments__updated_dt__date__gte?: string;
-  acknowledgments__updated_dt__date__lte?: string;
-  acknowledgments__updated_dt__gt?: string;
-  acknowledgments__updated_dt__gte?: string;
-  acknowledgments__updated_dt__lt?: string;
-  acknowledgments__updated_dt__lte?: string;
-  acknowledgments__uuid?: string;
-  affects__affectedness?: string;
-  affects__created_dt?: string;
-  affects__created_dt__date?: string;
-  affects__created_dt__date__gte?: string;
-  affects__created_dt__date__lte?: string;
-  affects__created_dt__gt?: string;
-  affects__created_dt__gte?: string;
-  affects__created_dt__lt?: string;
-  affects__created_dt__lte?: string;
-  affects__embargoed?: string;
-  affects__impact?: string;
-  affects__ps_component?: string;
-  affects__ps_module?: string;
-  affects__resolution?: string;
-  affects__trackers__created_dt?: string;
-  affects__trackers__created_dt__date?: string;
-  affects__trackers__created_dt__date__gte?: string;
-  affects__trackers__created_dt__date__lte?: string;
-  affects__trackers__created_dt__gt?: string;
-  affects__trackers__created_dt__gte?: string;
-  affects__trackers__created_dt__lt?: string;
-  affects__trackers__created_dt__lte?: string;
-  affects__trackers__embargoed?: string;
-  affects__trackers__errata__advisory_name?: string;
-  affects__trackers__errata__et_id?: string;
-  affects__trackers__errata__shipped_dt?: string;
-  affects__trackers__errata__shipped_dt__date?: string;
-  affects__trackers__errata__shipped_dt__date__gte?: string;
-  affects__trackers__errata__shipped_dt__date__lte?: string;
-  affects__trackers__errata__shipped_dt__gt?: string;
-  affects__trackers__errata__shipped_dt__gte?: string;
-  affects__trackers__errata__shipped_dt__lt?: string;
-  affects__trackers__errata__shipped_dt__lte?: string;
-  affects__trackers__external_system_id?: string;
-  affects__trackers__ps_update_stream?: string;
-  affects__trackers__resolution?: string;
-  affects__trackers__status?: string;
-  affects__trackers__type?: string;
-  affects__trackers__updated_dt?: string;
-  affects__trackers__updated_dt__date?: string;
-  affects__trackers__updated_dt__date__gte?: string;
-  affects__trackers__updated_dt__date__lte?: string;
-  affects__trackers__updated_dt__gt?: string;
-  affects__trackers__updated_dt__gte?: string;
-  affects__trackers__updated_dt__lt?: string;
-  affects__trackers__updated_dt__lte?: string;
-  affects__trackers__uuid?: string;
-  affects__updated_dt?: string;
-  affects__updated_dt__date?: string;
-  affects__updated_dt__date__gte?: string;
-  affects__updated_dt__date__lte?: string;
-  affects__updated_dt__gt?: string;
-  affects__updated_dt__gte?: string;
-  affects__updated_dt__lt?: string;
-  affects__updated_dt__lte?: string;
-  affects__uuid?: string;
-  bz_id?: string;
-  changed_after?: string;
-  changed_before?: string;
-  comment_zero?: string;
-  components?: string; // Multiple values may be separated by commas.
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  cve_description?: string;
-  cve_description__isempty?: string;
-  cve_id?: string; // Multiple values may be separated by commas.
-  cve_id__isempty?: string;
-  cvss_scores__comment?: string;
-  cvss_scores__created_dt?: string;
-  cvss_scores__created_dt__date?: string;
-  cvss_scores__created_dt__date__gte?: string;
-  cvss_scores__created_dt__date__lte?: string;
-  cvss_scores__created_dt__gt?: string;
-  cvss_scores__created_dt__gte?: string;
-  cvss_scores__created_dt__lt?: string;
-  cvss_scores__created_dt__lte?: string;
-  cvss_scores__cvss_version?: string;
-  cvss_scores__issuer?: string;
-  cvss_scores__score?: string;
-  cvss_scores__updated_dt?: string;
-  cvss_scores__updated_dt__date?: string;
-  cvss_scores__updated_dt__date__gte?: string;
-  cvss_scores__updated_dt__date__lte?: string;
-  cvss_scores__updated_dt__gt?: string;
-  cvss_scores__updated_dt__gte?: string;
-  cvss_scores__updated_dt__lt?: string;
-  cvss_scores__updated_dt__lte?: string;
-  cvss_scores__uuid?: string;
-  cvss_scores__vector?: string;
-  cvss2_nist__isempty?: string;
-  cvss2_rh__isempty?: string;
-  cvss3_nist__isempty?: string;
-  cvss3_rh__isempty?: string;
-  cvss4_nist__isempty?: string;
-  cvss4_rh__isempty?: string;
-  cwe_id?: string;
-  cwe_id__isempty?: string;
-  embargoed?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  impact?: string;
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_history?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
-  limit?: string; // Number of results to return per page.
-  major_incident_start_dt?: string;
-  major_incident_start_dt__date?: string;
-  major_incident_start_dt__date__gte?: string;
-  major_incident_start_dt__date__lte?: string;
-  major_incident_start_dt__gt?: string;
-  major_incident_start_dt__gte?: string;
-  major_incident_start_dt__lt?: string;
-  major_incident_start_dt__lte?: string;
-  major_incident_state?: string;
-  mitigation__isempty?: string;
-  nist_cvss_validation?: string;
-  offset?: string; // The initial index from which to return the results.
-  order?: string; // Ordering
-  owner?: string;
-  owner__isempty?: string;
-  query?: string; // Advanced filter with special syntax. See https://github.com/ivelum/djangoql for more information.
-  references__created_dt?: string;
-  references__created_dt__date?: string;
-  references__created_dt__date__gte?: string;
-  references__created_dt__date__lte?: string;
-  references__created_dt__gt?: string;
-  references__created_dt__gte?: string;
-  references__created_dt__lt?: string;
-  references__created_dt__lte?: string;
-  references__description?: string;
-  references__type?: string;
-  references__updated_dt?: string;
-  references__updated_dt__date?: string;
-  references__updated_dt__date__gte?: string;
-  references__updated_dt__date__lte?: string;
-  references__updated_dt__gt?: string;
-  references__updated_dt__gte?: string;
-  references__updated_dt__lt?: string;
-  references__updated_dt__lte?: string;
-  references__url?: string;
-  references__uuid?: string;
-  reported_dt?: string;
-  reported_dt__date?: string;
-  reported_dt__date__gte?: string;
-  reported_dt__date__lte?: string;
-  reported_dt__gt?: string;
-  reported_dt__gte?: string;
-  reported_dt__lt?: string;
-  reported_dt__lte?: string;
-  requires_cve_description?: string;
-  search?: string;
-  source?: string;
-  statement?: string;
-  statement__isempty?: string;
-  team_id?: string;
-  title?: string;
-  tracker_ids?: string; // Filter only Flaws which are related to specified Trackers (through Affects). Multiple tracker IDs may be separated by commas. Also only Affects that have the specified Trackers related will be shown.
-  unembargo_dt?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
-  workflow_state?: string; // Multiple values may be separated by commas.
+  'acknowledgments__affiliation'?: string;
+  'acknowledgments__created_dt'?: string;
+  'acknowledgments__created_dt__date'?: string;
+  'acknowledgments__created_dt__date__gte'?: string;
+  'acknowledgments__created_dt__date__lte'?: string;
+  'acknowledgments__created_dt__gt'?: string;
+  'acknowledgments__created_dt__gte'?: string;
+  'acknowledgments__created_dt__lt'?: string;
+  'acknowledgments__created_dt__lte'?: string;
+  'acknowledgments__from_upstream'?: string;
+  'acknowledgments__name'?: string;
+  'acknowledgments__updated_dt'?: string;
+  'acknowledgments__updated_dt__date'?: string;
+  'acknowledgments__updated_dt__date__gte'?: string;
+  'acknowledgments__updated_dt__date__lte'?: string;
+  'acknowledgments__updated_dt__gt'?: string;
+  'acknowledgments__updated_dt__gte'?: string;
+  'acknowledgments__updated_dt__lt'?: string;
+  'acknowledgments__updated_dt__lte'?: string;
+  'acknowledgments__uuid'?: string;
+  'affects__affectedness'?: string;
+  'affects__created_dt'?: string;
+  'affects__created_dt__date'?: string;
+  'affects__created_dt__date__gte'?: string;
+  'affects__created_dt__date__lte'?: string;
+  'affects__created_dt__gt'?: string;
+  'affects__created_dt__gte'?: string;
+  'affects__created_dt__lt'?: string;
+  'affects__created_dt__lte'?: string;
+  'affects__embargoed'?: string;
+  'affects__impact'?: string;
+  'affects__ps_component'?: string;
+  'affects__ps_module'?: string;
+  'affects__resolution'?: string;
+  'affects__trackers__created_dt'?: string;
+  'affects__trackers__created_dt__date'?: string;
+  'affects__trackers__created_dt__date__gte'?: string;
+  'affects__trackers__created_dt__date__lte'?: string;
+  'affects__trackers__created_dt__gt'?: string;
+  'affects__trackers__created_dt__gte'?: string;
+  'affects__trackers__created_dt__lt'?: string;
+  'affects__trackers__created_dt__lte'?: string;
+  'affects__trackers__embargoed'?: string;
+  'affects__trackers__errata__advisory_name'?: string;
+  'affects__trackers__errata__et_id'?: string;
+  'affects__trackers__errata__shipped_dt'?: string;
+  'affects__trackers__errata__shipped_dt__date'?: string;
+  'affects__trackers__errata__shipped_dt__date__gte'?: string;
+  'affects__trackers__errata__shipped_dt__date__lte'?: string;
+  'affects__trackers__errata__shipped_dt__gt'?: string;
+  'affects__trackers__errata__shipped_dt__gte'?: string;
+  'affects__trackers__errata__shipped_dt__lt'?: string;
+  'affects__trackers__errata__shipped_dt__lte'?: string;
+  'affects__trackers__external_system_id'?: string;
+  'affects__trackers__ps_update_stream'?: string;
+  'affects__trackers__resolution'?: string;
+  'affects__trackers__status'?: string;
+  'affects__trackers__type'?: string;
+  'affects__trackers__updated_dt'?: string;
+  'affects__trackers__updated_dt__date'?: string;
+  'affects__trackers__updated_dt__date__gte'?: string;
+  'affects__trackers__updated_dt__date__lte'?: string;
+  'affects__trackers__updated_dt__gt'?: string;
+  'affects__trackers__updated_dt__gte'?: string;
+  'affects__trackers__updated_dt__lt'?: string;
+  'affects__trackers__updated_dt__lte'?: string;
+  'affects__trackers__uuid'?: string;
+  'affects__updated_dt'?: string;
+  'affects__updated_dt__date'?: string;
+  'affects__updated_dt__date__gte'?: string;
+  'affects__updated_dt__date__lte'?: string;
+  'affects__updated_dt__gt'?: string;
+  'affects__updated_dt__gte'?: string;
+  'affects__updated_dt__lt'?: string;
+  'affects__updated_dt__lte'?: string;
+  'affects__uuid'?: string;
+  'bz_id'?: string;
+  'changed_after'?: string;
+  'changed_before'?: string;
+  'comment_zero'?: string;
+  'components'?: string; // Multiple values may be separated by commas.
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'cve_description'?: string;
+  'cve_description__isempty'?: string;
+  'cve_id'?: string; // Multiple values may be separated by commas.
+  'cve_id__isempty'?: string;
+  'cvss2_nist__isempty'?: string;
+  'cvss2_rh__isempty'?: string;
+  'cvss3_nist__isempty'?: string;
+  'cvss3_rh__isempty'?: string;
+  'cvss4_nist__isempty'?: string;
+  'cvss4_rh__isempty'?: string;
+  'cvss_scores__comment'?: string;
+  'cvss_scores__created_dt'?: string;
+  'cvss_scores__created_dt__date'?: string;
+  'cvss_scores__created_dt__date__gte'?: string;
+  'cvss_scores__created_dt__date__lte'?: string;
+  'cvss_scores__created_dt__gt'?: string;
+  'cvss_scores__created_dt__gte'?: string;
+  'cvss_scores__created_dt__lt'?: string;
+  'cvss_scores__created_dt__lte'?: string;
+  'cvss_scores__cvss_version'?: string;
+  'cvss_scores__issuer'?: string;
+  'cvss_scores__score'?: string;
+  'cvss_scores__updated_dt'?: string;
+  'cvss_scores__updated_dt__date'?: string;
+  'cvss_scores__updated_dt__date__gte'?: string;
+  'cvss_scores__updated_dt__date__lte'?: string;
+  'cvss_scores__updated_dt__gt'?: string;
+  'cvss_scores__updated_dt__gte'?: string;
+  'cvss_scores__updated_dt__lt'?: string;
+  'cvss_scores__updated_dt__lte'?: string;
+  'cvss_scores__uuid'?: string;
+  'cvss_scores__vector'?: string;
+  'cwe_id'?: string;
+  'cwe_id__isempty'?: string;
+  'embargoed'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'impact'?: string;
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_history'?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
+  'limit'?: string; // Number of results to return per page.
+  'major_incident_start_dt'?: string;
+  'major_incident_start_dt__date'?: string;
+  'major_incident_start_dt__date__gte'?: string;
+  'major_incident_start_dt__date__lte'?: string;
+  'major_incident_start_dt__gt'?: string;
+  'major_incident_start_dt__gte'?: string;
+  'major_incident_start_dt__lt'?: string;
+  'major_incident_start_dt__lte'?: string;
+  'major_incident_state'?: string;
+  'mitigation__isempty'?: string;
+  'nist_cvss_validation'?: string;
+  'offset'?: string; // The initial index from which to return the results.
+  'order'?: string; // Ordering  
+  'owner'?: string;
+  'owner__isempty'?: string;
+  'query'?: string; // Advanced filter with special syntax. See https://github.com/ivelum/djangoql for more information.
+  'references__created_dt'?: string;
+  'references__created_dt__date'?: string;
+  'references__created_dt__date__gte'?: string;
+  'references__created_dt__date__lte'?: string;
+  'references__created_dt__gt'?: string;
+  'references__created_dt__gte'?: string;
+  'references__created_dt__lt'?: string;
+  'references__created_dt__lte'?: string;
+  'references__description'?: string;
+  'references__type'?: string;
+  'references__updated_dt'?: string;
+  'references__updated_dt__date'?: string;
+  'references__updated_dt__date__gte'?: string;
+  'references__updated_dt__date__lte'?: string;
+  'references__updated_dt__gt'?: string;
+  'references__updated_dt__gte'?: string;
+  'references__updated_dt__lt'?: string;
+  'references__updated_dt__lte'?: string;
+  'references__url'?: string;
+  'references__uuid'?: string;
+  'reported_dt'?: string;
+  'reported_dt__date'?: string;
+  'reported_dt__date__gte'?: string;
+  'reported_dt__date__lte'?: string;
+  'reported_dt__gt'?: string;
+  'reported_dt__gte'?: string;
+  'reported_dt__lt'?: string;
+  'reported_dt__lte'?: string;
+  'requires_cve_description'?: string;
+  'search'?: string;
+  'source'?: string;
+  'statement'?: string;
+  'statement__isempty'?: string;
+  'team_id'?: string;
+  'title'?: string;
+  'tracker_ids'?: string; // Filter only Flaws which are related to specified Trackers (through Affects). Multiple tracker IDs may be separated by commas. Also only Affects that have the specified Trackers related will be shown.
+  'unembargo_dt'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
+  'workflow_state'?: string; // Multiple values may be separated by commas.  
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/acknowledgments
  */
 export type GetOsidbApiV1FlawsByFlaw_idAcknowledgmentsQueryParams = {
-  affiliation?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  from_upstream?: string;
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  limit?: string; // Number of results to return per page.
-  name?: string;
-  offset?: string; // The initial index from which to return the results.
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
+  'affiliation'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'from_upstream'?: string;
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'limit'?: string; // Number of results to return per page.
+  'name'?: string;
+  'offset'?: string; // The initial index from which to return the results.
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/acknowledgments/{id}
  */
 export type GetOsidbApiV1FlawsByFlaw_idAcknowledgmentsByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/comments
  */
 export type GetOsidbApiV1FlawsByFlaw_idCommentsQueryParams = {
-  creator?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  external_system_id?: string;
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  order?: string; // Retrieve only FlawComment resource with the specified order number. Regular flaw comments are numbered from 1 up.
-  uuid?: string;
+  'creator'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'external_system_id'?: string;
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'order'?: string; // Retrieve only FlawComment resource with the specified order number. Regular flaw comments are numbered from 1 up.
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/comments/{comment_id}
  */
 export type GetOsidbApiV1FlawsByFlaw_idCommentsByComment_idQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/cvss_scores
  */
 export type GetOsidbApiV1FlawsByFlaw_idCvss_scoresQueryParams = {
-  comment?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  cvss_version?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  issuer?: string;
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  score?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
-  vector?: string;
+  'comment'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'cvss_version'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'issuer'?: string;
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'score'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
+  'vector'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/cvss_scores/{id}
  */
 export type GetOsidbApiV1FlawsByFlaw_idCvss_scoresByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/labels
  */
 export type GetOsidbApiV1FlawsByFlaw_idLabelsQueryParams = {
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/package_versions
  */
 export type GetOsidbApiV1FlawsByFlaw_idPackage_versionsQueryParams = {
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  package?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
-  versions__version?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'package'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
+  'versions__version'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/package_versions/{id}
  */
 export type GetOsidbApiV1FlawsByFlaw_idPackage_versionsByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/references
  */
 export type GetOsidbApiV1FlawsByFlaw_idReferencesQueryParams = {
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  description?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  type?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  url?: string;
-  uuid?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'description'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'type'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'url'?: string;
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{flaw_id}/references/{id}
  */
 export type GetOsidbApiV1FlawsByFlaw_idReferencesByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/flaws/{id}
  */
 export type GetOsidbApiV1FlawsByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_history?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
-  query?: string; // Advanced filter with special syntax. See https://github.com/ivelum/djangoql for more information.
-  tracker_ids?: string; // Filter only Flaws which are related to specified Trackers (through Affects). Multiple tracker IDs may be separated by commas. Also only Affects that have the specified Trackers related will be shown.
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_history'?: string; // Indicates whether the response should include the model's change history. Set to 'true' to include historical changes. Default: false.
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
+  'query'?: string; // Advanced filter with special syntax. See https://github.com/ivelum/djangoql for more information.
+  'tracker_ids'?: string; // Filter only Flaws which are related to specified Trackers (through Affects). Multiple tracker IDs may be separated by commas. Also only Affects that have the specified Trackers related will be shown.
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/labels
  */
 export type GetOsidbApiV1LabelsQueryParams = {
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/schema/
  */
 export type GetOsidbApiV1SchemaQueryParams = {
-  format?: string;
-  lang?: string;
+  'format'?: string;
+  'lang'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/trackers
  */
 export type GetOsidbApiV1TrackersQueryParams = {
-  affects__affectedness?: string;
-  affects__created_dt?: string;
-  affects__created_dt__date?: string;
-  affects__created_dt__date__gte?: string;
-  affects__created_dt__date__lte?: string;
-  affects__created_dt__gt?: string;
-  affects__created_dt__gte?: string;
-  affects__created_dt__lt?: string;
-  affects__created_dt__lte?: string;
-  affects__embargoed?: string;
-  affects__flaw__components?: string; // Multiple values may be separated by commas.
-  affects__flaw__created_dt?: string;
-  affects__flaw__created_dt__date?: string;
-  affects__flaw__created_dt__date__gte?: string;
-  affects__flaw__created_dt__date__lte?: string;
-  affects__flaw__created_dt__gt?: string;
-  affects__flaw__created_dt__gte?: string;
-  affects__flaw__created_dt__lt?: string;
-  affects__flaw__created_dt__lte?: string;
-  affects__flaw__cve_id?: string;
-  affects__flaw__cwe_id?: string;
-  affects__flaw__embargoed?: string;
-  affects__flaw__impact?: string;
-  affects__flaw__reported_dt?: string;
-  affects__flaw__reported_dt__date?: string;
-  affects__flaw__reported_dt__date__gte?: string;
-  affects__flaw__reported_dt__date__lte?: string;
-  affects__flaw__reported_dt__gt?: string;
-  affects__flaw__reported_dt__gte?: string;
-  affects__flaw__reported_dt__lt?: string;
-  affects__flaw__reported_dt__lte?: string;
-  affects__flaw__source?: string;
-  affects__flaw__unembargo_dt?: string;
-  affects__flaw__updated_dt?: string;
-  affects__flaw__updated_dt__date?: string;
-  affects__flaw__updated_dt__date__gte?: string;
-  affects__flaw__updated_dt__date__lte?: string;
-  affects__flaw__updated_dt__gt?: string;
-  affects__flaw__updated_dt__gte?: string;
-  affects__flaw__updated_dt__lt?: string;
-  affects__flaw__updated_dt__lte?: string;
-  affects__flaw__uuid?: string;
-  affects__impact?: string;
-  affects__ps_component?: string;
-  affects__ps_module?: string;
-  affects__resolution?: string;
-  affects__updated_dt?: string;
-  affects__updated_dt__date?: string;
-  affects__updated_dt__date__gte?: string;
-  affects__updated_dt__date__lte?: string;
-  affects__updated_dt__gt?: string;
-  affects__updated_dt__gte?: string;
-  affects__updated_dt__lt?: string;
-  affects__updated_dt__lte?: string;
-  affects__uuid?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  embargoed?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  external_system_id?: string;
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  order?: string; // Ordering
-  ps_update_stream?: string;
-  resolution?: string;
-  status?: string;
-  type?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
+  'affects__affectedness'?: string;
+  'affects__created_dt'?: string;
+  'affects__created_dt__date'?: string;
+  'affects__created_dt__date__gte'?: string;
+  'affects__created_dt__date__lte'?: string;
+  'affects__created_dt__gt'?: string;
+  'affects__created_dt__gte'?: string;
+  'affects__created_dt__lt'?: string;
+  'affects__created_dt__lte'?: string;
+  'affects__embargoed'?: string;
+  'affects__flaw__components'?: string; // Multiple values may be separated by commas.
+  'affects__flaw__created_dt'?: string;
+  'affects__flaw__created_dt__date'?: string;
+  'affects__flaw__created_dt__date__gte'?: string;
+  'affects__flaw__created_dt__date__lte'?: string;
+  'affects__flaw__created_dt__gt'?: string;
+  'affects__flaw__created_dt__gte'?: string;
+  'affects__flaw__created_dt__lt'?: string;
+  'affects__flaw__created_dt__lte'?: string;
+  'affects__flaw__cve_id'?: string;
+  'affects__flaw__cwe_id'?: string;
+  'affects__flaw__embargoed'?: string;
+  'affects__flaw__impact'?: string;
+  'affects__flaw__reported_dt'?: string;
+  'affects__flaw__reported_dt__date'?: string;
+  'affects__flaw__reported_dt__date__gte'?: string;
+  'affects__flaw__reported_dt__date__lte'?: string;
+  'affects__flaw__reported_dt__gt'?: string;
+  'affects__flaw__reported_dt__gte'?: string;
+  'affects__flaw__reported_dt__lt'?: string;
+  'affects__flaw__reported_dt__lte'?: string;
+  'affects__flaw__source'?: string;
+  'affects__flaw__unembargo_dt'?: string;
+  'affects__flaw__updated_dt'?: string;
+  'affects__flaw__updated_dt__date'?: string;
+  'affects__flaw__updated_dt__date__gte'?: string;
+  'affects__flaw__updated_dt__date__lte'?: string;
+  'affects__flaw__updated_dt__gt'?: string;
+  'affects__flaw__updated_dt__gte'?: string;
+  'affects__flaw__updated_dt__lt'?: string;
+  'affects__flaw__updated_dt__lte'?: string;
+  'affects__flaw__uuid'?: string;
+  'affects__impact'?: string;
+  'affects__ps_component'?: string;
+  'affects__ps_module'?: string;
+  'affects__resolution'?: string;
+  'affects__updated_dt'?: string;
+  'affects__updated_dt__date'?: string;
+  'affects__updated_dt__date__gte'?: string;
+  'affects__updated_dt__date__lte'?: string;
+  'affects__updated_dt__gt'?: string;
+  'affects__updated_dt__gte'?: string;
+  'affects__updated_dt__lt'?: string;
+  'affects__updated_dt__lte'?: string;
+  'affects__uuid'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'embargoed'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'external_system_id'?: string;
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'order'?: string; // Ordering  
+  'ps_update_stream'?: string;
+  'resolution'?: string;
+  'status'?: string;
+  'type'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v1/trackers/{uuid}
  */
 export type GetOsidbApiV1TrackersByUuidQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  include_meta_attr?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all.
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'include_meta_attr'?: string; // Specify which keys from meta_attr field should be retrieved, multiple values may be separated by commas. Dot notation can be used to specify meta_attr keys on related models. Example: `include_meta_attr=key,related_model.key`Use wildcards eg. `include_meta_attr=*,related_model.*` for retrieving all the keys from meta_attr. Omit this parameter to not include meta_attr fields at all. 
 };
 
 /**
  * Query parameters for GET /osidb/api/v2beta/flaws/{flaw_id}/cvss-scores
  */
 export type GetOsidbApiV2betaFlawsByFlaw_idCvssscoresQueryParams = {
-  comment?: string;
-  created_dt?: string;
-  created_dt__date?: string;
-  created_dt__date__gte?: string;
-  created_dt__date__lte?: string;
-  created_dt__gt?: string;
-  created_dt__gte?: string;
-  created_dt__lt?: string;
-  created_dt__lte?: string;
-  cvss_version?: string;
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
-  issuer?: string;
-  limit?: string; // Number of results to return per page.
-  offset?: string; // The initial index from which to return the results.
-  score?: string;
-  updated_dt?: string;
-  updated_dt__date?: string;
-  updated_dt__date__gte?: string;
-  updated_dt__date__lte?: string;
-  updated_dt__gt?: string;
-  updated_dt__gte?: string;
-  updated_dt__lt?: string;
-  updated_dt__lte?: string;
-  uuid?: string;
-  vector?: string;
+  'comment'?: string;
+  'created_dt'?: string;
+  'created_dt__date'?: string;
+  'created_dt__date__gte'?: string;
+  'created_dt__date__lte'?: string;
+  'created_dt__gt'?: string;
+  'created_dt__gte'?: string;
+  'created_dt__lt'?: string;
+  'created_dt__lte'?: string;
+  'cvss_version'?: string;
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'issuer'?: string;
+  'limit'?: string; // Number of results to return per page.
+  'offset'?: string; // The initial index from which to return the results.
+  'score'?: string;
+  'updated_dt'?: string;
+  'updated_dt__date'?: string;
+  'updated_dt__date__gte'?: string;
+  'updated_dt__date__lte'?: string;
+  'updated_dt__gt'?: string;
+  'updated_dt__gte'?: string;
+  'updated_dt__lt'?: string;
+  'updated_dt__lte'?: string;
+  'uuid'?: string;
+  'vector'?: string;
 };
 
 /**
  * Query parameters for GET /osidb/api/v2beta/flaws/{flaw_id}/cvss-scores/{id}
  */
 export type GetOsidbApiV2betaFlawsByFlaw_idCvssscoresByIdQueryParams = {
-  exclude_fields?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
-  include_fields?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
+  'exclude_fields'?: string; // Exclude specified fields from the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `exclude_fields=field,related_model_field.field`
+  'include_fields'?: string; // Include only specified fields in the response. Multiple values may be separated by commas. Dot notation can be used to filter on related model fields. Example: `include_fields=field,related_model_field.field`
 };
+
