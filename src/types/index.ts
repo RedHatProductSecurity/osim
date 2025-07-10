@@ -1,4 +1,8 @@
 export type {
+  GetOsidbApiV1AffectsQueryParams,
+} from '@/types/osidb-query-params';
+
+export type {
   AffectCVSSSchemaType,
   AffectSchemaType,
   ErratumSchemaType,
