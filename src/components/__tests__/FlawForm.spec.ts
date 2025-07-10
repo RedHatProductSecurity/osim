@@ -10,7 +10,7 @@ import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 
-import { blankFlaw } from '@/composables/useFlaw';
+import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
@@ -18,9 +18,8 @@ import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
-import type { ZodFlawType } from '@/types';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { flawImpactEnum, flawSources, Source521EnumWithBlank } from '@/types/zodFlaw';
+import { flawImpactEnum, flawSources, Source521EnumWithBlank, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
@@ -45,11 +44,11 @@ vi.mock('@/composables/useTrackers', () => {
 
 vi.mock('@/services/LabelsService');
 
-const flawProps = (flaw: ZodFlawType, mode: 'create' | 'edit') => ({ flaw, mode, relatedFlaws: [flaw] });
-const flawEditModeProps = (flaw: ZodFlawType) => flawProps(flaw, 'edit');
-const flawCreateModeProps = (flaw: ZodFlawType) => flawProps(flaw, 'create');
+type FlawFormProps = InstanceType<typeof FlawForm>['$props'];
 
-function mountWithProps(props: InstanceType<typeof FlawForm>['$props']) {
+function mountWithProps(flaw: ZodFlawType, props: FlawFormProps) {
+  const { setFlaw } = useFlaw();
+  setFlaw(flaw);
   return mountWithConfig(FlawForm, {
     props,
     directives: {
@@ -68,13 +67,13 @@ function mountWithProps(props: InstanceType<typeof FlawForm>['$props']) {
 
 describe('flawForm', () => {
   osimFullFlawTest('mounts and renders', ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     expect(subject.html()).toMatchSnapshot();
   });
 
   osimFullFlawTest('shows the expected fields in edit mode', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const titleField = subject
       .findAllComponents(LabelEditable)
@@ -157,7 +156,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('shows the expected fields in create mode', async ({ flaw }) => {
-    const subject = mountWithProps(flawCreateModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'create' });
 
     const titleField = subject
       .findAllComponents(LabelEditable)
@@ -228,7 +227,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('renders the description field', async ({ flaw }) => {
     flaw.major_incident_state = '';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const descriptionField = subject
       .findAllComponents(LabelTextarea)
       .find(component => component.props().label === 'Description');
@@ -237,7 +236,7 @@ describe('flawForm', () => {
 
   it('triggers validations for blank flaw', async () => {
     const flaw = blankFlaw();
-    const subject = mountWithProps(flawCreateModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'create' });
     const vm = subject.findComponent(FlawForm).vm as any;
     expect(vm.errors.title).not.toBe(null);
     expect(vm.errors.component).not.toBe(null);
@@ -291,7 +290,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('triggers validations for the description field', async ({ flaw }) => {
     flaw.major_incident_state = '';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const descriptionField = subject
       .findAllComponents(LabelTextarea)
       .find(component => component.props().label === 'Description');
@@ -308,7 +307,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('displays correct Owner field value from props', async ({ flaw }) => {
     flaw.owner = 'test owner';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const assigneeField = subject.findComponent(FlawFormOwner);
     expect(assigneeField?.find('span.form-label').text()).toBe('Owner');
     expect(assigneeField?.props().modelValue).toBe('test owner');
@@ -316,14 +315,14 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('displays correct State field value from props', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject.findComponent(IssueFieldState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
     expect(workflowStateField?.props().classification.state).toBe('NEW');
   });
 
   osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject
       .findAllComponents(IssueFieldState)
       .find(component => component.text().includes('State'));
@@ -342,7 +341,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject
       .findAllComponents(IssueFieldState)
       .find(component => component.text().includes('State'));
@@ -353,14 +352,14 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('shows an explanation message when nvd score and Rh score mismatch', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const cvssScoreError = subject.find('.cvss-score-mismatch');
     expect(cvssScoreError?.exists()).toBe(true);
     expect(cvssScoreError?.text()).toBe('Explain non-obvious CVSSv3 score metrics');
   });
 
   osimFullFlawTest('shows a highlighted nvdCvssField value when nvd score and Rh score mismatch', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const nvdCvssField = subject
       .findAllComponents(LabelDiv)
       .find(component => component.props().label === 'NVD CVSSv3');
@@ -374,7 +373,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if embargoed and public date is in the past, it returns an error', async ({ flaw }) => {
     flaw.embargoed = true;
     flaw.unembargo_dt = '2022-02-01';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('An embargoed flaw must have a public date in the future.');
   });
@@ -382,7 +381,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if embargoed and public date is later today (in the future) it returns null', async ({ flaw }) => {
     flaw.embargoed = true;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
@@ -390,7 +389,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if embargoed and public date is in the future, it returns null', async ({ flaw }) => {
     flaw.embargoed = true;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T23:00:00Z';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
@@ -398,7 +397,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if NOT embargoed and public date is in the future, it returns an error ', async ({ flaw }) => {
     flaw.embargoed = false;
     flaw.unembargo_dt = '3000-01-01';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('A public flaw cannot have a public date in the future.');
   });
@@ -406,7 +405,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if NOT embargoed and public date is today or in the past, it returns null', async ({ flaw }) => {
     flaw.embargoed = false;
     flaw.unembargo_dt = DateTime.now().toISODate() + 'T00:00:00Z';
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
@@ -414,7 +413,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if NOT embargoed and public date is null, it returns an error message', async ({ flaw }) => {
     flaw.embargoed = false;
     flaw.unembargo_dt = null;
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe('A public flaw must have a public date set.');
   });
@@ -422,7 +421,7 @@ describe('flawForm', () => {
   osimFullFlawTest('if embargoed and public date is null, it returns null', async ({ flaw }) => {
     flaw.embargoed = true;
     flaw.unembargo_dt = null;
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     expect((subject.vm as any).errors.unembargo_dt)
       .toBe(null);
   });
@@ -430,7 +429,7 @@ describe('flawForm', () => {
   osimFullFlawTest('sets public date if empty when unembargo button is clicked', async ({ flaw }) => {
     flaw.embargoed = true;
     flaw.unembargo_dt = null;
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     await flushPromises();
     subject.findComponent(IssueFieldEmbargo).find('.osim-unembargo-button').trigger('click');
 
@@ -438,7 +437,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should show only allowed sources in edit mode', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
       .find(component => component.props().label === 'CVE Source');
@@ -449,7 +448,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should show all sources in create mode', async ({ flaw }) => {
-    const subject = mountWithProps(flawCreateModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'create' });
     const sourceField = subject
       .findAllComponents(LabelSelect)
       .find(component => component.props().label === 'CVE Source');
@@ -460,7 +459,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should show a link to bugzilla if ID exists', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const bugzillaLink = subject.find('.osim-flaw-header-link > a');
     expect(bugzillaLink.exists()).toBe(true);
@@ -468,7 +467,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('should not show a link to bugzilla if ID does not exists', async ({ flaw }) => {
     flaw.meta_attr = {};
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const bugzillaLink = subject.find('.osim-flaw-header-link > a');
     expect(bugzillaLink.exists()).toBe(false);
@@ -485,7 +484,7 @@ describe('flawForm', () => {
       };
     });
 
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const flawLinks = subject.findAll('.osim-flaw-header-link > a');
     expect(flawLinks.length).toBe(2);
@@ -505,7 +504,7 @@ describe('flawForm', () => {
       };
     });
 
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const flawLinks = subject.findAll('.osim-flaw-header-link > a');
     expect(flawLinks.length).toBe(1);
@@ -515,7 +514,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should show CreatedDate on Flaw Edit', async ({ flaw }) => {
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
       .find(component => component.props().label === 'Created Date');
@@ -526,7 +525,7 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('should not show CreatedDate on Flaw Creation', async ({ flaw }) => {
-    const subject = mountWithProps(flawCreateModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'create' });
     const createdAtField = subject
       .findAllComponents(LabelStatic)
       .find(component => component.props().label === 'Created Date');
@@ -535,7 +534,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('should show border when flaw is embargoed', async ({ flaw }) => {
     flaw.embargoed = true;
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const flawForm = subject.find('div.osim-flaw-form-embargoed');
 
     expect(flawForm?.exists()).toBeTruthy();
@@ -543,7 +542,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('should not show border when flaw is not embargoed', async ({ flaw }) => {
     flaw.embargoed = false;
-    const subject = mountWithProps(flawEditModeProps(flaw));
+    const subject = mountWithProps(flaw, { mode: 'edit' });
     const flawForm = subject.find('div.osim-flaw-form-embargoed');
 
     expect(flawForm?.exists()).toBeFalsy();
@@ -555,7 +554,7 @@ describe('flawForm', () => {
       http.get(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json(flaw)),
       http.put(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json({})),
     );
-    const wrapper = mountWithProps(flawEditModeProps(flaw));
+    const wrapper = mountWithProps(flaw, { mode: 'edit' });
 
     await wrapper.find('form').trigger('submit');
     await flushPromises();
