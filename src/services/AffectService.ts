@@ -8,6 +8,8 @@ import { beforeFetch } from './FlawService';
 
 export async function getAffects(cveOrUuid: string) {
   const field = isCveValid(cveOrUuid) ? 'flaw__cve_id' : 'flaw__uuid';
+  // TODO: replace line above with line below after OSIDB-4293 is merged
+  // const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   return osidbFetch({
     method: 'get',
     url: '/osidb/api/v1/affects',
