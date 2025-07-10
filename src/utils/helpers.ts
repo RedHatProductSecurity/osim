@@ -139,3 +139,12 @@ export function orderCommentsByDate<T extends ZodFlawCommentType>(comments: T[])
     return 0;
   });
 }
+
+export function serializeWithExclude<T extends object>(object: T, excludeKeys: Array<keyof T>): string {
+  return JSON.stringify(object, (key, value) => {
+    if (excludeKeys.includes(key as keyof T)) {
+      return undefined; // Exclude the key from serialization
+    }
+    return value;
+  });
+}

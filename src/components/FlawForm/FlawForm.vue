@@ -21,6 +21,8 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
+import { useFlaw } from '@/composables/useFlaw';
+import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -28,11 +30,11 @@ import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import {
-  type ZodFlawType,
   MajorIncidentStateEnumWithBlank,
   descriptionRequiredStates,
   flawImpactEnum,
   flawSources,
+  type ZodFlawType,
 } from '@/types/zodFlaw';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
@@ -40,7 +42,6 @@ import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
 
 const props = defineProps<{
-  flaw: ZodFlawType;
   mode: 'create' | 'edit';
 }>();
 
@@ -64,7 +65,6 @@ const {
   deleteAcknowledgment,
   deleteReference,
   errors,
-  flaw,
   flawAcknowledgments,
   flawReferences,
   flawRhCvss3,
@@ -83,26 +83,26 @@ const {
   shouldDisplayEmailNistForm,
   toggleShouldCreateJiraTask,
   updateFlaw,
-} = useFlawModel(props.flaw, onSaveSuccess);
+} = useFlawModel(onSaveSuccess);
+const { isFetchingAffects } = useFetchFlaw();
+
+const { flaw, initialFlaw } = useFlaw();
 
 const { draftFlaw } = useDraftFlawStore();
-let initialFlaw: ZodFlawType;
 
 onMounted(() => {
-  if (props.flaw.cve_id) {
-    document.title = props.flaw.cve_id;
+  if (flaw.value.cve_id) {
+    document.title = flaw.value.cve_id;
   }
-  initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
-  isEmbargoed.value = initialFlaw?.embargoed;
+  isEmbargoed.value = initialFlaw.value?.embargoed;
   if (draftFlaw) {
     flaw.value = useDraftFlawStore().addDraftFields(flaw.value);
     useDraftFlawStore().$reset();
   }
 });
 
-watch(() => props.flaw, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
-  initialFlaw = deepCopyFromRaw(props.flaw) as ZodFlawType;
-  isEmbargoed.value = initialFlaw?.embargoed;
+watch(() => flaw.value, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
+  isEmbargoed.value = initialFlaw.value?.embargoed;
   shouldCreateJiraTask.value = false;
 });
 
@@ -124,7 +124,7 @@ const onSubmit = async () => {
 
 const onReset = () => {
   // is deepCopyFromRaw needed?
-  flaw.value = deepCopyFromRaw(initialFlaw);
+  flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
   shouldCreateJiraTask.value = false;
 };
 

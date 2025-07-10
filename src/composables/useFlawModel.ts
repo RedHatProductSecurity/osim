@@ -32,10 +32,8 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useFlawLabels } from './useFlawLabels';
 
-export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
-  const { flaw } = useFlaw();
-  flaw.value = forFlaw;
-
+export function useFlawModel(onSaveSuccess: () => void) {
+  const { flaw, isFlawUpdated } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
@@ -53,12 +51,10 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
 
   const router = useRouter();
-  const committedFlaw = ref<null | ZodFlawType>(null);
   const { saveDraftFlaw } = useDraftFlawStore();
 
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
-
   const isInTriageWithoutAffects = computed(
     () => flaw.value.classification?.state === 'TRIAGE'
     && flaw.value.affects.every(affect => !affect.uuid),
@@ -157,8 +153,9 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
       queue.push(saveAffects);
     }
 
-    queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
-
+    if (isFlawUpdated.value) {
+      queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
+    }
     if (wasCvssModified.value) {
       queue.push(saveCvssScores);
     }
@@ -198,11 +195,9 @@ export function useFlawModel(forFlaw: ZodFlawType, onSaveSuccess: () => void) {
   };
 
   return {
-    flaw,
     isSaving,
     isValid,
     errors,
-    committedFlaw,
     flawSources,
     flawImpacts,
     flawIncidentStates,
