@@ -13,7 +13,7 @@ const isFetchingRelatedFlaws = ref(false);
 const isFetchingAffects = ref(false);
 
 export function useFetchFlaw() {
-  const { flaw, relatedFlaws, resetFlaw } = useFlaw();
+  const { flaw, relatedFlaws, resetFlaw, setFlaw } = useFlaw();
   const { addToast } = useToastStore();
 
   const didFetchFail = ref<boolean>(false);
@@ -38,8 +38,6 @@ export function useFetchFlaw() {
     } catch (error) {
       console.error(`Error while fetching affects for flaw ${flawCveOrId}:`, error);
       throw error;
-    } finally {
-      isFetchingAffects.value = false;
     }
   }
 
@@ -51,11 +49,13 @@ export function useFetchFlaw() {
       resetInitialAffects();
 
       const flawResult = await fetchedFlaw;
-      flaw.value = Object.assign({ affects: [] }, flawResult);
+      setFlaw(Object.assign({ affects: [] }, flawResult));
       history.replaceState(null, '', `/flaws/${(flawResult.cve_id || flawResult.uuid)}`);
 
       const affectResults = (await fetchedAffects).data.results;
       flaw.value.affects = affectResults;
+      isFetchingAffects.value = false;
+      setFlaw(flaw.value);
 
       const fetchedRelatedFlaws = fetchRelatedFlaws(affectResults);
       relatedFlaws.value = await fetchedRelatedFlaws;

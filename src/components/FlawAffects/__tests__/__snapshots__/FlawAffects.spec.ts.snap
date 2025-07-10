@@ -1,8 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawAffects > Correctly renders the component when there are affects to display 1`] = `
-"<!--v-if-->
-<div data-v-2d3c4208="" class="osim-affects-section">
+"<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
     <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
@@ -351,8 +350,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
 `;
 
 exports[`flawAffects > Correctly renders the component when there are no affects to display 1`] = `
-"<!--v-if-->
-<div data-v-2d3c4208="" class="osim-affects-section">
+"<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection">
     <!--v-if-->
@@ -475,8 +473,7 @@ exports[`flawAffects > Correctly renders the component when there are no affects
 `;
 
 exports[`flawAffects > Displays tracker manager for a selection of affects 1`] = `
-"<!--v-if-->
-<div data-v-2d3c4208="" class="osim-affects-section">
+"<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
     <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
@@ -899,8 +896,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
 `;
 
 exports[`flawAffects > Displays tracker manager for individual affect 1`] = `
-"<!--v-if-->
-<div data-v-2d3c4208="" class="osim-affects-section">
+"<div data-v-2d3c4208="" class="osim-affects-section">
   <h4 data-v-2d3c4208="">Affected Offerings</h4>
   <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
     <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">

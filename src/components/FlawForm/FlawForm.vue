@@ -410,8 +410,14 @@ const createdDate = computed(() => {
           <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
         </div>
         <div class="osim-flaw-form-section">
+          <div v-if="isFetchingAffects">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Fetching affects...</span>
+            </div>
+            <span class="ms-1">Fetching affects...</span>
+          </div>
           <FlawAffects
-            v-if="mode === 'edit'"
+            v-else-if="mode === 'edit'"
             :errors="errors.affects"
             :embargoed="flaw.embargoed"
           />
