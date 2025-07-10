@@ -1,17 +1,29 @@
-import { ref } from 'vue';
+import { ref, readonly, computed } from 'vue';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
+const initialFlaw = ref<ZodFlawType>(blankFlaw());
 const relatedFlaws = ref<ZodFlawType[]>([]);
 
 function resetFlaw() {
   flaw.value = blankFlaw();
+  initialFlaw.value = blankFlaw();
   relatedFlaws.value = [];
 }
 
+function setFlaw(fetchedFlaw: ZodFlawType) {
+  initialFlaw.value = deepCopyFromRaw(fetchedFlaw);
+  flaw.value = fetchedFlaw;
+}
+
+const isFlawUpdated = computed(
+  () => JSON.stringify(flaw.value) !== JSON.stringify(initialFlaw.value),
+);
+
 export function useFlaw() {
-  return { flaw, relatedFlaws, resetFlaw };
+  return { flaw, initialFlaw: readonly(initialFlaw), isFlawUpdated, relatedFlaws, resetFlaw, setFlaw };
 }
 
 export function blankFlaw(): ZodFlawType {
