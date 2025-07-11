@@ -1,0 +1,63 @@
+/* tslint:disable */
+/* eslint-disable */
+{{>licenseInfo}}
+
+{{#imports.0}}
+import type {
+  {{#imports}}
+  {{className}},
+  {{/imports}}
+} from '../models';
+{{/imports.0}}
+
+{{#operations}}
+{{#operation}}
+/**
+{{#notes}}
+* {{&notes}}
+{{/notes}}
+{{#summary}}
+* {{&summary}}
+{{/summary}}
+* @Path {{path}}
+* @Method {{httpMethod}}
+*/
+{{#bodyParam}}
+export type {{nickname}} = {{#isArray}}Array<{{baseName}}>{{/isArray}}{{^isArray}}{{baseName}}{{/isArray}};
+{{/bodyParam}}
+{{^bodyParam}}
+{{#hasParams}}
+export type {{nickname}} = {
+    {{#queryParams}}
+    {{#isArray}}
+    {{baseName}}: Array<{{#isEnum}}{{operationIdCamelCase}}{{enumName}}{{/isEnum}}{{^isEnum}}{{{baseType}}}{{#isNullable}} | null{{/isNullable}}{{/isEnum}}>;
+    {{/isArray}}
+    {{^isArray}}
+    {{baseName}}: {{#isEnum}}{{operationIdCamelCase}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{#isNullable}} | null{{/isNullable}}{{/isEnum}};
+    {{/isArray}}
+    {{/queryParams}}
+}
+{{/hasParams}}
+{{/bodyParam}}
+{{/operation}}
+
+{{/operations}}
+{{#hasEnums}}
+{{#operations}}
+{{#operation}}
+{{#allParams}}
+{{#isEnum}}
+
+export const {{operationIdCamelCase}}{{enumName}} = {
+{{#allowableValues}}
+    {{#enumVars}}
+    {{{name}}}: {{{value}}}{{^-last}},{{/-last}}
+    {{/enumVars}}
+{{/allowableValues}}
+} as const;
+export type {{operationIdCamelCase}}{{enumName}} = typeof {{operationIdCamelCase}}{{enumName}}[keyof typeof {{operationIdCamelCase}}{{enumName}}];
+{{/isEnum}}
+{{/allParams}}
+{{/operation}}
+{{/operations}}
+{{/hasEnums}}

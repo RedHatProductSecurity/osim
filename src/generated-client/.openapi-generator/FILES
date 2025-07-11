@@ -1,1 +1,8 @@
+apis/AuthApi.ts
+apis/CollectorsApi.ts
+apis/ExploitsApi.ts
+apis/OsidbApi.ts
+apis/TrackersApi.ts
+apis/WorkflowsApi.ts
+apis/index.ts
 models/index.ts
