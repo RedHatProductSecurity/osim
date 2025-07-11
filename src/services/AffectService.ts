@@ -3,13 +3,12 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
+import type { osidbApiV1AffectsList } from '@/generated-client';
 
 import { beforeFetch } from './FlawService';
 
 export async function getAffects(cveOrUuid: string) {
-  const field = isCveValid(cveOrUuid) ? 'flaw__cve_id' : 'flaw__uuid';
-  // TODO: replace line above with line below after OSIDB-4293 is merged
-  // const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
+  const field: keyof osidbApiV1AffectsList = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   return osidbFetch({
     method: 'get',
     url: '/osidb/api/v1/affects',
