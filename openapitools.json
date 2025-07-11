@@ -8,9 +8,10 @@
         "generatorName": "typescript-fetch",
         "output": "src/generated-client",
         "inputSpec": "openapi.yml",
+        "templateDir": "src/generated-client/templates",
         "additionalProperties": {
-          "supportsES6": "true",
-          "withoutRuntimeChecks": true
+          "withoutRuntimeChecks": true,
+          "withSeparateModelsAndApi": false
         }
       }
     }
