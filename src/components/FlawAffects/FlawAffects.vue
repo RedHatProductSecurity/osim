@@ -508,6 +508,7 @@ const displayedTrackers = computed(() => {
         v-model:affects="tableAffects"
         :errors="errors"
         :totalPages="totalPages"
+        @affect:recover="recoverAffect"
         @affects:display-mode="setDisplayMode"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"

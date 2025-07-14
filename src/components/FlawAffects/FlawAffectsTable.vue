@@ -18,6 +18,7 @@ defineProps<{
 const affects = defineModel<ZodAffectType[]>('affects', { default: [] });
 
 const emit = defineEmits<{
+  'affect:recover': [value: ZodAffectType];
   'affect:remove': [value: ZodAffectType];
   'affect:toggle-selection': [value: ZodAffectType];
   'affect:track': [value: ZodAffectType];
@@ -50,6 +51,7 @@ function isNewAffect(affect: ZodAffectType) {
           :isModified="isModified(affect)"
           :isNew="isNewAffect(affect)"
           :isLast="affectIndex === affects.length - 1"
+          @affect:recover="emit('affect:recover', affect)"
           @affect:remove="emit('affect:remove', affect)"
           @affect:toggle-selection="emit('affect:toggle-selection', affect)"
           @affect:track="emit('affect:track', affect)"
