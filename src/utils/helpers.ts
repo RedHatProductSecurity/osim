@@ -8,6 +8,8 @@ import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType } from '@/types';
 
+import type { DeepMapValues } from './typeHelpers';
+
 export function unwrap(value: any): any {
   const unwrapped = toRaw(unref(value));
   return isUnwrappable(unwrapped) ? unwrap(unwrapped) : unwrapped;
@@ -45,7 +47,11 @@ const isNonEmptyArray = (value: any) => R.is(Array, value) && value.length > 0;
 const isNonArrayObject = (value: any) => R.is(Object, value) && !R.is(Array, value);
 const isDeepMappable = (value: DeepMappable) => isNonEmptyArray(value) || isNonArrayObject(value);
 
-export const deepMap = (transform: (arg: any) => any, object: DeepMappable): any =>
+type deepMapOverload = {
+  <T extends object, K>(transform: (arg: any) => K, object: T): DeepMapValues<T, K>;
+  <T, K>(transform: (arg: any) => K, object: T[]): K[];
+};
+export const deepMap: deepMapOverload = (transform: (arg: any) => any, object: DeepMappable): any =>
   R.map(
     (val: any) => isDeepMappable(val)
       ? deepMap(transform, val)
