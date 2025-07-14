@@ -4,7 +4,7 @@ import type { TextareaHTMLAttributes } from 'vue';
 
 withDefaults(defineProps<{
   disabled?: boolean;
-  error?: string;
+  error?: null | string;
   label: string;
   loading?: boolean;
   modelValue: null | string | undefined;

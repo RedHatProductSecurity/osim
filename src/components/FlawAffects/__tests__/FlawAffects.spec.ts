@@ -1,4 +1,4 @@
-import { type Component } from 'vue';
+import { type Component, type Ref } from 'vue';
 
 import { describe, expect } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
@@ -30,7 +30,7 @@ vi.mock('@/stores/AffectsEditingStore');
 
 let pinia: ReturnType<typeof createPinia>;
 
-async function useMocks(flaw: ZodFlawType) {
+async function useMocks() {
   type ActualFlaw = typeof import('@/composables/useFlaw');
   type ActualFlawModel = typeof import('@/composables/useFlawModel');
   type ActualFlawFetch = typeof import('@/composables/useFetchFlaw');
@@ -51,8 +51,7 @@ async function useMocks(flaw: ZodFlawType) {
 
   const { useAffectsEditingStore: _useAffectsEditingStore } =
     await vi.importActual<ActualEditingStore>('@/stores/AffectsEditingStore');
-
-  return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw, flaw };
+  return { _useFlaw, _useFlawModel, _useFlawAffectsModel, _useAffectsEditingStore, _useFetchFlaw };
 }
 
 const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => {
@@ -62,13 +61,11 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
     _useFlaw,
     _useFlawAffectsModel,
     _useFlawModel,
-    flaw,
-  } = await useMocks(testFlaw);
-  const [[mockedFlaw, errors]] = withSetup(() => {
+  } = await useMocks();
+  const [[mockedFlaw, errors]] = withSetup<[Ref<ZodFlawType>, unknown]>(() => {
     const mockedUseFlaw = _useFlaw();
-    mockedUseFlaw.flaw.value = flaw;
-    mockedUseFlaw.relatedFlaws.value = [flaw];
-
+    mockedUseFlaw.flaw.value = testFlaw;
+    mockedUseFlaw.relatedFlaws.value = [testFlaw];
     vi.mocked(useFlaw).mockReturnValue(mockedUseFlaw);
     vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
@@ -81,7 +78,7 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
 
   return mountWithConfig(Component, {
     props: {
-      embargoed: mockedFlaw.value.embargoed,
+      embargoed: mockedFlaw!.value.embargoed,
       errors,
     },
   });

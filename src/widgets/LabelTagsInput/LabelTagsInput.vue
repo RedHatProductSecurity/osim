@@ -2,7 +2,7 @@
 import TagsInput from '@/widgets/TagsInput/TagsInput.vue';
 
 withDefaults(defineProps<{
-  error?: string | string[];
+  error?: (null | string)[] | null | string;
   label?: string;
 }>(), {
   label: '',

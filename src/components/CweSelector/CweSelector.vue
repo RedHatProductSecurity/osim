@@ -7,7 +7,7 @@ import type { CWEMemberType } from '@/types/mitreCwe';
 import { loadCweData } from '@/services/CweService';
 
 withDefaults(defineProps<{
-  error?: string;
+  error?: null | string;
   label?: string;
 }>(), {
   label: '',
