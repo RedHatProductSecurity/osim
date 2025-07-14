@@ -1,3 +1,5 @@
+import { useFlaw } from '@/composables/useFlaw';
+
 import { mountWithConfig } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 import { getNextAccessTokenHandler } from '@/__tests__/handlers';
@@ -9,6 +11,8 @@ describe('flawCreateView', () => {
     vi.useFakeTimers({
       now: new Date('2024-09-24T14:00:00Z'),
     });
+    const { resetFlaw } = useFlaw();
+    resetFlaw();
   });
 
   afterAll(() => {
