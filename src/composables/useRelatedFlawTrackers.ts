@@ -13,6 +13,7 @@ import type { TrackersPost } from '@/services/TrackerService';
 import { fileTrackingFor, getTrackersForFlaws } from '@/services/TrackerService';
 import { getFlaw } from '@/services/FlawService';
 import { isAffectIn } from '@/utils/helpers';
+import { getAffects } from '@/services/AffectService';
 
 import { createCatchHandler } from './service-helpers';
 
@@ -136,7 +137,6 @@ export function useRelatedFlawTrackers(
     trackersToFile,
     unselectedStreams,
   } = useComputedState(multiFlawTrackers, selectedRelatedFlaws, specificAffectsToTrack);
-
   watch(filterString, (newFilterString) => {
     for (const tracker of Object.values(multiFlawTrackers.value)) {
       tracker.filterString = newFilterString;
@@ -263,10 +263,10 @@ export function useRelatedFlawTrackers(
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
       for (const flaw of selectedRelatedFlaws.value) {
-        const fetchedFlaw = await getFlaw(flaw.uuid, true);
+        const { data: { results } } = await getAffects(flaw.uuid);
         const index = relatedFlaws.value.findIndex(({ uuid }) => uuid === flaw.uuid);
         if (index !== -1) {
-          relatedFlaws.value[index].affects = fetchedFlaw.affects;
+          relatedFlaws.value[index].affects = results;
         }
       }
     } finally {
