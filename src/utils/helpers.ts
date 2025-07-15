@@ -105,8 +105,14 @@ export function matchModuleComponent(first: WithModuleComponent, second: WithMod
   return (first.ps_component === second.ps_component && first.ps_module === second.ps_module);
 }
 
+export function affectUUID(affect: ZodAffectType): string {
+  const _affect = unref(affect);
+  const uuidField = '_uuid' in _affect ? '_uuid' : 'uuid';
+  return _affect[uuidField]!;
+}
+
 export function doAffectsMatch(first: ZodAffectType, second: ZodAffectType) {
-  const doUuidsMatch = first.uuid && second.uuid && (first.uuid === second.uuid);
+  const doUuidsMatch = affectUUID(first) && affectUUID(second) && (affectUUID(first) === affectUUID(second));
   return doUuidsMatch || matchModuleComponent(first, second);
 }
 

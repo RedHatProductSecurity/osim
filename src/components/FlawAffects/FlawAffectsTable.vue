@@ -43,9 +43,9 @@ function isNewAffect(affect: ZodAffectType) {
   <table class="table align-middle table-striped mt-1" :class="{'mb-0': totalPages === 0}">
     <FlawAffectsTableHead />
     <tbody>
-      <template v-for="(affect, affectIndex) in affects" :key="affectIndex">
+      <template v-for="(affect, affectIndex) in affects" :key="affect.uuid ?? affect._uuid">
         <FlawAffectsTableRow
-          v-model:affect="affects[affectIndex]"
+          :affect="affect"
           :error="errors?.[affectIndex] ?? null"
           :isRemoved="isAffectBeingRemoved(affect)"
           :isModified="isModified(affect)"

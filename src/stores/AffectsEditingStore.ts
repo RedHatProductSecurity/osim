@@ -142,7 +142,8 @@ function useAffectSelections(selectedAffects: Ref<ZodAffectType[]>, isBeingEdite
   }
 
   function isAffectSelected(affect: ZodAffectType) {
-    return isSelectable(affect) && selectedAffects.value.includes(affect);
+    const matchingAffect = selectedAffects.value.find(matcherForAffect(affect))!;
+    return isSelectable(affect) && selectedAffects.value.includes(matchingAffect);
   }
 
   const areAllAffectsSelected = computed(() => {

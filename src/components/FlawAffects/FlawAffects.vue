@@ -178,6 +178,7 @@ const newAffects = computed(() => flaw.value.affects.filter(affect => !affect.uu
 
 function addNewAffect() {
   addAffect({
+    _uuid: crypto.randomUUID(),
     embargoed: props.embargoed,
     affectedness: 'NEW',
     resolution: '',

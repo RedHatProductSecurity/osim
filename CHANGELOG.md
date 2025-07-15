@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Fixed
+* Fix performance issues with affects updates (`OSIDB-4273`)
+
 ### Changed
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
 * Don't update Flaw when only affects are modified (`OSIDB-4270`)
