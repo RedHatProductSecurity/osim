@@ -3,7 +3,7 @@
 ## [Unreleased]
 ### Changed
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
-
+* Don't update Flaw when only affects are modified (`OSIDB-4270`)
 
 ## [2025.6.0]
 ### Added

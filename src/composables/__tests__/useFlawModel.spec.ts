@@ -4,13 +4,14 @@ import { flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
 import { useFlawModel } from '@/composables/useFlawModel';
-import { blankFlaw } from '@/composables/useFlaw';
 
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { postFlaw, putFlaw } from '@/services/FlawService';
+
+import { useFlaw } from '../useFlaw';
 
 vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
@@ -32,10 +33,10 @@ describe('useFlawModel', () => {
   const onSaveSuccess = vi.fn();
   let app: App;
 
-  const mountFlawModel = (flaw: ZodFlawType = blankFlaw()) => {
+  const mountFlawModel = () => {
     const pinia = createTestingPinia();
     const plugins = [router, pinia];
-    const [composable, _app] = withSetup(() => useFlawModel(flaw, onSaveSuccess), plugins);
+    const [composable, _app] = withSetup(() => useFlawModel(onSaveSuccess), plugins);
     app = _app;
     return composable;
   };
@@ -49,9 +50,8 @@ describe('useFlawModel', () => {
   });
 
   it('initializes with correct default values', () => {
-    const { flaw, isSaving, isValid, shouldCreateJiraTask } = mountFlawModel();
+    const { isSaving, isValid, shouldCreateJiraTask } = mountFlawModel();
 
-    expect(flaw.value).toBeDefined();
     expect(isSaving.value).toBe(false);
     expect(isValid()).toBe(false);
     expect(shouldCreateJiraTask.value).toBe(false);
@@ -98,7 +98,9 @@ describe('useFlawModel', () => {
     });
 
     it('should call postFlaw on createFlaw', () => {
-      const { createFlaw } = mountFlawModel(sampleFlawRequired as ZodFlawType);
+      const { flaw } = useFlaw();
+      flaw.value = sampleFlawRequired as ZodFlawType;
+      const { createFlaw } = mountFlawModel();
 
       createFlaw();
 
@@ -106,7 +108,9 @@ describe('useFlawModel', () => {
     });
 
     it('should call putFlaw on updateFlaw', async () => {
-      const { flaw, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { flaw } = useFlaw();
+      flaw.value = sampleFlawFull as ZodFlawType;
+      const { updateFlaw } = mountFlawModel();
       flaw.value.title = 'altered';
       await flushPromises();
       await updateFlaw();
@@ -115,7 +119,9 @@ describe('useFlawModel', () => {
     });
 
     it('should prevent saving if CVSS scores are invalid', async () => {
-      const { flawRhCvss3, updateFlaw } = mountFlawModel(sampleFlawFull as ZodFlawType);
+      const { flaw } = useFlaw();
+      flaw.value = sampleFlawFull as ZodFlawType;
+      const { flawRhCvss3, updateFlaw } = mountFlawModel();
 
       flawRhCvss3.value.vector = 'invalid';
       await flushPromises();

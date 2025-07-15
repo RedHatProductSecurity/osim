@@ -13,7 +13,6 @@ import {
   postAffectCvssScore,
   deleteAffectCvssScore,
 } from '@/services/AffectService';
-import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types';
 import { IssuerEnum } from '@/generated-client';
@@ -39,13 +38,6 @@ export function useFlawAffectsModel() {
     initialAffects.value = deepCopyFromRaw(flaw.value.affects);
   }
 
-  function refreshAffects() {
-    return getFlaw(flaw.value.uuid).then((response) => {
-      flaw.value.affects = [...response.affects];
-      initialAffects.value = [...response.affects];
-    });
-  }
-
   const affectsToUpdate = computed(() => flaw.value.affects.filter(shouldUpdateAffect));
 
   const affectCvssToSave = computed(() => flaw.value.affects.filter(shouldUpsertAffectCvss));
@@ -60,7 +52,6 @@ export function useFlawAffectsModel() {
   ]);
 
   const wereAffectsEditedOrAdded = computed(() => modifiedAffects.value.length > 0 || affectsToCreate.value.length > 0);
-
   function isAffectBeingRemoved(affect: ZodAffectType) {
     return affectsToDelete.value.some(matcherForAffect(affect));
   }
@@ -260,9 +251,6 @@ export function useFlawAffectsModel() {
         });
       }
     }
-    if (saveErrors.length === 0) {
-      refreshAffects();
-    }
   }
 
   return {
@@ -275,7 +263,6 @@ export function useFlawAffectsModel() {
     affectsToDelete,
     affectCvssToDelete,
     initialAffects,
-    refreshAffects,
     modifiedAffects,
     wereAffectsEditedOrAdded,
     isAffectBeingRemoved,

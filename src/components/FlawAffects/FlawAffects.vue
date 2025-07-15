@@ -11,7 +11,6 @@ import { useModal } from '@/composables/useModal';
 import { usePaginationWithSettings } from '@/composables/usePaginationWithSettings';
 import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
-import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
@@ -31,7 +30,6 @@ const props = defineProps<{
 }>();
 
 const { flaw } = useFlaw();
-const { isFetchingAffects } = useFetchFlaw();
 const affectsEditingStore = useAffectsEditingStore();
 const {
   cancelAllChanges,
@@ -61,11 +59,9 @@ const {
   isAffectBeingRemoved,
   modifiedAffects, // TODO: move to composable?
   recoverAffect,
-  refreshAffects,
   removeAffect,
   updateAffectCvss,
 } = useFlawAffectsModel();
-
 const {
   filterAffects,
   selectedModules,
@@ -253,13 +249,7 @@ const displayedTrackers = computed(() => {
 </script>
 
 <template>
-  <div v-if="isFetchingAffects">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Fetching affects...</span>
-    </div>
-    <span class="ms-1">Fetching affects...</span>
-  </div>
-  <div v-if="flaw.affects && !isFetchingAffects" class="osim-affects-section">
+  <div class="osim-affects-section">
     <h4>Affected Offerings</h4>
     <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
@@ -518,6 +508,7 @@ const displayedTrackers = computed(() => {
         v-model:affects="tableAffects"
         :errors="errors"
         :totalPages="totalPages"
+        @affect:recover="recoverAffect"
         @affects:display-mode="setDisplayMode"
         @affect:remove="handleRemove"
         @affect:toggle-selection="toggleAffectSelection"
@@ -535,7 +526,6 @@ const displayedTrackers = computed(() => {
       :flaw="flaw"
       :displayedTrackers="displayedTrackers"
       :allTrackersCount="allTrackers.length"
-      @affects:refresh="refreshAffects"
     />
     <div class="osim-tracker-manager-modal-container">
       <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">

@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawForm > mounts and renders 1`] = `
-"<form data-v-76e7a15d="" class="osim-flaw-form" relatedflaws="[object Object]">
+"<form data-v-76e7a15d="" class="osim-flaw-form">
   <div data-v-76e7a15d="" class="osim-content container-fluid">
     <div data-v-76e7a15d="" class="row px-4 my-3">
       <div data-v-76e7a15d="" class="row osim-flaw-form-section pt-0">
@@ -516,8 +516,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <!--v-if-->
-    <div data-v-2d3c4208="" class="osim-affects-section">
+    <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
         <div data-v-4715e8e2="" data-v-2d3c4208="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle">
