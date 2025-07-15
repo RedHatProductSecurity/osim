@@ -22,6 +22,27 @@ export const queryRedirect = z.object({
 
 const _userStoreKey = 'UserStore';
 
+// Migration: Remove deprecated 'refresh' token from localStorage
+// This can be removed in a future release after users have migrated
+function migrateUserStore() {
+  const rawStorage = localStorage.getItem(_userStoreKey);
+  if (rawStorage) {
+    try {
+      const parsed = JSON.parse(rawStorage);
+      if ('refresh' in parsed) {
+        console.debug('UserStore: Migrating localStorage - removing deprecated refresh token');
+        delete parsed.refresh;
+        localStorage.setItem(_userStoreKey, JSON.stringify(parsed));
+      }
+    } catch (e) {
+      console.debug('UserStore: Migration skipped - unable to parse localStorage', e);
+    }
+  }
+}
+
+// Run migration before useLocalStorage initialization
+migrateUserStore();
+
 const loginResponse = z.object({
   access: z.string(),
   env: z.string(),
