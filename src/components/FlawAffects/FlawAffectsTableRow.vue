@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, toRefs, watch } from 'vue';
+import { computed, ref, toRaw } from 'vue';
 
-import { storeToRefs } from 'pinia';
 import { PackageURL } from 'packageurl-js';
 
 import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
@@ -15,7 +14,6 @@ import {
 } from '@/types/zodAffect';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
-import { matcherForAffect } from '@/utils/helpers';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 
 const props = defineProps<{
@@ -45,23 +43,14 @@ const {
   isSelectable,
   revertAffectToLastSaved,
 } = affectsEditingStore;
-const { affectsBeingEdited } = storeToRefs(affectsEditingStore);
 
-const { affect } = toRefs(props);
-
-watch(affect, (newAffect) => {
-  if (isBeingEdited(affect.value)) {
-    const filter = matcherForAffect(affect.value);
-    const index = affectsBeingEdited.value.findIndex(filter);
-    if (index !== -1) {
-      affectsBeingEdited.value[index] = newAffect;
-    }
-  }
-});
+const currentAffect = ref(structuredClone(toRaw(props.affect)));
+const resetCurrentAffect = () => { currentAffect.value = structuredClone(toRaw(props.affect)); };
 
 const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
     cancelChanges(affect);
+    resetCurrentAffect();
   } else if (event.key === 'Enter') {
     commitChanges(affect);
   }
@@ -88,6 +77,7 @@ function revertChanges(affect: ZodAffectType) {
   if (isAffectSelected(affect)) {
     handleToggle(affect);
   }
+  currentAffect.value = structuredClone(toRaw(props.affect));
 }
 
 function affectCvss(affect: ZodAffectType) {
@@ -125,31 +115,31 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
 
 <template>
   <tr
-    v-if="affect"
+    v-if="currentAffect"
     :class="{
       'border-bottom border-gray': isLast,
-      'editing': isBeingEdited(affect),
-      'modified': isModified && !isBeingEdited(affect),
-      'new': isNew && !isBeingEdited(affect),
+      'editing': isBeingEdited(currentAffect),
+      'modified': isModified && !isBeingEdited(currentAffect),
+      'new': isNew && !isBeingEdited(currentAffect),
       'removed': isRemoved,
-      'selected': isAffectSelected(affect) }"
-    :style="isSelectable(affect) ? 'cursor: pointer' : ''"
+      'selected': isAffectSelected(currentAffect) }"
+    :style="isSelectable(currentAffect) ? 'cursor: pointer' : ''"
     :title="affectRowTooltip"
-    @click.prevent="handleToggle(affect)"
+    @click.prevent="handleToggle(currentAffect)"
   >
     <td>
       <i class="row-left-indicator bi bi-caret-right-fill fs-4" />
       <input
         type="checkbox"
         class="form-check-input"
-        :checked="isAffectSelected(affect)"
-        :disabled="isBeingEdited(affect) || isRemoved"
-        @click.stop="handleToggle(affect)"
+        :checked="isAffectSelected(currentAffect)"
+        :disabled="isBeingEdited(currentAffect) || isRemoved"
+        @click.stop="handleToggle(currentAffect)"
       />
     </td>
     <td>
       <i
-        v-if="isBeingEdited(affect)"
+        v-if="isBeingEdited(currentAffect)"
         class="bi bi-pencil"
         title="This affect is currently being edited"
       />
@@ -172,45 +162,45 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <input
-        v-if="isBeingEdited(affect)"
-        v-model="affect.ps_module"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.ps_module"
         class="form-control"
-        @keydown="handleKeystroke($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
       />
-      <span v-else :title="affect.ps_module">
-        {{ affect.ps_module }}
+      <span v-else :title="currentAffect.ps_module">
+        {{ currentAffect.ps_module }}
       </span>
     </td>
-    <td v-if="!affect.purl">
+    <td v-if="!currentAffect.purl">
       <input
-        v-if="isBeingEdited(affect)"
-        v-model="affect.ps_component"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.ps_component"
         class="form-control"
-        @keydown="handleKeystroke($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
       />
-      <span v-else :title="affect.ps_component">
-        {{ affect.ps_component }}
+      <span v-else :title="currentAffect.ps_component">
+        {{ currentAffect.ps_component }}
       </span>
     </td>
-    <td v-if="affect.purl">
-      <span :title="componentFromPurl(affect.purl) ?? ''">
-        {{ componentFromPurl(affect.purl) }}
+    <td v-if="currentAffect.purl">
+      <span :title="componentFromPurl(currentAffect.purl) ?? ''">
+        {{ componentFromPurl(currentAffect.purl) }}
       </span>
     </td>
     <td>
       <input
-        v-if="isBeingEdited(affect)"
-        v-model="affect.purl"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.purl"
         class="form-control"
         :class="{ 'is-invalid': error?.purl }"
         :title="error?.purl ?? null"
-        @keydown="handleKeystroke($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
       />
       <span
         v-else
-        :title="affect.purl || ''"
+        :title="currentAffect.purl || ''"
       >
-        {{ affect.purl }}
+        {{ currentAffect.purl }}
       </span>
       <span v-if="error?.purl" class="invalid-feedback d-block text-wrap affect-field-error">
         {{ error?.purl }}
@@ -218,112 +208,112 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <select
-        v-if="isBeingEdited(affect)"
-        v-model="affect.affectedness"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.affectedness"
         class="form-select"
-        @keydown="handleKeystroke($event, affect)"
-        @change="affectednessChange($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
+        @change="affectednessChange($event, currentAffect)"
       >
         <option
           v-for="affectedness in affectAffectedness"
           :key="affectedness"
           :value="affectedness"
-          :selected="affectedness === affect.affectedness"
+          :selected="affectedness === currentAffect.affectedness"
         >
           {{ affectedness }}
         </option>
       </select>
       <span v-else>
-        {{ affect.affectedness }}
+        {{ currentAffect.affectedness }}
       </span>
     </td>
 
     <td>
       <select
-        v-if="isBeingEdited(affect)"
-        v-model="affect.not_affected_justification"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.not_affected_justification"
         class="form-select"
-        :disabled="affect.affectedness !== 'NOTAFFECTED'"
-        @keydown="handleKeystroke($event, affect)"
+        :disabled="currentAffect.affectedness !== 'NOTAFFECTED'"
+        @keydown="handleKeystroke($event, currentAffect)"
       >
         <option
           v-for="justification in affectJustification"
           :key="justification"
           :value="justification"
-          :selected="justification === affect.not_affected_justification"
+          :selected="justification === currentAffect.not_affected_justification"
         >
           {{ justification }}
         </option>
       </select>
-      <span v-else :title="affect.not_affected_justification ?? ''">
-        {{ affect.not_affected_justification }}
+      <span v-else :title="currentAffect.not_affected_justification ?? ''">
+        {{ currentAffect.not_affected_justification }}
       </span>
     </td>
     <td>
       <select
-        v-if="isBeingEdited(affect)"
-        v-model="affect.resolution"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.resolution"
         class="form-select"
-        @keydown="handleKeystroke($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
       >
         <option
-          v-for="resolution in resolutionOptions(affect)"
+          v-for="resolution in resolutionOptions(currentAffect)"
           :key="resolution"
           :value="resolution"
-          :selected="resolution === affect.resolution"
+          :selected="resolution === currentAffect.resolution"
         >
           {{ resolution }}
         </option>
       </select>
       <span v-else>
-        {{ affect.resolution }}
+        {{ currentAffect.resolution }}
       </span>
     </td>
     <td>
       <select
-        v-if="isBeingEdited(affect)"
-        v-model="affect.impact"
+        v-if="isBeingEdited(currentAffect)"
+        v-model="currentAffect.impact"
         class="form-select"
-        @keydown="handleKeystroke($event, affect)"
+        @keydown="handleKeystroke($event, currentAffect)"
       >
         <option
           v-for="impact in affectImpacts"
           :key="impact"
           :value="impact"
-          :selected="impact === affect.impact"
+          :selected="impact === currentAffect.impact"
         >
           {{ impact }}
         </option>
       </select>
       <span v-else>
-        {{ affect.impact }}
+        {{ currentAffect.impact }}
       </span>
     </td>
     <td>
       <CvssCalculatorOverlayed
-        v-if="isBeingEdited(affect)"
-        :cvssVector="affectCvss(affect)?.vector"
-        :cvssScore="affectCvss(affect)?.score"
+        v-if="isBeingEdited(currentAffect)"
+        :cvssVector="affectCvss(currentAffect)?.vector"
+        :cvssScore="affectCvss(currentAffect)?.score"
         @updateAffectCvss="(vectorValue, scoreValue) => emit(
           'affect:updateCvss',
-          affect,
+          currentAffect,
           vectorValue,
           scoreValue,
-          affect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(affect)?.uuid)
+          currentAffect.cvss_scores.findIndex(cvss => cvss.uuid == affectCvss(currentAffect)?.uuid)
         )"
       />
-      <span v-else :title="affectCvss(affect)?.vector || ''">
-        {{ affectCvss(affect)?.score || '' }}
+      <span v-else :title="affectCvss(currentAffect)?.vector || ''">
+        {{ affectCvss(currentAffect)?.score || '' }}
       </span>
     </td>
     <td>
       <div class="affect-tracker-cell">
-        <span class="me-2 my-auto">{{ affect.trackers.length }}</span>
+        <span class="me-2 my-auto">{{ currentAffect.trackers.length }}</span>
         <button
-          v-if="!(isBeingEdited(affect) || isRemoved)"
+          v-if="!(isBeingEdited(currentAffect) || isRemoved)"
           type="button"
           class="btn btn-sm px-1 py-0 d-flex rounded-circle"
-          @click.prevent.stop="emit('affect:track', affect)"
+          @click.prevent.stop="emit('affect:track', currentAffect)"
         >
           <i class="bi bi-plus lh-sm m-auto" />
         </button>
@@ -331,42 +321,42 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <button
-        v-if="!isBeingEdited(affect) && !isRemoved"
+        v-if="!isBeingEdited(currentAffect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Edit affect"
         tabindex="-1"
-        @click.stop="editAffect(affect)"
+        @click.stop="editAffect(currentAffect)"
       >
         <i class="bi bi-pencil" />
       </button>
       <button
-        v-if="isBeingEdited(affect) && !isRemoved"
+        v-if="isBeingEdited(currentAffect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Commit edit"
         tabindex="-1"
-        @click.stop="commitChanges(affect)"
+        @click.stop="commitChanges(currentAffect)"
       >
         <i class="bi bi-check2 fs-5 lh-sm" />
       </button>
       <button
-        v-if="!isBeingEdited(affect) && !isRemoved"
+        v-if="!isBeingEdited(currentAffect) && !isRemoved"
         type="button"
         class="btn btn-sm"
         title="Remove affect"
         tabindex="-1"
-        @click.stop="emit('affect:remove', affect)"
+        @click.stop="emit('affect:remove', currentAffect)"
       >
         <i class="bi bi-trash" />
       </button>
       <button
-        v-if="isBeingEdited(affect) && !isRemoved && !isNew"
+        v-if="isBeingEdited(currentAffect) && !isRemoved && !isNew"
         type="button"
         class="btn btn-sm"
         title="Cancel edit"
         tabindex="-1"
-        @click.stop="cancelChanges(affect)"
+        @click.stop="{ cancelChanges(currentAffect); resetCurrentAffect() }"
       >
         <i class="bi bi-x fs-5 lh-sm" />
       </button>
@@ -376,17 +366,17 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         class="btn btn-sm recover-btn"
         title="Recover affect"
         tabindex="-1"
-        @click.stop="emit('affect:recover', affect)"
+        @click.stop="emit('affect:recover', currentAffect)"
       >
         <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
       </button>
       <button
-        v-if="!isBeingEdited(affect) && isModified"
+        v-if="!isBeingEdited(currentAffect) && isModified"
         type="button"
         class="btn btn-sm"
         title="Discard changes (Revert)"
         tabindex="-1"
-        @click.stop="revertChanges(affect)"
+        @click.stop="revertChanges(currentAffect)"
       >
         <i class="bi bi-backspace" />
       </button>

@@ -604,7 +604,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
             </tr>
           </thead>
           <tbody data-v-93f0c720="">
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
@@ -628,7 +628,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
@@ -652,7 +652,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
@@ -676,7 +676,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
@@ -700,7 +700,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
@@ -724,7 +724,7 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
                 <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
               </td>
             </tr>
-            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" title="">
+            <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="" title="">
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
               <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
               <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
