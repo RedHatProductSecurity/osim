@@ -11,6 +11,7 @@
 * Support changing between display modes in comment section (`OSIDB-3467`)
 * Add searchbox filter on trackers table (`OSIDB-4062`)
 * Show CVE ID on page title (`OSIDB-3715`)
+* Resizable column widths in affects section tables (`OSIDB-4074`)
 
 ### Fixed
 * Display CISA as an Issuer (`OSIDB-4279`)
