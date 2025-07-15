@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
+import { type ZodIssue } from 'zod';
 import { modifyPath } from 'ramda';
-import type { ZodIssue } from 'zod';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawCvssScores } from '@/composables/useFlawCvssScores';
@@ -28,6 +28,7 @@ import {
   ZodFlawSchema,
   type ZodFlawType,
 } from '@/types';
+import type { DeepMapValues, DeepNullable } from '@/utils/typeHelpers';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useFlawLabels } from './useFlawLabels';
@@ -188,7 +189,13 @@ export function useFlawModel(onSaveSuccess: () => void) {
     isSaving.value = false;
   }
 
-  const errors = computed(() => flawErrors(flaw.value));
+  const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {
+    const newErrors = flawErrors(flaw.value);
+    if (previousErrors && JSON.stringify(previousErrors) === JSON.stringify(newErrors)) {
+      return previousErrors;
+    }
+    return newErrors;
+  });
 
   const toggleShouldCreateJiraTask = () => {
     shouldCreateJiraTask.value = !shouldCreateJiraTask.value;
@@ -214,7 +221,7 @@ export function useFlawModel(onSaveSuccess: () => void) {
   };
 }
 
-function flawErrors(flaw: ZodFlawType) {
+function flawErrors(flaw: ZodFlawType): DeepNullable<DeepMapValues<ZodFlawType, string>> {
   const parsedFlaw = ZodFlawSchema.safeParse(flaw);
   let mirroredFlaw = deepMap(() => null, flaw);
 

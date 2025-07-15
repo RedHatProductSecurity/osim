@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import { useDraggable } from '@/composables/useDraggable';
 
 const props = withDefaults(defineProps<{
-  error?: string | string[];
+  error?: (null | string)[] | null | string;
   readOnly?: boolean;
 }>(), {
   error: '',
