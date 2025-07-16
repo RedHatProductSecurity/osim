@@ -24,7 +24,6 @@ describe('userStore', () => {
 
   it('initializes', () => {
     const userStore = useUserStore();
-    expect(userStore.refresh === '').toBe(true);
     expect(userStore.env === '').toBe(true);
     expect(userStore.whoami === null).toBe(true);
     expect(userStore.jiraUsername === '').toBe(true);
@@ -114,7 +113,6 @@ describe('userStore', () => {
     server.use(
       http.post(`${osimRuntime.value.backends.osidb}/auth/token`, () => HttpResponse.json({
         access: jwt,
-        refresh: jwt,
         env: 'unit',
       })),
       http.get(`${osimRuntime.value.backends.osidb}/osidb/whoami`, () => HttpResponse.json(whoami)),
@@ -125,7 +123,6 @@ describe('userStore', () => {
 
     const storage = JSON.parse(localStorage.getItem('UserStore') || '');
     expect(storage).toBeInstanceOf(Object);
-    expect(storage).toHaveProperty('refresh', jwt);
     expect(storage).toHaveProperty('env', 'unit');
     expect(storage).toHaveProperty('whoami', whoami);
   });
