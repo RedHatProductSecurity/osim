@@ -16,6 +16,7 @@ import FlawSearchView from '@/views/FlawSearchView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { getNextAccessToken } from '@/services/OsidbAuthService';
 
 import FlawEditView from '../views/FlawEditView.vue';
 import IndexView from '../views/IndexView.vue';
@@ -169,6 +170,19 @@ router.beforeEach(async (to, from) => {
 
   const { canVisitWithoutAuth } = to.meta;
   const manualLocationNavigation = from.name === undefined;
+
+  if (
+    userStore.isLoggedIn
+    && to.name !== 'logout'
+    && to.name !== 'login'
+  ) {
+    try {
+      console.log('Router: Refreshing access token');
+      await getNextAccessToken();
+    } catch (error) {
+      console.error('Router: Failed to refresh access token during navigation', error);
+    }
+  }
 
   if (!canVisitWithoutAuth && !isAuthenticated) {
     if (isNavigationBackButton) {

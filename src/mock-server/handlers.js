@@ -35,7 +35,7 @@ export const handlers = [
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.post(`${baseURL}/auth/token/refresh`, async () => {
+  http.get(`${baseURL}/auth/token/refresh`, async () => {
     const resultArray = [
       [await getAuthTokenRefreshCreate200Response(), { status: 200 }],
     ];
