@@ -22,14 +22,14 @@ export const queryRedirect = z.object({
 
 const _userStoreKey = 'UserStore';
 
-// Migration: Remove deprecated 'refresh' token from localStorage
+// Migration: Remove deprecated 'refresh' token from localStorage for non-dev environments
 // This can be removed in a future release after users have migrated
 function migrateUserStore() {
   const rawStorage = localStorage.getItem(_userStoreKey);
   if (rawStorage) {
     try {
       const parsed = JSON.parse(rawStorage);
-      if ('refresh' in parsed) {
+      if ('refresh' in parsed && osimRuntime.value?.env && osimRuntime.value.env !== 'dev') {
         console.debug('UserStore: Migrating localStorage - removing deprecated refresh token');
         delete parsed.refresh;
         localStorage.setItem(_userStoreKey, JSON.stringify(parsed));
@@ -45,6 +45,7 @@ migrateUserStore();
 
 const loginResponse = z.object({
   access: z.string(),
+  refresh: z.string().optional(), // Include refresh token for dev environments
   env: z.string(),
   detail: z.string().optional(), // detail error message
 });
@@ -59,8 +60,10 @@ const whoamiResponse = z.object({
 });
 type WhoamiType = z.infer<typeof whoamiResponse>;
 
+// Conditionally include refresh token in localStorage schema for dev environments
 const userStoreLocalStorage = z.object({
   env: z.string(),
+  refresh: z.string().optional(), // Only used in dev environments
   whoami: whoamiResponse.nullable(),
   jiraUsername: z.string(),
   isLoggedIn: z.boolean(),
@@ -80,14 +83,22 @@ async function updateJiraUsername() {
   }
 }
 
-function setTokens(env_: string) {
+function setRefreshToken(env_: string, refresh_?: string) {
   _userStoreSession.value.env = env_;
+  // Only store refresh token in localStorage for dev environments
+  if (osimRuntime.value.env === 'dev' && refresh_) {
+    _userStoreSession.value.refresh = refresh_;
+  } else {
+    // Clear refresh token from localStorage for non-dev environments
+    delete _userStoreSession.value.refresh;
+  }
 }
 
 function $reset() {
   setRefreshToken('');
   _userStoreSession.value.whoami = null;
   _userStoreSession.value.jiraUsername = '';
+  delete _userStoreSession.value.refresh;
 }
 
 export const useUserStore = defineStore('UserStore', () => {
@@ -172,7 +183,7 @@ export const useUserStore = defineStore('UserStore', () => {
         if (parsedLoginResponse.detail) {
           throw new Error(parsedLoginResponse.detail);
         }
-        _userStoreSession.value.env = parsedLoginResponse.env;
+        setRefreshToken(parsedLoginResponse.env, parsedLoginResponse.refresh);
         accessToken.value = parsedLoginResponse.access;
         _userStoreSession.value.isLoggedIn = true;
         return parsedLoginResponse.access;
@@ -271,6 +282,18 @@ export const useUserStore = defineStore('UserStore', () => {
     }
   });
 
+  // Helper method to get refresh token for dev environments
+  function getDevRefreshToken() {
+    return osimRuntime.value.env === 'dev' ? _userStoreSession.value.refresh : null;
+  }
+
+  // Helper method to set refresh token for dev environments
+  function setDevRefreshToken(refresh: string) {
+    if (osimRuntime.value.env === 'dev') {
+      _userStoreSession.value.refresh = refresh;
+    }
+  }
+
   return {
     isLoggedIn: _userStoreSession.value.isLoggedIn,
     accessToken,
@@ -284,6 +307,8 @@ export const useUserStore = defineStore('UserStore', () => {
     login,
     logout,
     isAuthenticated,
+    getDevRefreshToken,
+    setDevRefreshToken,
     $reset,
   };
 });

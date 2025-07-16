@@ -8,6 +8,7 @@ import { useUserStore } from '../stores/UserStore';
 
 const RefreshResponse = z.object({
   access: z.string(),
+  refresh: z.string().optional(), // For dev environments
 });
 
 export type OsidbFetchCallbacks = {
@@ -142,11 +143,32 @@ export async function getNextAccessToken() {
   const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
 
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-cache',
-    });
+    let response: Response;
+
+    if (osimRuntime.value.env === 'dev') {
+      // For local development: Use POST with refresh token from localStorage
+      const refreshToken = userStore.getDevRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token available in localStorage for dev environment');
+      }
+
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+        credentials: 'include',
+        cache: 'no-cache',
+      });
+    } else {
+      // Non local development: Use GET with cookies
+      response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-cache',
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to refresh token: ${response.status} ${response.statusText}`);
@@ -158,6 +180,11 @@ export async function getNextAccessToken() {
     // Update the access token in the store
     userStore.accessToken = parsedResponse.access;
     userStore.isLoggedIn = true;
+
+    // For dev environments, update the refresh token if provided
+    if (osimRuntime.value.env === 'dev' && parsedResponse.refresh) {
+      userStore.setDevRefreshToken(parsedResponse.refresh);
+    }
 
     return parsedResponse.access;
   } catch (e) {
