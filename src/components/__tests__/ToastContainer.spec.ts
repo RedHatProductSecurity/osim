@@ -28,9 +28,12 @@ describe('toastContainer', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
         privacyNoticeShown: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        unifiedCommentsView: false,
       },
     };
     const toastStore = useToastStore(pinia);
@@ -68,9 +71,12 @@ describe('toastContainer', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
         privacyNoticeShown: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        unifiedCommentsView: false,
       },
     };
     subject = mount(ToastContainer, {
@@ -97,8 +103,12 @@ describe('toastContainer', () => {
       const settingStore = useSettingsStore(pinia);
       settingStore.$state = {
         settings: {
-          ...settingStore.$state.settings,
           showNotifications: false,
+          affectsPerPage: 10,
+          trackersPerPage: 10,
+          isHidingLabels: false,
+          privacyNoticeShown: false,
+          unifiedCommentsView: false,
         },
       };
       const toastStore = useToastStore(pinia);
