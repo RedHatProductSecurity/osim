@@ -6,12 +6,26 @@
 //       Visit <RouterLink :to="{name: 'settings'}">Settings</RouterLink>.
 //     </div>
 
+import { createCatchHandler } from '@/composables/service-helpers';
+
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { osidbFetch } from '@/services/OsidbAuthService';
 // import { useRouter } from 'vue-router';
 
+export interface IntegrationTokensResponse {
+  bugzilla: null | string;
+  jira: null | string;
+}
+
+export interface IntegrationTokensPatchRequest {
+  bugzilla?: string;
+  jira?: string;
+}
+
 export function notifyApiKeyUnset() {
-  const { settings: { bugzillaApiKey, jiraApiKey } } = useSettingsStore();
+  const settingsStore = useSettingsStore();
+  const { bugzillaApiKey, jiraApiKey } = settingsStore.apiKeys;
   const unsetKeys: string[] = [];
 
   if (!bugzillaApiKey) {
@@ -35,6 +49,36 @@ export function notifyApiKeyUnset() {
       'Visit Settings to set any required keys.',
     });
     // maybeRedirectToSettings();
+  }
+}
+
+/**
+ * Save API keys to the backend
+ */
+export async function saveApiKeysToBackend(apiKeys: IntegrationTokensPatchRequest) {
+  console.log('ApiKeyService: saveApiKeysToBackend called with:', apiKeys);
+
+  return osidbFetch({
+    method: 'PATCH',
+    url: '/osidb/integrations',
+    data: apiKeys,
+  })
+    .catch(createCatchHandler('Failed to save API keys'));
+}
+
+/**
+ * Retrieve API keys from the backend
+ */
+export async function getApiKeysFromBackend(): Promise<IntegrationTokensResponse> {
+  try {
+    const response = await osidbFetch({
+      method: 'get',
+      url: '/osidb/integrations',
+    });
+    return response.data as IntegrationTokensResponse;
+  } catch (error) {
+    console.error('Failed to retrieve API keys:', error);
+    throw error;
   }
 }
 

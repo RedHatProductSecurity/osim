@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { osimRuntime } from '@/stores/osimRuntime';
-import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 
 import { useUserStore } from '../stores/UserStore';
@@ -25,10 +24,10 @@ export type OsidbGetFetchOptions = {
   url: string;
 };
 
-export type OsidbPutPostFetchOptions = {
+export type OsidbPatchPutPostFetchOptions = {
   cache?: CacheOptions;
   data?: Record<string, any>;
-  method: 'POST' | 'post' | 'PUT' | 'put';
+  method: 'PATCH' | 'patch' | 'POST' | 'post' | 'PUT' | 'put';
   params?: Record<string, any>;
   url: string;
 };
@@ -44,7 +43,7 @@ export type OsidbDeleteFetchOptions = {
 export type OsidbFetchOptions =
   | OsidbDeleteFetchOptions
   | OsidbGetFetchOptions
-  | OsidbPutPostFetchOptions;
+  | OsidbPatchPutPostFetchOptions;
 
 export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: OsidbFetchCallbacks) {
   if (factoryOptions?.beforeFetch) {
@@ -54,6 +53,16 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
   const body = config?.data ? JSON.stringify(config.data) : undefined;
   const queryString = queryStringFromParams(config?.params ?? {});
   const baseUrl = osimRuntime.value.backends.osidb;
+
+  // Debug logging
+  console.log('🔍 osidbFetch called with:', {
+    method: config?.method,
+    url: `${baseUrl}${config.url}${queryString}`,
+    hasData: !!config?.data,
+    data: config?.data,
+    bodyString: body,
+    headers: await osimRequestHeaders(),
+  });
 
   if (config?.method?.toUpperCase() !== 'GET' && osimRuntime.value.readOnly) {
     useToastStore().addToast({ title: 'Operation Not Permitted', body: 'OSIM is in read-only mode.' });
@@ -70,7 +79,15 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
       cache: config?.cache,
       body,
     });
+
+    console.log('📡 Fetch response:', {
+      ok: response.ok,
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
+    });
   } catch (e) {
+    console.error('❌ Fetch failed:', e);
     return Promise.reject(e);
   }
 
@@ -105,13 +122,10 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
 }
 
 async function osimRequestHeaders() {
-  const settingsStore = useSettingsStore();
   const token = await getNextAccessToken();
   return new Headers({
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-    'Bugzilla-Api-Key': settingsStore.settings.bugzillaApiKey,
-    'Jira-Api-Key': settingsStore.settings.jiraApiKey,
   });
 }
 
