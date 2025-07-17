@@ -1,31 +1,48 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, reactive } from 'vue';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
-import type { SettingsType } from '@/stores/SettingsStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 type SensitiveFormInput = 'password' | 'text';
 
 const settingsStore = useSettingsStore();
 const revealSensitive = ref<SensitiveFormInput>('password');
 
-const settings = ref(settingsStore.settings);
-
-const onSubmit = (values: SettingsType) => {
-  settingsStore.settings = values;
-};
-
-const isValid = ref({
-  bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
-  jiraApiKey: Boolean(settings.value.jiraApiKey),
+// Create reactive form data for API keys only
+const formData = reactive({
+  bugzillaApiKey: settingsStore.apiKeys.bugzillaApiKey,
+  jiraApiKey: settingsStore.apiKeys.jiraApiKey,
 });
 
-watch(settings, () => {
-  isValid.value = {
-    bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
-    jiraApiKey: Boolean(settings.value.jiraApiKey),
-  };
-}, { deep: true });
+// Watch for changes in API keys from store and update form
+watch(() => settingsStore.apiKeys, (newApiKeys) => {
+  formData.bugzillaApiKey = newApiKeys.bugzillaApiKey;
+  formData.jiraApiKey = newApiKeys.jiraApiKey;
+}, { immediate: true });
+
+const onSubmit = async () => {
+  try {
+    console.log('🚀 Settings form submitted');
+    console.log('📊 Runtime info:', {
+      readOnly: osimRuntime.value.readOnly,
+      env: osimRuntime.value.env,
+      backend: osimRuntime.value.backends.osidb,
+    });
+
+    await settingsStore.updateApiKeys({
+      jiraApiKey: formData.jiraApiKey,
+      bugzillaApiKey: formData.bugzillaApiKey,
+    });
+  } catch (error) {
+    console.error('Error saving settings:', error);
+  }
+};
+
+const isValid = computed(() => ({
+  bugzillaApiKey: Boolean(formData.bugzillaApiKey),
+  jiraApiKey: Boolean(formData.jiraApiKey),
+}));
 </script>
 
 <template>
@@ -33,14 +50,13 @@ watch(settings, () => {
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">
-      These values are saved in browser local storage, and should persist across tabs
-      and browser sessions. Ensure that security best practices are followed.
+      API keys are saved securely on the backend and will persist across sessions.
     </div>
 
     <!--@submit.prevent="settingsStore.save(settings)"-->
     <form
       class="osim-settings"
-      @submit="onSubmit(settings)"
+      @submit.prevent="onSubmit()"
     >
 
       <!-- <LabelInput
@@ -75,7 +91,7 @@ watch(settings, () => {
         <label class="d-block">
           <span class="form-label">Bugzilla API Key</span>
           <input
-            v-model="settings.bugzillaApiKey"
+            v-model="formData.bugzillaApiKey"
             class="form-control"
             :type="revealSensitive"
             :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
@@ -110,7 +126,7 @@ watch(settings, () => {
         <label class="d-block">
           <span class="form-label">JIRA API Key</span>
           <input
-            v-model="settings.jiraApiKey"
+            v-model="formData.jiraApiKey"
             class="form-control"
             :type="revealSensitive"
             :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
@@ -139,6 +155,15 @@ watch(settings, () => {
             </ul>
           </details>
         </div>
+      </div>
+
+      <div class="mt-4">
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+          Save Settings
+        </button>
       </div>
     </form>
   </div>
