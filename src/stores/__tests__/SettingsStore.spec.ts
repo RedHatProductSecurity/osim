@@ -2,11 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
 
-import { useSettingsStore, type SettingsType } from '@/stores/SettingsStore';
+import { useSettingsStore, type PersistentSettingsType } from '@/stores/SettingsStore';
 
-const initialState: SettingsType = {
-  bugzillaApiKey: '',
-  jiraApiKey: '',
+const initialState: PersistentSettingsType = {
   showNotifications: false,
   affectsPerPage: 10,
   trackersPerPage: 10,
@@ -36,8 +34,6 @@ describe('settingsStore', () => {
 
   it('saves values', () => {
     const settings = {
-      bugzillaApiKey: 'beep-beep-who-got-the-keys-to-the-jeep',
-      jiraApiKey: 'beep-beep-who-got-the-keys-to-the-jeep',
       showNotifications: !initialState.showNotifications,
       affectsPerPage: 1337,
       trackersPerPage: 1337,
