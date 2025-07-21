@@ -65,7 +65,10 @@ export function useFlawModel() {
   function afterSaveSuccess(queue?: (() => void)[]) {
     isSaving.value = false;
     if (queue) {
-      queue.forEach(fn => fn());
+      queue.forEach((fn) => {
+        fn();
+        console.log(fn);
+      });
     }
   }
 
@@ -171,7 +174,8 @@ export function useFlawModel() {
     if (isFlawUpdated.value) {
       queue.push(async () => {
         const response = await putFlaw(flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value);
-        afterSuccessQueue.push(() => setFlaw(response?.data as ZodFlawType));
+        console.log('response', response);
+        afterSuccessQueue.push(() => setFlaw(response));
       },
       );
     }
