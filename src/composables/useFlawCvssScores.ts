@@ -3,7 +3,7 @@ import { computed, ref, watch, type Ref } from 'vue';
 import { groupWith, equals } from 'ramda';
 
 import { deleteFlawCvssScores, putFlawCvssScores, postFlawCvssScores } from '@/services/FlawService';
-import type { ZodFlawType } from '@/types/zodFlaw';
+import type { ZodFlawCVSSType, ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
@@ -113,7 +113,8 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       }
       // Update embargoed state from parent flaw
       flawRhCvss3.value.embargoed = flaw.value.embargoed;
-      return putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value);
+      const updatedScore = await putFlawCvssScores(flaw.value.uuid, flawRhCvss3.value.uuid || '', flawRhCvss3.value);
+      return updatedCvssScores(updatedScore, true);
     }
 
     // Handle newly created CVSS score
@@ -125,7 +126,14 @@ export function useFlawCvssScores(flaw: Ref<ZodFlawType>) {
       vector: flawRhCvss3.value?.vector,
       embargoed: flaw.value.embargoed,
     };
-    return postFlawCvssScores(flaw.value.uuid, requestBody);
+    const updatedScore = await postFlawCvssScores(flaw.value.uuid, requestBody);
+    return updatedCvssScores(updatedScore);
+  }
+
+  function updatedCvssScores(response: ZodFlawCVSSType, isNewScore = false) {
+    return isNewScore
+      ? [...flaw.value.cvss_scores, response]
+      : [...flaw.value.cvss_scores.filter(score => score.uuid !== response.uuid), response];
   }
 
   return {

@@ -29,6 +29,7 @@ import {
   type ZodFlawType,
   type ZodAffectType,
   type ZodFlawLabelType,
+  type ZodFlawCVSSType,
 } from '@/types';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
@@ -174,7 +175,6 @@ export function useFlawModel() {
     if (isFlawUpdated.value) {
       queue.push(async () => {
         const response = await putFlaw(flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value);
-        console.log('response', response);
         afterSuccessQueue.push(() => setFlaw(response));
       },
       );
@@ -182,7 +182,7 @@ export function useFlawModel() {
     if (wasCvssModified.value) {
       queue.push(async () => {
         const response = await saveCvssScores();
-        afterSuccessQueue.push(() => setFlaw(response?.data, 'cvss_scores'));
+        afterSuccessQueue.push(() => setFlaw(response as ZodFlawCVSSType[], 'cvss_scores'));
       });
     }
 
