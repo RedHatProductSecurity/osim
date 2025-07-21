@@ -93,10 +93,12 @@ export function useFlawModel() {
           flaw.value.uuid = response.uuid;
           saveDraftFlaw(flaw.value);
           if (flaw.value.acknowledgments.length > 0) {
-            await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+            const acknowledgments = await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+            response.acknowledgments = acknowledgments;
           }
           if (flaw.value.references.length > 0) {
-            await flawAttributionsModel.saveReferences(flaw.value.references);
+            const references = await flawAttributionsModel.saveReferences(flaw.value.references);
+            response.references = references;
           }
           return response;
         })
