@@ -104,6 +104,9 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   const apiKeys = ref<ApiKeysType>(structuredClone(defaultApiKeys));
 
+  const isLoadingApiKeys = ref<boolean>(false);
+  const isSavingApiKeys = ref<boolean>(false);
+
   const persistentSettings = useLocalStorage('OSIM::USER-SETTINGS', structuredClone(defaultPersistentSettings));
 
   const validatedPersistentSettings = PersistentSettingsSchema.safeParse(persistentSettings.value);
@@ -126,6 +129,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   async function loadApiKeysFromBackend() {
     try {
+      isLoadingApiKeys.value = true;
       const retrievedKeys = await getApiKeysFromBackend();
       apiKeys.value = {
         bugzillaApiKey: retrievedKeys.bugzilla || '',
@@ -133,6 +137,8 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       };
     } catch (error) {
       console.debug('No API keys found on server or failed to retrieve them');
+    } finally {
+      isLoadingApiKeys.value = false;
     }
   }
 
@@ -157,6 +163,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   async function updateApiKeys(newApiKeys: Partial<ApiKeysType>) {
     try {
+      isSavingApiKeys.value = true;
       console.log('SettingsStore: updateApiKeys called with:', newApiKeys);
 
       apiKeys.value = {
@@ -188,6 +195,8 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
         css: 'danger',
       });
       throw error;
+    } finally {
+      isSavingApiKeys.value = false;
     }
   }
 
@@ -195,6 +204,8 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     $reset,
     settings,
     apiKeys,
+    isLoadingApiKeys,
+    isSavingApiKeys,
     updateApiKeys,
   };
 });
