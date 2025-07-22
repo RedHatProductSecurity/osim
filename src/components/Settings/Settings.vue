@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive, computed } from 'vue';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { osimRuntime } from '@/stores/osimRuntime';
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 type SensitiveFormInput = 'password' | 'text';
 
@@ -20,6 +21,8 @@ watch(() => settingsStore.apiKeys, (newApiKeys) => {
   formData.bugzillaApiKey = newApiKeys.bugzillaApiKey;
   formData.jiraApiKey = newApiKeys.jiraApiKey;
 }, { immediate: true });
+
+const apiKeysSyncing = computed(() => settingsStore.isLoadingApiKeys || settingsStore.isSavingApiKeys);
 
 const onSubmit = async () => {
   try {
@@ -72,6 +75,7 @@ const isValid = computed(() => ({
             type="radio"
             name="revealSensitive"
             value="password"
+            :disabled="apiKeysSyncing"
           >
           <span class="form-check-label">Hide Password Values</span>
         </label>
@@ -82,6 +86,7 @@ const isValid = computed(() => ({
             type="radio"
             name="revealSensitive"
             value="text"
+            :disabled="apiKeysSyncing"
           >
           <span class="form-check-label">Reveal Password Values</span>
         </label>
@@ -95,6 +100,7 @@ const isValid = computed(() => ({
             class="form-control"
             :type="revealSensitive"
             :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
+            :disabled="apiKeysSyncing"
             placeholder="[none saved]"
           />
           <span
@@ -130,6 +136,7 @@ const isValid = computed(() => ({
             class="form-control"
             :type="revealSensitive"
             :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
+            :disabled="apiKeysSyncing"
             placeholder="[none saved]"
           />
           <span
@@ -161,8 +168,14 @@ const isValid = computed(() => ({
         <button
           type="submit"
           class="btn btn-primary"
+          :disabled="apiKeysSyncing"
         >
-          Save Settings
+          <LoadingSpinner
+            v-if="settingsStore.isSavingApiKeys"
+            type="border"
+            class="spinner-border-sm me-2 d-inline-block"
+          />
+          {{ settingsStore.isSavingApiKeys ? 'Saving...' : 'Save Settings' }}
         </button>
       </div>
     </form>
