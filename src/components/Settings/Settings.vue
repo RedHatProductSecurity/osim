@@ -5,10 +5,10 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
-type SensitiveFormInput = 'password' | 'text';
-
 const settingsStore = useSettingsStore();
-const revealSensitive = ref<SensitiveFormInput>('password');
+
+const showBugzillaKey = ref(false);
+const showJiraKey = ref(false);
 
 // Create reactive form data for API keys only
 const formData = reactive({
@@ -67,42 +67,28 @@ const isValid = computed(() => ({
         label="Bugzilla API Key"
         :error="errors.bugzillaApiKey"
       /> -->
-      <div class="form-control mb-3">
-        <label class="form-check">
-          <input
-            v-model="revealSensitive"
-            class="form-check-input"
-            type="radio"
-            name="revealSensitive"
-            value="password"
-            :disabled="apiKeysSyncing"
-          >
-          <span class="form-check-label">Hide Password Values</span>
-        </label>
-        <label class="form-check">
-          <input
-            v-model="revealSensitive"
-            class="form-check-input"
-            type="radio"
-            name="revealSensitive"
-            value="text"
-            :disabled="apiKeysSyncing"
-          >
-          <span class="form-check-label">Reveal Password Values</span>
-        </label>
-      </div>
 
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">Bugzilla API Key</span>
-          <input
-            v-model="formData.bugzillaApiKey"
-            class="form-control"
-            :type="revealSensitive"
-            :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
-            :disabled="apiKeysSyncing"
-            placeholder="[none saved]"
-          />
+          <div class="input-group">
+            <input
+              v-model="formData.bugzillaApiKey"
+              class="form-control"
+              :type="showBugzillaKey ? 'text' : 'password'"
+              :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
+              :disabled="apiKeysSyncing"
+              placeholder="[none saved]"
+            />
+            <button
+              type="button"
+              class="btn btn-dark eye-toggle-btn"
+              :disabled="apiKeysSyncing"
+              @click="showBugzillaKey = !showBugzillaKey"
+            >
+              <i :class="showBugzillaKey ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <span
             v-if="!isValid.bugzillaApiKey"
             class="invalid-feedback d-block"
@@ -131,14 +117,24 @@ const isValid = computed(() => ({
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">JIRA API Key</span>
-          <input
-            v-model="formData.jiraApiKey"
-            class="form-control"
-            :type="revealSensitive"
-            :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
-            :disabled="apiKeysSyncing"
-            placeholder="[none saved]"
-          />
+          <div class="input-group">
+            <input
+              v-model="formData.jiraApiKey"
+              class="form-control"
+              :type="showJiraKey ? 'text' : 'password'"
+              :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
+              :disabled="apiKeysSyncing"
+              placeholder="[none saved]"
+            />
+            <button
+              type="button"
+              class="btn btn-dark eye-toggle-btn"
+              :disabled="apiKeysSyncing"
+              @click="showJiraKey = !showJiraKey"
+            >
+              <i :class="showJiraKey ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <span
             v-if="!isValid.jiraApiKey"
             class="invalid-feedback d-block"
