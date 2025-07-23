@@ -60,7 +60,20 @@ const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
 
 function componentFromPurl(purl: string) {
   try {
-    return PackageURL.fromString(purl)?.name ?? null;
+    const packageUrl = PackageURL.fromString(purl);
+
+    if (packageUrl?.type === 'oci') {
+      const repositoryUrl = packageUrl.qualifiers?.repository_url;
+      const prefix = repositoryUrl?.split('/')[1];
+      if (!prefix) {
+        throw new Error('Invalid repository_url in OCI PURL');
+      }
+      return `${prefix}/${packageUrl.name}`;
+    } else if (packageUrl?.qualifiers?.rpmmod) {
+      return `${packageUrl.qualifiers.rpmmod}/${packageUrl.name}`;
+    } else {
+      return packageUrl?.name ?? null;
+    }
   } catch (error) {
     return null;
   }
