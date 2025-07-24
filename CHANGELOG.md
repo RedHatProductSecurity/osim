@@ -13,6 +13,9 @@
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
 * Don't update Flaw when only affects are modified (`OSIDB-4270`)
 
+### Added
+* CVSS4 support, disabled until adoption (`OSIDB-2363`)
+
 ## [2025.6.0]
 ### Added
 * Add an unified view for all comment types  (`OSIDB-3467`)
@@ -26,11 +29,6 @@
 
 ### Changed
 * Renamed Incident states (`OSIDB-3850`)
-
-### Added
-* Support CVSS versions 3 & 4
-  * Optional score syncronization
-  * New CVSS4 Calculator UI
 
 ## [2025.4.0]
 ### Added

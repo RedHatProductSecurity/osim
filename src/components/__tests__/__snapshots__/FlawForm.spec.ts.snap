@@ -135,7 +135,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </label>
     <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
-      <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" aria-role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-1"><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSS <select data-v-ffda1b6f="" class="ms-2"><option data-v-ffda1b6f="" selected="" value="V3">3.1</option><option data-v-ffda1b6f="" value="V4">4.0</option></select><span data-v-ffda1b6f="" class="bg-light rounded ms-2 px-2" title="Synchronize factors between CVSS3 and CVSS4"><i data-v-ffda1b6f="" class="bi bi-repeat me-1" style="cursor: help; height: 24px; width: 24px; stroke: black; vertical-align: middle;"></i><input data-v-ffda1b6f="" type="checkbox" class="form-check-input"></span></span>
+      <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
           <div data-v-ffda1b6f="" class="input-wrapper col">
             <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
               <!--v-if-->
@@ -144,7 +144,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
           <!--v-if-->
         </label><button data-v-ffda1b6f="" tabindex="-1" type="button" class="erase-button input-group-text"><i data-v-ffda1b6f="" class="bi bi-eraser"></i></button></div>
-      <div data-v-707feb84="" data-v-ffda1b6f="" class="cvss-calculator visually-hidden mt-2" cvssscore="2.2">
+      <div data-v-707feb84="" data-v-ffda1b6f="" class="cvss-calculator visually-hidden mt-2">
         <div data-v-707feb84="" class="p-3">
           <div data-v-707feb84="" class="osim-input mx-0">
             <div data-v-707feb84="" class="mx-auto">

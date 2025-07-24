@@ -11,6 +11,8 @@ export enum CvssVersions {
 export const CVSS_V3 = CvssVersions.V3;
 export const CVSS_V4 = CvssVersions.V4;
 
+export const isCvss4Enabled = false;
+
 export const CvssVersionDisplayMap: { [_key in CvssVersions]: string } = {
   [CvssVersions.V3]: '3.1',
   [CvssVersions.V4]: '4.0',

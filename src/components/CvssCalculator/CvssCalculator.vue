@@ -9,11 +9,10 @@ import { useCvssScores } from '@/composables/useCvssScores';
 import { parseCvss3Factors } from '@/composables/useCvss3Calculator';
 
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
-import { CvssVersions, CvssVersionDisplayMap } from '@/constants';
+import { CvssVersions, CvssVersionDisplayMap, isCvss4Enabled } from '@/constants';
 
 const {
   cvss3Factors,
-  cvss4Score,
   cvss4Selections,
   cvss4Vector,
   cvssScore,
@@ -89,16 +88,18 @@ function highlightFactorValue(factor: null | string) {
     @paste="handlePaste"
   >
     <div class="osim-input mb-2">
-      <label class="label-group row" aria-role="red-hat-cvss">
-        <span class="form-label col-3 pe-1">
+      <label class="label-group row" role="red-hat-cvss">
+        <span class="form-label col-3 pe-3">
           <img
             :src="RedHatIconSvg"
             alt="Red Hat Logo"
             width="24px"
             class="me-2"
           />
-          CVSS
+          {{ isCvss4Enabled ? 'CVSS' : 'CVSSv3' }}
+          <!-- TODO: Remove this once we have a proper CVSS4 selector -->
           <select
+            v-if="isCvss4Enabled"
             v-model="cvssVersion"
             class="ms-2"
           >
@@ -111,12 +112,17 @@ function highlightFactorValue(factor: null | string) {
               {{ CvssVersionDisplayMap[version] }}
             </option>
           </select>
-          <span class="bg-light rounded ms-2 px-2" title="Synchronize factors between CVSS3 and CVSS4">
+          <span
+            v-if="isCvss4Enabled"
+            class="bg-light rounded ms-2 px-2"
+            title="Synchronize factors between CVSS3 and CVSS4"
+          >
             <i
               class="bi bi-repeat me-1"
               style="cursor: help; height: 24px; width: 24px; stroke: black; vertical-align: middle;"
             ></i>
             <input
+
               v-model="shouldSyncVectors"
               type="checkbox"
               class="form-check-input"
@@ -164,7 +170,6 @@ function highlightFactorValue(factor: null | string) {
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused"
-      :cvssScore="cvssScore"
       :cvssVector="cvssVector ?? null"
       @update:cvssScore="updateScore"
       @update:cvssVector="updateVector"
