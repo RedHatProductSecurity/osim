@@ -166,12 +166,16 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
   watch(rhCvss, () => {
     wasCvssModified.value = !equals(initialRhCvss, rhCvss.value);
+
+    // Abort checking if cvss value is not modified
     if (!wasCvssModified.value) {
       if (!isAffect(entity)) {
         wasFlawCvssModified.value = false;
       };
       return;
     }
+
+    // if the modified CVSS value is from a flaw, set the flaw CVSS marker to true
     if (!isAffect(entity)) {
       wasFlawCvssModified.value = true;
       flawRhCvss.value.score = rhCvss.value.score ?? null;
@@ -187,6 +191,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     if (shouldSyncVectors.value) synchronizeFactors();
   }, { deep: true });
 
+  // reset the flag when the flaw is updated
   watch(() => flaw.value.updated_dt, () => {
     wasFlawCvssModified.value = false;
   });

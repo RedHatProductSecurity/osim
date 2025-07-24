@@ -20,7 +20,7 @@ function setFlaw(fetchedFlaw: ZodFlawType) {
 
 const isFlawUpdated = computed(
   () => {
-    const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers'];
+    const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers', 'cvss_scores'];
     return serializeWithExclude(flaw.value, keysToExclude)
       !== serializeWithExclude(initialFlaw.value, keysToExclude);
   },

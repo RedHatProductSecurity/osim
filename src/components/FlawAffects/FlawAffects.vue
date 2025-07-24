@@ -15,8 +15,7 @@ import { newAffectCvss } from '@/composables/useCvssScores';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
-import type { ZodAffectType, ZodFlawType } from '@/types';
-import { CVSS_V3 } from '@/constants';
+import type { ZodAffectType } from '@/types';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { uniques } from '@/utils/helpers';
