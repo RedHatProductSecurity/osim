@@ -7,11 +7,7 @@ import {
 import { METRICS, type MetricsGroup } from '@/utils/cvss40';
 
 defineProps<{
-  // cvss4Score: null | number;
   cvss4Selections: any;
-  // cvss4Vector: null | string;
-  // highlightedFactor: null | string;
-  // isFocused: boolean;
 }>();
 
 const emit = defineEmits<{
