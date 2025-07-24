@@ -99,7 +99,7 @@ describe('flawForm', () => {
 
     const cvssV3Field = subject
       .findAllComponents(CvssCalculator)
-      .find(component => component.text().includes('CVSSv3'));
+      .find(component => component.find('label[role="red-hat-cvss"]'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const nvdCvssField = subject
@@ -180,7 +180,7 @@ describe('flawForm', () => {
 
     const cvssV3Field = subject
       .findAllComponents(CvssCalculator)
-      .find(component => component.html().includes('CVSSv3'));
+      .find(component => component.find('label[role="red-hat-cvss"]'));
     expect(cvssV3Field?.exists()).toBe(true);
 
     const nvdCvssField = subject
