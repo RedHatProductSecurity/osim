@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 * Fix performance issues with affects updates (`OSIDB-4273`)
+* Fix wrong affected component names from OCI and RPMMOD types (`OSIDB-4358`)
 
 ### Changed
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
