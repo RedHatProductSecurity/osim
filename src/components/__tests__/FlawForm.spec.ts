@@ -44,6 +44,29 @@ vi.mock('@/composables/useTrackers', () => {
 
 vi.mock('@/services/LabelsService');
 
+vi.mock('@/composables/useJiraContributors', () => {
+  return {
+    default: vi.fn(() => ({
+      contributors: { value: [] },
+      isLoadingContributors: { value: false },
+      loadJiraContributors: vi.fn(),
+      saveContributors: vi.fn(),
+      searchContributors: vi.fn(),
+    })),
+  };
+});
+
+vi.mock('@/services/JiraService', () => {
+  return {
+    getJiraComments: vi.fn(() => Promise.resolve({ response: { ok: true }, data: { comments: [] } })),
+    getJiraIssue: vi.fn(() => Promise.resolve({ data: { fields: { customfield_12315950: [] } } })),
+    searchJiraUsers: vi.fn(() => Promise.resolve({ data: { users: [] } })),
+    jiraTaskUrl: vi.fn((id: string) => `http://jira-example.com/browse/${id}`),
+    jiraUserUrl: vi.fn((name: string) => `http://jira-example.com/user/${name}`),
+    postJiraComment: vi.fn(() => Promise.resolve({})),
+  };
+});
+
 type FlawFormProps = InstanceType<typeof FlawForm>['$props'];
 
 function mountWithProps(flaw: ZodFlawType, props: FlawFormProps) {
@@ -476,41 +499,21 @@ describe('flawForm', () => {
   osimFullFlawTest('should show a link to Jira if task_key exists', async ({ flaw }) => {
     flaw.task_key = 'OSIM-1234';
 
-    vi.mock(import('@/services/JiraService'), async (importOriginal) => {
-      const actual = await importOriginal();
-      return {
-        ...actual,
-        jiraTaskUrl: () => 'http://jira-example.com',
-      };
-    });
-
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const flawLinks = subject.findAll('.osim-flaw-header-link > a');
     expect(flawLinks.length).toBe(2);
     expect(flawLinks[1].text()).contain('Jira');
-
-    vi.clearAllMocks();
   });
 
   osimFullFlawTest('should not show a link to Jira if task_key does not exists', async ({ flaw }) => {
     flaw.task_key = '';
-
-    vi.mock(import('@/services/JiraService'), async (importOriginal) => {
-      const actual = await importOriginal();
-      return {
-        ...actual,
-        jiraTaskUrl: () => 'http://jira-example.com',
-      };
-    });
 
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const flawLinks = subject.findAll('.osim-flaw-header-link > a');
     expect(flawLinks.length).toBe(1);
     expect(flawLinks[0].text()).not.toContain('Jira');
-
-    vi.clearAllMocks();
   });
 
   osimFullFlawTest('should show CreatedDate on Flaw Edit', async ({ flaw }) => {
