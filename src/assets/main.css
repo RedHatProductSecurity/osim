@@ -51,6 +51,26 @@ table {
   border-spacing: 0;
 }
 
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.affects-table .resizer {
+  background-color: #707070;
+  border-inline: 1px solid #707070;
+}
+
+.trackers-table .resizer {
+  background-color: #212529;
+  border-inline: 1px solid #212529;
+}
+
 .card {
   border-radius: 0;
 }

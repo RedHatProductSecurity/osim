@@ -238,76 +238,9 @@ const {
 thead {
   tr {
     th {
+      position: relative;
       user-select: none;
       text-wrap: nowrap;
-
-      // Checkbox
-      &:nth-of-type(1) {
-        max-width: 1ch;
-      }
-
-      // Editing State Icon
-      &:nth-of-type(2) {
-        width: 2ch;
-        padding: 0;
-      }
-
-      &:nth-of-type(3) {
-        // Module
-        width: 18ch;
-      }
-
-      &:nth-of-type(4) {
-        // Component
-        width: 18ch;
-      }
-
-      &:nth-of-type(5) {
-        // PURL
-        width: 24ch;
-      }
-
-      &:nth-of-type(6) {
-        // Affectedness
-        width: 16ch;
-      }
-
-      &:nth-of-type(7) {
-        // Justification
-        width: 24ch;
-      }
-
-      &:nth-of-type(8) {
-        // Resolution
-        width: 16ch;
-      }
-
-      &:nth-of-type(9) {
-        // Impact
-        width: 16ch;
-      }
-
-      &:nth-of-type(10) {
-        // CVSS
-        min-width: 6ch;
-      }
-
-      &:nth-of-type(11) {
-        // Trackers
-        width: 8ch;
-      }
-
-      &:nth-of-type(12) {
-        // Actions
-        min-width: 6ch;
-      }
-
-      &:nth-of-type(13) {
-        //  Selection Indicator
-        min-width: 0;
-        max-width: 0;
-        width: 0;
-      }
 
       &:not(:nth-of-type(10), :nth-of-type(2)) {
         cursor: pointer;

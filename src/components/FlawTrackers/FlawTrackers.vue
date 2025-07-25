@@ -118,6 +118,8 @@ const {
 const tableTrackers = computed(() => {
   return showAllTrackers.value ? filteredTrackers.value : paginatedTrackers.value;
 });
+
+const { settings: userSettings } = useSettingsStore();
 </script>
 
 <template>
@@ -224,7 +226,10 @@ const tableTrackers = computed(() => {
       <div
         class="osim-tracker-card pb-2 pt-0 pe-2 ps-2 bg-dark"
       >
-        <table class="table table-striped table-info mb-0">
+        <table
+          v-resizableTableColumns="userSettings.trackersColumnWidths"
+          class="trackers-table table table-striped table-info mb-0"
+        >
           <thead>
             <tr>
               <th>Bug ID</th>
@@ -419,19 +424,22 @@ const tableTrackers = computed(() => {
         z-index: 10;
       }
 
-      tr th {
+      th {
+        position: relative;
         user-select: none;
+        text-wrap: nowrap;
 
-        #status-filter .bi {
-          font-size: 1rem;
-        }
+        tr th {
+          user-select: none;
 
-        &:nth-of-type(7) {
-          cursor: pointer;
-        }
+          #status-filter .bi {
+            font-size: 1rem;
+          }
 
-        &:nth-of-type(8) {
-          cursor: pointer;
+          &:nth-of-type(7),
+          &:nth-of-type(8) {
+            cursor: pointer;
+          }
         }
       }
     }
