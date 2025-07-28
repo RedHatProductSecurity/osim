@@ -13,6 +13,10 @@ const mountApp = () => shallowMount(App, {
         meta: {},
       },
     },
+    stubs: {
+      RouterView: true,
+      KeepAlive: true,
+    },
   },
 });
 

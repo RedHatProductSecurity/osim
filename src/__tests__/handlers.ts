@@ -14,7 +14,7 @@ export const getNextAccessTokenHandler = http.get(`${osimRuntime.value.backends.
     user_id: 1337,
   })));
 
-export const getNextAccessTokenRefreshHandler = http.post(`${osimRuntime.value.backends.osidb}/auth/token/refresh`,
+export const getNextAccessTokenRefreshHandler = http.get(`${osimRuntime.value.backends.osidb}/auth/token/refresh`,
   () => HttpResponse.json({
     access: encodeJWT({
       token_type: 'access',

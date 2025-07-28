@@ -17,7 +17,7 @@ describe('osidbAuthService', () => {
     user_id: 1337,
   });
 
-  const refreshEndpoint = http.post('/auth/token/refresh', () => {
+  const refreshEndpoint = http.get('/auth/token/refresh', () => {
     return HttpResponse.json({ access: accessJWT });
   });
 
