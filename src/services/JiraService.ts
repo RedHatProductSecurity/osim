@@ -3,6 +3,7 @@ import { createSuccessHandler, createCatchHandler } from '@/composables/service-
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
+import { getApiKeysFromBackend } from '@/services/ApiKeyService';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
@@ -172,15 +173,15 @@ async function osimRequestHeaders() {
   const osidbToken = await getNextAccessToken();
   if (osimRuntime.value.env === 'prod') {
     return new Headers({
-      'Authorization': `Bearer ${settingsStore.settings.jiraApiKey}`,
+      'Authorization': `Bearer ${settingsStore.apiKeys.jiraApiKey}`,
       'Content-Type': 'application/json',
     });
   } else {
+    const integrationTokens = await getApiKeysFromBackend();
     return new Headers({
       'Authorization': `Bearer ${osidbToken}`,
       'Content-Type': 'application/json',
-      'Bugzilla-Api-Key': settingsStore.settings.bugzillaApiKey,
-      'Jira-Api-Key': settingsStore.settings.jiraApiKey,
+      'Jira-Api-Key': integrationTokens.jira || '',
       'User-Agent': 'OSIM',
     });
   }

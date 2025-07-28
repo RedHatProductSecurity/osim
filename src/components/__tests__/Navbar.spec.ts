@@ -51,9 +51,21 @@ describe('navbar', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        privacyNoticeShown: false,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -84,9 +96,21 @@ describe('navbar', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        privacyNoticeShown: true,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -102,7 +126,7 @@ describe('navbar', () => {
     expect(icon.classes()).toContain('bi-bell-fill');
     const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
-    expect(badge.text()).toBe('2');
+    expect(badge.text()).toBe('3');
     await icon.trigger('click');
     expect(settingStore.settings.showNotifications).toBe(false);
     icon = subject.find('.osim-notification-button .notification-icon');
@@ -122,9 +146,21 @@ describe('navbar', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: false,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        privacyNoticeShown: false,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -155,9 +191,21 @@ describe('navbar', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: false,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        privacyNoticeShown: false,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     subject = mount(Navbar, {
       global: {

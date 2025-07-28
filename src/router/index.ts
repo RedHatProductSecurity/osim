@@ -125,9 +125,8 @@ const router = createRouter({
 });
 
 function areApiKeysNotSet(): boolean {
-  const {
-    settings: { bugzillaApiKey, jiraApiKey },
-  } = useSettingsStore();
+  const settingsStore = useSettingsStore();
+  const { bugzillaApiKey, jiraApiKey } = settingsStore.apiKeys;
   return !bugzillaApiKey || !jiraApiKey;
 }
 

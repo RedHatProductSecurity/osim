@@ -6,6 +6,10 @@
 * Fix wrong affected component names from OCI and RPMMOD types (`OSIDB-4358`)
 
 ### Changed
+* Bugzilla and Jira api keys are now saved on the backend (`OSIDB-4312`)
+* Show api key is now a field button instead a separate radio input (`OSIDB-4312`)
+
+### Changed
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
 * Don't update Flaw when only affects are modified (`OSIDB-4270`)
 

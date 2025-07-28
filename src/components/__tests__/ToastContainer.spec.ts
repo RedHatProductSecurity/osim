@@ -28,10 +28,21 @@ describe('toastContainer', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
         privacyNoticeShown: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     const toastStore = useToastStore(pinia);
     toastStore.addToast({
@@ -68,10 +79,21 @@ describe('toastContainer', () => {
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
       settings: {
-        ...settingStore.$state.settings,
         showNotifications: true,
         privacyNoticeShown: true,
+        affectsPerPage: 10,
+        trackersPerPage: 10,
+        isHidingLabels: false,
+        unifiedCommentsView: false,
+        affectsColumnWidths: [],
+        trackersColumnWidths: [],
       },
+      apiKeys: {
+        bugzillaApiKey: '',
+        jiraApiKey: '',
+      },
+      isLoadingApiKeys: false,
+      isSavingApiKeys: false,
     };
     subject = mount(ToastContainer, {
       global: {
@@ -97,9 +119,21 @@ describe('toastContainer', () => {
       const settingStore = useSettingsStore(pinia);
       settingStore.$state = {
         settings: {
-          ...settingStore.$state.settings,
           showNotifications: false,
+          affectsPerPage: 10,
+          trackersPerPage: 10,
+          isHidingLabels: false,
+          privacyNoticeShown: false,
+          unifiedCommentsView: false,
+          affectsColumnWidths: [],
+          trackersColumnWidths: [],
         },
+        apiKeys: {
+          bugzillaApiKey: '',
+          jiraApiKey: '',
+        },
+        isLoadingApiKeys: false,
+        isSavingApiKeys: false,
       };
       const toastStore = useToastStore(pinia);
       toastStore.addToast({

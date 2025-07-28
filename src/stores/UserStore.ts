@@ -148,7 +148,7 @@ export const useUserStore = defineStore('UserStore', () => {
   });
 
   watch(
-    () => settingsStore.settings.jiraApiKey,
+    () => settingsStore.apiKeys.jiraApiKey,
     async () => {
       await updateJiraUsername();
     },

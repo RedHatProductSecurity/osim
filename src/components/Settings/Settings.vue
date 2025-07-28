@@ -1,31 +1,51 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, reactive, computed } from 'vue';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
-import type { SettingsType } from '@/stores/SettingsStore';
-
-type SensitiveFormInput = 'password' | 'text';
+import { osimRuntime } from '@/stores/osimRuntime';
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const settingsStore = useSettingsStore();
-const revealSensitive = ref<SensitiveFormInput>('password');
 
-const settings = ref(settingsStore.settings);
+const showBugzillaKey = ref(false);
+const showJiraKey = ref(false);
 
-const onSubmit = (values: SettingsType) => {
-  settingsStore.settings = values;
-};
-
-const isValid = ref({
-  bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
-  jiraApiKey: Boolean(settings.value.jiraApiKey),
+// Create reactive form data for API keys only
+const formData = reactive({
+  bugzillaApiKey: settingsStore.apiKeys.bugzillaApiKey,
+  jiraApiKey: settingsStore.apiKeys.jiraApiKey,
 });
 
-watch(settings, () => {
-  isValid.value = {
-    bugzillaApiKey: Boolean(settings.value.bugzillaApiKey),
-    jiraApiKey: Boolean(settings.value.jiraApiKey),
-  };
-}, { deep: true });
+// Watch for changes in API keys from store and update form
+watch(() => settingsStore.apiKeys, (newApiKeys) => {
+  formData.bugzillaApiKey = newApiKeys.bugzillaApiKey;
+  formData.jiraApiKey = newApiKeys.jiraApiKey;
+}, { immediate: true });
+
+const apiKeysSyncing = computed(() => settingsStore.isLoadingApiKeys || settingsStore.isSavingApiKeys);
+
+const onSubmit = async () => {
+  try {
+    console.log('🚀 Settings form submitted');
+    console.log('📊 Runtime info:', {
+      readOnly: osimRuntime.value.readOnly,
+      env: osimRuntime.value.env,
+      backend: osimRuntime.value.backends.osidb,
+    });
+
+    await settingsStore.updateApiKeys({
+      jiraApiKey: formData.jiraApiKey,
+      bugzillaApiKey: formData.bugzillaApiKey,
+    });
+  } catch (error) {
+    console.error('Error saving settings:', error);
+  }
+};
+
+const isValid = computed(() => ({
+  bugzillaApiKey: Boolean(formData.bugzillaApiKey),
+  jiraApiKey: Boolean(formData.jiraApiKey),
+}));
 </script>
 
 <template>
@@ -33,14 +53,13 @@ watch(settings, () => {
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">
-      These values are saved in browser local storage, and should persist across tabs
-      and browser sessions. Ensure that security best practices are followed.
+      API keys are saved securely on the backend and will persist across sessions.
     </div>
 
     <!--@submit.prevent="settingsStore.save(settings)"-->
     <form
       class="osim-settings"
-      @submit="onSubmit(settings)"
+      @submit.prevent="onSubmit()"
     >
 
       <!-- <LabelInput
@@ -48,39 +67,28 @@ watch(settings, () => {
         label="Bugzilla API Key"
         :error="errors.bugzillaApiKey"
       /> -->
-      <div class="form-control mb-3">
-        <label class="form-check">
-          <input
-            v-model="revealSensitive"
-            class="form-check-input"
-            type="radio"
-            name="revealSensitive"
-            value="password"
-          >
-          <span class="form-check-label">Hide Password Values</span>
-        </label>
-        <label class="form-check">
-          <input
-            v-model="revealSensitive"
-            class="form-check-input"
-            type="radio"
-            name="revealSensitive"
-            value="text"
-          >
-          <span class="form-check-label">Reveal Password Values</span>
-        </label>
-      </div>
 
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">Bugzilla API Key</span>
-          <input
-            v-model="settings.bugzillaApiKey"
-            class="form-control"
-            :type="revealSensitive"
-            :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
-            placeholder="[none saved]"
-          />
+          <div class="input-group">
+            <input
+              v-model="formData.bugzillaApiKey"
+              class="form-control"
+              :type="showBugzillaKey ? 'text' : 'password'"
+              :class="{'is-invalid': !isValid.bugzillaApiKey,'is-valid': isValid.bugzillaApiKey}"
+              :disabled="apiKeysSyncing"
+              placeholder="[none saved]"
+            />
+            <button
+              type="button"
+              class="btn btn-dark eye-toggle-btn"
+              :disabled="apiKeysSyncing"
+              @click="showBugzillaKey = !showBugzillaKey"
+            >
+              <i :class="showBugzillaKey ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <span
             v-if="!isValid.bugzillaApiKey"
             class="invalid-feedback d-block"
@@ -109,13 +117,24 @@ watch(settings, () => {
       <div class="form-control mb-3">
         <label class="d-block">
           <span class="form-label">JIRA API Key</span>
-          <input
-            v-model="settings.jiraApiKey"
-            class="form-control"
-            :type="revealSensitive"
-            :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
-            placeholder="[none saved]"
-          />
+          <div class="input-group">
+            <input
+              v-model="formData.jiraApiKey"
+              class="form-control"
+              :type="showJiraKey ? 'text' : 'password'"
+              :class="{'is-invalid': !isValid.jiraApiKey,'is-valid': isValid.jiraApiKey}"
+              :disabled="apiKeysSyncing"
+              placeholder="[none saved]"
+            />
+            <button
+              type="button"
+              class="btn btn-dark eye-toggle-btn"
+              :disabled="apiKeysSyncing"
+              @click="showJiraKey = !showJiraKey"
+            >
+              <i :class="showJiraKey ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <span
             v-if="!isValid.jiraApiKey"
             class="invalid-feedback d-block"
@@ -139,6 +158,21 @@ watch(settings, () => {
             </ul>
           </details>
         </div>
+      </div>
+
+      <div class="mt-4">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          :disabled="apiKeysSyncing"
+        >
+          <LoadingSpinner
+            v-if="settingsStore.isSavingApiKeys"
+            type="border"
+            class="spinner-border-sm me-2 d-inline-block"
+          />
+          {{ settingsStore.isSavingApiKeys ? 'Saving...' : 'Save Settings' }}
+        </button>
       </div>
     </form>
   </div>
