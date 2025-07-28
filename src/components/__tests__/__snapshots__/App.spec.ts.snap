@@ -3,7 +3,8 @@
 exports[`app > renders the App component when OSIDB is NOT READY 1`] = `"<div class="osim-backend-error">OSIDB is not ready</div>"`;
 
 exports[`app > renders the App component when OSIDB is READY 1`] = `
-"<header>
+"<session-warning-banner-stub></session-warning-banner-stub>
+<header>
   <navbar-stub></navbar-stub>
 </header>
 <div class="osim-content-layered">
