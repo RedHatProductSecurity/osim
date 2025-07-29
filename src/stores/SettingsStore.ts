@@ -4,7 +4,11 @@ import { defineStore } from 'pinia';
 import { z } from 'zod';
 import { useLocalStorage } from '@vueuse/core';
 
-import { saveApiKeysToBackend, getApiKeysFromBackend } from '@/services/ApiKeyService';
+import {
+  saveApiKeysToBackend,
+  getApiKeysFromBackend,
+  type IntegrationTokensPatchRequest,
+} from '@/services/ApiKeyService';
 
 import { useToastStore } from './ToastStore';
 
@@ -46,49 +50,36 @@ const defaultPersistentSettings: PersistentSettingsType = {
   trackersColumnWidths: [],
 };
 
-const LEGACY_SETTINGS_KEY = 'OSIM::USER-SETTINGS';
+const SETTINGS_KEY = 'OSIM::USER-SETTINGS';
 
+// Can be removed once we're sure all users have migrated their API keys
 async function migrateApiKeysFromLocalStorage(apiKeys: any, persistentSettings: any, addToast: any) {
+  const settings = persistentSettings.value;
+
+  const hasApiKeys = !!settings.bugzillaApiKey || !!settings.jiraApiKey;
+  if (!hasApiKeys) {
+    return;
+  }
+
+  // Prepare keys for backend
+  const keysToMigrate: IntegrationTokensPatchRequest = {
+    ...(settings.bugzillaApiKey && { bugzilla: settings.bugzillaApiKey }),
+    ...(settings.jiraApiKey && { jira: settings.jiraApiKey }),
+  };
+
   try {
-    const legacySettings = JSON.parse(localStorage.getItem(LEGACY_SETTINGS_KEY) ?? '{}');
-
-    const hasLegacyApiKeys = legacySettings.bugzillaApiKey || legacySettings.jiraApiKey;
-    if (!hasLegacyApiKeys) {
-      return;
-    }
-
-    console.log('🔄 Migrating API keys from localStorage to backend...');
-
-    const keysToMigrate: any = {};
-    if (legacySettings.bugzillaApiKey) {
-      keysToMigrate.bugzilla = legacySettings.bugzillaApiKey;
-    }
-    if (legacySettings.jiraApiKey) {
-      keysToMigrate.jira = legacySettings.jiraApiKey;
-    }
-
     await saveApiKeysToBackend(keysToMigrate);
-
     const retrievedKeys = await getApiKeysFromBackend();
-
     apiKeys.value = {
       bugzillaApiKey: retrievedKeys.bugzilla || '',
       jiraApiKey: retrievedKeys.jira || '',
     };
-
-    const cleanedSettings = { ...legacySettings };
-    delete cleanedSettings.bugzillaApiKey;
-    delete cleanedSettings.jiraApiKey;
-
-    localStorage.setItem(LEGACY_SETTINGS_KEY, JSON.stringify(cleanedSettings));
 
     addToast({
       title: 'API Keys Migrated',
       body: 'Your API keys have been securely moved to the server and will no longer be stored in your browser.',
       css: 'success',
     });
-
-    console.log('✅ API keys migration completed successfully');
   } catch (error) {
     console.error('❌ Failed to migrate API keys:', error);
     addToast({
@@ -96,6 +87,9 @@ async function migrateApiKeysFromLocalStorage(apiKeys: any, persistentSettings: 
       body: 'Failed to migrate API keys to server. You may need to re-enter them in Settings.',
       css: 'warning',
     });
+  } finally {
+    delete settings.bugzillaApiKey;
+    delete settings.jiraApiKey;
   }
 }
 
@@ -107,7 +101,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   const isLoadingApiKeys = ref<boolean>(false);
   const isSavingApiKeys = ref<boolean>(false);
 
-  const persistentSettings = useLocalStorage('OSIM::USER-SETTINGS', structuredClone(defaultPersistentSettings));
+  const persistentSettings = useLocalStorage(SETTINGS_KEY, structuredClone(defaultPersistentSettings));
 
   const validatedPersistentSettings = PersistentSettingsSchema.safeParse(persistentSettings.value);
   if (validatedPersistentSettings.success) {
@@ -136,25 +130,30 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
         jiraApiKey: retrievedKeys.jira || '',
       };
     } catch (error) {
-      console.debug('No API keys found on server or failed to retrieve them');
+      console.debug('SettingsStore: No API keys found on server or failed to retrieve them:', error);
     } finally {
       isLoadingApiKeys.value = false;
     }
   }
 
-  const isTestEnvironment = (typeof window !== 'undefined' && (window as any).__vitest__ !== undefined)
-    || (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test');
+  async function initializeApiKeys() {
+    console.debug('SettingsStore: Initializing API keys...');
+    try {
+      // Check if user is authenticated before trying to load API keys
+      const { useUserStore } = await import('./UserStore');
+      const userStore = useUserStore();
 
-  if (!isTestEnvironment) {
-    Promise.resolve()
-      .then(() => loadApiKeysFromBackend())
-      .then(() => migrateApiKeysFromLocalStorage(apiKeys, persistentSettings, addToast))
-      .catch((error) => {
-        console.error('Error during API keys initialization:', error);
-      });
+      if (!userStore.isLoggedIn) {
+        return;
+      }
+
+      await loadApiKeysFromBackend();
+      await migrateApiKeysFromLocalStorage(apiKeys, persistentSettings, addToast);
+      console.debug('SettingsStore: API keys initialization completed');
+    } catch (error) {
+      console.error('SettingsStore: Error during API keys initialization:', error);
+    }
   }
-
-  const settings = persistentSettings;
 
   function $reset() {
     apiKeys.value = structuredClone(defaultApiKeys);
@@ -164,23 +163,25 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   async function updateApiKeys(newApiKeys: Partial<ApiKeysType>) {
     try {
       isSavingApiKeys.value = true;
-      console.log('SettingsStore: updateApiKeys called with:', newApiKeys);
 
       apiKeys.value = {
         ...apiKeys.value,
         ...newApiKeys,
       };
 
-      const keysToSave: any = {};
-      if (newApiKeys.bugzillaApiKey !== undefined) {
-        keysToSave.bugzilla = newApiKeys.bugzillaApiKey;
-      }
-      if (newApiKeys.jiraApiKey !== undefined) {
-        keysToSave.jira = newApiKeys.jiraApiKey;
-      }
+      const keysToSave: IntegrationTokensPatchRequest = {
+        ...(newApiKeys.bugzillaApiKey !== undefined && { bugzilla: newApiKeys.bugzillaApiKey }),
+        ...(newApiKeys.jiraApiKey !== undefined && { jira: newApiKeys.jiraApiKey }),
+      };
 
-      console.log('SettingsStore: keysToSave (backend format):', keysToSave);
       await saveApiKeysToBackend(keysToSave);
+
+      // Update Jira username if jiraApiKey was changed
+      if (newApiKeys.jiraApiKey !== undefined) {
+        const { useUserStore } = await import('./UserStore');
+        const userStore = useUserStore();
+        await userStore.updateJiraUsername();
+      }
 
       addToast({
         title: 'Success!',
@@ -202,10 +203,11 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   return {
     $reset,
-    settings,
+    settings: persistentSettings,
     apiKeys,
     isLoadingApiKeys,
     isSavingApiKeys,
     updateApiKeys,
+    initializeApiKeys,
   };
 });

@@ -2,7 +2,6 @@
 import { ref, watch, reactive, computed } from 'vue';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { osimRuntime } from '@/stores/osimRuntime';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const settingsStore = useSettingsStore();
@@ -26,13 +25,6 @@ const apiKeysSyncing = computed(() => settingsStore.isLoadingApiKeys || settings
 
 const onSubmit = async () => {
   try {
-    console.log('🚀 Settings form submitted');
-    console.log('📊 Runtime info:', {
-      readOnly: osimRuntime.value.readOnly,
-      env: osimRuntime.value.env,
-      backend: osimRuntime.value.backends.osidb,
-    });
-
     await settingsStore.updateApiKeys({
       jiraApiKey: formData.jiraApiKey,
       bugzillaApiKey: formData.bugzillaApiKey,
