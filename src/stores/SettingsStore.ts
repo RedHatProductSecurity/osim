@@ -7,10 +7,12 @@ import { useLocalStorage } from '@vueuse/core';
 import {
   saveApiKeysToBackend,
   getApiKeysFromBackend,
+  notifyApiKeyUnset,
   type IntegrationTokensPatchRequest,
 } from '@/services/ApiKeyService';
 
 import { useToastStore } from './ToastStore';
+import { osimRuntime } from './osimRuntime';
 
 export const ApiKeysSchema = z.object({
   bugzillaApiKey: z.string().optional().or(z.literal('')).default(''),
@@ -150,6 +152,11 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       await loadApiKeysFromBackend();
       await migrateApiKeysFromLocalStorage(apiKeys, persistentSettings, addToast);
       console.debug('SettingsStore: API keys initialization completed');
+
+      // Check if API keys are still missing after loading and migration
+      if ((!apiKeys.value.bugzillaApiKey || !apiKeys.value.jiraApiKey) && !osimRuntime.value.readOnly) {
+        notifyApiKeyUnset();
+      }
     } catch (error) {
       console.error('SettingsStore: Error during API keys initialization:', error);
     }
