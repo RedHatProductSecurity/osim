@@ -55,16 +55,6 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
   const queryString = queryStringFromParams(config?.params ?? {});
   const baseUrl = osimRuntime.value.backends.osidb;
 
-  // Debug logging
-  console.log('🔍 osidbFetch called with:', {
-    method: config?.method,
-    url: `${baseUrl}${config.url}${queryString}`,
-    hasData: !!config?.data,
-    data: config?.data,
-    bodyString: body,
-    headers: await osimRequestHeaders(),
-  });
-
   if (config?.method?.toUpperCase() !== 'GET' && osimRuntime.value.readOnly) {
     useToastStore().addToast({ title: 'Operation Not Permitted', body: 'OSIM is in read-only mode.' });
     return Promise.reject('OSIM is in read-only mode.');
@@ -79,13 +69,6 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
       credentials: 'include',
       cache: config?.cache,
       body,
-    });
-
-    console.log('📡 Fetch response:', {
-      ok: response.ok,
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
     });
   } catch (e) {
     console.error('❌ Fetch failed:', e);

@@ -12,8 +12,6 @@ import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getJiraUsername } from '@/services/JiraService';
 
-import { useSettingsStore } from './SettingsStore';
-
 export const queryRedirect = z.object({
   query: z.object({
     redirect: z.string(),
@@ -102,8 +100,6 @@ function $reset() {
 }
 
 export const useUserStore = defineStore('UserStore', () => {
-  const settingsStore = useSettingsStore();
-
   const accessToken = ref<null | string>();
   const isAccessTokenExpired = () => {
     try {
@@ -146,13 +142,6 @@ export const useUserStore = defineStore('UserStore', () => {
   const jiraUsername = computed(() => {
     return _userStoreSession.value.jiraUsername ?? '';
   });
-
-  watch(
-    () => settingsStore.apiKeys.jiraApiKey,
-    async () => {
-      await updateJiraUsername();
-    },
-  );
 
   async function login(username: string = '', password: string = '') {
     const requestMetadata: { [key: string]: any } = {};

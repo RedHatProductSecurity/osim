@@ -16,11 +16,16 @@ import {
 import { footerHeight, footerTop } from '@/stores/responsive';
 import { OsimRuntimeStatus } from '@/types/zodOsim';
 import { updateCWEData } from '@/services/CweService';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
-watch(osimRuntimeStatus, () => {
+watch(osimRuntimeStatus, async () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
     updateCWEData();
+
+    // Initialize API keys after runtime is ready
+    const settingsStore = useSettingsStore();
+    await settingsStore.initializeApiKeys();
   }
 });
 

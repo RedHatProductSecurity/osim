@@ -176,7 +176,7 @@ router.beforeEach(async (to, from) => {
     && to.name !== 'login'
   ) {
     try {
-      console.log('Router: Refreshing access token');
+      console.debug('Router: Refreshing access token');
       await getNextAccessToken();
     } catch (error) {
       console.error('Router: Failed to refresh access token during navigation', error);
@@ -184,6 +184,20 @@ router.beforeEach(async (to, from) => {
   }
 
   if (!canVisitWithoutAuth && !isAuthenticated) {
+    // If user is logged in but token is expired/missing, try to refresh first
+    if (userStore.isLoggedIn) {
+      try {
+        console.debug('Router: Attempting token refresh for authenticated user');
+        await getNextAccessToken();
+        // If refresh succeeds, continue with navigation
+        if (userStore.isAuthenticated) {
+          return;
+        }
+      } catch (error) {
+        console.debug('Router: Token refresh failed, redirecting to login', error);
+      }
+    }
+
     if (isNavigationBackButton) {
       history.pushState(popState, '', router.resolve({ name: 'login' }).path);
       return { name: 'login' };

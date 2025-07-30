@@ -56,8 +56,6 @@ export function notifyApiKeyUnset() {
  * Save API keys to the backend
  */
 export async function saveApiKeysToBackend(apiKeys: IntegrationTokensPatchRequest) {
-  console.log('ApiKeyService: saveApiKeysToBackend called with:', apiKeys);
-
   return osidbFetch({
     method: 'PATCH',
     url: '/osidb/integrations',
