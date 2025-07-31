@@ -14,7 +14,7 @@ import {
   useCvss3Calculator,
 } from '@/composables/useCvss3Calculator';
 
-import { matcherForAffect, deepCopyFromRaw } from '@/utils/helpers';
+import { matcherForAffect } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersionDisplayMap, CvssVersions, DEFAULT_CVSS_VERSION, CorrespondingCvssFactors } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
@@ -30,7 +30,6 @@ import type {
   ZodFlawType,
 } from '@/types';
 
-const wasFlawCvssModified = ref(false);
 const shouldSyncVectors = ref(false);
 const cvssVersion = ref<CvssVersions>(DEFAULT_CVSS_VERSION);
 
@@ -100,7 +99,7 @@ function formatScore(score: Nullable<number>) {
 }
 
 export function useCvssScores(cvssEntity?: CvssEntity) {
-  const { flaw } = useFlaw();
+  const { flaw, initialFlaw } = useFlaw();
 
   const rhFlawCvssScores = computed(() => Object.fromEntries(
     Object.values(CvssVersions).map(version => [
@@ -110,7 +109,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
   ));
   const { updateAffectCvss } = useFlawAffectsModel();
   const { cvss4Score, cvss4Selections, cvss4Vector, errorV4, parseVectorV4String, setMetric } = useCvss4Calculator();
-  const wasCvssModified = ref(false);
   const rhCvssScores = ref(rhCvssByVersion());
 
   function rhCvssByVersion(): Dict<string, Cvss> {
@@ -162,22 +160,19 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     maybeAffect.cvss_scores.push(newAffectCvss());
   }
 
-  const initialRhCvss = deepCopyFromRaw(rhCvss.value);
+  const initialRhCvss = computed(() => initialFlaw.value.cvss_scores.find(
+    cvss => cvss.issuer === IssuerEnum.Rh && cvss.cvss_version === cvssVersion.value),
+  );
+
+  const wasCvssModified = computed(() => !equals(
+    initialRhCvss.value as Cvss | undefined,
+    rhCvss.value as Cvss | undefined,
+  ));
+  const wasFlawCvssModified = computed(() => !isAffect(entity) && wasCvssModified.value);
 
   watch(rhCvss, () => {
-    wasCvssModified.value = !equals(initialRhCvss, rhCvss.value);
-
-    // Abort checking if cvss value is not modified
-    if (!wasCvssModified.value) {
-      if (!isAffect(entity)) {
-        wasFlawCvssModified.value = false;
-      };
-      return;
-    }
-
     // if the modified CVSS value is from a flaw, set the flaw CVSS marker to true
     if (!isAffect(entity)) {
-      wasFlawCvssModified.value = true;
       flawRhCvss.value.score = rhCvss.value.score ?? null;
       flawRhCvss.value.vector = rhCvss.value.vector ?? null;
     } else {
@@ -191,18 +186,12 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     if (shouldSyncVectors.value) synchronizeFactors();
   }, { deep: true });
 
-  // reset the flag when the flaw is updated
-  watch(() => flaw.value.updated_dt, () => {
-    wasFlawCvssModified.value = false;
-  });
-
   watch(cvss3Factors, () => {
     updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
   }, { deep: true });
 
   watch(() => flawOrAffect.value.updated_dt, () => {
     rhCvssScores.value = rhCvssByVersion();
-    wasCvssModified.value = false;
   });
 
   watch(cvss4Score, (score) => {
@@ -264,7 +253,7 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       // Update logic, if the CVSS score already exists in OSIDB
       if (cvssData.created_dt) {
         // Handle existing CVSS score
-        if (cvssData.vector === null && cvssData.uuid != null) {
+        if (['', null].includes(cvssData.vector) && cvssData.uuid) {
           queue.push(deleteFlawCvssScores(flaw.value.uuid, cvssData.uuid));
         } else if (cvssData.vector !== null && cvssData.uuid) {
           // Update embargoed state from parent flaw
