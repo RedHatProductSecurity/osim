@@ -8,13 +8,49 @@ import { beforeFetch } from './FlawService';
 
 export async function getAffects(cveOrUuid: string) {
   const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
-  return osidbFetch({
+  const pageSize = 100;
+
+  // First request to get up to 100 affects and the total count
+  const firstResponse = await osidbFetch({
     method: 'get',
     url: '/osidb/api/v1/affects',
     params: {
       [field]: cveOrUuid,
+      limit: pageSize,
     },
   });
+
+  const allAffects = [...firstResponse.data.results];
+  let nextUrl = firstResponse.data.next;
+
+  // Fetch remaining affects using the next URL
+  while (nextUrl !== null) {
+    // Extract the path and query parameters from the full URL
+    const url = new URL(nextUrl);
+    const relativePath = url.pathname + url.search;
+
+    const response = await osidbFetch({
+      method: 'get',
+      url: relativePath,
+    });
+
+    allAffects.push(...response.data.results);
+    nextUrl = response.data.next;
+
+    // Safety check to prevent infinite loops
+    if (response.data.results.length === 0) {
+      break;
+    }
+  }
+
+  // Return response in the same format as the original
+  return {
+    data: {
+      ...firstResponse.data,
+      results: allAffects,
+    },
+    response: firstResponse.response,
+  };
 }
 
 export async function putAffect(uuid: string, affectObject: any) {
