@@ -24,19 +24,6 @@ const elTextArea = ref<HTMLTextAreaElement | null>(null);
 defineExpose({
   elTextArea,
 });
-
-// onMounted(() => {
-//   nextTick(() => {
-//     if (elTextArea != null) {
-//       elTextArea.disp
-//     }
-//   });
-// });
-// function resizeTextarea() {
-//   if (elTextArea != null) {
-//     elTextArea.style.height = elTextArea.scrollHeight + 'px';
-//   }
-// }
 </script>
 
 <template>

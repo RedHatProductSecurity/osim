@@ -84,3 +84,10 @@ export const mountWithConfig: MountConfig = (
 export const createMouseEvent = (type: string, clientX: number) => {
   return new MouseEvent(type, { clientX, bubbles: true, cancelable: true });
 };
+
+export async function importActual(path: string) {
+  const imported = import(path);
+  await vi.dynamicImportSettled();
+  type Imported = Awaited<typeof imported>;
+  return vi.importActual<Imported>(path);
+}
