@@ -24,6 +24,7 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
@@ -411,9 +412,10 @@ const createdDate = computed(() => {
         </div>
         <div class="osim-flaw-form-section">
           <div v-if="isFetchingAffects">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Fetching affects...</span>
-            </div>
+            <LoadingSpinner
+              type="border"
+              class="spinner-border-sm me-1"
+            />
             <span class="ms-1">Fetching affects...</span>
           </div>
           <FlawAffects

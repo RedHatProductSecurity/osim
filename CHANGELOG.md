@@ -1,6 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Fixed
+* Fix only showing 100 affects in flaw view (`OSIDB-4393`)
 * Fix incorrect "unset api keys" notification (`OSIDB-4390`)
 
 ## [2025.7.0]
