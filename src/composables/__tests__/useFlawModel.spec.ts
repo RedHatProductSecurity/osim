@@ -27,6 +27,7 @@ vi.mock('@/services/FlawService', () => ({
   postFlaw: vi.fn().mockResolvedValue({}),
   putFlaw: vi.fn().mockResolvedValue({}),
   putFlawCvssScores: vi.fn().mockResolvedValue({}),
+  deleteFlawCvssScores: vi.fn().mockResolvedValue({}),
 }));
 
 describe('useFlawModel', () => {
