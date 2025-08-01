@@ -1,5 +1,9 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Add expiring session banner (`OSIDB-4275`)
+* Support extending session (reauthenticating) (`OSIDB-4275`)
+
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
 * Fix incorrect "unset api keys" notification (`OSIDB-4390`)
