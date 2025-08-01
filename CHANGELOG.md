@@ -1,9 +1,15 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Support extending session (reauthenticating) (`OSIDB-4275`)
+
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
 
 ## [2025.8.0]
+### Added
+* Add expiring session banner (`OSIDB-4275`)
+
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
 * Fix incorrect "unset api keys" notification (`OSIDB-4390`)
@@ -16,8 +22,6 @@
 ### Changed
 * Bugzilla and Jira api keys are now saved on the backend (`OSIDB-4312`)
 * Show api key is now a field button instead a separate radio input (`OSIDB-4312`)
-
-### Changed
 * Improve loading performance by splitting up flaw and affect requests  (`OSIDB-4266`)
 * Don't update Flaw when only affects are modified (`OSIDB-4270`)
 
