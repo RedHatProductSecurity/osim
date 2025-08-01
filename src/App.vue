@@ -7,6 +7,7 @@ import { useElementBounding } from '@vueuse/core';
 import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
 import ChangeLog from '@/components/ChangeLog/ChangeLog.vue';
 import Navbar from '@/components/Navbar/Navbar.vue';
+import SessionWarningBanner from '@/components/SessionWarningBanner/SessionWarningBanner.vue';
 
 import {
   osidbHealth,
@@ -63,6 +64,7 @@ onBeforeUnmount(() => {
 
 <template>
   <template v-if="osimRuntimeStatus === OsimRuntimeStatus.READY">
+    <SessionWarningBanner />
     <header>
       <Navbar v-if="!$route.meta.hideNavbar" />
     </header>
