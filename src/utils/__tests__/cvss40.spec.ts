@@ -274,9 +274,16 @@ describe('scoring', () => {
   Object.entries(testData).forEach(
     ([fileName, vectorScores]: [string, any]) => {
       it(`should calculate scores in ${fileName} correctly`, () => {
-        vectorScores.slice(0, 1000).forEach(({ score, vector }: { score: number; vector: string }) => {
-          expect(`${vector} ${new CVSS40(vector).score}`).toBe(`${vector} ${score}`);
-        });
+        // if there are 100,000 or more vectors, choose every 100th vector
+        // to manually run a more comprehensive test, use vector scores instead of testCases
+        const testCases = vectorScores.length >= 100000
+          ? vectorScores.filter((_: any, i: number) => (i % 100) === 0)
+          : vectorScores;
+
+        testCases
+          .forEach(({ score, vector }: { score: number; vector: string }) => {
+            expect(`${vector} ${new CVSS40(vector).score}`).toBe(`${vector} ${score}`);
+          });
       });
     });
 });

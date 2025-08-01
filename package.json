@@ -24,7 +24,8 @@
     "lint": "yarn lint-style && yarn lint-ts-vue",
     "lint-ts-vue": "eslint .",
     "lint-fix": "eslint --fix .",
-    "lint-style": "stylelint '**/*.{vue,css,scss}'"
+    "lint-style": "stylelint '**/*.{vue,css,scss}'",
+    "fetch-cvss4-test-data": "scripts/fetch_cvss4_test_data.sh"
   },
   "dependencies": {
     "@mrmarble/djangoql-completion": "^0.8.3",
