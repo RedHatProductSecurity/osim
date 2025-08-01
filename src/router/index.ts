@@ -59,7 +59,6 @@ export const routes = [
     meta: {
       title: 'Flaw Details',
     },
-    beforeEnter: apiKeysGuard(),
   },
   {
     path: '/search',
@@ -102,11 +101,6 @@ export const routes = [
     meta: {
       title: 'Settings',
     },
-    beforeEnter() {
-      if (areApiKeysNotSet() && osimRuntime.value.readOnly) {
-        notifyApiKeyUnset();
-      }
-    },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -143,11 +137,8 @@ function apiKeysGuard(shouldRedirectToSettings = false) {
       return;
     }
 
-    if (noKeysAreSet) {
-      notifyApiKeyUnset();
-    }
-
     if (noKeysAreSet && shouldRedirectToSettings) {
+      notifyApiKeyUnset();
       next('/settings');
       return;
     }

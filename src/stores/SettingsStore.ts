@@ -7,6 +7,7 @@ import { useLocalStorage } from '@vueuse/core';
 import {
   saveApiKeysToBackend,
   getApiKeysFromBackend,
+  notifyApiKeyUnset,
   type IntegrationTokensPatchRequest,
 } from '@/services/ApiKeyService';
 
@@ -139,6 +140,11 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       await loadApiKeysFromBackend();
       migrateApiKeysFromLocalStorage();
       console.debug('SettingsStore: API keys initialization completed');
+
+      // Check if API keys are still missing after loading and migration
+      if ((!apiKeys.value.bugzillaApiKey || !apiKeys.value.jiraApiKey) && !osimRuntime.value.readOnly) {
+        notifyApiKeyUnset();
+      }
     } catch (error) {
       console.error('SettingsStore: Error during API keys initialization:', error);
     }

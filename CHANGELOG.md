@@ -1,4 +1,7 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Fix incorrect "unset api keys" notification (`OSIDB-4390`)
 
 ## [2025.7.0]
 ### Fixed
