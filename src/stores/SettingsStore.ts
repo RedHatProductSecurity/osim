@@ -11,6 +11,7 @@ import {
 } from '@/services/ApiKeyService';
 
 import { useToastStore } from './ToastStore';
+import { osimRuntime } from './osimRuntime';
 
 export const ApiKeysSchema = z.object({
   bugzillaApiKey: z.string().optional().or(z.literal('')).default(''),
@@ -52,47 +53,6 @@ const defaultPersistentSettings: PersistentSettingsType = {
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';
 
-// Can be removed once we're sure all users have migrated their API keys
-async function migrateApiKeysFromLocalStorage(apiKeys: any, persistentSettings: any, addToast: any) {
-  const settings = persistentSettings.value;
-
-  const hasApiKeys = !!settings.bugzillaApiKey || !!settings.jiraApiKey;
-  if (!hasApiKeys) {
-    return;
-  }
-
-  // Prepare keys for backend
-  const keysToMigrate: IntegrationTokensPatchRequest = {
-    ...(settings.bugzillaApiKey && { bugzilla: settings.bugzillaApiKey }),
-    ...(settings.jiraApiKey && { jira: settings.jiraApiKey }),
-  };
-
-  try {
-    await saveApiKeysToBackend(keysToMigrate);
-    const retrievedKeys = await getApiKeysFromBackend();
-    apiKeys.value = {
-      bugzillaApiKey: retrievedKeys.bugzilla || '',
-      jiraApiKey: retrievedKeys.jira || '',
-    };
-
-    addToast({
-      title: 'API Keys Migrated',
-      body: 'Your API keys have been securely moved to the server and will no longer be stored in your browser.',
-      css: 'success',
-    });
-  } catch (error) {
-    console.error('❌ Failed to migrate API keys:', error);
-    addToast({
-      title: 'Migration Warning',
-      body: 'Failed to migrate API keys to server. You may need to re-enter them in Settings.',
-      css: 'warning',
-    });
-  } finally {
-    delete settings.bugzillaApiKey;
-    delete settings.jiraApiKey;
-  }
-}
-
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const { addToast } = useToastStore();
 
@@ -119,6 +79,35 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       ' In some cases that information may be publicly visible.',
     });
     persistentSettings.value.privacyNoticeShown = true;
+  }
+
+  // Migration: Move API keys from localStorage to backend
+  // This can be removed once we're sure all users have migrated their API keys
+  function migrateApiKeysFromLocalStorage() {
+    const settings = persistentSettings.value as any;
+
+    if (osimRuntime.value.env !== 'dev' && (settings.jiraApiKey || settings.bugzillaApiKey)) {
+      const keysToMigrate: IntegrationTokensPatchRequest = {
+        ...(settings.bugzillaApiKey && { bugzilla: settings.bugzillaApiKey }),
+        ...(settings.jiraApiKey && { jira: settings.jiraApiKey }),
+      };
+
+      saveApiKeysToBackend(keysToMigrate)
+        .then(() => addToast({
+          title: 'API Keys Migrated',
+          body: 'Your API keys have been securely moved to the server and will no longer be stored in your browser.',
+          css: 'success',
+        }))
+        .catch(() => addToast({
+          title: 'Migration Warning',
+          body: 'Failed to migrate API keys to server. You may need to re-enter them in Settings.',
+          css: 'warning',
+        }))
+        .finally(() => {
+          delete (persistentSettings.value as any).jiraApiKey;
+          delete (persistentSettings.value as any).bugzillaApiKey;
+        });
+    }
   }
 
   async function loadApiKeysFromBackend() {
@@ -148,7 +137,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       }
 
       await loadApiKeysFromBackend();
-      await migrateApiKeysFromLocalStorage(apiKeys, persistentSettings, addToast);
+      migrateApiKeysFromLocalStorage();
       console.debug('SettingsStore: API keys initialization completed');
     } catch (error) {
       console.error('SettingsStore: Error during API keys initialization:', error);
