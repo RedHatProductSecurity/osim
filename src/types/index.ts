@@ -5,6 +5,24 @@ export type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
 export type CvssEntity = ZodAffectType | ZodFlawType;
 
 export type {
+  ZodAegisAIComponentAnalysisParamsType,
+  ZodAegisAIComponentFeatureNameType,
+  ZodAegisAIComponentFeatureNameV2Type,
+  ZodAegisAICVEAnalysisParamsType,
+  ZodAegisAIHTTPValidationErrorType,
+  ZodAegisAIValidationErrorType,
+} from '@/types/zodAegisAI';
+
+export {
+  ZodAegisAIComponentAnalysisParams,
+  ZodAegisAIComponentFeatureName,
+  ZodAegisAIComponentFeatureNameV2,
+  ZodAegisAICVEAnalysisParams,
+  ZodAegisAIHTTPValidationError,
+  ZodAegisAIValidationError,
+} from '@/types/zodAegisAI';
+
+export type {
   AffectCVSSSchemaType,
   AffectSchemaType,
   ErratumSchemaType,
