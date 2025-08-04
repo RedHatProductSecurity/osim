@@ -23,6 +23,7 @@ vi.mock('@/composables/useFlaw', () => ({
   useFlaw: () => ({
     flaw: ref({
       task_key: '123',
+      cvss_scores: [],
     }),
   }),
 }));

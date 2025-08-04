@@ -3,33 +3,46 @@ import { describe, it, expect } from 'vitest';
 
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 
-function activateFactorButton(subject: any, factor: string, value: string) {
-  const factorButtonGroup = subject.findAll('.btn-group-vertical')
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
+
+import { importActual } from '@/__tests__/helpers';
+
+vi.mock('@/composables/useCvssScores');
+
+async function activateFactorButton(subject: any, factor: string, value: string) {
+  const factorButtonGroup = await subject.findAll('.btn-group-vertical')
     .filter((node: { text: () => string | string[] }) => node.text().includes(factor))[0];
-  const factorButton = factorButtonGroup
+  const factorButton = await factorButtonGroup
     .findAll('.btn')
-    .filter((node: { text: () => string }) => node.text() === value)[0];
-  factorButton.trigger('click');
+    .find((node: { text: () => string }) => node.text() === value);
+  await factorButton.trigger('click');
 }
 
-function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, string][]) {
+async function activateMultipleFactorButtons(subject: any, factorValuePairs: [string, string][]) {
   for (const [factor, value] of factorValuePairs) {
-    activateFactorButton(subject, factor, value);
+    await subject.vm.$nextTick();
+    await activateFactorButton(subject, factor, value);
+    await subject.vm.$nextTick();
   }
 }
 
 describe('cvssCalculator', () => {
   let subject: any;
 
-  beforeEach(() => {
-    subject = mount(CvssCalculator, {
-      props: {
-        'cvssScore': null,
-        'onUpdate:cvssScore': (e: any) => subject.setProps({ cvssScore: e }),
-        'cvssVector': '',
-        'onUpdate:cvssVector': (e: any) => subject.setProps({ cvssVector: e }),
-      },
-    });
+  beforeEach(async () => {
+    const {
+      useCvssScores: _useCvssScores,
+      validateCvssVector: _validateCvssVector,
+    } = await importActual('@/composables/useCvssScores');
+    vi.mocked(useCvssScores).mockImplementation(_useCvssScores);
+    vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
+    subject = mount(CvssCalculator, { error: null });
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+    vi.resetModules();
+    subject?.unmount();
   });
 
   it('shows calculator on input focus', async () => {
@@ -87,7 +100,8 @@ describe('cvssCalculator', () => {
       ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
-    const inputVectorValue = subject.find('.vector-input');
+    await subject.vm.$nextTick();
+    const inputVectorValue = subject.find('.vector-input.form-control');
     expect(inputVectorValue.text()).toBe('10 CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H');
   });
 
@@ -104,6 +118,7 @@ describe('cvssCalculator', () => {
       ['Availability', 'High'],
     ];
     await activateMultipleFactorButtons(subject, factorValuePairs);
+    await subject.vm.$nextTick();
     const inputVectorValue = subject.find('.vector-input');
     expect(inputVectorValue.text()).toBe('7.5 CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:H/A:H');
   });

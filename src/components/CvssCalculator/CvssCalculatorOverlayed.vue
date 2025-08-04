@@ -2,42 +2,40 @@
 import { computed, ref, watch } from 'vue';
 
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
-import CvssFactorButtons from '@/components/CvssCalculator/CvssFactorButtons.vue';
+import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 
 import {
-  getFactors,
-  calculateScore,
-  formatFactors,
-  validateCvssVector,
-} from '@/composables/useCvssCalculator';
+  parseCvss3Factors,
+  calculateCvss3Score,
+  formatCvss3Factors,
+} from '@/composables/useCvss3Calculator';
+import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 
-const cvssVector = defineModel<null | string | undefined>('cvssVector');
-const cvssScore = defineModel<null | number | undefined>('cvssScore');
+import { CvssVersions } from '@/constants';
+import type { ZodAffectType } from '@/types';
 
-const emit = defineEmits<{
-  updateAffectCvss: [vector: string, score: null | number];
+const props = defineProps<{
+  affect: ZodAffectType;
 }>();
 
-const error = computed(() => validateCvssVector(cvssVector.value));
-const cvssFactors = ref<Record<string, string>>({});
-const isFocused = ref(false);
+const { cvss3Factors, cvssScore, cvssVector, cvssVersion, updateScore, updateVector } = useCvssScores(props.affect);
 
+const error = computed(() => validateCvssVector(cvssVector.value, cvssVersion.value) ?? null);
+const isFocused = ref(false);
 const cvssDiv = ref();
 const cvssVectorInput = ref();
 
-function updateFactors(newCvssVector: null | string | undefined) {
+function updateUsingV3Vector(newCvssVector: null | string | undefined) {
   if (cvssVector.value !== newCvssVector) {
-    emit('updateAffectCvss', newCvssVector || '', calculateScore(cvssFactors.value) || null);
+    updateCvss(newCvssVector);
   }
-  cvssFactors.value = getFactors(newCvssVector ?? '');
+  cvss3Factors.value = parseCvss3Factors(newCvssVector ?? '');
 }
 
-updateFactors(cvssVector.value);
-
 watch(() => cvssVector.value, () => {
-  updateFactors(cvssVector.value);
-  emit('updateAffectCvss', cvssVector.value || '', calculateScore(cvssFactors.value) || null);
-});
+  updateUsingV3Vector(cvssVector.value);
+  updateCvss(cvssVector.value);
+}, { immediate: true });
 
 function onInputFocus(event: FocusEvent) {
   isFocused.value = true;
@@ -53,9 +51,9 @@ function onInputBlur(event: FocusEvent) {
 }
 
 function reset() {
-  cvssScore.value = null;
-  emit('updateAffectCvss', '', null);
-  cvssFactors.value = {};
+  updateScore(null);
+  updateVector(null);
+  cvss3Factors.value = {};
 }
 
 function handlePaste(e: ClipboardEvent) {
@@ -64,13 +62,20 @@ function handlePaste(e: ClipboardEvent) {
     return;
   }
 
-  updateFactors(maybeCvss);
-  if (!getFactors(maybeCvss)['CVSS']) {
-    cvssFactors.value['CVSS'] = '3.1';
+  updateUsingV3Vector(maybeCvss);
+  if (!parseCvss3Factors(maybeCvss)['CVSS']) {
+    cvss3Factors.value['CVSS'] = '3.1';
   }
 
-  updateFactors(formatFactors(cvssFactors.value));
-  cvssScore.value = calculateScore(cvssFactors.value);
+  updateUsingV3Vector(formatCvss3Factors(cvss3Factors.value));
+  updateScore(calculateCvss3Score(cvss3Factors.value));
+  updateVector(maybeCvss);
+}
+
+function updateCvss(vector: null | string = null) {
+  updateUsingV3Vector(vector);
+  updateScore(calculateCvss3Score(cvss3Factors.value));
+  updateVector(vector);
 }
 
 const highlightedFactor = ref<null | string>(null);
@@ -94,14 +99,15 @@ function highlightFactorValue(factor: null | string) {
   >
     <span>{{ cvssScore }}</span>
     <i class="bi bi-calculator-fill p-2" />
-    <CvssFactorButtons
-      v-model:cvssVector="cvssVector"
-      v-model:cvssScore="cvssScore"
-      v-model:cvssFactors="cvssFactors"
+    <Cvss3Calculator
+      v-model:cvss3Factors="cvss3Factors"
       :highlightedFactor="highlightedFactor"
       :highlightedFactorValue="highlightedFactorValue"
       :isFocused="isFocused"
+      :cvssVector="cvssVector ?? null"
       class="overlayed"
+      @update:cvssScore="updateScore"
+      @update:cvssVector="updateVector"
       @highlightFactor="highlightFactor"
       @highlightFactorValue="highlightFactorValue"
     >
@@ -109,8 +115,10 @@ function highlightFactorValue(factor: null | string) {
         <div class="input-wrapper col">
           <CvssVectorInput
             ref="cvssVectorInput"
-            :cvssScore="cvssScore"
-            :cvssFactors="cvssFactors"
+            :cvss3Factors="cvss3Factors"
+            :selectedVersion="CvssVersions.V3"
+            :cvss4Vector="null"
+            :cvssScore="cvssScore ?? null"
             :isFocused="isFocused"
             :highlightedFactor="highlightedFactor"
             :error="error"
@@ -119,7 +127,6 @@ function highlightFactorValue(factor: null | string) {
             @onInputFocus="onInputFocus"
             @onInputBlur="onInputBlur"
             @highlightFactor="highlightFactor"
-            @updateFactors="updateFactors(cvssVector)"
           />
         </div>
         <button
@@ -133,7 +140,7 @@ function highlightFactorValue(factor: null | string) {
           <i class="bi bi-eraser"></i>
         </button>
       </div>
-    </CvssFactorButtons>
+    </Cvss3Calculator>
   </div>
 </template>
 

@@ -5,7 +5,7 @@ withDefaults(
   defineProps<{
     error: null | string;
     label: string;
-    modelValue: null | string;
+    modelValue?: null | string;
     options: Record<string, string> | string[];
     optionsHidden?: null | string[];
     withBlank?: boolean;

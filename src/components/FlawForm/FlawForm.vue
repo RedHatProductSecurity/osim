@@ -23,6 +23,7 @@ import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -68,26 +69,28 @@ const {
   errors,
   flawAcknowledgments,
   flawReferences,
-  flawRhCvss3,
-  highlightedNvdCvss3String,
   internalCommentsAvailable,
   isLoadingInternalComments,
   isSaving,
   isValid,
   loadInternalComments,
-  nvdCvss3String,
   osimLink,
-  rhCvss3String,
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
-  shouldDisplayEmailNistForm,
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel(onSaveSuccess);
 const { isFetchingAffects } = useFetchFlaw();
 
 const { flaw, initialFlaw } = useFlaw();
+
+const {
+  highlightedNvdCvssString,
+  nvdCvssString,
+  rhCvssString,
+  shouldDisplayEmailNistForm,
+} = useCvssScores();
 
 const { draftFlaw } = useDraftFlawStore();
 
@@ -260,19 +263,16 @@ const createdDate = computed(() => {
               :error="errors.impact"
               :withBlank="true"
             />
-            <CvssCalculator
-              v-model:cvss-vector="flawRhCvss3.vector"
-              v-model:cvss-score="flawRhCvss3.score"
-            />
+            <CvssCalculator />
             <CvssSection
-              :highlightedNvdCvss3String
+              :highlightedNvdCvssString
               :shouldDisplayEmailNistForm
               :cveId="flaw.cve_id"
               :summary="flaw.comment_zero"
               :bugzilla="bugzillaLink"
-              :cvss="rhCvss3String"
+              :cvss="rhCvssString"
               :allCvss="flaw.cvss_scores"
-              :nistCvss="nvdCvss3String"
+              :nistCvss="nvdCvssString"
             />
             <CweSelector
               v-model="flaw.cwe_id"

@@ -1,9 +1,9 @@
 import { computed, ref, toValue, type MaybeRef } from 'vue';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import { createLabel, deleteLabel, fetchLabels, updateLabel } from '@/services/LabelsService';
 import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
-
-import { useFlaw } from './useFlaw';
 
 const labels = ref<Record<string, ZodFlawLabelType>>({});
 const newLabels = ref<Set<string>>(new Set<string>());
@@ -11,7 +11,7 @@ const updatedLabels = ref<Set<string>>(new Set<string>());
 const deletedLabels = ref<Set<string>>(new Set<string>());
 
 export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
-  if (initialLabels) {
+  if (initialLabels && toValue(initialLabels)?.length) {
     labels.value = toValue(initialLabels).reduce((acc: Record<string, ZodFlawLabelType>, label) => {
       acc[label.label] = label;
       return acc;
