@@ -408,9 +408,6 @@ const createdDate = computed(() => {
           </div>
         </div>
         <div class="osim-flaw-form-section">
-          <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
-        </div>
-        <div class="osim-flaw-form-section">
           <div v-if="isFetchingAffects">
             <LoadingSpinner
               type="border"
@@ -423,6 +420,9 @@ const createdDate = computed(() => {
             :errors="errors.affects"
             :embargoed="flaw.embargoed"
           />
+        </div>
+        <div class="osim-flaw-form-section">
+          <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
           <FlawComments
