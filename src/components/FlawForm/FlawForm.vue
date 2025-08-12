@@ -29,7 +29,6 @@ import {
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
 
-import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
@@ -411,17 +410,11 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
           </div>
         </div>
         <div class="osim-flaw-form-section">
-          <div v-if="isFetchingAffects">
-            <LoadingSpinner
-              type="border"
-              class="spinner-border-sm me-1"
-            />
-            <span class="ms-1">Fetching affects...</span>
-          </div>
           <FlawAffects
-            v-else-if="mode === 'edit'"
+            v-if="mode === 'edit'"
             :errors="errors.affects"
             :embargoed="flaw.embargoed"
+            :isFetchingAffects
           />
         </div>
         <div class="osim-flaw-form-section">
