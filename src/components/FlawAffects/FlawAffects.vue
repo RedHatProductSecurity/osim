@@ -34,8 +34,6 @@ const props = defineProps<{
 const { flaw } = useFlaw();
 const affectsEditingStore = useAffectsEditingStore();
 const {
-  cancelAllChanges,
-  commitAllChanges,
   editAffect,
   editSelectedAffects,
   getAffectPriorEdit,
@@ -47,6 +45,18 @@ const {
 } = affectsEditingStore;
 
 const { affectsBeingEdited, selectedAffects } = storeToRefs(affectsEditingStore);
+
+// Ref to the table component for bulk operations via exposed methods
+const flawAffectsTableRef = ref<InstanceType<typeof FlawAffectsTable>>();
+
+// Bulk operations using table's exposed methods - avoids global state
+function commitAllChanges() {
+  flawAffectsTableRef.value?.commitAllRowChanges();
+}
+
+function cancelAllChanges() {
+  flawAffectsTableRef.value?.cancelAllRowChanges();
+}
 
 const { settings } = useSettingsStore();
 const {
@@ -509,6 +519,7 @@ const displayedTrackers = computed(() => {
           </div>
         </div>
         <FlawAffectsTable
+          ref="flawAffectsTableRef"
           v-model:affects="tableAffects"
           :errors="errors"
           :totalPages="totalPages"
