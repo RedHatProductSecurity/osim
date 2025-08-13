@@ -80,6 +80,7 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
     props: {
       embargoed: mockedFlaw!.value.embargoed,
       errors,
+      isFetchingAffects: false,
     },
   });
 };

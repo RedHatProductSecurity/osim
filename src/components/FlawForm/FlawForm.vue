@@ -18,14 +18,12 @@ import FlawContributors from '@/components/FlawContributors/FlawContributors.vue
 import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
-import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useCvssScores } from '@/composables/useCvssScores';
 
-import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
@@ -408,20 +406,11 @@ const createdDate = computed(() => {
           </div>
         </div>
         <div class="osim-flaw-form-section">
-          <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
-        </div>
-        <div class="osim-flaw-form-section">
-          <div v-if="isFetchingAffects">
-            <LoadingSpinner
-              type="border"
-              class="spinner-border-sm me-1"
-            />
-            <span class="ms-1">Fetching affects...</span>
-          </div>
           <FlawAffects
-            v-else-if="mode === 'edit'"
+            v-if="mode === 'edit'"
             :errors="errors.affects"
             :embargoed="flaw.embargoed"
+            :isFetchingAffects
           />
         </div>
         <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">

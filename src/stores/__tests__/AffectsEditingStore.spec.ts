@@ -169,4 +169,38 @@ describe('useAffectsEditingStore Store', () => {
       expect(store.selectedAffects).toContain(affect);
     }
   });
+
+  osimFullFlawTest('should commit all changes for multiple affects', ({ flaw: testFlaw }) => {
+    const [flaw, store] = flawWithStore(testFlaw);
+    const affect1 = flaw.value.affects[0];
+    const affect2 = flaw.value.affects[1];
+
+    store.editAffect(affect1);
+    store.editAffect(affect2);
+    affect1.ps_component = 'updated-component-1';
+    affect2.ps_component = 'updated-component-2';
+    store.commitAllChanges();
+
+    expect(flaw.value.affects[0].ps_component).toEqual('updated-component-1');
+    expect(flaw.value.affects[1].ps_component).toEqual('updated-component-2');
+    expect(store.affectsBeingEdited).toEqual([]);
+  });
+
+  osimFullFlawTest('should cancel all changes for multiple affects', ({ flaw: testFlaw }) => {
+    const [flaw, store] = flawWithStore(testFlaw);
+    const affect1 = flaw.value.affects[0];
+    const affect2 = flaw.value.affects[1];
+    const originalComponent1 = affect1.ps_component;
+    const originalComponent2 = affect2.ps_component;
+
+    store.editAffect(affect1);
+    store.editAffect(affect2);
+    affect1.ps_component = 'modified-component-1';
+    affect2.ps_component = 'modified-component-2';
+    store.cancelAllChanges();
+
+    expect(flaw.value.affects[0].ps_component).toEqual(originalComponent1);
+    expect(flaw.value.affects[1].ps_component).toEqual(originalComponent2);
+    expect(store.affectsBeingEdited).toEqual([]);
+  });
 });

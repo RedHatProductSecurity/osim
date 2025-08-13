@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Fix multi-row operations in affects table (`OSIDB-4381`)
+
 ## [2025.8.0]
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)

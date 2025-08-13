@@ -403,9 +403,6 @@ exports[`flawCreateView > should render 1`] = `
         <div data-v-76e7a15d="" class="osim-flaw-form-section">
           <!--v-if-->
         </div>
-        <div data-v-76e7a15d="" class="osim-flaw-form-section">
-          <!--v-if-->
-        </div>
         <!--v-if-->
         <!--v-if-->
       </div>
