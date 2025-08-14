@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { z } from 'zod';
 import jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
-import { useLocalStorage } from '@vueuse/core';
+import { useLocalStorage, until } from '@vueuse/core';
 import { DateTime } from 'luxon';
 
 // const router = useRouter();
@@ -231,6 +231,12 @@ export const useUserStore = defineStore('UserStore', () => {
     }
   });
 
+  async function waitUntilAuthenticated(): Promise<void> {
+    if (!isAuthenticated.value) {
+      await until(isAuthenticated).toBeTruthy();
+    }
+  }
+
   // Watch authentication changes from other tabs
   watch(isAuthenticated, () => {
     if (isAuthenticated.value) {
@@ -296,6 +302,7 @@ export const useUserStore = defineStore('UserStore', () => {
     login,
     logout,
     isAuthenticated,
+    waitUntilAuthenticated,
     getDevRefreshToken,
     setDevRefreshToken,
     $reset,

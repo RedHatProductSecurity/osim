@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Fix API Keys not loaded on new user session (`OSIDB-4416`)
+
 ## [2025.8.0]
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
