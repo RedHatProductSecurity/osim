@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import { defineStore } from 'pinia';
 import { z } from 'zod';
@@ -132,6 +132,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   async function loadApiKeysFromBackend() {
     try {
       isLoadingApiKeys.value = true;
+
       const retrievedKeys = await getApiKeysFromBackend();
       apiKeys.value = {
         bugzillaApiKey: retrievedKeys.bugzilla || '',
@@ -144,28 +145,47 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     }
   }
 
+  const isApiKeysInitialized = ref(false);
+
   async function initializeApiKeys() {
-    console.debug('SettingsStore: Initializing API keys...');
-    try {
-      // Check if user is authenticated before trying to load API keys
-      const { useUserStore } = await import('./UserStore');
-      const userStore = useUserStore();
+    console.debug('SettingsStore: Setting up API keys initialization...');
 
-      if (!userStore.isLoggedIn) {
-        return;
-      }
+    // Import UserStore dynamically to avoid circular dependencies
+    const { useUserStore } = await import('./UserStore');
+    const userStore = useUserStore();
 
-      await loadApiKeysFromBackend();
-      migrateApiKeysFromLocalStorage();
-      console.debug('SettingsStore: API keys initialization completed');
+    // Watch for authentication changes and load API keys when authenticated
+    // Watch both isAuthenticated (computed from token) and isLoggedIn (boolean flag)
+    // to handle any potential timing edge cases
+    watch(
+      () => ({
+        isAuthenticated: userStore.isAuthenticated,
+        isLoggedIn: userStore.isLoggedIn,
+      }),
+      async ({ isAuthenticated, isLoggedIn }) => {
+        if (isAuthenticated && !isApiKeysInitialized.value) {
+          try {
+            console.debug('SettingsStore: User authenticated, loading API keys...');
+            await loadApiKeysFromBackend();
+            migrateApiKeysFromLocalStorage();
+            isApiKeysInitialized.value = true;
+            console.debug('✅ API keys initialized');
 
-      // Check if API keys are still missing after loading and migration
-      if ((!apiKeys.value.bugzillaApiKey || !apiKeys.value.jiraApiKey) && !osimRuntime.value.readOnly) {
-        notifyApiKeyUnset();
-      }
-    } catch (error) {
-      console.error('SettingsStore: Error during API keys initialization:', error);
-    }
+            if ((!apiKeys.value.bugzillaApiKey || !apiKeys.value.jiraApiKey) && !osimRuntime.value.readOnly) {
+              notifyApiKeyUnset();
+            }
+          } catch (error) {
+            console.error('SettingsStore: Error during API keys initialization:', error);
+          }
+        } else if (!isAuthenticated && !isLoggedIn) {
+          // Reset API keys when user logs out (both flags should be false)
+          apiKeys.value = structuredClone(defaultApiKeys);
+          isApiKeysInitialized.value = false;
+          console.debug('SettingsStore: User logged out, API keys cleared');
+        }
+      },
+      { immediate: true },
+    );
   }
 
   function $reset() {
@@ -220,6 +240,7 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     apiKeys,
     isLoadingApiKeys,
     isSavingApiKeys,
+    isApiKeysInitialized,
     updateApiKeys,
     initializeApiKeys,
   };
