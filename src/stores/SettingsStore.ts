@@ -133,15 +133,10 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       const { useUserStore } = await import('./UserStore');
       const userStore = useUserStore();
 
-      if (!userStore.isLoggedIn) {
-        return;
-      }
-
+      if (!userStore.isAuthenticated) await userStore.waitUntilAuthenticated();
       await loadApiKeysFromBackend();
       migrateApiKeysFromLocalStorage();
-      console.debug('SettingsStore: API keys initialization completed');
-
-      // Check if API keys are still missing after loading and migration
+      console.debug('✅ API keys initialized');
       if ((!apiKeys.value.bugzillaApiKey || !apiKeys.value.jiraApiKey) && !osimRuntime.value.readOnly) {
         notifyApiKeyUnset();
       }
