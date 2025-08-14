@@ -67,6 +67,7 @@ describe('navbar', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -113,6 +114,7 @@ describe('navbar', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -164,6 +166,7 @@ describe('navbar', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     subject = mount(Navbar, {
       global: {
@@ -210,6 +213,7 @@ describe('navbar', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     subject = mount(Navbar, {
       global: {

@@ -44,6 +44,7 @@ describe('toastContainer', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     const toastStore = useToastStore(pinia);
     toastStore.addToast({
@@ -96,6 +97,7 @@ describe('toastContainer', () => {
       },
       isLoadingApiKeys: false,
       isSavingApiKeys: false,
+      isApiKeysInitialized: false,
     };
     subject = mount(ToastContainer, {
       global: {
@@ -137,6 +139,7 @@ describe('toastContainer', () => {
         },
         isLoadingApiKeys: false,
         isSavingApiKeys: false,
+        isApiKeysInitialized: false,
       };
       const toastStore = useToastStore(pinia);
       toastStore.addToast({
