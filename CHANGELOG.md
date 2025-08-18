@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Collapse Contributors table by default unless any labels are new or have assigned contributors (`OSIDB-4083`). 
+
 ## [2025.8.0]
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
