@@ -69,3 +69,28 @@ export const ZodAegisAIHTTPValidationError = z.object({
 });
 
 export type ZodAegisAIHTTPValidationErrorType = z.infer<typeof ZodAegisAIHTTPValidationError>;
+
+// Suggestion context values used to enrich AEGIS-AI requests
+export const ZodAegisSuggestionContext = z.object({
+  cveId: z.string().nullable().optional(),
+  title: z.string().nullable().optional(),
+  commentZero: z.string().nullable().optional(),
+  cveDescription: z.string().nullable().optional(),
+  requiresCveDescription: z.string().nullable().optional(),
+  statement: z.string().nullable().optional(),
+  components: z.array(z.string()).nullable().optional(),
+});
+
+type _ZodAegisSuggestionContext = z.infer<typeof ZodAegisSuggestionContext>;
+
+export type AegisSuggestionContextRefs = {
+  [K in keyof _ZodAegisSuggestionContext]: import('vue').Ref<_ZodAegisSuggestionContext[K]>;
+};
+
+export const ZodAegisSuggestCWEResponse = z.object({
+  cwe: z.array(z.string()),
+  confidence: z.union([z.number(), z.string()]).optional(),
+  explanation: z.string().optional(),
+});
+
+export type ZodAegisSuggestCWEResponseType = z.infer<typeof ZodAegisSuggestCWEResponse>;
