@@ -1,7 +1,8 @@
 import { ref, readonly, computed } from 'vue';
 
-import type { ZodFlawType } from '@/types/zodFlaw';
+import type { ZodFlawCVSSType, ZodFlawLabelType, ZodFlawType } from '@/types/zodFlaw';
 import { deepCopyFromRaw, serializeWithExclude } from '@/utils/helpers';
+import type { ZodAffectType } from '@/types';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
 const initialFlaw = ref<ZodFlawType>(blankFlaw());
@@ -13,9 +14,15 @@ function resetFlaw() {
   relatedFlaws.value = [];
 }
 
-function setFlaw(fetchedFlaw: ZodFlawType) {
-  initialFlaw.value = deepCopyFromRaw(fetchedFlaw);
-  flaw.value = fetchedFlaw;
+type FlawDataType = ZodAffectType[] | ZodFlawCVSSType[] | ZodFlawLabelType[] | ZodFlawType;
+type FlawFieldsWithEndpoints = 'affects' | 'cvss_scores' | 'labels';
+function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints) {
+  if (!key) {
+    flaw.value = flawData as ZodFlawType;
+  } else {
+    Object.assign(flaw.value, { [key]: flawData });
+  }
+  initialFlaw.value = deepCopyFromRaw(flaw.value);
 }
 
 const isFlawUpdated = computed(
@@ -27,7 +34,14 @@ const isFlawUpdated = computed(
 );
 
 export function useFlaw() {
-  return { flaw, initialFlaw: readonly(initialFlaw), isFlawUpdated, relatedFlaws, resetFlaw, setFlaw };
+  return {
+    flaw,
+    initialFlaw: readonly(initialFlaw),
+    isFlawUpdated,
+    relatedFlaws,
+    resetFlaw,
+    setFlaw,
+  };
 }
 
 export function blankFlaw(): ZodFlawType {

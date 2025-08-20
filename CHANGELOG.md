@@ -5,6 +5,7 @@
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
+* Reduce network calls in post-save Flaw refresh (`OSIDB-4267`)
 
 ## [2025.8.0]
 ### Added

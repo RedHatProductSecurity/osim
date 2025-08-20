@@ -48,7 +48,7 @@ export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
       requests.push(deleteLabel(flaw.value.uuid, labels.value[deletedLabel]));
     }
 
-    await Promise.allSettled(requests);
+    return await Promise.allSettled(requests);
   };
 
   return {

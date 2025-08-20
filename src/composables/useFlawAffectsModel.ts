@@ -227,6 +227,7 @@ export function useFlawAffectsModel() {
           css: 'success',
         });
       }
+      return savedAffects;
     }
 
     if (Object.keys(affectCvssToDelete.value).length > 0) {
