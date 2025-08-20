@@ -70,7 +70,7 @@ const mountFlawAffects = async (testFlaw: ZodFlawType, Component: Component) => 
     vi.mocked(useFetchFlaw).mockReturnValue(_useFetchFlaw());
     vi.mocked(useFlawAffectsModel).mockReturnValue(_useFlawAffectsModel());
     vi.mocked(useAffectsEditingStore).mockReturnValue(_useAffectsEditingStore());
-    const mockedUseFlawModel = _useFlawModel(() => {});
+    const mockedUseFlawModel = _useFlawModel();
     vi.mocked(useFlawModel).mockReturnValue(mockedUseFlawModel);
     const errors = mockedUseFlawModel.errors.value.affects;
     return [mockedUseFlaw.flaw, errors];
