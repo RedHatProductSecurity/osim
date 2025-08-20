@@ -219,12 +219,8 @@ export function useFlawModel() {
 
   function afterSaveSuccess(queue?: (() => void)[]) {
     isSaving.value = false;
-    if (queue) {
-      queue.forEach((fn) => {
-        fn();
-        console.log(fn);
-      });
-    }
+    if (!queue) return;
+    queue.forEach(fn => fn());
   }
 
   const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {
