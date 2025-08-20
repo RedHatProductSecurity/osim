@@ -1,7 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Changed
-* Collapse Contributors table by default unless any labels are new or have assigned contributors (`OSIDB-4083`). 
+* Only expand Contributors table when a label is new or assigned (`OSIDB-4083`). 
 
 ## [2025.8.0]
 ### Fixed

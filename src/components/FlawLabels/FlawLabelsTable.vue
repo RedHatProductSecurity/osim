@@ -32,7 +32,7 @@ const availableLabels = computed(() =>
   ),
 );
 
-const isExpandedDefault = labelsFromProps.value.some(label => label.contributor) || ([...newLabels.value].length > 0);
+const isExpandedDefault = labelsFromProps.value.some(label => label.contributor || label.state === 'NEW');
 const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
 
 function handleNewLabel(label: ZodFlawLabelType) {
