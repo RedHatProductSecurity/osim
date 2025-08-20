@@ -10,7 +10,7 @@ import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
 
 import FlawLabelTableEditingRow from './FlawLabelTableEditingRow.vue';
 
-const modelValue = defineModel<ZodFlawLabelType[]>({ required: true });
+const labelsFromProps = defineModel<ZodFlawLabelType[]>({ required: true });
 
 const {
   deletedLabels,
@@ -21,7 +21,7 @@ const {
   loadContextLabels,
   newLabels,
   updatedLabels,
-} = useFlawLabels(modelValue);
+} = useFlawLabels(labelsFromProps);
 
 const isCreatingLabel = ref(false);
 const isUpdatingLabel = ref<string>();
@@ -31,7 +31,9 @@ const availableLabels = computed(() =>
     !Object.values(labels.value).some(({ label }) => label === contextLabel),
   ),
 );
-const [isExpanded, toggleExpanded] = useToggle(true);
+
+const isExpandedDefault = labelsFromProps.value.some(label => label.contributor || label.state === 'NEW');
+const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
 
 function handleNewLabel(label: ZodFlawLabelType) {
   newLabels.value.add(label.label);

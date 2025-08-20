@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Only expand Contributors table when a label is new or assigned (`OSIDB-4083`). 
+
 ## [2025.8.0]
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
