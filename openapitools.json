@@ -6,8 +6,17 @@
     "generators": {
       "OSIDB": {
         "generatorName": "typescript-fetch",
-        "output": "src/generated-client",
-        "inputSpec": "openapi.yml",
+        "output": "src/generated-client/osidb",
+        "inputSpec": "openapi-osidb.yml",
+        "additionalProperties": {
+          "supportsES6": "true",
+          "withoutRuntimeChecks": true
+        }
+      },
+      "AEGIS-AI": {
+        "generatorName": "typescript-fetch",
+        "output": "src/generated-client/aegis-ai",
+        "inputSpec": "openapi-aegis-ai.yml",
         "additionalProperties": {
           "supportsES6": "true",
           "withoutRuntimeChecks": true

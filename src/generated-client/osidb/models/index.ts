@@ -41,6 +41,12 @@ export interface Affect {
      * @type {string}
      * @memberof Affect
      */
+    readonly cveId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Affect
+     */
     readonly psProduct: string;
     /**
      * 
@@ -412,6 +418,147 @@ export interface AffectCVSSRequest {
      * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
      * @type {string}
      * @memberof AffectCVSSRequest
+     */
+    updatedDt: string;
+}
+/**
+ * Abstract serializer for FlawCVSS and AffectCVSS serializer
+ * @export
+ * @interface AffectCVSSV2
+ */
+export interface AffectCVSSV2 {
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    affect?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    comment?: string | null;
+    /**
+     * 
+     * @type {CvssVersionEnum}
+     * @memberof AffectCVSSV2
+     */
+    cvssVersion: CvssVersionEnum;
+    /**
+     * 
+     * @type {IssuerEnum}
+     * @memberof AffectCVSSV2
+     */
+    readonly issuer: IssuerEnum;
+    /**
+     * 
+     * @type {number}
+     * @memberof AffectCVSSV2
+     */
+    readonly score: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    readonly uuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    vector: string;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof AffectCVSSV2
+     */
+    embargoed: boolean;
+    /**
+     * 
+     * @type {Array<Alert>}
+     * @memberof AffectCVSSV2
+     */
+    readonly alerts: Array<Alert>;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    readonly createdDt: string;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof AffectCVSSV2
+     */
+    updatedDt: string;
+}
+/**
+ * Abstract serializer for FlawCVSS and AffectCVSS serializer
+ * @export
+ * @interface AffectCVSSV2PostRequest
+ */
+export interface AffectCVSSV2PostRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2PostRequest
+     */
+    comment?: string | null;
+    /**
+     * 
+     * @type {CvssVersionEnum}
+     * @memberof AffectCVSSV2PostRequest
+     */
+    cvssVersion: CvssVersionEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2PostRequest
+     */
+    vector: string;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof AffectCVSSV2PostRequest
+     */
+    embargoed: boolean;
+}
+/**
+ * Abstract serializer for FlawCVSS and AffectCVSS serializer
+ * @export
+ * @interface AffectCVSSV2PutRequest
+ */
+export interface AffectCVSSV2PutRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2PutRequest
+     */
+    comment?: string | null;
+    /**
+     * 
+     * @type {CvssVersionEnum}
+     * @memberof AffectCVSSV2PutRequest
+     */
+    cvssVersion: CvssVersionEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof AffectCVSSV2PutRequest
+     */
+    vector: string;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof AffectCVSSV2PutRequest
+     */
+    embargoed: boolean;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof AffectCVSSV2PutRequest
      */
     updatedDt: string;
 }
@@ -3682,6 +3829,12 @@ export interface OsidbApiV1AffectsCreate201Response {
      * @type {string}
      * @memberof OsidbApiV1AffectsCreate201Response
      */
+    readonly cveId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1AffectsCreate201Response
+     */
     readonly psProduct: string;
     /**
      * 
@@ -5580,6 +5733,12 @@ export interface OsidbApiV1TrackersCreate201Response {
     affects?: Array<string>;
     /**
      * 
+     * @type {string}
+     * @memberof OsidbApiV1TrackersCreate201Response
+     */
+    readonly cveId: string;
+    /**
+     * 
      * @type {Array<Erratum>}
      * @memberof OsidbApiV1TrackersCreate201Response
      */
@@ -5750,6 +5909,12 @@ export interface OsidbApiV1TrackersRetrieve200Response {
     affects?: Array<string>;
     /**
      * 
+     * @type {string}
+     * @memberof OsidbApiV1TrackersRetrieve200Response
+     */
+    readonly cveId: string;
+    /**
+     * 
      * @type {Array<Erratum>}
      * @memberof OsidbApiV1TrackersRetrieve200Response
      */
@@ -5854,6 +6019,158 @@ export interface OsidbApiV1TrackersRetrieve200Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1TrackersRetrieve200Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
+ * @interface OsidbApiV2betaAffectsCvssScoresCreate201Response
+ */
+export interface OsidbApiV2betaAffectsCvssScoresCreate201Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    affect?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    comment?: string | null;
+    /**
+     * 
+     * @type {CvssVersionEnum}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    cvssVersion: CvssVersionEnum;
+    /**
+     * 
+     * @type {IssuerEnum}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    readonly issuer: IssuerEnum;
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    readonly score: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    readonly uuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    vector: string;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    embargoed: boolean;
+    /**
+     * 
+     * @type {Array<Alert>}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    readonly alerts: Array<Alert>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    readonly createdDt: string;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    updatedDt: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresCreate201Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
+ * @interface OsidbApiV2betaAffectsCvssScoresList200Response
+ */
+export interface OsidbApiV2betaAffectsCvssScoresList200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    count: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    next?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    previous?: string | null;
+    /**
+     * 
+     * @type {Array<AffectCVSSV2>}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    results: Array<AffectCVSSV2>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2betaAffectsCvssScoresList200Response
      */
     version?: string;
 }
@@ -6216,6 +6533,37 @@ export interface PaginatedAffectCVSSList {
      * @memberof PaginatedAffectCVSSList
      */
     results: Array<AffectCVSS>;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedAffectCVSSV2List
+ */
+export interface PaginatedAffectCVSSV2List {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedAffectCVSSV2List
+     */
+    count: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginatedAffectCVSSV2List
+     */
+    next?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginatedAffectCVSSV2List
+     */
+    previous?: string | null;
+    /**
+     * 
+     * @type {Array<AffectCVSSV2>}
+     * @memberof PaginatedAffectCVSSV2List
+     */
+    results: Array<AffectCVSSV2>;
 }
 /**
  * 
@@ -6966,7 +7314,10 @@ export const SpecialHandlingEnum = {
     MajorIncident: 'Major Incident',
     KevActiveExploitCase: 'KEV (active exploit case)',
     CompliancePriority: 'compliance-priority',
-    ContractPriority: 'contract-priority'
+    ContractPriority: 'contract-priority',
+    MinorIncident: 'Minor Incident',
+    SecuritySelect: 'security-select',
+    SupportException: 'support-exception'
 } as const;
 export type SpecialHandlingEnum = typeof SpecialHandlingEnum[keyof typeof SpecialHandlingEnum];
 
@@ -7087,6 +7438,12 @@ export interface Tracker {
     affects?: Array<string>;
     /**
      * 
+     * @type {string}
+     * @memberof Tracker
+     */
+    readonly cveId: string;
+    /**
+     * 
      * @type {Array<Erratum>}
      * @memberof Tracker
      */
@@ -7188,6 +7545,12 @@ export interface TrackerPost {
      * @memberof TrackerPost
      */
     affects?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof TrackerPost
+     */
+    readonly cveId: string;
     /**
      * 
      * @type {Array<Erratum>}

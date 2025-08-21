@@ -16,6 +16,7 @@ export const OsimRuntime = z.object({
     errata: z.string(),
     jiraDisplay: z.string(),
     mitre: z.string(),
+    aegisai: z.string().optional(),
   }),
   osimVersion: z.object({
     rev: z.string(),
