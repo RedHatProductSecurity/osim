@@ -509,17 +509,6 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
-      <div data-v-4715e8e2="" class="ps-3 border-start">
-        <div data-v-4715e8e2="" class="">
-          <div data-v-5d530569="">
-            <p data-v-5d530569="">No available labels</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div data-v-76e7a15d="" class="osim-flaw-form-section">
     <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">
       <h4 data-v-2d3c4208="">Affected Offerings</h4>
       <div data-v-2d3c4208="" class="affect-modules-selection mb-4">
@@ -864,6 +853,17 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
           <!--v-if-->
         </transition-stub>
+      </div>
+    </div>
+  </div>
+  <div data-v-76e7a15d="" class="osim-flaw-form-section">
+    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="">
+          <div data-v-5d530569="">
+            <p data-v-5d530569="">No available labels</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

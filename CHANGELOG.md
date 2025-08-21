@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Move labels table after trackers (`OSIDB-4082`)
+
 ## [2025.8.0]
 ### Fixed
 * Fix only showing 100 affects in flaw view (`OSIDB-4393`)
