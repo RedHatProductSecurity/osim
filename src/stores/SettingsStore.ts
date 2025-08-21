@@ -130,10 +130,10 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     console.debug('SettingsStore: Initializing API keys...');
     try {
       // Check if user is authenticated before trying to load API keys
-      const { useUserStore } = await import('./UserStore');
-      const userStore = useUserStore();
+      const { useAuthStore } = await import('./AuthStore');
+      const authStore = useAuthStore();
 
-      if (!userStore.isLoggedIn) {
+      if (!authStore.isLoggedIn) {
         return;
       }
 
