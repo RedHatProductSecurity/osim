@@ -27,13 +27,15 @@ import {
   flawIncidentStates,
   ZodFlawSchema,
   type ZodFlawType,
+  type ZodAffectType,
+  type ZodFlawLabelType,
 } from '@/types';
 import type { DeepMapValues, DeepNullable } from '@/utils/typeHelpers';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 
-export function useFlawModel(onSaveSuccess: () => void) {
-  const { flaw, isFlawUpdated } = useFlaw();
+export function useFlawModel() {
+  const { flaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
@@ -62,8 +64,8 @@ export function useFlawModel(onSaveSuccess: () => void) {
 
   const bugzillaLink = computed(() => getFlawBugzillaLink(flaw.value));
   const osimLink = computed(() => getFlawOsimLink(flaw.value.uuid));
-  const isInTriageWithoutAffects = computed(
-    () => flaw.value.classification?.state === 'TRIAGE'
+  const isInTriageWithoutAffects = computed(() =>
+    flaw.value.classification?.state === 'TRIAGE'
     && flaw.value.affects.every(affect => !affect.uuid),
   );
 
@@ -91,10 +93,12 @@ export function useFlawModel(onSaveSuccess: () => void) {
           flaw.value.uuid = response.uuid;
           saveDraftFlaw(flaw.value);
           if (flaw.value.acknowledgments.length > 0) {
-            await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+            const acknowledgments = await flawAttributionsModel.saveAcknowledgments(flaw.value.acknowledgments);
+            response.acknowledgments = acknowledgments;
           }
           if (flaw.value.references.length > 0) {
-            await flawAttributionsModel.saveReferences(flaw.value.references);
+            const references = await flawAttributionsModel.saveReferences(flaw.value.references);
+            response.references = references;
           }
           return response;
         })
@@ -146,6 +150,7 @@ export function useFlawModel(onSaveSuccess: () => void) {
   async function updateFlaw() {
     const { execute } = useNetworkQueue();
     const queue: (() => Promise<any>)[] = [];
+    const afterSuccessQueue: (() => void)[] = [];
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -157,15 +162,24 @@ export function useFlawModel(onSaveSuccess: () => void) {
 
     // If the flaw is in triage and has no affects, we need to save the affects first
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
-      queue.push(saveAffects);
+      queue.push(async () => {
+        const response = await saveAffects();
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+      });
     }
 
     if (isFlawUpdated.value) {
-      queue.push(putFlaw.bind(null, flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value));
+      queue.push(async () => {
+        const response = await putFlaw(flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value);
+        afterSuccessQueue.push(() => setFlaw(response));
+      },
+      );
     }
-
     if (wasFlawCvssModified.value) {
-      queue.push(saveCvssScores);
+      queue.push(async () => {
+        const response = await saveCvssScores();
+        afterSuccessQueue.push(() => setFlaw(response, 'cvss_scores'));
+      });
     }
 
     if (affectsToDelete.value.length) {
@@ -173,11 +187,23 @@ export function useFlawModel(onSaveSuccess: () => void) {
     }
 
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
-      queue.push(saveAffects);
+      queue.push(async () => {
+        const response = await saveAffects();
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+      });
     }
 
     if (areLabelsUpdated.value) {
-      queue.push(updateLabels);
+      queue.push(async () => {
+        const response = await updateLabels();
+        if (response && Array.isArray(response)) {
+          const labels = response
+            .filter((result): result is PromiseFulfilledResult<{ data: any }> =>
+              result.status === 'fulfilled' && result.value?.data)
+            .map(result => result.value.data);
+          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels'));
+        }
+      });
     }
 
     try {
@@ -187,13 +213,14 @@ export function useFlawModel(onSaveSuccess: () => void) {
       isSaving.value = false;
       return;
     } finally {
-      afterSaveSuccess();
+      afterSaveSuccess(afterSuccessQueue);
     }
   }
 
-  function afterSaveSuccess() {
-    onSaveSuccess();
+  function afterSaveSuccess(queue?: (() => void)[]) {
     isSaving.value = false;
+    if (!queue) return;
+    queue.forEach(fn => fn());
   }
 
   const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {

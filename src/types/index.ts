@@ -20,6 +20,7 @@ export type {
   ZodFlawAcknowledgmentType,
   ZodFlawCommentType,
   ZodFlawCVSSType,
+  ZodFlawLabelType,
   ZodFlawReferenceType,
   ZodFlawType,
 } from '@/types/zodFlaw';
