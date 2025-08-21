@@ -81,26 +81,30 @@ async function updateJiraUsername() {
   }
 }
 
-function setRefreshToken(env_: string, refresh_?: string) {
-  _userStoreSession.value.env = env_;
-  // Only store refresh token in localStorage for dev environments
-  if (osimRuntime.value.env === 'dev' && refresh_) {
-    _userStoreSession.value.refresh = refresh_;
-  } else {
-    // Clear refresh token from localStorage for non-dev environments
-    delete _userStoreSession.value.refresh;
-  }
-}
-
-function $reset() {
-  setRefreshToken('');
-  _userStoreSession.value.whoami = null;
-  _userStoreSession.value.jiraUsername = '';
-  delete _userStoreSession.value.refresh;
-}
-
 export const useUserStore = defineStore('UserStore', () => {
   const accessToken = ref<null | string>();
+  const refreshToken = ref<null | string>();
+
+  function setRefreshToken(env_: string, refresh_?: string) {
+    _userStoreSession.value.env = env_;
+    // Only store refresh token in localStorage for dev environments
+    if (osimRuntime.value.env === 'dev' && refresh_) {
+      _userStoreSession.value.refresh = refresh_;
+      refreshToken.value = null; // Clear in-memory token for dev
+    } else {
+      delete _userStoreSession.value.refresh;
+      refreshToken.value = refresh_ || null;
+    }
+  }
+
+  function $reset() {
+    _userStoreSession.value.env = '';
+    _userStoreSession.value.whoami = null;
+    _userStoreSession.value.jiraUsername = '';
+    delete _userStoreSession.value.refresh;
+    refreshToken.value = null;
+  }
+
   const isAccessTokenExpired = () => {
     try {
       const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
@@ -293,6 +297,7 @@ export const useUserStore = defineStore('UserStore', () => {
     jiraUsername,
     updateJiraUsername,
     env,
+    refreshToken,
     login,
     logout,
     isAuthenticated,

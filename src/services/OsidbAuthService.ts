@@ -129,19 +129,17 @@ function queryStringFromParams(params: Record<string, any>) {
   return queryString ? `?${queryString}` : '';
 }
 
-export async function getNextAccessToken() {
+export async function getNextAccessToken(forceRefresh: boolean = false) {
+  // Moving this to module scope results in "cannot access before initialization" -
+  // probably a vite or typescript bug
+  const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
   const userStore = useUserStore();
-
-  // If we have a valid access token, return it
-  if (userStore.accessToken && !userStore.isAccessTokenExpired()) {
+  let response;
+  if (!forceRefresh && userStore.accessToken && !userStore.isAccessTokenExpired()) {
     return userStore.accessToken;
   }
 
-  const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
-
   try {
-    let response: Response;
-
     if (osimRuntime.value.env === 'dev') {
       // For local development: Use POST with refresh token from localStorage
       const refreshToken = userStore.getDevRefreshToken();
