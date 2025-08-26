@@ -3,13 +3,13 @@ import { computed, type Ref } from 'vue';
 import type { ZodFlawType } from '@/types/zodFlaw';
 
 export type AegisSuggestionContextRefs = {
-  commentZero?: { value: null | string } | null;
-  components?: { value: null | string[] } | null;
-  cveDescription?: { value: null | string } | null;
-  cveId?: { value: null | string } | null;
-  requiresCveDescription?: { value: null | string } | null;
-  statement?: { value: null | string } | null;
-  title?: { value: null | string } | null;
+  commentZero?: null | Ref<null | string | undefined>;
+  components?: null | Ref<null | string[] | undefined>;
+  cveDescription?: null | Ref<null | string | undefined>;
+  cveId?: null | Ref<null | string | undefined>;
+  requiresCveDescription?: null | Ref<null | string | undefined>;
+  statement?: null | Ref<null | string | undefined>;
+  title?: null | Ref<null | string | undefined>;
 };
 
 export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggestionContextRefs {
