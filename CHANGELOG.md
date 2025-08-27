@@ -6,6 +6,7 @@
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
 * CWE suggestions using AegisAI (`AEGIS-69`)
+* Only expand Contributors table when a label is new or assigned (`OSIDB-4083`). 
 
 ## [2025.8.0]
 ### Added

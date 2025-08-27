@@ -859,9 +859,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
+    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
       <div data-v-4715e8e2="" class="ps-3 border-start">
-        <div data-v-4715e8e2="" class="">
+        <div data-v-4715e8e2="" class="visually-hidden">
           <div data-v-5d530569="">
             <p data-v-5d530569="">No available labels</p>
           </div>
