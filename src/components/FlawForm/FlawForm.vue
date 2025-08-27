@@ -24,6 +24,10 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useCvssScores } from '@/composables/useCvssScores';
+import {
+  aegisSuggestionRequestBody,
+  type AegisSuggestionContextRefs,
+} from '@/composables/aegis/useAegisSuggestionContext';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -169,6 +173,8 @@ const createdDate = computed(() => {
   }
   return DateTime.fromISO(flaw.value.created_dt!).toUTC().toFormat('yyyy-MM-dd T ZZZZ');
 });
+
+const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw);
 </script>
 
 <template>
@@ -274,6 +280,7 @@ const createdDate = computed(() => {
               v-model="flaw.cwe_id"
               label="CWE ID"
               :error="errors.cwe_id"
+              :aegis-context="aegisContext"
             />
             <LabelSelect
               v-model="flaw.source"

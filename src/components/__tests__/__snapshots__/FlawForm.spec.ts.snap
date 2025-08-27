@@ -204,20 +204,22 @@ exports[`flawForm > mounts and renders 1`] = `
       <!--v-if-->
     </div>
     <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
-      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><i data-v-478878c2="" class="bi-stars label-icon" title="Suggest CWE via AEGIS-AI"></i><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
         <div data-v-0e2ae48e="" class="col-9">
-          <!-- for invalid-tooltip positioning -->
-          <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
-            <!--<Transition name="flash-bg" :duration="2000">-->
-            <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-              <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
-                <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+          <div data-v-478878c2="" tabindex="0">
+            <!-- for invalid-tooltip positioning -->
+            <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
+              <!--<Transition name="flash-bg" :duration="2000">-->
+              <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
+                  <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+                </div>
+              </transition-stub>
+              <div class="input-group position-relative" tabindex="-1" style="display: none;">
+                <!--v-if--><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button>
               </div>
-            </transition-stub>
-            <div class="input-group position-relative" tabindex="-1" style="display: none;">
-              <!--v-if--><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button>
+              <!--v-if-->
             </div>
-            <!--v-if-->
           </div>
         </div>
       </div>
@@ -857,9 +859,9 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
     </div>
   </div>
   <div data-v-76e7a15d="" class="osim-flaw-form-section">
-    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
+    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
       <div data-v-4715e8e2="" class="ps-3 border-start">
-        <div data-v-4715e8e2="" class="">
+        <div data-v-4715e8e2="" class="visually-hidden">
           <div data-v-5d530569="">
             <p data-v-5d530569="">No available labels</p>
           </div>

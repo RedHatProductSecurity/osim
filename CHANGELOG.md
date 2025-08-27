@@ -6,6 +6,8 @@
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
 * Reduce network calls in post-save Flaw refresh (`OSIDB-4267`)
+* CWE suggestions using AegisAI (`AEGIS-69`)
+* Only expand Contributors table when a label is new or assigned (`OSIDB-4083`). 
 
 ## [2025.8.0]
 ### Added
