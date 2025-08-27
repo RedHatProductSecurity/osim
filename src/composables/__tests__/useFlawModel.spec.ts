@@ -31,13 +31,12 @@ vi.mock('@/services/FlawService', () => ({
 }));
 
 describe('useFlawModel', () => {
-  const onSaveSuccess = vi.fn();
   let app: App;
 
   const mountFlawModel = () => {
     const pinia = createTestingPinia();
     const plugins = [router, pinia];
-    const [composable, _app] = withSetup(() => useFlawModel(onSaveSuccess), plugins);
+    const [composable, _app] = withSetup(() => useFlawModel(), plugins);
     app = _app;
     return composable;
   };
@@ -77,7 +76,6 @@ describe('useFlawModel', () => {
     isSaving.value = true;
     afterSaveSuccess();
 
-    expect(onSaveSuccess).toHaveBeenCalled();
     expect(isSaving.value).toBe(false);
   });
 

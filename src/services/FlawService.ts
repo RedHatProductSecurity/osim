@@ -121,18 +121,24 @@ export async function getUpdatedDt(url: string): Promise<string> {
   }).then(response => response.data.updated_dt);
 }
 
-export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false) {
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v1/flaws/${uuid}`,
-    data: flawObject,
-    params: {
-      ...(createJiraTask && { create_jira_task: true }),
-    },
-  }, { beforeFetch })
-    .then(response => response.data)
-    .then(createSuccessHandler({ title: 'Success!', body: 'Flaw saved' }))
-    .catch(createCatchHandler('Could not update Flaw'));
+export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false): Promise<ZodFlawType> {
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v1/flaws/${uuid}`,
+      data: flawObject,
+      params: {
+        ...(createJiraTask && { create_jira_task: true }),
+      },
+    }, { beforeFetch });
+
+    const result = response.data;
+    createSuccessHandler({ title: 'Success!', body: 'Flaw saved' })({ data: result });
+    return result;
+  } catch (error) {
+    createCatchHandler('Could not update Flaw', false)(error);
+    throw error;
+  }
 }
 
 export async function putFlawCvssScores(

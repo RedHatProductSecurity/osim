@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
-import { http, HttpResponse } from 'msw';
 
 import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
@@ -21,9 +20,6 @@ import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import { flawImpactEnum, flawSources, Source521EnumWithBlank, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
-import { server } from '@/__tests__/setup';
-import { getNextAccessTokenRefreshHandler } from '@/__tests__/handlers';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 import { osimFullFlawTest } from './test-suite-helpers';
 
@@ -549,19 +545,5 @@ describe('flawForm', () => {
     const flawForm = subject.find('div.osim-flaw-form-embargoed');
 
     expect(flawForm?.exists()).toBeFalsy();
-  });
-
-  osimFullFlawTest('should emit event on flaw update', async ({ flaw }) => {
-    server.use(
-      getNextAccessTokenRefreshHandler,
-      http.get(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json(flaw)),
-      http.put(`${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/:uuid`, () => HttpResponse.json({})),
-    );
-    const wrapper = mountWithProps(flaw, { mode: 'edit' });
-
-    await wrapper.find('form').trigger('submit');
-    await flushPromises();
-
-    expect(wrapper.emitted()).toHaveProperty('refresh:flaw');
   });
 });

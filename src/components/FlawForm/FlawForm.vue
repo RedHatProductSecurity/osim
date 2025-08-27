@@ -55,10 +55,6 @@ const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
 }>();
 
-function onSaveSuccess() {
-  emit('refresh:flaw');
-}
-
 const {
   addBlankAcknowledgment,
   addBlankReference,
@@ -84,7 +80,7 @@ const {
   shouldCreateJiraTask,
   toggleShouldCreateJiraTask,
   updateFlaw,
-} = useFlawModel(onSaveSuccess);
+} = useFlawModel();
 const { isFetchingAffects } = useFetchFlaw();
 
 const { flaw, initialFlaw } = useFlaw();
