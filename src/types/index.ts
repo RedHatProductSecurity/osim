@@ -11,7 +11,7 @@ export type {
   AegisAICVEAnalysisParamsType,
   AegisAIHTTPValidationErrorType,
   AegisAIValidationErrorType,
-} from '@/types/zodAegisAI';
+} from '@/types/aegisAI';
 
 export type {
   AffectCVSSSchemaType,

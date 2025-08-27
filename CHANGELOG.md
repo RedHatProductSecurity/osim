@@ -5,6 +5,7 @@
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
+* CWE suggestions using AegisAI (`AEGIS-69`)
 
 ## [2025.8.0]
 ### Added

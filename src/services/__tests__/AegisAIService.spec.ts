@@ -7,7 +7,7 @@ import type {
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
   AegisAICVEAnalysisWithContextParamsType,
-} from '@/types/zodAegisAI';
+} from '@/types/aegisAI';
 
 import { AegisAIService } from '../AegisAIService';
 
