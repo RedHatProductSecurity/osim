@@ -1,5 +1,5 @@
 import { VueWrapper, mount, flushPromises } from '@vue/test-utils';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
 import ToastContainer from '@/components/ToastContainer/ToastContainer.vue';
@@ -22,7 +22,7 @@ describe('toastContainer', () => {
 
   it('renders toasts and clearAll button when showNotification is true', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const settingStore = useSettingsStore(pinia);
@@ -30,6 +30,7 @@ describe('toastContainer', () => {
       settings: {
         showNotifications: true,
         privacyNoticeShown: true,
+        aiUsageNoticeShown: true,
         affectsPerPage: 10,
         trackersPerPage: 10,
         isHidingLabels: false,
@@ -63,7 +64,7 @@ describe('toastContainer', () => {
       },
     });
     const toastElements = subject.findAllComponents(Toast);
-    expect(toastElements.length).toBe(3);
+    expect(toastElements.length).toBe(4);
     const clearAllButton = subject.find('.osim-toast-container-clear button');
     expect(clearAllButton.exists()).toBeTruthy();
     await clearAllButton.trigger('click');
@@ -73,7 +74,7 @@ describe('toastContainer', () => {
 
   it('renders empty toasts and hide clearAll button when showNotification is true', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const settingStore = useSettingsStore(pinia);
@@ -81,6 +82,7 @@ describe('toastContainer', () => {
       settings: {
         showNotifications: true,
         privacyNoticeShown: true,
+        aiUsageNoticeShown: true,
         affectsPerPage: 10,
         trackersPerPage: 10,
         isHidingLabels: false,
@@ -113,7 +115,7 @@ describe('toastContainer', () => {
     'renders temporary toasts and hide toasts after its timeoutMs when showNotification is false',
     async () => {
       const pinia = createTestingPinia({
-        createSpy: vitest.fn,
+        createSpy: vi.fn,
         stubActions: false,
       });
       const settingStore = useSettingsStore(pinia);
@@ -124,6 +126,7 @@ describe('toastContainer', () => {
           trackersPerPage: 10,
           isHidingLabels: false,
           privacyNoticeShown: false,
+          aiUsageNoticeShown: false,
           unifiedCommentsView: false,
           affectsColumnWidths: [],
           trackersColumnWidths: [],
