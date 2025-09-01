@@ -25,6 +25,7 @@ export const PersistentSettingsSchema = z.object({
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
+  aiUsageNoticeShown: z.boolean().default(false),
   unifiedCommentsView: z.boolean().default(false),
   affectsColumnWidths: z.array(z.number()).default([]),
   trackersColumnWidths: z.array(z.number()).default([]),
@@ -47,6 +48,7 @@ const defaultPersistentSettings: PersistentSettingsType = {
   trackersPerPage: 10,
   isHidingLabels: false,
   privacyNoticeShown: false,
+  aiUsageNoticeShown: false,
   unifiedCommentsView: false,
   affectsColumnWidths: [],
   trackersColumnWidths: [],
@@ -80,6 +82,22 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       ' In some cases that information may be publicly visible.',
     });
     persistentSettings.value.privacyNoticeShown = true;
+  }
+
+  if (!persistentSettings.value.aiUsageNoticeShown) {
+    addToast({
+      title: 'AI Usage Notice',
+      body:
+        'You are about to use a Red Hat AI-powered system, which utilizes generative AI technology to '
+        + 'provide you with relevant information. Please do not include any personal information in your '
+        + 'queries. By proceeding to use the tool, you acknowledge that the tool and any output provided '
+        + 'are only intended for internal use and that information should only be shared with those with a '
+        + 'legitimate business purpose. Responses provided by tools utilizing AI technology should be '
+        + 'reviewed and verified by a human prior to use.',
+      css: 'info',
+      timeoutMs: 0, // Don't auto-dismiss
+    });
+    persistentSettings.value.aiUsageNoticeShown = true;
   }
 
   // Migration: Move API keys from localStorage to backend
