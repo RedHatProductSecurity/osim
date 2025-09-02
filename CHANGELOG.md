@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
+* Add Aegis-AI regulatory notifications (`AEGIS-62`)
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
