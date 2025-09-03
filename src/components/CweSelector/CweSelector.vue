@@ -8,6 +8,7 @@ import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/E
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import type { CWEMemberType } from '@/types/mitreCwe';
 import { loadCweData } from '@/services/CweService';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
@@ -112,6 +113,7 @@ const getUsageClass = (usage: string) => {
   <LabelDiv :label :loading="isSuggesting" class="mb-2">
     <template #labelSlot>
       <i
+        v-if="osimRuntime.flags?.aiCweSuggestions === true"
         class="bi-stars label-icon"
         :class="{ disabled: !canSuggest, applied: hasAppliedSuggestion }"
         :title="suggestionTooltip"
