@@ -25,6 +25,9 @@ if [ -f "/osim_build.json" ]; then
     IFS= read -r -d '' OSIM_VERSION <"/osim_build.json" || :
 fi
 
+# Feature flags
+OSIM_FLAG_AI_CWE_SUGGESTIONS="${OSIM_FLAG_AI_CWE_SUGGESTIONS:-false}"
+
 IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
 {
   "env": "${OSIM_ENV}",
@@ -38,7 +41,10 @@ IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
     "mitre": "${OSIM_BACKENDS_MITRE}"
   },
   "osimVersion": ${OSIM_VERSION},
-  "readOnly": ${OSIM_READONLY_MODE}
+  "readOnly": ${OSIM_READONLY_MODE},
+  "flags": {
+    "aiCweSuggestions": ${OSIM_FLAG_AI_CWE_SUGGESTIONS}
+  }
 }
 EOF
 
