@@ -1,5 +1,5 @@
 import { VueWrapper, mount } from '@vue/test-utils';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
 import Navbar from '@/components/Navbar/Navbar.vue';
@@ -17,7 +17,7 @@ describe('navbar', () => {
 
   it('hides widget test option when not dev environment', () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     subject = mount(Navbar, {
@@ -41,7 +41,7 @@ describe('navbar', () => {
 
   it('renders show notification icon with empty notification count', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
@@ -56,6 +56,7 @@ describe('navbar', () => {
         trackersPerPage: 10,
         isHidingLabels: false,
         privacyNoticeShown: false,
+        aiUsageNoticeShown: false,
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
@@ -85,7 +86,7 @@ describe('navbar', () => {
 
   it('renders show notification icon with notification count', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
@@ -101,6 +102,7 @@ describe('navbar', () => {
         trackersPerPage: 10,
         isHidingLabels: false,
         privacyNoticeShown: true,
+        aiUsageNoticeShown: true,
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
@@ -126,7 +128,7 @@ describe('navbar', () => {
     expect(icon.classes()).toContain('bi-bell-fill');
     const badge = button.find('.osim-notification-count');
     expect(badge.exists()).toBeTruthy();
-    expect(badge.text()).toBe('3');
+    expect(badge.text()).toBe('4');
     await icon.trigger('click');
     expect(settingStore.settings.showNotifications).toBe(false);
     icon = subject.find('.osim-notification-button .notification-icon');
@@ -136,7 +138,7 @@ describe('navbar', () => {
 
   it('renders hide notification icon with empty notification count', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
@@ -151,6 +153,7 @@ describe('navbar', () => {
         trackersPerPage: 10,
         isHidingLabels: false,
         privacyNoticeShown: false,
+        aiUsageNoticeShown: false,
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
@@ -180,7 +183,7 @@ describe('navbar', () => {
 
   it('renders hide notification icon with notification count', async () => {
     const pinia = createTestingPinia({
-      createSpy: vitest.fn,
+      createSpy: vi.fn,
       stubActions: false,
     });
     const toastStore = useToastStore(pinia);
@@ -196,6 +199,7 @@ describe('navbar', () => {
         trackersPerPage: 10,
         isHidingLabels: false,
         privacyNoticeShown: false,
+        aiUsageNoticeShown: false,
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],

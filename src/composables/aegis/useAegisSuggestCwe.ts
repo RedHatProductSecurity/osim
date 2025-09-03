@@ -62,7 +62,12 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         explanation: (data as any)?.explanation,
       } as CweSuggestionDetails;
       hasAppliedSuggestion.value = true;
-      toastStore.addToast({ title: 'AI Suggestion', body: 'Suggestion applied.' });
+      toastStore.addToast({
+        title: 'AI Suggestion Applied',
+        body: 'Suggestion applied. Always review AI generated responses prior to use.',
+        css: 'info',
+        timeoutMs: 8000,
+      });
     } catch (e: any) {
       const msg = e?.data?.detail ?? e?.message ?? 'Request failed';
       toastStore.addToast({ title: 'AI Suggestion Error', body: `${msg}` });
