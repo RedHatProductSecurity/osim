@@ -3,6 +3,7 @@
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
 * Add Aegis-AI regulatory notifications (`AEGIS-62`)
+* Show time in Flaw index/list view (`OSIDB-4407`)
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
