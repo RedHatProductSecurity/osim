@@ -113,7 +113,7 @@ function relevantFields(issue: ZodFlawType) {
     unembargo_dt: issue.unembargo_dt,
     embargoed: issue.embargoed,
     owner: issue.owner,
-    formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd'),
+    formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd HH:mm'),
     labels: issue.labels,
   };
 }

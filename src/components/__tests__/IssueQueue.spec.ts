@@ -193,7 +193,7 @@ describe('issueQueue', () => {
 
     const dateEl = wrapper.findAll('td')[2];
     expect(dateEl.exists()).toBeTruthy();
-    expect(dateEl.text()).toBe('2021-07-29');
+    expect(dateEl.text()).toBe('2021-07-29 22:50');
   });
 
   it('should render flaw labels', () => {

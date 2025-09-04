@@ -25,7 +25,7 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
         <tr data-v-15d9c71d="" class="osim-issue-queue-item osim-shaded">
           <td data-v-15d9c71d="" class="osim-issue-title pb-0"><a data-v-15d9c71d="" href="/flaws/CVE-2903-0092" class="">CVE-2903-0092</a></td>
           <td data-v-15d9c71d="" class="pb-0">MODERATE</td>
-          <td data-v-15d9c71d="" class="pb-0">2021-07-29</td>
+          <td data-v-15d9c71d="" class="pb-0">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="pb-0">title</td>
           <td data-v-15d9c71d="" class="pb-0">NEW</td>
           <td data-v-15d9c71d="" class="pb-0">test@redhat.com</td>
@@ -76,7 +76,7 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
         <tr data-v-15d9c71d="" class="osim-issue-queue-item osim-shaded">
           <td data-v-15d9c71d="" class="osim-issue-title"><a data-v-15d9c71d="" href="/flaws/CVE-2903-0092" class="">CVE-2903-0092</a></td>
           <td data-v-15d9c71d="" class="">MODERATE</td>
-          <td data-v-15d9c71d="" class="">2021-07-29</td>
+          <td data-v-15d9c71d="" class="">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="">title</td>
           <td data-v-15d9c71d="" class="">NEW</td>
           <td data-v-15d9c71d="" class="">test@redhat.com</td>
@@ -118,7 +118,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
         <tr data-v-15d9c71d="" class="osim-issue-queue-item osim-shaded">
           <td data-v-15d9c71d="" class="osim-issue-title pb-0"><a data-v-15d9c71d="" href="/flaws/CVE-2903-0092" class="">CVE-2903-0092</a></td>
           <td data-v-15d9c71d="" class="pb-0">MODERATE</td>
-          <td data-v-15d9c71d="" class="pb-0">2021-07-29</td>
+          <td data-v-15d9c71d="" class="pb-0">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="pb-0">title</td>
           <td data-v-15d9c71d="" class="pb-0">NEW</td>
           <td data-v-15d9c71d="" class="pb-0">test@redhat.com</td>
