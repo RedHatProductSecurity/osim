@@ -64,6 +64,12 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
   }
 
   function cancelChanges(affect: ZodAffectType) {
+    const priorEditAffect = getAffectPriorEdit(affect);
+    const matchAffect = matcherForAffect(affect);
+    const updateIndex = flaw.value.affects.findIndex(matchAffect);
+    if (updateIndex !== -1 && priorEditAffect) {
+      flaw.value.affects.splice(updateIndex, 1, { ...priorEditAffect });
+    }
     resetStagedAffectEdit(affect);
   }
 
