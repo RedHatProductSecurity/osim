@@ -178,7 +178,7 @@ const tabsTooltips = computed(() => {
     }
   }
 
-  .osim-flaw-comment {
+  :deep(.osim-flaw-comment) {
     white-space: pre-wrap;
   }
 }
