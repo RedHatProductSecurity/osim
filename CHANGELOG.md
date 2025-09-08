@@ -10,6 +10,8 @@
 * Reduce network calls in post-save Flaw refresh (`OSIDB-4267`)
 * CWE suggestions using AegisAI (`AEGIS-69`)
 * Only expand Contributors table when a label is new or assigned (`OSIDB-4083`). 
+* Remove validation preventing incident state changes without approved description (`OSIDB-4441`)
+
 
 ## [2025.8.0]
 ### Added
