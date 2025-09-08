@@ -19,6 +19,7 @@ import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
+import Nudge from '@/components/Nudge/Nudge.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -46,6 +47,9 @@ import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
+import {
+  FlawClassificationStateEnum,
+} from '@/generated-client';
 
 const props = defineProps<{
   mode: 'create' | 'edit';
@@ -84,6 +88,10 @@ const {
 const { isFetchingAffects } = useFetchFlaw();
 
 const { flaw, initialFlaw } = useFlaw();
+
+const shouldShowImpactNudge = computed(() => flaw.value.impact !== initialFlaw.value?.impact
+  && [...Object.values(FlawClassificationStateEnum)]
+    .indexOf(flaw.value.classification?.state as FlawClassificationStateEnum) > 1);
 
 const {
   highlightedNvdCvssString,
@@ -264,7 +272,11 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
               :options="flawImpactEnum"
               :error="errors.impact"
               :withBlank="true"
-            />
+            >
+              <template #nudge>
+                <Nudge :isVisible="shouldShowImpactNudge" :tooltip="flawImpactEnum[flaw.impact]" />
+              </template>
+            </LabelSelect>
             <CvssCalculator />
             <CvssSection
               :highlightedNvdCvssString

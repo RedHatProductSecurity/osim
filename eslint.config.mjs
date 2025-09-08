@@ -144,7 +144,7 @@ export default tseslint.config(
       'vue/multi-word-component-names': [
         'error',
         {
-          ignores: ['Modal', 'Tabs', 'Toast', 'Login', 'Navbar', 'Settings'],
+          ignores: ['Modal', 'Tabs', 'Toast', 'Login', 'Navbar', 'Settings', 'Nudge'],
         },
       ],
       'vue/multiline-html-element-content-newline': 'off',
