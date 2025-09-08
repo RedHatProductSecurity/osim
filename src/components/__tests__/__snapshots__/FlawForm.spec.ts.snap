@@ -1,27 +1,54 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`flawForm > mounts and renders 1`] = `
-"<form data-v-76e7a15d="" class="osim-flaw-form mt-4">
-  <div data-v-76e7a15d="" class="">
-    <div data-v-76e7a15d="" class="row justify-content-end">
-      <div data-v-76e7a15d="" class="text-end osim-flaw-header-link"><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" class="d-block" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a>
-        <!--v-if-->
-      </div>
-      <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
-        <div data-v-4715e8e2="" class="ps-3 border-start">
-          <div data-v-4715e8e2="" class="visually-hidden">
-            <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
+"<form data-v-76e7a15d="" class="osim-flaw-form">
+  <div data-v-76e7a15d="" class="osim-content container-fluid">
+    <div data-v-76e7a15d="" class="row px-4 my-3">
+      <div data-v-76e7a15d="" class="row osim-flaw-form-section pt-0">
+        <div data-v-76e7a15d="" class="osim-flaw-form-header">
+          <div data-v-76e7a15d="" class="osim-flaw-header-link"><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a>
+            <!--v-if-->
+          </div>
+          <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+            <div data-v-4715e8e2="" class="ps-3 border-start">
+              <div data-v-4715e8e2="" class="visually-hidden">
+                <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
+                  <div data-v-4715e8e2="" class="ps-3 border-start">
+                    <div data-v-4715e8e2="" class="visually-hidden">
+                      <div>
+                        <!--v-if-->
+                      </div>
+                      <div>
+                        <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-warning"><i data-v-ec9bcb53="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
+                          <div data-v-4715e8e2="" class="ps-3 border-start">
+                            <div data-v-4715e8e2="" class="visually-hidden">
+                              <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
+                                <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> CVSSv3 score is missing.</span></div>
+                                <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
+                                <div data-v-ec9bcb53="" class="row mt-2">
+                                  <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
+                <!--v-if--></span></span>
+              </button>
               <div data-v-4715e8e2="" class="ps-3 border-start">
                 <div data-v-4715e8e2="" class="visually-hidden">
                   <div>
-                    <!--v-if-->
-                  </div>
-                  <div>
-                    <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-warning"><i data-v-ec9bcb53="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
+                    <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-danger"><i data-v-ec9bcb53="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
                       <div data-v-4715e8e2="" class="ps-3 border-start">
                         <div data-v-4715e8e2="" class="visually-hidden">
                           <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
-                            <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> CVSSv3 score is missing.</span></div>
+                            <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> Flaw contains acknowledgments for public source LKML</span></div>
                             <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
                             <div data-v-ec9bcb53="" class="row mt-2">
                               <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
@@ -33,20 +60,379 @@ exports[`flawForm > mounts and renders 1`] = `
                   </div></span>
                 </div>
               </div>
+              <div>
+                <!--v-if-->
+              </div>
             </div>
           </div>
         </div>
-        <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
-            <!--v-if--></span></span>
-          </button>
+        <!--v-if-->
+        <!--v-if-->
+        <!--v-if-->
+        <!--v-if-->
+      </div>
+    </div>
+  </div>
+  </div>
+  <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6 flaw-form-subdivision"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
+        <!--v-if-->
+        <!-- for invalid-tooltip positioning -->
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
+          <!--<Transition name="flash-bg" :duration="2000">-->
+          <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+            <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span>
+              <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+            </div>
+          </transition-stub>
+          <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+          <!--v-if-->
+        </div>
+      </div>
+    </label><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
+        <div data-v-76f6bf34="" class="col-9">
+          <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
+            <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"><span data-v-8bc603c3="" class="osim-pill-list-item badge text-bg-secondary" draggable="true" data-index="0"><span data-v-8bc603c3="" style="cursor: text;">kernel</span><i data-v-8bc603c3="" class="bi bi-x-square ms-1" style="cursor: pointer;" tabindex="0"><span data-v-8bc603c3="" class="visually-hidden">Remove</span></i></span></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
+            <!--v-if-->
+          </div>
+        </div>
+      </div>
+    </label>
+    <div data-v-76e7a15d="" class="row">
+      <div data-v-76e7a15d="" class="col"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+          <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3"><a data-v-76e7a15d="" href="https://access.redhat.com/security/cve/CVE-2024-1234" target="_blank" rel="noopener noreferrer"> CVE ID <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a></span>
+            <!--v-if-->
+            <!-- for invalid-tooltip positioning -->
+            <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
+              <!--<Transition name="flash-bg" :duration="2000">-->
+              <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CVE-2024-1234</span>
+                  <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+                </div>
+              </transition-stub>
+              <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+              <!--v-if-->
+            </div>
+          </div>
+        </label></div>
+      <!--v-if-->
+    </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact </span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MODERATE">
+            <option data-v-001a00e0="" selected="" disabled="" value=""></option>
+            <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
+            <option data-v-001a00e0="" value="IMPORTANT">IMPORTANT</option>
+            <option data-v-001a00e0="" selected="" value="MODERATE">MODERATE</option>
+            <option data-v-001a00e0="" value="LOW">LOW</option>
+            <option data-v-001a00e0="" value="">NONE</option>
+          </select>
+          <!--v-if-->
+        </div>
+      </div>
+    </label>
+    <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
+      <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
+          <div data-v-ffda1b6f="" class="input-wrapper col">
+            <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
+              <!--v-if-->
+              <!--v-if-->
+            </div>
+          </div>
+          <!--v-if-->
+        </label><button data-v-ffda1b6f="" tabindex="-1" type="button" class="erase-button input-group-text"><i data-v-ffda1b6f="" class="bi bi-eraser"></i></button></div>
+      <div data-v-707feb84="" data-v-ffda1b6f="" class="cvss-calculator visually-hidden mt-2">
+        <div data-v-707feb84="" class="p-3">
+          <div data-v-707feb84="" class="osim-input mx-0">
+            <div data-v-707feb84="" class="mx-auto">
+              <div data-v-707feb84="" class="row-group">
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Attack Vector</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet. Such a vulnerability is often termed “remotely exploitable” and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers)." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">Network</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worse: The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone). One example of an Adjacent attack would be an ARP (IPv4) or neighbor discovery (IPv6) flood leading to a denial of service on the local LAN segment." style="background-color: rgb(224, 224, 224);">Adjacent</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: 1.the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); 2.or the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., using social engineering techniques to trick a legitimate user into opening a malicious document)." style="background-color: rgb(224, 224, 224);">Local</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief (e.g., evil maid attack) or persistent. An example of such an attack is a cold boot attack in which an attacker gains access to disk encryption keys after physically accessing the target system. Other examples include peripheral attacks via FireWire/USB Direct Memory Access (DMA)." style="background-color: rgb(224, 224, 224);">Physical</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Attack Complexity</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component." style="background-color: rgb(224, 224, 224);">Low</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">High</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Privileges Required</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the the vulnerable system to carry out an attack." style="background-color: rgb(224, 224, 224);">None</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worse: The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources." style="background-color: rgb(224, 224, 224);">Low</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">High</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">User Interaction</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: The vulnerable system can be exploited without interaction from any user." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">None</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator." style="background-color: rgb(224, 224, 224);">Required</button></div>
+                </div>
+              </div>
+              <div data-v-707feb84="" class="row-group">
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Scope</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities." style="background-color: rgb(224, 224, 224);">Changed</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">Unchanged</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Confidentiality</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator's password, or private encryption keys of a web server." style="background-color: rgb(224, 224, 224);">High</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">Low</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Good: There is no loss of confidentiality within the impacted component." style="background-color: rgb(224, 224, 224);">None</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Integrity</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component." style="background-color: rgb(224, 224, 224);">High</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component." style="background-color: rgb(224, 224, 224);">Low</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Good: There is no loss of integrity within the impacted component." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">None</button></div>
+                </div>
+                <div data-v-707feb84="" class="col-group">
+                  <div data-v-707feb84="" class="btn-group-vertical btn-group-sm osim-factor-severity-select"><button data-v-707feb84="" class="btn-group-header btn lh-sm" disabled="">Availability</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Worst: There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable)." style="background-color: rgb(224, 224, 224);">High</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm" data-bs-toggle="tooltip" data-bs-placement="right" title="Bad: Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component." style="background-color: rgb(224, 224, 224);">Low</button><button data-v-707feb84="" tabindex="-1" type="button" class="btn lh-sm osim-factor-highlight" data-bs-toggle="tooltip" data-bs-placement="right" title="Good: There is no impact to availability within the impacted component." style="color: rgb(0, 0, 0); background-color: rgb(229, 229, 229);">None</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-v-76e7a15d="">
+      <div data-v-0e2ae48e="" class="osim-input ps-3 mb-2">
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> NVD CVSSv3 <!--attrs: {{ $attrs }}--></span>
+          <div data-v-0e2ae48e="" class="col-9">
+            <div class="d-flex flex-row">
+              <div class="form-control text-break h-auto rounded-0"><span class="text-primary">4.0</span> CVSS:3.1/AV:N/AC:H/PR:<span class="text-primary">E</span>/UI:N/S:U/C:<span class="text-primary">N</span>/I:<span class="text-primary">L</span>/A:<span class="text-primary">R</span></div>
+              <div class="col-auto align-self-center">
+                <div data-v-b05c734f="" class="osim-cve-nist-form"><button data-v-b05c734f="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
+                  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+                    <!--v-if-->
+                  </transition-stub>
+                  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+                    <!--v-if-->
+                  </transition-stub>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--v-if-->
+    </div>
+    <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="col-9">
+          <div data-v-478878c2="" tabindex="0">
+            <!-- for invalid-tooltip positioning -->
+            <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
+              <!--<Transition name="flash-bg" :duration="2000">-->
+              <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
+                  <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+                </div>
+              </transition-stub>
+              <div class="input-group position-relative" tabindex="-1" style="display: none;">
+                <!--v-if--><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button>
+              </div>
+              <!--v-if-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source </span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="GIT">
+            <!--v-if-->
+            <option data-v-001a00e0="" value=""></option>
+            <option data-v-001a00e0="" value="ADOBE">ADOBE</option>
+            <option data-v-001a00e0="" value="APPLE">APPLE</option>
+            <option data-v-001a00e0="" hidden="" value="ASF">ASF</option>
+            <option data-v-001a00e0="" hidden="" value="BIND">BIND</option>
+            <option data-v-001a00e0="" hidden="" value="BK">BK</option>
+            <option data-v-001a00e0="" value="BUGTRAQ">BUGTRAQ</option>
+            <option data-v-001a00e0="" hidden="" value="BUGZILLA">BUGZILLA</option>
+            <option data-v-001a00e0="" value="CERT">CERT</option>
+            <option data-v-001a00e0="" hidden="" value="CERTIFI">CERTIFI</option>
+            <option data-v-001a00e0="" hidden="" value="CORELABS">CORELABS</option>
+            <option data-v-001a00e0="" value="CUSTOMER">CUSTOMER</option>
+            <option data-v-001a00e0="" value="CVE">CVE</option>
+            <option data-v-001a00e0="" hidden="" value="CVEORG">CVEORG</option>
+            <option data-v-001a00e0="" hidden="" value="DAILYDAVE">DAILYDAVE</option>
+            <option data-v-001a00e0="" value="DEBIAN">DEBIAN</option>
+            <option data-v-001a00e0="" value="DISTROS">DISTROS</option>
+            <option data-v-001a00e0="" hidden="" value="FEDORA">FEDORA</option>
+            <option data-v-001a00e0="" hidden="" value="FETCHMAIL">FETCHMAIL</option>
+            <option data-v-001a00e0="" hidden="" value="FREEDESKTOP">FREEDESKTOP</option>
+            <option data-v-001a00e0="" hidden="" value="FREERADIUS">FREERADIUS</option>
+            <option data-v-001a00e0="" hidden="" value="FRSIRT">FRSIRT</option>
+            <option data-v-001a00e0="" hidden="" value="FULLDISCLOSURE">FULLDISCLOSURE</option>
+            <option data-v-001a00e0="" hidden="" value="GAIM">GAIM</option>
+            <option data-v-001a00e0="" value="GENTOO">GENTOO</option>
+            <option data-v-001a00e0="" hidden="" value="GENTOOBZ">GENTOOBZ</option>
+            <option data-v-001a00e0="" selected="" value="GIT">GIT</option>
+            <option data-v-001a00e0="" hidden="" value="GNOME">GNOME</option>
+            <option data-v-001a00e0="" hidden="" value="GNUPG">GNUPG</option>
+            <option data-v-001a00e0="" value="GOOGLE">GOOGLE</option>
+            <option data-v-001a00e0="" hidden="" value="HP">HP</option>
+            <option data-v-001a00e0="" value="HW_VENDOR">HW_VENDOR</option>
+            <option data-v-001a00e0="" hidden="" value="IBM">IBM</option>
+            <option data-v-001a00e0="" hidden="" value="IDEFENSE">IDEFENSE</option>
+            <option data-v-001a00e0="" value="INTERNET">INTERNET</option>
+            <option data-v-001a00e0="" hidden="" value="ISC">ISC</option>
+            <option data-v-001a00e0="" hidden="" value="ISEC">ISEC</option>
+            <option data-v-001a00e0="" hidden="" value="IT">IT</option>
+            <option data-v-001a00e0="" hidden="" value="JBOSS">JBOSS</option>
+            <option data-v-001a00e0="" hidden="" value="JPCERT">JPCERT</option>
+            <option data-v-001a00e0="" hidden="" value="KERNELBUGZILLA">KERNELBUGZILLA</option>
+            <option data-v-001a00e0="" hidden="" value="KERNELSEC">KERNELSEC</option>
+            <option data-v-001a00e0="" value="LKML">LKML</option>
+            <option data-v-001a00e0="" hidden="" value="LWN">LWN</option>
+            <option data-v-001a00e0="" hidden="" value="MACROMEDIA">MACROMEDIA</option>
+            <option data-v-001a00e0="" value="MAGEIA">MAGEIA</option>
+            <option data-v-001a00e0="" hidden="" value="MAILINGLIST">MAILINGLIST</option>
+            <option data-v-001a00e0="" hidden="" value="MILW0RM">MILW0RM</option>
+            <option data-v-001a00e0="" hidden="" value="MIT">MIT</option>
+            <option data-v-001a00e0="" hidden="" value="MITRE">MITRE</option>
+            <option data-v-001a00e0="" value="MOZILLA">MOZILLA</option>
+            <option data-v-001a00e0="" hidden="" value="MUTTDEV">MUTTDEV</option>
+            <option data-v-001a00e0="" hidden="" value="NETDEV">NETDEV</option>
+            <option data-v-001a00e0="" hidden="" value="NISCC">NISCC</option>
+            <option data-v-001a00e0="" value="NVD">NVD</option>
+            <option data-v-001a00e0="" hidden="" value="OCERT">OCERT</option>
+            <option data-v-001a00e0="" hidden="" value="OPENOFFICE">OPENOFFICE</option>
+            <option data-v-001a00e0="" value="OPENSSL">OPENSSL</option>
+            <option data-v-001a00e0="" hidden="" value="OPENSUSE">OPENSUSE</option>
+            <option data-v-001a00e0="" value="ORACLE">ORACLE</option>
+            <option data-v-001a00e0="" hidden="" value="OSS">OSS</option>
+            <option data-v-001a00e0="" value="OSSSECURITY">OSSSECURITY</option>
+            <option data-v-001a00e0="" value="OSV">OSV</option>
+            <option data-v-001a00e0="" hidden="" value="PHP">PHP</option>
+            <option data-v-001a00e0="" hidden="" value="PIDGIN">PIDGIN</option>
+            <option data-v-001a00e0="" hidden="" value="POSTGRESQL">POSTGRESQL</option>
+            <option data-v-001a00e0="" hidden="" value="PRESS">PRESS</option>
+            <option data-v-001a00e0="" hidden="" value="REAL">REAL</option>
+            <option data-v-001a00e0="" value="REDHAT">REDHAT</option>
+            <option data-v-001a00e0="" value="RESEARCHER">RESEARCHER</option>
+            <option data-v-001a00e0="" hidden="" value="RT">RT</option>
+            <option data-v-001a00e0="" hidden="" value="SAMBA">SAMBA</option>
+            <option data-v-001a00e0="" hidden="" value="SECALERT">SECALERT</option>
+            <option data-v-001a00e0="" value="SECUNIA">SECUNIA</option>
+            <option data-v-001a00e0="" hidden="" value="SECURITYFOCUS">SECURITYFOCUS</option>
+            <option data-v-001a00e0="" value="SKO">SKO</option>
+            <option data-v-001a00e0="" hidden="" value="SQUID">SQUID</option>
+            <option data-v-001a00e0="" hidden="" value="SQUIRRELMAIL">SQUIRRELMAIL</option>
+            <option data-v-001a00e0="" hidden="" value="SUN">SUN</option>
+            <option data-v-001a00e0="" hidden="" value="SUNSOLVE">SUNSOLVE</option>
+            <option data-v-001a00e0="" value="SUSE">SUSE</option>
+            <option data-v-001a00e0="" value="TWITTER">TWITTER</option>
+            <option data-v-001a00e0="" value="UBUNTU">UBUNTU</option>
+            <option data-v-001a00e0="" value="UPSTREAM">UPSTREAM</option>
+            <option data-v-001a00e0="" hidden="" value="VENDORSEC">VENDORSEC</option>
+            <option data-v-001a00e0="" hidden="" value="VULNWATCH">VULNWATCH</option>
+            <option data-v-001a00e0="" hidden="" value="WIRESHARK">WIRESHARK</option>
+            <option data-v-001a00e0="" hidden="" value="XCHAT">XCHAT</option>
+            <option data-v-001a00e0="" hidden="" value="XEN">XEN</option>
+            <option data-v-001a00e0="" hidden="" value="XPDF">XPDF</option>
+          </select>
+          <!--v-if-->
+        </div>
+      </div>
+    </label>
+  </div>
+  <div data-v-76e7a15d="" class="col-6 flaw-form-subdivision">
+    <div data-v-d6c306ee="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
+      <div data-v-0e2ae48e="" data-v-d6c306ee="" class="osim-input ps-3 osim-workflow-state-display mb-2">
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
+          <div data-v-0e2ae48e="" class="col-9">
+            <div data-v-d6c306ee="" class="d-flex"><span data-v-d6c306ee="" class="form-control rounded-0">NEW</span>
+              <div data-v-d6c306ee="" class="col-auto">
+                <div data-v-d6c306ee="" class="osim-workflow-state-buttons"><button data-v-d6c306ee="" type="button" class="btn btn-secondary rounded-0"> Reject </button><button data-v-d6c306ee="" type="button" class="btn btn-warning osim-last-field-button" title="Promote to Triage"> Promote to Triage</button></div>
+              </div>
+            </div>
+            <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+            <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+          </div>
+        </div>
+      </div>
+    </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State </span>
+        <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="APPROVED">
+            <!--v-if-->
+            <option data-v-001a00e0="" value=""></option>
+            <option data-v-001a00e0="" selected="" value="APPROVED">Major Incident Approved</option>
+            <option data-v-001a00e0="" value="CISA_APPROVED">Exploits (KEV) Approved</option>
+            <option data-v-001a00e0="" value="MINOR">Minor Incident Approved</option>
+            <option data-v-001a00e0="" value="REQUESTED">Major Incident Requested</option>
+            <option data-v-001a00e0="" value="REJECTED">Major Incident Rejected</option>
+          </select>
+          <!--v-if-->
+        </div>
+      </div>
+    </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
+          <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2012-01-10</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
+          <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2012-01-10"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
+          <!--v-if-->
+        </div>
+        <!--v-if-->
+      </div>
+    </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Public Date</span><!-- for invalid-tooltip positioning -->
+        <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
+          <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2012-01-10 00:00 UTC</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
+          <div class="input-group osim-date-edit-field" style="display: none;"><input class="form-control" type="text" value="2012-01-10 00:00 UTC"><button type="button" class="input-group-text osim-confirm" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text osim-cancel" tabindex="-1"><i class="bi bi-x"></i></button></div>
+          <!--v-if-->
+        </div>
+        <!--v-if-->
+      </div>
+    </label>
+    <div data-v-0e2ae48e="" data-v-cbe7eb54="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Embargoed <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="col-9">
+          <div data-v-cbe7eb54="">
+            <div data-v-cbe7eb54="" class="d-flex ms-0 p-0 justify-content-between">
+              <div data-v-cbe7eb54="" class="osim-embargo-label osim-input d-flex align-items-center"><span data-v-cbe7eb54="" class="form-control">No <!--v-if--></span>
+                <!--v-if-->
+              </div>
+              <!--v-if-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
+      <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> Owner <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="col-9">
+          <!-- for invalid-tooltip positioning -->
+          <div class="position-relative col-9 osim-editable-field osim-text col-12">
+            <!--<Transition name="flash-bg" :duration="2000">-->
+            <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+              <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
+                <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button><button type="button" class="btn btn-primary osim-self-assign"> Self Assign </button>
+              </div>
+            </transition-stub>
+            <div class="input-group position-relative" tabindex="-1" style="display: none;">
+              <!--v-if--><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button><button type="button" class="btn btn-primary osim-self-assign"> Self Assign </button>
+            </div>
+            <!--v-if-->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-v-b341c440="" data-v-76e7a15d="" class="osim-static-label osim-input mb-2 ps-3">
+      <div data-v-b341c440="" class="row"><span data-v-b341c440="" class="form-label col-3">Created Date</span>
+        <div data-v-b341c440="" class="col-9"><span data-v-b341c440="" class="form-control">2021-09-13 09:09 UTC</span></div>
+      </div>
+    </div>
+    <!--v-if-->
+    <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label ms-2 cvss-score-mismatch"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label data-v-4715e8e2="" class="ms-2 form-label">Explain non-obvious CVSSv3 score metrics</label></button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden"><textarea rows="3" class="form-control col-9 d-inline-block mb-3" placeholder="CVSS Score Explanation"></textarea></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
+    <div data-v-4715e8e2="" class="ps-3 border-start">
+      <div data-v-4715e8e2="" class="visually-hidden">
+        <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw:</label><span><!--v-if--><span class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </span></span></span></button>
           <div data-v-4715e8e2="" class="ps-3 border-start">
             <div data-v-4715e8e2="" class="visually-hidden">
               <div>
-                <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-danger"><i data-v-ec9bcb53="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
+                <!--v-if-->
+              </div>
+              <div>
+                <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-warning" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-warning"><i data-v-ec9bcb53="" class="bi bi-exclamation-triangle-fill"></i> Warning cvss3_missing</span></button>
                   <div data-v-4715e8e2="" class="ps-3 border-start">
                     <div data-v-4715e8e2="" class="visually-hidden">
                       <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
-                        <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> Flaw contains acknowledgments for public source LKML</span></div>
+                        <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> CVSSv3 score is missing.</span></div>
                         <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
                         <div data-v-ec9bcb53="" class="row mt-2">
                           <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
@@ -58,16 +444,41 @@ exports[`flawForm > mounts and renders 1`] = `
               </div></span>
             </div>
           </div>
-          <div>
-            <!--v-if-->
-          </div>
         </div>
       </div>
     </div>
-    <!--v-if-->
-    <!--v-if-->
-    <!--v-if-->
-    <!--v-if-->
+    <div data-v-4715e8e2="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span><label class="mx-2">Flaw Acknowledgments:</label><span><span class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </span>
+        <!--v-if--></span></span>
+      </button>
+      <div data-v-4715e8e2="" class="ps-3 border-start">
+        <div data-v-4715e8e2="" class="visually-hidden">
+          <div>
+            <div><span><div data-v-ec9bcb53="" class="alert my-1 p-2 alert-danger" role="alert"><div data-v-4715e8e2="" data-v-ec9bcb53="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-ec9bcb53="" class="badge mx-2 text-bg-danger"><i data-v-ec9bcb53="" class="bi bi-x-circle-fill"></i> Error _validate_public_source_no_ack</span></button>
+              <div data-v-4715e8e2="" class="ps-3 border-start">
+                <div data-v-4715e8e2="" class="visually-hidden">
+                  <div data-v-ec9bcb53="" class="ms-1 py-2 container text-left">
+                    <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">Description:</strong><span data-v-ec9bcb53=""> Flaw contains acknowledgments for public source LKML</span></div>
+                    <div data-v-ec9bcb53="" class="osim-flaw-alert-info"><strong data-v-ec9bcb53="">How To Resolve:</strong><span data-v-ec9bcb53=""> No resolution steps are defined.</span></div>
+                    <div data-v-ec9bcb53="" class="row mt-2">
+                      <div data-v-ec9bcb53="" class="col"><button data-v-ec9bcb53="" type="button" class="btn btn-sm btn-secondary"> Scroll To Origin <i data-v-ec9bcb53="" class="bi bi-arrow-down-circle"></i></button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div></span>
+        </div>
+      </div>
+      <div>
+        <!--v-if-->
+      </div>
+    </div>
+  </div>
+  </div>
+  <!--v-if-->
+  <!--v-if-->
+  <!--v-if-->
+  <!--v-if-->
   </div>
   </div>
   </div>
@@ -117,7 +528,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </label></div>
         <!--v-if-->
       </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact</span>
+        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact </span>
           <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MODERATE">
               <option data-v-001a00e0="" selected="" disabled="" value=""></option>
               <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
@@ -220,7 +631,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
         </div>
       </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source</span>
+        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source </span>
           <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="GIT">
               <!--v-if-->
               <option data-v-001a00e0="" value=""></option>
@@ -339,7 +750,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
         </div>
       </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
+        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State </span>
           <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="APPROVED">
               <!--v-if-->
               <option data-v-001a00e0="" value=""></option>
