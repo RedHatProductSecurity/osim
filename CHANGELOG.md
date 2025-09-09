@@ -7,6 +7,7 @@
 
 ### Fixed
 * Correctly display line breaks in comments (`OSIDB-4290`)
+* Fix UI layout issues for smaller resolutions (`OSIDB-4411`)
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
