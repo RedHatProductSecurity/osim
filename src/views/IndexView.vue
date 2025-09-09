@@ -66,10 +66,10 @@ function selectSavedSearch(index: number) {
   <main class="mt-3">
     <details
       :open="showSavedSearches"
-      class="osim-advanced-search-container container-fluid ps-3"
+      class="osim-advanced-search-container"
     >
       <summary @click="showSavedSearches === true"> Saved Searches</summary>
-      <div class="container-fluid mt-2">
+      <div class="mt-2">
         <template v-for="(savedSearch, index) in searchStore.savedSearches" :key="index">
           <button
             :title="'Query: ' + savedSearch.queryFilter + '\nFields: '
