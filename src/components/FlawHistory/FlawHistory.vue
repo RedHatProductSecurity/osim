@@ -94,12 +94,12 @@ function clearFilters() {
       <span>There are no tracked changes for this flaw.</span>
     </template>
     <template v-else>
-      <div class="d-flex mb-2">
+      <div class="d-flex mb-2 gap-2">
         <button
           tabindex="-1"
           type="button"
           :disabled="emptyFilters"
-          class="input-group-text ms-2"
+          class="input-group-text"
           @click="clearFilters()"
           @mousedown="event => event.preventDefault()"
         >
@@ -107,13 +107,11 @@ function clearFilters() {
         </button>
         <EditableDate
           v-model="startDate as string"
-          class="ms-2"
           style="width: 225px;"
           placeholder="[Start date]"
         />
         <EditableDate
           v-model="endDate as string"
-          class="ms-2"
           style="width: 225px;"
           placeholder="[End date]"
         />
@@ -123,35 +121,33 @@ function clearFilters() {
       </template>
       <div v-else class="mt-2">
         <div class="mt-2">
-          <label class="mx-2 form-label w-100">
-            <template v-for="historyEntry in paginatedHistoryItems" :key="historyEntry.pgh_slug">
-              <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
-                <span>
-                  {{ formatDateWithTimezone(historyEntry.pgh_created_at || '', true) }}
-                  - {{ historyEntry.pgh_context?.user || 'System' }}
-                </span>
-                <ul class="mb-2">
-                  <li v-for="(diffEntry, diffKey) in historyEntry.pgh_diff" :key="diffKey">
-                    <div class="ms-3 pb-0">
-                      <span>{{ capitalize(historyEntry.pgh_label) }}</span>
-                      <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
-                      <span>{{ ': ' +
-                        (isDateField(diffKey) && diffEntry[0]
-                          ? formatDateWithTimezone(diffEntry[0])
-                          : (diffEntry[0]?.toString() || '')
-                        ) + ' '
-                      }}</span>
-                      <i class="bi bi-arrow-right" />
-                      {{ (isDateField(diffKey) && diffEntry[1]
-                        ? formatDateWithTimezone(diffEntry[1])
-                        : (diffEntry[1]?.toString() || '')
-                      ) }}
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </template>
-          </label>
+          <template v-for="historyEntry in paginatedHistoryItems" :key="historyEntry.pgh_slug">
+            <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
+              <span>
+                {{ formatDateWithTimezone(historyEntry.pgh_created_at || '', true) }}
+                - {{ historyEntry.pgh_context?.user || 'System' }}
+              </span>
+              <ul class="mb-2">
+                <li v-for="(diffEntry, diffKey) in historyEntry.pgh_diff" :key="diffKey">
+                  <div class="ms-3 pb-0">
+                    <span>{{ capitalize(historyEntry.pgh_label) }}</span>
+                    <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
+                    <span>{{ ': ' +
+                      (isDateField(diffKey) && diffEntry[0]
+                        ? formatDateWithTimezone(diffEntry[0])
+                        : (diffEntry[0]?.toString() || '')
+                      ) + ' '
+                    }}</span>
+                    <i class="bi bi-arrow-right" />
+                    {{ (isDateField(diffKey) && diffEntry[1]
+                      ? formatDateWithTimezone(diffEntry[1])
+                      : (diffEntry[1]?.toString() || '')
+                    ) }}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </template>
         </div>
       </div>
     </template>

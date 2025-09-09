@@ -178,184 +178,182 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
 </script>
 
 <template>
-  <form class="osim-flaw-form" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
-    <div class="osim-content container-fluid">
-      <div
-        class="row px-4 my-3"
-        :class="{'osim-flaw-form-embargoed border border-2 border-primary': flaw.embargoed}"
-      >
-        <div class="row osim-flaw-form-section pt-0">
-          <div class="osim-flaw-form-header">
-            <div class="osim-flaw-header-link">
-              <a
-                v-if="flaw.meta_attr?.bz_id"
-                :href="bugzillaLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-              </a>
-              <a
-                v-if="flaw.task_key"
-                :href="jiraTaskUrl(flaw.task_key)"
-                target="_blank"
-              >
-                Open in Jira <i class="bi-box-arrow-up-right ms-2" />
-              </a>
-            </div>
-
-            <FlawAlertsList
-              :flaw="flaw"
-              class="col-12 osim-alerts-banner"
-              @expandFocusedComponent="expandFocusedComponent"
-            />
-          </div>
-          <div :id="flaw.uuid" class="col-6 flaw-form-subdivision">
-            <LabelEditable
-              v-model="flaw.title"
-              label="Title"
-              type="text"
-              :error="errors.title"
-            />
-            <LabelTagsInput
-              v-model="flaw.components"
-              label="Components"
-              :error="errors.components"
-            />
-            <div class="row">
-              <div class="col">
-                <LabelEditable
-                  v-model="flaw.cve_id"
-                  type="text"
-                  label="CVE ID"
-                  :error="errors.cve_id"
-                >
-                  <template #label>
-                    <a
-                      v-if="!isEmbargoed && flaw.cve_id"
-                      :href="`https://access.redhat.com/security/cve/${flaw.cve_id}`"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      CVE ID <i class="bi-box-arrow-up-right ms-2" />
-                    </a>
-                    <span v-else>
-                      CVE ID
-                    </span>
-                  </template>
-                </LabelEditable>
-              </div>
-              <div
-                v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
-                class="col-auto align-self-end mb-2"
-              >
-                <CveRequestForm
-                  :embargoed="flaw.embargoed"
-                  :bugzilla-link="bugzillaLink"
-                  :osim-link="osimLink"
-                  :subject="flaw.title"
-                  :description="flaw.cve_description ?? ''"
-                />
-              </div>
-            </div>
-            <LabelSelect
-              v-model="flaw.impact"
-              label="Impact"
-              :options="flawImpactEnum"
-              :error="errors.impact"
-              :withBlank="true"
-            />
-            <CvssCalculator />
-            <CvssSection
-              :highlightedNvdCvssString
-              :shouldDisplayEmailNistForm
-              :cveId="flaw.cve_id"
-              :summary="flaw.comment_zero"
-              :bugzilla="bugzillaLink"
-              :cvss="rhCvssString"
-              :allCvss="flaw.cvss_scores"
-              :nistCvss="nvdCvssString"
-            />
-            <CweSelector
-              v-model="flaw.cwe_id"
-              label="CWE ID"
-              :error="errors.cwe_id"
-              :aegis-context="aegisContext"
-            />
-            <LabelSelect
-              v-model="flaw.source"
-              label="CVE Source"
-              :options="flawSources"
-              :error="errors.source"
-              :options-hidden="hiddenSources"
-            />
-          </div>
-          <div class="col-6 flaw-form-subdivision">
-            <IssueFieldState
-              v-if="mode === 'edit'"
-              :classification="flaw.classification"
-              :flawId="flaw.uuid"
-              :shouldCreateJiraTask
-              @refresh:flaw="emit('refresh:flaw')"
-              @create:jiraTask="toggleShouldCreateJiraTask()"
-            />
-            <LabelSelect
-              v-model="flaw.major_incident_state"
-              label="Incident State"
-              :options="MajorIncidentStateEnumWithBlank"
-              :error="errors.major_incident_state"
-            />
-            <LabelEditable
-              v-model="flaw.reported_dt"
-              label="Reported Date"
-              type="date"
-              :error="errors.reported_dt"
-            />
-            <LabelEditable
-              v-model="flaw.unembargo_dt"
-              :label="
-                'Public Date' +
-                  (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
-                    ? ' [FUTURE]'
-                    : '')
-              "
-              type="datetime"
-              :error="errors.unembargo_dt"
-            />
-            <IssueFieldEmbargo
-              v-model="flaw.embargoed"
-              v-model:showModal="showUnembargoingModal"
-              :isFlawNew="!flaw.uuid"
-              :isEmbargoed="isEmbargoed"
-              :flawId="flaw.cve_id || flaw.uuid"
-              @updateFlaw="updateFlaw"
-              @update:model-value="onUnembargoed"
-            />
-            <FlawFormOwner v-model="flaw.owner" :taskKey="flaw.task_key" />
-            <LabelStatic
-              v-if="mode === 'edit'"
-              :modelValue="createdDate"
-              label="Created Date"
-            />
-            <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
-            <CvssExplainForm v-if="shouldDisplayEmailNistForm" v-model="flaw" />
-          </div>
+  <form class="osim-flaw-form mt-4" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
+    <div :class="{'osim-flaw-form-embargoed': flaw.embargoed}">
+      <div class="row justify-content-end">
+        <div class="col-12 text-end">
+          <a
+            v-if="flaw.meta_attr?.bz_id"
+            :href="bugzillaLink"
+            target="_blank"
+            class="d-block"
+            rel="noopener noreferrer"
+          >
+            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+          </a>
+          <a
+            v-if="flaw.task_key"
+            :href="jiraTaskUrl(flaw.task_key)"
+            target="_blank"
+            class="d-block"
+          >
+            Open in Jira <i class="bi-box-arrow-up-right ms-2" />
+          </a>
         </div>
-        <div class="osim-flaw-form-section border-top row mx-0">
+        <FlawAlertsList
+          :flaw="flaw"
+          class="col-12 osim-alerts-banner"
+          @expandFocusedComponent="expandFocusedComponent"
+        />
+      </div>
+      <div class="row osim-flaw-form-section">
+        <div :id="flaw.uuid" class="col-6">
+          <LabelEditable
+            v-model="flaw.title"
+            label="Title"
+            type="text"
+            :error="errors.title"
+          />
+          <LabelTagsInput
+            v-model="flaw.components"
+            label="Components"
+            :error="errors.components"
+          />
+          <div class="row">
+            <div class="col">
+              <LabelEditable
+                v-model="flaw.cve_id"
+                type="text"
+                label="CVE ID"
+                :error="errors.cve_id"
+              >
+                <template #label>
+                  <a
+                    v-if="!isEmbargoed && flaw.cve_id"
+                    :href="`https://access.redhat.com/security/cve/${flaw.cve_id}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    CVE ID <i class="bi-box-arrow-up-right ms-2" />
+                  </a>
+                  <span v-else>
+                    CVE ID
+                  </span>
+                </template>
+              </LabelEditable>
+            </div>
+            <div
+              v-if="!(flaw.cve_id || '').includes('CVE') && mode === 'edit'"
+              class="col-auto align-self-end mb-2"
+            >
+              <CveRequestForm
+                :embargoed="flaw.embargoed"
+                :bugzilla-link="bugzillaLink"
+                :osim-link="osimLink"
+                :subject="flaw.title"
+                :description="flaw.cve_description ?? ''"
+              />
+            </div>
+          </div>
+          <LabelSelect
+            v-model="flaw.impact"
+            label="Impact"
+            :options="flawImpactEnum"
+            :error="errors.impact"
+            :withBlank="true"
+          />
+          <CvssCalculator />
+          <CvssSection
+            :highlightedNvdCvssString
+            :shouldDisplayEmailNistForm
+            :cveId="flaw.cve_id"
+            :summary="flaw.comment_zero"
+            :bugzilla="bugzillaLink"
+            :cvss="rhCvssString"
+            :allCvss="flaw.cvss_scores"
+            :nistCvss="nvdCvssString"
+          />
+          <CweSelector
+            v-model="flaw.cwe_id"
+            label="CWE ID"
+            :error="errors.cwe_id"
+            :aegis-context="aegisContext"
+          />
+          <LabelSelect
+            v-model="flaw.source"
+            label="CVE Source"
+            :options="flawSources"
+            :error="errors.source"
+            :options-hidden="hiddenSources"
+          />
+        </div>
+        <div class="col-6">
+          <IssueFieldState
+            v-if="mode === 'edit'"
+            :classification="flaw.classification"
+            :flawId="flaw.uuid"
+            :shouldCreateJiraTask
+            @refresh:flaw="emit('refresh:flaw')"
+            @create:jiraTask="toggleShouldCreateJiraTask()"
+          />
+          <LabelSelect
+            v-model="flaw.major_incident_state"
+            label="Incident State"
+            :options="MajorIncidentStateEnumWithBlank"
+            :error="errors.major_incident_state"
+          />
+          <LabelEditable
+            v-model="flaw.reported_dt"
+            label="Reported Date"
+            type="date"
+            :error="errors.reported_dt"
+          />
+          <LabelEditable
+            v-model="flaw.unembargo_dt"
+            :label="
+              'Public Date' +
+                (DateTime.fromISO(flaw.unembargo_dt as string).diffNow().milliseconds > 0
+                  ? ' [FUTURE]'
+                  : '')
+            "
+            type="datetime"
+            :error="errors.unembargo_dt"
+          />
+          <IssueFieldEmbargo
+            v-model="flaw.embargoed"
+            v-model:showModal="showUnembargoingModal"
+            :isFlawNew="!flaw.uuid"
+            :isEmbargoed="isEmbargoed"
+            :flawId="flaw.cve_id || flaw.uuid"
+            @updateFlaw="updateFlaw"
+            @update:model-value="onUnembargoed"
+          />
+          <FlawFormOwner v-model="flaw.owner" :taskKey="flaw.task_key" />
+          <LabelStatic
+            v-if="mode === 'edit'"
+            :modelValue="createdDate"
+            label="Created Date"
+          />
+          <FlawContributors v-if="flaw.task_key" :taskKey="flaw.task_key" />
+          <CvssExplainForm v-if="shouldDisplayEmailNistForm" v-model="flaw" />
+        </div>
+      </div>
+      <div class="osim-flaw-form-section border-top row">
+        <div class="col-6">
           <LabelTextarea
             v-model="flaw.comment_zero"
             label="Comment#0"
             placeholder="Comment#0 ..."
             :error="errors.comment_zero"
             :disabled="mode === 'edit'"
-            class="col-6 px-4 py-2"
           />
+        </div>
+        <div class="col-6">
           <LabelTextarea
             v-model="flaw.cve_description"
             label="Description"
             placeholder="Description Text ..."
             :error="errors.cve_description"
-            class="col-6 px-4 py-2"
           >
             <template #label>
               <span class="form-label col-3 osim-folder-tab-label">
@@ -369,48 +367,51 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
               </span>
             </template>
           </LabelTextarea>
+        </div>
+        <div class="col-6">
           <LabelTextarea
             v-model="flaw.statement"
             label="Statement"
             placeholder="Statement Text ..."
             :error="errors.statement"
-            class="col-6 px-4 py-2"
           />
+        </div>
+        <div class="col-6">
           <LabelTextarea
             v-model="flaw.mitigation"
             label="Mitigation"
             placeholder="Mitigation Text ..."
             :error="errors.mitigation"
-            class="col-6 px-4 py-2"
           />
         </div>
-        <div class="osim-flaw-form-section border-top border-bottom">
-          <div class="d-flex gap-3">
-            <IssueFieldReferences
-              ref="referencesComp"
-              v-model="flawReferences"
-              class="w-100 my-2"
-              :mode="mode"
-              :error="errors.references"
-              @reference:update="saveReferences"
-              @reference:new="addBlankReference(flaw.embargoed)"
-              @reference:cancel-new="cancelAddReference"
-              @reference:delete="deleteReference"
-            />
-            <IssueFieldAcknowledgments
-              ref="acknowledgmentsComp"
-              v-model="flawAcknowledgments"
-              class="w-100 my-2"
-              :mode="mode"
-              :error="errors.acknowledgments"
-              @acknowledgment:update="saveAcknowledgments"
-              @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
-              @acknowledgment:cancel-new="cancelAddAcknowledgment"
-              @acknowledgment:delete="deleteAcknowledgment"
-            />
-          </div>
-        </div>
-        <div class="osim-flaw-form-section">
+
+      </div>
+      <div class="row osim-flaw-form-section border-top border-bottom">
+        <IssueFieldReferences
+          ref="referencesComp"
+          v-model="flawReferences"
+          class="col-6"
+          :mode="mode"
+          :error="errors.references"
+          @reference:update="saveReferences"
+          @reference:new="addBlankReference(flaw.embargoed)"
+          @reference:cancel-new="cancelAddReference"
+          @reference:delete="deleteReference"
+        />
+        <IssueFieldAcknowledgments
+          ref="acknowledgmentsComp"
+          v-model="flawAcknowledgments"
+          class="col-6"
+          :mode="mode"
+          :error="errors.acknowledgments"
+          @acknowledgment:update="saveAcknowledgments"
+          @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
+          @acknowledgment:cancel-new="cancelAddAcknowledgment"
+          @acknowledgment:delete="deleteAcknowledgment"
+        />
+      </div>
+      <div class="row osim-flaw-form-section">
+        <div class="col">
           <div v-if="isFetchingAffects">
             <LoadingSpinner
               type="border"
@@ -424,26 +425,30 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             :embargoed="flaw.embargoed"
           />
         </div>
-        <div class="osim-flaw-form-section">
-          <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
+      </div>
+      <div class="row osim-flaw-form-section">
+        <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
+      </div>
+      <div v-if="mode === 'edit'" class="row border-top osim-flaw-form-section">
+        <FlawComments
+          :commentsByType
+          :internalCommentsAvailable
+          :isLoadingInternalComments
+          :taskKey="flaw.task_key || ''"
+          :bugzillaLink
+          :isSaving
+          @comment:addFlawComment="addFlawComment"
+          @loadInternalComments="loadInternalComments"
+        />
+      </div>
+      <div class="row border-top">
+        <div class="col">
+          <FlawHistory v-if="mode === 'edit'" :history="flaw.history" />
         </div>
-        <div v-if="mode === 'edit'" class="border-top osim-flaw-form-section">
-          <FlawComments
-            :commentsByType
-            :internalCommentsAvailable
-            :isLoadingInternalComments
-            :taskKey="flaw.task_key || ''"
-            :bugzillaLink
-            :isSaving
-            @comment:addFlawComment="addFlawComment"
-            @loadInternalComments="loadInternalComments"
-          />
-        </div>
-        <FlawHistory v-if="mode === 'edit'" :history="flaw.history" />
       </div>
     </div>
-    <div class="osim-action-buttons sticky-bottom d-grid gap-2 d-flex justify-content-end">
-      <div v-if="mode === 'edit'">
+    <div class="osim-action-buttons sticky-bottom d-flex justify-content-end">
+      <template v-if="mode === 'edit'">
         <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
         <button
           v-osim-loading.grow="isSaving"
@@ -453,8 +458,8 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
         >
           Save Changes
         </button>
-      </div>
-      <div v-else-if="mode === 'create'">
+      </template>
+      <template v-else-if="mode === 'create'">
         <button
           v-osim-loading.grow="isSaving"
           type="submit"
@@ -463,12 +468,19 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
         >
           Create New Flaw
         </button>
-      </div>
+      </template>
     </div>
   </form>
 </template>
 
 <style scoped lang="scss">
+.osim-flaw-header-link {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+}
+
 form.osim-flaw-form :deep(*) {
   line-height: 1.5;
   font-family: 'Red Hat Mono', monospace;
@@ -486,10 +498,6 @@ form.osim-flaw-form :deep(*) {
   .flaw-form-subdivision {
     max-width: 100ch;
   }
-}
-
-div.osim-content {
-  width: 97.5%;
 }
 
 :deep(.osim-input) {
@@ -576,11 +584,12 @@ div.osim-content {
 .osim-action-buttons {
   background: white;
   border-top: 1px solid #ddd;
-  margin-left: 20px;
-  margin-right: 20px;
   padding-right: 20px;
-  padding-bottom: 2rem;
+  padding-bottom: calc(var(--osim-status-bar-height) + 0.5rem);
   padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
 }
 
 .osim-doc-text-container {
@@ -591,12 +600,16 @@ div.osim-content {
   margin-top: -15px;
 }
 
-.osim-flaw-header-link {
+.osim-flaw-form-embargoed {
+  position: relative;
+}
+
+.osim-flaw-form-embargoed::after {
+  content: ' ';
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  right: 0;
-  top: 0.25rem;
-  width: auto;
+  border: 2px solid;
+  border-color: rgba(var(--bs-primary-rgb));
+  inset: -1rem -1.5rem 0;
+  z-index: -1;
 }
 </style>

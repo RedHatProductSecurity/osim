@@ -41,36 +41,37 @@ const { settings } = useSettingsStore();
 </script>
 
 <template>
-  <table
-    v-resizableTableColumns="settings.affectsColumnWidths"
-    class="affects-table table align-middle table-striped mt-1"
-    :class="{'mb-0': totalPages === 0}"
-  >
-    <FlawAffectsTableHead />
-    <tbody>
-      <template v-for="(affect, affectIndex) in affects" :key="affect.uuid ?? affect._uuid">
-        <FlawAffectsTableRow
-          :affect="affect"
-          :error="errors?.[affectIndex] ?? null"
-          :isRemoved="isAffectBeingRemoved(affect)"
-          :isModified="isModified(affect)"
-          :isNew="isNewAffect(affect)"
-          :isLast="affectIndex === affects.length - 1"
-          @affect:recover="emit('affect:recover', affect)"
-          @affect:remove="emit('affect:remove', affect)"
-          @affect:toggle-selection="emit('affect:toggle-selection', affect)"
-          @affect:track="emit('affect:track', affect)"
-          @affect:updateCvss="(affect, newVector, newScore, cvssScoreIndex) => emit(
-            'affect:updateCvss',
-            affect,
-            newVector,
-            newScore,
-            cvssScoreIndex
-          )"
-        />
-      </template>
-    </tbody>
-  </table>
+  <div class="table-responsive mb-3" :class="{'mb-0': totalPages === 0}">
+    <table
+      v-resizableTableColumns="settings.affectsColumnWidths"
+      class="affects-table table align-middle table-striped mt-1 mb-0"
+    >
+      <FlawAffectsTableHead />
+      <tbody>
+        <template v-for="(affect, affectIndex) in affects" :key="affect.uuid ?? affect._uuid">
+          <FlawAffectsTableRow
+            :affect="affect"
+            :error="errors?.[affectIndex] ?? null"
+            :isRemoved="isAffectBeingRemoved(affect)"
+            :isModified="isModified(affect)"
+            :isNew="isNewAffect(affect)"
+            :isLast="affectIndex === affects.length - 1"
+            @affect:recover="emit('affect:recover', affect)"
+            @affect:remove="emit('affect:remove', affect)"
+            @affect:toggle-selection="emit('affect:toggle-selection', affect)"
+            @affect:track="emit('affect:track', affect)"
+            @affect:updateCvss="(affect, newVector, newScore, cvssScoreIndex) => emit(
+              'affect:updateCvss',
+              affect,
+              newVector,
+              newScore,
+              cvssScoreIndex
+            )"
+          />
+        </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped lang="scss">

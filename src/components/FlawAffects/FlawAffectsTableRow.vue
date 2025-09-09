@@ -141,7 +141,6 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     @click.prevent="handleToggle(currentAffect)"
   >
     <td>
-      <i class="row-left-indicator bi bi-caret-right-fill fs-4" />
       <input
         type="checkbox"
         class="form-check-input"
@@ -385,7 +384,6 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
       >
         <i class="bi bi-backspace" />
       </button>
-      <i class="row-right-indicator bi bi-caret-left-fill fs-4" />
     </td>
   </tr>
 </template>
@@ -405,23 +403,8 @@ tr {
     border-block: 0.2ch solid #e0e0e0;
     background-color: #e0e0e0;
 
-    .row-right-indicator {
-      right: -42px;
-    }
-
     .row-left-indicator {
       left: -42px;
-    }
-
-    .row-left-indicator,
-    .row-right-indicator {
-      position: absolute;
-      opacity: 0;
-      transition:
-        opacity 0.5s,
-        right 0.5s,
-        left 0.5s;
-      top: 0;
     }
 
     .btn {
@@ -480,21 +463,6 @@ tr {
     td {
       border-color: #707070bf;
     }
-  }
-}
-
-tr.selected td {
-  .row-left-indicator,
-  .row-right-indicator {
-    opacity: 100;
-  }
-
-  .row-right-indicator {
-    right: -24px !important;
-  }
-
-  .row-left-indicator {
-    left: -24px !important;
   }
 }
 
