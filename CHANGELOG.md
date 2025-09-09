@@ -5,6 +5,9 @@
 * Add Aegis-AI regulatory notifications (`AEGIS-62`)
 * Show time in Flaw index/list view (`OSIDB-4407`)
 
+### Fixed
+* Correctly display line breaks in comments (`OSIDB-4290`)
+
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
 * Reduce network calls in post-save Flaw refresh (`OSIDB-4267`)
