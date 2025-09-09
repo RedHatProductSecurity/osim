@@ -208,7 +208,7 @@ function deleteSavedSearch() {
 </script>
 
 <template>
-  <details :open="shouldShowAdvanced" class="osim-advanced-search-container container-fluid">
+  <details :open="shouldShowAdvanced" class="osim-advanced-search-container">
     <summary class="mb-1" @click="shouldShowAdvanced = true">Advanced Search</summary>
     <form class="mb-2" @submit.prevent="submitAdvancedSearch">
       <div v-show="queryFilterVisible" class="input-group my-1">
@@ -348,7 +348,7 @@ function deleteSavedSearch() {
   </details>
   <details
     :open="showSavedSearches"
-    class="osim-advanced-search-container container-fluid"
+    class="osim-advanced-search-container"
   >
     <summary @click="showSavedSearches === true"> Saved Searches</summary>
     <div class="container-fluid mt-2">
@@ -469,8 +469,6 @@ function deleteSavedSearch() {
 
 <style lang="scss" scoped>
 .osim-advanced-search-container {
-  width: 97.5%;
-
   i {
     cursor: pointer;
   }
