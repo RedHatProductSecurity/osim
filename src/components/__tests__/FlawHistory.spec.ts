@@ -83,7 +83,7 @@ describe('flawHistory', () => {
         },
       },
     });
-    const historyEntry = subject.find('label:has(div.alert-info)');
+    const historyEntry = subject.find('div.alert-info');
     expect(historyEntry?.text()).includes('15:06:56');
   });
 

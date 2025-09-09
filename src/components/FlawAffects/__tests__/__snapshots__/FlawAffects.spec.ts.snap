@@ -44,197 +44,199 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1">
-      <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
-        <tr data-v-3026e75d="">
-          <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
-          <th data-v-3026e75d="">
-            <!-- State -->
-          </th>
-          <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">PURL</th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">Actions</th>
-        </tr>
-      </thead>
-      <tbody data-v-93f0c720="">
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+    <div data-v-93f0c720="" data-v-2d3c4208="" class="table-responsive mb-3">
+      <table data-v-93f0c720="" class="affects-table table align-middle table-striped mt-1 mb-0">
+        <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
+          <tr data-v-3026e75d="">
+            <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
+            <th data-v-3026e75d="">
+              <!-- State -->
+            </th>
+            <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">PURL</th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-93f0c720="">
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <!--v-if-->
   </div>
   <div data-v-89a61d08="" data-v-2d3c4208="">
@@ -377,52 +379,54 @@ exports[`flawAffects > Correctly renders the component when there are no affects
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1 mb-0">
-      <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
-        <tr data-v-3026e75d="">
-          <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table" checked=""></th>
-          <th data-v-3026e75d="">
-            <!-- State -->
-          </th>
-          <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">PURL</th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">Actions</th>
-        </tr>
-      </thead>
-      <tbody data-v-93f0c720=""></tbody>
-    </table><span data-v-2d3c4208="" class="my-2 p-2 d-flex"> This flaw has no affects </span>
+    <div data-v-93f0c720="" data-v-2d3c4208="" class="table-responsive mb-3 mb-0">
+      <table data-v-93f0c720="" class="affects-table table align-middle table-striped mt-1 mb-0">
+        <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
+          <tr data-v-3026e75d="">
+            <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table" checked=""></th>
+            <th data-v-3026e75d="">
+              <!-- State -->
+            </th>
+            <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">PURL</th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-93f0c720=""></tbody>
+      </table>
+    </div><span data-v-2d3c4208="" class="my-2 p-2 d-flex"> This flaw has no affects </span>
   </div>
   <div data-v-89a61d08="" data-v-2d3c4208="">
     <div data-v-89a61d08="" class="affects-trackers">
@@ -515,197 +519,199 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="icon-btn btn btn-sm text-white" title="Edit all selected affects"><i data-v-2d3c4208="" class="bi bi-pencil"></i></button><button data-v-2d3c4208="" type="button" class="icon-btn btn btn-sm text-white" title="Remove all selected affects"><i data-v-2d3c4208="" class="bi bi-trash"></i></button><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1">
-      <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
-        <tr data-v-3026e75d="">
-          <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
-          <th data-v-3026e75d="">
-            <!-- State -->
-          </th>
-          <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">PURL</th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">Actions</th>
-        </tr>
-      </thead>
-      <tbody data-v-93f0c720="">
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+    <div data-v-93f0c720="" data-v-2d3c4208="" class="table-responsive mb-3">
+      <table data-v-93f0c720="" class="affects-table table align-middle table-striped mt-1 mb-0">
+        <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
+          <tr data-v-3026e75d="">
+            <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
+            <th data-v-3026e75d="">
+              <!-- State -->
+            </th>
+            <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">PURL</th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-93f0c720="">
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="selected" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input" checked=""></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <!--v-if-->
   </div>
   <div data-v-89a61d08="" data-v-2d3c4208="">
@@ -939,197 +945,199 @@ This module has no trackers associated"><i data-v-2d3c4208="" class="bi bi-excla
         <!--v-if--><button data-v-2d3c4208="" type="button" class="btn btn-sm text-white"> Add New Affect </button>
       </div>
     </div>
-    <table data-v-93f0c720="" data-v-2d3c4208="" class="affects-table table align-middle table-striped mt-1">
-      <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
-        <tr data-v-3026e75d="">
-          <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
-          <th data-v-3026e75d="">
-            <!-- State -->
-          </th>
-          <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">PURL</th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
-            <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
-              <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
-            </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
-          </th>
-          <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
-          <th data-v-3026e75d="">Actions</th>
-        </tr>
-      </thead>
-      <tbody data-v-93f0c720="">
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+    <div data-v-93f0c720="" data-v-2d3c4208="" class="table-responsive mb-3">
+      <table data-v-93f0c720="" class="affects-table table align-middle table-striped mt-1 mb-0">
+        <thead data-v-3026e75d="" data-v-93f0c720="" class="sticky-top table-dark">
+          <tr data-v-3026e75d="">
+            <th data-v-3026e75d=""><input data-v-3026e75d="" type="checkbox" class="form-check-input" aria-label="Select All affects in Table"></th>
+            <th data-v-3026e75d="">
+              <!-- State -->
+            </th>
+            <th data-v-3026e75d=""> Module <i data-v-3026e75d="" class="bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Component <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">PURL</th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Affectedness</span><button data-v-3026e75d="" id="affectedness-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="affectedness-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NEW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">AFFECTED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">NOTAFFECTED</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Justification</span></th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Resolution</span><button data-v-3026e75d="" id="resolution-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="resolution-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">FIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DEFER</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTFIX</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">OOSS</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">DELEGATED</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">WONTREPORT</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""><span data-v-3026e75d="" class="align-bottom me-1">Impact</span><button data-v-3026e75d="" id="impact-filter" type="button" class="btn btn-sm border-0 p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-3026e75d="" class="bi text-white bi-funnel" title=""></i></button>
+              <ul data-v-3026e75d="" class="dropdown-menu" aria-labelledby="impact-filter" style="z-index: 10;">
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">LOW</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">MODERATE</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">IMPORTANT</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">CRITICAL</span></a></li>
+                <li data-v-3026e75d=""><a data-v-3026e75d="" href="#" class="btn py-0 dropdown-item"><input data-v-3026e75d="" type="checkbox" class="form-check-input me-2"><span data-v-3026e75d="">EMPTY</span></a></li>
+              </ul><i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi align-middle"></i>
+            </th>
+            <th data-v-3026e75d=""> CVSS <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d=""> Trackers <i data-v-3026e75d="" class="opacity-0 bi-caret-up-fill bi"></i></th>
+            <th data-v-3026e75d="">Actions</th>
+          </tr>
+        </thead>
+        <tbody data-v-93f0c720="">
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1">openshift-1</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-1-1">openshift-1-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">4</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2">openshift-2</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-2-1">openshift-2-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
             <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">DELEGATED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
             <!--v-if-->
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+          <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
+            <td data-v-cf2e7c24=""><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
+            <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
             <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3">openshift-3</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-3-1">openshift-3-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4">openshift-4</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-4-1">openshift-4-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5">openshift-5</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-5-1">openshift-5-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">AFFECTED</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">FIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">LOW</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">2</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-        <tr data-v-cf2e7c24="" data-v-93f0c720="" class="border-bottom border-gray" style="cursor: pointer;" title="">
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="row-left-indicator bi bi-caret-right-fill fs-4"></i><input data-v-cf2e7c24="" type="checkbox" class="form-check-input"></td>
-          <td data-v-cf2e7c24=""><i data-v-cf2e7c24="" class="bi bi-database-check" title="This affect is saved"></i></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6">openshift-6</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title="openshift-6-1">openshift-6-1</span></td>
-          <!--v-if-->
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
-            <!--v-if-->
-          </td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
-          <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
-          <td data-v-cf2e7c24="">
-            <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
-          </td>
-          <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
-            <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
-            <!--v-if-->
-            <!--v-if-->
-            <!--v-if--><i data-v-cf2e7c24="" class="row-right-indicator bi bi-caret-left-fill fs-4"></i>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span>
+              <!--v-if-->
+            </td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">WONTFIX</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="">CRITICAL</span></td>
+            <td data-v-cf2e7c24=""><span data-v-cf2e7c24="" title=""></span></td>
+            <td data-v-cf2e7c24="">
+              <div data-v-cf2e7c24="" class="affect-tracker-cell"><span data-v-cf2e7c24="" class="me-2 my-auto">0</span><button data-v-cf2e7c24="" type="button" class="btn btn-sm px-1 py-0 d-flex rounded-circle"><i data-v-cf2e7c24="" class="bi bi-plus lh-sm m-auto"></i></button></div>
+            </td>
+            <td data-v-cf2e7c24=""><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Edit affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-pencil"></i></button>
+              <!--v-if--><button data-v-cf2e7c24="" type="button" class="btn btn-sm" title="Remove affect" tabindex="-1"><i data-v-cf2e7c24="" class="bi bi-trash"></i></button>
+              <!--v-if-->
+              <!--v-if-->
+              <!--v-if-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <!--v-if-->
   </div>
   <div data-v-89a61d08="" data-v-2d3c4208="">

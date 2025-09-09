@@ -2,7 +2,7 @@
 
 exports[`settingsView > should render 1`] = `
 "<main class="mt-3">
-  <div data-v-4b5aabe5="" class="osim-content container">
+  <div data-v-4b5aabe5="" class="osim-content">
     <h1 data-v-4b5aabe5="" class="mb-3">Settings</h1>
     <div data-v-4b5aabe5="" class="alert alert-info" role="alert"> API keys are saved securely on the backend and will persist across sessions. </div>
     <!--@submit.prevent="settingsStore.save(settings)"-->

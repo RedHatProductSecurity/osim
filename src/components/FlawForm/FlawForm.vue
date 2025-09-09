@@ -181,7 +181,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
   <form class="osim-flaw-form mt-4" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div :class="{'osim-flaw-form-embargoed': flaw.embargoed}">
       <div class="row justify-content-end">
-        <div class="col-12 text-end">
+        <div class="text-end osim-flaw-header-link">
           <a
             v-if="flaw.meta_attr?.bz_id"
             :href="bugzillaLink"
