@@ -26,8 +26,17 @@ if [ -f "/osim_build.json" ]; then
     IFS= read -r -d '' OSIM_VERSION <"/osim_build.json" || :
 fi
 
-# Feature flags
-OSIM_FLAG_AI_CWE_SUGGESTIONS="${OSIM_FLAG_AI_CWE_SUGGESTIONS:-false}"
+feature_flags="{"
+for var in "${!OSIM_FLAG_@}"; do
+    flag_name=$(echo "$var" |
+      sed -E 's/^OSIM_FLAG_//'  | # remove prefix
+      sed -E 's/([A-Z])/\L\1/g' | # to lowercase
+      sed -E 's/_([a-z])/\U\1/g'  # to camelCase
+    )
+    flag_value="${!var}"
+    feature_flags+="\"${flag_name}\": ${flag_value},"
+done
+feature_flags="${feature_flags%,}}" # remove trailing comma and close the JSON object
 
 IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
 {
@@ -44,9 +53,7 @@ IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
   },
   "osimVersion": ${OSIM_VERSION},
   "readOnly": ${OSIM_READONLY_MODE},
-  "flags": {
-    "aiCweSuggestions": ${OSIM_FLAG_AI_CWE_SUGGESTIONS}
-  }
+  "flags": ${feature_flags}
 }
 EOF
 
