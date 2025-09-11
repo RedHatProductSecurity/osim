@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, toRaw } from 'vue';
+import { computed } from 'vue';
 
 import { PackageURL } from 'packageurl-js';
 
 import CvssCalculatorOverlayed from '@/components/CvssCalculator/CvssCalculatorOverlayed.vue';
+
+import { useFlaw } from '@/composables/useFlaw';
 
 import {
   affectImpacts,
@@ -15,6 +17,7 @@ import {
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
 import { useAffectsEditingStore } from '@/stores/AffectsEditingStore';
+import { matcherForAffect } from '@/utils/helpers';
 
 const props = defineProps<{
   affect: ZodAffectType;
@@ -44,17 +47,42 @@ const {
   revertAffectToLastSaved,
 } = affectsEditingStore;
 
-const currentAffect = ref(structuredClone(toRaw(props.affect)));
-const resetCurrentAffect = () => { currentAffect.value = structuredClone(toRaw(props.affect)); };
+const { flaw } = useFlaw();
+
+const currentAffect = computed(() => {
+  if (isBeingEdited(props.affect)) {
+    const matchAffect = matcherForAffect(props.affect);
+    return flaw.value.affects.find(matchAffect) || props.affect;
+  }
+  return props.affect;
+});
 
 const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
     cancelChanges(affect);
-    resetCurrentAffect();
   } else if (event.key === 'Enter') {
     commitChanges(affect);
   }
 };
+
+function commitRowChanges() {
+  if (isBeingEdited(currentAffect.value)) {
+    commitChanges(currentAffect.value);
+  }
+}
+
+function cancelRowChanges() {
+  if (isBeingEdited(currentAffect.value)) {
+    cancelChanges(currentAffect.value);
+  }
+}
+
+defineExpose({
+  commitRowChanges,
+  cancelRowChanges,
+  isBeingEdited: () => isBeingEdited(currentAffect.value),
+  affect: currentAffect,
+});
 
 // Select Affects
 
@@ -90,7 +118,6 @@ function revertChanges(affect: ZodAffectType) {
   if (isAffectSelected(affect)) {
     handleToggle(affect);
   }
-  currentAffect.value = structuredClone(toRaw(props.affect));
 }
 
 function affectCvss(affect: ZodAffectType) {
@@ -361,7 +388,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
         class="btn btn-sm"
         title="Cancel edit"
         tabindex="-1"
-        @click.stop="{ cancelChanges(currentAffect); resetCurrentAffect() }"
+        @click.stop="cancelChanges(currentAffect)"
       >
         <i class="bi bi-x fs-5 lh-sm" />
       </button>

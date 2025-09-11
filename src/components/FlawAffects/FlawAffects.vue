@@ -13,6 +13,7 @@ import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { newAffectCvss } from '@/composables/useCvssScores';
 
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import Modal from '@/widgets/Modal/Modal.vue';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 import type { ZodAffectType } from '@/types';
@@ -26,13 +27,13 @@ import { useFilterSortAffects } from './useFilterSortAffects';
 const props = defineProps<{
   embargoed: boolean;
   errors: null | Record<string, any>;
+  isFetchingAffects: boolean;
+
 }>();
 
 const { flaw } = useFlaw();
 const affectsEditingStore = useAffectsEditingStore();
 const {
-  cancelAllChanges,
-  commitAllChanges,
   editAffect,
   editSelectedAffects,
   getAffectPriorEdit,
@@ -44,6 +45,18 @@ const {
 } = affectsEditingStore;
 
 const { affectsBeingEdited, selectedAffects } = storeToRefs(affectsEditingStore);
+
+// Ref to the table component for bulk operations via exposed methods
+const flawAffectsTableRef = ref<InstanceType<typeof FlawAffectsTable>>();
+
+// Bulk operations using table's exposed methods - avoids global state
+function commitAllChanges() {
+  flawAffectsTableRef.value?.commitAllRowChanges();
+}
+
+function cancelAllChanges() {
+  flawAffectsTableRef.value?.cancelAllRowChanges();
+}
 
 const { settings } = useSettingsStore();
 const {
@@ -242,298 +255,310 @@ const displayedTrackers = computed(() => {
 <template>
   <div class="osim-affects-section">
     <h4>Affected Offerings</h4>
-    <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
-      <LabelCollapsible
-        v-if="affectedModules.length > 0"
-        :isExpanded="modulesExpanded"
-        :isExpandable="hasAffects"
-        :iconClose="null"
-        :iconOpen="null"
-        @toggleExpanded="toggleModulesCollapse"
-      >
-        <template #label>
-          <label class="form-label mt-2 btn btn-sm btn-secondary">
-            <i :class="modulesExpanded?'bi-funnel-fill':'bi-funnel'"></i>
-            Affected Module Filters
-          </label>
-        </template>
-        <template #buttons>
-          <button
-            v-if="selectedModules.length > 0"
-            type="button"
-            class="mt-2 mb-0 btn btn-primary btn-sm"
-            @click="selectedModules = []"
-          >
-            <i class="bi bi-x" />
-            Clear Filters
-          </button>
-        </template>
-        <div class="d-inline-block bg-light-gray p-2">
-          <template v-for="(moduleName) in affectedModules" :key="moduleName">
+    <div v-if="isFetchingAffects">
+      <LoadingSpinner
+        type="border"
+        class="spinner-border-sm me-1"
+      />
+      <span class="ms-1">Fetching affects...</span>
+    </div>
+    <template v-else>
+      <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
+        <LabelCollapsible
+          v-if="affectedModules.length > 0"
+          :isExpanded="modulesExpanded"
+          :isExpandable="hasAffects"
+          :iconClose="null"
+          :iconOpen="null"
+          @toggleExpanded="toggleModulesCollapse"
+        >
+          <template #label>
+            <label class="form-label mt-2 btn btn-sm btn-secondary">
+              <i :class="modulesExpanded?'bi-funnel-fill':'bi-funnel'"></i>
+              Affected Module Filters
+            </label>
+          </template>
+          <template #buttons>
             <button
-              v-if="moduleName"
+              v-if="selectedModules.length > 0"
               type="button"
-              tabindex="-1"
-              class="module-btn btn btn-sm"
-              :class="{
-                'btn-secondary': isModuleSelected(moduleName),
-                'border-gray': !isModuleSelected(moduleName),
-                'fw-bold': moduleTrackersCount(moduleName) === 0,
-              }"
-              :title="moduleBtnTooltip(moduleName)"
-              @click="handleModuleSelection(moduleName)"
+              class="mt-2 mb-0 btn btn-primary btn-sm"
+              @click="selectedModules = []"
             >
-              <i
-                v-if="moduleTrackersCount(moduleName) === 0"
-                class="bi bi-exclamation-lg"
-              />
-              <span>{{ moduleName }}</span>
+              <i class="bi bi-x" />
+              Clear Filters
             </button>
           </template>
-        </div>
-      </LabelCollapsible>
-    </div>
-    <div class="affects-management">
-      <div v-if="hasAffects && displayMode !== displayModes.ALL" class="pagination-controls gap-1 my-2">
-        <button
-          type="button"
-          tabindex="-1"
-          class="btn btn-sm btn-secondary rounded-end-0"
-          :disabled="currentPage === 1"
-          @click="changePage(currentPage - 1)"
-        >
-          <i class="bi bi-arrow-left fs-5" />
-        </button>
-        <button
-          v-for="page in pages"
-          :key="page"
-          tabindex="-1"
-          class="osim-page-btn btn btn-sm rounded-0 btn-secondary"
-          style="width: 34.8px;"
-          :disabled="page === currentPage || page === '..'"
-          @click.prevent="changePage(page as number)"
-        >
-          {{ page }}
-        </button>
-        <button
-          type="button"
-          tabindex="-1"
-          class="btn btn-sm btn-secondary rounded-start-0"
-          :disabled="currentPage === totalPages || totalPages === 0"
-          @click.prevent="changePage(currentPage + 1)"
-        >
-          <i class="bi bi-arrow-right fs-5" />
-        </button>
+          <div class="d-inline-block bg-light-gray p-2">
+            <template v-for="(moduleName) in affectedModules" :key="moduleName">
+              <button
+                v-if="moduleName"
+                type="button"
+                tabindex="-1"
+                class="module-btn btn btn-sm"
+                :class="{
+                  'btn-secondary': isModuleSelected(moduleName),
+                  'border-gray': !isModuleSelected(moduleName),
+                  'fw-bold': moduleTrackersCount(moduleName) === 0,
+                }"
+                :title="moduleBtnTooltip(moduleName)"
+                @click="handleModuleSelection(moduleName)"
+              >
+                <i
+                  v-if="moduleTrackersCount(moduleName) === 0"
+                  class="bi bi-exclamation-lg"
+                />
+                <span>{{ moduleName }}</span>
+              </button>
+            </template>
+          </div>
+        </LabelCollapsible>
       </div>
-      <div class="affects-toolbar">
-        <div class="badges my-auto gap-1" :class="{ 'me-3': hasAffects }">
-          <div
-            v-if="paginatedAffects.length > 0 && displayMode !== displayModes.ALL"
-            class="per-page-btn btn btn-sm btn-secondary"
-          >
-            <i
-              :style="settings.affectsPerPage > minItemsPerPage
-                ? 'pointer-events: auto;'
-                : 'opacity: 50%; pointer-events: none;'"
-              class="bi bi-dash-square fs-6 my-auto"
-              title="Reduce affects per page"
-              @click="decreaseItemsPerPage()"
-            />
-            <span class="mx-2 my-auto">Per page:</span>
-            <input
-              type="text"
-              class="form-control mx-2"
-              :value="settings.affectsPerPage"
-              @input="handlePerPageInput($event)"
-            />
-            <i
-              :style="settings.affectsPerPage < maxItemsPerPage
-                ? 'pointer-events: auto;'
-                : 'opacity: 50%; pointer-events: none;'"
-              class="bi bi-plus-square fs-6 my-auto"
-              title="Increase affects per page"
-              @click="increaseItemsPerPage()"
-            />
-          </div>
-          <div
-            v-if="hasAffects"
-            class="badge-btn btn btn-sm border-secondary"
-            :class="displayMode === displayModes.ALL ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
-            :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : 'cursor: auto'"
-            :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
-            @click.stop="setDisplayMode(displayModes.ALL)"
-          >
-            <span>Show all affects ({{ allAffects.length }})</span>
-          </div>
-          <div
-            v-if="selectedAffects.length > 0"
-            class="badge-btn btn btn-sm border-secondary"
-            :class="displayMode === displayModes.SELECTED ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
-            :title="displayMode !== displayModes.SELECTED ? 'Display selected affects' : 'Displaying selected affects'"
-            @click.stop="setDisplayMode(displayModes.SELECTED)"
-          >
-            <i class="bi bi-check-square me-1 h-fit" />
-            <span>Selected {{ selectedAffects.length }}</span>
-          </div>
-          <div
-            v-if="affectsBeingEdited?.length > 0"
-            class="badge-btn btn btn-sm bg-light-yellow"
-            style="border-color: #73480b !important; color: #73480b;"
-            :style="displayMode === displayModes.EDITING
-              ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
-            :title="displayMode === displayModes.EDITING ? 'Displaying editing affects' :'Display editing affects'"
-            @click.stop="setDisplayMode(displayModes.EDITING)"
-          >
-            <i class="bi bi-pencil me-1 h-fit" />
-            <span>Editing {{ affectsBeingEdited.length }}</span>
-          </div>
-          <div
-            v-if="modifiedAffects.length > 0"
-            class="badge-btn btn btn-sm bg-light-green"
-            style="color: #204d00; border-color: #204d00 !important;"
-            :style="displayMode === displayModes.MODIFIED
-              ? 'background-color: #204d00 !important; color: #d1f1bb;' : ''"
-            :title="displayMode === displayModes.MODIFIED ? 'Displaying modified affects' : 'Display modified affects'"
-            @click.stop="setDisplayMode(displayModes.MODIFIED)"
-          >
-            <i class="bi bi-file-earmark-diff me-1 h-fit" />
-            <span>Modified {{ modifiedAffects.length }}</span>
-          </div>
-          <div
-            v-if="affectsToDelete.length > 0"
-            class="badge-btn btn btn-sm"
-            style="background-color: #ffe3d9; color: #731f00; border-color: #731f00 !important;"
-            :style="displayMode === displayModes.DELETED
-              ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
-            :title="displayMode === displayModes.DELETED ? 'Displaying removed affects' : 'Display removed affects'"
-            @click.stop="setDisplayMode(displayModes.DELETED)"
-          >
-            <i class="bi bi-trash me-1 h-fit" />
-            <span>Removed {{ affectsToDelete.length }}</span>
-          </div>
-          <div
-            v-if="newAffects.length > 0"
-            class="badge-btn btn btn-sm bg-light-blue"
-            style="background-color: #e0f0ff; color: #036; border-color: #036 !important;"
-            :style="displayMode === displayModes.CREATED
-              ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
-            :title="displayMode === displayModes.CREATED ? 'Displaying new affects' : 'Display new affects'"
-            @click.stop="setDisplayMode(displayModes.CREATED)"
-          >
-            <i class="bi bi-plus-lg me-1 h-fit" />
-            <span>Added {{ newAffects.length }}</span>
-          </div>
-        </div>
-        <div class="affects-table-actions ms-auto">
+      <div class="affects-management">
+        <div v-if="hasAffects && displayMode !== displayModes.ALL" class="pagination-controls gap-1 my-2">
           <button
-            v-if="selectedAffects.length > 0"
             type="button"
-            class="trackers-btn btn btn-sm btn-info border-dark-info"
-            :title="`Manage trackers for ${selectedAffects.length} selected affect(s)`"
-            @click.prevent.stop="openManageTrackersModal"
+            tabindex="-1"
+            class="btn btn-sm btn-secondary rounded-end-0"
+            :disabled="currentPage === 1"
+            @click="changePage(currentPage - 1)"
           >
-            <!-- Manage Trackers for {{ selectedAffects.length }} Affect(s) -->
-            <span>Manage Trackers</span>
-            <span class="bg-dark-info ms-1 text-white rounded-pill px-2">{{ selectedAffects.length }} </span>
+            <i class="bi bi-arrow-left fs-5" />
           </button>
           <button
-            v-if="affectsBeingEdited?.length > 0"
-            type="button"
-            class="icon-btn btn btn-sm text-white"
-            title="Commit changes on all affects being edited"
-            @click.prevent="commitAllChanges()"
+            v-for="page in pages"
+            :key="page"
+            tabindex="-1"
+            class="osim-page-btn btn btn-sm rounded-0 btn-secondary"
+            style="width: 34.8px;"
+            :disabled="page === currentPage || page === '..'"
+            @click.prevent="changePage(page as number)"
           >
-            <i class="bi bi-check2-all fs-5 lh-sm" />
+            {{ page }}
           </button>
           <button
-            v-if="affectsBeingEdited?.length > 0"
             type="button"
-            class="icon-btn btn btn-sm text-white px-1"
-            title="Cancel changes on all affects being edited"
-            @click.prevent="cancelAllChanges()"
+            tabindex="-1"
+            class="btn btn-sm btn-secondary rounded-start-0"
+            :disabled="currentPage === totalPages || totalPages === 0"
+            @click.prevent="changePage(currentPage + 1)"
           >
-            <i class="bi bi-x fs-4 lh-1" />
-          </button>
-          <button
-            v-if="modifiedAffects.length > 0"
-            type="button"
-            class="icon-btn btn btn-sm text-white"
-            title="Discard all affect modifications"
-            @click.prevent="revertAllAffects"
-          >
-            <i class="bi bi-backspace" />
-          </button>
-          <button
-            v-if="affectsToDelete.length > 0"
-            type="button"
-            class="icon-btn btn btn-sm text-white"
-            title="Recover all removed affects"
-            @click.prevent="recoverAllAffects()"
-          >
-            <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
-          </button>
-          <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="icon-btn btn btn-sm text-white"
-            title="Edit all selected affects"
-            @click.prevent="editSelectedAffects()"
-          >
-            <i class="bi bi-pencil" />
-          </button>
-          <button
-            v-if="selectedAffects.length > 0"
-            type="button"
-            class="icon-btn btn btn-sm text-white"
-            title="Remove all selected affects"
-            @click.prevent="removeSelectedAffects()"
-          >
-            <i class="bi bi-trash" />
-          </button>
-          <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
-            Add New Affect
+            <i class="bi bi-arrow-right fs-5" />
           </button>
         </div>
+        <div class="affects-toolbar">
+          <div class="badges my-auto gap-1" :class="{ 'me-3': hasAffects }">
+            <div
+              v-if="paginatedAffects.length > 0 && displayMode !== displayModes.ALL"
+              class="per-page-btn btn btn-sm btn-secondary"
+            >
+              <i
+                :style="settings.affectsPerPage > minItemsPerPage
+                  ? 'pointer-events: auto;'
+                  : 'opacity: 50%; pointer-events: none;'"
+                class="bi bi-dash-square fs-6 my-auto"
+                title="Reduce affects per page"
+                @click="decreaseItemsPerPage()"
+              />
+              <span class="mx-2 my-auto">Per page:</span>
+              <input
+                type="text"
+                class="form-control mx-2"
+                :value="settings.affectsPerPage"
+                @input="handlePerPageInput($event)"
+              />
+              <i
+                :style="settings.affectsPerPage < maxItemsPerPage
+                  ? 'pointer-events: auto;'
+                  : 'opacity: 50%; pointer-events: none;'"
+                class="bi bi-plus-square fs-6 my-auto"
+                title="Increase affects per page"
+                @click="increaseItemsPerPage()"
+              />
+            </div>
+            <div
+              v-if="hasAffects"
+              class="badge-btn btn btn-sm border-secondary"
+              :class="displayMode === displayModes.ALL ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
+              :style="displayMode !== displayModes.ALL ? 'cursor: pointer' : 'cursor: auto'"
+              :title="displayMode !== displayModes.ALL ? 'Display all affects' : 'Displaying all affects'"
+              @click.stop="setDisplayMode(displayModes.ALL)"
+            >
+              <span>Show all affects ({{ allAffects.length }})</span>
+            </div>
+            <div
+              v-if="selectedAffects.length > 0"
+              class="badge-btn btn btn-sm border-secondary"
+              :class="displayMode === displayModes.SELECTED ? 'bg-secondary text-white' : 'bg-light-gray text-black'"
+              :title="displayMode !== displayModes.SELECTED
+                ? 'Display selected affects' : 'Displaying selected affects'"
+              @click.stop="setDisplayMode(displayModes.SELECTED)"
+            >
+              <i class="bi bi-check-square me-1 h-fit" />
+              <span>Selected {{ selectedAffects.length }}</span>
+            </div>
+            <div
+              v-if="affectsBeingEdited?.length > 0"
+              class="badge-btn btn btn-sm bg-light-yellow"
+              style="border-color: #73480b !important; color: #73480b;"
+              :style="displayMode === displayModes.EDITING
+                ? 'background-color: #73480b !important; color: #fff4cc;' : ''"
+              :title="displayMode === displayModes.EDITING ? 'Displaying editing affects' :'Display editing affects'"
+              @click.stop="setDisplayMode(displayModes.EDITING)"
+            >
+              <i class="bi bi-pencil me-1 h-fit" />
+              <span>Editing {{ affectsBeingEdited.length }}</span>
+            </div>
+            <div
+              v-if="modifiedAffects.length > 0"
+              class="badge-btn btn btn-sm bg-light-green"
+              style="color: #204d00; border-color: #204d00 !important;"
+              :style="displayMode === displayModes.MODIFIED
+                ? 'background-color: #204d00 !important; color: #d1f1bb;' : ''"
+              :title="displayMode === displayModes.MODIFIED
+                ? 'Displaying modified affects' : 'Display modified affects'"
+              @click.stop="setDisplayMode(displayModes.MODIFIED)"
+            >
+              <i class="bi bi-file-earmark-diff me-1 h-fit" />
+              <span>Modified {{ modifiedAffects.length }}</span>
+            </div>
+            <div
+              v-if="affectsToDelete.length > 0"
+              class="badge-btn btn btn-sm"
+              style="background-color: #ffe3d9; color: #731f00; border-color: #731f00 !important;"
+              :style="displayMode === displayModes.DELETED
+                ? 'background-color: #731f00 !important; color: #ffe3d9;' : ''"
+              :title="displayMode === displayModes.DELETED ? 'Displaying removed affects' : 'Display removed affects'"
+              @click.stop="setDisplayMode(displayModes.DELETED)"
+            >
+              <i class="bi bi-trash me-1 h-fit" />
+              <span>Removed {{ affectsToDelete.length }}</span>
+            </div>
+            <div
+              v-if="newAffects.length > 0"
+              class="badge-btn btn btn-sm bg-light-blue"
+              style="background-color: #e0f0ff; color: #036; border-color: #036 !important;"
+              :style="displayMode === displayModes.CREATED
+                ? 'background-color: #036 !important; color: #e0f0ff;' : ''"
+              :title="displayMode === displayModes.CREATED ? 'Displaying new affects' : 'Display new affects'"
+              @click.stop="setDisplayMode(displayModes.CREATED)"
+            >
+              <i class="bi bi-plus-lg me-1 h-fit" />
+              <span>Added {{ newAffects.length }}</span>
+            </div>
+          </div>
+          <div class="affects-table-actions ms-auto">
+            <button
+              v-if="selectedAffects.length > 0"
+              type="button"
+              class="trackers-btn btn btn-sm btn-info border-dark-info"
+              :title="`Manage trackers for ${selectedAffects.length} selected affect(s)`"
+              @click.prevent.stop="openManageTrackersModal"
+            >
+              <!-- Manage Trackers for {{ selectedAffects.length }} Affect(s) -->
+              <span>Manage Trackers</span>
+              <span class="bg-dark-info ms-1 text-white rounded-pill px-2">{{ selectedAffects.length }} </span>
+            </button>
+            <button
+              v-if="affectsBeingEdited?.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white"
+              title="Commit changes on all affects being edited"
+              @click.prevent="commitAllChanges()"
+            >
+              <i class="bi bi-check2-all fs-5 lh-sm" />
+            </button>
+            <button
+              v-if="affectsBeingEdited?.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white px-1"
+              title="Cancel changes on all affects being edited"
+              @click.prevent="cancelAllChanges()"
+            >
+              <i class="bi bi-x fs-4 lh-1" />
+            </button>
+            <button
+              v-if="modifiedAffects.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white"
+              title="Discard all affect modifications"
+              @click.prevent="revertAllAffects"
+            >
+              <i class="bi bi-backspace" />
+            </button>
+            <button
+              v-if="affectsToDelete.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white"
+              title="Recover all removed affects"
+              @click.prevent="recoverAllAffects()"
+            >
+              <i class="bi-arrow-counterclockwise fs-5 lh-sm" />
+            </button>
+            <button
+              v-if="selectedAffects.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white"
+              title="Edit all selected affects"
+              @click.prevent="editSelectedAffects()"
+            >
+              <i class="bi bi-pencil" />
+            </button>
+            <button
+              v-if="selectedAffects.length > 0"
+              type="button"
+              class="icon-btn btn btn-sm text-white"
+              title="Remove all selected affects"
+              @click.prevent="removeSelectedAffects()"
+            >
+              <i class="bi bi-trash" />
+            </button>
+            <button type="button" class="btn btn-sm text-white" @click.prevent="addNewAffect()">
+              Add New Affect
+            </button>
+          </div>
+        </div>
+        <FlawAffectsTable
+          ref="flawAffectsTableRef"
+          v-model:affects="tableAffects"
+          :errors="errors"
+          :totalPages="totalPages"
+          @affect:recover="recoverAffect"
+          @affects:display-mode="setDisplayMode"
+          @affect:remove="handleRemove"
+          @affect:toggle-selection="toggleAffectSelection"
+          @affect:track="trackSpecificAffect"
+          @affect:updateCvss="updateAffectCvss"
+        />
+        <span v-if="!hasAffects" class="my-2 p-2 d-flex">
+          This flaw has no affects
+        </span>
+        <span v-else-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
+          No affects found for current filters
+        </span>
       </div>
-      <FlawAffectsTable
-        v-model:affects="tableAffects"
-        :errors="errors"
-        :totalPages="totalPages"
-        @affect:recover="recoverAffect"
-        @affects:display-mode="setDisplayMode"
-        @affect:remove="handleRemove"
-        @affect:toggle-selection="toggleAffectSelection"
-        @affect:track="trackSpecificAffect"
-        @affect:updateCvss="updateAffectCvss"
+      <FlawTrackers
+        :flaw="flaw"
+        :displayedTrackers="displayedTrackers"
+        :allTrackersCount="allTrackers.length"
       />
-      <span v-if="!hasAffects" class="my-2 p-2 d-flex">
-        This flaw has no affects
-      </span>
-      <span v-else-if="hasAffects && totalPages === 0" class="my-2 p-2 d-flex">
-        No affects found for current filters
-      </span>
-    </div>
-    <FlawTrackers
-      :flaw="flaw"
-      :displayedTrackers="displayedTrackers"
-      :allTrackersCount="allTrackers.length"
-    />
-    <div class="osim-tracker-manager-modal-container">
-      <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">
-        <template #body>
-          <button
-            type="button"
-            class="btn btn-close ms-auto"
-            aria-label="Close"
-            @click="closeManageTrackersModal"
-          />
-          <TrackerManager
-            :flaw="flaw"
-            :specificAffectsToTrack="specificAffectsToTrack"
-          />
-        </template>
-      </Modal>
-    </div>
+      <div class="osim-tracker-manager-modal-container">
+        <Modal :show="isManageTrackersModalOpen" style="max-width: 75%;" @close="closeManageTrackersModal">
+          <template #body>
+            <button
+              type="button"
+              class="btn btn-close ms-auto"
+              aria-label="Close"
+              @click="closeManageTrackersModal"
+            />
+            <TrackerManager
+              :flaw="flaw"
+              :specificAffectsToTrack="specificAffectsToTrack"
+            />
+          </template>
+        </Modal>
+      </div>
+    </template>
   </div>
 </template>
 

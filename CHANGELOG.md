@@ -8,6 +8,9 @@
 ### Fixed
 * Correctly display line breaks in comments (`OSIDB-4290`)
 
+### Fixed
+* Fix multi-row operations in affects table (`OSIDB-4381`)
+
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
 * Reduce network calls in post-save Flaw refresh (`OSIDB-4267`)

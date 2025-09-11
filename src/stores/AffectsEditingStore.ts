@@ -64,6 +64,12 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
   }
 
   function cancelChanges(affect: ZodAffectType) {
+    const priorEditAffect = getAffectPriorEdit(affect);
+    const matchAffect = matcherForAffect(affect);
+    const updateIndex = flaw.value.affects.findIndex(matchAffect);
+    if (updateIndex !== -1 && priorEditAffect) {
+      flaw.value.affects.splice(updateIndex, 1, { ...priorEditAffect });
+    }
     resetStagedAffectEdit(affect);
   }
 
@@ -91,16 +97,6 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
     selectedAffects.value.forEach(editAffect);
   }
 
-  function commitAllChanges() {
-    const affectsToCommit = [...affectsBeingEdited.value];
-    affectsToCommit.forEach(commitChanges);
-  }
-
-  function cancelAllChanges() {
-    const affectsToCancel = [...affectsBeingEdited.value];
-    affectsToCancel.forEach(cancelChanges);
-  }
-
   function $reset() {
     affectsBeingEdited.value = [];
     affectValuesPriorEdit.value = [];
@@ -126,8 +122,6 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
     toggleMultipleAffectSelections,
     resetSelections,
     editSelectedAffects,
-    commitAllChanges,
-    cancelAllChanges,
   };
 });
 

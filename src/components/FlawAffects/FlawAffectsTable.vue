@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import FlawAffectsTableRow from '@/components/FlawAffects/FlawAffectsTableRow.vue';
 import FlawAffectsTableHead from '@/components/FlawAffects/FlawAffectsTableHead.vue';
@@ -37,6 +37,32 @@ function isModified(affect: ZodAffectType) {
 function isNewAffect(affect: ZodAffectType) {
   return newAffects.value.includes(affect);
 }
+
+// Store refs to all table row components for bulk operations
+const rowRefs = ref<Record<string, InstanceType<typeof FlawAffectsTableRow>>>({});
+
+// Bulk operations using exposed row methods - avoids global state updates
+function commitAllRowChanges() {
+  Object.values(rowRefs.value).forEach((rowRef) => {
+    if (rowRef?.isBeingEdited()) {
+      rowRef.commitRowChanges();
+    }
+  });
+}
+
+function cancelAllRowChanges() {
+  Object.values(rowRefs.value).forEach((rowRef) => {
+    if (rowRef?.isBeingEdited()) {
+      rowRef.cancelRowChanges();
+    }
+  });
+}
+
+defineExpose({
+  commitAllRowChanges,
+  cancelAllRowChanges,
+});
+
 const { settings } = useSettingsStore();
 </script>
 
@@ -50,6 +76,8 @@ const { settings } = useSettingsStore();
     <tbody>
       <template v-for="(affect, affectIndex) in affects" :key="affect.uuid ?? affect._uuid">
         <FlawAffectsTableRow
+          :ref="(el) => rowRefs[affect.uuid ?? affect._uuid ?? affectIndex] =
+            el as InstanceType<typeof FlawAffectsTableRow>"
           :affect="affect"
           :error="errors?.[affectIndex] ?? null"
           :isRemoved="isAffectBeingRemoved(affect)"
