@@ -41,7 +41,7 @@ const isValid = computed(() => ({
 </script>
 
 <template>
-  <div class="osim-content container">
+  <div class="osim-content">
     <h1 class="mb-3">Settings</h1>
 
     <div class="alert alert-info" role="alert">

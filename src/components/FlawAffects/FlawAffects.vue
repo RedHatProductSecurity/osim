@@ -541,7 +541,6 @@ const displayedTrackers = computed(() => {
 @import '@/scss/bootstrap-overrides';
 
 .osim-affects-section {
-  padding-bottom: 100px;
   margin-block: 1rem;
 
   .affect-modules-selection {

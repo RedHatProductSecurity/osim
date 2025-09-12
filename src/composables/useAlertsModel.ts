@@ -27,7 +27,7 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
 
   const flawCVSSAlerts = computed(() => {
     return groupAlertsByType(
-      joinAlerts(flaw.value.cvss_scores),
+      joinAlerts(flaw.value.cvss_scores).filter(Boolean),
     );
   });
 
@@ -36,7 +36,7 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
       [
         baseFlawAlerts.value,
         flawCVSSAlerts.value,
-      ],
+      ].filter(Boolean),
     );
   });
 

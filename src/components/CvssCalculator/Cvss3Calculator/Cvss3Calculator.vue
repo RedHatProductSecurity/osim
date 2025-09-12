@@ -105,7 +105,7 @@ function factorButton(id: string, key: string) {
     right: 5ch;
     background-color: #525252;
     border-radius: 10px;
-    z-index: 5;
+    z-index: 1050;
     position: absolute;
   }
 

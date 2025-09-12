@@ -27,8 +27,8 @@ defineExpose({
 </script>
 
 <template>
-  <label class="osim-input mb-2 ps-3" :class="$attrs.class">
-    <div class="row">
+  <label class="osim-input mb-2" :class="$attrs.class">
+    <div class="row px-0 mx-0">
       <slot name="label">
         <span class="form-label col-3 position-relative">
           <span v-if="loading" v-osim-loading.grow="loading" class="throbber" />

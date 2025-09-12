@@ -2,13 +2,13 @@
 
 exports[`indexView > should render 1`] = `
 "<main data-v-fb5dc0f2="" class="mt-3">
-  <details data-v-fb5dc0f2="" open="" class="osim-advanced-search-container container-fluid ps-3">
+  <details data-v-fb5dc0f2="" open="" class="osim-advanced-search-container">
     <summary data-v-fb5dc0f2=""> Saved Searches</summary>
-    <div data-v-fb5dc0f2="" class="container-fluid mt-2"><button data-v-fb5dc0f2="" title="Query: django query
+    <div data-v-fb5dc0f2="" class="mt-2"><button data-v-fb5dc0f2="" title="Query: django query
 Fields: affects__ps_component: test" class="btn me-2 mt-1 border" type="button">name <i data-v-fb5dc0f2="" class="bi ms-2 bi-star"></i></button></div>
     <!--v-if-->
   </details>
-  <div data-v-48717bcb="" data-v-fb5dc0f2="" class="osim-content container-fluid osim-issue-queue">
+  <div data-v-48717bcb="" data-v-fb5dc0f2="" class="osim-content osim-issue-queue">
     <div data-v-48717bcb="" class="osim-incident-filter">
       <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">My Issues</span></label></div>
       <div data-v-b2ceeac4="" data-v-48717bcb="" class="osim-input ps-3 d-inline-block"><label data-v-b2ceeac4="" class="form-check h-100 d-inline-block ps-4 p-1"><input data-v-b2ceeac4="" class="d-inline-block form-check-input" type="checkbox"><span data-v-b2ceeac4="" class="form-check-label">Open Issues</span></label></div>

@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
     </header>
     <div class="osim-content-layered">
       <ToastContainer />
-      <RouterView v-slot="{ Component }" class="osim-page-view">
+      <RouterView v-slot="{ Component }" class="container-fluid osim-page-view">
         <KeepAlive include="IndexView">
           <component :is="Component" />
         </KeepAlive>
@@ -114,27 +114,12 @@ onBeforeUnmount(() => {
   --osim-status-bar-height: 24px;
 }
 
-/*
-.osim-view-wrapper {
-  position: relative;
-  display: grid;
-}
-.osim-view-wrapper > * {
-  grid-column-start: 1;
-  grid-row-start: 1;
-  align-items: start;
-}
-*/
-
 .osim-content-layered {
-  display: grid;
   margin-bottom: var(--osim-status-bar-height);
-}
 
-.osim-content-layered > * {
-  grid-column-start: 1;
-  grid-row-start: 1;
-  align-items: start;
+  .container-fluid {
+    --bs-gutter-x: 6rem;
+  }
 }
 
 .osim-backend-error {
@@ -147,24 +132,16 @@ onBeforeUnmount(() => {
   align-self: center;
 }
 
-.osim-page-view {
-  margin-bottom: var(--osim-status-bar-height);
-}
-
 .osim-status-bar.fixed-bottom {
-  /* position: fixed; */
   background: #efefef;
   border-top: 1px solid #ddd;
   height: var(--osim-status-bar-height);
   display: flex;
   justify-content: flex-end;
-  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 1091;
-
-  /* --bs-toast-zindex + 1 */
 }
 
 .osim-status-bar > * {

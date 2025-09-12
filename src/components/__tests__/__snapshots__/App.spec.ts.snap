@@ -9,7 +9,7 @@ exports[`app > renders the App component when OSIDB is READY 1`] = `
 </header>
 <div class="osim-content-layered">
   <toast-container-stub></toast-container-stub>
-  <router-view-stub class="osim-page-view"></router-view-stub>
+  <router-view-stub class="container-fluid osim-page-view"></router-view-stub>
 </div>
 <footer class="fixed-bottom osim-status-bar">
   <!--TODO add active request count-->

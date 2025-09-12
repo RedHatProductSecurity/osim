@@ -29,8 +29,8 @@ exports[`cvssNISTForm > renders a modal when clicking the button 1`] = `
               <p data-v-b05c734f="">Subject:</p>
               <div data-v-b05c734f="" class="mb-2"><input data-v-b05c734f="" class="form-control" readonly="" type="text" value="CVSS Rescore Request - string"></div>
               <hr data-v-b05c734f="">
-            </div><label data-v-055401b4="" data-v-b05c734f="" class="osim-input mb-2 ps-3">
-              <div data-v-055401b4="" class="row"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Body: <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+            </div><label data-v-055401b4="" data-v-b05c734f="" class="osim-input mb-2">
+              <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Body: <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
                 <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" class="form-control col-9 d-inline-block" rows="5" value="Hello,
 
 I have performed an analysis of string on behalf of Red Hat Product Security,

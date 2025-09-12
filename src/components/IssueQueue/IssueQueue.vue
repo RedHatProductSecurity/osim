@@ -138,7 +138,7 @@ watch(isButtonVisible, (isVisible) => {
 </script>
 
 <template>
-  <div class="osim-content container-fluid osim-issue-queue">
+  <div class="osim-content osim-issue-queue">
     <div class="osim-incident-filter">
       <LabelCheckbox v-model="isMyIssuesSelected" label="My Issues" class="d-inline-block" />
       <LabelCheckbox v-model="isOpenIssuesSelected" label="Open Issues" class="d-inline-block" />
@@ -222,7 +222,6 @@ watch(isButtonVisible, (isVisible) => {
 
 .osim-issue-queue {
   font-family: 'Red Hat Mono', monospace;
-  width: 97.5%;
   margin-top: 0.75rem;
 
   // tbody
