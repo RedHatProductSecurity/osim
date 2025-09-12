@@ -29,6 +29,7 @@ defineOptions({
     <div class="row">
       <span v-if="label" class="form-label col-3">
         {{ label }}
+        <slot name="nudge" />
       </span>
       <div class="col-9">
         <select

@@ -4,6 +4,7 @@
 * Support extending session (reauthenticating) (`OSIDB-4275`)
 * Add Aegis-AI regulatory notifications (`AEGIS-62`)
 * Show time in Flaw index/list view (`OSIDB-4407`)
+* Prompt user for comment on Impact change when Flaw is beyond Triage (`OSIDB-4412`)
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)

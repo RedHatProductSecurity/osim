@@ -1,13 +1,20 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   isVisible: boolean;
   tooltip: string;
 }>();
 </script>
 
 <template>
-  <i v-if="isVisible" class="bi-warning" :title="tooltip" />
+  <span v-if="isVisible" class="ms-1" :title="tooltip">
+    <i class="bi bi-exclamation-diamond-fill text-warning" />
+  </span>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/scss/redhat-brand-colors.scss';
+
+i {
+  color: $redhat-orange-50;
+}
 </style>

@@ -89,9 +89,14 @@ const { isFetchingAffects } = useFetchFlaw();
 
 const { flaw, initialFlaw } = useFlaw();
 
-const shouldShowImpactNudge = computed(() => flaw.value.impact !== initialFlaw.value?.impact
-  && [...Object.values(FlawClassificationStateEnum)]
-    .indexOf(flaw.value.classification?.state as FlawClassificationStateEnum) > 1);
+const shouldShowImpactNudge = computed(() => {
+  const indexOfTriage = [...Object.values(FlawClassificationStateEnum)]
+    .indexOf(FlawClassificationStateEnum.Triage);
+  const isAfterTriage = [...Object.values(FlawClassificationStateEnum)]
+    .indexOf(flaw.value.classification?.state as FlawClassificationStateEnum) > indexOfTriage;
+  const didImpactChange = flaw.value.impact !== initialFlaw.value?.impact;
+  return isAfterTriage && didImpactChange;
+});
 
 const {
   highlightedNvdCvssString,
@@ -274,7 +279,10 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
               :withBlank="true"
             >
               <template #nudge>
-                <Nudge :isVisible="shouldShowImpactNudge" :tooltip="flawImpactEnum[flaw.impact]" />
+                <Nudge
+                  :isVisible="shouldShowImpactNudge"
+                  tooltip="Ensure justification has been provided for impact change."
+                />
               </template>
             </LabelSelect>
             <CvssCalculator />
