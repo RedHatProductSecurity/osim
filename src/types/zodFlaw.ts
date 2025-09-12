@@ -234,14 +234,6 @@ export const ZodFlawSchema = z.object({
     }
   }
 
-  if (
-    zodFlaw.requires_cve_description !== 'APPROVED'
-    && zodFlaw.major_incident_state
-    && ['APPROVED', 'CISA_APPROVED'].includes(zodFlaw.major_incident_state)
-  ) {
-    raiseIssue('Description must be approved for Major Incidents.', ['cve_description']);
-  }
-
   const unembargo_dt = DateTime.fromISO(`${zodFlaw.unembargo_dt}`).toISODate();
   const reported_dt = DateTime.fromISO(`${zodFlaw.reported_dt}`).toISODate();
 

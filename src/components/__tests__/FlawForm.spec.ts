@@ -320,8 +320,9 @@ describe('flawForm', () => {
     expect(vm.errors.cve_description).toBe(null);
     vm.flaw.cve_description = '';
     expect(vm.errors.cve_description).toBe('Description cannot be blank if requested or approved.');
+    vm.flaw.cve_description = 'I am once more a spooky CVE';
     vm.flaw.major_incident_state = 'APPROVED';
-    expect(vm.errors.cve_description).toBe('Description must be approved for Major Incidents.');
+    expect(vm.errors.cve_description).toBe(null);
   });
 
   osimFullFlawTest('displays correct Owner field value from props', async ({ flaw }) => {
