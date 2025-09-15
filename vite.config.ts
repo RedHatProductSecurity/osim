@@ -3,13 +3,15 @@ import path from 'node:path';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import viteBasicSslPlugin from '@vitejs/plugin-basic-ssl';
 // import copy from '@rollup-extras/plugin-copy';
 
 // https://vitejs.dev/config/
-export default defineConfig(() => ({
+export default defineConfig({
   plugins: [
     vue(),
+    vueJsx(),
     viteBasicSslPlugin(),
   ],
   build: {
@@ -54,4 +56,4 @@ export default defineConfig(() => ({
       // path: 'path-browserify',
     },
   },
-}));
+});

@@ -16,6 +16,8 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "jsx": "preserve",
+    "jsxImportSource": "vue"
   },
   "vueCompilerOptions": {
     "strictTemplates": true,
