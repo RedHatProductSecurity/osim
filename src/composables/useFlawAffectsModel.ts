@@ -35,6 +35,10 @@ export function useFlawAffectsModel() {
   }, {} as Record<string, string>));
 
   if (!initialAffects.value.length) {
+    setInitialAffects();
+  }
+
+  function setInitialAffects() {
     initialAffects.value = deepCopyFromRaw(flaw.value.affects);
   }
 
@@ -108,7 +112,6 @@ export function useFlawAffectsModel() {
 
   async function removeAffects() {
     await deleteAffects(affectsToDelete.value.map(({ uuid }) => uuid as string));
-    resetInitialAffects();
   }
 
   function updateAffectCvss(
@@ -227,7 +230,6 @@ export function useFlawAffectsModel() {
           css: 'success',
         });
       }
-      return savedAffects;
     }
 
     if (Object.keys(affectCvssToDelete.value).length > 0) {
@@ -255,6 +257,8 @@ export function useFlawAffectsModel() {
         });
       }
     }
+
+    return savedAffects;
   }
 
   return {
@@ -263,11 +267,14 @@ export function useFlawAffectsModel() {
     recoverAffect,
     saveAffects,
     removeAffects,
+    setInitialAffects,
     updateAffectCvss,
     affectsToDelete,
+    affectsToUpdate,
     affectCvssToDelete,
     initialAffects,
     modifiedAffects,
+    affectsToCreate,
     wereAffectsEditedOrAdded,
     isAffectBeingRemoved,
   };

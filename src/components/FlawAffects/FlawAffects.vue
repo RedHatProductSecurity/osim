@@ -55,8 +55,8 @@ const {
 const {
   addAffect,
   affectsToDelete,
+  affectsToUpdate, // TODO: move to composable?
   isAffectBeingRemoved,
-  modifiedAffects, // TODO: move to composable?
   recoverAffect,
   removeAffect,
   updateAffectCvss,
@@ -80,7 +80,7 @@ const displayedAffects = computed(() => {
     case displayModes.EDITING:
       return affectsBeingEdited.value;
     case displayModes.MODIFIED:
-      return modifiedAffects.value;
+      return affectsToUpdate.value;
     case displayModes.SELECTED:
       return selectedAffects.value;
     default:
@@ -164,7 +164,7 @@ function moduleBtnTooltip(moduleName: string) {
 }
 
 function revertAllAffects() {
-  const affectsToRestore = [...modifiedAffects.value];
+  const affectsToRestore = [...affectsToUpdate.value];
   affectsToRestore.forEach((affect) => {
     if (!affectsBeingEdited.value.includes(affect)) {
       revertAffectToLastSaved(affect);
@@ -388,7 +388,7 @@ const displayedTrackers = computed(() => {
             <span>Editing {{ affectsBeingEdited.length }}</span>
           </div>
           <div
-            v-if="modifiedAffects.length > 0"
+            v-if="affectsToUpdate.length > 0"
             class="badge-btn btn btn-sm bg-light-green"
             style="color: #204d00; border-color: #204d00 !important;"
             :style="displayMode === displayModes.MODIFIED
@@ -397,7 +397,7 @@ const displayedTrackers = computed(() => {
             @click.stop="setDisplayMode(displayModes.MODIFIED)"
           >
             <i class="bi bi-file-earmark-diff me-1 h-fit" />
-            <span>Modified {{ modifiedAffects.length }}</span>
+            <span>Modified {{ affectsToUpdate.length }}</span>
           </div>
           <div
             v-if="affectsToDelete.length > 0"
@@ -455,7 +455,7 @@ const displayedTrackers = computed(() => {
             <i class="bi bi-x fs-4 lh-1" />
           </button>
           <button
-            v-if="modifiedAffects.length > 0"
+            v-if="affectsToUpdate.length > 0"
             type="button"
             class="icon-btn btn btn-sm text-white"
             title="Discard all affect modifications"

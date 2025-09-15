@@ -14,13 +14,20 @@ function resetFlaw() {
   relatedFlaws.value = [];
 }
 
-type FlawDataType = ZodAffectType[] | ZodFlawCVSSType[] | ZodFlawLabelType[] | ZodFlawType;
+type FlawDataType = RelatedDataType | ZodFlawType;
+type RelatedDataType = ZodAffectType[] | ZodFlawCVSSType[] | ZodFlawLabelType[];
 type FlawFieldsWithEndpoints = 'affects' | 'cvss_scores' | 'labels';
-function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints) {
+function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace: boolean = true) {
   if (!key) {
     flaw.value = flawData as ZodFlawType;
-  } else {
+  } else if (replace) {
     Object.assign(flaw.value, { [key]: flawData });
+  } else {
+    (flawData as RelatedDataType).forEach((item, index) => {
+      if (item.uuid && item.uuid === flaw.value[key]?.[index].uuid) {
+        flaw.value[key]![index] = item;
+      }
+    });
   }
   initialFlaw.value = deepCopyFromRaw(flaw.value);
 }

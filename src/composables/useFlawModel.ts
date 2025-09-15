@@ -54,6 +54,7 @@ export function useFlawModel() {
     affectsToDelete,
     removeAffects,
     saveAffects,
+    setInitialAffects,
     wereAffectsEditedOrAdded,
   } = useFlawAffectsModel();
 
@@ -164,7 +165,8 @@ export function useFlawModel() {
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
       });
     }
 
@@ -189,8 +191,12 @@ export function useFlawModel() {
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
       });
+    }
+
+    if (wereAffectsEditedOrAdded.value || affectsToDelete.value.length) {
+      afterSuccessQueue.push(setInitialAffects);
     }
 
     if (areLabelsUpdated.value) {
@@ -201,7 +207,7 @@ export function useFlawModel() {
             .filter((result): result is PromiseFulfilledResult<{ data: any }> =>
               result.status === 'fulfilled' && result.value?.data)
             .map(result => result.value.data);
-          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels'));
+          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels', false));
         }
       });
     }
