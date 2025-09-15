@@ -1,12 +1,11 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
+import { createTestingPinia } from '@pinia/testing';
 
 import Settings from '@/components/Settings/Settings.vue';
 
-import { mockSettingsStore } from '@/stores/__tests__/SettingsStore.spec';
-
 const subject = mount(Settings, {
-  plugins: [mockSettingsStore],
+  plugins: [createTestingPinia()],
 });
 
 describe('settings', () => {
