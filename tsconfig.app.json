@@ -16,13 +16,13 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "jsx": "preserve",
-    "jsxImportSource": "vue"
   },
   "vueCompilerOptions": {
     "strictTemplates": true,
+    "fallthroughAttributes": true,
+    "checkUnknownEvents": false,
     "dataAttributes": [
-      "data-*",
+      "data-*"
     ]
   }
 }

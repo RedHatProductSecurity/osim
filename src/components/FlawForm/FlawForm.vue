@@ -20,6 +20,7 @@ import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
+import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -48,6 +49,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
 import { FlawClassificationStateEnum } from '@/generated-client';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   mode: 'create' | 'edit';
@@ -442,11 +444,15 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             />
             <span class="ms-1">Fetching affects...</span>
           </div>
-          <FlawAffects
-            v-else-if="mode === 'edit'"
-            :errors="errors.affects"
-            :embargoed="flaw.embargoed"
-          />
+          <template v-else>
+            <AffectsTable v-if="osimRuntime.flags?.affectsV2" />
+            <FlawAffects
+              v-else
+              :errors="errors.affects"
+              :embargoed="flaw.embargoed"
+            />
+          </template>
+
         </div>
       </div>
       <div class="row osim-flaw-form-section">

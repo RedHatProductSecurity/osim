@@ -1,0 +1,244 @@
+import { createColumnHelper } from '@tanstack/vue-table';
+import type {
+  CellContext,
+  ColumnDefTemplate,
+  DeepKeys,
+  Row,
+  RowData,
+  Table,
+} from '@tanstack/vue-table';
+
+import type { ZodAffectType } from '@/types';
+import {
+  affectAffectedness,
+  affectImpacts,
+  affectJustification,
+  affectResolutions,
+  possibleAffectResolutions,
+} from '@/types/zodAffect';
+import { affectRhCvss3, formatDateWithTimezone } from '@/utils/helpers';
+import { labelColorMap } from '@/constants';
+
+import EditableCell from './EditableCell.vue';
+import RowActions from './RowActions.vue';
+import TrackerLink from './TrackerLink.vue';
+
+declare module '@tanstack/vue-table' {
+
+  interface ColumnMeta<TData extends RowData, TValue> {
+    cvss?: boolean;
+    enum?: ((row?: Row<TData>) => Record<string, string>) | Record<string, string>;
+    extraColumn?: DeepKeys<TData>;
+    filter?: boolean;
+    onValueChange?: (newValue: TValue, row: Row<TData>, table: Table<TData>) => void;
+  }
+}
+
+const editableCellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, any>> =
+ ({ column, getValue, row, table }) =>
+   <EditableCell row={row} table={table} column={column} getValue={getValue} />;
+
+export default function AffectColumnDefinitions() {
+  const columnHelper = createColumnHelper<ZodAffectType>();
+
+  const columns = [
+    columnHelper.display({
+      id: 'Select',
+      header: ({ table }) => {
+        return (
+          <input
+            type="checkbox"
+            class="form-check-input"
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        );
+      },
+      cell: ({ row }) => {
+        return (
+          <input
+            type="checkbox"
+            class="form-check-input"
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        );
+      },
+      size: 40,
+      enableSorting: false,
+      enableGlobalFilter: false,
+      enableColumnFilter: false,
+      meta: {
+        filter: false,
+      },
+    }),
+    columnHelper.accessor('labels', {
+      cell: column => (column.getValue()?.map(name => (
+        <span
+          class="badge rounded-pill border text-black"
+          style={{ backgroundColor: labelColorMap[name] }}
+        >
+          {name}
+        </span>
+      ))
+      ),
+      filterFn: 'arrIncludesSome',
+      header: 'Label',
+      size: 110,
+    }),
+    columnHelper.accessor('ps_update_stream', {
+      cell: editableCellRenderer,
+      header: 'Product Stream',
+      size: 190,
+    }),
+    columnHelper.accessor('ps_module', {
+      cell: editableCellRenderer,
+      header: 'Module',
+    }),
+    columnHelper.accessor('ps_component', {
+      cell: editableCellRenderer,
+      header: 'Component',
+    }),
+    columnHelper.accessor('purl', {
+      cell: editableCellRenderer,
+      header: 'Analyzed Component',
+      size: 220,
+    }),
+    columnHelper.accessor('affectedness', {
+      cell: editableCellRenderer,
+      header: 'Affectedness',
+      filterFn: 'arrIncludesWithBlanks',
+      meta: {
+        enum: affectAffectedness,
+        onValueChange: (newValue: keyof typeof possibleAffectResolutions, row, table) => {
+          const { not_affected_justification, resolution } = row.original;
+          const { updateData } = table.options.meta!;
+
+          // Clear resolution if empty or no longer valid
+          if (!newValue || (resolution && !Object.values(possibleAffectResolutions[newValue]).includes(resolution))) {
+            updateData(row.index, 'resolution', '');
+          }
+
+          // Clear justification if empty or not "not_affected"
+          if (!newValue || (newValue !== 'NOTAFFECTED' && not_affected_justification)) {
+            updateData(row.index, 'not_affected_justification', '');
+          }
+
+          // Clear impact for "not_affected"
+          if (newValue === 'NOTAFFECTED') {
+            updateData(row.index, 'impact', '');
+          }
+        },
+      },
+      size: 170,
+    }),
+    columnHelper.accessor('not_affected_justification', {
+      cell: editableCellRenderer,
+      header: 'Not Affected Justification',
+      size: 282,
+      meta: {
+        enum: row => row
+          ? row?.original.affectedness === 'NOTAFFECTED' ? affectJustification : {}
+          : affectJustification,
+      },
+    }),
+    columnHelper.accessor('resolution', {
+      cell: editableCellRenderer,
+      header: 'Resolution',
+      filterFn: 'arrIncludesWithBlanks',
+      meta: {
+        enum: row => row
+          ? row.original.affectedness
+            ? possibleAffectResolutions[row.original.affectedness]
+            : {}
+          : affectResolutions,
+        extraColumn: 'tracker.resolution',
+      },
+    }),
+    columnHelper.accessor('impact', {
+      cell: editableCellRenderer,
+      header: 'Impact',
+      filterFn: 'arrIncludesWithBlanks',
+      meta: {
+        enum: affectImpacts,
+      },
+    }),
+    columnHelper.accessor('cvss_scores', {
+      cell: editableCellRenderer,
+      sortingFn: (rowA, rowB) => {
+        const scoreA = affectRhCvss3(rowA.original)?.score || 0;
+        const scoreB = affectRhCvss3(rowB.original)?.score || 0;
+        const diff = scoreA - scoreB;
+        return Math.sign(diff);
+      },
+      header: 'CVSS',
+      filterFn: 'cvssScore',
+      size: 100,
+      meta: {
+        cvss: true,
+      },
+    }),
+    columnHelper.accessor(row => `${row.tracker?.external_system_id || ''}`, {
+      cell: ({ row }) => <TrackerLink tracker={row.original.tracker} />,
+      header: 'Tracker',
+      enableGlobalFilter: false,
+    }),
+    columnHelper.accessor(row => row.tracker?.status, {
+      cell: column => column.getValue()?.toUpperCase(),
+      header: 'Tracker Status',
+      enableGlobalFilter: false,
+      size: 185,
+    }),
+    columnHelper.accessor('created_dt', {
+      cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
+      header: 'Affect Creation date',
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
+      size: 234,
+    }),
+    columnHelper.accessor('updated_dt', {
+      cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
+      header: 'Affect Update date',
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
+      size: 220,
+    }),
+    columnHelper.accessor(row => row.tracker?.created_dt, {
+      cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
+      header: 'Tracker Creation date',
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
+      size: 240,
+    }),
+    columnHelper.accessor(row => row.tracker?.updated_dt, {
+      cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
+      header: 'Tracker Update date',
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
+      size: 234,
+    }),
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row, table }) => <RowActions row={row} table={table} />,
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
+    }),
+  ];
+
+  return columns;
+}
