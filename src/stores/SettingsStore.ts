@@ -22,6 +22,8 @@ export const ApiKeysSchema = z.object({
 export const PersistentSettingsSchema = z.object({
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
+  affectsSizing: z.record(z.number()),
+  affectsVisibility: z.record(z.boolean()),
   trackersPerPage: z.number(),
   isHidingLabels: z.boolean().optional().default(false),
   privacyNoticeShown: z.boolean().default(false),
@@ -50,6 +52,8 @@ const defaultPersistentSettings: PersistentSettingsType = {
   privacyNoticeShown: false,
   aiUsageNoticeShown: false,
   unifiedCommentsView: false,
+  affectsSizing: {},
+  affectsVisibility: {},
   affectsColumnWidths: [],
   trackersColumnWidths: [],
 };
