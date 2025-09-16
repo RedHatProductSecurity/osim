@@ -167,6 +167,7 @@ export function useFlawModel() {
         const response = await saveAffects();
 
         afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        afterSuccessQueue.push(setInitialAffects);
       });
     }
 
@@ -192,11 +193,8 @@ export function useFlawModel() {
       queue.push(async () => {
         const response = await saveAffects();
         afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        afterSuccessQueue.push(setInitialAffects);
       });
-    }
-
-    if (wereAffectsEditedOrAdded.value || affectsToDelete.value.length) {
-      afterSuccessQueue.push(setInitialAffects);
     }
 
     if (areLabelsUpdated.value) {
@@ -223,10 +221,13 @@ export function useFlawModel() {
     }
   }
 
-  function afterSaveSuccess(queue?: (() => void)[]) {
+  async function afterSaveSuccess(queue?: (() => void)[]) {
     isSaving.value = false;
     if (!queue) return;
-    queue.forEach(fn => fn());
+    const promisedQueue = queue.map(fn => new Promise(fn));
+    for (const promise of promisedQueue) {
+      await promise;
+    }
   }
 
   const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {
