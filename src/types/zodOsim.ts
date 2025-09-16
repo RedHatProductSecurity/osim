@@ -26,6 +26,7 @@ export const OsimRuntime = z.object({
   error: z.string().default(''),
   readOnly: z.boolean().default(false),
   flags: z.record(z.union([z.boolean(), z.string()])).optional(),
+  aegisFeedbackUrl: z.string().optional(),
 });
 export type OsimRuntimeType = z.infer<typeof OsimRuntime>;
 
