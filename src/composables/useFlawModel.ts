@@ -54,6 +54,7 @@ export function useFlawModel() {
     affectsToDelete,
     removeAffects,
     saveAffects,
+    setInitialAffects,
     wereAffectsEditedOrAdded,
   } = useFlawAffectsModel();
 
@@ -164,7 +165,9 @@ export function useFlawModel() {
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        afterSuccessQueue.push(setInitialAffects);
       });
     }
 
@@ -189,7 +192,8 @@ export function useFlawModel() {
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects'));
+        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        afterSuccessQueue.push(setInitialAffects);
       });
     }
 
@@ -201,7 +205,7 @@ export function useFlawModel() {
             .filter((result): result is PromiseFulfilledResult<{ data: any }> =>
               result.status === 'fulfilled' && result.value?.data)
             .map(result => result.value.data);
-          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels'));
+          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels', false));
         }
       });
     }
@@ -217,10 +221,13 @@ export function useFlawModel() {
     }
   }
 
-  function afterSaveSuccess(queue?: (() => void)[]) {
+  async function afterSaveSuccess(queue?: (() => void)[]) {
     isSaving.value = false;
     if (!queue) return;
-    queue.forEach(fn => fn());
+    const promisedQueue = queue.map(fn => new Promise(fn));
+    for (const promise of promisedQueue) {
+      await promise;
+    }
   }
 
   const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {
