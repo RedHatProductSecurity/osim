@@ -18,6 +18,7 @@ OSIM_BACKENDS_AEGISAI="${OSIM_BACKENDS_AEGISAI:-http://aegis-ai-service:8005}"
 OSIM_BACKENDS_JIRA_DISPLAY="${OSIM_BACKENDS_JIRA_DISPLAY:-http://jira-service:8002}"
 OSIM_VERSION='{"rev":"dev","tag":"dev","timestamp":"1970-01-01T00:00:00Z"}'
 OSIM_READONLY_MODE=${OSIM_READONLY_MODE:-false}
+OSIM_AEGIS_FEEDBACK_URL="${OSIM_AEGIS_FEEDBACK_URL:-}"
 
 if [ -f "/osim_build.json" ]; then
     # Add the OSIM build info
@@ -53,7 +54,8 @@ IFS= read -r -d '' OSIM_RUNTIME <<EOF || :
   },
   "osimVersion": ${OSIM_VERSION},
   "readOnly": ${OSIM_READONLY_MODE},
-  "flags": ${feature_flags}
+  "flags": ${feature_flags},
+  "aegisFeedbackUrl": "${OSIM_AEGIS_FEEDBACK_URL}"
 }
 EOF
 
