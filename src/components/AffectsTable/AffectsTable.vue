@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, toRaw } from 'vue';
 
-import { FlexRender, getCoreRowModel, getPaginationRowModel, useVueTable, type Column } from '@tanstack/vue-table';
+import {
+  FlexRender, getCoreRowModel, getPaginationRowModel,
+  getSortedRowModel, type SortingState, useVueTable, type Column,
+} from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
 
 import PaginationControls from '@/components/AffectsTable/PaginationControls.vue';
@@ -10,6 +13,7 @@ import { useFlaw } from '@/composables/useFlaw';
 import { usePagination } from '@/composables/usePagination';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
+import SortIcon from '@/widgets/SortIcon/SortIcon.vue';
 
 import columnDefinitions from './columnDefinitions';
 
@@ -18,6 +22,7 @@ const { settings } = storeToRefs(useSettingsStore());
 const { flaw } = useFlaw();
 const data = ref(structuredClone(toRaw(flaw.value.affects)));
 const columns = ref(columnDefinitions());
+const sorting = ref<SortingState>([]);
 
 const totalPages = computed(() =>
   Math.ceil((data.value.length || 0) / settings.value.affectsPerPage),
@@ -46,6 +51,12 @@ const table = useVueTable({
         pageSize: settings.value.affectsPerPage,
       };
     },
+    get sorting() {
+      return sorting.value;
+    },
+  },
+  onSortingChange: (updaterOrValue) => {
+    sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue;
   },
   onStateChange: () => {
     settings.value.affectsSizing = table.getAllLeafColumns()
@@ -53,6 +64,7 @@ const table = useVueTable({
   },
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
+  getSortedRowModel: getSortedRowModel(),
 });
 
 function toggleColumnVisibility(column: Column<any, any>) {
@@ -124,12 +136,19 @@ function changeItemsPerPage(itemsCount: number) {
             v-for="header in headerGroup.headers"
             :key="header.id"
             :colspan="header.colSpan"
+            :class="header.column.getCanSort() ? 'sortable' : ''"
             :style="{ width: `${header.getSize()}px` }"
+            @click="header.column.getToggleSortingHandler()?.($event)"
           >
             <FlexRender
               v-if="!header.isPlaceholder"
               :render="header.column.columnDef.header"
               :props="header.getContext()"
+            />
+            <SortIcon
+              v-if="header.column.getCanSort()"
+              class="sort-icon"
+              :direction="header.column.getIsSorted()"
             />
             <div
               class="resizer"
@@ -137,6 +156,7 @@ function changeItemsPerPage(itemsCount: number) {
               @mousedown="$event => header.getResizeHandler()($event)"
               @touchstart="$event => header.getResizeHandler()($event)"
               @dblclick="header.column.resetSize()"
+              @click.stop
             >
             </div>
           </th>
@@ -166,6 +186,13 @@ function changeItemsPerPage(itemsCount: number) {
   z-index: 1021; // Bootstrap sticky-header has 1020;
 }
 
+.sort-icon {
+  position: absolute;
+  right: 1rem;
+  bottom: 50%;
+  translate: 0 50%;
+}
+
 table {
   border-collapse: separate;
   table-layout: fixed;
@@ -179,6 +206,12 @@ table {
       background-color: rgb(var(--bs-secondary-rgb));
       user-select: none;
       touch-action: none;
+    }
+
+    &.sortable {
+      cursor: pointer;
+      user-select: none;
+      padding-right: 28px;
     }
   }
 

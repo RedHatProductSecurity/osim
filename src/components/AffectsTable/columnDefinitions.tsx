@@ -31,6 +31,7 @@ export default function AffectColumnDefinitions() {
         );
       },
       size: 40,
+      enableSorting: false,
     }),
     columnHelper.accessor('ps_module', {
       cell: column => column.getValue(),
