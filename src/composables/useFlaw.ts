@@ -20,14 +20,14 @@ type FlawFieldsWithEndpoints = 'affects' | 'cvss_scores' | 'labels';
 function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace: boolean = true) {
   if (!key) {
     flaw.value = flawData as ZodFlawType;
-  } else if (replace) {
-    Object.assign(flaw.value, { [key]: flawData });
-  } else {
-    (flawData as RelatedDataType).forEach((item, index) => {
+  } else if (!replace && Array.isArray(flawData)) {
+    flawData.forEach((item, index) => {
       if (item.uuid && item.uuid === flaw.value[key]?.[index].uuid) {
         flaw.value[key]![index] = item;
       }
     });
+  } else {
+    Object.assign(flaw.value, { [key]: flawData });
   }
   initialFlaw.value = deepCopyFromRaw(flaw.value);
 }
