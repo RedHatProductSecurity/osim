@@ -22,7 +22,7 @@ function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace:
     flaw.value = flawData as ZodFlawType;
   } else if (!replace && Array.isArray(flawData)) {
     flawData.forEach((item, index) => {
-      if (item.uuid && item.uuid === flaw.value[key]?.[index].uuid) {
+      if (item.uuid && item.uuid === flaw.value[key]?.[index]?.uuid) {
         flaw.value[key]![index] = item;
       }
     });
