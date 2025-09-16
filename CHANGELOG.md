@@ -8,6 +8,7 @@
 ### Fixed
 * Correctly display line breaks in comments (`OSIDB-4290`)
 * Fix UI layout issues for smaller resolutions (`OSIDB-4411`)
+* Fix API Keys not loaded on new user session (`OSIDB-4416`)
 
 ### Changed
 * Move labels table after trackers (`OSIDB-4082`)
