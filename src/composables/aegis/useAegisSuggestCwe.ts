@@ -7,6 +7,7 @@ import {
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 export type UseAegisSuggestCweOptions = {
   context: AegisSuggestionContextRefs;
@@ -85,12 +86,17 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     details.value = null;
   }
 
-  // TODO: Implement feedback
   function sendFeedback(kind: 'down' | 'up') {
-    toastStore.addToast({
-      title: 'AI Suggestion Feedback',
-      body: kind === 'up' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
-    });
+    const url = osimRuntime.value.aegisFeedbackUrl;
+
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      toastStore.addToast({
+        title: 'AI Suggestion Feedback',
+        body: kind === 'up' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+      });
+    }
   }
 
   return { canSuggest, canShowFeedback, details, hasAppliedSuggestion, isSuggesting, revert, sendFeedback, suggestCwe };
