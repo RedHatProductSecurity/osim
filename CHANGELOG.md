@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2025.9.0]
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
 * Add Aegis-AI regulatory notifications (`AEGIS-62`)
@@ -493,7 +493,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.8.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.9.0...HEAD
+[2025.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.8.0...v2025.9.0
 [2025.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.7.0...v2025.8.0
 [2025.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.6.0...v2025.7.0
 [2025.6.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.4.0...v2025.6.0
