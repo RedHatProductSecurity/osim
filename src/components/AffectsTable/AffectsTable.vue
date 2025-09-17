@@ -2,9 +2,15 @@
 import { computed, ref, toRaw } from 'vue';
 
 import {
-  FlexRender, getCoreRowModel, getPaginationRowModel,
-  getSortedRowModel, type SortingState, useVueTable, type Column,
+  FlexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getFacetedUniqueValues,
+  useVueTable,
 } from '@tanstack/vue-table';
+import type { SortingState, Column, ColumnFiltersState } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
 
 import PaginationControls from '@/components/AffectsTable/PaginationControls.vue';
@@ -14,8 +20,11 @@ import { usePagination } from '@/composables/usePagination';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import SortIcon from '@/widgets/SortIcon/SortIcon.vue';
+import DebouncedInput from '@/widgets/DebouncedInput/DebouncedInput.vue';
 
 import columnDefinitions from './columnDefinitions';
+import ColumnFilter from './ColumnFilter.vue';
+import { arrIncludesWithBlanks } from './customFilters';
 
 const { settings } = storeToRefs(useSettingsStore());
 
@@ -23,7 +32,9 @@ const { flaw } = useFlaw();
 const data = ref(structuredClone(toRaw(flaw.value.affects)));
 const columns = ref(columnDefinitions());
 const sorting = ref<SortingState>([]);
-
+const showAll = ref(false);
+const globalFilter = ref('');
+const columnFilters = ref<ColumnFiltersState>([]);
 const totalPages = computed(() =>
   Math.ceil((data.value.length || 0) / settings.value.affectsPerPage),
 );
@@ -46,25 +57,57 @@ const table = useVueTable({
       return settings.value.affectsVisibility;
     },
     get pagination() {
-      return {
-        pageIndex: currentPage.value - 1,
-        pageSize: settings.value.affectsPerPage,
-      };
+      return showAll.value
+        ? {
+            pageIndex: 0,
+            pageSize: data.value.length,
+          }
+        : {
+            pageIndex: currentPage.value - 1,
+            pageSize: settings.value.affectsPerPage,
+          };
     },
     get sorting() {
       return sorting.value;
     },
+    get globalFilter() {
+      return globalFilter.value;
+    },
+
+    get columnFilters() {
+      return columnFilters.value;
+    },
   },
   onSortingChange: (updaterOrValue) => {
-    sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue;
+    sorting.value =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(sorting.value)
+        : updaterOrValue;
+  },
+  onGlobalFilterChange: (updaterOrValue) => {
+    globalFilter.value =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(globalFilter.value)
+        : updaterOrValue;
+  },
+  onColumnFiltersChange: (updaterOrValue) => {
+    columnFilters.value =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(columnFilters.value)
+        : updaterOrValue;
   },
   onStateChange: () => {
     settings.value.affectsSizing = table.getAllLeafColumns()
       .reduce((acc, cur) => ({ ...acc, [cur.id]: cur.getSize() }), {});
   },
+  filterFns: {
+    arrIncludesWithBlanks,
+  },
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getFacetedUniqueValues: getFacetedUniqueValues(),
 });
 
 function toggleColumnVisibility(column: Column<any, any>) {
@@ -72,6 +115,11 @@ function toggleColumnVisibility(column: Column<any, any>) {
     ...settings.value.affectsVisibility,
     [column.id]: !column.getIsVisible(),
   };
+
+  // Toggle global filtering based on column visibility
+  if (column.columnDef.meta?.filter !== false) {
+    column.columnDef.enableGlobalFilter = !column.getCanGlobalFilter();
+  }
 }
 
 function changeItemsPerPage(itemsCount: number) {
@@ -84,17 +132,35 @@ function changeItemsPerPage(itemsCount: number) {
 <template>
   <h4>Affected Offerings</h4>
   <div class="mb-2 d-flex justify-content-between align-items-end">
-    <div>
+    <div class="d-flex flex-row align-items-end gap-2">
       <PaginationControls
         :currentPage
         :pages
         :itemsPerPage="settings.affectsPerPage"
         :totalPages
+        :disabled="showAll"
+        :totalCount="data.length"
+        :filteredCount="table.getRowCount()"
         @changePage="changePage"
         @changeItemsPerPage="changeItemsPerPage"
+        @toggleShowAll="showAll = $event"
       />
     </div>
-    <div>
+    <div class="d-flex flex-row gap-2">
+      <button
+        v-if="columnFilters.length"
+        class="btn btn-light btn-sm text-nowrap border border-secondary"
+        @click="columnFilters = []"
+      >
+        <i class="bi-x"></i>
+        Clear column filters
+      </button>
+      <DebouncedInput
+        v-model="globalFilter"
+        class="form-control"
+        type="text"
+        placeholder="Search..."
+      />
       <button
         class="btn btn-secondary dropdown-toggle"
         type="button"
@@ -123,10 +189,7 @@ function changeItemsPerPage(itemsCount: number) {
     </div>
   </div>
   <div class="table-responsive">
-    <table
-      class="table table-striped mb-0"
-      :style="{ width: `${table.getCenterTotalSize()}px` }"
-    >
+    <table class="table table-striped mb-0 z-0">
       <thead class="sticky-top table-dark">
         <tr
           v-for="headerGroup in table.getHeaderGroups()"
@@ -145,8 +208,13 @@ function changeItemsPerPage(itemsCount: number) {
               :render="header.column.columnDef.header"
               :props="header.getContext()"
             />
+            <ColumnFilter
+              v-if="!header.isPlaceholder && header.column.getCanFilter()"
+              class="px-1"
+              :column="header.column"
+            />
             <SortIcon
-              v-if="header.column.getCanSort()"
+              v-if="!header.isPlaceholder && header.column.getCanSort()"
               class="sort-icon"
               :direction="header.column.getIsSorted()"
             />
@@ -220,7 +288,6 @@ table {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
       transition:
         background-color 0.5s,
         color 0.5s,

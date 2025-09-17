@@ -30,7 +30,6 @@ defineProps<{
   font-size: 1rem;
   display: inline-block;
   color: var(--bs-secondary);
-
   width: var(--button-size);
   height: var(--button-size);
 
