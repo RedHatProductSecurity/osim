@@ -1,16 +1,23 @@
-import { createColumnHelper, type RowData } from '@tanstack/vue-table';
+import { createColumnHelper, type CellContext, type ColumnDefTemplate, type RowData } from '@tanstack/vue-table';
+import { DateTime } from 'luxon';
 
 import type { ZodAffectType } from '@/types';
 import { affectAffectedness, affectImpacts, affectResolutions } from '@/types/zodAffect';
-import { formatDateWithTimezone } from '@/utils/helpers';
+import { affectRhCvss3, formatDateWithTimezone } from '@/utils/helpers';
+
+import EditableCell from './EditableCell.vue';
 
 declare module '@tanstack/vue-table' {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
+    cvss?: boolean;
     enum?: Record<string, string>;
     filter?: boolean;
   }
 }
+
+const cellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, unknown>> = ({ column, getValue, row, table }) =>
+  <EditableCell row={row} table={table} column={column} getValue={getValue} />;
 
 export default function AffectColumnDefinitions() {
   const columnHelper = createColumnHelper<ZodAffectType>();
@@ -49,20 +56,20 @@ export default function AffectColumnDefinitions() {
       },
     }),
     columnHelper.accessor('ps_module', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Module',
     }),
     columnHelper.accessor('ps_component', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Component',
     }),
     columnHelper.accessor('purl', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Analyzed Component',
       size: 220,
     }),
     columnHelper.accessor('affectedness', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Affectedness',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
@@ -71,12 +78,12 @@ export default function AffectColumnDefinitions() {
       size: 170,
     }),
     columnHelper.accessor('not_affected_justification', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Not Affected Justification',
       size: 282,
     }),
     columnHelper.accessor('resolution', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Resolution',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
@@ -84,20 +91,30 @@ export default function AffectColumnDefinitions() {
       },
     }),
     columnHelper.accessor('impact', {
-      cell: column => column.getValue(),
+      cell: cellRenderer,
       header: 'Impact',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
         enum: affectImpacts,
       },
     }),
-    columnHelper.accessor(row => `${row.cvss_scores?.[0]?.score ?? ''}`, {
-      cell: column => column.getValue(),
+    columnHelper.accessor('cvss_scores', {
+      cell: cellRenderer,
+      sortingFn: (rowA, rowB) => {
+        const scoreA = affectRhCvss3(rowA.original)?.score || 0;
+        const scoreB = affectRhCvss3(rowB.original)?.score || 0;
+        const diff = scoreA - scoreB;
+        return diff > 0 ? 1 : diff < 0 ? -1 : 0;
+      },
       header: 'CVSS',
+      filterFn: 'cvssScore',
       size: 100,
+      meta: {
+        cvss: true,
+      },
     }),
     columnHelper.accessor('created_dt', {
-      cell: column => formatDateWithTimezone(column.getValue() || ''),
+      cell: column => formatDateWithTimezone(column.getValue() || DateTime.now().toISO()),
       header: 'Affect Creation date',
       enableGlobalFilter: false,
       meta: {
@@ -106,7 +123,7 @@ export default function AffectColumnDefinitions() {
       size: 234,
     }),
     columnHelper.accessor('updated_dt', {
-      cell: column => formatDateWithTimezone(column.getValue() || ''),
+      cell: column => formatDateWithTimezone(column.getValue() || DateTime.now().toISO()),
       header: 'Affect Update date',
       enableGlobalFilter: false,
       meta: {

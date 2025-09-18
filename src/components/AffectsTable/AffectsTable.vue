@@ -102,6 +102,7 @@ const table = useVueTable({
   },
   filterFns: {
     arrIncludesWithBlanks,
+    cvssScore,
   },
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
