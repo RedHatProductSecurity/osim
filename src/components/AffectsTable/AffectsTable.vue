@@ -10,7 +10,7 @@ import {
   getFacetedUniqueValues,
   useVueTable,
 } from '@tanstack/vue-table';
-import type { SortingState, Column, ColumnFiltersState } from '@tanstack/vue-table';
+import type { SortingState, Column, ColumnFiltersState, RowData } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
 
 import PaginationControls from '@/components/AffectsTable/PaginationControls.vue';
@@ -21,15 +21,26 @@ import { usePagination } from '@/composables/usePagination';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import SortIcon from '@/widgets/SortIcon/SortIcon.vue';
 import DebouncedInput from '@/widgets/DebouncedInput/DebouncedInput.vue';
+import type { ZodAffectType } from '@/types';
 
 import columnDefinitions from './columnDefinitions';
 import ColumnFilter from './ColumnFilter.vue';
-import { arrIncludesWithBlanks } from './customFilters';
+import { arrIncludesWithBlanks, cvssScore } from './customFilters';
+
+declare module '@tanstack/table-core' {
+  interface TableMeta<TData extends RowData> {
+    createData(): void;
+    modifiedRows: string[];
+    newRows: string[];
+    removedRows: string[];
+    updateData(rowIndex: number, columnId: string, value: unknown): void;
+  }
+}
 
 const { settings } = storeToRefs(useSettingsStore());
 
 const { flaw } = useFlaw();
-const data = ref(structuredClone(toRaw(flaw.value.affects)));
+const data = ref<ZodAffectType[]>(structuredClone(toRaw(flaw.value.affects)));
 const columns = ref(columnDefinitions());
 const sorting = ref<SortingState>([]);
 const showAll = ref(false);
@@ -47,6 +58,7 @@ const table = useVueTable({
   get columns() {
     return columns.value;
   },
+  getRowId: row => (row._uuid || row.uuid) ?? '',
   columnResizeMode: 'onChange',
   columnResizeDirection: 'ltr',
   initialState: {
@@ -103,6 +115,44 @@ const table = useVueTable({
   filterFns: {
     arrIncludesWithBlanks,
     cvssScore,
+  },
+  meta: {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => {
+      const updatedRow = data.value[rowIndex];
+      data.value = data.value.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            [columnId]: value,
+          };
+        }
+        return row;
+      });
+      table.options.meta?.modifiedRows.push((updatedRow.uuid || updatedRow._uuid)!);
+    },
+    createData: () => {
+      const uuid = crypto.randomUUID();
+      data.value = [{
+        _uuid: uuid,
+        embargoed: flaw.value.embargoed,
+        affectedness: 'NEW',
+        resolution: '',
+        delegated_resolution: '',
+        ps_module: `Module`,
+        ps_component: `Component`,
+        purl: '',
+        impact: '',
+        cvss_scores: [],
+        trackers: [],
+        alerts: [],
+      }, ...data.value];
+
+      table.options.meta?.newRows.push(uuid);
+      currentPage.value = 1;
+    },
+    modifiedRows: [],
+    newRows: [],
+    removedRows: [],
   },
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
@@ -163,6 +213,14 @@ function changeItemsPerPage(itemsCount: number) {
         placeholder="Search..."
       />
       <button
+        class="btn btn-secondary text-nowrap"
+        title="Add new affect"
+        type="button"
+        @click="table.options.meta?.createData()"
+      >
+        <i class="bi-plus-lg" />
+      </button>
+      <button
         class="btn btn-secondary dropdown-toggle"
         type="button"
         data-bs-toggle="dropdown"
@@ -177,7 +235,7 @@ function changeItemsPerPage(itemsCount: number) {
           :key="column.id"
           class="dropdown-item"
         >
-          <label>
+          <label class="w-100">
             <input
               type="checkbox"
               :checked="column.getIsVisible()"
@@ -235,6 +293,12 @@ function changeItemsPerPage(itemsCount: number) {
         <tr
           v-for="row in table.getRowModel().rows"
           :key="row.id"
+          :class="{
+            'modified': table.options.meta?.modifiedRows.includes(row.id),
+            'new': table.options.meta?.newRows.includes(row.id),
+            'removed': table.options.meta?.removedRows.includes(row.id),
+            [row.id]: true,
+          }"
         >
           <td
             v-for="cell in row.getVisibleCells()"
@@ -300,6 +364,30 @@ table {
 
     &:hover td {
       border-color: #707070bf;
+    }
+
+    &.modified td {
+      border-color: var(--bs-light-green) !important;
+      background-color: var(--bs-light-green);
+      color: #204d00;
+    }
+
+    &.new td {
+      border-color: #e0f0ff !important;
+      background-color: #e0f0ff;
+      color: #036;
+    }
+
+    &.removed td {
+      border-color: #ffe3d9 !important;
+      background-color: #ffe3d9;
+      color: #731f00;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 2.5rem;
     }
   }
 }
