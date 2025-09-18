@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Affect's CVSS changes not saved/commited (`OSIDB-4431`)
+
 ## [2025.9.0]
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
