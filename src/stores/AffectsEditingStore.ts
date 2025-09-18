@@ -29,6 +29,7 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
 
   const affectValuesPriorEdit = ref<ZodAffectType[]>([]);
   const affectsBeingEdited = ref<ZodAffectType[]>([]);
+  const affectsCurrentEdits = ref<ZodAffectType[]>([]);
 
   onUnmounted($reset);
 
@@ -39,6 +40,21 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
 
   function getAffectPriorEdit(affect: ZodAffectType): ZodAffectType {
     return affectValuesPriorEdit.value.find(prior => prior.uuid && prior.uuid === affect.uuid) || affect;
+  }
+
+  function updateCurrentEdit(affect: ZodAffectType) {
+    const matchAffect = matcherForAffect(affect);
+    const existingIndex = affectsCurrentEdits.value.findIndex(matchAffect);
+    if (existingIndex !== -1) {
+      affectsCurrentEdits.value.splice(existingIndex, 1, affect);
+    } else {
+      affectsCurrentEdits.value.push(affect);
+    }
+  }
+
+  function getCurrentEdit(affect: ZodAffectType): ZodAffectType {
+    const matchAffect = matcherForAffect(affect);
+    return affectsCurrentEdits.value.find(matchAffect) || affect;
   }
 
   function editAffect(affect: ZodAffectType) {
@@ -83,6 +99,13 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
     const editingIndex = affectsBeingEdited.value.findIndex(matchAffect);
     affectsBeingEdited.value.splice(editingIndex, 1);
     affectValuesPriorEdit.value.splice(affectValuesPriorEdit.value.findIndex(matchAffect), 1);
+
+    // Also remove from current edits
+    const currentEditIndex = affectsCurrentEdits.value.findIndex(matchAffect);
+    if (currentEditIndex !== -1) {
+      affectsCurrentEdits.value.splice(currentEditIndex, 1);
+    }
+
     if (isAffectSelected(affect)) {
       toggleAffectSelection(affect);
     }
@@ -93,7 +116,10 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
 
   function commitAllChanges() {
     const affectsToCommit = [...affectsBeingEdited.value];
-    affectsToCommit.forEach(commitChanges);
+    affectsToCommit.forEach((affect) => {
+      const currentEdit = getCurrentEdit(affect);
+      commitChanges(currentEdit);
+    });
   }
 
   function cancelAllChanges() {
@@ -104,6 +130,7 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
   function $reset() {
     affectsBeingEdited.value = [];
     affectValuesPriorEdit.value = [];
+    affectsCurrentEdits.value = [];
   }
 
   return {
@@ -111,10 +138,13 @@ export const useAffectsEditingStore = defineStore('EditableAffects', () => {
     commitChanges,
     isBeingEdited,
     getAffectPriorEdit,
+    updateCurrentEdit,
+    getCurrentEdit,
     editAffect,
     revertAffectToLastSaved,
     affectValuesPriorEdit,
     affectsBeingEdited,
+    affectsCurrentEdits,
     $reset,
     selectedAffects,
     areAllAffectsSelected,

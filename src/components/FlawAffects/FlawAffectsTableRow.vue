@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRaw } from 'vue';
+import { computed, ref, toRaw, watch } from 'vue';
 
 import { PackageURL } from 'packageurl-js';
 
@@ -42,10 +42,18 @@ const {
   isBeingEdited,
   isSelectable,
   revertAffectToLastSaved,
+  updateCurrentEdit,
 } = affectsEditingStore;
 
 const currentAffect = ref(structuredClone(toRaw(props.affect)));
 const resetCurrentAffect = () => { currentAffect.value = structuredClone(toRaw(props.affect)); };
+
+// Sync currentAffect changes back to the store when the affect is being edited
+watch(currentAffect, (newValue) => {
+  if (isBeingEdited(props.affect)) {
+    updateCurrentEdit(newValue);
+  }
+}, { deep: true });
 
 const handleKeystroke = (event: KeyboardEvent, affect: ZodAffectType) => {
   if (event.key === 'Escape') {
