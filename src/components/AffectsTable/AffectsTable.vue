@@ -26,6 +26,7 @@ import type { ZodAffectType } from '@/types';
 import columnDefinitions from './columnDefinitions';
 import ColumnFilter from './ColumnFilter.vue';
 import { arrIncludesWithBlanks, cvssScore } from './customFilters';
+import ColumnOptions from './ColumnOptions.vue';
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -92,6 +93,9 @@ const table = useVueTable({
     get columnFilters() {
       return columnFilters.value;
     },
+    get columnOrder() {
+      return settings.value.affectsColumnOrder;
+    },
   },
   onSortingChange: (updaterOrValue) => {
     sorting.value =
@@ -110,6 +114,11 @@ const table = useVueTable({
       typeof updaterOrValue === 'function'
         ? updaterOrValue(columnFilters.value)
         : updaterOrValue;
+  },
+  onColumnOrderChange: (updaterOrValue) => {
+    settings.value.affectsColumnOrder = typeof updaterOrValue === 'function'
+      ? updaterOrValue(settings.value.affectsColumnOrder)
+      : updaterOrValue;
   },
   onStateChange: () => {
     settings.value.affectsSizing = table.getAllLeafColumns()
@@ -247,31 +256,7 @@ function changeItemsPerPage(itemsCount: number) {
       >
         <i class="bi-plus-lg" />
       </button>
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        data-bs-toggle="dropdown"
-        data-bs-auto-close="outside"
-        aria-expanded="false"
-      >
-        <i class="bi-gear"></i>
-      </button>
-      <ul class="dropdown-menu">
-        <li
-          v-for="column in table.getAllLeafColumns()"
-          :key="column.id"
-          class="dropdown-item"
-        >
-          <label class="w-100">
-            <input
-              type="checkbox"
-              :checked="column.getIsVisible()"
-              @input="toggleColumnVisibility(column)"
-            >
-            {{ typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id }}
-          </label>
-        </li>
-      </ul>
+      <ColumnOptions :table @toggleVisibility="toggleColumnVisibility" />
     </div>
   </div>
   <div class="table-responsive">
@@ -341,10 +326,6 @@ function changeItemsPerPage(itemsCount: number) {
   </div>
 </template>
 <style lang="scss" scoped>
-.dropdown-menu {
-  z-index: 1021; // Bootstrap sticky-header has 1020;
-}
-
 .sort-icon {
   position: absolute;
   right: 1rem;
