@@ -3,6 +3,7 @@ import type { ZodAffectCVSSType } from '@/types/zodAffect';
 
 export type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
 export type CvssEntity = {
+  [key: string]: unknown;
   cvss_scores: ZodAffectCVSSType[];
 };
 

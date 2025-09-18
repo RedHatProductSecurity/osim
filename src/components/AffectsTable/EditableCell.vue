@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue';
 
 import type { Column, Getter, Row, Table } from '@tanstack/vue-table';
 
-import type { ZodAffectType } from '@/types';
+import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import { affectRhCvss3 } from '@/utils/helpers';
 
 import CvssCalculatorBase from '../CvssCalculator/CvssCalculatorBase.vue';
@@ -67,10 +67,10 @@ watch(() => props.getValue(), (newValue) => {
         >{{ key.toUpperCase() }}</option>
       </select>
     </template>
-    <template v-if="columnMeta?.cvss">
+    <template v-else-if="columnMeta?.cvss">
       <CvssCalculatorBase
         class="overlayed"
-        :cvssEntity="{cvss_scores: cellValue, ps_module: ''}"
+        :cvssEntity="{cvss_scores: cellValue as ZodAffectCVSSType[], ps_module: ''}"
         @change:cvss_score="(newCvssScores) => {
           cellValue = newCvssScores
         }"

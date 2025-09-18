@@ -28,11 +28,14 @@ import ColumnFilter from './ColumnFilter.vue';
 import { arrIncludesWithBlanks, cvssScore } from './customFilters';
 
 declare module '@tanstack/table-core' {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   interface TableMeta<TData extends RowData> {
     createData(): void;
+    deleteData(rowId: string): void;
     modifiedRows: string[];
     newRows: string[];
     removedRows: string[];
+    revert(rowId: string): void;
     updateData(rowIndex: number, columnId: string, value: unknown): void;
   }
 }
@@ -149,6 +152,30 @@ const table = useVueTable({
 
       table.options.meta?.newRows.push(uuid);
       currentPage.value = 1;
+    },
+    deleteData: (rowId: string) => {
+      if (table.options.meta?.newRows.includes(rowId)) {
+        table.options.meta.newRows.splice(table.options.meta.newRows.indexOf(rowId), 1);
+        data.value = data.value.filter(affect => (affect._uuid ?? affect.uuid) !== rowId);
+      } else {
+        table.options.meta?.removedRows.push(rowId);
+        data.value = [...data.value];
+      }
+    },
+    revert: (rowId: string) => {
+      if (table.options.meta?.removedRows.includes(rowId)) {
+        table.options.meta.removedRows.splice(table.options.meta.removedRows.indexOf(rowId), 1);
+        data.value = [...data.value];
+      }
+      if (table.options.meta?.modifiedRows.includes(rowId)) {
+        table.options.meta.modifiedRows.splice(table.options.meta.modifiedRows.indexOf(rowId), 1);
+        data.value = data.value.map((row) => {
+          if ((row._uuid ?? row.uuid) === rowId) {
+            return flaw.value.affects.find(affect => ((affect as ZodAffectType)._uuid ?? affect.uuid) === rowId)!;
+          }
+          return row;
+        });
+      }
     },
     modifiedRows: [],
     newRows: [],
@@ -297,7 +324,6 @@ function changeItemsPerPage(itemsCount: number) {
             'modified': table.options.meta?.modifiedRows.includes(row.id),
             'new': table.options.meta?.newRows.includes(row.id),
             'removed': table.options.meta?.removedRows.includes(row.id),
-            [row.id]: true,
           }"
         >
           <td

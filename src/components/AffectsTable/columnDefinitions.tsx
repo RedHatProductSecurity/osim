@@ -6,6 +6,7 @@ import { affectAffectedness, affectImpacts, affectResolutions } from '@/types/zo
 import { affectRhCvss3, formatDateWithTimezone } from '@/utils/helpers';
 
 import EditableCell from './EditableCell.vue';
+import RowActions from './RowActions.vue';
 
 declare module '@tanstack/vue-table' {
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -16,8 +17,9 @@ declare module '@tanstack/vue-table' {
   }
 }
 
-const cellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, unknown>> = ({ column, getValue, row, table }) =>
-  <EditableCell row={row} table={table} column={column} getValue={getValue} />;
+const editableCellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, unknown>> =
+ ({ column, getValue, row, table }) =>
+   <EditableCell row={row} table={table} column={column} getValue={getValue} />;
 
 export default function AffectColumnDefinitions() {
   const columnHelper = createColumnHelper<ZodAffectType>();
@@ -56,20 +58,20 @@ export default function AffectColumnDefinitions() {
       },
     }),
     columnHelper.accessor('ps_module', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Module',
     }),
     columnHelper.accessor('ps_component', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Component',
     }),
     columnHelper.accessor('purl', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Analyzed Component',
       size: 220,
     }),
     columnHelper.accessor('affectedness', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Affectedness',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
@@ -78,12 +80,12 @@ export default function AffectColumnDefinitions() {
       size: 170,
     }),
     columnHelper.accessor('not_affected_justification', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Not Affected Justification',
       size: 282,
     }),
     columnHelper.accessor('resolution', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Resolution',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
@@ -91,7 +93,7 @@ export default function AffectColumnDefinitions() {
       },
     }),
     columnHelper.accessor('impact', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       header: 'Impact',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
@@ -99,7 +101,7 @@ export default function AffectColumnDefinitions() {
       },
     }),
     columnHelper.accessor('cvss_scores', {
-      cell: cellRenderer,
+      cell: editableCellRenderer,
       sortingFn: (rowA, rowB) => {
         const scoreA = affectRhCvss3(rowA.original)?.score || 0;
         const scoreB = affectRhCvss3(rowB.original)?.score || 0;
@@ -130,6 +132,17 @@ export default function AffectColumnDefinitions() {
         filter: false,
       },
       size: 220,
+    }),
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row, table }) => <RowActions row={row} table={table} />,
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      meta: {
+        filter: false,
+      },
     }),
   ];
 
