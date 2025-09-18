@@ -311,11 +311,11 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <CvssCalculatorOverlayed
-        v-if="isBeingEdited(affect)"
-        :affect="affect"
+        v-if="isBeingEdited(currentAffect)"
+        :affect="currentAffect"
       />
-      <span v-else :title="affectCvss(affect)?.vector || ''">
-        {{ affectCvss(affect)?.score || '' }}
+      <span v-else :title="affectCvss(currentAffect)?.vector || ''">
+        {{ affectCvss(currentAffect)?.score || '' }}
       </span>
     </td>
     <td>
