@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 import { DateTime } from 'luxon';
 
-import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 import { encodeJWT } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 
@@ -52,8 +52,8 @@ describe('osidbAuthService', () => {
       jti: '1111',
       user_id: 1337,
     });
-    const userStore = useUserStore();
-    userStore.accessToken = accessToken;
+    const authStore = useAuthStore();
+    authStore.accessToken = accessToken;
 
     const token = await getNextAccessToken();
 
@@ -68,8 +68,8 @@ describe('osidbAuthService', () => {
       jti: '0000',
       user_id: 1337,
     });
-    const userStore = useUserStore();
-    userStore.accessToken = expiredAccessJWT;
+    const authStore = useAuthStore();
+    authStore.accessToken = expiredAccessJWT;
 
     vi.advanceTimersByTime(4 * 60 * 1000);
     const token = await getNextAccessToken();
