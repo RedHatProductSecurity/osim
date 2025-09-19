@@ -9,7 +9,7 @@ import type { ValueOf } from '@/types';
 import {
   NistCvssValidationEnum,
   RequiresCveDescriptionEnum,
-  SourceBe0Enum,
+  FlawSourceEnum,
   IssuerEnum,
   FlawReferenceType,
   StateEnum,
@@ -19,7 +19,7 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
-export const Source521EnumWithBlank = { '': '', ...SourceBe0Enum } as const;
+export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;
 // TODO: Remove once OSIDB-3959 is resolved
 export const MajorIncidentStateEnumWithBlank = {
   '': '',
@@ -31,7 +31,7 @@ export const MajorIncidentStateEnumWithBlank = {
 } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
-export const flawSources = Object.values(Source521EnumWithBlank);
+export const flawSources = Object.values(FlawSourceEnumWithBlank);
 
 const flawImpactsWeight: Record<ValueOf<typeof ImpactEnumWithBlank>, number> = {
   '': 0,
@@ -181,7 +181,7 @@ export const ZodFlawSchema = z.object({
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
-  source: z.nativeEnum(Source521EnumWithBlank).refine(
+  source: z.nativeEnum(FlawSourceEnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' },
   ),

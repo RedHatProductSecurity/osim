@@ -19,3 +19,5 @@ get_osidb_schema() {
 }
 
 get_osidb_schema ${1}
+
+sed -i 's/FlawSource/FlawSourceEnum/g' openapi-osidb.yml
