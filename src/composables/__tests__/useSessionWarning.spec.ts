@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { DateTime } from 'luxon';
 
 import { encodeJWT } from '@/__tests__/helpers';
-import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 
 import { useSessionWarning } from '../useSessionWarning';
 
@@ -29,9 +29,9 @@ const mockSessionData = {
 // Create a shared login spy that can be accessed in tests
 const mockLogin = vi.fn().mockResolvedValue(true);
 
-vi.mock('@/stores/UserStore', () => ({
-  useUserStore: vi.fn(() => ({
-    get refreshToken() { return mockSessionData.refresh; },
+vi.mock('@/stores/AuthStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    get refreshToken() { return mockSessionData.refresh as any; },
     set refreshToken(value: string) { mockSessionData.refresh = value; },
     login: mockLogin,
     logout: vi.fn(),
@@ -39,7 +39,7 @@ vi.mock('@/stores/UserStore', () => ({
 }));
 
 describe('useSessionWarning', () => {
-  let _userStore: any;
+  let _authStore: any;
 
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -53,7 +53,7 @@ describe('useSessionWarning', () => {
     mockSessionData.whoami = null;
     mockSessionData.jiraUsername = '';
 
-    _userStore = useUserStore();
+    _authStore = useAuthStore();
     vi.clearAllMocks();
     mockLogin.mockClear();
   });
