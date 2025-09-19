@@ -125,4 +125,8 @@ export const ZodAffectSchema = z.object({
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
   alerts: z.array(ZodAlertSchema).default([]),
+
+  // V2 Types
+  ps_update_stream: z.string(),
+  tracker: TrackerSchema,
 });
