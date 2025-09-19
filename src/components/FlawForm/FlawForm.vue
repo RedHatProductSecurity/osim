@@ -411,6 +411,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
         />
       </div>
       <div class="row osim-flaw-form-section">
+        <h4>Affected Offerings</h4>
         <div class="col">
           <div v-if="isFetchingAffects">
             <LoadingSpinner

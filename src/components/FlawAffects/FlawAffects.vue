@@ -241,7 +241,6 @@ const displayedTrackers = computed(() => {
 
 <template>
   <div class="osim-affects-section">
-    <h4>Affected Offerings</h4>
     <div class="affect-modules-selection" :class="{'mb-4': affectedModules.length > 0 && modulesExpanded}">
       <LabelCollapsible
         v-if="affectedModules.length > 0"

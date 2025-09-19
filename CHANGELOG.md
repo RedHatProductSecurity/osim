@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Fix multi-row operations in affects table (`OSIDB-4381`)
+
 ## [2025.9.0]
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
