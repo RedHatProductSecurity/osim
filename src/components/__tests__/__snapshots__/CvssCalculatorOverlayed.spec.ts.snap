@@ -1,16 +1,22 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`cvssCalculatorOverlayed > mounts and renders correctly 1`] = `
-"<div data-v-b418eb65="" tabindex="0"><span data-v-b418eb65="">0</span><i data-v-b418eb65="" class="bi bi-calculator-fill p-2"></i>
-  <div data-v-707feb84="" data-v-b418eb65="" class="cvss-calculator overlayed">
+"<div tabindex="0"><span></span><i class="bi bi-calculator-fill p-2"></i>
+  <!--v-if-->
+</div>"
+`;
+
+exports[`cvssCalculatorOverlayed > shows cvss calculator on click 1`] = `
+"<div tabindex="0"><span>0</span><i class="bi bi-calculator-fill p-2"></i>
+  <div data-v-707feb84="" data-v-39ed26bb="" class="cvss-calculator overlayed">
     <div data-v-707feb84="" class="p-3">
-      <div data-v-b418eb65="" class="osim-input">
-        <div data-v-b418eb65="" class="input-wrapper col">
-          <div data-v-1d5c2355="" data-v-b418eb65="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input" style="height: 30.8px;"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;">0 </span>
+      <div data-v-39ed26bb="" class="osim-input">
+        <div data-v-39ed26bb="" class="input-wrapper col">
+          <div data-v-1d5c2355="" data-v-39ed26bb="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input" style="height: 30.8px;"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;">0 </span>
             <!--v-if-->
             <!--v-if-->
           </div>
-        </div><button data-v-b418eb65="" tabindex="-1" type="button" disabled="" class="erase-button input-group-text"><i data-v-b418eb65="" class="bi bi-eraser"></i></button>
+        </div><button data-v-39ed26bb="" tabindex="-1" type="button" disabled="" class="erase-button input-group-text"><i data-v-39ed26bb="" class="bi bi-eraser"></i></button>
       </div>
       <div data-v-707feb84="" class="osim-input mx-0">
         <div data-v-707feb84="" class="mx-auto">

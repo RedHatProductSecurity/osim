@@ -1,8 +1,11 @@
-import type { ZodFlawCVSSType, ZodFlawType } from '@/types/zodFlaw';
-import type { ZodAffectCVSSType, ZodAffectType } from '@/types/zodAffect';
+import type { ZodFlawCVSSType } from '@/types/zodFlaw';
+import type { ZodAffectCVSSType } from '@/types/zodAffect';
 
 export type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
-export type CvssEntity = ZodAffectType | ZodFlawType;
+export type CvssEntity = {
+  [key: string]: unknown;
+  cvss_scores: ZodAffectCVSSType[];
+};
 
 export type {
   AegisAIComponentAnalysisParamsType,
