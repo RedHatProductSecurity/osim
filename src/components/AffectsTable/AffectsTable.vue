@@ -32,7 +32,7 @@ declare module '@tanstack/table-core' {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface TableMeta<TData extends RowData> {
     createData(): void;
-    deleteData(rowId: string): void;
+    deleteData(rowId: string | string[]): void;
     modifiedRows: string[];
     newRows: string[];
     removedRows: string[];
@@ -62,7 +62,7 @@ const table = useVueTable({
   get columns() {
     return columns.value;
   },
-  getRowId: row => (row._uuid || row.uuid) ?? '',
+  getRowId: row => (row?._uuid || row?.uuid) ?? '',
   columnResizeMode: 'onChange',
   columnResizeDirection: 'ltr',
   initialState: {
@@ -162,12 +162,25 @@ const table = useVueTable({
       table.options.meta?.newRows.push(uuid);
       currentPage.value = 1;
     },
-    deleteData: (rowId: string) => {
-      if (table.options.meta?.newRows.includes(rowId)) {
-        table.options.meta.newRows.splice(table.options.meta.newRows.indexOf(rowId), 1);
-        data.value = data.value.filter(affect => (affect._uuid ?? affect.uuid) !== rowId);
-      } else {
-        table.options.meta?.removedRows.push(rowId);
+    deleteData: (rowId: string | string[]) => {
+      if (!Array.isArray(rowId)) {
+        rowId = [rowId];
+      }
+      let refreshData = false;
+
+      rowId.forEach((rowId) => {
+        if (table.options.meta?.newRows.includes(rowId)) {
+          table.options.meta.newRows.splice(table.options.meta.newRows.indexOf(rowId), 1);
+          data.value = data.value.filter(affect => (affect._uuid ?? affect.uuid) !== rowId);
+        } else if (!table.options.meta?.removedRows.includes(rowId)) {
+          table.options.meta?.removedRows.push(rowId);
+          refreshData = true;
+        }
+        if (table.options.meta?.modifiedRows.includes(rowId)) {
+          table.options.meta.modifiedRows.splice(table.options.meta.modifiedRows.indexOf(rowId), 1);
+        }
+      });
+      if (refreshData) {
         data.value = [...data.value];
       }
     },
@@ -179,8 +192,8 @@ const table = useVueTable({
       if (table.options.meta?.modifiedRows.includes(rowId)) {
         table.options.meta.modifiedRows.splice(table.options.meta.modifiedRows.indexOf(rowId), 1);
         data.value = data.value.map((row) => {
-          if ((row._uuid ?? row.uuid) === rowId) {
-            return flaw.value.affects.find(affect => ((affect as ZodAffectType)._uuid ?? affect.uuid) === rowId)!;
+          if ((row?._uuid || row?.uuid) === rowId) {
+            return flaw.value.affects.find(affect => ((affect as ZodAffectType)?._uuid ?? affect.uuid) === rowId)!;
           }
           return row;
         });
@@ -215,6 +228,31 @@ function changeItemsPerPage(itemsCount: number) {
   }
   settings.value.affectsPerPage = Math.max(1, Math.min(100, itemsCount));
 }
+
+function deleteSelectedRows() {
+  table.options.meta?.deleteData(table.getSelectedRowModel().flatRows.map(row => row.id));
+  table.resetRowSelection();
+}
+
+function revertAllChanges() {
+  if (!table.options.meta) {
+    return;
+  }
+
+  data.value = data.value.map((row) => {
+    const rowId = (row._uuid || row.uuid) ?? '';
+    if (!table.options.meta?.modifiedRows.includes(rowId)) {
+      return flaw.value.affects.find(affect => ((affect as ZodAffectType)._uuid ?? affect.uuid) === rowId)!;
+    } else if (!table.options.meta?.newRows.includes(rowId)) {
+      return null;
+    }
+    return row;
+  }).filter(row => row !== null);
+
+  table.options.meta.modifiedRows = [];
+  table.options.meta.removedRows = [];
+  table.options.meta.newRows = [];
+}
 </script>
 <template>
   <h4>Affected Offerings</h4>
@@ -234,6 +272,24 @@ function changeItemsPerPage(itemsCount: number) {
       />
     </div>
     <div class="d-flex flex-row gap-2">
+      <button
+        v-if="table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()"
+        class="btn btn-danger"
+        title="Remove selected affects"
+        @click="deleteSelectedRows()"
+      >
+        <i class="bi-trash"></i>
+      </button>
+      <button
+        v-if="table.options.meta?.modifiedRows.length
+          || table.options.meta?.newRows.length
+          || table.options.meta?.removedRows.length"
+        class="btn btn-danger"
+        title="Revert ALL changes"
+        @click="revertAllChanges()"
+      >
+        <i class="bi-arrow-counterclockwise"></i>
+      </button>
       <button
         v-if="columnFilters.length"
         class="btn btn-light btn-sm text-nowrap border border-secondary"
@@ -256,7 +312,10 @@ function changeItemsPerPage(itemsCount: number) {
       >
         <i class="bi-plus-lg" />
       </button>
-      <ColumnOptions :table @toggleVisibility="toggleColumnVisibility" />
+      <ColumnOptions
+        :table
+        @toggleVisibility="toggleColumnVisibility"
+      />
     </div>
   </div>
   <div class="table-responsive">

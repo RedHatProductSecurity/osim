@@ -13,6 +13,7 @@ const props = defineProps<{
 const tableMeta = props.table.options.meta;
 const isModified = computed(() => tableMeta?.modifiedRows.includes(props.row.id));
 const isRemoved = computed(() => tableMeta?.removedRows.includes(props.row.id));
+const isNew = computed(() => tableMeta?.newRows.includes(props.row.id));
 
 function deleteRow() {
   tableMeta?.deleteData(props.row.id);
@@ -31,7 +32,7 @@ function revertRow() {
       @click="deleteRow()"
     ><i class="bi-trash"></i></button>
     <button
-      v-if="isModified || isRemoved"
+      v-if="!isNew && (isModified || isRemoved)"
       type="button"
       title="Revert changes"
       class="btn btn-dark btn-sm"
