@@ -69,7 +69,12 @@ describe('useAegisSuggestCwe', () => {
     const valueRef = ref<null | string>('CWE-79');
     const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
 
-    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89'],
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['cwe_tool'],
+    });
 
     const [composable] = withSetup(
       () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
@@ -91,7 +96,12 @@ describe('useAegisSuggestCwe', () => {
     const valueRef = ref<null | string>('CWE-79');
     const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
 
-    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89'],
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['cwe_tool'],
+    });
 
     const [composable] = withSetup(
       () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
@@ -100,7 +110,12 @@ describe('useAegisSuggestCwe', () => {
     await composable.suggestCwe();
 
     expect(valueRef.value).toBe('CWE-89');
-    expect(composable.details.value).toEqual({ cwe: 'CWE-89', confidence: 0.9, explanation: 'Reasoning' });
+    expect(composable.details.value).toEqual({
+      cwe: ['CWE-89'],
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['cwe_tool'],
+    });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
     expect(composable.canShowFeedback.value).toBe(true);
     expect(addToast).toHaveBeenCalledWith({
@@ -115,7 +130,12 @@ describe('useAegisSuggestCwe', () => {
     const valueRef = ref<null | string>('CWE-79');
     const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
 
-    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89'],
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['cwe_tool'],
+    });
 
     const [composable] = withSetup(
       () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
