@@ -4,6 +4,7 @@ import { flushPromises } from '@vue/test-utils';
 
 import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
+import Nudge from '@/components/Nudge/Nudge.vue';
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
@@ -20,6 +21,7 @@ import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
 import { flawImpactEnum, flawSources, Source521EnumWithBlank, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
+import { FlawClassificationStateEnum } from '@/generated-client';
 
 import { osimFullFlawTest } from './test-suite-helpers';
 
@@ -339,6 +341,16 @@ describe('flawForm', () => {
     const workflowStateField = subject.findComponent(IssueFieldState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
     expect(workflowStateField?.props().classification.state).toBe('NEW');
+  });
+
+  osimFullFlawTest('displays with impact nudge when workflow state is after triage', async ({ flaw }) => {
+    flaw.classification!.state = FlawClassificationStateEnum.PreSecondaryAssessment;
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const workflowStateField = subject.findComponent(IssueFieldState);
+    expect(workflowStateField?.props().classification.state).toBe('PRE_SECONDARY_ASSESSMENT');
+    (subject.vm as any).flaw.impact = 'CRITICAL';
+    await flushPromises();
+    expect(subject.findComponent(Nudge)).toBeTruthy();
   });
 
   osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
