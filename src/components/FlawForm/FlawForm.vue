@@ -30,6 +30,7 @@ import {
   aegisSuggestionRequestBody,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -133,6 +134,9 @@ const onSubmit = async () => {
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
+  if (osimRuntime.value.flags?.affectsV2) {
+    useAffectsModel().actions.initializeAffects(flaw.value.affects);
+  }
   shouldCreateJiraTask.value = false;
 };
 
