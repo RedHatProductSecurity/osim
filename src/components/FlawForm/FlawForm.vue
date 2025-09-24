@@ -30,6 +30,7 @@ import {
   aegisSuggestionRequestBody,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -133,6 +134,9 @@ const onSubmit = async () => {
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
+  if (osimRuntime.value.flags?.affectsV2) {
+    useAffectsModel().actions.initializeAffects(flaw.value.affects);
+  }
   shouldCreateJiraTask.value = false;
 };
 
@@ -434,7 +438,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
           @acknowledgment:delete="deleteAcknowledgment"
         />
       </div>
-      <div class="row osim-flaw-form-section">
+      <div v-if="mode === 'edit'" class="row osim-flaw-form-section">
         <h4>Affected Offerings</h4>
         <div class="col">
           <div v-if="isFetchingAffects">
@@ -611,6 +615,7 @@ form.osim-flaw-form :deep(*) {
 }
 
 .osim-action-buttons {
+  z-index: 1029; // Bootstrap 'sticky' sets index to 1020, but we want this one to be on top of every other sticky
   background: white;
   border-top: 1px solid #ddd;
   padding-right: 20px;

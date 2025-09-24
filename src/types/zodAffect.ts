@@ -105,7 +105,7 @@ export const ZodAffectSchema = z.object({
   ps_component: z.string().max(255),
   ps_product: z.string().nullish(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
-  trackers: z.array(TrackerSchema).or(z.array(z.any())),
+  trackers: z.array(TrackerSchema).or(z.array(z.any())).optional(),
   meta_attr: z
     .object({
       affectedness: z.string(),
@@ -127,6 +127,7 @@ export const ZodAffectSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 
   // V2 Types
-  ps_update_stream: z.string(),
-  tracker: TrackerSchema,
+  ps_update_stream: z.string().optional(),
+  tracker: TrackerSchema.nullable().optional(),
+  labels: z.array(z.string()).optional(),
 });

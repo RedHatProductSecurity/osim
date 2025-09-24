@@ -20,7 +20,7 @@ import {
 } from '@/services/FlawService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
-import { deepMap } from '@/utils/helpers';
+import { deepMap, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
   flawImpacts,
@@ -31,8 +31,34 @@ import {
   type ZodFlawLabelType,
 } from '@/types';
 import type { DeepMapValues, DeepNullable } from '@/utils/typeHelpers';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
+import { useAffectsModel } from './useAffectsModel';
+
+function useAffectsModelV2() {
+  if (osimRuntime.value.flags?.affectsV2) {
+    const {
+      actions: { initializeAffects, removeAffects, saveAffects },
+      state: { removedAffects, wereAffectsEditedOrAdded },
+    } = useAffectsModel();
+
+    return {
+      setInitialAffects: () => initializeAffects(useFlaw().flaw.value.affects),
+      saveAffects,
+      wereAffectsEditedOrAdded,
+      removeAffects,
+      affectsToDelete: {
+        value: {
+          get length() {
+            return removedAffects.size;
+          },
+        },
+      },
+    };
+  }
+  return useFlawAffectsModel();
+}
 
 export function useFlawModel() {
   const { flaw, isFlawUpdated, setFlaw } = useFlaw();
@@ -56,7 +82,7 @@ export function useFlawModel() {
     saveAffects,
     setInitialAffects,
     wereAffectsEditedOrAdded,
-  } = useFlawAffectsModel();
+  } = useAffectsModelV2();
 
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
 
@@ -166,7 +192,11 @@ export function useFlawModel() {
       queue.push(async () => {
         const response = await saveAffects();
 
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        if (osimRuntime.value.flags?.affectsV2) {
+          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, response, 'uuid'), 'affects'));
+        } else {
+          afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        }
         afterSuccessQueue.push(setInitialAffects);
       });
     }
@@ -186,13 +216,28 @@ export function useFlawModel() {
     }
 
     if (affectsToDelete.value.length) {
-      queue.push(removeAffects);
+      if (osimRuntime.value.flags?.affectsV2) {
+        queue.push(async () => {
+          const removedAffects = await removeAffects();
+          afterSuccessQueue.push(() =>
+            setFlaw(flaw.value.affects.filter(({ uuid }) => !removedAffects.includes(uuid)), 'affects'),
+          );
+          afterSuccessQueue.push(setInitialAffects);
+        });
+      } else {
+        queue.push(removeAffects);
+      }
     }
 
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
-        afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+
+        if (osimRuntime.value.flags?.affectsV2) {
+          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, response, 'uuid'), 'affects'));
+        } else {
+          afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+        }
         afterSuccessQueue.push(setInitialAffects);
       });
     }

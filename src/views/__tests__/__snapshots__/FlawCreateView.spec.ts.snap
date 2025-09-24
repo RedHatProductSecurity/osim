@@ -379,12 +379,7 @@ exports[`flawCreateView > should render 1`] = `
           </div>
         </div>
       </div>
-      <div data-v-76e7a15d="" class="row osim-flaw-form-section">
-        <h4 data-v-76e7a15d="">Affected Offerings</h4>
-        <div data-v-76e7a15d="" class="col">
-          <!--v-if-->
-        </div>
-      </div>
+      <!--v-if-->
       <div data-v-76e7a15d="" class="row osim-flaw-form-section">
         <!--v-if-->
       </div>

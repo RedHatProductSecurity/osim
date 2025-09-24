@@ -5,6 +5,7 @@ import { groupBy, mergeDeepWith, prop, concat } from 'ramda';
 import { type ZodFlawType } from '@/types/zodFlaw';
 import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
 import { type ZodAlertType, ZodAlertSchema } from '@/types/zodShared';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 function groupAlertsByType(alerts: ZodAlertType[]) {
   return mergeDeepWith(
@@ -13,7 +14,7 @@ function groupAlertsByType(alerts: ZodAlertType[]) {
 }
 
 function joinAlerts(modelsWithAlerts: any[]): ZodAlertType[] {
-  return modelsWithAlerts.reduce((acc, obj) => acc.concat(obj.alerts), [] as ZodAlertType[]);
+  return modelsWithAlerts.reduce((acc, obj) => acc.concat(obj.alerts ?? []), [] as ZodAlertType[]);
 }
 
 function joinGroupedAlerts(groupedAlerts: Record<string, ZodAlertType[]>[]) {
@@ -81,9 +82,11 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
   });
 
   const trackersAlerts = computed(() => {
-    const trackers = flaw.value.affects.reduce(
-      (acc: ZodTrackerType[], obj) => acc.concat(obj.trackers), [] as ZodTrackerType[],
-    );
+    const trackers = osimRuntime.value.flags?.affectsV2
+      ? flaw.value.affects.map(affect => affect.tracker ?? {})
+      : flaw.value.affects.reduce(
+        (acc: ZodTrackerType[], obj) => acc.concat(obj.trackers ?? []), [] as ZodTrackerType[],
+      );
     return groupAlertsByType(joinAlerts(trackers));
   });
 

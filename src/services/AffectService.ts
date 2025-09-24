@@ -3,6 +3,7 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import { beforeFetch } from './FlawService';
 
@@ -13,7 +14,7 @@ export async function getAffects(cveOrUuid: string) {
   // First request to get up to 100 affects and the total count
   const firstResponse = await osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/affects',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/affects`,
     params: {
       [field]: cveOrUuid,
       limit: pageSize,
@@ -70,7 +71,7 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
 export async function putAffects(affectObjects: any[]) {
   return osidbFetch({
     method: 'put',
-    url: '/osidb/api/v1/affects/bulk',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/affects/bulk`,
     data: affectObjects,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Affects Updated.' }))
@@ -81,7 +82,7 @@ type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
 export async function postAffects(affectObjects: AffectPost[]) {
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/affects/bulk',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/affects/bulk`,
     data: affectObjects,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Affects Created.' }))
@@ -94,7 +95,7 @@ export async function deleteAffects(affectUuids: string[]) {
   }
   return osidbFetch({
     method: 'delete',
-    url: '/osidb/api/v1/affects/bulk',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/affects/bulk`,
     data: affectUuids,
   })
     .then(createSuccessHandler({ title: 'Success!', body: `${affectUuids.length} Affect(s) Deleted.` }))
@@ -118,9 +119,13 @@ export async function putAffectCvssScore(
   delete putObject['uuid'];
   delete putObject['affect'];
   delete putObject['created_dt'];
+
+  const isV2 = osimRuntime.value?.flags?.affectsV2;
+  const apiVersion = isV2 ? 'v2' : 'v1';
+  const path = isV2 ? 'cvss-scores' : 'cvss_scores';
   return osidbFetch({
     method: 'put',
-    url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
+    url: `/osidb/api/${apiVersion}/affects/${affectId}/${path}/${cvssScoresId}`,
     data: putObject,
   }, { beforeFetch })
     .then(response => response.data)
@@ -136,9 +141,12 @@ export async function putAffectCvssScore(
 // }
 export async function postAffectCvssScore(affectId: string, cvssScoreObject: ZodAffectCVSSType) {
   const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
+  const isV2 = osimRuntime.value?.flags?.affectsV2;
+  const apiVersion = isV2 ? 'v2' : 'v1';
+  const path = isV2 ? 'cvss-scores' : 'cvss_scores';
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/affects/${affectId}/cvss_scores`,
+    url: `/osidb/api/${apiVersion}/affects/${affectId}/${path}`,
     data: postObject,
   })
     .then(response => response.data)
@@ -146,9 +154,12 @@ export async function postAffectCvssScore(affectId: string, cvssScoreObject: Zod
 }
 
 export async function deleteAffectCvssScore(affectId: string, cvssScoresId: string) {
+  const isV2 = osimRuntime.value?.flags?.affectsV2;
+  const apiVersion = isV2 ? 'v2' : 'v1';
+  const path = isV2 ? 'cvss-scores' : 'cvss_scores';
   return osidbFetch({
     method: 'delete',
-    url: `/osidb/api/v1/affects/${affectId}/cvss_scores/${cvssScoresId}`,
+    url: `/osidb/api/${apiVersion}/affects/${affectId}/${path}/${cvssScoresId}`,
   })
     .then(response => response.data)
     .catch(createCatchHandler('Problem deleting affect CVSS scores:'));
