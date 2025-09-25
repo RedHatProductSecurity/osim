@@ -45,7 +45,7 @@ const suggestionTooltip = computed(() => {
   const parts: string[] = [`Value: ${cwe}`];
   if (confidence != null && confidence !== '') parts.push(`Confidence: ${confidence}`);
   if (explanation) parts.push(`Explanation: ${explanation}`);
-  if (tools_used && Array.isArray(tools_used) && tools_used.length > 0) {
+  if (tools_used && tools_used.length > 0) {
     parts.push(`Tools Used: ${tools_used.join(', ')}`);
   }
   return parts.join('\n');
