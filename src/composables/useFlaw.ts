@@ -1,7 +1,7 @@
 import { ref, readonly, computed } from 'vue';
 
 import type { ZodFlawCVSSType, ZodFlawLabelType, ZodFlawType } from '@/types/zodFlaw';
-import { deepCopyFromRaw, serializeWithExclude } from '@/utils/helpers';
+import { deepCopyFromRaw, mergeBy, serializeWithExclude } from '@/utils/helpers';
 import type { ZodAffectType } from '@/types';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
@@ -17,15 +17,12 @@ function resetFlaw() {
 type FlawDataType = RelatedDataType | ZodFlawType;
 type RelatedDataType = ZodAffectType[] | ZodFlawCVSSType[] | ZodFlawLabelType[];
 type FlawFieldsWithEndpoints = 'affects' | 'cvss_scores' | 'labels';
+type WithUUID = { uuid: string }[];
 function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace: boolean = true) {
   if (!key) {
     flaw.value = flawData as ZodFlawType;
   } else if (!replace && Array.isArray(flawData)) {
-    flawData.forEach((item, index) => {
-      if (item.uuid && item.uuid === flaw.value[key]?.[index]?.uuid) {
-        flaw.value[key]![index] = item;
-      }
-    });
+    flaw.value[key] = mergeBy(flaw.value[key] as WithUUID, flawData as WithUUID, 'uuid') as any;
   } else {
     Object.assign(flaw.value, { [key]: flawData });
   }
