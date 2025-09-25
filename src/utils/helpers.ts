@@ -168,3 +168,21 @@ export function regexCVSS(keys: string[]) {
 export function jsonEquals(left: unknown, right: unknown): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
+
+/**
+ * Merge two object arrays by the specific key.
+ * Elements in left are overridden by elements in right.
+ * Order of elements is kept.
+*/
+export function mergeBy<T extends object>(left: T[], right: T[], key: keyof T) {
+  const rightKeyMap = new Map(right.map(rightElement => [rightElement[key], rightElement]));
+  const leftKeys = new Set(left.map(leftElement => leftElement[key]));
+
+  const merged = left.map(leftElement => rightKeyMap.get(leftElement[key]) ?? leftElement);
+  const newElements = right.filter(rightElement => !leftKeys.has(rightElement[key]));
+
+  return [
+    ...merged,
+    ...newElements,
+  ];
+}
