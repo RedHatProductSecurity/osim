@@ -2,6 +2,7 @@ import type {
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
   AegisAICVEAnalysisWithContextParamsType,
+  CweSuggestionDetails,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
@@ -185,6 +186,10 @@ export class AegisAIService {
    * @param params CVE analysis parameters with context
    * @returns AI-generated analysis response
    */
+  async analyzeCVEWithContext(
+    params: { feature: 'suggest-cwe' } & AegisAICVEAnalysisWithContextParamsType,
+  ): Promise<CweSuggestionDetails>;
+  async analyzeCVEWithContext(params: AegisAICVEAnalysisWithContextParamsType): Promise<any>;
   async analyzeCVEWithContext(params: AegisAICVEAnalysisWithContextParamsType): Promise<any> {
     try {
       const { detail, feature, ...contextData } = params;

@@ -41,7 +41,7 @@ const {
 
 const suggestionTooltip = computed(() => {
   if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CWE via AEGIS-AI';
-  const { confidence, cwe, explanation, tools_used } = suggestionDetails.value as any;
+  const { confidence, cwe, explanation, tools_used } = suggestionDetails.value;
   const parts: string[] = [`Value: ${cwe}`];
   if (confidence != null && confidence !== '') parts.push(`Confidence: ${confidence}`);
   if (explanation) parts.push(`Explanation: ${explanation}`);
