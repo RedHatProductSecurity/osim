@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 // const router = useRouter();
-const userStore = useUserStore();
+const userStore = useAuthStore();
 // const route = useRoute();
 
 const username = ref('');
