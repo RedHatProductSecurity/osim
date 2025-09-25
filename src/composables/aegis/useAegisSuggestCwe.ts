@@ -24,7 +24,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     confidence?: number | string;
     cwe: string;
     explanation?: string;
-    tools_used?: string[];
+    tools_used: string[];
   };
   const details = ref<CweSuggestionDetails | null>(null);
   const canShowFeedback = computed(() => hasAppliedSuggestion.value && !isSuggesting.value);
@@ -65,7 +65,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         cwe: first,
         confidence: data.confidence,
         explanation: data.explanation,
-        tools_used: data.tools_used,
+        tools_used: Array.isArray(data.tools_used) ? data.tools_used : [],
       };
       hasAppliedSuggestion.value = true;
       toastStore.addToast({
