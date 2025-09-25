@@ -164,3 +164,7 @@ export function serializeWithExclude<T extends object>(object: T, excludeKeys: A
 export function regexCVSS(keys: string[]) {
   return keys.map(key => new RegExp(`(?<=^|\\/)${key}:(?<${key}>[^/]+)`));
 }
+
+export function jsonEquals(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
