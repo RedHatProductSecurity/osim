@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Fixed
 * Fix multi-row operations in affects table (`OSIDB-4381`)
+* Affect's CVSS changes not saved/commited (`OSIDB-4431`)
 
 ## [2025.9.0]
 ### Added
