@@ -43,6 +43,14 @@ export type AegisAIValidationErrorType = {
   type: string;
 };
 
+// AEGIS AI Response Types
+export type AegisAISuggestCweResponseType = {
+  confidence?: number | string;
+  cwe: string[];
+  explanation?: string;
+  tools_used?: string[];
+};
+
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];

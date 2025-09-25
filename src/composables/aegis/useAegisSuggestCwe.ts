@@ -55,8 +55,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         feature: 'suggest-cwe',
         ...serializeAegisContext(options.context),
       });
-      const arr = (data as any)?.cwe as string[] | undefined;
-      const first = arr?.[0] ?? '';
+      const first = data.cwe?.[0] ?? '';
       if (!first) {
         toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
         return;
@@ -64,10 +63,10 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
       applyValue(first);
       details.value = {
         cwe: first,
-        confidence: (data as any)?.confidence,
-        explanation: (data as any)?.explanation,
-        tools_used: (data as any)?.tools_used,
-      } as CweSuggestionDetails;
+        confidence: data.confidence,
+        explanation: data.explanation,
+        tools_used: data.tools_used,
+      };
       hasAppliedSuggestion.value = true;
       toastStore.addToast({
         title: 'AI Suggestion Applied',
