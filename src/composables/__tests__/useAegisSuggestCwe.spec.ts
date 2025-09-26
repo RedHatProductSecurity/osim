@@ -7,6 +7,7 @@ import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { withSetup } from '@/__tests__/helpers';
 
@@ -162,5 +163,91 @@ describe('useAegisSuggestCwe', () => {
 
     expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion Error', body: 'Backend error' });
     expect(composable.isSuggesting.value).toBe(false);
+  });
+
+  it('tracks AI metadata when suggestion is applied', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+    const tracking = useAegisMetadataTracking();
+    tracking.clearAegisMetadata();
+
+    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    expect(tracking.getAIChangeType('cwe_id')).toBe('AI');
+    expect(tracking.hasAegisChanges()).toBe(true);
+  });
+
+  it('removes AI tracking when suggestion is reverted', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+    const tracking = useAegisMetadataTracking();
+    tracking.clearAegisMetadata();
+
+    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+    composable.revert();
+
+    expect(tracking.getAIChangeType('cwe_id')).toBeUndefined();
+    expect(tracking.hasAegisChanges()).toBe(false);
+  });
+
+  it('tracks partial AI when user modifies suggestion', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+    const tracking = useAegisMetadataTracking();
+    tracking.clearAegisMetadata();
+
+    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    // User modifies the suggestion
+    valueRef.value = 'CWE-89 (with additional context)';
+
+    // Wait for the watcher to trigger
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(tracking.getAIChangeType('cwe_id')).toBe('Partial AI');
+    expect(tracking.hasAegisChanges()).toBe(true);
+  });
+
+  it('tracks as Partial AI when user completely changes suggestion', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+    const tracking = useAegisMetadataTracking();
+    tracking.clearAegisMetadata();
+
+    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    // User completely changes the value
+    valueRef.value = 'CWE-456';
+
+    // Wait for the watcher to trigger
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(tracking.getAIChangeType('cwe_id')).toBe('Partial AI');
+    expect(tracking.hasAegisChanges()).toBe(true);
+    expect(composable.hasAppliedSuggestion.value).toBe(true);
   });
 });
