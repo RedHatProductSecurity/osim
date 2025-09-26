@@ -33,10 +33,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
 
   const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value);
 
-  function applyValue(value: string) {
-    (options.valueRef as Ref<null | string>).value = value;
-  }
-
   async function suggestCwe() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
@@ -77,7 +73,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
 
   function revert() {
     if (previousValue.value !== null) {
-      applyValue(previousValue.value as string);
+      options.valueRef.value = previousValue.value;
     }
     previousValue.value = null;
     hasAppliedSuggestion.value = false;
