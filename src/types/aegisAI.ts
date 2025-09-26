@@ -55,3 +55,16 @@ export type CweSuggestionDetails = {
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];
 };
+
+// AI Change Tracking Types
+export type AegisChangeType = 'AI' | 'Partial AI';
+
+export type AegisChangeEntry = {
+  timestamp: string;
+  type: AegisChangeType;
+  value?: string;
+};
+
+export type AegisMetadata = {
+  [fieldName: string]: AegisChangeEntry[];
+};
