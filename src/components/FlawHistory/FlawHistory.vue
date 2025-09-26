@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 
 import { usePagination } from '@/composables/usePagination';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import EditableDate from '@/widgets/EditableDate/EditableDate.vue';
 import { capitalize, formatDateWithTimezone } from '@/utils/helpers';
@@ -12,6 +13,8 @@ import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 const props = defineProps<{
   history: null | undefined | ZodFlawHistoryItemType[];
 }>();
+
+const { getFieldAegisType, isFieldAegisChange } = useAegisMetadataTracking();
 
 const startDate = ref<null | string | undefined>(null);
 const endDate = ref<null | string | undefined>(null);
@@ -128,8 +131,23 @@ function clearFilters() {
                 - {{ historyEntry.pgh_context?.user || 'System' }}
               </span>
               <ul class="mb-2">
-                <li v-for="(diffEntry, diffKey) in historyEntry.pgh_diff" :key="diffKey">
+                <li
+                  v-for="(diffEntry, diffKey) in historyEntry.pgh_diff"
+                  v-show="diffKey !== 'aegis_meta'"
+                  :key="diffKey"
+                >
                   <div class="ms-3 pb-0">
+                    <span
+                      v-if="isFieldAegisChange(historyEntry, diffKey)"
+                      class="badge bg-secondary me-2"
+                      style="cursor: default;"
+                      :title="getFieldAegisType(historyEntry, diffKey) === 'AI'
+                        ? 'This change was suggested by Aegis-AI'
+                        : 'This change was a modified Aegis-AI suggestion'"
+                      data-bs-toggle="tooltip"
+                    >
+                      <i class="bi bi-robot"></i> {{ getFieldAegisType(historyEntry, diffKey) }}
+                    </span>
                     <span>{{ capitalize(historyEntry.pgh_label) }}</span>
                     <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
                     <span>{{ ': ' +
