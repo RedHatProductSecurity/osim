@@ -19,6 +19,19 @@ function sampleHistoryItem(): ZodFlawHistoryItemType {
   };
 }
 
+function sampleAegisHistoryItem(): ZodFlawHistoryItemType {
+  return {
+    pgh_created_at: '2024-10-04T15:06:56.760289Z',
+    pgh_slug: 'osidb.FlawAudit:123457',
+    pgh_label: 'update',
+    pgh_context: { url: 'osidb/api/v1/flaws/12d3820a-a43b-417c-a22e-46e47c232a63', user: 1 },
+    pgh_diff: {
+      cwe_id: ['', 'CWE-123 (Partial AI)'],
+      aegis_meta: [{}, { cwe_id: [{ type: 'Partial AI', timestamp: '2024-10-04T15:06:56.760Z' }] }],
+    },
+  };
+}
+
 describe('flawHistory', () => {
   osimEmptyFlawTest('is not shown if no history present on flaw', async ({ flaw }) => {
     const subject = mount(FlawHistory, {
@@ -153,5 +166,41 @@ describe('flawHistory', () => {
     endDate.value = '2024-02-28';
     await subject.vm.$nextTick();
     expect(filteredHistoryItems.value).toEqual([]);
+  });
+
+  osimFullFlawTest('displays AI badge for Aegis changes', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(sampleAegisHistoryItem());
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(true);
+    expect(aiBadge.text()).toContain('AI');
+    expect(aiBadge.find('i.bi-robot').exists()).toBe(true);
+  });
+
+  osimFullFlawTest('does not display AI badge for regular changes', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(sampleHistoryItem());
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(false);
   });
 });
