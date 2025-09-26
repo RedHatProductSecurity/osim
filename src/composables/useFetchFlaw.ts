@@ -2,6 +2,7 @@ import { ref } from 'vue';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { resetInitialAffects } from '@/composables/useFlawAffectsModel';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
 import type { ZodAffectType } from '@/types';
@@ -15,6 +16,7 @@ const isFetchingAffects = ref(false);
 export function useFetchFlaw() {
   const { flaw, relatedFlaws, resetFlaw, setFlaw } = useFlaw();
   const { addToast } = useToastStore();
+  const { setAegisMetadata } = useAegisMetadataTracking();
 
   const didFetchFail = ref<boolean>(false);
 
@@ -51,6 +53,9 @@ export function useFetchFlaw() {
       const flawResult = await fetchedFlaw;
       setFlaw(Object.assign({ affects: [] }, flawResult));
       history.replaceState(null, '', `/flaws/${(flawResult.cve_id || flawResult.uuid)}`);
+
+      // Initialize aegis metadata tracking with existing data
+      setAegisMetadata(flawResult.aegis_meta);
 
       const affectResults = (await fetchedAffects).data.results;
       flaw.value.affects = affectResults;
