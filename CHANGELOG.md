@@ -4,6 +4,8 @@
 * Fix multi-row operations in affects table (`OSIDB-4381`)
 * Affect's CVSS changes not saved/commited (`OSIDB-4431`)
 
+### Changed
+* Implement AffectsV2 (`OSIDB-4459`)
 ## [2025.9.0]
 ### Added
 * Support extending session (reauthenticating) (`OSIDB-4275`)
