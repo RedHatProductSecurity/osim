@@ -20,11 +20,11 @@ export function createCatchHandler(title: string = 'Error', shouldThrow: boolean
   };
 }
 
-export function createSuccessHandler({
+export function createSuccessHandler<T>({
   body,
   title = 'Operation Successful',
 }: Record<string, string>) {
-  return (response: { data: any }) => {
+  return (response: T) => {
     const { addToast } = useToastStore();
     addToast({
       title,

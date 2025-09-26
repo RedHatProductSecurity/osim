@@ -7,6 +7,7 @@
   },
   "license": "MIT",
   "private": false,
+  "type": "module",
   "scripts": {
     "dev": "scripts/dev-osim.sh",
     "dev-server": "vite",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@mrmarble/djangoql-completion": "^0.8.3",
     "@popperjs/core": "^2.11.8",
+    "@tanstack/vue-table": "^8.21.3",
     "@vueuse/core": "^12.3.0",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.3",
@@ -65,6 +67,7 @@
     "@typescript-eslint/parser": "^7.0.1",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-vue": "^4.3.4",
+    "@vitejs/plugin-vue-jsx": "^5.1.1",
     "@vitest/coverage-istanbul": "^2.1.1",
     "@vitest/ui": "^1.6.0",
     "@vue/test-utils": "^2.4.1",

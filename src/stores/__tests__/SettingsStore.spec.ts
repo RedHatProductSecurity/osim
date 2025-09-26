@@ -1,9 +1,22 @@
+import { ref } from 'vue';
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import { createPinia, setActivePinia } from 'pinia';
+import { useLocalStorage } from '@vueuse/core';
 
 import { useSettingsStore, type PersistentSettingsType } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+
+vi.mock('@vueuse/core', async (importOriginal) => {
+  const { ref } = await import('vue');
+  const vueUse = await importOriginal<typeof import('@vueuse/core')>();
+
+  return ({
+    ...vueUse,
+    useLocalStorage: vi.fn().mockImplementation((key, initialValue) => ref(initialValue)),
+  });
+});
 
 const initialState: PersistentSettingsType = {
   showNotifications: false,
@@ -15,12 +28,10 @@ const initialState: PersistentSettingsType = {
   unifiedCommentsView: false,
   affectsColumnWidths: [],
   trackersColumnWidths: [],
+  affectsColumnOrder: [],
+  affectsSizing: {},
+  affectsVisibility: {},
 };
-
-// While not used in this file, store below depends on global pinia test instance
-export const mockSettingsStore = createTestingPinia({
-  initialState,
-});
 
 describe('settingsStore', () => {
   let settingsStore: ReturnType<typeof useSettingsStore>;
@@ -29,6 +40,10 @@ describe('settingsStore', () => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
     settingsStore = useSettingsStore();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   it('initializes', () => {
@@ -46,6 +61,9 @@ describe('settingsStore', () => {
       unifiedCommentsView: false,
       affectsColumnWidths: [],
       trackersColumnWidths: [],
+      affectsColumnOrder: [],
+      affectsSizing: {},
+      affectsVisibility: {},
     };
 
     settingsStore.settings = settings;
@@ -96,31 +114,21 @@ describe('settingsStore', () => {
   });
 
   it('does not show AI usage toast when aiUsageNoticeShown is true', () => {
-    const pinia = createTestingPinia({
-      createSpy: vi.fn,
-      stubActions: false,
-    });
-
-    const toastStore = useToastStore(pinia);
+    const toastStore = useToastStore();
     const addToastSpy = vi.spyOn(toastStore, 'addToast');
+    vi.mocked(useLocalStorage).mockReturnValueOnce(ref({
+      showNotifications: false,
+      affectsPerPage: 10,
+      trackersPerPage: 10,
+      isHidingLabels: false,
+      privacyNoticeShown: true,
+      aiUsageNoticeShown: true,
+      unifiedCommentsView: false,
+      affectsColumnWidths: [],
+      trackersColumnWidths: [],
+    }));
 
-    const mockLocalStorage = {
-      getItem: vi.fn().mockReturnValue(JSON.stringify({
-        showNotifications: false,
-        affectsPerPage: 10,
-        trackersPerPage: 10,
-        isHidingLabels: false,
-        privacyNoticeShown: true,
-        aiUsageNoticeShown: true,
-        unifiedCommentsView: false,
-        affectsColumnWidths: [],
-        trackersColumnWidths: [],
-      })),
-      setItem: vi.fn(),
-    };
-    Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
-
-    useSettingsStore(pinia);
+    useSettingsStore();
 
     expect(addToastSpy).not.toHaveBeenCalledWith(
       expect.objectContaining({

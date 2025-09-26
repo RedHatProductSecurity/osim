@@ -60,6 +60,9 @@ describe('navbar', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -107,6 +110,9 @@ describe('navbar', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -159,6 +165,9 @@ describe('navbar', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -206,6 +215,9 @@ describe('navbar', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',

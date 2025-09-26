@@ -1,0 +1,287 @@
+import { computed, reactive, readonly, toRaw, ref } from 'vue';
+
+import { createSharedComposable } from '@vueuse/core';
+
+import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
+import {
+  deleteAffectCvssScore,
+  deleteAffects,
+  postAffectCvssScore,
+  postAffects,
+  putAffectCvssScore,
+  putAffects,
+} from '@/services/AffectService';
+import { affectRhCvss3, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
+import { fileTrackingFor } from '@/services/TrackerService';
+
+import { useFlaw } from './useFlaw';
+
+async function executeOperations<T>(operations: Array<Promise<T>>): Promise<{ failed: any[]; successful: T[] }> {
+  const results = await Promise.allSettled(operations);
+  const successful: T[] = [];
+  const failed: any[] = [];
+
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      successful.push(result.value);
+    } else {
+      failed.push(result.reason?.data || result.reason);
+    }
+  }
+
+  return { successful, failed };
+}
+
+function useAffects() {
+  // Metadata
+  const modifiedAffects = reactive<Set<string>>(new Set());
+  const newAffects = reactive<Set<string>>(new Set());
+  const removedAffects = reactive<Set<string>>(new Set());
+
+  // Data
+  const initialAffects = ref<ZodAffectType[]>([]);
+  const currentAffects = ref<ZodAffectType[]>([]);
+  const wereAffectsEditedOrAdded = computed(() => modifiedAffects.size || newAffects.size);
+  const hasChanges = computed(() => wereAffectsEditedOrAdded.value || removedAffects.size);
+
+  function initializeAffects(affects: ZodAffectType[]) {
+    initialAffects.value = deepCopyFromRaw(toRaw(affects));
+    currentAffects.value = deepCopyFromRaw(toRaw(affects));
+    reset();
+  }
+
+  function reset() {
+    modifiedAffects.clear();
+    newAffects.clear();
+    removedAffects.clear();
+  }
+
+  function markModified(uuid: string) {
+    if (!newAffects.has(uuid)) {
+      modifiedAffects.add(uuid);
+    }
+  }
+
+  function markNew(uuid: string) {
+    newAffects.add(uuid);
+  }
+
+  function markRemoved(uuid: string) {
+    if (newAffects.has(uuid)) {
+      newAffects.delete(uuid);
+      currentAffects.value = currentAffects.value.filter(a => a._uuid !== uuid);
+      return;
+    }
+    modifiedAffects.delete(uuid);
+    removedAffects.add(uuid);
+  }
+
+  function revertAffect(uuid: string) {
+    if (newAffects.has(uuid)) {
+      // Remove new affect entirely from currentAffects
+      newAffects.delete(uuid);
+      currentAffects.value = currentAffects.value.filter(
+        a => (a.uuid || a._uuid) !== uuid,
+      );
+    } else if (removedAffects.has(uuid)) {
+      // Restore removed affect
+      removedAffects.delete(uuid);
+    } else if (modifiedAffects.has(uuid)) {
+      // Revert to initial state
+      const originalAffect = initialAffects.value.find(
+        a => a.uuid === uuid,
+      );
+      if (originalAffect) {
+        const index = currentAffects.value.findIndex(
+          a => (a.uuid || a._uuid) === uuid,
+        );
+        if (index !== -1) {
+          currentAffects.value[index] = structuredClone(toRaw(originalAffect));
+        }
+      }
+      modifiedAffects.delete(uuid);
+    }
+  }
+
+  function refreshData() {
+    // Trigger reactivity for shallowRef after mutations
+    currentAffects.value = [...currentAffects.value];
+  }
+
+  const requestBodyFromAffect = (affect: ZodAffectType) => ({
+    ...affect,
+    ps_component: affect.purl ? '' : affect.ps_component,
+    embargoed: affect.embargoed || false,
+  });
+
+  function buildAffectOperations() {
+    const toCreate: ZodAffectType[] = [];
+    const toUpdate: ZodAffectType[] = [];
+
+    for (const affect of currentAffects.value) {
+      if (affect._uuid && newAffects.has(affect._uuid)) {
+        toCreate.push(requestBodyFromAffect(affect));
+      } else if (affect.uuid && modifiedAffects.has(affect.uuid)) {
+        toUpdate.push(requestBodyFromAffect(affect));
+      }
+    }
+
+    return { toCreate, toUpdate };
+  }
+
+  function buildCvssOperations(updatedAffects: ZodAffectType[]) {
+    const toCreate: Record<string, ZodAffectCVSSType> = {};
+    const toUpdate: Record<string, ZodAffectCVSSType> = {};
+    const toDelete: Record<string, string> = {};
+
+    // Process existing affects
+    for (const affect of currentAffects.value) {
+      const rhCvss3Score = affectRhCvss3(affect);
+
+      if (affect.uuid && modifiedAffects.has(affect.uuid)) {
+        const initialCvssScore = affectRhCvss3(initialAffects.value.find(({ uuid }) => affect.uuid === uuid)!);
+
+        if (!rhCvss3Score?.uuid && rhCvss3Score?.score) {
+          toCreate[affect.uuid] = rhCvss3Score;
+        } else if (rhCvss3Score?.score && !jsonEquals(initialCvssScore, rhCvss3Score)) {
+          toUpdate[affect.uuid] = rhCvss3Score;
+        } else if (!rhCvss3Score?.score && initialCvssScore?.score) {
+          toDelete[affect.uuid] = initialCvssScore.uuid!;
+        }
+      } else if (affect._uuid && newAffects.has(affect._uuid) && rhCvss3Score?.score) {
+        // Find corresponding saved affect for new affects
+        const matchingUpdatedAffect = updatedAffects.find(updatedAffect =>
+          updatedAffect.ps_update_stream === affect.ps_update_stream
+          && updatedAffect.ps_module === affect.ps_module
+          && updatedAffect.ps_component === affect.ps_component,
+        );
+
+        if (matchingUpdatedAffect?.uuid) {
+          toCreate[matchingUpdatedAffect.uuid] = rhCvss3Score;
+        }
+      }
+    }
+
+    return { toCreate, toUpdate, toDelete };
+  }
+
+  function updateCvssScoresInAffects(
+    affects: ZodAffectType[],
+    cvssScores: ZodAffectCVSSType[],
+    deletedScores: Record<string, string>,
+  ) {
+    // Merge new/updated CVSS scores
+    cvssScores.forEach((score) => {
+      const affect = affects.find(affect => affect.uuid === score.affect);
+      if (affect) {
+        affect.cvss_scores = mergeBy(affect?.cvss_scores, [score], 'uuid');
+      }
+    });
+
+    // Remove deleted CVSS scores
+    for (const affectUuid in deletedScores) {
+      const deletedScoreUuid = deletedScores[affectUuid];
+      const affect = affects.find(affect => affect.uuid === affectUuid)
+        || currentAffects.value.find(affect => affect.uuid === affectUuid);
+      if (affect?.cvss_scores) {
+        affect.cvss_scores = affect.cvss_scores.filter(score => score.uuid !== deletedScoreUuid);
+      }
+    }
+  }
+
+  async function saveCvssScores(updatedAffects: ZodAffectType[]) {
+    const { toCreate, toDelete, toUpdate } = buildCvssOperations(updatedAffects);
+
+    const operations = [
+      ...Object.entries(toCreate).map(([affectUuid, cvssScore]) =>
+        postAffectCvssScore(affectUuid, cvssScore),
+      ),
+      ...Object.entries(toUpdate).map(([affectUuid, cvssScore]) =>
+        putAffectCvssScore(affectUuid, cvssScore.uuid!, cvssScore),
+      ),
+      ...Object.entries(toDelete).map(([affectUuid, scoreUuid]) =>
+        deleteAffectCvssScore(affectUuid, scoreUuid),
+      ),
+    ];
+
+    const { successful: savedCvssScores } = await executeOperations(operations);
+
+    // Update state with successful operations
+    updateCvssScoresInAffects(updatedAffects, savedCvssScores.filter(Boolean), toDelete);
+  }
+
+  async function saveAffects() {
+    const { toCreate, toUpdate } = buildAffectOperations();
+
+    const operations = [
+      ...(toCreate.length ? [postAffects(toCreate)] : []),
+      ...(toUpdate.length ? [putAffects(toUpdate)] : []),
+    ];
+
+    const { successful: results } = await executeOperations(operations);
+
+    // Flatten successful results
+    const savedAffects: ZodAffectType[] = results.flatMap(result => result?.data.results ?? []);
+
+    // Save CVSS scores (this also updates the affects)
+    await saveCvssScores(savedAffects);
+
+    // TODO: We could use the erroredAffects to only reset the saved ones
+    return savedAffects;
+  }
+
+  type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
+  async function fileTracker({ ps_update_stream, updated_dt, uuid }: fileTrackerFields) {
+    const trackerToFile = {
+      embargoed: useFlaw().flaw.value.embargoed,
+      affects: [uuid!],
+      ps_update_stream: ps_update_stream!,
+      updated_dt: updated_dt!,
+    };
+
+    const result = await fileTrackingFor(trackerToFile);
+    if (result && 'uuid' in result) {
+      currentAffects.value.find(affect => affect.uuid === uuid)!.tracker = result;
+    }
+  }
+
+  async function removeAffects() {
+    await deleteAffects([...removedAffects.values()]);
+    currentAffects.value = currentAffects.value.filter(({ uuid }) => !removedAffects.has(uuid!));
+
+    return [...removedAffects.values()];
+  }
+
+  return {
+    state: {
+      // Data
+      currentAffects,
+      initialAffects: readonly(initialAffects),
+
+      // Metadata
+      hasChanges,
+      modifiedAffects,
+      newAffects,
+      removedAffects,
+      wereAffectsEditedOrAdded,
+    },
+    actions: {
+      // Internal
+      initializeAffects,
+      markModified,
+      markNew,
+      markRemoved,
+      refreshData,
+      reset,
+      revertAffect,
+
+      // External
+      fileTracker,
+      saveAffects,
+      removeAffects,
+    },
+
+  };
+}
+
+export const useAffectsModel = createSharedComposable(useAffects);

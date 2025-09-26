@@ -9,10 +9,13 @@ import { useToastStore } from '@/stores/ToastStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import Toast from '@/widgets/Toast/Toast.vue';
 
+createTestingPinia();
+
 describe('toastContainer', () => {
   let subject: VueWrapper<InstanceType<typeof ToastContainer>>;
   beforeEach(() => {
     vi.useFakeTimers();
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -37,6 +40,9 @@ describe('toastContainer', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -74,11 +80,7 @@ describe('toastContainer', () => {
   });
 
   it('renders empty toasts and hide clearAll button when showNotification is true', async () => {
-    const pinia = createTestingPinia({
-      createSpy: vi.fn,
-      stubActions: false,
-    });
-    const settingStore = useSettingsStore(pinia);
+    const settingStore = useSettingsStore();
     settingStore.$state = {
       settings: {
         showNotifications: true,
@@ -90,6 +92,9 @@ describe('toastContainer', () => {
         unifiedCommentsView: false,
         affectsColumnWidths: [],
         trackersColumnWidths: [],
+        affectsColumnOrder: [],
+        affectsSizing: {},
+        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -99,14 +104,7 @@ describe('toastContainer', () => {
       isSavingApiKeys: false,
       isApiKeysInitialized: false,
     };
-    subject = mount(ToastContainer, {
-      global: {
-        plugins: [
-          pinia,
-          router,
-        ],
-      },
-    });
+    subject = mount(ToastContainer);
     const toastElements = subject.findAllComponents(Toast);
     expect(toastElements.length).toBe(0);
     const clearAllButton = subject.find('.osim-toast-container-clear button');
@@ -116,11 +114,7 @@ describe('toastContainer', () => {
   it(
     'renders temporary toasts and hide toasts after its timeoutMs when showNotification is false',
     async () => {
-      const pinia = createTestingPinia({
-        createSpy: vi.fn,
-        stubActions: false,
-      });
-      const settingStore = useSettingsStore(pinia);
+      const settingStore = useSettingsStore();
       settingStore.$state = {
         settings: {
           showNotifications: false,
@@ -132,6 +126,9 @@ describe('toastContainer', () => {
           unifiedCommentsView: false,
           affectsColumnWidths: [],
           trackersColumnWidths: [],
+          affectsColumnOrder: [],
+          affectsSizing: {},
+          affectsVisibility: {},
         },
         apiKeys: {
           bugzillaApiKey: '',
@@ -141,21 +138,13 @@ describe('toastContainer', () => {
         isSavingApiKeys: false,
         isApiKeysInitialized: false,
       };
-      const toastStore = useToastStore(pinia);
+      const toastStore = useToastStore();
       toastStore.addToast({
         title: 'Test',
         body: 'Test',
         timeoutMs: 5000,
       });
-      subject = mount(ToastContainer, {
-        global: {
-          plugins: [
-            pinia,
-            router,
-          ],
-        },
-      });
-
+      subject = mount(ToastContainer);
       settingStore.settings.privacyNoticeShown = true;
       const toastElements = subject.findAllComponents(Toast);
       expect(toastElements.length).toBe(1);

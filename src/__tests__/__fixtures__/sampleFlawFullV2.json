@@ -1,0 +1,274 @@
+{
+    "uuid": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+    "cve_id": "CVE-2024-1234",
+    "impact": "MODERATE",
+    "components": [
+        "kernel"
+    ],
+    "title": "Sample title",
+    "trackers": [
+        "XXXX-0001",
+        "XXXX-0005"
+    ],
+    "comment_zero": "Comment Zero == Patient Zero",
+    "cve_description": "I am a spooky CVE",
+    "requires_cve_description": "APPROVED",
+    "statement": "Statement for None",
+    "cwe_id": "CWE-1",
+    "unembargo_dt": "2012-01-10T00:00:00Z",
+    "source": "GIT",
+    "reported_dt": "2012-01-10T00:00:00Z",
+    "mitigation": "CVE mitigation",
+    "major_incident_state": "APPROVED",
+    "nist_cvss_validation": "",
+    "affects": [
+        {
+            "uuid": "3484da83-c08c-4bf8-87c0-640bfb8334f5",
+            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+            "affectedness": "AFFECTED",
+            "resolution": "FIX",
+            "ps_module": "openshift-1",
+            "ps_product": null,
+            "ps_component": "openshift-1-1",
+            "ps_update_stream": "xxxx-0-001",
+            "purl": "",
+            "impact": "LOW",
+            "tracker": {
+                "affects": [
+                    "3484da83-c08c-4bf8-87c0-640bfb8334f5"
+                ],
+                "errata": [],
+                "external_system_id": "XXXX-0001",
+                "ps_update_stream": "xxxx-0-001",
+                "status": "New",
+                "resolution": "Won't Do",
+                "type": "JIRA",
+                "uuid": "71c60db4-0d33-4a86-b912-3d8f5c8b8658",
+                "embargoed": false,
+                "alerts": [],
+                "created_dt": "2024-12-01T13:05:53Z",
+                "updated_dt": "2024-12-01T13:06:28Z"
+            },
+            "delegated_resolution": null,
+            "cvss_scores": [],
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2021-09-13T09:09:38Z",
+            "updated_dt": "2023-12-06T17:12:21Z"
+        },
+        {
+            "uuid": "f300fbec-29ef-4b4d-8a01-bb210bd09d50",
+            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+            "affectedness": "AFFECTED",
+            "resolution": "DELEGATED",
+            "ps_module": "openshift-2",
+            "ps_product": null,
+            "ps_component": "openshift-2-1",
+            "purl": "",
+            "ps_update_stream": "xxxx-0-002",
+            "impact": "LOW",
+            "tracker": {
+                "affects": [
+                    "f300fbec-29ef-4b4d-8a01-bb210bd09d50"
+                ],
+                "errata": [],
+                "external_system_id": "XXXX-0002",
+                "ps_update_stream": "xxxx-0-002",
+                "status": "Closed",
+                "resolution": "",
+                "type": "JIRA",
+                "uuid": "cf1d329b-5ddc-48e2-a8ae-5e2f01411424",
+                "embargoed": false,
+                "alerts": [],
+                "created_dt": "2024-11-01T13:05:53Z",
+                "updated_dt": "2024-11-01T13:06:28Z"
+            },
+            "delegated_resolution": null,
+            "cvss_scores": [],
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2021-09-13T09:09:38Z",
+            "updated_dt": "2023-12-06T17:12:21Z"
+        },
+        {
+            "uuid": "b0d28cd4-767c-423c-9195-819aca1c3c19",
+            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+            "affectedness": "AFFECTED",
+            "resolution": "FIX",
+            "ps_module": "openshift-3",
+            "ps_product": null,
+            "ps_component": "openshift-3-1",
+            "ps_update_stream": "xxxx-0-005",
+            "purl": "",
+            "impact": "LOW",
+            "tracker": null,
+            "delegated_resolution": null,
+            "cvss_scores": [],
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2021-09-13T09:09:38Z",
+            "updated_dt": "2023-12-06T17:12:21Z"
+        }
+    ],
+    "comments": [
+        {
+            "uuid": "0d90cb33-cbdc-4bd8-bef0-7b5c7f33ece2",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15302346",
+            "order": 0,
+            "creator": "example@example.com",
+            "is_private": false,
+            "alerts": [],
+            "created_dt": "2021-09-13T09:09:38Z",
+            "updated_dt": "2021-09-13T09:09:38Z"
+        },
+        {
+            "uuid": "dffc4966-3442-46a4-98b8-2fd542addba0",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15302351",
+            "order": 1,
+            "creator": "ex-maple@example.com",
+            "is_private": true,
+            "alerts": [],
+            "created_dt": "2021-09-13T09:09:38Z",
+            "updated_dt": "2021-09-13T09:09:38Z"
+        },
+        {
+            "uuid": "b6e8870e-5f7a-46d7-bb2f-40910b75b6a4",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15392392",
+            "order": 2,
+            "creator": "former-maple@example.com",
+            "is_private": true,
+            "alerts": [],
+            "created_dt": "2022-03-12T08:34:13Z",
+            "updated_dt": "2022-03-12T08:34:13Z"
+        },
+        {
+            "uuid": "7edd4365-d12e-4873-a1ea-1cf2f7110391",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15596524",
+            "order": 3,
+            "creator": "former-maple@example.com",
+            "is_private": true,
+            "alerts": [],
+            "created_dt": "2023-07-13T01:07:34Z",
+            "updated_dt": "2023-07-13T01:07:34Z"
+        },
+        {
+            "uuid": "8f5b04e2-d62e-4330-b42f-634d41457033",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15607332",
+            "order": 4,
+            "creator": "former-maple@example.com",
+            "is_private": true,
+            "alerts": [],
+            "created_dt": "2023-07-13T02:06:48Z",
+            "updated_dt": "2023-07-13T02:06:48Z"
+        },
+        {
+            "uuid": "0d90cb33-cbdc-4bd8-bef0-7b5c7f33ece2",
+            "text": "Dictum maecenas congue quis quam phasellus aenean.",
+            "external_system_id": "15614647",
+            "order": 5,
+            "creator": "former-maple@example.com",
+            "is_private": true,
+            "alerts": [],
+            "created_dt": "2023-07-13T02:39:44Z",
+            "updated_dt": "2023-07-13T02:39:44Z"
+        }
+    ],
+    "meta_attr": {
+        "bz_id": "1984541"
+    },
+    "acknowledgments": [
+        {
+            "name": "Simon McVittie",
+            "affiliation": "",
+            "from_upstream": false,
+            "flaw": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
+            "uuid": "5cf5979d-b344-4dd1-873c-3901559b0366",
+            "embargoed": false,
+            "alerts": [
+                {
+                    "uuid": "e1fa2380-eb79-4e05-ae1e-e60236add901",
+                    "name": "_validate_public_source_no_ack",
+                    "description": "Flaw contains acknowledgments for public source LKML",
+                    "alert_type": "ERROR",
+                    "resolution_steps": "",
+                    "parent_uuid": "5cf5979d-b344-4dd1-873c-3901559b0366",
+                    "parent_model": "flawacknowledgment"
+                }
+            ],
+            "created_dt": "2012-01-10T07:58:32Z",
+            "updated_dt": "2023-05-11T18:23:32Z"
+        }
+    ],
+    "references": [
+        {
+            "description": "Reference details",
+            "flaw": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
+            "type": "EXTERNAL",
+            "url": "https://example.com",
+            "uuid": "1bfc04a2-b46a-4e2a-b7e4-7ff2eacf224e",
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2024-08-29T09:07:24.851625Z",
+            "updated_dt": "2024-08-29T09:07:24Z"
+        }
+    ],
+    "cvss_scores": [
+        {
+            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+            "comment": "The CVSS is as it is and that is it.",
+            "cvss_version": "V3",
+            "issuer": "RH",
+            "score": 2.2,
+            "uuid": "db265f8e-f7f6-4e96-b61f-8dea783e79c7",
+            "vector": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:L/I:N/A:N",
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2021-08-02T10:49:35Z",
+            "updated_dt": "2024-03-04T14:27:02Z"
+        },
+        {
+            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
+            "comment": "The CVSS is as it is and that is it.",
+            "cvss_version": "V3",
+            "issuer": "NIST",
+            "score": 4,
+            "uuid": "db265f8e-f7f6-4e96-b61f-8dea783e79c7",
+            "vector": "CVSS:3.1/AV:N/AC:H/PR:E/UI:N/S:U/C:N/I:L/A:R",
+            "embargoed": false,
+            "alerts": [],
+            "created_dt": "2021-08-02T10:49:35Z",
+            "updated_dt": "2024-03-04T14:27:02Z"
+        }
+    ],
+    "embargoed": false,
+    "created_dt": "2021-09-13T09:09:38Z",
+    "updated_dt": "2023-12-06T17:12:21Z",
+    "classification": {
+        "workflow": "DEFAULT",
+        "state": "NEW"
+    },
+    "owner": "",
+    "task_key": "",
+    "team_id": "",
+    "alerts": [
+        {
+            "uuid": "641f3ef6-52c7-4482-b406-7e575309981a",
+            "name": "cvss3_missing",
+            "description": "CVSSv3 score is missing.",
+            "alert_type": "WARNING",
+            "resolution_steps": "",
+            "parent_uuid": "111881be-08ea-48a3-aea9-5e62c9ac6d6c",
+            "parent_model": "flaw"
+        }
+    ],
+    "labels": [],
+    "dt": "2024-01-17T22:31:19.131516Z",
+    "revision": "b61be72c3b93b2f307d8f4ebfd7db64ec4c81f9c",
+    "version": "3.5.2",
+    "env": "stage"
+}

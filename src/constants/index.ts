@@ -90,3 +90,19 @@ export const issuerLabels: Record<string, string> = {
   [IssuerEnum.Osv]: 'OSV',
   [IssuerEnum.Cisa]: 'CISA',
 };
+
+export const labelColorMap: { [key: string]: string } = {
+  'ansible': '#FF9AFC',
+  'community': '#BD9EA3',
+  'devel-tools': '#FFFF9E',
+  'kernel': '#72CBD7',
+  'management': '#78E2B7',
+  'middleware': '#FFAC74',
+  'platforms': '#C39BFF',
+  'special-handling': '#D8FF89',
+  'cloud': '#A1CBF5',
+  'openshift': '#FFD574',
+  'other': '#86C770',
+  'rhel': '#FF7B7B',
+  'services': '#8292FF',
+};
