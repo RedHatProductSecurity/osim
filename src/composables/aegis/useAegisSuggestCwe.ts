@@ -20,7 +20,12 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   const isSuggesting = ref(false);
   const hasAppliedSuggestion = ref(false);
   const previousValue = ref<null | string>(null);
-  type CweSuggestionDetails = { confidence?: number | string; cwe: string; explanation?: string };
+  type CweSuggestionDetails = {
+    confidence?: number | string;
+    cwe: string;
+    explanation?: string;
+    tools_used: string[];
+  };
   const details = ref<CweSuggestionDetails | null>(null);
   const canShowFeedback = computed(() => hasAppliedSuggestion.value && !isSuggesting.value);
 
@@ -50,8 +55,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         feature: 'suggest-cwe',
         ...serializeAegisContext(options.context),
       });
-      const arr = (data as any)?.cwe as string[] | undefined;
-      const first = arr?.[0] ?? '';
+      const first = data.cwe?.[0] ?? '';
       if (!first) {
         toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
         return;
@@ -59,9 +63,10 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
       applyValue(first);
       details.value = {
         cwe: first,
-        confidence: (data as any)?.confidence,
-        explanation: (data as any)?.explanation,
-      } as CweSuggestionDetails;
+        confidence: data.confidence,
+        explanation: data.explanation,
+        tools_used: Array.isArray(data.tools_used) ? data.tools_used : [],
+      };
       hasAppliedSuggestion.value = true;
       toastStore.addToast({
         title: 'AI Suggestion Applied',
