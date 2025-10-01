@@ -128,6 +128,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
       url: `/osidb/api/v1/flaws/${uuid}`,
       data: flawObject,
       params: {
+        include_history: 'true',
         ...(createJiraTask && { create_jira_task: true }),
       },
     }, { beforeFetch });
