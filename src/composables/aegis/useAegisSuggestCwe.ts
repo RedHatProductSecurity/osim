@@ -22,8 +22,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   const hasAppliedSuggestion = ref(false);
   const previousValue = ref<null | string>(null);
   const details = ref<CweSuggestionDetails | null>(null);
-  const requestStartTime = ref<null | number>(null);
-  const requestDuration = ref<null | number>(null);
   const canShowFeedback = computed(() => hasAppliedSuggestion.value && !isSuggesting.value);
 
   const isCveIdValid = computed(() => {
@@ -44,7 +42,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
       return;
     }
     isSuggesting.value = true;
-    requestStartTime.value = Date.now();
     try {
       if (!hasAppliedSuggestion.value && previousValue.value == null) {
         previousValue.value = options.valueRef.value;
@@ -53,7 +50,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         feature: 'suggest-cwe',
         ...serializeAegisContext(options.context),
       });
-      requestDuration.value = Date.now() - requestStartTime.value;
       const first = data.cwe?.[0] ?? '';
       if (!first) {
         toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
@@ -86,10 +82,9 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   }
 
   function sendFeedback(kind: 'down' | 'up') {
-    const baseUrl = osimRuntime.value.aegisFeedbackUrl;
+    const url = osimRuntime.value.aegisFeedbackUrl;
 
-    if (baseUrl) {
-      const url = buildFeedbackUrl(baseUrl, kind);
+    if (url) {
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       toastStore.addToast({
@@ -97,43 +92,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         body: kind === 'up' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
       });
     }
-  }
-
-  /**
-   * Builds a Google Form URL with prepopulated fields containing flaw data.
-   *
-   * Form fields:
-   * - entry.62718102: CVE ID
-   * - entry.77590445: CWE suggested by Aegis
-   * - entry.432941906: CWE Request time (in milliseconds)
-   * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
-   */
-  function buildFeedbackUrl(baseUrl: string, feedbackKind: 'down' | 'up'): string {
-    const params = new URLSearchParams();
-
-    // Get flaw data from context
-    const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
-    const suggestedCwe = options.valueRef.value;
-
-    // Add CVE ID if available
-    if (cveId) {
-      params.set('entry.62718102', cveId);
-    }
-
-    // Add suggested CWE if available
-    if (suggestedCwe) {
-      params.set('entry.77590445', suggestedCwe);
-    }
-
-    // Add CWE request time if available
-    if (requestDuration.value !== null) {
-      params.set('entry.432941906', `${requestDuration.value}ms`);
-    }
-
-    // Add feedback type
-    params.set('entry.810710028', feedbackKind === 'up' ? 'accept' : 'reject');
-
-    return `${baseUrl}?${params.toString()}`;
   }
 
   return { canSuggest, canShowFeedback, details, hasAppliedSuggestion, isSuggesting, revert, sendFeedback, suggestCwe };
