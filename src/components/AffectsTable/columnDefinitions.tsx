@@ -92,19 +92,26 @@ export default function AffectColumnDefinitions() {
       cell: editableCellRenderer,
       header: 'Product Stream',
       size: 190,
+      sortingFn: 'alphanumeric',
     }),
     columnHelper.accessor('ps_module', {
       cell: editableCellRenderer,
       header: 'Module',
+      sortingFn: 'alphanumeric',
+
     }),
     columnHelper.accessor('ps_component', {
       cell: editableCellRenderer,
       header: 'Component',
+      sortingFn: 'alphanumeric',
+
     }),
     columnHelper.accessor('purl', {
       cell: editableCellRenderer,
       header: 'Analyzed Component',
       size: 220,
+      sortingFn: 'alphanumeric',
+
     }),
     columnHelper.accessor('affectedness', {
       cell: editableCellRenderer,
@@ -183,7 +190,9 @@ export default function AffectColumnDefinitions() {
     columnHelper.accessor(row => `${row.tracker?.external_system_id || ''}`, {
       cell: ({ row }) => <TrackerLink tracker={row.original.tracker} />,
       header: 'Tracker',
-      enableGlobalFilter: false,
+      enableGlobalFilter: true,
+      sortingFn: 'alphanumeric',
+
     }),
     columnHelper.accessor(row => row.tracker?.status, {
       cell: column => column.getValue()?.toUpperCase(),
@@ -199,6 +208,8 @@ export default function AffectColumnDefinitions() {
         filter: false,
       },
       size: 234,
+      sortingFn: 'datetime',
+
     }),
     columnHelper.accessor('updated_dt', {
       cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
@@ -208,6 +219,8 @@ export default function AffectColumnDefinitions() {
         filter: false,
       },
       size: 220,
+      sortingFn: 'datetime',
+
     }),
     columnHelper.accessor(row => row.tracker?.created_dt, {
       cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
@@ -217,6 +230,8 @@ export default function AffectColumnDefinitions() {
         filter: false,
       },
       size: 240,
+      sortingFn: 'datetime',
+
     }),
     columnHelper.accessor(row => row.tracker?.updated_dt, {
       cell: column => column.getValue() ? formatDateWithTimezone(column.getValue()!) : '',
@@ -226,6 +241,7 @@ export default function AffectColumnDefinitions() {
         filter: false,
       },
       size: 234,
+      sortingFn: 'datetime',
     }),
     columnHelper.display({
       id: 'actions',
