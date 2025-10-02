@@ -66,7 +66,8 @@ export default function AffectColumnDefinitions() {
           />
         );
       },
-      size: 40,
+      size: 20,
+      enableResizing: false,
       enableSorting: false,
       enableGlobalFilter: false,
       enableColumnFilter: false,
@@ -84,7 +85,7 @@ export default function AffectColumnDefinitions() {
         </span>
       ))
       ),
-      filterFn: 'arrIncludesSome',
+      filterFn: 'arrIncludesPartial',
       header: 'Label',
       size: 110,
     }),
@@ -207,7 +208,7 @@ export default function AffectColumnDefinitions() {
       meta: {
         filter: false,
       },
-      size: 234,
+      size: 272,
       sortingFn: 'datetime',
 
     }),
@@ -218,7 +219,7 @@ export default function AffectColumnDefinitions() {
       meta: {
         filter: false,
       },
-      size: 220,
+      size: 248,
       sortingFn: 'datetime',
 
     }),
@@ -229,7 +230,7 @@ export default function AffectColumnDefinitions() {
       meta: {
         filter: false,
       },
-      size: 240,
+      size: 284,
       sortingFn: 'datetime',
 
     }),
@@ -240,7 +241,7 @@ export default function AffectColumnDefinitions() {
       meta: {
         filter: false,
       },
-      size: 234,
+      size: 260,
       sortingFn: 'datetime',
     }),
     columnHelper.display({
@@ -250,6 +251,8 @@ export default function AffectColumnDefinitions() {
       enableSorting: false,
       enableColumnFilter: false,
       enableGlobalFilter: false,
+      enableResizing: false,
+      size: 80,
       meta: {
         filter: false,
       },

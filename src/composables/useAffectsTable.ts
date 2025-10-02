@@ -12,7 +12,7 @@ import type { SortingState, Column, ColumnFiltersState, RowData } from '@tanstac
 import { storeToRefs } from 'pinia';
 
 import columnDefinitions from '@/components/AffectsTable/columnDefinitions';
-import { arrIncludesWithBlanks, cvssScore } from '@/components/AffectsTable/customFilters';
+import { arrIncludesWithBlanks, cvssScore, arrIncludesPartial } from '@/components/AffectsTable/customFilters';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { usePagination } from '@/composables/usePagination';
@@ -138,6 +138,7 @@ export function useAffectsTable() {
       filingTracker: reactive(new Set()),
     },
     filterFns: {
+      arrIncludesPartial,
       arrIncludesWithBlanks,
       cvssScore,
     },
@@ -190,6 +191,20 @@ export function useAffectsTable() {
     await table.options.meta?.fileTrackers(affectsWithoutTracker);
   }
 
+  function fitColumnWidth(column: Column<ZodAffectType>) {
+    const HEADER_CHAR_WIDTH = 12; // Bold monospace
+    const BODY_CHAR_WIDTH = 9;    // Regular monospace
+    const PADDING = 32;
+
+    const headerWidth = (column.columnDef.header?.toString() || '').length * HEADER_CHAR_WIDTH;
+    const maxBodyWidth = Math.max(
+      0,
+      ...column.getFacetedRowModel().flatRows
+        .map(row => (row.getValue(column.id)?.toString() || '').length * BODY_CHAR_WIDTH),
+    );
+    settings.value.affectsSizing[column.id] = Math.max(headerWidth, maxBodyWidth) + PADDING;
+  }
+
   return {
     state: {
       table,
@@ -211,6 +226,7 @@ export function useAffectsTable() {
       deleteSelectedRows,
       revertAllChanges,
       fileSelectedTrackers,
+      fitColumnWidth,
       refreshData,
     },
   };

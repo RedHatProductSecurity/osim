@@ -32,6 +32,7 @@ const {
     changePage,
     deleteSelectedRows,
     fileSelectedTrackers,
+    fitColumnWidth,
     refreshData,
     revertAllChanges,
     toggleColumnVisibility,
@@ -164,11 +165,12 @@ onMounted(() => {
               :direction="header.column.getIsSorted()"
             />
             <div
+              v-if="header.column.getCanResize()"
               class="resizer"
               :class="[table.options.columnResizeDirection, header.column.getIsResizing() ? 'isResizing' : '']"
               @mousedown="$event => header.getResizeHandler()($event)"
               @touchstart="$event => header.getResizeHandler()($event)"
-              @dblclick="header.column.resetSize()"
+              @dblclick="fitColumnWidth(header.column)"
               @click.stop
             >
             </div>
@@ -195,6 +197,9 @@ onMounted(() => {
             />
           </td>
         </tr>
+        <tr v-if="table.getRowCount()=== 0">
+          <td colspan="100">No affects found for current filters</td>
+        </tr>
       </tbody>
     </table>
     <div v-else class="my-2 ms-2">
@@ -218,6 +223,7 @@ table {
     overflow: hidden;
     text-overflow: ellipsis;
     position: relative;
+    box-sizing: content-box;
 
     .resizer {
       background-color: rgb(var(--bs-secondary-rgb));
