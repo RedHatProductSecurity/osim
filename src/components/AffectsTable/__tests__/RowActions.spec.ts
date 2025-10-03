@@ -6,7 +6,7 @@ import type { Row, Table } from '@tanstack/vue-table';
 
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
-import SampleFlawFullV2 from '@/__tests__/__fixtures__/sampleFlawFullV2.json';
+import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodAffectType } from '@/types';
 
 import RowActions from '../RowActions.vue';
@@ -43,8 +43,8 @@ const mountRowActions = (row: Row<ZodAffectType>, table: Table<ZodAffectType>) =
 };
 
 describe('rowActions', () => {
-  const affectWithoutTracker = SampleFlawFullV2.affects.find(affect => !affect.tracker) as ZodAffectType;
-  const affectWithTracker = SampleFlawFullV2.affects.find(affect => !!affect.tracker) as ZodAffectType;
+  const affectWithoutTracker = SampleFlawFull.affects.find(affect => !affect.tracker) as ZodAffectType;
+  const affectWithTracker = SampleFlawFull.affects.find(affect => !!affect.tracker) as ZodAffectType;
 
   beforeEach(() => {
     const { state: { modifiedAffects, newAffects, removedAffects } } = useAffectsModel();

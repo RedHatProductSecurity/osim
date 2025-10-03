@@ -75,7 +75,6 @@ describe('toastContainer', () => {
       settings: {
         ...defaultPersistentSettings,
         showNotifications: true,
-
       },
       apiKeys: {
         bugzillaApiKey: '',
