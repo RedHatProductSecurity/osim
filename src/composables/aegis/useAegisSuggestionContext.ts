@@ -14,7 +14,7 @@ import type {
 } from '@/types';
 import { CommentType } from '@/constants';
 
-type AffectWithoutTracker = Omit<ZodAffectType, 'trackers'>;
+type AffectWithoutTracker = Omit<ZodAffectType, 'tracker'>;
 
 export function serializePublicComments(comments: ZodFlawCommentType[]) {
   const maxComments = 15;
@@ -53,7 +53,7 @@ export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggest
     references: computed(() => flaw.value.references),
     embargoed: computed(() => flaw.value.embargoed),
     cvssScores: computed(() => flaw.value.cvss_scores),
-    affects: computed(() => flaw.value.affects.map(affect => omit(['trackers'], affect))),
+    affects: computed(() => flaw.value.affects.map(affect => omit(['tracker'], affect))),
   };
 }
 
