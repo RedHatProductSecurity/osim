@@ -187,6 +187,11 @@ export const ZodFlawSchema = z.object({
     { message: 'You must specify a source for this Flaw before saving.' },
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
+  aegis_meta: z.record(z.string(), z.array(z.object({
+    type: z.enum(['AI', 'Partial AI']),
+    timestamp: z.string(),
+    value: z.string().optional(),
+  }))).nullish(),
   mitigation: z.string().nullish(),
   major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullable(),
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),

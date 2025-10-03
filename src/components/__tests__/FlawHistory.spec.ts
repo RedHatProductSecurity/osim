@@ -2,22 +2,13 @@ import { computed, ref, type Directive } from 'vue';
 
 import { mount } from '@vue/test-utils';
 import { IMaskDirective } from 'vue-imask';
+import * as historyFixtures from '@test-fixtures/sampleFlawHistory.json';
 
 import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 
 import type { ZodFlawHistoryItemType } from '@/types/zodFlaw';
 
 import { osimEmptyFlawTest, osimFullFlawTest } from './test-suite-helpers';
-
-function sampleHistoryItem(): ZodFlawHistoryItemType {
-  return {
-    pgh_created_at: '2024-10-04T15:06:56.760289Z',
-    pgh_slug: 'osidb.FlawAudit:123456',
-    pgh_label: 'update',
-    pgh_context: { url: 'osidb/api/v1/flaws/12d3820a-a43b-417c-a22e-46e47c232a63', user: 1 },
-    pgh_diff: { owner: ['', 'noemail@example.com'] },
-  };
-}
 
 describe('flawHistory', () => {
   osimEmptyFlawTest('is not shown if no history present on flaw', async ({ flaw }) => {
@@ -37,7 +28,7 @@ describe('flawHistory', () => {
 
   osimFullFlawTest('is shown if history present on flaw', async ({ flaw }) => {
     flaw.history = [];
-    flaw.history.push(sampleHistoryItem());
+    flaw.history.push(historyFixtures.regularHistoryItem as ZodFlawHistoryItemType);
     const subject = mount(FlawHistory, {
       props: {
         history: flaw.history,
@@ -55,7 +46,7 @@ describe('flawHistory', () => {
 
   osimFullFlawTest('displays history items', async ({ flaw }) => {
     flaw.history = [];
-    flaw.history.push(sampleHistoryItem());
+    flaw.history.push(historyFixtures.regularHistoryItem as ZodFlawHistoryItemType);
     const subject = mount(FlawHistory, {
       props: {
         history: flaw.history,
@@ -72,7 +63,7 @@ describe('flawHistory', () => {
 
   osimFullFlawTest('shows seconds, minutes, hours in timestamp', async ({ flaw }) => {
     flaw.history = [];
-    flaw.history.push(sampleHistoryItem());
+    flaw.history.push(historyFixtures.regularHistoryItem as ZodFlawHistoryItemType);
     const subject = mount(FlawHistory, {
       props: {
         history: flaw.history,
@@ -153,5 +144,41 @@ describe('flawHistory', () => {
     endDate.value = '2024-02-28';
     await subject.vm.$nextTick();
     expect(filteredHistoryItems.value).toEqual([]);
+  });
+
+  osimFullFlawTest('displays AI badge for Aegis changes', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(historyFixtures.aegisHistoryItem as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(true);
+    expect(aiBadge.text()).toContain('AI');
+    expect(aiBadge.find('i.bi-robot').exists()).toBe(true);
+  });
+
+  osimFullFlawTest('does not display AI badge for regular changes', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(historyFixtures.regularHistoryItem as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(false);
   });
 });
