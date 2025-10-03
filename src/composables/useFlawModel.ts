@@ -5,7 +5,6 @@ import { type ZodIssue } from 'zod';
 import { modifyPath } from 'ramda';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
@@ -30,41 +29,12 @@ import {
   type DeepMapValues,
   type DeepNullable,
   type ZodFlawType,
-  type ZodAffectType,
   type ZodFlawLabelType,
+  type ZodAffectType,
 } from '@/types';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useAffectsModel } from './useAffectsModel';
-
-function useAffectsModelV2() {
-  if (osimRuntime.value.flags?.affectsV2) {
-    const {
-      actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
-      state: { removedAffects, wereAffectsEditedOrAdded },
-    } = useAffectsModel();
-
-    return {
-      setInitialAffects: () => initializeAffects(useFlaw().flaw.value.affects),
-      resetSavedAffects: resetSavedAffects,
-      saveAffects,
-      wereAffectsEditedOrAdded,
-      removeAffects,
-      affectsToDelete: {
-        value: {
-          get length() {
-            return removedAffects.size;
-          },
-        },
-      },
-    };
-  }
-  return {
-    ...useFlawAffectsModel(),
-    resetSavedAffects: undefined,
-  };
-}
 
 export function useFlawModel() {
   const { flaw, isFlawUpdated, setFlaw } = useFlaw();
@@ -88,13 +58,9 @@ export function useFlawModel() {
   } = useCvssScores();
 
   const {
-    affectsToDelete,
-    removeAffects,
-    resetSavedAffects,
-    saveAffects,
-    setInitialAffects,
-    wereAffectsEditedOrAdded,
-  } = useAffectsModelV2();
+    actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
+    state: { removedAffects, wereAffectsEditedOrAdded },
+  } = useAffectsModel();
 
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
 
@@ -201,13 +167,12 @@ export function useFlawModel() {
       isSaving.value = false;
       return;
     }
-
     // If the flaw is in triage and has no affects, we need to save the affects first
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
 
-        if (osimRuntime.value.flags?.affectsV2 && typeof response === 'object' && 'savedAffects' in response) {
+        if (typeof response === 'object' && 'savedAffects' in response) {
           const { hasErrors, savedAffects } = response;
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
@@ -216,11 +181,11 @@ export function useFlawModel() {
           if (hasErrors && resetSavedAffects) {
             afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
           } else {
-            afterSuccessQueue.push(setInitialAffects);
+            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
           }
         } else {
           afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
-          afterSuccessQueue.push(setInitialAffects);
+          afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
         }
       });
     }
@@ -243,38 +208,34 @@ export function useFlawModel() {
       });
     }
 
-    if (affectsToDelete.value.length) {
-      if (osimRuntime.value.flags?.affectsV2) {
-        queue.push(async () => {
-          const response = await removeAffects();
+    if (removedAffects.size) {
+      queue.push(async () => {
+        const response = await removeAffects();
 
-          if (response && typeof response === 'object' && 'deletedUuids' in response) {
-            const { deletedUuids, hasErrors } = response;
+        if (response && typeof response === 'object' && 'deletedUuids' in response) {
+          const { deletedUuids, hasErrors } = response;
 
-            // Remove successfully deleted affects from flaw state
-            if (deletedUuids.length > 0) {
-              afterSuccessQueue.push(() =>
-                setFlaw(flaw.value.affects.filter(({ uuid }) => uuid && !deletedUuids.includes(uuid)), 'affects'),
-              );
-            }
-
-            // Only do full reset if all deletions succeeded
-            if (!hasErrors) {
-              afterSuccessQueue.push(setInitialAffects);
-            }
-            // If hasErrors, failed deletions stay in removedAffects Set for retry
+          // Remove successfully deleted affects from flaw state
+          if (deletedUuids.length > 0) {
+            afterSuccessQueue.push(() =>
+              setFlaw(flaw.value.affects.filter(({ uuid }) => uuid && !deletedUuids.includes(uuid)), 'affects'),
+            );
           }
-        });
-      } else {
-        queue.push(removeAffects);
-      }
+
+          // Only do full reset if all deletions succeeded
+          if (!hasErrors) {
+            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
+          }
+          // If hasErrors, failed deletions stay in removedAffects Set for retry
+        }
+      });
     }
 
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
         const response = await saveAffects();
 
-        if (osimRuntime.value.flags?.affectsV2 && typeof response === 'object' && 'savedAffects' in response) {
+        if (typeof response === 'object' && 'savedAffects' in response) {
           const { hasErrors, savedAffects } = response;
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
@@ -283,11 +244,11 @@ export function useFlawModel() {
           if (hasErrors && resetSavedAffects) {
             afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
           } else {
-            afterSuccessQueue.push(setInitialAffects);
+            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
           }
         } else {
-          afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
-          afterSuccessQueue.push(setInitialAffects);
+          afterSuccessQueue.push(() => setFlaw(response, 'affects', false));
+          afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
         }
       });
     }
