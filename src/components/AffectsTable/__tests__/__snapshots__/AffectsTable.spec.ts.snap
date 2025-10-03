@@ -1,0 +1,334 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`affectsTable > should render 1`] = `
+"<div data-v-17587d65="" class="mb-2 d-flex justify-content-between align-items-end">
+  <div data-v-17587d65="" class="d-flex flex-row align-items-end gap-2">
+    <div data-v-4da629d3="" data-v-17587d65="">
+      <div data-v-4da629d3="" class="pagination-controls"><button data-v-4da629d3="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-end-0" disabled=""><i data-v-4da629d3="" class="bi bi-arrow-left fs-5"></i></button><button data-v-4da629d3="" tabindex="-1" class="osim-page-btn btn btn-sm rounded-0 btn-secondary" style="width: 34.8px;" disabled="">1</button><button data-v-4da629d3="" type="button" tabindex="-1" class="btn btn-sm btn-secondary rounded-start-0" disabled=""><i data-v-4da629d3="" class="bi bi-arrow-right fs-5"></i></button></div>
+      <div data-v-4da629d3="" class="d-flex flex-row align-items-center gap-2">
+        <div data-v-4da629d3="" class="per-page-btn btn btn-sm btn-secondary"><i data-v-4da629d3="" style="pointer-events: auto;" class="bi bi-dash-square fs-6 my-auto" title="Reduce affects per page"></i><span data-v-4da629d3="" class="mx-2 my-auto">Per page:</span><input data-v-4da629d3="" type="text" class="form-control mx-2"><i data-v-4da629d3="" style="pointer-events: auto;" class="bi bi-plus-square fs-6 my-auto" title="Increase affects per page"></i></div>
+        <div data-v-4da629d3="" class="form-check form-switch"><input data-v-4da629d3="" id="toggleAllAffects" type="checkbox" class="form-check-input"><label data-v-4da629d3="" for="toggleAllAffects" class="form-check-label user-select-none">Show All (3)</label></div>
+      </div>
+    </div>
+  </div>
+  <div data-v-17587d65="" class="d-flex flex-row gap-2">
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search..."><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
+    <ul data-v-12d45215="" class="dropdown-menu drop-zone">
+      <li data-v-12d45215="" class="dropdown-item" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
+        <!--v-if-->
+      </li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item d-flex justify-content-center gap-1 mt-2"><button data-v-12d45215="" type="button" title="Reset column order" class="btn btn-sm btn-secondary"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> order</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column sizes"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> size</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column visibility">show all</button></li>
+    </ul>
+  </div>
+</div>
+<div data-v-17587d65="" class="table-responsive">
+  <table data-v-17587d65="" class="table table-striped mb-0 z-0">
+    <thead data-v-17587d65="" class="sticky-top table-dark">
+      <tr data-v-17587d65="">
+        <th data-v-17587d65="" colspan="1" class="" style="width: 20px;"><input data-v-17587d65="" type="checkbox" class="form-check-input">
+          <!--v-if-->
+          <!--v-if-->
+          <!--v-if-->
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 110px;">Label<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 190px;">Product Stream<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 150px;">Module<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 150px;">Component<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 220px;">Analyzed Component<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 170px;">Affectedness<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 282px;">Not Affected Justification<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 150px;">Resolution<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 150px;">Impact<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 100px;">CVSS<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 150px;">Tracker<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 185px;">Tracker Status<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 272px;">Affect Creation date<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 248px;">Affect Update date<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 284px;">Tracker Creation date<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 260px;">Tracker Update date<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="" style="width: 80px;">Actions
+          <!--v-if-->
+          <!--v-if-->
+          <!--v-if-->
+        </th>
+      </tr>
+    </thead>
+    <tbody data-v-17587d65="">
+      <tr data-v-17587d65="" class="">
+        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1-1</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX / Won't Do</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i class="bi-box-arrow-up-right"></i></a></td>
+        <td data-v-17587d65="">NEW</td>
+        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65="">2024-12-01 13:05 UTC</td>
+        <td data-v-17587d65="">2024-12-01 13:06 UTC</td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
+            <!--v-if-->
+            <!--v-if-->
+          </div>
+        </td>
+      </tr>
+      <tr data-v-17587d65="" class="">
+        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2-1</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">DELEGATED</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i class="bi-box-arrow-up-right"></i></a></td>
+        <td data-v-17587d65="">CLOSED</td>
+        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65="">2024-11-01 13:05 UTC</td>
+        <td data-v-17587d65="">2024-11-01 13:06 UTC</td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
+            <!--v-if-->
+            <!--v-if-->
+          </div>
+        </td>
+      </tr>
+      <tr data-v-17587d65="" class="">
+        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3-1</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="">
+          <!--v-if-->
+        </td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
+        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65=""></td>
+        <td data-v-17587d65=""></td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
+            <!--v-if--><button type="button" title="File tracker" class="btn btn-dark btn-sm"><i class="bi-file-earmark-diff"></i></button>
+          </div>
+        </td>
+      </tr>
+      <!--v-if-->
+    </tbody>
+  </table>
+</div>"
+`;
+
+exports[`affectsTable > should render empty state 1`] = `
+"<div data-v-17587d65="" class="mb-2 d-flex justify-content-between align-items-end">
+  <div data-v-17587d65="" class="d-flex flex-row align-items-end gap-2">
+    <!--v-if-->
+  </div>
+  <div data-v-17587d65="" class="d-flex flex-row gap-2">
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if--><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
+    <ul data-v-12d45215="" class="dropdown-menu drop-zone">
+      <li data-v-12d45215="" class="dropdown-item" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
+        <!--v-if-->
+      </li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item d-flex justify-content-center gap-1 mt-2"><button data-v-12d45215="" type="button" title="Reset column order" class="btn btn-sm btn-secondary"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> order</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column sizes"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> size</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column visibility">show all</button></li>
+    </ul>
+  </div>
+</div>
+<div data-v-17587d65="" class="table-responsive">
+  <div data-v-17587d65="" class="my-2 ms-2"> This Flaw does not have affects </div>
+</div>"
+`;

@@ -171,7 +171,7 @@ defineExpose({
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 10%),
     0 4px 6px -2px rgb(0 0 0 / 5%);
-  max-width: 400px;
+  max-width: 420px;
   animation: fade-in 0.15s ease-out;
   padding: var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x);
 }

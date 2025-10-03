@@ -2,12 +2,12 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 
 import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
+import type { ZodTrackerType } from '@/types';
 
 export type TrackersPost = {
   affects: string[];
   embargoed: boolean;
   ps_update_stream: string;
-  resolution: string;
   sync_to_bz?: boolean;
   updated_dt: string;
 };
@@ -69,10 +69,10 @@ export async function postTracker(requestBody: TrackersPost, shouldSyncToBz: boo
 
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/trackers',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/trackers`,
     data: requestBody,
   })
-    .then(({ data }) => data);
+    .then(({ data }) => data as ZodTrackerType);
 }
 
 export type TrackersFilePost = {

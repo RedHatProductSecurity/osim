@@ -5,11 +5,12 @@ import { cveRegex } from '@/utils/helpers';
 import { loadCweData } from '@/services/CweService';
 import { CommentType } from '@/constants';
 import type { ValueOf } from '@/types';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import {
   NistCvssValidationEnum,
   RequiresCveDescriptionEnum,
-  SourceBe0Enum,
+  FlawSourceEnum,
   IssuerEnum,
   FlawReferenceType,
   StateEnum,
@@ -19,7 +20,7 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
-export const Source521EnumWithBlank = { '': '', ...SourceBe0Enum } as const;
+export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;
 // TODO: Remove once OSIDB-3959 is resolved
 export const MajorIncidentStateEnumWithBlank = {
   '': '',
@@ -31,7 +32,7 @@ export const MajorIncidentStateEnumWithBlank = {
 } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 
-export const flawSources = Object.values(Source521EnumWithBlank);
+export const flawSources = Object.values(FlawSourceEnumWithBlank);
 
 const flawImpactsWeight: Record<ValueOf<typeof ImpactEnumWithBlank>, number> = {
   '': 0,
@@ -181,7 +182,7 @@ export const ZodFlawSchema = z.object({
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
   reported_dt: zodOsimDateTime().nullish(), // $date-time,
-  source: z.nativeEnum(Source521EnumWithBlank).refine(
+  source: z.nativeEnum(FlawSourceEnumWithBlank).refine(
     Boolean,
     { message: 'You must specify a source for this Flaw before saving.' },
   ),
@@ -291,7 +292,9 @@ export const ZodFlawSchema = z.object({
 const duplicatedAffects = (affects: ZodAffectType[]) => {
   const map: Record<string, boolean> = {};
   for (let i = 0; i < affects.length; i++) {
-    const key = `${affects[i].ps_module}-${affects[i].ps_component}`;
+    const key = osimRuntime.value.flags?.affectsV2
+      ? `${affects[i].ps_update_stream}-${affects[i].ps_module}-${affects[i].ps_component}`
+      : `${affects[i].ps_module}-${affects[i].ps_component}`;
     if (map[key]) {
       return {
         index: i,

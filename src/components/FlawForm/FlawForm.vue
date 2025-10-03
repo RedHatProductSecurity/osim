@@ -20,6 +20,7 @@ import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
+import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -29,6 +30,7 @@ import {
   aegisSuggestionRequestBody,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -48,6 +50,7 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
 import { FlawClassificationStateEnum } from '@/generated-client';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   mode: 'create' | 'edit';
@@ -131,6 +134,9 @@ const onSubmit = async () => {
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
+  if (osimRuntime.value.flags?.affectsV2) {
+    useAffectsModel().actions.initializeAffects(flaw.value.affects);
+  }
   shouldCreateJiraTask.value = false;
 };
 
@@ -432,7 +438,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
           @acknowledgment:delete="deleteAcknowledgment"
         />
       </div>
-      <div class="row osim-flaw-form-section">
+      <div v-if="mode === 'edit'" class="row osim-flaw-form-section">
         <h4>Affected Offerings</h4>
         <div class="col">
           <div v-if="isFetchingAffects">
@@ -442,11 +448,15 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             />
             <span class="ms-1">Fetching affects...</span>
           </div>
-          <FlawAffects
-            v-else-if="mode === 'edit'"
-            :errors="errors.affects"
-            :embargoed="flaw.embargoed"
-          />
+          <template v-else>
+            <AffectsTable v-if="osimRuntime.flags?.affectsV2" />
+            <FlawAffects
+              v-else
+              :errors="errors.affects"
+              :embargoed="flaw.embargoed"
+            />
+          </template>
+
         </div>
       </div>
       <div class="row osim-flaw-form-section">
@@ -605,6 +615,7 @@ form.osim-flaw-form :deep(*) {
 }
 
 .osim-action-buttons {
+  z-index: 1029; // Bootstrap 'sticky' sets index to 1020, but we want this one to be on top of every other sticky
   background: white;
   border-top: 1px solid #ddd;
   padding-right: 20px;

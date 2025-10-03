@@ -19,7 +19,7 @@ import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { flawImpactEnum, flawSources, Source521EnumWithBlank, type ZodFlawType } from '@/types/zodFlaw';
+import { flawImpactEnum, FlawSourceEnumWithBlank, flawSources, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { FlawClassificationStateEnum } from '@/generated-client';
 
@@ -138,7 +138,7 @@ describe('flawForm', () => {
       .find(component => component.props().label === 'CVE Source');
     expect(sourceField?.exists()).toBe(true);
     const sourceOptionEls = sourceField?.findAll('option');
-    const sourceOptionCount = Object.keys(Source521EnumWithBlank).length;
+    const sourceOptionCount = Object.keys(FlawSourceEnumWithBlank).length;
     expect(sourceOptionEls?.length).toBe(sourceOptionCount);
 
     const workflowStateField = subject
