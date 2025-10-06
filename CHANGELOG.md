@@ -10,6 +10,7 @@
 * Affect's CVSS changes not saved/commited (`OSIDB-4431`)
 * Fix history section becoming hidden after saving flaw changes (`OSIDB-4491`)
 * 'Open in Jira' link hidden when flaw does not have alerts (`OSIDB-4523`)
+* Fix references and acknowledgements remaining in edit state after saving (`OSIDB-4484`)
 
 ### Changed
 * Implement AffectsV2 (`OSIDB-4459`)
