@@ -19,6 +19,7 @@ const emit = defineEmits<{
   'item:delete': [value: string];
   'item:new': [];
   'item:save': [value: any[]];
+  'save:complete': [];
 }>();
 
 const modals = computed(() => Object.fromEntries(items.value.map(item => [item.uuid, useModal()])));
@@ -66,6 +67,14 @@ function saveItems() {
   emit('item:save', itemsToSave.value);
 }
 
+function onSaveComplete() {
+  // Reset the saved state after successful save
+  savedValues.value = deepCopyFromRaw(items.value);
+  priorValues.value = deepCopyFromRaw(items.value);
+  indexBeingEdited.value = null;
+  emit('save:complete');
+}
+
 function cancelEdit(index: number) {
   items.value[index] = deepCopyFromRaw(priorValues.value[index]);
   indexBeingEdited.value = null;
@@ -80,7 +89,7 @@ function commitEdit() {
   indexBeingEdited.value = null;
 }
 
-defineExpose({ isExpanded });
+defineExpose({ isExpanded, onSaveComplete });
 </script>
 
 <template>
