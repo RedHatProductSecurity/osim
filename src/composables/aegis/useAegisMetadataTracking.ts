@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
-import type { ZodFlawHistoryItemType } from '../../types/zodFlaw';
-import type { AegisChangeType, AegisChangeEntry, AegisMetadata } from '../../types/aegisAI';
+import type { ZodFlawHistoryItemType, AegisChangeType } from '../../types/zodFlaw';
+import type { AegisChangeEntry, AegisMetadata } from '../../types/aegisAI';
 
 const aegisMetadata = ref<AegisMetadata>({});
 

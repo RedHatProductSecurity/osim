@@ -19,6 +19,10 @@ import {
 import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSchema } from './zodShared';
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
+// Aegis AI Change Types
+export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI']);
+export type AegisChangeType = z.infer<typeof ZodAegisChangeTypeEnum>;
+
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;
 // TODO: Remove once OSIDB-3959 is resolved
@@ -188,7 +192,7 @@ export const ZodFlawSchema = z.object({
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
   aegis_meta: z.record(z.string(), z.array(z.object({
-    type: z.enum(['AI', 'Partial AI']),
+    type: ZodAegisChangeTypeEnum,
     timestamp: z.string(),
     value: z.string().optional(),
   }))).nullish(),

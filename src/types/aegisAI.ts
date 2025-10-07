@@ -1,3 +1,6 @@
+// AI Change Tracking Types
+import type { AegisChangeType } from './zodFlaw';
+
 // Component Feature Names for CVE Analysis
 export type AegisAIComponentFeatureNameType =
   | 'cvss-diff-explainer'
@@ -57,8 +60,6 @@ export type AegisAIHTTPValidationErrorType = {
 };
 
 // AI Change Tracking Types
-export type AegisChangeType = 'AI' | 'Partial AI';
-
 export type AegisChangeEntry = {
   timestamp: string;
   type: AegisChangeType;
