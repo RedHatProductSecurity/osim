@@ -4,6 +4,7 @@ import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWatcher';
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
@@ -18,12 +19,13 @@ export type UseAegisSuggestCweOptions = {
 export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   const toastStore = useToastStore();
   const service = new AegisAIService();
+  const aegisCweSuggestionWatcher = useAISuggestionsWatcher('cwe_id', options.valueRef);
   const isSuggesting = ref(false);
-  const hasAppliedSuggestion = ref(false);
   const previousValue = ref<null | string>(null);
   const details = ref<CweSuggestionDetails | null>(null);
   const requestDuration = ref<null | number>(null);
-  const canShowFeedback = computed(() => hasAppliedSuggestion.value && !isSuggesting.value);
+
+  const canShowFeedback = computed(() => aegisCweSuggestionWatcher.hasAppliedSuggestion.value && !isSuggesting.value);
 
   const isCveIdValid = computed(() => {
     const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
@@ -33,10 +35,6 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
 
   const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value);
 
-  function applyValue(value: string) {
-    (options.valueRef as Ref<null | string>).value = value;
-  }
-
   async function suggestCwe() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
@@ -45,11 +43,11 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     isSuggesting.value = true;
     const requestStartTime = Date.now();
     try {
-      if (!hasAppliedSuggestion.value && previousValue.value == null) {
+      if (!aegisCweSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
         previousValue.value = options.valueRef.value;
       }
       const data = await service.analyzeCVEWithContext({
-        feature: 'suggest-cwe',
+        feature: 'suggest-cwe' as const,
         ...serializeAegisContext(options.context),
       });
       requestDuration.value = Date.now() - requestStartTime;
@@ -58,9 +56,13 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
         return;
       }
-      applyValue(first);
-      details.value = data;
-      hasAppliedSuggestion.value = true;
+      details.value = {
+        cwe: [first],
+        confidence: data.confidence,
+        explanation: data.explanation,
+        tools_used: data.tools_used,
+      };
+      aegisCweSuggestionWatcher.applyAISuggestion(first);
       toastStore.addToast({
         title: 'AI Suggestion Applied',
         body: 'Suggestion applied. Always review AI generated responses prior to use.',
@@ -77,11 +79,11 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
 
   function revert() {
     if (previousValue.value !== null) {
-      applyValue(previousValue.value as string);
+      options.valueRef.value = previousValue.value;
     }
     previousValue.value = null;
-    hasAppliedSuggestion.value = false;
     details.value = null;
+    aegisCweSuggestionWatcher.revertAISuggestion();
   }
 
   function sendFeedback(kind: 'down' | 'up') {
@@ -135,5 +137,14 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     return `${baseUrl}?${params.toString()}`;
   }
 
-  return { canSuggest, canShowFeedback, details, hasAppliedSuggestion, isSuggesting, revert, sendFeedback, suggestCwe };
+  return {
+    canSuggest,
+    canShowFeedback,
+    details,
+    hasAppliedSuggestion: aegisCweSuggestionWatcher.hasAppliedSuggestion,
+    isSuggesting,
+    revert,
+    sendFeedback,
+    suggestCwe,
+  };
 }

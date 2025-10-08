@@ -1,3 +1,6 @@
+// AI Change Tracking Types
+import type { AegisChangeType } from './zodFlaw';
+
 // Component Feature Names for CVE Analysis
 export type AegisAIComponentFeatureNameType =
   | 'cvss-diff-explainer'
@@ -54,4 +57,15 @@ export type CweSuggestionDetails = {
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];
+};
+
+// AI Change Tracking Types
+export type AegisChangeEntry = {
+  timestamp: string;
+  type: AegisChangeType;
+  value?: string;
+};
+
+export type AegisMetadata = {
+  [fieldName: string]: AegisChangeEntry[];
 };

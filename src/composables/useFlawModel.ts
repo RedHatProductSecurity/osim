@@ -11,6 +11,7 @@ import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel
 import { useNetworkQueue } from '@/composables/useNetworkQueue';
 import { useCvssScores, validateCvssVector } from '@/composables/useCvssScores';
 import { useFlawLabels } from '@/composables/useFlawLabels';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import {
   getFlawBugzillaLink,
@@ -65,6 +66,11 @@ export function useFlawModel() {
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const shouldCreateJiraTask = ref(false);
+  const { getAegisMetadata, hasAegisChanges } = useAegisMetadataTracking();
+
+  function getAegisMetadataIfChanged() {
+    return hasAegisChanges() ? { aegis_meta: getAegisMetadata() } : {};
+  }
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
 
@@ -108,10 +114,13 @@ export function useFlawModel() {
       isSaving.value = false;
       return;
     }
-    // Remove any empty fields before request
-    const flawForPost: any = Object.fromEntries(
-      Object.entries(validatedFlaw.data).filter(([, value]) => value !== ''),
-    );
+    // Remove any empty fields before request and add aegis metadata if there are AI changes
+    const flawForPost: any = {
+      ...Object.fromEntries(
+        Object.entries(validatedFlaw.data).filter(([, value]) => value !== ''),
+      ),
+      ...getAegisMetadataIfChanged(),
+    };
     try {
       // TODO: Refactor promise chain
       await postFlaw(flawForPost)
@@ -203,7 +212,11 @@ export function useFlawModel() {
 
     if (isFlawUpdated.value) {
       queue.push(async () => {
-        const response = await putFlaw(flaw.value.uuid, validatedFlaw.data, shouldCreateJiraTask.value);
+        // Add aegis metadata if there are AI changes
+        const response = await putFlaw(flaw.value.uuid, {
+          ...validatedFlaw.data,
+          ...getAegisMetadataIfChanged(),
+        }, shouldCreateJiraTask.value);
         afterSuccessQueue.push(() => setFlaw(response));
       },
       );
@@ -219,9 +232,11 @@ export function useFlawModel() {
       if (osimRuntime.value.flags?.affectsV2) {
         queue.push(async () => {
           const removedAffects = await removeAffects();
-          afterSuccessQueue.push(() =>
-            setFlaw(flaw.value.affects.filter(({ uuid }) => !removedAffects.includes(uuid)), 'affects'),
-          );
+          if (removedAffects) {
+            afterSuccessQueue.push(() =>
+              setFlaw(flaw.value.affects.filter(({ uuid }) => uuid && !removedAffects.includes(uuid)), 'affects'),
+            );
+          }
           afterSuccessQueue.push(setInitialAffects);
         });
       } else {
@@ -247,7 +262,7 @@ export function useFlawModel() {
         const response = await updateLabels();
         if (response && Array.isArray(response)) {
           const labels = response
-            .filter((result): result is PromiseFulfilledResult<{ data: any }> =>
+            .filter((result): result is PromiseFulfilledResult<{ data: any; response: Response }> =>
               result.status === 'fulfilled' && result.value?.data)
             .map(result => result.value.data);
           afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels', false));
