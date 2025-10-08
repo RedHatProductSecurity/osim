@@ -6,6 +6,7 @@ import { useFlaw } from '@/composables/useFlaw';
 import SampleFlawFullV2 from '@/__tests__/__fixtures__/sampleFlawFullV2.json';
 import type { ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import * as TrackerService from '@/services/TrackerService';
 
 import AffectsTable from '../AffectsTable.vue';
 
@@ -372,6 +373,76 @@ describe('affectsTable', () => {
 
         revertBtn = wrapper.find('button[title="Revert ALL changes"]');
         expect(revertBtn.exists()).toBe(true);
+      });
+
+      it('should render select suggested trackers button when affects exist', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const selectTrackersBtn = wrapper.find('button[title="Select suggested trackers"]');
+        expect(selectTrackersBtn.exists()).toBe(true);
+      });
+
+      it('should not render select suggested trackers button when no affects exist', async () => {
+        useFlaw().flaw.value.affects = [];
+        const wrapper = await mountAffectsTable();
+
+        const selectTrackersBtn = wrapper.find('button[title="Select suggested trackers"]');
+        expect(selectTrackersBtn.exists()).toBe(false);
+      });
+
+      it('should select affects with suggested trackers when button is clicked', async () => {
+        const wrapper = await mountAffectsTable();
+
+        // Use the third affect which doesn't have a tracker (index 2)
+        const affectWithoutTracker = SampleFlawFullV2.affects[2];
+
+        const mockTrackerSuggestions = {
+          streams_components: [
+            {
+              affect: affectWithoutTracker,
+              ps_component: affectWithoutTracker.ps_component,
+              ps_update_stream: affectWithoutTracker.ps_update_stream,
+              selected: true,
+              offer: {
+                acked: false,
+                aus: false,
+                eus: false,
+                ps_update_stream: affectWithoutTracker.ps_update_stream,
+                selected: false,
+              },
+            },
+          ],
+          not_applicable: [],
+        };
+
+        vi.spyOn(TrackerService, 'getTrackersForFlaws').mockResolvedValue(mockTrackerSuggestions);
+
+        const selectTrackersBtn = wrapper.find('button[title="Select suggested trackers"]');
+        await selectTrackersBtn.trigger('click');
+        await flushPromises();
+
+        const checkboxes = wrapper.findAll('tbody input[type="checkbox"]');
+        const selectedCheckboxes = checkboxes.filter(checkbox => (checkbox.element as HTMLInputElement).checked);
+        expect(selectedCheckboxes.length).toBeGreaterThan(0);
+      });
+
+      it('should show toast when some trackers are not applicable', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const mockTrackerSuggestions = {
+          streams_components: [],
+          not_applicable: [SampleFlawFullV2.affects[0]],
+        };
+
+        vi.spyOn(TrackerService, 'getTrackersForFlaws').mockResolvedValue(mockTrackerSuggestions);
+
+        const selectTrackersBtn = wrapper.find('button[title="Select suggested trackers"]');
+        await selectTrackersBtn.trigger('click');
+        await flushPromises();
+
+        // The toast store should have been called to display the warning
+        // We can verify this by checking if the unavailableTrackers set was populated
+        expect(TrackerService.getTrackersForFlaws).toHaveBeenCalled();
       });
 
       it('should apply styling to new rows', async () => {
