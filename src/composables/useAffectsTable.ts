@@ -20,6 +20,9 @@ import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import type { ZodAffectType } from '@/types';
+import { getTrackersForFlaws } from '@/services/TrackerService';
+import { useToastStore } from '@/stores/ToastStore';
+import type { TrackerSuggestions } from '@/types/zodAffect';
 
 declare module '@tanstack/table-core' {
 
@@ -29,6 +32,7 @@ declare module '@tanstack/table-core' {
     fileTrackers(rows: TData | TData[]): Promise<void>;
     filingTracker: Set<string>;
     revert(rowId: string): void;
+    unavailableTrackers: Set<string>;
     updateData<T extends keyof ZodAffectType>(rowIndex: number, columnId: T, value: ZodAffectType[T]): void;
   }
 }
@@ -60,6 +64,7 @@ export function useAffectsTable() {
   const showAll = ref(false);
   const globalFilter = ref('');
   const columnFilters = ref<ColumnFiltersState>([]);
+  const isFetchingSuggestedTrackers = ref(false);
 
   const totalPages = computed(() =>
     Math.ceil((currentAffects.value.length || 0) / settings.value.affectsPerPage),
@@ -136,6 +141,7 @@ export function useAffectsTable() {
         refreshData();
       },
       filingTracker: reactive(new Set()),
+      unavailableTrackers: reactive(new Set()),
     },
     filterFns: {
       arrIncludesPartial,
@@ -205,29 +211,68 @@ export function useAffectsTable() {
     settings.value.affectsSizing[column.id] = Math.max(headerWidth, maxBodyWidth) + PADDING;
   }
 
+  async function selectRelatedTrackers() {
+    isFetchingSuggestedTrackers.value = true;
+    table.options.meta?.unavailableTrackers.clear();
+
+    const trackers: TrackerSuggestions = await getTrackersForFlaws({ flaw_uuids: [flaw.value.uuid] });
+    const rows = table.getRowModel().flatRows;
+
+    trackers.streams_components.forEach((stream) => {
+      if (stream.selected || stream.offer?.selected) {
+        const row = rows.find(row =>
+          row.original.uuid === stream.affect.uuid
+          && !row.original.tracker,
+        );
+        if (row) {
+          row.toggleSelected(true);
+        }
+      }
+    });
+
+    isFetchingSuggestedTrackers.value = false;
+
+    if (trackers?.not_applicable?.length) {
+      const streams = trackers?.not_applicable.map((affect) => {
+        table.options.meta?.unavailableTrackers.add(affect.uuid!);
+
+        return `${affect.ps_update_stream}/${affect.ps_component}`;
+      },
+      ).join('\n');
+
+      useToastStore().addToast({
+        title: 'Tracker suggestions',
+        body: `These affects dot not have available trackers:\n${streams}`,
+        css: 'warning',
+      });
+    }
+  }
+
   return {
     state: {
-      table,
-      showAll,
-      globalFilter,
       columnFilters,
-      currentPage,
-      pages,
-      totalPages,
       currentAffects,
+      currentPage,
+      globalFilter,
+      isFetchingSuggestedTrackers,
       modifiedAffects,
       newAffects,
+      pages,
       removedAffects,
+      showAll,
+      table,
+      totalPages,
     },
     actions: {
-      changePage,
       changeItemsPerPage,
-      toggleColumnVisibility,
+      changePage,
       deleteSelectedRows,
-      revertAllChanges,
       fileSelectedTrackers,
       fitColumnWidth,
       refreshData,
+      revertAllChanges,
+      selectRelatedTrackers,
+      toggleColumnVisibility,
     },
   };
 }

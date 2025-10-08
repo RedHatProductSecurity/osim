@@ -131,3 +131,22 @@ export const ZodAffectSchema = z.object({
   tracker: TrackerSchema.nullable().optional(),
   labels: z.array(z.string()).optional(),
 });
+
+export type StreamComponent = {
+  affect: ZodAffectType;
+  offer: {
+    acked: boolean;
+    aus: boolean;
+    eus: boolean;
+    ps_update_stream: string;
+    selected: boolean;
+  };
+  ps_component: string;
+  ps_update_stream: string;
+  selected: boolean;
+};
+
+export type TrackerSuggestions = {
+  not_applicable: Array<ZodAffectType>;
+  streams_components: Array<StreamComponent>;
+};
