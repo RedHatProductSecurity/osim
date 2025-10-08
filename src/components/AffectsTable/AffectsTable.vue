@@ -35,6 +35,7 @@ const {
     fitColumnWidth,
     refreshData,
     revertAllChanges,
+    selectRelatedTrackers,
     toggleColumnVisibility,
   },
   state: {
@@ -42,6 +43,7 @@ const {
     currentAffects,
     currentPage,
     globalFilter,
+    isFetchingSuggestedTrackers,
     modifiedAffects,
     newAffects,
     pages,
@@ -120,6 +122,17 @@ onMounted(() => {
         type="text"
         placeholder="Search..."
       />
+      <button
+        v-if="currentAffects.length > 0"
+        v-osim-loading="isFetchingSuggestedTrackers"
+        :disabled="isFetchingSuggestedTrackers"
+        class="btn btn-secondary text-nowrap"
+        type="button"
+        title="Select suggested trackers"
+        @click="selectRelatedTrackers()"
+      >
+        <i v-if="!isFetchingSuggestedTrackers" class="bi-check2-square"></i>
+      </button>
       <button
         class="btn btn-secondary text-nowrap"
         title="Add new affect"
