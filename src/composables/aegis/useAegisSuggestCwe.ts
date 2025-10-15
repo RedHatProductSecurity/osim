@@ -122,7 +122,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     } else {
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
-        body: kind === 'up' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+        body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
       });
     }
   }
@@ -136,7 +136,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
    * - entry.432941906: CWE Request time (in milliseconds)
    * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
    */
-  function buildFeedbackUrl(baseUrl: string, feedbackKind: 'down' | 'up'): string {
+  function buildFeedbackUrl(baseUrl: string, feedbackKind: 'negative' | 'positive'): string {
     const params = new URLSearchParams();
 
     // Get flaw data from context
@@ -159,7 +159,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     }
 
     // Add feedback type
-    params.set('entry.810710028', feedbackKind === 'up' ? 'accept' : 'reject');
+    params.set('entry.810710028', feedbackKind === 'positive' ? 'accept' : 'reject');
 
     return `${baseUrl}?${params.toString()}`;
   }
