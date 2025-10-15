@@ -275,3 +275,112 @@ describe('useAegisSuggestCwe', () => {
     expect(composable.hasAppliedSuggestion.value).toBe(true);
   });
 });
+
+describe('useAegisSuggestCwe - Multiple Suggestions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('handles multiple CWE suggestions correctly', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89', 'CWE-79', 'CWE-20'],
+      confidence: 0.9,
+      explanation: 'Multiple suggestions',
+      tools_used: ['cwe_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    expect(composable.allSuggestions.value).toEqual(['CWE-89', 'CWE-79', 'CWE-20']);
+    expect(composable.hasMultipleSuggestions.value).toBe(true);
+    expect(composable.currentSuggestion.value).toBe('CWE-89');
+    expect(composable.selectedSuggestionIndex.value).toBe(0);
+    expect(valueRef.value).toBe('CWE-89');
+  });
+
+  it('allows selecting different suggestions', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89', 'CWE-79', 'CWE-20'],
+      confidence: 0.9,
+      explanation: 'Multiple suggestions',
+      tools_used: ['cwe_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    // Select the second suggestion
+    composable.selectSuggestion(1);
+
+    expect(composable.selectedSuggestionIndex.value).toBe(1);
+    expect(composable.currentSuggestion.value).toBe('CWE-79');
+    expect(valueRef.value).toBe('CWE-79');
+
+    // Select the third suggestion
+    composable.selectSuggestion(2);
+
+    expect(composable.selectedSuggestionIndex.value).toBe(2);
+    expect(composable.currentSuggestion.value).toBe('CWE-20');
+    expect(valueRef.value).toBe('CWE-20');
+  });
+
+  it('handles single suggestion without multiple suggestion features', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89'],
+      confidence: 0.9,
+      explanation: 'Single suggestion',
+      tools_used: ['cwe_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+
+    expect(composable.allSuggestions.value).toEqual(['CWE-89']);
+    expect(composable.hasMultipleSuggestions.value).toBe(false);
+    expect(composable.currentSuggestion.value).toBe('CWE-89');
+    expect(composable.selectedSuggestionIndex.value).toBe(0);
+  });
+
+  it('revert resets selected suggestion index', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      cwe: ['CWE-89', 'CWE-79', 'CWE-20'],
+      confidence: 0.9,
+      explanation: 'Multiple suggestions',
+      tools_used: ['cwe_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+    );
+
+    await composable.suggestCwe();
+    composable.selectSuggestion(2);
+    composable.revert();
+
+    expect(composable.selectedSuggestionIndex.value).toBe(0);
+    expect(composable.details.value).toBeNull();
+    expect(valueRef.value).toBe('CWE-79');
+  });
+});

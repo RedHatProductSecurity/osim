@@ -1,4 +1,4 @@
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, readonly, type Ref } from 'vue';
 
 import {
   serializeAegisContext,
@@ -24,6 +24,7 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   const previousValue = ref<null | string>(null);
   const details = ref<CweSuggestionDetails | null>(null);
   const requestDuration = ref<null | number>(null);
+  const selectedSuggestionIndex = ref(0);
 
   const canShowFeedback = computed(() => aegisCweSuggestionWatcher.hasAppliedSuggestion.value && !isSuggesting.value);
 
@@ -51,18 +52,19 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
         ...serializeAegisContext(options.context),
       });
       requestDuration.value = Date.now() - requestStartTime;
-      const first = data.cwe?.[0] ?? '';
-      if (!first) {
+      const suggestions = data.cwe || [];
+      if (suggestions.length === 0) {
         toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
         return;
       }
       details.value = {
-        cwe: [first],
+        cwe: suggestions,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
       };
-      aegisCweSuggestionWatcher.applyAISuggestion(first);
+      selectedSuggestionIndex.value = 0;
+      aegisCweSuggestionWatcher.applyAISuggestion(suggestions[0]);
       toastStore.addToast({
         title: 'AI Suggestion Applied',
         body: 'Suggestion applied. Always review AI generated responses prior to use.',
@@ -83,10 +85,35 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     }
     previousValue.value = null;
     details.value = null;
+    selectedSuggestionIndex.value = 0;
     aegisCweSuggestionWatcher.revertAISuggestion();
   }
 
-  function sendFeedback(kind: 'down' | 'up') {
+  function selectSuggestion(index: number) {
+    if (!details.value || !details.value.cwe || index < 0 || index >= details.value.cwe.length) {
+      return;
+    }
+    selectedSuggestionIndex.value = index;
+    const selectedCwe = details.value.cwe[index];
+    aegisCweSuggestionWatcher.applyAISuggestion(selectedCwe);
+  }
+
+  const currentSuggestion = computed(() => {
+    if (!details.value?.cwe || selectedSuggestionIndex.value >= details.value.cwe.length) {
+      return null;
+    }
+    return details.value.cwe[selectedSuggestionIndex.value];
+  });
+
+  const allSuggestions = computed(() => {
+    return details.value?.cwe || [];
+  });
+
+  const hasMultipleSuggestions = computed(() => {
+    return allSuggestions.value.length > 1;
+  });
+
+  function sendFeedback(kind: 'negative' | 'positive') {
     const baseUrl = osimRuntime.value.aegisFeedbackUrl;
 
     if (baseUrl) {
@@ -138,12 +165,17 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
   }
 
   return {
+    allSuggestions,
     canSuggest,
     canShowFeedback,
+    currentSuggestion,
     details,
     hasAppliedSuggestion: aegisCweSuggestionWatcher.hasAppliedSuggestion,
+    hasMultipleSuggestions,
     isSuggesting,
     revert,
+    selectSuggestion,
+    selectedSuggestionIndex: readonly(selectedSuggestionIndex),
     sendFeedback,
     suggestCwe,
   };
