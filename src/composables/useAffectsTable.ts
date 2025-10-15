@@ -61,6 +61,18 @@ export function useAffectsTable() {
   const globalFilter = ref('');
   const columnFilters = ref<ColumnFiltersState>([]);
 
+  // Bulk edit state
+  const isBulkEditMode = ref(false);
+  const bulkEditData = ref<Partial<ZodAffectType>>({});
+  const bulkEditChangedFields = ref<Set<keyof ZodAffectType>>(new Set());
+  const bulkEditSelectedRowIds = ref<string[]>([]);
+
+  // Virtual row for bulk edit - represents the current bulk edit state
+  // This allows enum functions and validations to work correctly
+  const bulkEditVirtualRow = computed(() => ({
+    original: bulkEditData.value as ZodAffectType,
+  }));
+
   const totalPages = computed(() =>
     Math.ceil((currentAffects.value.length || 0) / settings.value.affectsPerPage),
   );
@@ -205,6 +217,63 @@ export function useAffectsTable() {
     settings.value.affectsSizing[column.id] = Math.max(headerWidth, maxBodyWidth) + PADDING;
   }
 
+  function enterBulkEditMode() {
+    // Capture currently selected row IDs
+    bulkEditSelectedRowIds.value = table.getSelectedRowModel().flatRows.map(row => row.id);
+    // Initialize empty bulk edit data
+    bulkEditData.value = {};
+    // Clear changed fields tracker
+    bulkEditChangedFields.value.clear();
+    // Enter bulk edit mode
+    isBulkEditMode.value = true;
+  }
+
+  function exitBulkEditMode() {
+    isBulkEditMode.value = false;
+    bulkEditData.value = {};
+    bulkEditChangedFields.value.clear();
+    bulkEditSelectedRowIds.value = [];
+  }
+
+  function updateBulkEditField<K extends keyof ZodAffectType>(field: K, value: ZodAffectType[K]) {
+    bulkEditData.value[field] = value;
+    bulkEditChangedFields.value.add(field);
+  }
+
+  function commitBulkEdits() {
+    // Get the table rows that were selected when entering bulk edit mode
+    const selectedTableRows = table.getRowModel().flatRows.filter(row =>
+      bulkEditSelectedRowIds.value.includes(row.id),
+    );
+
+    // Apply only the changed fields to each selected row
+    selectedTableRows.forEach((row) => {
+      bulkEditChangedFields.value.forEach((fieldName) => {
+        const newValue = bulkEditData.value[fieldName];
+        const oldValue = row.original[fieldName];
+
+        // Skip update if value hasn't changed
+        if (newValue === oldValue) {
+          return;
+        }
+
+        // Use the table's updateData function to properly update the data
+        table.options.meta?.updateData(row.index, fieldName as keyof ZodAffectType, newValue);
+
+        // Trigger onValueChange callback if it exists
+        const column = table.getColumn(fieldName);
+        const onValueChange = column?.columnDef.meta?.onValueChange;
+        if (onValueChange) {
+          onValueChange(newValue, row, table);
+        }
+      });
+    });
+
+    // Exit bulk edit mode and clear selection
+    exitBulkEditMode();
+    table.resetRowSelection();
+  }
+
   return {
     state: {
       table,
@@ -218,6 +287,11 @@ export function useAffectsTable() {
       modifiedAffects,
       newAffects,
       removedAffects,
+      isBulkEditMode,
+      bulkEditData,
+      bulkEditChangedFields,
+      bulkEditSelectedRowIds,
+      bulkEditVirtualRow,
     },
     actions: {
       changePage,
@@ -228,6 +302,10 @@ export function useAffectsTable() {
       fileSelectedTrackers,
       fitColumnWidth,
       refreshData,
+      enterBulkEditMode,
+      exitBulkEditMode,
+      updateBulkEditField,
+      commitBulkEdits,
     },
   };
 }

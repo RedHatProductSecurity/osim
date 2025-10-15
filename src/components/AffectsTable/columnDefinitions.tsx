@@ -26,6 +26,7 @@ import TrackerLink from './TrackerLink.vue';
 declare module '@tanstack/vue-table' {
 
   interface ColumnMeta<TData extends RowData, TValue> {
+    bulkEditable?: boolean;
     cvss?: boolean;
     enum?: ((row?: Row<TData>) => Record<string, string>) | Record<string, string>;
     extraColumn?: DeepKeys<TData>;
@@ -94,31 +95,41 @@ export default function AffectColumnDefinitions() {
       header: 'Product Stream',
       size: 190,
       sortingFn: 'alphanumeric',
+      meta: {
+        bulkEditable: true,
+      },
     }),
     columnHelper.accessor('ps_module', {
       cell: editableCellRenderer,
       header: 'Module',
       sortingFn: 'alphanumeric',
-
+      meta: {
+        bulkEditable: true,
+      },
     }),
     columnHelper.accessor('ps_component', {
       cell: editableCellRenderer,
       header: 'Component',
       sortingFn: 'alphanumeric',
-
+      meta: {
+        bulkEditable: true,
+      },
     }),
     columnHelper.accessor('purl', {
       cell: editableCellRenderer,
       header: 'Analyzed Component',
       size: 220,
       sortingFn: 'alphanumeric',
-
+      meta: {
+        bulkEditable: true,
+      },
     }),
     columnHelper.accessor('affectedness', {
       cell: editableCellRenderer,
       header: 'Affectedness',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
+        bulkEditable: true,
         enum: affectAffectedness,
         onValueChange: (newValue: keyof typeof possibleAffectResolutions, row, table) => {
           const { not_affected_justification, resolution } = row.original;
@@ -147,6 +158,7 @@ export default function AffectColumnDefinitions() {
       header: 'Not Affected Justification',
       size: 282,
       meta: {
+        bulkEditable: true,
         enum: row => row
           ? row?.original.affectedness === 'NOTAFFECTED' ? affectJustification : {}
           : affectJustification,
@@ -157,6 +169,7 @@ export default function AffectColumnDefinitions() {
       header: 'Resolution',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
+        bulkEditable: true,
         enum: row => row
           ? row.original.affectedness
             ? possibleAffectResolutions[row.original.affectedness]
@@ -170,6 +183,7 @@ export default function AffectColumnDefinitions() {
       header: 'Impact',
       filterFn: 'arrIncludesWithBlanks',
       meta: {
+        bulkEditable: true,
         enum: affectImpacts,
       },
     }),
@@ -186,6 +200,7 @@ export default function AffectColumnDefinitions() {
       size: 100,
       meta: {
         cvss: true,
+        bulkEditable: true,
       },
     }),
     columnHelper.accessor(row => `${row.tracker?.external_system_id || ''}`, {
