@@ -4,6 +4,7 @@
 * Fix multi-row operations in affects table (`OSIDB-4381`)
 * Affect's CVSS changes not saved/commited (`OSIDB-4431`)
 * Fix history section becoming hidden after saving flaw changes (`OSIDB-4491`)
+* 'Open in Jira' link hidden when flaw does not have alerts (`OSIDB-4523`)
 
 ### Changed
 * Implement AffectsV2 (`OSIDB-4459`)
