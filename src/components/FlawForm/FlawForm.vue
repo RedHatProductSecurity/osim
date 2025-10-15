@@ -202,6 +202,11 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
   <form class="osim-flaw-form mt-4" :class="{'osim-disabled': isSaving || formDisabled}" @submit.prevent="onSubmit">
     <div :class="{'osim-flaw-form-embargoed': flaw.embargoed}">
       <div class="row justify-content-end">
+        <FlawAlertsList
+          :flaw="flaw"
+          class="col-12 osim-alerts-banner"
+          @expandFocusedComponent="expandFocusedComponent"
+        />
         <div class="text-end osim-flaw-header-link">
           <a
             v-if="flaw.meta_attr?.bz_id"
@@ -221,11 +226,6 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             Open in Jira <i class="bi-box-arrow-up-right ms-2" />
           </a>
         </div>
-        <FlawAlertsList
-          :flaw="flaw"
-          class="col-12 osim-alerts-banner"
-          @expandFocusedComponent="expandFocusedComponent"
-        />
       </div>
       <div class="row osim-flaw-form-section">
         <div :id="flaw.uuid" class="col-6">
@@ -508,10 +508,13 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
 
 <style scoped lang="scss">
 .osim-flaw-header-link {
-  position: absolute;
   display: flex;
   flex-direction: column;
   width: auto;
+
+  .osim-alerts-banner + & {
+    position: absolute;
+  }
 }
 
 form.osim-flaw-form :deep(*) {

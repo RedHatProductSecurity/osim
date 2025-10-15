@@ -4,9 +4,6 @@ exports[`flawForm > mounts and renders 1`] = `
 "<form data-v-76e7a15d="" class="osim-flaw-form mt-4">
   <div data-v-76e7a15d="" class="">
     <div data-v-76e7a15d="" class="row justify-content-end">
-      <div data-v-76e7a15d="" class="text-end osim-flaw-header-link"><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" class="d-block" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a>
-        <!--v-if-->
-      </div>
       <div data-v-4715e8e2="" data-v-76e7a15d="" class="osim-collapsible-label my-2 col-12 osim-alerts-banner"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><label class="mx-2 mb-0 form-label"> Alerts: </label><span><div class="badge text-bg-danger mx-1"><i class="bi bi-x-circle-fill"></i> 1 Errors </div><div class="badge text-bg-warning mx-1"><i class="bi bi-exclamation-triangle-fill"></i> 1 Warnings </div></span></button>
         <div data-v-4715e8e2="" class="ps-3 border-start">
           <div data-v-4715e8e2="" class="visually-hidden">
@@ -70,6 +67,9 @@ exports[`flawForm > mounts and renders 1`] = `
     <!--v-if-->
   </div>
   </div>
+  </div>
+  <div data-v-76e7a15d="" class="text-end osim-flaw-header-link"><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" class="d-block" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a>
+    <!--v-if-->
   </div>
   </div>
   <div data-v-76e7a15d="" class="row osim-flaw-form-section">
