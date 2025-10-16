@@ -57,7 +57,7 @@ const onBlur = () => {
 };
 
 const toggleEditMode = () => {
-  if (metaEnum.value && !Object.keys(metaEnum.value).length) {
+  if (tableMeta?.filingTracker.has(props.row.id) || (metaEnum.value && !Object.keys(metaEnum.value).length)) {
     return;
   }
   editMode.value = !editMode.value;

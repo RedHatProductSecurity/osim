@@ -82,7 +82,7 @@ export type TrackersFilePost = {
 export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
   return osidbFetch({
     method: 'post',
-    url: '/trackers/api/v1/file',
+    url: `/trackers/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/file`,
     data: requestBody,
   })
     .then(({ data }) => data)

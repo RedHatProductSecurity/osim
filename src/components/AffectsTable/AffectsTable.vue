@@ -35,6 +35,7 @@ const {
     fitColumnWidth,
     refreshData,
     revertAllChanges,
+    selectRelatedTrackers,
     toggleColumnVisibility,
   },
   state: {
@@ -42,6 +43,7 @@ const {
     currentAffects,
     currentPage,
     globalFilter,
+    isFetchingSuggestedTrackers,
     modifiedAffects,
     newAffects,
     pages,
@@ -121,6 +123,17 @@ onMounted(() => {
         placeholder="Search..."
       />
       <button
+        v-if="currentAffects.length > 0"
+        v-osim-loading="isFetchingSuggestedTrackers"
+        :disabled="isFetchingSuggestedTrackers"
+        class="btn btn-secondary text-nowrap"
+        type="button"
+        title="Select suggested trackers"
+        @click="selectRelatedTrackers()"
+      >
+        <i v-if="!isFetchingSuggestedTrackers" class="bi-ui-checks-grid"></i>
+      </button>
+      <button
         class="btn btn-secondary text-nowrap"
         title="Add new affect"
         type="button"
@@ -185,6 +198,7 @@ onMounted(() => {
             'modified': modifiedAffects.has(row.id),
             'new': newAffects.has(row.id),
             'removed': removedAffects.has(row.id),
+            'disabled': table.options.meta?.filingTracker.has(row.id)
           }"
         >
           <td
@@ -276,6 +290,12 @@ table {
       border-color: #ffe3d9 !important;
       background-color: #ffe3d9;
       color: #731f00;
+    }
+
+    &.disabled td {
+      border-color: #adadad;
+      background-color: #adadad;
+      cursor: progress;
     }
   }
 

@@ -21,6 +21,12 @@ const isModified = computed(() => modifiedAffects.has(props.row.id));
 const isRemoved = computed(() => removedAffects.has(props.row.id));
 const isNew = computed(() => newAffects.has(props.row.id));
 const isFilingTracker = computed(() => tableMeta?.filingTracker.has(props.row.id));
+const isTrackerUnavailable = computed(() => tableMeta?.unavailableTrackers.has(props.row.original.uuid!));
+const canFileTracker = computed(() =>
+  (!isNew.value && !isModified.value && !isRemoved.value)
+  && !props.row.original.tracker
+  && !isTrackerUnavailable.value,
+);
 
 function deleteRow() {
   tableMeta?.deleteData(props.row.id);
@@ -39,6 +45,7 @@ function fileTracker() {
     <button
       title="Remove affect"
       type="button"
+      :disabled="isFilingTracker"
       class="btn btn-dark btn-sm"
       @click="deleteRow()"
     ><i class="bi-trash"></i></button>
@@ -50,7 +57,7 @@ function fileTracker() {
       @click="revertRow()"
     ><i class="bi-arrow-counterclockwise"></i></button>
     <button
-      v-if="(!isNew && !isModified && !isRemoved) && !row.original.tracker"
+      v-if="canFileTracker"
       v-osim-loading="isFilingTracker"
       type="button"
       title="File tracker"
@@ -60,6 +67,14 @@ function fileTracker() {
     ><i
       v-if="!isFilingTracker"
       class="bi-file-earmark-diff"
+    /></button>
+    <button
+      v-else-if="isTrackerUnavailable"
+      type="button"
+      title="Tracker not available"
+      class="btn btn-warning btn-sm"
+    ><i
+      class="bi-exclamation-triangle"
     /></button>
   </div>
 </template>
