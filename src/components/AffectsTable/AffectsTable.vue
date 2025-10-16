@@ -131,7 +131,7 @@ onMounted(() => {
         title="Select suggested trackers"
         @click="selectRelatedTrackers()"
       >
-        <i v-if="!isFetchingSuggestedTrackers" class="bi-check2-square"></i>
+        <i v-if="!isFetchingSuggestedTrackers" class="bi-ui-checks-grid"></i>
       </button>
       <button
         class="btn btn-secondary text-nowrap"
@@ -198,6 +198,7 @@ onMounted(() => {
             'modified': modifiedAffects.has(row.id),
             'new': newAffects.has(row.id),
             'removed': removedAffects.has(row.id),
+            'disabled': table.options.meta?.filingTracker.has(row.id)
           }"
         >
           <td
@@ -289,6 +290,12 @@ table {
       border-color: #ffe3d9 !important;
       background-color: #ffe3d9;
       color: #731f00;
+    }
+
+    &.disabled td {
+      border-color: #adadad;
+      background-color: #adadad;
+      cursor: progress;
     }
   }
 

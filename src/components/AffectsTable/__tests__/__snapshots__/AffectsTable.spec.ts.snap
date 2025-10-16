@@ -15,7 +15,7 @@ exports[`affectsTable > should render 1`] = `
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->
-    <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search..."><button data-v-17587d65="" class="btn btn-secondary text-nowrap" type="button" title="Select suggested trackers"><i data-v-17587d65="" class="bi-check2-square"></i></button><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
+    <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search..."><button data-v-17587d65="" class="btn btn-secondary text-nowrap" type="button" title="Select suggested trackers"><i data-v-17587d65="" class="bi-ui-checks-grid"></i></button><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
     <ul data-v-12d45215="" class="dropdown-menu drop-zone">
       <li data-v-12d45215="" class="dropdown-item" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
         <!--v-if-->

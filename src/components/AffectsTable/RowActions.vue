@@ -45,6 +45,7 @@ function fileTracker() {
     <button
       title="Remove affect"
       type="button"
+      :disabled="isFilingTracker"
       class="btn btn-dark btn-sm"
       @click="deleteRow()"
     ><i class="bi-trash"></i></button>
