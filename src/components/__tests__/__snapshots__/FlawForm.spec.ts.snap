@@ -200,7 +200,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
       </div>
       <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
-        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <div data-v-478878c2="" tabindex="0">
               <!-- for invalid-tooltip positioning -->
