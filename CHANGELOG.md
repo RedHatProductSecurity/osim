@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
+
 ### Fixed
 * Fix multi-row operations in affects table (`OSIDB-4381`)
 * Affect's CVSS changes not saved/commited (`OSIDB-4431`)
