@@ -36,6 +36,13 @@ onMounted(() => {
   priorValues.value = deepCopyFromRaw(items.value);
 });
 
+// Watch modelValue changes and update internal state
+watch(() => items.value, (newItems) => {
+  savedValues.value = deepCopyFromRaw(newItems);
+  priorValues.value = deepCopyFromRaw(newItems);
+  indexBeingEdited.value = null;
+}, { deep: true });
+
 const indexBeingEdited = ref<null | number>(null);
 const isBeingEdited = (index: number) => indexBeingEdited.value === index;
 const priorValues = ref<any[]>([]);
