@@ -212,7 +212,7 @@ onMounted(() => {
           </td>
         </tr>
         <tr v-if="table.getRowCount()=== 0">
-          <td colspan="100">No affects found for current filters</td>
+          <td :colspan="table.getVisibleFlatColumns().length">No affects found for current filters</td>
         </tr>
       </tbody>
     </table>
