@@ -261,8 +261,9 @@ export function useAffectsTable() {
   }
 
   function fitColumnWidth(column: Column<ZodAffectType>) {
-    const HEADER_CHAR_WIDTH = 12; // Bold monospace
-    const BODY_CHAR_WIDTH = 9;    // Regular monospace
+    const FONT_SIZE = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const HEADER_CHAR_WIDTH = FONT_SIZE - 4; // Bold monospace
+    const BODY_CHAR_WIDTH = FONT_SIZE - 6;    // Regular monospace
     const PADDING = 32;
 
     const headerWidth = (column.columnDef.header?.toString() || '').length * HEADER_CHAR_WIDTH;
