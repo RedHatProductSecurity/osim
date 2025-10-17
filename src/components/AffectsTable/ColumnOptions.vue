@@ -50,11 +50,23 @@ function onDrop(event: DragEvent, targetIndex: number) {
     <i class="bi-gear"></i>
   </button>
   <ul class="dropdown-menu drop-zone">
+    <li class="dropdown-item">
+      <label class="w-100">
+        <input
+          v-model="settings.affectsGrouping"
+          type="checkbox"
+          class="form-check-input"
+        >
+        Group by PsModule
+      </label>
+    </li>
+    <li class="dropdown-divider"></li>
     <li
       v-for="(column, index) in orderedColumns"
       :key="column.id"
       :class="[
         'dropdown-item',
+        'draggable',
         {
           'drop-border-top': dragOverIndex === index && draggedItem !== column.id,
           'drop-border-bottom': dragOverIndex === index + 1 && draggedItem !== column.id

@@ -31,6 +31,7 @@ const initialState: PersistentSettingsType = {
   affectsColumnOrder: [],
   affectsSizing: {},
   affectsVisibility: {},
+  affectsGrouping: false,
 };
 
 describe('settingsStore', () => {

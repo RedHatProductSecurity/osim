@@ -49,7 +49,12 @@ const onBlur = () => {
   editMode.value = !editMode.value;
 
   if (cellValue.value !== props.getValue()) {
-    tableMeta?.updateData(props.row.index, props.column.id as keyof ZodAffectType, cellValue.value);
+    tableMeta?.updateData(
+      props.row.index,
+      props.column.id as keyof ZodAffectType,
+      cellValue.value,
+      props.row.getParentRow()?.index,
+    );
     if (columnMeta?.onValueChange) {
       columnMeta.onValueChange(cellValue.value, props.row, props.table);
     }
