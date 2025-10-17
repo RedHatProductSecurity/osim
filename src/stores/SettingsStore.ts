@@ -23,6 +23,7 @@ export const PersistentSettingsSchema = z.object({
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
   affectsColumnOrder: z.array(z.string()),
+  affectsGrouping: z.boolean(),
   affectsSizing: z.record(z.number()),
   affectsVisibility: z.record(z.boolean()),
   trackersPerPage: z.number(),
@@ -58,6 +59,7 @@ const defaultPersistentSettings: PersistentSettingsType = {
   affectsColumnWidths: [],
   affectsColumnOrder: [],
   trackersColumnWidths: [],
+  affectsGrouping: false,
 };
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';
