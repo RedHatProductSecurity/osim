@@ -125,7 +125,7 @@ describe('affectsTable', () => {
         await columnOptionsBtn.trigger('click');
         await flushPromises();
 
-        const checkboxes = wrapper.findAll('.dropdown-menu input[type="checkbox"]');
+        const checkboxes = wrapper.findAll('.dropdown-menu .draggable input[type="checkbox"]');
         const moduleCheckbox = checkboxes.find((checkbox) => {
           const label = checkbox.element.parentElement?.textContent;
           return label?.includes('ps_module') || label?.includes('Module');

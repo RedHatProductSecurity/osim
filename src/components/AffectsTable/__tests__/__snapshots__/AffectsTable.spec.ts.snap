@@ -17,26 +17,28 @@ exports[`affectsTable > should render 1`] = `
     <!--v-if-->
     <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search..."><button data-v-17587d65="" class="btn btn-secondary text-nowrap" type="button" title="Select suggested trackers"><i data-v-17587d65="" class="bi-ui-checks-grid"></i></button><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
     <ul data-v-12d45215="" class="dropdown-menu drop-zone">
-      <li data-v-12d45215="" class="dropdown-item" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
+      <li data-v-12d45215="" class="dropdown-item"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input"> Group by PsModule </label></li>
+      <li data-v-12d45215="" class="dropdown-divider"></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
         <!--v-if-->
       </li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item d-flex justify-content-center gap-1 mt-2"><button data-v-12d45215="" type="button" title="Reset column order" class="btn btn-sm btn-secondary"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> order</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column sizes"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> size</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column visibility">show all</button></li>
     </ul>
   </div>
@@ -45,7 +47,10 @@ exports[`affectsTable > should render 1`] = `
   <table data-v-17587d65="" class="table table-striped mb-0 z-0">
     <thead data-v-17587d65="" class="sticky-top table-dark">
       <tr data-v-17587d65="">
-        <th data-v-17587d65="" colspan="1" class="" style="width: 20px;"><input data-v-17587d65="" type="checkbox" class="form-check-input">
+        <th data-v-17587d65="" colspan="1" class="" style="width: 40px;">
+          <div data-v-17587d65=""><input type="checkbox" class="form-check-input">
+            <!---->
+          </div>
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
@@ -203,7 +208,11 @@ exports[`affectsTable > should render 1`] = `
     </thead>
     <tbody data-v-17587d65="">
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
+            <!---->
+          </div>
+        </td>
         <td data-v-17587d65="">
           <!---->
         </td>
@@ -230,7 +239,11 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
+            <!---->
+          </div>
+        </td>
         <td data-v-17587d65="">
           <!---->
         </td>
@@ -257,7 +270,11 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65=""><input data-v-17587d65="" type="checkbox" class="form-check-input"></td>
+        <td data-v-17587d65="">
+          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
+            <!---->
+          </div>
+        </td>
         <td data-v-17587d65="">
           <!---->
         </td>
@@ -305,26 +322,28 @@ exports[`affectsTable > should render empty state 1`] = `
     <!--v-if-->
     <!--v-if--><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
     <ul data-v-12d45215="" class="dropdown-menu drop-zone">
-      <li data-v-12d45215="" class="dropdown-item" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
+      <li data-v-12d45215="" class="dropdown-item"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input"> Group by PsModule </label></li>
+      <li data-v-12d45215="" class="dropdown-divider"></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
         <!--v-if-->
       </li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
-      <li data-v-12d45215="" class="dropdown-item" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Impact</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> CVSS</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Status</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affect Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Creation date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Tracker Update date</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Actions</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item d-flex justify-content-center gap-1 mt-2"><button data-v-12d45215="" type="button" title="Reset column order" class="btn btn-sm btn-secondary"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> order</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column sizes"><i data-v-12d45215="" class="bi-arrow-counterclockwise"></i> size</button><button data-v-12d45215="" type="button" class="btn btn-sm btn-secondary" title="Reset column visibility">show all</button></li>
     </ul>
   </div>
