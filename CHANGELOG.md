@@ -1,5 +1,6 @@
 # OSIM Changelog
-## [Unreleased]
+
+## [2025.10.0]
 ### Fixed
 * Fix multi-row operations in affects table (`OSIDB-4381`)
 * Affect's CVSS changes not saved/commited (`OSIDB-4431`)
@@ -516,7 +517,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.9.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.10.0...HEAD
+[2025.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.9.0...v2025.10.0
 [2025.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.8.0...v2025.9.0
 [2025.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.7.0...v2025.8.0
 [2025.7.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.6.0...v2025.7.0
