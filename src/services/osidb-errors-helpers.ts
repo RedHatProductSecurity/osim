@@ -37,17 +37,17 @@ function parseOsidbErrorsJson(data: Record<string, any>) {
 
 function parseOsidbHtmlError(error: any) {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(
-    error.response.data, error.response.headers['content-type'],
-  );
+  const contentType = error.response.headers['content-type'];
+  const mimeType = contentType?.split(';')[0] || 'text/html';
+  const doc = parser.parseFromString(error.response.data, mimeType);
   const exception_value = doc.querySelector('.exception_value'); // May depend on OSIDB being in debug mode?
 
-  const text = ((exception_value as HTMLElement)?.textContent
-    ?? (exception_value as HTMLElement)?.textContent
-    ?? (exception_value as HTMLElement)?.innerHTML)
-    || 'Please contact OSIM/OSIDB team';
-
-  return 'Likely error between OSIDB and database:\n' + text;
+  const osidbError = ((exception_value as HTMLElement)?.textContent
+    ?? (exception_value as HTMLElement)?.innerHTML);
+  // eslint-disable-next-line max-len
+  const genericErrorMessage = `OSIDB responded with error ${error.response.status} (${error.response.statusText}) for request ${error.response.url}).`;
+  const osidbErrorMessage = `OSIDB reported an error: ${osidbError}`;
+  return osidbError ? osidbErrorMessage : genericErrorMessage;
 }
 
 export function parseOsidbErrors(errors: any[]) {
