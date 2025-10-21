@@ -23,42 +23,42 @@ const next = () => {
 export const handlers = [
   http.get(`${baseURL}/auth/token`, async () => {
     const resultArray = [
-      [await getAuthTokenRetrieve200Response(), { status: 200 }],
+      [getAuthTokenRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/auth/token`, async () => {
     const resultArray = [
-      [await getAuthTokenCreate200Response(), { status: 200 }],
+      [getAuthTokenCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/auth/token/refresh`, async () => {
     const resultArray = [
-      [await getAuthTokenRefreshCreate200Response(), { status: 200 }],
+      [getAuthTokenRefreshCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/auth/token/verify`, async () => {
     const resultArray = [
-      [await getAuthTokenVerifyCreate200Response(), { status: 200 }],
+      [getAuthTokenVerifyCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsList200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCreate201Response(), { status: 201 }],
+      [getOsidbApiV1FlawsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -66,7 +66,7 @@ export const handlers = [
   http.get(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments`, async () => {
     const resultArray = [
       [
-        await getOsidbApiV1FlawsAcknowledgmentsList200Response(),
+        getOsidbApiV1FlawsAcknowledgmentsList200Response(),
         { status: 200 },
       ],
     ];
@@ -76,7 +76,7 @@ export const handlers = [
   http.post(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments`, async () => {
     const resultArray = [
       [
-        await getOsidbApiV1FlawsAcknowledgmentsCreate201Response(),
+        getOsidbApiV1FlawsAcknowledgmentsCreate201Response(),
         { status: 201 },
       ],
     ];
@@ -86,7 +86,7 @@ export const handlers = [
   http.get(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        await getOsidbApiV1FlawsAcknowledgmentsRetrieve200Response(),
+        getOsidbApiV1FlawsAcknowledgmentsRetrieve200Response(),
         { status: 200 },
       ],
     ];
@@ -96,7 +96,7 @@ export const handlers = [
   http.put(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        await getOsidbApiV1FlawsAcknowledgmentsUpdate200Response(),
+        getOsidbApiV1FlawsAcknowledgmentsUpdate200Response(),
         { status: 200 },
       ],
     ];
@@ -106,7 +106,7 @@ export const handlers = [
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        await getOsidbApiV1FlawsAcknowledgmentsDestroy200Response(),
+        getOsidbApiV1FlawsAcknowledgmentsDestroy200Response(),
         { status: 200 },
       ],
     ];
@@ -115,35 +115,35 @@ export const handlers = [
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/comments`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCommentsList200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsCommentsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/comments`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCommentsCreate201Response(), { status: 201 }],
+      [getOsidbApiV1FlawsCommentsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/comments/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCommentsRetrieve200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsCommentsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCvssScoresList200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsCvssScoresList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCvssScoresCreate201Response(), { status: 201 }],
+      [getOsidbApiV1FlawsCvssScoresCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -160,42 +160,42 @@ export const handlers = [
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCvssScoresUpdate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsCvssScoresUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsCvssScoresDestroy200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsCvssScoresDestroy200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
+      [getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -260,21 +260,21 @@ export const handlers = [
   ),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/promote`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsPromoteCreate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsPromoteCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/references`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsReferencesList200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsReferencesList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/references`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsReferencesCreate201Response(), { status: 201 }],
+      [getOsidbApiV1FlawsReferencesCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -291,84 +291,84 @@ export const handlers = [
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/references/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsReferencesUpdate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsReferencesUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/references/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsReferencesDestroy200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsReferencesDestroy200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/reject`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsRejectCreate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsRejectCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsRetrieve200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1FlawsUpdate200Response(), { status: 200 }],
+      [getOsidbApiV1FlawsUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/labels`, async () => {
     const resultArray = [
-      [await getOsidbApiV1LabelsList200Response(), { status: 200 }],
+      [getOsidbApiV1LabelsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/labels/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1LabelsRetrieve200Response(), { status: 200 }],
+      [getOsidbApiV1LabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/trackers`, async () => {
     const resultArray = [
-      [await getOsidbApiV1TrackersList200Response(), { status: 200 }],
+      [getOsidbApiV1TrackersList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/trackers`, async () => {
     const resultArray = [
-      [await getOsidbApiV1TrackersCreate201Response(), { status: 201 }],
+      [getOsidbApiV1TrackersCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/trackers/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1TrackersRetrieve200Response(), { status: 200 }],
+      [getOsidbApiV1TrackersRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.put(`${baseURL}/osidb/api/v1/trackers/*`, async () => {
     const resultArray = [
-      [await getOsidbApiV1TrackersUpdate200Response(), { status: 200 }],
+      [getOsidbApiV1TrackersUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/trackers/api/v1/file`, async () => {
     const resultArray = [
-      [await getTrackersApiV1FileCreate200Response(), { status: 200 }],
+      [getTrackersApiV1FileCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);

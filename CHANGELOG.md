@@ -6,6 +6,7 @@
 ## [Unreleased]
 ### Added
 * Allow grouping affects by ps_module (`OSIDB-4546`)
+* Support revert and reset workflow functions (`OSIDB-4489`)
 
 ## [2025.10.0]
 ### Fixed

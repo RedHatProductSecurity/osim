@@ -326,7 +326,15 @@ exports[`flawForm > mounts and renders 1`] = `
             <div data-v-0e2ae48e="" class="col-9">
               <div data-v-d6c306ee="" class="d-flex"><span data-v-d6c306ee="" class="form-control rounded-0">NEW</span>
                 <div data-v-d6c306ee="" class="col-auto">
-                  <div data-v-d6c306ee="" class="osim-workflow-state-buttons"><button data-v-d6c306ee="" type="button" class="btn btn-secondary rounded-0"> Reject </button><button data-v-d6c306ee="" type="button" class="btn btn-warning osim-last-field-button" title="Promote to Triage"> Promote to Triage</button></div>
+                  <div data-v-d6c306ee="" class="osim-workflow-state-buttons">
+                    <div data-v-846ac2ce="" data-v-d6c306ee="" class="dropdown-container">
+                      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button data-v-d6c306ee="" type="button" class="btn btn-secondary dropdown-toggle"> Change State </button></div>
+                      <teleport-stub data-v-846ac2ce="" to="#app">
+                        <!--v-if-->
+                      </teleport-stub>
+                      <!--v-if-->
+                    </div>
+                  </div>
                 </div>
               </div>
               <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
