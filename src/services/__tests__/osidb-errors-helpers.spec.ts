@@ -66,7 +66,7 @@ describe('oSIDB Error helpers', () => {
         data: '<div class="exception_value">Some error on line 1</div>',
       },
     };
-    expect(getDisplayedOsidbError(error)).toBe('Likely error between OSIDB and database:\nSome error on line 1');
+    expect(getDisplayedOsidbError(error)).toBe('OSIDB reported an error: Some error on line 1');
   });
 
   it('should return default error when HTML does not match', () => {
@@ -76,11 +76,14 @@ describe('oSIDB Error helpers', () => {
           'content-type': 'text/html',
         },
         data: '<h1>Server Error (500)</h1><p></p>',
+        status: 500,
+        statusText: 'Internal Server Error',
+        url: 'http://localhost:8000/api/v1/errors',
       },
     };
 
     expect(getDisplayedOsidbError(error))
-      .toBe('Likely error between OSIDB and database:\nPlease contact OSIM/OSIDB team');
+      .toBe('OSIDB responded with error 500 (Internal Server Error) for request http://localhost:8000/api/v1/errors).');
   });
 
   describe('parseOsidbErrors', () => {

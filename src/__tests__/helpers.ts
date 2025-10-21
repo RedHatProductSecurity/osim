@@ -71,6 +71,7 @@ export const mountWithConfig: MountConfig = (
 ) => mount(originalComponent, {
   ...options,
   global: {
+    ...options?.global,
     directives: {
       osimLoading: vi.fn(),
       imask: vi.fn(),
