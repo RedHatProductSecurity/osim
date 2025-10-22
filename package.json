@@ -26,6 +26,10 @@
     "lint-ts-vue": "eslint .",
     "lint-fix": "eslint --fix .",
     "lint-style": "stylelint '**/*.{vue,css,scss}'",
+    "lint-changed": "yarn lint-style-changed && yarn lint-ts-vue-changed",
+    "lint-ts-vue-changed": "bash -c 'FILES=$(scripts/get-changed-files.sh \"vue|ts|tsx\"); [ -n \"$FILES\" ] && eslint $FILES || echo \"No changed files to lint\"'",
+    "lint-style-changed": "bash -c 'FILES=$(scripts/get-changed-files.sh \"vue|s?css\"); [ -n \"$FILES\" ] && stylelint $FILES || echo \"No changed files to lint\"'",
+    "type-check-changed": "bash -c 'FILES=$(scripts/get-changed-files.sh \"vue|ts|tsx\"); [ -n \"$FILES\" ] && vue-tsc --noEmit -p tsconfig.vitest.json --composite false $FILES || echo \"No changed files to type-check\"'",
     "fetch-cvss4-test-data": "scripts/fetch_cvss4_test_data.sh"
   },
   "dependencies": {
