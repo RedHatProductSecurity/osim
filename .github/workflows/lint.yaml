@@ -22,31 +22,79 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to get list of changed files
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/iron' # '20.x'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn type-check
+      - name: Get list of changed files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(./scripts/get-changed-files.sh 'vue|ts|tsx')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      - run: yarn vue-tsc --noEmit -p tsconfig.vitest.json --composite false ${{ steps.changed-files.outputs.files }}
+        if: steps.changed-files.outputs.skip != 'true'
 
   lint-ts-vue:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to get list of changed files
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/iron' # '20.x'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn lint-ts-vue
+      - name: Get list of changed files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(./scripts/get-changed-files.sh 'vue|ts|tsx')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      - run: yarn eslint ${{ steps.changed-files.outputs.files }}
+        if: steps.changed-files.outputs.skip != 'true'
 
   lint-style:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to get list of changed files
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/iron' # '20.x'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn lint-style
+      - name: Get list of changed files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(./scripts/get-changed-files.sh 'vue|s?css')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      - run: yarn stylelint ${{ steps.changed-files.outputs.files }}
+        if: steps.changed-files.outputs.skip != 'true'
