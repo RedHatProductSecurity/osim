@@ -4,4 +4,4 @@
 
 PATTERN="$1"
 BASE=$(git merge-base HEAD origin/main)
-git diff --name-only --diff-filter=b $BASE | grep -E "\.($PATTERN)$" || true
+git diff --name-only --diff-filter=b $BASE | grep -E "\.($PATTERN)$" | xargs || true
