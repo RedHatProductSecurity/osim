@@ -8,6 +8,7 @@ import { encodeJWT } from '@/__tests__/helpers';
 import { server } from '@/__tests__/setup';
 
 import { useUserStore } from '../UserStore';
+import { useAuthStore } from '../AuthStore';
 import { osimRuntime } from '../osimRuntime';
 
 describe('userStore', () => {
@@ -55,14 +56,14 @@ describe('userStore', () => {
   });
 
   it('should set `isAccessTokenExpired` to true when access token is undefined', () => {
-    const userStore = useUserStore();
-    userStore.accessToken = undefined;
-    expect(userStore.isAccessTokenExpired()).toBe(true);
+    const authStore = useAuthStore();
+    authStore.accessToken = null;
+    expect(authStore.isAccessTokenExpired()).toBe(true);
   });
 
   it('should set `isAccessTokenExpired` to true when access token is about to expire', () => {
-    const userStore = useUserStore();
-    userStore.accessToken = encodeJWT({
+    const authStore = useAuthStore();
+    authStore.accessToken = encodeJWT({
       token_type: 'access',
       exp: Math.floor(DateTime.now().minus({ minutes: 1 }).toSeconds()),
       iat: Math.floor(DateTime.now().toSeconds()),
@@ -70,12 +71,12 @@ describe('userStore', () => {
       user_id: 1337,
     });
 
-    expect(userStore.isAccessTokenExpired()).toBe(true);
+    expect(authStore.isAccessTokenExpired()).toBe(true);
   });
 
   it('should set `isAccessTokenExpired` to false when access token is active', () => {
-    const userStore = useUserStore();
-    userStore.accessToken = encodeJWT({
+    const authStore = useAuthStore();
+    authStore.accessToken = encodeJWT({
       token_type: 'access',
       exp: Math.floor(DateTime.now().plus({ minutes: 5 }).toSeconds()),
       iat: Math.floor(DateTime.now().toSeconds()),
@@ -83,17 +84,17 @@ describe('userStore', () => {
       user_id: 1337,
     });
 
-    expect(userStore.isAccessTokenExpired()).toBe(false);
+    expect(authStore.isAccessTokenExpired()).toBe(false);
   });
 
   it('should not throw when access token is invalid', () => {
     vi.spyOn(console, 'debug').mockImplementation(() => void 0);
-    const userStore = useUserStore();
+    const authStore = useAuthStore();
 
     expect(() => {
-      userStore.accessToken = 'invalid';
+      authStore.accessToken = null;
 
-      expect(userStore.isAccessTokenExpired()).toBe(true);
+      expect(authStore.isAccessTokenExpired()).toBe(true);
     }).not.toThrow();
   });
 
@@ -118,8 +119,9 @@ describe('userStore', () => {
       http.get(`${osimRuntime.value.backends.osidb}/osidb/whoami`, () => HttpResponse.json(whoami)),
     );
 
-    const userStore = useUserStore();
-    await userStore.login('skynet', 'terminator');
+    const { useAuthStore } = await import('../AuthStore');
+    const authStore = useAuthStore();
+    await authStore.login('skynet', 'terminator');
 
     const storage = JSON.parse(localStorage.getItem('UserStore') || '');
     expect(storage).toBeInstanceOf(Object);

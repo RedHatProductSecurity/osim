@@ -1,16 +1,15 @@
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 
 import { defineStore } from 'pinia';
 import { z } from 'zod';
-import jwtDecode from 'jwt-decode';
-import type { JwtPayload } from 'jwt-decode';
 import { useLocalStorage } from '@vueuse/core';
-import { DateTime } from 'luxon';
 
-// const router = useRouter();
-import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getJiraUsername } from '@/services/JiraService';
+
+function setEnv(value: string) {
+  _userStoreSession.value.env = value;
+}
 
 export const queryRedirect = z.object({
   query: z.object({
@@ -41,13 +40,7 @@ function migrateUserStore() {
 // Run migration before useLocalStorage initialization
 migrateUserStore();
 
-const loginResponse = z.object({
-  access: z.string(),
-  refresh: z.string().optional(), // Include refresh token for dev environments
-  env: z.string(),
-  detail: z.string().optional(), // detail error message
-});
-const whoamiResponse = z.object({
+export const whoamiResponse = z.object({
   email: z.string(),
   groups: z.array(z.string()),
   profile: z.object({
@@ -81,61 +74,26 @@ async function updateJiraUsername() {
   }
 }
 
+function resetUserStore() {
+  _userStoreSession.value.env = '';
+  _userStoreSession.value.whoami = null;
+  _userStoreSession.value.jiraUsername = '';
+  delete _userStoreSession.value.refresh;
+}
+
 export const useUserStore = defineStore('UserStore', () => {
-  const accessToken = ref<null | string>();
-  const refreshToken = ref<null | string>();
-
-  function setRefreshToken(env_: string, refresh_?: string) {
-    _userStoreSession.value.env = env_;
-    // Only store refresh token in localStorage for dev environments
-    if (osimRuntime.value.env === 'dev' && refresh_) {
-      _userStoreSession.value.refresh = refresh_;
-      refreshToken.value = null; // Clear in-memory token for dev
-    } else {
-      delete _userStoreSession.value.refresh;
-      refreshToken.value = refresh_ || null;
-    }
-  }
-
-  function $reset() {
-    _userStoreSession.value.env = '';
-    _userStoreSession.value.whoami = null;
-    _userStoreSession.value.jiraUsername = '';
-    delete _userStoreSession.value.refresh;
-    refreshToken.value = null;
-  }
-
-  const isAccessTokenExpired = () => {
-    try {
-      const exp = accessToken.value ? jwtDecode<JwtPayload>(accessToken.value)?.exp : null;
-      return !exp || DateTime.now().toSeconds() >= exp - 60;
-    } catch (e) {
-      console.debug('UserStore: access token not a valid JWT', accessToken.value, e);
-      return true;
-    }
-  };
+  const $reset = resetUserStore;
 
   const whoami = computed<null | WhoamiType>(() => {
     return _userStoreSession.value.whoami || null;
   });
   const userName = computed(() => {
-    if (!accessToken.value) {
-      return 'Not Logged In';
-    }
     if (_userStoreSession.value.whoami != null) {
       return _userStoreSession.value.whoami.email ?? _userStoreSession.value.whoami.username;
     }
-    try {
-      const decoded = jwtDecode<JwtPayload>(accessToken.value);
-      return decoded.sub ?? 'Current User';
-    } catch (e) {
-      return 'Current User';
-    }
+    return 'Current User';
   });
   const userEmail = computed(() => {
-    if (!accessToken.value) {
-      return '';
-    }
     return _userStoreSession.value.whoami?.email ?? '';
   });
 
@@ -147,162 +105,21 @@ export const useUserStore = defineStore('UserStore', () => {
     return _userStoreSession.value.jiraUsername ?? '';
   });
 
-  async function login(username: string = '', password: string = '') {
-    const requestMetadata: { [key: string]: any } = {};
-    if (osimRuntime.value.backends.osidbAuth == 'kerberos') {
-      requestMetadata['method'] = 'GET';
-    } else if (osimRuntime.value.backends.osidbAuth == 'credentials') {
-      requestMetadata['method'] = 'POST';
-      requestMetadata['body'] = JSON.stringify({ username: username, password: password });
-      requestMetadata['headers'] = {
-        'Content-Type': 'application/json',
-      };
-    }
-
-    return fetch(`${osimRuntime.value.backends.osidb}/auth/token`, {
-      // credentials: 'same-origin',
-      credentials: 'include',
-      cache: 'no-cache',
-      ...requestMetadata,
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const text = await response.text();
-          // console.log('UserStore: login not ok', response.status, text);
-          throw new Error(text);
-        }
-        const json = await response.json();
-        const parsedLoginResponse = loginResponse.passthrough().parse(json);
-        if (parsedLoginResponse.detail) {
-          throw new Error(parsedLoginResponse.detail);
-        }
-        setRefreshToken(parsedLoginResponse.env, parsedLoginResponse.refresh);
-        accessToken.value = parsedLoginResponse.access;
-        _userStoreSession.value.isLoggedIn = true;
-        return parsedLoginResponse.access;
-      })
-      .then((access) => {
-        return fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
-          credentials: 'include',
-          cache: 'no-cache',
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
-      })
-      .then(response => response.json())
-      .then((json) => {
-        const parsedWhoamiResponse = whoamiResponse.parse(json);
-        _userStoreSession.value.whoami = parsedWhoamiResponse;
-      })
-      .then(async () => {
-        await updateJiraUsername();
-      })
-      .catch((e) => {
-        $reset();
-        console.error('UserStore::login() unsuccessful login request', e);
-        throw e;
-      });
+  function setWhoami(data: WhoamiType) {
+    _userStoreSession.value.whoami = data;
   }
 
-  function logout() {
-    // clearInterval(refreshInterval);
-    $reset();
-    accessToken.value = null;
-    _userStoreSession.value.isLoggedIn = false;
-
-    // router.push({name: 'login'});
-    // return Promise.resolve()
-    //     .then(() => {
-    //       jwt.value.user = undefined;
-    //     })
-    //     .then(() => {
-    //       router.push({name: 'login'})
-    //     })
-    return router.push({ name: 'login' });
-  }
-
-  const isAuthenticated = computed<boolean>(() => {
-    if (!accessToken.value) {
-      return false;
-    }
-    try {
-      const decoded = jwtDecode<JwtPayload>(accessToken.value);
-      const now = Date.now() / 1000; // Convert to seconds
-      return decoded.exp != null && now < decoded.exp;
-    } catch (e) {
-      return false;
-    }
-  });
-
-  // Watch authentication changes from other tabs
-  watch(isAuthenticated, () => {
-    if (isAuthenticated.value) {
-      if (router.currentRoute.value.name === 'login') {
-        try {
-          const maybeRedirect = queryRedirect.parse(router.currentRoute.value);
-          const redirect = maybeRedirect.query.redirect;
-          if (redirect.startsWith('/')) { // avoid possible third-party redirection
-            router.push(redirect);
-            return;
-          } else {
-            console.debug('UserStore::isAuthenticated() Refusing to redirect to', redirect);
-          }
-        } catch (e) {
-          // do nothing
-        }
-        router.push({
-          name: 'index',
-        });
-        return;
-      }
-    } else {
-      $reset();   // wipes tokens if tokens are expired
-      if (router.currentRoute.value.name !== 'login') {
-        // Preserve destination
-        const currentPath = router.currentRoute.value.fullPath;
-        if (currentPath !== '/') {
-          const query: any = {};
-          query.redirect = currentPath;
-          router.push({ name: 'login', query });
-          return;
-        }
-        router.push({
-          name: 'login',
-        });
-        return;
-      }
-    }
-  });
-
-  // Helper method to get refresh token for dev environments
-  function getDevRefreshToken() {
-    return osimRuntime.value.env === 'dev' ? _userStoreSession.value.refresh : null;
-  }
-
-  // Helper method to set refresh token for dev environments
-  function setDevRefreshToken(refresh: string) {
-    if (osimRuntime.value.env === 'dev') {
-      _userStoreSession.value.refresh = refresh;
-    }
-  }
+  // For compatibility, keep a lightweight reset used by AuthStore
 
   return {
-    isLoggedIn: _userStoreSession.value.isLoggedIn,
-    accessToken,
-    isAccessTokenExpired,
     whoami,
     userName,
     userEmail,
     jiraUsername,
     updateJiraUsername,
     env,
-    refreshToken,
-    login,
-    logout,
-    isAuthenticated,
-    getDevRefreshToken,
-    setDevRefreshToken,
+    setEnv,
+    setWhoami,
     $reset,
   };
 });
