@@ -141,6 +141,7 @@ function toggleModulesCollapse() {
 function moduleTrackersCount(moduleName: string) {
   return flaw.value.affects
     .filter(affect => affect.ps_module === moduleName)
+  // @ts-expect-error affectsv2
     .reduce((count, affect) => count + affect.trackers.length, 0);
 }
 
@@ -230,6 +231,7 @@ const displayedTrackers = computed(() => {
   return sortedAffects.value
     .filter(affect => !isAffectBeingRemoved(affect) && affect.uuid)
     .flatMap(affect =>
+    // @ts-expect-error affectsv2
       affect.trackers.map(tracker => ({
         ...tracker,
         ps_module: affect.ps_module,

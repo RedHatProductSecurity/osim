@@ -61,6 +61,7 @@ export function useFilterSortAffects() {
 
     const customSortFn = (affect: ZodAffectType) => {
       if (sortKey.value === 'trackers') {
+        // @ts-expect-error affectsv2
         return affect.trackers.length;
       } else if (sortKey.value === 'cvss_scores') {
         return affect[sortKey.value].length;

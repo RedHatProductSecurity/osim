@@ -185,7 +185,7 @@ describe('useFlawAffectsModel', () => {
     const fakeAffect = mockAffect({ ps_component: 'component1', ps_module: 'module1' });
     flaw.value.affects.push(fakeAffect);
 
-    vi.mocked(postAffects).mockResolvedValue({ data:
+    vi.mocked(postAffects, { partial: true }).mockResolvedValue({ data:
       { results:
       [...flaw.value.affects, fakeAffect] } });
 

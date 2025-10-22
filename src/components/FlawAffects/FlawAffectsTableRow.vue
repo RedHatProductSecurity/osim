@@ -320,7 +320,7 @@ function affectednessChange(event: Event, affect: ZodAffectType) {
     </td>
     <td>
       <div class="affect-tracker-cell">
-        <span class="me-2 my-auto">{{ currentAffect.trackers.length }}</span>
+        <span class="me-2 my-auto">{{ currentAffect?.trackers?.length }}</span>
         <button
           v-if="!(isBeingEdited(currentAffect) || isRemoved)"
           type="button"
