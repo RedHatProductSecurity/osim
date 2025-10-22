@@ -37,6 +37,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -49,6 +50,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -84,6 +86,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -107,6 +110,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -131,6 +135,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -155,6 +160,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -172,6 +178,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -186,6 +193,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),
@@ -200,6 +208,7 @@ describe('flawTrackers', () => {
     const subject = mountFlawTrackers({
       flaw: flaw as ZodFlawType,
       displayedTrackers: flaw.affects
+      // @ts-expect-error affectsv2
         .flatMap(affect => affect.trackers
           .map(tracker => ({ ...tracker, ps_module: affect.ps_module })),
         ),

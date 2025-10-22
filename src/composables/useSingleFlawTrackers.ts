@@ -75,7 +75,7 @@ export function useSingleFlawTrackers(
         tracker => tracker.affects?.some(
           (affectUuid: string) => trackedAffectUuids.value.includes(affectUuid)),
       );
-
+      // @ts-expect-error affectsv2
       return filedAffectTrackers.map(filedTracker => ({
         ...filedTracker,
         ...affect,

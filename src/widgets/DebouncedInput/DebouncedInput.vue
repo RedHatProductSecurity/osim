@@ -1,10 +1,13 @@
 <script lang="ts" setup>
+import type { InputHTMLAttributes } from 'vue';
 import { computed, onBeforeUnmount, ref } from 'vue';
 
-const props = withDefaults(defineProps<{
+interface DebouncedInputProps extends /* @vue-ignore */ InputHTMLAttributes {
   debounce?: number;
   modelValue: number | string;
-}>(), {
+}
+
+const props = withDefaults(defineProps<DebouncedInputProps>(), {
   debounce: 250,
 });
 
