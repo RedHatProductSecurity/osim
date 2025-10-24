@@ -48,12 +48,14 @@ export type AegisAIValidationErrorType = {
 
 // AEGIS AI Fields Types
 export type CweSuggestionDetails = {
-  confidence?: number;
   cwe: string[];
+} & SuggestionDetails;
+
+export type SuggestionDetails = {
+  confidence?: number | string;
   explanation?: string;
   tools_used?: string[];
 };
-
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];

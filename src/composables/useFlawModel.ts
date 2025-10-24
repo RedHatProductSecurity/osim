@@ -27,11 +27,12 @@ import {
   flawImpacts,
   flawIncidentStates,
   ZodFlawSchema,
+  type DeepMapValues,
+  type DeepNullable,
   type ZodFlawType,
   type ZodAffectType,
   type ZodFlawLabelType,
 } from '@/types';
-import type { DeepMapValues, DeepNullable } from '@/utils/typeHelpers';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
