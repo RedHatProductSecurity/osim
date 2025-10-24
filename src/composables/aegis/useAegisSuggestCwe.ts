@@ -1,4 +1,4 @@
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, unref, type Ref } from 'vue';
 
 import {
   serializeAegisContext,
@@ -9,81 +9,98 @@ import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWat
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
-import type { CweSuggestionDetails } from '@/types/aegisAI';
+import type { CweSuggestionDetails, AegisAIComponentFeatureNameType, SuggestionDetails } from '@/types/aegisAI';
 
-export type UseAegisSuggestCweOptions = {
-  context: AegisSuggestionContextRefs;
-  valueRef: Ref<null | string>;
+const FIELD_NAME_TO_FEATURE_NAME: Record<string, AegisAIComponentFeatureNameType> = {
+  cwe_id: 'suggest-cwe',
+  impact: 'suggest-impact',
 };
 
-export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
+export function useAegisSuggestion(
+  context: AegisSuggestionContextRefs,
+  valueRef: Ref<null | string>,
+  fieldName: string,
+) {
   const toastStore = useToastStore();
   const service = new AegisAIService();
-  const aegisCweSuggestionWatcher = useAISuggestionsWatcher('cwe_id', options.valueRef);
-  const isSuggesting = ref(false);
+  const aegisSuggestionWatcher = useAISuggestionsWatcher(fieldName, valueRef);
   const previousValue = ref<null | string>(null);
-  const details = ref<CweSuggestionDetails | null>(null);
-  const requestDuration = ref<null | number>(null);
+  // TODO: revisit type handling for details
+  const details = ref<CweSuggestionDetails | null | SuggestionDetails>(null);
 
-  const canShowFeedback = computed(() => aegisCweSuggestionWatcher.hasAppliedSuggestion.value && !isSuggesting.value);
+  const canShowFeedback = computed(
+    () => aegisSuggestionWatcher.hasAppliedSuggestion.value && !service.isFetching.value,
+  );
 
   const isCveIdValid = computed(() => {
-    const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
-    if (!cveId) return false;
+    const cveId = unref(context?.cveId?.value ?? context?.cveId);
+    if (cveId == null) return false;
     return /^CVE-\d{4}-\d{4,7}$/i.test(cveId);
   });
 
-  const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value);
+  const canSuggest = computed(() => isCveIdValid.value && !service.isFetching.value);
 
   async function suggestCwe() {
+    if (fieldName !== 'cwe_id') return;
+    const data = await getSuggestion();
+    const first = data.cwe?.[0] ?? '';
+    if (!first) {
+      toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
+      return;
+    }
+    // TODO: revisit type handling for details
+    (details.value as CweSuggestionDetails).cwe = [first];
+    applySuggestion(first);
+  }
+
+  async function applySuggestion(suggestion: string) {
+    aegisSuggestionWatcher.applyAISuggestion(suggestion);
+    toastStore.addToast({
+      title: 'AI Suggestion Applied',
+      body: 'Suggestion applied. Always review AI generated responses prior to use.',
+      css: 'info',
+      timeoutMs: 8000,
+    });
+  }
+
+  async function suggestImpact() {
+    if (fieldName !== 'impact') return;
+    await getSuggestion();
+  }
+
+  async function getSuggestion() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
       return;
     }
-    isSuggesting.value = true;
-    const requestStartTime = Date.now();
     try {
-      if (!aegisCweSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
-        previousValue.value = options.valueRef.value;
+      if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
+        previousValue.value = valueRef.value;
       }
       const data = await service.analyzeCVEWithContext({
-        feature: 'suggest-cwe' as const,
-        ...serializeAegisContext(options.context),
+        feature: FIELD_NAME_TO_FEATURE_NAME[fieldName],
+        ...serializeAegisContext(context),
       });
-      requestDuration.value = Date.now() - requestStartTime;
-      const first = data.cwe?.[0] ?? '';
-      if (!first) {
-        toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
-        return;
-      }
       details.value = {
-        cwe: [first],
+        // cwe: [first],
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
       };
-      aegisCweSuggestionWatcher.applyAISuggestion(first);
-      toastStore.addToast({
-        title: 'AI Suggestion Applied',
-        body: 'Suggestion applied. Always review AI generated responses prior to use.',
-        css: 'info',
-        timeoutMs: 8000,
-      });
+      return data;
     } catch (e: any) {
       const msg = e?.data?.detail ?? e?.message ?? 'Request failed';
       toastStore.addToast({ title: 'AI Suggestion Error', body: `${msg}` });
-    } finally {
-      isSuggesting.value = false;
     }
   }
 
   function revert() {
     if (previousValue.value !== null) {
-      options.valueRef.value = previousValue.value;
+      valueRef.value = previousValue.value;
     }
     previousValue.value = null;
     details.value = null;
-    aegisCweSuggestionWatcher.revertAISuggestion();
+    aegisSuggestionWatcher.revertAISuggestion();
   }
 
   function sendFeedback(kind: 'down' | 'up') {
@@ -113,8 +130,8 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     const params = new URLSearchParams();
 
     // Get flaw data from context
-    const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
-    const suggestedCwe = options.valueRef.value;
+    const cveId = unref(context?.cveId?.value ?? context?.cveId);
+    const suggestedCwe = unref(valueRef.value);
 
     // Add CVE ID if available
     if (cveId) {
@@ -127,8 +144,8 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     }
 
     // Add CWE request time if available
-    if (requestDuration.value !== null) {
-      params.set('entry.432941906', `${requestDuration.value}ms`);
+    if (service.requestDuration.value !== null) {
+      params.set('entry.432941906', `${service.requestDuration.value}ms`);
     }
 
     // Add feedback type
@@ -141,8 +158,8 @@ export function useAegisSuggestCwe(options: UseAegisSuggestCweOptions) {
     canSuggest,
     canShowFeedback,
     details,
-    hasAppliedSuggestion: aegisCweSuggestionWatcher.hasAppliedSuggestion,
-    isSuggesting,
+    hasAppliedSuggestion: aegisSuggestionWatcher.hasAppliedSuggestion,
+    isFetching: service.isFetching,
     revert,
     sendFeedback,
     suggestCwe,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed } from 'vue';
 
-import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestCwe';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestCwe';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
@@ -9,6 +9,7 @@ import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import type { CWEMemberType } from '@/types/mitreCwe';
 import { loadCweData } from '@/services/CweService';
 import { osimRuntime } from '@/stores/osimRuntime';
+import type { CweSuggestionDetails } from '@/types/aegisAI';
 
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
@@ -33,15 +34,20 @@ const {
   canSuggest,
   details: suggestionDetails,
   hasAppliedSuggestion,
-  isSuggesting,
+  isFetching,
   revert: revertCwe,
   sendFeedback,
   suggestCwe,
-} = useAegisSuggestCwe({ valueRef: modelValue, context: props.aegisContext as AegisSuggestionContextRefs });
+} = useAegisSuggestion(
+  props.aegisContext as AegisSuggestionContextRefs,
+  modelValue,
+  'cwe_id',
+);
 
 const suggestionTooltip = computed(() => {
   if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CWE via AEGIS-AI';
-  const { confidence, cwe, explanation, tools_used } = suggestionDetails.value;
+  const { confidence, explanation, tools_used } = suggestionDetails.value as CweSuggestionDetails;
+  const { cwe } = suggestionDetails.value as CweSuggestionDetails;
   const parts: string[] = [`Value: ${cwe}`];
   if (confidence != null && confidence !== '') parts.push(`Confidence: ${confidence}`);
   if (explanation) parts.push(`Explanation: ${explanation}`);
@@ -113,7 +119,7 @@ const getUsageClass = (usage: string) => {
 </script>
 
 <template>
-  <LabelDiv :label :loading="isSuggesting" class="mb-2">
+  <LabelDiv :label :loading="isFetching" class="mb-2">
     <template #labelSlot>
       <i
         v-if="osimRuntime.flags?.aiCweSuggestions === true"
@@ -146,7 +152,7 @@ const getUsageClass = (usage: string) => {
         v-model="modelValue"
         :error
         class="col-12"
-        :read-only="isSuggesting"
+        :read-only="isFetching"
         @update:query="filterSuggestions"
       >
         <template v-if="suggestions.length > 0" #suggestions="{ abort }">
