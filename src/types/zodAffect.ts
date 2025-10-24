@@ -82,7 +82,7 @@ export const AffectCVSSSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
 });
 
-export type ZodAffectType = { _uuid?: string } & z.infer<typeof ZodAffectSchema>;
+export type ZodAffectType = { _uuid?: string; rows?: ZodAffectType[] } & z.infer<typeof ZodAffectSchema>;
 export type AffectSchemaType = typeof ZodAffectSchema;
 export const ZodAffectSchema = z.object({
   uuid: z.string().uuid().nullish(),

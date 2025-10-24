@@ -23,6 +23,7 @@ export const PersistentSettingsSchema = z.object({
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
   affectsColumnOrder: z.array(z.string()),
+  affectsGrouping: z.boolean(),
   affectsSizing: z.record(z.number()),
   affectsVisibility: z.record(z.boolean()),
   trackersPerPage: z.number(),
@@ -45,7 +46,7 @@ const defaultApiKeys: ApiKeysType = {
   jiraApiKey: '',
 };
 
-const defaultPersistentSettings: PersistentSettingsType = {
+export const defaultPersistentSettings: PersistentSettingsType = {
   showNotifications: false,
   affectsPerPage: 10,
   trackersPerPage: 10,
@@ -58,6 +59,7 @@ const defaultPersistentSettings: PersistentSettingsType = {
   affectsColumnWidths: [],
   affectsColumnOrder: [],
   trackersColumnWidths: [],
+  affectsGrouping: false,
 };
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';

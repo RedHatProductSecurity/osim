@@ -46,27 +46,50 @@ export default function AffectColumnDefinitions() {
       id: 'Select',
       header: ({ table }) => {
         return (
-          <input
-            type="checkbox"
-            class="form-check-input"
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-          />
+          <div>
+            <input
+              type="checkbox"
+              class="form-check-input"
+              checked={table.getIsAllRowsSelected()}
+              indeterminate={table.getIsSomeRowsSelected()}
+              onChange={table.getToggleAllRowsSelectedHandler()}
+            />
+            {table.getCanSomeRowsExpand() && (
+              <i
+                role="button"
+                onClick={() => table.toggleAllRowsExpanded()}
+                class={'p-1 ps-2 text-white ' +
+                  (table.getIsAllRowsExpanded() ? 'bi-caret-down-fill' : 'bi-caret-right-fill')}
+              >
+              </i>
+            )}
+          </div>
+
         );
       },
       cell: ({ row }) => {
         return (
-          <input
-            type="checkbox"
-            class="form-check-input"
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onChange={row.getToggleSelectedHandler()}
-          />
+          <div style={{ paddingLeft: `${row.depth * 20}px` }}>
+            <input
+              type="checkbox"
+              class="form-check-input"
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              onChange={row.getToggleSelectedHandler()}
+            />
+            {row.getCanExpand() && (
+              <i
+                role="button"
+                onClick={row.getToggleExpandedHandler()}
+                class={'p-1 ps-2 ' +
+                  (row.getIsExpanded() ? 'bi-caret-down-fill' : 'bi-caret-right-fill')}
+              >
+              </i>
+            )}
+          </div>
         );
       },
-      size: 20,
+      size: 40,
       enableResizing: false,
       enableSorting: false,
       enableGlobalFilter: false,

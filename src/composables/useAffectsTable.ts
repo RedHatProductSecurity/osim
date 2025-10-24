@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getFacetedUniqueValues,
   useVueTable,
+  getExpandedRowModel,
 } from '@tanstack/vue-table';
 import type { SortingState, Column, ColumnFiltersState, RowData } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
@@ -19,10 +20,10 @@ import { usePagination } from '@/composables/usePagination';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
-import type { ZodAffectType } from '@/types';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { useToastStore } from '@/stores/ToastStore';
-import type { TrackerSuggestions } from '@/types/zodAffect';
+import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
+import { affectUUID } from '@/utils/helpers';
 
 declare module '@tanstack/table-core' {
 
@@ -33,7 +34,12 @@ declare module '@tanstack/table-core' {
     filingTracker: Set<string>;
     revert(rowId: string): void;
     unavailableTrackers: Set<string>;
-    updateData<T extends keyof ZodAffectType>(rowIndex: number, columnId: T, value: ZodAffectType[T]): void;
+    updateData<T extends keyof ZodAffectType>(
+      rowIndex: number,
+      columnId: T,
+      value: ZodAffectType[T],
+      parentIndex?: number
+    ): void;
   }
 }
 
@@ -54,8 +60,44 @@ export function useAffectsTable() {
 
   const {
     actions: { fileTracker, markModified, markNew, markRemoved, refreshData, revertAffect },
-    state: { currentAffects, modifiedAffects, newAffects, removedAffects },
+    state: { affectUUIDMap, currentAffects, modifiedAffects, newAffects, removedAffects },
   } = useAffectsModel();
+
+  // groupedAffects is a representation of the currentAffects grouped by ps_module,
+  // all the logic still depends on currentAffects to work, this is used only
+  // by the table to group/expand the rows
+  const groupedAffects = computed(() => {
+    // Separate new affects from existing affects
+    const newAffectsList: ({ rows: ZodAffectType[] } & ZodAffectType)[] = [];
+    const groups = new Map<string, ZodAffectType[]>();
+
+    for (const affect of currentAffects.value) {
+      const id = affectUUID(affect) ?? '';
+      if (newAffects.has(id)) {
+        // New affects are always individual parent rows
+        const parent = { ...affect, rows: [] };
+        newAffectsList.push(parent);
+      } else {
+        // Group existing affects by ps_module
+        const module = affect.ps_module ?? '';
+        let group = groups.get(module);
+        if (!group) {
+          group = [];
+          groups.set(module, group);
+        }
+        group.push(affect);
+      }
+    }
+
+    // Select first element in group as parent
+    const groupedExisting: ({ rows: ZodAffectType[] } & ZodAffectType)[] = [];
+    for (const group of groups.values()) {
+      const parent = { ...group[0], rows: group.length > 1 ? group.slice(1) : [] };
+      groupedExisting.push(parent);
+    }
+    // Return new affects first, then grouped existing affects
+    return newAffectsList.concat(groupedExisting);
+  });
 
   const { flaw } = useFlaw();
 
@@ -65,10 +107,14 @@ export function useAffectsTable() {
   const globalFilter = ref('');
   const columnFilters = ref<ColumnFiltersState>([]);
   const isFetchingSuggestedTrackers = ref(false);
+  const expandedRows = ref({});
 
-  const totalPages = computed(() =>
-    Math.ceil((currentAffects.value.length || 0) / settings.value.affectsPerPage),
-  );
+  const totalPages = computed(() => {
+    const affectCount = settings.value.affectsGrouping
+      ? groupedAffects.value.length
+      : currentAffects.value.length;
+    return Math.ceil(affectCount / settings.value.affectsPerPage);
+  });
 
   const { changePage, currentPage, pages } = usePagination(totalPages);
 
@@ -78,14 +124,17 @@ export function useAffectsTable() {
   }));
 
   const table = useVueTable({
-    get data() { return currentAffects.value; },
+    get data() { return settings.value.affectsGrouping ? groupedAffects.value : currentAffects.value; },
     get columns() { return columns.value; },
-    getRowId: row => (row?._uuid || row?.uuid) ?? '',
+    getRowId: row => affectUUID(row) ?? '',
+    getSubRows: row => settings.value.affectsGrouping ? row.rows : undefined,
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
     initialState: {
       columnSizing: settings.value.affectsSizing,
     },
+    filterFromLeafRows: true,
+    enableSubRowSelection: false,
     state: {
       get columnVisibility() { return settings.value.affectsVisibility; },
       get pagination() { return pagination.value; },
@@ -94,6 +143,7 @@ export function useAffectsTable() {
       get columnFilters() { return columnFilters.value; },
       get columnOrder() { return settings.value.affectsColumnOrder; },
       get columnSizing() { return settings.value.affectsSizing; },
+      get expanded() { return expandedRows.value; },
     },
     meta: {
       createData: () => {
@@ -112,10 +162,21 @@ export function useAffectsTable() {
           tracker: null,
         }, ...currentAffects.value];
       },
-      updateData: (rowIndex, columnId, value) => {
-        const currentAffect = currentAffects.value[rowIndex];
+
+      updateData: (rowIndex, columnId, value, parentIndex) => {
+        let currentAffect = currentAffects.value[rowIndex];
+
+        if (settings.value.affectsGrouping) {
+          const rowUUID = parentIndex !== undefined
+            ? affectUUID(groupedAffects.value[parentIndex].rows[rowIndex])
+            : affectUUID(groupedAffects.value[rowIndex]);
+
+          const index = affectUUIDMap.value.get(rowUUID)!;
+          currentAffect = currentAffects.value[index];
+        }
+
         currentAffect[columnId] = value;
-        markModified((currentAffect._uuid || currentAffect.uuid)!);
+        markModified(affectUUID(currentAffect));
         refreshData();
       },
       deleteData: (rowId) => {
@@ -154,11 +215,13 @@ export function useAffectsTable() {
     onColumnOrderChange: createChangeHandler(settings.value, 'affectsColumnOrder'),
     onColumnVisibilityChange: createChangeHandler(settings.value, 'affectsVisibility'),
     onColumnSizingChange: createChangeHandler(settings.value, 'affectsSizing'),
+    onExpandedChange: createChangeHandler(expandedRows),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getExpandedRowModel: getExpandedRowModel(),
   });
 
   function toggleColumnVisibility(column: Column<any, any>) {
@@ -198,8 +261,9 @@ export function useAffectsTable() {
   }
 
   function fitColumnWidth(column: Column<ZodAffectType>) {
-    const HEADER_CHAR_WIDTH = 12; // Bold monospace
-    const BODY_CHAR_WIDTH = 9;    // Regular monospace
+    const FONT_SIZE = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const HEADER_CHAR_WIDTH = FONT_SIZE - 4; // Bold monospace
+    const BODY_CHAR_WIDTH = FONT_SIZE - 6;    // Regular monospace
     const PADDING = 32;
 
     const headerWidth = (column.columnDef.header?.toString() || '').length * HEADER_CHAR_WIDTH;
@@ -262,6 +326,8 @@ export function useAffectsTable() {
       showAll,
       table,
       totalPages,
+      groupedAffects,
+      expandedRows,
     },
     actions: {
       changeItemsPerPage,
