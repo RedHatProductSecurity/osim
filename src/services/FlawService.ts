@@ -205,7 +205,7 @@ export async function postFlawComment(
 }
 
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
-export async function promoteFlaw(uuid: string) {
+export async function promoteFlawWorkflow(uuid: string) {
   const { addToast } = useToastStore();
   return osidbFetch({
     method: 'post',
@@ -226,12 +226,12 @@ export async function promoteFlaw(uuid: string) {
         body: displayedError,
         css: 'warning',
       });
-      console.error('FlawService::promoteFlaw() Problem promoting flaw:', error);
+      console.error('FlawService::promoteFlawWorkflow() Problem promoting flaw:', error);
       throw error;
     });
 }
 // Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
-export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
+export async function rejectFlawWorkflow(uuid: string, data: Record<'reason', string>) {
   const { addToast } = useToastStore();
   return osidbFetch({
     method: 'post',
@@ -254,9 +254,55 @@ export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
         body: displayedError,
         css: 'warning',
       });
-      console.error('FlawService::rejectFlaw() Problem rejecting flaw:', error);
+      console.error('FlawService::rejectFlawWorkflow() Problem rejecting flaw:', error);
       throw error;
     });
+}
+
+export async function revertFlawWorkflow(uuid: string) {
+  const { addToast } = useToastStore();
+  try {
+    const response = await osidbFetch({
+      method: 'post',
+      url: `/osidb/api/v1/flaws/${uuid}/revert`,
+    });
+    addToast({
+      title: 'Flaw Reverted',
+      body: response.data.classification.state,
+      css: 'success',
+    });
+    return response.data;
+  } catch (error) {
+    addToast({
+      title: 'Error Reverting Flaw',
+      body: getDisplayedOsidbError(error),
+      css: 'warning',
+    });
+    throw error;
+  }
+}
+
+export async function resetFlawWorkflow(uuid: string) {
+  const { addToast } = useToastStore();
+  try {
+    const response = await osidbFetch({
+      method: 'post',
+      url: `/osidb/api/v1/flaws/${uuid}/reset`,
+    });
+    addToast({
+      title: 'Flaw Reset',
+      body: response.data.classification.state,
+      css: 'success',
+    });
+    return response.data;
+  } catch (error) {
+    addToast({
+      title: 'Error Resetting Flaw',
+      body: getDisplayedOsidbError(error),
+      css: 'warning',
+    });
+    throw error;
+  }
 }
 
 // TODO paginate search results page
