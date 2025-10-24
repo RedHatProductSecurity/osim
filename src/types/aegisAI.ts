@@ -51,17 +51,19 @@ export type AegisAIValidationErrorType = {
 // AEGIS AI Fields Types
 export type SuggestionFields = 'cwe_id' | 'impact';
 
+export type SuggestionDetails = CweSuggestionDetails & ImpactSuggestionDetails;
+
 export type CweSuggestionDetails = {
-} & SuggestionDetails;
+  cwe: Nullable<string[]>;
+} & SuggestionDetailOptionals;
 
 export type ImpactSuggestionDetails = {
-} & SuggestionDetails;
+  impact: Nullable<ImpactEnumWithBlankType[]>;
+} & SuggestionDetailOptionals;
 
-export type SuggestionDetails = {
+export type SuggestionDetailOptionals = {
   confidence?: number | string;
-  cwe: Nullable<string[]>;
   explanation?: string;
-  impact: Nullable<ImpactEnumWithBlankType | ImpactEnumWithBlankType[]>;
   tools_used?: string[];
 };
 

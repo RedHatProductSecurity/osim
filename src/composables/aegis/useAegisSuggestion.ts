@@ -12,6 +12,7 @@ import { osimRuntime } from '@/stores/osimRuntime';
 import type {
   SuggestionDetails,
   SuggestionFields,
+  AegisAIComponentFeatureNameType,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
@@ -19,6 +20,11 @@ type DetailsFeatureField = 'cwe' | 'impact';
 const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
+};
+
+const FIELD_NAME_TO_FEATURE_NAME: Record<string, AegisAIComponentFeatureNameType> = {
+  cwe_id: 'suggest-cwe',
+  impact: 'suggest-impact',
 };
 
 export function useAegisSuggestion(

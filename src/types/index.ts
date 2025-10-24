@@ -2,6 +2,7 @@ import type { Ref } from 'vue';
 
 import type { ZodFlawCVSSType } from '@/types/zodFlaw';
 import type { ZodAffectCVSSType } from '@/types/zodAffect';
+import type { Ref } from 'vue';
 
 export type Cvss = ZodAffectCVSSType | ZodFlawCVSSType;
 export type CvssEntity = {
