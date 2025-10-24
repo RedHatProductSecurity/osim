@@ -1,8 +1,9 @@
+
 import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestCwe';
+import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
