@@ -2,11 +2,19 @@ import { computed, type Ref } from 'vue';
 
 import { omit } from 'ramda';
 
-import type { ZodFlawCommentType, ZodFlawType } from '@/types/zodFlaw';
-import type { ZodAffectCVSSType, ZodAffectType, ZodFlawCVSSType, ZodFlawReferenceType } from '@/types';
+import type {
+  ZodAffectCVSSType,
+  ZodAffectType,
+  ZodFlawCVSSType,
+  ZodFlawReferenceType,
+  ZodFlawType,
+  ZodFlawCommentType,
+} from '@/types';
 import { CommentType } from '@/constants';
 
 type AffectWithoutTracker = Omit<ZodAffectType, 'trackers'>;
+type NullableRef<T> = null | Ref<T>;
+type DeepNullableRef<T> = NullableRef<null | T>;
 
 export function serializePublicComments(comments: ZodFlawCommentType[]) {
   const maxComments = 15;
@@ -18,18 +26,18 @@ export function serializePublicComments(comments: ZodFlawCommentType[]) {
 }
 
 export type AegisSuggestionContextRefs = {
-  affects?: null | Ref<AffectWithoutTracker[] | null>;
-  comments?: null | Ref<string>;
-  commentZero?: null | Ref<null | string>;
-  components?: null | Ref<null | string[]>;
-  cveDescription?: null | Ref<null | string | undefined>;
-  cveId?: null | Ref<null | string>;
-  cvssScores?: null | Ref<null | ZodAffectCVSSType[] | ZodFlawCVSSType[]> ;
-  embargoed?: null | Ref<boolean | null>;
-  references?: null | Ref<null | ZodFlawReferenceType[]>;
-  requiresCveDescription?: null | Ref<null | string | undefined>;
-  statement?: null | Ref<null | string | undefined>;
-  title?: null | Ref<null | string>;
+  affects?: DeepNullableRef<AffectWithoutTracker[]>;
+  comments?: NullableRef<string>;
+  commentZero?: DeepNullableRef<string>;
+  components?: DeepNullableRef<string[]>;
+  cveDescription?: DeepNullableRef<string | undefined>;
+  cveId?: DeepNullableRef<string>;
+  cvssScores?: DeepNullableRef<ZodAffectCVSSType[] | ZodFlawCVSSType[]>;
+  embargoed?: DeepNullableRef<boolean>;
+  references?: DeepNullableRef<ZodFlawReferenceType[]>;
+  requiresCveDescription?: DeepNullableRef<string | undefined>;
+  statement?: DeepNullableRef<string | undefined>;
+  title?: DeepNullableRef<string>;
 };
 
 export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggestionContextRefs {
