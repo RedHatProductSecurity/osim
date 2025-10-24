@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed } from 'vue';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestCwe';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
