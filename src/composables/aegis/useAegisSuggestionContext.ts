@@ -9,12 +9,12 @@ import type {
   ZodFlawReferenceType,
   ZodFlawType,
   ZodFlawCommentType,
+  DeepNullableRef,
+  NullableRef,
 } from '@/types';
 import { CommentType } from '@/constants';
 
 type AffectWithoutTracker = Omit<ZodAffectType, 'trackers'>;
-type NullableRef<T> = null | Ref<T>;
-type DeepNullableRef<T> = NullableRef<null | T>;
 
 export function serializePublicComments(comments: ZodFlawCommentType[]) {
   const maxComments = 15;

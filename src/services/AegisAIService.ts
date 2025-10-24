@@ -1,3 +1,5 @@
+import { type Ref, ref } from 'vue';
+
 import type {
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
@@ -133,6 +135,14 @@ function queryStringFromParams(params: Record<string, any>) {
 }
 
 export class AegisAIService {
+  isFetching: Ref<boolean>;
+  requestDuration: Ref<number>;
+
+  constructor() {
+    this.isFetching = ref(false);
+    this.requestDuration = ref(0);
+  }
+
   /**
    * Analyze a component using AEGIS-AI intelligence
    * @param params Component analysis parameters
@@ -140,7 +150,7 @@ export class AegisAIService {
    */
   async analyzeComponent(params: AegisAIComponentAnalysisParamsType): Promise<any> {
     try {
-      const result = await aegisAIFetch({
+      const result = await this.fetch({
         method: 'GET',
         url: '/analysis/component',
         params: {
@@ -164,7 +174,7 @@ export class AegisAIService {
    */
   async analyzeCVE(params: AegisAICVEAnalysisParamsType): Promise<any> {
     try {
-      const result = await aegisAIFetch({
+      const result = await this.fetch({
         method: 'GET',
         url: '/analysis/cve',
         params: {
@@ -193,7 +203,7 @@ export class AegisAIService {
     try {
       const { detail, feature, ...contextData } = params;
 
-      const result = await aegisAIFetch({
+      const result = await this.fetch({
         method: 'POST',
         url: `/analysis/cve/${feature}`,
         params: {
@@ -209,6 +219,17 @@ export class AegisAIService {
     }
   }
 
+  async fetch(config: AegisAIFetchOptions, factoryOptions?: AegisAIFetchCallbacks): ReturnType<typeof aegisAIFetch> {
+    this.isFetching.value = true;
+    const requestStartTime = Date.now();
+    try {
+      return await aegisAIFetch(config, factoryOptions);
+    } finally {
+      this.isFetching.value = false;
+      this.requestDuration.value = Date.now() - requestStartTime;
+    }
+  }
+
   /**
    * Generate a response using AEGIS-AI (for the web console)
    * @param prompt The prompt to send to AEGIS-AI
@@ -216,7 +237,7 @@ export class AegisAIService {
    */
   async generateResponse(prompt: string): Promise<any> {
     try {
-      const result = await aegisAIFetch({
+      const result = await this.fetch({
         method: 'POST',
         url: '/generate_response',
         data: { prompt },
@@ -234,7 +255,7 @@ export class AegisAIService {
    */
   async getConsole(): Promise<string> {
     try {
-      const result = await aegisAIFetch({
+      const result = await this.fetch({
         method: 'GET',
         url: '/console',
       });

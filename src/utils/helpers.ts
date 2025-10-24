@@ -6,9 +6,7 @@ import { watchOnce } from '@vueuse/core';
 
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
-import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType, CvssEntity } from '@/types';
-
-import type { DeepMapValues } from './typeHelpers';
+import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType, CvssEntity, DeepMapValues } from '@/types';
 
 export function unwrap(value: any): any {
   const unwrapped = toRaw(unref(value));
