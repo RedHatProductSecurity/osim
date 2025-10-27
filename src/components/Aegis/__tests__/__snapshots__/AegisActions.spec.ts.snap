@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`aegisActions > renders correctly 1`] = `
+"<div data-v-e049df0b="" class="d-flex align-items-center"><i data-v-e049df0b="" class="bi-stars label-icon" title="Test tooltip"></i>
+  <!--v-if-->
+  <!--v-if-->
+</div>"
+`;
