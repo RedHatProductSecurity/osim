@@ -3,6 +3,7 @@
 ## [2025.11.0]
 ### Added
 * Tour guide for new features (`OSIDB-4583`)
+* Allow grouping affects by ps_module (`OSIDB-4546`)
 
 
 ## [2025.10.0]
@@ -25,6 +26,7 @@
   * Allow sorting by any column with the option to combine them
   * Added bulk actions for filing trackers
   * Fixed some issues of old implementation
+  * Allow grouping affects by PsModule (`OSIDB-4546`)
 
 
 ## [2025.9.0]

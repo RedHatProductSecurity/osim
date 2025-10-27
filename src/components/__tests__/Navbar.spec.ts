@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar/Navbar.vue';
 
 import router from '@/router';
 import { useToastStore, type ToastAdded } from '@/stores/ToastStore';
-import { useSettingsStore } from '@/stores/SettingsStore';
+import { defaultPersistentSettings, useSettingsStore } from '@/stores/SettingsStore';
 
 describe('navbar', () => {
   let subject: VueWrapper<InstanceType<typeof Navbar>>;
@@ -50,19 +50,8 @@ describe('navbar', () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      settings: {
+      settings: { ...defaultPersistentSettings,
         showNotifications: true,
-        affectsPerPage: 10,
-        trackersPerPage: 10,
-        isHidingLabels: false,
-        privacyNoticeShown: false,
-        aiUsageNoticeShown: false,
-        unifiedCommentsView: false,
-        affectsColumnWidths: [],
-        trackersColumnWidths: [],
-        affectsColumnOrder: [],
-        affectsSizing: {},
-        affectsVisibility: {},
       },
       apiKeys: {
         bugzillaApiKey: '',
@@ -100,20 +89,7 @@ describe('navbar', () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      settings: {
-        showNotifications: true,
-        affectsPerPage: 10,
-        trackersPerPage: 10,
-        isHidingLabels: false,
-        privacyNoticeShown: true,
-        aiUsageNoticeShown: true,
-        unifiedCommentsView: false,
-        affectsColumnWidths: [],
-        trackersColumnWidths: [],
-        affectsColumnOrder: [],
-        affectsSizing: {},
-        affectsVisibility: {},
-      },
+      settings: { ...defaultPersistentSettings, showNotifications: true },
       apiKeys: {
         bugzillaApiKey: '',
         jiraApiKey: '',
@@ -155,20 +131,7 @@ describe('navbar', () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      settings: {
-        showNotifications: false,
-        affectsPerPage: 10,
-        trackersPerPage: 10,
-        isHidingLabels: false,
-        privacyNoticeShown: false,
-        aiUsageNoticeShown: false,
-        unifiedCommentsView: false,
-        affectsColumnWidths: [],
-        trackersColumnWidths: [],
-        affectsColumnOrder: [],
-        affectsSizing: {},
-        affectsVisibility: {},
-      },
+      settings: defaultPersistentSettings,
       apiKeys: {
         bugzillaApiKey: '',
         jiraApiKey: '',
@@ -205,20 +168,7 @@ describe('navbar', () => {
     };
     const settingStore = useSettingsStore(pinia);
     settingStore.$state = {
-      settings: {
-        showNotifications: false,
-        affectsPerPage: 10,
-        trackersPerPage: 10,
-        isHidingLabels: false,
-        privacyNoticeShown: false,
-        aiUsageNoticeShown: false,
-        unifiedCommentsView: false,
-        affectsColumnWidths: [],
-        trackersColumnWidths: [],
-        affectsColumnOrder: [],
-        affectsSizing: {},
-        affectsVisibility: {},
-      },
+      settings: defaultPersistentSettings,
       apiKeys: {
         bugzillaApiKey: '',
         jiraApiKey: '',
