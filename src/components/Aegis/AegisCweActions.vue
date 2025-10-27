@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue';
 
 import AegisActions from '@/components/Aegis/AegisActions.vue';
 
-import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestCwe';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
 import { loadCweData } from '@/services/CweService';
@@ -29,16 +29,16 @@ const {
   details: suggestionDetails,
   hasAppliedSuggestion,
   hasMultipleSuggestions,
-  isSuggesting,
+  isFetchingSuggestion,
   revert: revertCwe,
   selectedSuggestionIndex,
   selectSuggestion,
   sendFeedback,
   suggestCwe,
-} = useAegisSuggestCwe({ valueRef: modelValue, context: props.aegisContext as AegisSuggestionContextRefs });
+} = useAegisSuggestion(props.aegisContext as AegisSuggestionContextRefs, modelValue, 'cwe_id');
 
 defineExpose({
-  isSuggesting,
+  isFetchingSuggestion,
 });
 
 const suggestionTooltip = computed(() => {
@@ -80,9 +80,9 @@ onMounted(() => {
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
-    :isSuggesting="isSuggesting"
+    :isFetchingSuggestion="isFetchingSuggestion"
     :canShowFeedback="canShowFeedback"
-    :suggestions="allSuggestions"
+    :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
     @suggest="suggestCwe"

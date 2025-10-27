@@ -55,8 +55,8 @@ exports[`flawCreateView > should render 1`] = `
                 </div>
               </label></div>
             <!--v-if-->
-          </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Impact </span>
+          </div><label data-v-001a00e0="" data-v-1c54faf9="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3"><!--v-if--> Impact <!--v-if--></span>
               <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select is-invalid">
                   <option data-v-001a00e0="" selected="" disabled="" value=""></option>
                   <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
@@ -159,7 +159,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
             </div>
           </div><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source </span>
+            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">CVE Source</span>
               <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select is-invalid" value="">
                   <!--v-if-->
                   <option data-v-001a00e0="" selected="" value=""></option>
@@ -260,7 +260,7 @@ exports[`flawCreateView > should render 1`] = `
         </div>
         <div data-v-76e7a15d="" class="col-6">
           <!--v-if--><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State </span>
+            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
               <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
                   <!--v-if-->
                   <option data-v-001a00e0="" selected="" value=""></option>

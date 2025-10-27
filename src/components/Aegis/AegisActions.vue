@@ -6,7 +6,7 @@ defineProps<{
   canSuggest: boolean;
   hasAppliedSuggestion: boolean;
   hasMultipleSuggestions: boolean;
-  isSuggesting: boolean;
+  isFetchingSuggestion: boolean;
   selectedIndex: number;
   suggestions: string[];
   tooltipText: string;
@@ -27,13 +27,14 @@ function selectSuggestion(index: number) {
 <template>
   <div v-if="osimRuntime.flags?.aiCweSuggestions === true" class="d-flex align-items-center">
     <i
+      v-osim-loading.grow="isFetchingSuggestion"
       class="bi-stars label-icon"
       :class="{ disabled: !canSuggest, applied: hasAppliedSuggestion }"
       :title="tooltipText"
       @click.prevent.stop="canSuggest && emit('suggest')"
     />
     <div
-      v-if="hasMultipleSuggestions && !isSuggesting"
+      v-if="hasMultipleSuggestions && !isFetchingSuggestion"
       class="dropdown ms-1"
     >
       <i
@@ -72,7 +73,7 @@ function selectSuggestion(index: number) {
         </slot>
       </ul>
     </div>
-    <span v-if="canShowFeedback && !isSuggesting" class="ms-2">
+    <span v-if="canShowFeedback && !isFetchingSuggestion" class="ms-2">
       <i
         class="bi-arrow-counterclockwise label-icon"
         title="Revert to previous value"
@@ -93,6 +94,17 @@ function selectSuggestion(index: number) {
 </template>
 
 <style scoped lang="scss">
+i.bi-stars {
+  position: relative;
+
+  :deep(div[role='status']) {
+    position: absolute;
+    top: 0.25rem;
+    scale: 1.5;
+    left: 0;
+  }
+}
+
 .label-icon {
   color: gray;
   margin-right: 0.5rem;

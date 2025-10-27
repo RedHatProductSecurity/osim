@@ -2,10 +2,11 @@
 import { computed } from 'vue';
 
 import Nudge from '@/components/Nudge/Nudge.vue';
+import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import { flawImpactEnum } from '@/types/zodFlaw';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import { ImpactEnumWithBlank } from '@/types/zodShared';
@@ -23,20 +24,9 @@ const props = defineProps<{
 
 const modelValue = defineModel<ImpactEnumWithBlankType | null | undefined>('modelValue');
 
-const {
-  // canShowFeedback,
-  // canSuggest,
-  // details: suggestionDetails,
-  // hasAppliedSuggestion,
-  isFetching,
-  // revert: revertCwe,
-  // sendFeedback,
-  suggestImpact,
-} = useAegisSuggestion(
-  props.aegisContext as AegisSuggestionContextRefs,
-  modelValue,
-  'impact',
-);
+function handleImpactChange(value: null | string | undefined) {
+  modelValue.value = value as ImpactEnumWithBlankType | null | undefined;
+}
 
 const shouldShowImpactNudge = computed(() => {
   const postTriageStates: FlawClassificationStateEnum[] = [
@@ -59,7 +49,14 @@ const shouldShowImpactNudge = computed(() => {
     :error="error"
     :withBlank="true"
   >
-    <template #nudge>
+    <template #label="{ label }">
+      <AegisImpactActions
+        v-if="osimRuntime.flags?.aiImpactSuggestions === true"
+        :aegisContext="aegisContext"
+        :modelValue="modelValue"
+        @update:impact="handleImpactChange"
+      />
+      {{ label }}
       <Nudge
         v-if="shouldShowImpactNudge"
         tooltip="Ensure that you have left a comment justifying the impact change."
@@ -67,3 +64,25 @@ const shouldShowImpactNudge = computed(() => {
     </template>
   </LabelSelect>
 </template>
+
+<style lang="css" scoped>
+.label-icon {
+  color: gray;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.label-icon.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.label-icon.applied {
+  color: black;
+}
+
+.throbber {
+  position: absolute;
+  left: 1rem;
+}
+</style>

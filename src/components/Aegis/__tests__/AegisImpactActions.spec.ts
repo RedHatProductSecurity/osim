@@ -2,7 +2,7 @@ import { computed } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -25,28 +25,21 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
   })),
 }));
 
-vi.mock('@/services/CweService', () => ({
-  loadCweData: vi.fn(() => [
-    { id: '79', name: 'Cross-site Scripting', isProhibited: false },
-    { id: '89', name: 'SQL Injection', isProhibited: false },
-  ]),
-}));
-
-describe('aegisCweActions', () => {
+describe('aegisImpactActions', () => {
   beforeEach(() => {
     // @ts-expect-error - osimRuntime is readonly in tests
     osimRuntime.value = {
       ...osimRuntime.value,
       flags: {
         ...osimRuntime.value.flags,
-        aiCweSuggestions: true,
+        aiImpactSuggestions: true,
       },
     };
     vi.clearAllMocks();
   });
 
   it('renders correctly', () => {
-    const wrapper = mountWithConfig(AegisCweActions, {
+    const wrapper = mountWithConfig(AegisImpactActions, {
       props: {
         modelValue: null,
       },
@@ -57,9 +50,9 @@ describe('aegisCweActions', () => {
   });
 
   it('uses AegisActions component', () => {
-    const wrapper = mountWithConfig(AegisCweActions, {
+    const wrapper = mountWithConfig(AegisImpactActions, {
       props: {
-        modelValue: 'CWE-79',
+        modelValue: '',
       },
     });
 
@@ -67,7 +60,7 @@ describe('aegisCweActions', () => {
   });
 
   it('exposes isFetchingSuggestion state', () => {
-    const wrapper = mountWithConfig(AegisCweActions, {
+    const wrapper = mountWithConfig(AegisImpactActions, {
       props: {
         modelValue: null,
       },
@@ -80,12 +73,13 @@ describe('aegisCweActions', () => {
     const { useAegisSuggestion } = await import('@/composables/aegis/useAegisSuggestion');
     const mockSelectSuggestion = vi.fn();
 
+    const suggestedImpact = 'IMPORTANT';
     vi.mocked(useAegisSuggestion).mockReturnValueOnce({
-      allSuggestions: computed(() => ['CWE-79', 'CWE-89']),
+      allSuggestions: computed(() => [suggestedImpact]),
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
-      currentSuggestion: computed(() => 'CWE-79'),
-      details: computed(() => ({ cwe: ['CWE-79', 'CWE-89'], impact: null })),
+      currentSuggestion: computed(() => suggestedImpact),
+      details: computed(() => ({ cwe: null, impact: suggestedImpact })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -97,9 +91,9 @@ describe('aegisCweActions', () => {
       suggestImpact: vi.fn(),
     });
 
-    const wrapper = mountWithConfig(AegisCweActions, {
+    const wrapper = mountWithConfig(AegisImpactActions, {
       props: {
-        modelValue: 'CWE-79',
+        modelValue: 'LOW',
       },
     });
 

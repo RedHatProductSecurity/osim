@@ -3,7 +3,8 @@
 ## [Unreleased]
 ### Added
 * Added CWE title to suggestion hover details (`AEGIS-236`)
-
+* Offer Impact suggestions from Aegis (`AEGIS-224`)
+* Offer CVSS suggestions from Aegis (`AEGIS-225`)
 
 ## [2025.11.2]
 ### Added
@@ -11,7 +12,6 @@
 * Add bulk editing to affects (`OSIDB-4515`)
 * Add Multi-flaw tracker creation (`OSIDB-4519`)
 * Support revert and reset workflow functions (`OSIDB-4489`)
-
 
 ## [2025.11.1-hotfix]
 ### Changed
