@@ -6,6 +6,7 @@ import Nudge from '@/components/Nudge/Nudge.vue';
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import { flawImpactEnum } from '@/types/zodFlaw';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import { ImpactEnumWithBlank } from '@/types/zodShared';
@@ -24,13 +25,13 @@ const props = defineProps<{
 const modelValue = defineModel<ImpactEnumWithBlankType | null | undefined>('modelValue');
 
 const {
-  // canShowFeedback,
+  canShowFeedback,
   // canSuggest,
-  // details: suggestionDetails,
-  // hasAppliedSuggestion,
+  details: impactSuggestionDetails,
+  hasAppliedSuggestion,
   isFetching,
-  // revert: revertCwe,
-  // sendFeedback,
+  revert: revertImpact,
+  sendFeedback,
   suggestImpact,
 } = useAegisSuggestion(
   props.aegisContext as AegisSuggestionContextRefs,
@@ -59,7 +60,33 @@ const shouldShowImpactNudge = computed(() => {
     :error="error"
     :withBlank="true"
   >
-    <template #nudge>
+    <template #label="{ label }">
+      <span v-if="isFetching" v-osim-loading.grow="isFetching" class="throbber" />
+      <i
+        v-if="osimRuntime.flags?.aiCweSuggestions === true"
+        class="bi-stars label-icon"
+        :class="{ applied: hasAppliedSuggestion }"
+        :title="impactSuggestionDetails?.explanation"
+        @click.prevent.stop="suggestImpact"
+      />
+      <span v-if="canShowFeedback" class="ms-2">
+        <i
+          class="bi-arrow-counterclockwise label-icon"
+          title="Revert Impact suggestion"
+          @click.prevent.stop="revertImpact"
+        />
+        <i
+          class="bi-hand-thumbs-up label-icon"
+          title="Mark suggestion helpful"
+          @click.prevent.stop="sendFeedback('up')"
+        />
+        <i
+          class="bi-hand-thumbs-down label-icon"
+          title="Mark suggestion unhelpful"
+          @click.prevent.stop="sendFeedback('down')"
+        />
+      </span>
+      {{ label }}
       <Nudge
         v-if="shouldShowImpactNudge"
         tooltip="Ensure that you have left a comment justifying the impact change."
@@ -67,3 +94,25 @@ const shouldShowImpactNudge = computed(() => {
     </template>
   </LabelSelect>
 </template>
+
+<style lang="css" scoped>
+.label-icon {
+  color: gray;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.label-icon.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.label-icon.applied {
+  color: black;
+}
+
+.throbber {
+  position: absolute;
+  left: 1rem;
+}
+</style>

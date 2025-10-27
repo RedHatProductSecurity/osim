@@ -1,5 +1,7 @@
 // AI Change Tracking Types
+import type { ValueOf } from '.';
 import type { AegisChangeType } from './zodFlaw';
+import type { ImpactEnumWithBlank } from './zodShared';
 
 // Component Feature Names for CVE Analysis
 export type AegisAIComponentFeatureNameType =
@@ -49,6 +51,10 @@ export type AegisAIValidationErrorType = {
 // AEGIS AI Fields Types
 export type CweSuggestionDetails = {
   cwe: string[];
+} & SuggestionDetails;
+
+export type ImpactSuggestionDetails = {
+  impact: ValueOf<typeof ImpactEnumWithBlank>;
 } & SuggestionDetails;
 
 export type SuggestionDetails = {

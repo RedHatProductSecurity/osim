@@ -9,7 +9,12 @@ import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWat
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
-import type { CweSuggestionDetails, AegisAIComponentFeatureNameType, SuggestionDetails } from '@/types/aegisAI';
+import type {
+  CweSuggestionDetails,
+  AegisAIComponentFeatureNameType,
+  SuggestionDetails,
+  ImpactSuggestionDetails,
+} from '@/types/aegisAI';
 
 const FIELD_NAME_TO_FEATURE_NAME: Record<string, AegisAIComponentFeatureNameType> = {
   cwe_id: 'suggest-cwe',
@@ -49,13 +54,16 @@ export function useAegisSuggestion(
       toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
       return;
     }
-    // TODO: revisit type handling for details
     (details.value as CweSuggestionDetails).cwe = [first];
     applySuggestion(first);
   }
 
   async function applySuggestion(suggestion: string) {
     aegisSuggestionWatcher.applyAISuggestion(suggestion);
+    successToast();
+  }
+
+  function successToast() {
     toastStore.addToast({
       title: 'AI Suggestion Applied',
       body: 'Suggestion applied. Always review AI generated responses prior to use.',
@@ -66,7 +74,10 @@ export function useAegisSuggestion(
 
   async function suggestImpact() {
     if (fieldName !== 'impact') return;
-    await getSuggestion();
+    const data = await getSuggestion();
+    const { impact } = data;
+    (details.value as ImpactSuggestionDetails).impact = impact;
+    applySuggestion(impact);
   }
 
   async function getSuggestion() {
@@ -210,5 +221,6 @@ export function useAegisSuggestion(
     selectedSuggestionIndex: readonly(selectedSuggestionIndex),
     sendFeedback,
     suggestCwe,
+    suggestImpact,
   };
 }
