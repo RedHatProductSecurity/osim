@@ -34,8 +34,16 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function createReference(reference: ZodFlawReferenceType) {
     isSaving.value = true;
-    await postFlawReference(flaw.value.uuid, reference)
+    const response = await postFlawReference(flaw.value.uuid, reference)
       .finally(() => isSaving.value = false);
+
+    // Update the local reference with the UUID from the server response
+    if (response?.data?.uuid) {
+      const index = flawReferences.value.findIndex(ref => ref === reference);
+      if (index !== -1) {
+        flawReferences.value[index] = { ...reference, ...response.data };
+      }
+    }
   }
 
   async function deleteReference(referenceId: string) {
@@ -58,6 +66,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         await createReference(reference);
       }
     }
+    isSaving.value = false;
     afterSaveSuccess();
   }
 
@@ -75,8 +84,16 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function createAcknowledgment(acknowlegdment: any) {
     isSaving.value = true;
-    await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment)
+    const response = await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment)
       .finally(() => isSaving.value = false);
+
+    // Update the local acknowledgment with the UUID from the server response
+    if (response?.data?.uuid) {
+      const index = flawAcknowledgments.value.findIndex(ack => ack === acknowlegdment);
+      if (index !== -1) {
+        flawAcknowledgments.value[index] = { ...acknowlegdment, ...response.data };
+      }
+    }
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
@@ -93,6 +110,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   }
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
+    isSaving.value = true;
     for (const acknowledgment of acknowledgments) {
       if (acknowledgment.uuid) {
         await updateAcknowledgment(acknowledgment);
@@ -100,6 +118,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         await createAcknowledgment(acknowledgment);
       }
     }
+    isSaving.value = false;
     afterSaveSuccess();
   }
 
