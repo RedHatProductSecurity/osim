@@ -1,4 +1,4 @@
-import { computed, reactive, readonly, toRaw, ref } from 'vue';
+import { computed, reactive, readonly, toRaw, shallowRef, triggerRef } from 'vue';
 
 import { createSharedComposable } from '@vueuse/core';
 
@@ -11,7 +11,7 @@ import {
   putAffectCvssScore,
   putAffects,
 } from '@/services/AffectService';
-import { affectRhCvss3, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
+import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 import { fileTrackingFor } from '@/services/TrackerService';
 
 import { useFlaw } from './useFlaw';
@@ -39,10 +39,13 @@ function useAffects() {
   const removedAffects = reactive<Set<string>>(new Set());
 
   // Data
-  const initialAffects = ref<ZodAffectType[]>([]);
-  const currentAffects = ref<ZodAffectType[]>([]);
+  const initialAffects = shallowRef<ZodAffectType[]>([]);
+  const currentAffects = shallowRef<ZodAffectType[]>([]);
   const wereAffectsEditedOrAdded = computed(() => modifiedAffects.size || newAffects.size);
   const hasChanges = computed(() => wereAffectsEditedOrAdded.value || removedAffects.size);
+
+  // Calculate a Map of UUID:index when affect array is updated (shallowRef)
+  const affectUUIDMap = computed(() => new Map(currentAffects.value.map((a, i) => [affectUUID(a), i])));
 
   function initializeAffects(affects: ZodAffectType[]) {
     initialAffects.value = deepCopyFromRaw(toRaw(affects));
@@ -81,7 +84,7 @@ function useAffects() {
       // Remove new affect entirely from currentAffects
       newAffects.delete(uuid);
       currentAffects.value = currentAffects.value.filter(
-        a => (a.uuid || a._uuid) !== uuid,
+        a => affectUUID(a) !== uuid,
       );
     } else if (removedAffects.has(uuid)) {
       // Restore removed affect
@@ -92,10 +95,8 @@ function useAffects() {
         a => a.uuid === uuid,
       );
       if (originalAffect) {
-        const index = currentAffects.value.findIndex(
-          a => (a.uuid || a._uuid) === uuid,
-        );
-        if (index !== -1) {
+        const index = affectUUIDMap.value.get(uuid);
+        if (index) {
           currentAffects.value[index] = structuredClone(toRaw(originalAffect));
         }
       }
@@ -105,7 +106,7 @@ function useAffects() {
 
   function refreshData() {
     // Trigger reactivity for shallowRef after mutations
-    currentAffects.value = [...currentAffects.value];
+    triggerRef(currentAffects);
   }
 
   const requestBodyFromAffect = (affect: ZodAffectType) => ({
@@ -259,6 +260,7 @@ function useAffects() {
       initialAffects: readonly(initialAffects),
 
       // Metadata
+      affectUUIDMap,
       hasChanges,
       modifiedAffects,
       newAffects,
