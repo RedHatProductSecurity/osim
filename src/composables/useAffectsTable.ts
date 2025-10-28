@@ -13,11 +13,12 @@ import type { SortingState, Column, ColumnFiltersState, RowData } from '@tanstac
 import { storeToRefs } from 'pinia';
 
 import columnDefinitions from '@/components/AffectsTable/columnDefinitions';
-import { arrIncludesWithBlanks, cvssScore, arrIncludesPartial } from '@/components/AffectsTable/customFilters';
+import { arrIncludesPartial, arrIncludesWithBlanks, cvssScore } from '@/components/AffectsTable/customFilters';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { usePagination } from '@/composables/usePagination';
 import { useAffectsModel } from '@/composables/useAffectsModel';
+import { useMultiFlawTrackers } from '@/composables/useMultiFlawTrackers';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { getTrackersForFlaws } from '@/services/TrackerService';
@@ -32,6 +33,7 @@ declare module '@tanstack/table-core' {
     deleteData(rowId: string | string[]): void;
     fileTrackers(rows: TData | TData[]): Promise<void>;
     filingTracker: Set<string>;
+    relatedAffects: Map<string, 'error' | 'loading' | ZodAffectType[]>;
     revert(rowId: string): void;
     unavailableTrackers: Set<string>;
     updateData<T extends keyof ZodAffectType>(
@@ -62,6 +64,11 @@ export function useAffectsTable() {
     actions: { fileTracker, markModified, markNew, markRemoved, refreshData, revertAffect },
     state: { affectUUIDMap, currentAffects, modifiedAffects, newAffects, removedAffects },
   } = useAffectsModel();
+
+  const {
+    actions: { getAffectUuidsForStream },
+    state: { relatedAffects },
+  } = useMultiFlawTrackers();
 
   // groupedAffects is a representation of the currentAffects grouped by ps_module,
   // all the logic still depends on currentAffects to work, this is used only
@@ -134,8 +141,20 @@ export function useAffectsTable() {
     pageSize: showAll.value ? currentAffects.value.length : settings.value.affectsPerPage,
   }));
 
+  // Automatically filter affects to show only those with related CVEs when they exist
+  const displayAffects = computed(() => {
+    const baseData = settings.value.affectsGrouping ? groupedAffects.value : currentAffects.value;
+
+    return relatedAffects.size === 0
+      ? baseData
+      : baseData.filter(affect => getAffectUuidsForStream(
+        `${affect.ps_update_stream}:${affect.ps_component}`,
+      ).length > 1,
+      );
+  });
+
   const table = useVueTable({
-    get data() { return settings.value.affectsGrouping ? groupedAffects.value : currentAffects.value; },
+    get data() { return displayAffects.value; },
     get columns() { return columns.value; },
     getRowId: row => affectUUID(row) ?? '',
     getSubRows: row => settings.value.affectsGrouping ? row.rows : undefined,
@@ -206,14 +225,27 @@ export function useAffectsTable() {
 
         trackersToFile.forEach(({ uuid }) => table.options.meta?.filingTracker.add(uuid!));
         for (const trackerToFile of trackersToFile) {
-          await fileTracker(trackerToFile)
-            .catch(() => {}) // Error is handled by the service, but without a catch handler we stop the loop
-            .finally(() => table.options.meta?.filingTracker.delete(trackerToFile.uuid!));
+          const streamKey = `${trackerToFile.ps_update_stream}:${trackerToFile.ps_component}`;
+          const affectUuidsForStream = getAffectUuidsForStream(streamKey);
+
+          if (affectUuidsForStream.length > 1) {
+            await fileTracker({
+              affects: affectUuidsForStream,
+              ps_update_stream: trackerToFile.ps_update_stream!,
+            })
+              .catch(() => {}) // Error is handled by the service, but without a catch handler we stop the loop
+              .finally(() => table.options.meta?.filingTracker.delete(trackerToFile.uuid!));
+          } else {
+            await fileTracker(trackerToFile)
+              .catch(() => {}) // Error is handled by the service, but without a catch handler we stop the loop
+              .finally(() => table.options.meta?.filingTracker.delete(trackerToFile.uuid!));
+          }
         }
         refreshData();
       },
       filingTracker: reactive(new Set()),
       unavailableTrackers: reactive(new Set()),
+      relatedAffects,
     },
     filterFns: {
       arrIncludesPartial,
@@ -233,6 +265,7 @@ export function useAffectsTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
+    debugAll: true,
   });
 
   function toggleColumnVisibility(column: Column<any, any>) {
