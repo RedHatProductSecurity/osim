@@ -9,7 +9,7 @@ export type TrackersPost = {
   embargoed: boolean;
   ps_update_stream: string;
   sync_to_bz?: boolean;
-  updated_dt: string;
+  updated_dt?: string;
 };
 
 export async function fileTrackingFor(trackerData: TrackersPost | TrackersPost[]) {
