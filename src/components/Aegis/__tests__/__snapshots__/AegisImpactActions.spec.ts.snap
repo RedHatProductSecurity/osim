@@ -1,3 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`aegisImpactActions > renders correctly 1`] = `"<!--v-if-->"`;
+exports[`aegisImpactActions > renders correctly 1`] = `
+"<div data-v-e049df0b="" data-v-c3dcf9f5="" class="d-flex align-items-center"><i data-v-e049df0b="" class="bi-stars label-icon" title="Suggest Impact via AEGIS-AI"></i>
+  <!--v-if-->
+  <!--v-if-->
+</div>"
+`;
