@@ -4,7 +4,8 @@ import type {
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
   AegisAICVEAnalysisWithContextParamsType,
-  CweSuggestionDetails,
+  AegisFeature,
+  AegisFeatureResponseMap,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
@@ -194,14 +195,11 @@ export class AegisAIService {
    * Analyze a CVE with enhanced context using AEGIS-AI capabilities
    * Uses the new POST endpoint that accepts additional context in the request body
    * @param params CVE analysis parameters with context
-   * @returns AI-generated analysis response
+   * @returns AI-generated analysis response with proper typing based on feature
    */
-  async analyzeCVEWithContext(
-    params: { feature: 'suggest-cwe' } & AegisAICVEAnalysisWithContextParamsType,
-  ): Promise<CweSuggestionDetails>;
-
-  async analyzeCVEWithContext(params: AegisAICVEAnalysisWithContextParamsType): Promise<any>;
-  async analyzeCVEWithContext(params: AegisAICVEAnalysisWithContextParamsType): Promise<any> {
+  async analyzeCVEWithContext<TFeature extends AegisFeature>(
+    params: { feature: TFeature } & AegisAICVEAnalysisWithContextParamsType,
+  ): Promise<AegisFeatureResponseMap[TFeature]> {
     try {
       const { detail, feature, ...contextData } = params;
 
