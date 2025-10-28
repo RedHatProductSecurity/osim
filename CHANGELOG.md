@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Allow grouping affects by ps_module (`OSIDB-4546`)
+* Add Multi-flaw tracker creation (`OSIDB-4519`)
 
 ## [2025.10.0]
 ### Fixed
