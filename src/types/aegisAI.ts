@@ -5,10 +5,10 @@ import type { AegisChangeType } from './zodFlaw';
 export type AegisAIComponentFeatureNameType =
   | 'cvss-diff-explainer'
   | 'identify-pii'
-  | 'rewrite-description'
-  | 'rewrite-statement'
   | 'suggest-cwe'
-  | 'suggest-impact';
+  | 'suggest-description'
+  | 'suggest-impact'
+  | 'suggest-statement';
 
 export type AegisAIComponentFeatureNameV2Type = 'component-intelligence';
 
@@ -54,6 +54,16 @@ export type CweSuggestionDetails = {
   tools_used?: string[];
 };
 
+export type DescriptionSuggestionDetails = {
+  confidence?: number | string;
+  description?: string;
+  explanation?: string;
+  suggested_description?: string;
+  suggested_title?: string;
+  title?: string;
+  tools_used?: string[];
+};
+
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];
@@ -69,3 +79,10 @@ export type AegisChangeEntry = {
 export type AegisMetadata = {
   [fieldName: string]: AegisChangeEntry[];
 };
+
+export type AegisFeatureResponseMap = {
+  'suggest-cwe': CweSuggestionDetails;
+  'suggest-description': DescriptionSuggestionDetails;
+};
+
+export type AegisFeature = keyof AegisFeatureResponseMap;
