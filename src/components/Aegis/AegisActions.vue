@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { osimRuntime } from '@/stores/osimRuntime';
 
-defineProps<{
+const props = withDefaults(defineProps<{
   canShowFeedback: boolean;
   canSuggest: boolean;
+  featureFlag?: null | string;
   hasAppliedSuggestion: boolean;
   hasMultipleSuggestions: boolean;
   isSuggesting: boolean;
   selectedIndex: number;
   suggestions: string[];
   tooltipText: string;
-}>();
+}>(), {
+  featureFlag: 'aiCweSuggestions',
+});
 
 const emit = defineEmits<{
   feedback: ['negative' | 'positive'];
@@ -25,7 +28,7 @@ function selectSuggestion(index: number) {
 </script>
 
 <template>
-  <div v-if="osimRuntime.flags?.aiCweSuggestions === true" class="d-flex align-items-center">
+  <div v-if="props.featureFlag && osimRuntime.flags?.[props.featureFlag] === true" class="d-flex align-items-center">
     <i
       class="bi-stars label-icon"
       :class="{ disabled: !canSuggest, applied: hasAppliedSuggestion }"

@@ -2,7 +2,7 @@ import { ref, readonly, watch, type Ref } from 'vue';
 
 import { useAegisMetadataTracking } from './useAegisMetadataTracking';
 
-export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string>) {
+export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string | undefined>) {
   const { trackAIChange, untrackAIChange } = useAegisMetadataTracking();
 
   const hasAppliedSuggestion = ref(false);
