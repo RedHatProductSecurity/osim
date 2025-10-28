@@ -18,13 +18,21 @@ exports[`affectsTable > should render 1`] = `
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->
-    <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search..."><button data-v-17587d65="" class="btn btn-secondary text-nowrap" type="button" title="Select suggested trackers"><i data-v-17587d65="" class="bi-ui-checks-grid"></i></button><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
+    <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search...">
+    <div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container">
+      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button type="button" title="Open Tracker Manager" class="btn btn-secondary text-nowrap"><i class="bi-collection-fill"></i></button></div>
+      <teleport-stub data-v-846ac2ce="" to="#app">
+        <!--v-if-->
+      </teleport-stub>
+      <!--v-if-->
+    </div><button data-v-17587d65="" class="btn btn-secondary text-nowrap" type="button" title="Select suggested trackers"><i data-v-17587d65="" class="bi-ui-checks-grid"></i></button><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
     <ul data-v-12d45215="" class="dropdown-menu drop-zone">
       <li data-v-12d45215="" class="dropdown-item"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input"> Group by PsModule </label></li>
       <li data-v-12d45215="" class="dropdown-divider"></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
         <!--v-if-->
       </li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Related CVEs</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
@@ -57,6 +65,11 @@ exports[`affectsTable > should render 1`] = `
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
+        </th>
+        <th data-v-17587d65="" colspan="1" class="" style="width: 150px;">Related CVEs
+          <!--v-if-->
+          <!--v-if-->
+          <div data-v-17587d65="" class="resizer ltr"></div>
         </th>
         <th data-v-17587d65="" colspan="1" class="sortable" style="width: 110px;">Label<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
             <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
@@ -219,6 +232,9 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
         <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
@@ -248,6 +264,9 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
+        <td data-v-17587d65="">
+          <!---->
+        </td>
         <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
@@ -276,6 +295,9 @@ exports[`affectsTable > should render 1`] = `
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
+        </td>
+        <td data-v-17587d65="">
+          <!---->
         </td>
         <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
@@ -323,6 +345,7 @@ exports[`affectsTable > should render empty state 1`] = `
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->
+    <!--v-if-->
     <!--v-if--><button data-v-17587d65="" class="btn btn-secondary text-nowrap" title="Add new affect" type="button"><i data-v-17587d65="" class="bi-plus-lg"></i></button><button data-v-12d45215="" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i data-v-12d45215="" class="bi-gear"></i></button>
     <ul data-v-12d45215="" class="dropdown-menu drop-zone">
       <li data-v-12d45215="" class="dropdown-item"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input"> Group by PsModule </label></li>
@@ -330,6 +353,7 @@ exports[`affectsTable > should render empty state 1`] = `
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="false"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Select</label>
         <!--v-if-->
       </li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Related CVEs</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Label</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Product Stream</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
