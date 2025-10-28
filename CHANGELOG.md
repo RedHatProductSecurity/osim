@@ -3,6 +3,8 @@
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 * Add bulk editing to affects (`OSIDB-4515`)
+* Add Multi-flaw tracker creation (`OSIDB-4519`)
+
 
 ### Changed
 * Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
