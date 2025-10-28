@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, toRef, watch, onMounted } from 'vue';
 
 import { DateTime } from 'luxon';
 
@@ -21,6 +21,8 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
 import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
+import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
+import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -30,6 +32,7 @@ import {
   aegisSuggestionRequestBody,
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
@@ -38,6 +41,8 @@ import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
+import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
+import EditableText from '@/widgets/EditableText/EditableText.vue';
 import {
   MajorIncidentStateEnumWithBlank,
   descriptionRequiredStates,
@@ -196,6 +201,15 @@ const createdDate = computed(() => {
 });
 
 const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw);
+
+const titleRefForAegis = toRef(flaw.value, 'title');
+const descriptionRefForAegis = toRef(flaw.value, 'cve_description');
+
+const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
+  context: aegisContext,
+  titleRef: titleRefForAegis,
+  descriptionRef: descriptionRefForAegis,
+});
 </script>
 
 <template>
@@ -229,12 +243,18 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
       </div>
       <div class="row osim-flaw-form-section">
         <div :id="flaw.uuid" class="col-6">
-          <LabelEditable
-            v-model="flaw.title"
-            label="Title"
-            type="text"
-            :error="errors.title"
-          />
+          <LabelDiv label="Title" :loading="aegisSuggestDescriptionComposable.isSuggesting.value" class="mb-2">
+            <template #labelSlot>
+              <AegisTitleActions
+                :composable="aegisSuggestDescriptionComposable"
+              />
+            </template>
+            <EditableText
+              v-model="flaw.title"
+              class="col-12"
+              :error="errors.title"
+            />
+          </LabelDiv>
           <LabelTagsInput
             v-model="flaw.components"
             label="Components"
@@ -382,9 +402,18 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             label="Description"
             placeholder="Description Text ..."
             :error="errors.cve_description"
+            :loading="aegisSuggestDescriptionComposable.isSuggesting.value"
           >
             <template #label>
-              <span class="form-label col-3 osim-folder-tab-label">
+              <span class="form-label col-3 osim-folder-tab-label position-relative">
+                <span
+                  v-if="aegisSuggestDescriptionComposable.isSuggesting.value"
+                  v-osim-loading.grow="aegisSuggestDescriptionComposable.isSuggesting.value"
+                  class="throbber"
+                />
+                <AegisDescriptionActions
+                  :composable="aegisSuggestDescriptionComposable"
+                />
                 Description
               </span>
               <span class="col-3 ps-2">
@@ -648,5 +677,10 @@ form.osim-flaw-form :deep(*) {
   border-color: rgba(var(--bs-primary-rgb));
   inset: -1rem -1.5rem 0;
   z-index: -1;
+}
+
+.throbber {
+  position: absolute;
+  left: 1rem;
 }
 </style>
