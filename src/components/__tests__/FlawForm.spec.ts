@@ -97,7 +97,7 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
     const titleField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelDiv)
       .find(component => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
@@ -180,7 +180,7 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'create' });
 
     const titleField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelDiv)
       .find(component => component.props().label === 'Title');
     expect(titleField?.exists()).toBe(true);
 
@@ -266,7 +266,7 @@ describe('flawForm', () => {
     expect(vm.errors.comment_zero).not.toBe(null);
 
     const titleField = subject
-      .findAllComponents(LabelEditable)
+      .findAllComponents(LabelDiv)
       .find(component => component.props().label === 'Title')
       ?.find('.is-invalid');
     expect(titleField?.exists()).toBe(true);
