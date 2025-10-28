@@ -73,22 +73,24 @@ exports[`flawForm > mounts and renders 1`] = `
   </div>
   </div>
   <div data-v-76e7a15d="" class="row osim-flaw-form-section">
-    <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6"><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-        <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Title</span>
-          <!--v-if-->
-          <!-- for invalid-tooltip positioning -->
-          <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-text">
-            <!--<Transition name="flash-bg" :duration="2000">-->
-            <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-              <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span>
-                <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
-              </div>
-            </transition-stub>
-            <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
-            <!--v-if-->
+    <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6">
+      <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--> Title <!--attrs: {{ $attrs }}--></span>
+          <div data-v-0e2ae48e="" class="col-9">
+            <!-- for invalid-tooltip positioning -->
+            <div data-v-76e7a15d="" class="position-relative col-9 osim-editable-field osim-text col-12">
+              <!--<Transition name="flash-bg" :duration="2000">-->
+              <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">Sample title</span>
+                  <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
+                </div>
+              </transition-stub>
+              <div class="input-group" style="display: none;"><input class="form-control" type="text"><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-check"></i></button><button type="button" class="input-group-text" tabindex="-1"><i class="bi bi-x"></i></button></div>
+              <!--v-if-->
+            </div>
           </div>
         </div>
-      </label><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+      </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
         <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
           <div data-v-76f6bf34="" class="col-9">
             <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
@@ -429,7 +431,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </label></div>
     <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label"> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
+        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
           <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="form-control col-9 d-inline-block" rows="5" value="I am a spooky CVE"></textarea>
           <!--v-if-->
         </div>
