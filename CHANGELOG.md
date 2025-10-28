@@ -1,4 +1,7 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 
 ## [Unreleased]
 ### Added

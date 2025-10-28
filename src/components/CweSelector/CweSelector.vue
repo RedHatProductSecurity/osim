@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed } from 'vue';
 
-import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestCwe';
+import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { loadCweData } from '@/services/CweService';
+import type { CWEMemberType } from '@/types/mitreCwe';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
-import type { CWEMemberType } from '@/types/mitreCwe';
-import { loadCweData } from '@/services/CweService';
-import { osimRuntime } from '@/stores/osimRuntime';
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
   error?: null | string;
   label?: string;
@@ -27,31 +27,13 @@ const queryRef = ref('');
 const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
 const selectedIndex = ref(-1);
+const aegisCweActionsRef = ref<InstanceType<typeof AegisCweActions> | null>(null);
 
-const {
-  canShowFeedback,
-  canSuggest,
-  details: suggestionDetails,
-  hasAppliedSuggestion,
-  isSuggesting,
-  revert: revertCwe,
-  sendFeedback,
-  suggestCwe,
-} = useAegisSuggestCwe({ valueRef: modelValue, context: props.aegisContext as AegisSuggestionContextRefs });
-
-const suggestionTooltip = computed(() => {
-  if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CWE via AEGIS-AI';
-  const { confidence, cwe, explanation, tools_used } = suggestionDetails.value;
-  const parts: string[] = [`Value: ${cwe}`];
-  if (confidence != null && confidence !== '') parts.push(`Confidence: ${confidence}`);
-  if (explanation) parts.push(`Explanation: ${explanation}`);
-  if (tools_used && tools_used.length > 0) {
-    parts.push(`Tools Used: ${tools_used.join(', ')}`);
-  }
-  return parts.join('\n');
+const isLoadingSuggestions = computed(() => {
+  return aegisCweActionsRef.value?.isSuggesting || false;
 });
 
-const filterSuggestions = (query: string) => {
+function filterSuggestions(query: string) {
   queryRef.value = query;
   const queryParts = query.toLowerCase().split(/(->|\(|\)|\|)/);
   const lastQueryPart = queryParts[queryParts.length - 1];
@@ -68,9 +50,9 @@ const filterSuggestions = (query: string) => {
   if (suggestions.value.length === 0) {
     suggestions.value = cweData.value;
   }
-};
+}
 
-const handleSuggestionClick = (fn: (args?: any) => void, suggestion: string) => {
+function handleSuggestionClick(fn: (args?: any) => void, suggestion: string) {
   const queryParts = queryRef.value.split(/(->|\(|\)|\|)/);
   const lastIndex = queryParts.length - 1;
   queryParts[lastIndex] = suggestion;
@@ -78,9 +60,9 @@ const handleSuggestionClick = (fn: (args?: any) => void, suggestion: string) => 
   queryRef.value = modelValue.value;
   suggestions.value = [];
   nextTick(fn);
-};
+}
 
-const handleKeyDown = (event: KeyboardEvent) => {
+function handleKeyDown(event: KeyboardEvent) {
   if (suggestions.value.length === 0) return;
 
   switch (event.key) {
@@ -96,7 +78,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
       }
       break;
   }
-};
+}
 
 onMounted(() => {
   cweData.value = loadCweData().filter(({ isProhibited }) => !isProhibited);
@@ -107,46 +89,28 @@ const usageClassMap: { [key: string]: string } = {
   'allowed-with-review': 'text-bg-danger',
   'discouraged': 'text-bg-warning',
 };
-const getUsageClass = (usage: string) => {
+
+function getUsageClass(usage: string) {
   return usageClassMap[usage.toLowerCase()] ?? 'text-bg-secondary';
 };
 </script>
 
 <template>
-  <LabelDiv :label :loading="isSuggesting" class="mb-2">
+  <LabelDiv :label :loading="isLoadingSuggestions" class="mb-2">
     <template #labelSlot>
-      <i
-        v-if="osimRuntime.flags?.aiCweSuggestions === true"
-        class="bi-stars label-icon"
-        :class="{ disabled: !canSuggest, applied: hasAppliedSuggestion }"
-        :title="suggestionTooltip"
-        @click.prevent.stop="canSuggest && suggestCwe()"
+      <AegisCweActions
+        ref="aegisCweActionsRef"
+        v-model="modelValue"
+        :aegisContext="aegisContext"
+        :cweData="cweData"
       />
-
-      <span v-if="canShowFeedback" class="ms-2">
-        <i
-          class="bi-arrow-counterclockwise label-icon"
-          title="Revert to previous CWE"
-          @click.prevent.stop="revertCwe"
-        />
-        <i
-          class="bi-hand-thumbs-up label-icon"
-          title="Mark suggestion helpful"
-          @click.prevent.stop="sendFeedback('up')"
-        />
-        <i
-          class="bi-hand-thumbs-down label-icon"
-          title="Mark suggestion unhelpful"
-          @click.prevent.stop="sendFeedback('down')"
-        />
-      </span>
     </template>
     <div tabindex="0" @keydown="handleKeyDown($event)">
       <EditableTextWithSuggestions
         v-model="modelValue"
         :error
         class="col-12"
-        :read-only="isSuggesting"
+        :read-only="isLoadingSuggestions"
         @update:query="filterSuggestions"
       >
         <template v-if="suggestions.length > 0" #suggestions="{ abort }">
@@ -248,20 +212,5 @@ const getUsageClass = (usage: string) => {
   font-size: 1.25rem;
   float: right;
   margin-left: 0.5rem;
-}
-
-.label-icon {
-  color: gray;
-  margin-right: 0.5rem;
-  cursor: pointer;
-}
-
-.label-icon.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.label-icon.applied {
-  color: black;
 }
 </style>

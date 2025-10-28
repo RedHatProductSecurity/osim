@@ -48,7 +48,7 @@ export type AegisAIValidationErrorType = {
 
 // AEGIS AI Fields Types
 export type CweSuggestionDetails = {
-  confidence?: number | string;
+  confidence?: number;
   cwe: string[];
   explanation?: string;
   tools_used?: string[];

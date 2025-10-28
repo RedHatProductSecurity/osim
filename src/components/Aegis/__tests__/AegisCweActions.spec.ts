@@ -1,0 +1,110 @@
+import { computed } from 'vue';
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+
+import { mountWithConfig } from '@/__tests__/helpers';
+import { osimRuntime } from '@/stores/osimRuntime';
+
+vi.mock('@/composables/aegis/useAegisSuggestCwe', () => ({
+  useAegisSuggestCwe: vi.fn(() => ({
+    allSuggestions: computed(() => []),
+    canShowFeedback: computed(() => false),
+    canSuggest: computed(() => true),
+    currentSuggestion: computed(() => null),
+    details: computed(() => null),
+    hasAppliedSuggestion: computed(() => false),
+    hasMultipleSuggestions: computed(() => false),
+    isSuggesting: computed(() => false),
+    revert: vi.fn(),
+    selectedSuggestionIndex: computed(() => 0),
+    selectSuggestion: vi.fn(),
+    sendFeedback: vi.fn(),
+    suggestCwe: vi.fn(),
+  })),
+}));
+
+vi.mock('@/services/CweService', () => ({
+  loadCweData: vi.fn(() => [
+    { id: '79', name: 'Cross-site Scripting', isProhibited: false },
+    { id: '89', name: 'SQL Injection', isProhibited: false },
+  ]),
+}));
+
+describe('aegisCweActions', () => {
+  beforeEach(() => {
+    // @ts-expect-error - osimRuntime is readonly in tests
+    osimRuntime.value = {
+      ...osimRuntime.value,
+      flags: {
+        ...osimRuntime.value.flags,
+        aiCweSuggestions: true,
+      },
+    };
+    vi.clearAllMocks();
+  });
+
+  it('renders correctly', () => {
+    const wrapper = mountWithConfig(AegisCweActions, {
+      props: {
+        modelValue: null,
+      },
+    });
+
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  it('uses AegisActions component', () => {
+    const wrapper = mountWithConfig(AegisCweActions, {
+      props: {
+        modelValue: 'CWE-79',
+      },
+    });
+
+    expect(wrapper.findComponent({ name: 'AegisActions' }).exists()).toBe(true);
+  });
+
+  it('exposes isSuggesting state', () => {
+    const wrapper = mountWithConfig(AegisCweActions, {
+      props: {
+        modelValue: null,
+      },
+    });
+
+    expect(wrapper.vm.isSuggesting).toBeDefined();
+  });
+
+  it('updates model value when suggestion is selected', async () => {
+    const { useAegisSuggestCwe } = await import('@/composables/aegis/useAegisSuggestCwe');
+    const mockSelectSuggestion = vi.fn();
+
+    vi.mocked(useAegisSuggestCwe).mockReturnValueOnce({
+      allSuggestions: computed(() => ['CWE-79', 'CWE-89']),
+      canShowFeedback: computed(() => false),
+      canSuggest: computed(() => false),
+      currentSuggestion: computed(() => 'CWE-79'),
+      details: computed(() => ({ cwe: ['CWE-79', 'CWE-89'] })),
+      hasAppliedSuggestion: computed(() => true),
+      hasMultipleSuggestions: computed(() => true),
+      isSuggesting: computed(() => false),
+      revert: vi.fn(),
+      selectedSuggestionIndex: computed(() => 0),
+      selectSuggestion: mockSelectSuggestion,
+      sendFeedback: vi.fn(),
+      suggestCwe: vi.fn(),
+    });
+
+    const wrapper = mountWithConfig(AegisCweActions, {
+      props: {
+        modelValue: 'CWE-79',
+      },
+    });
+
+    const aegisActions = wrapper.findComponent({ name: 'AegisActions' });
+    await aegisActions.vm.$emit('selectSuggestion', 1);
+
+    expect(mockSelectSuggestion).toHaveBeenCalledWith(1);
+  });
+});
