@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { osimRuntime } from '@/stores/osimRuntime';
-
 defineProps<{
   canShowFeedback: boolean;
   canSuggest: boolean;
@@ -25,8 +23,7 @@ function selectSuggestion(index: number) {
 </script>
 
 <template>
-  <div v-if="osimRuntime.flags?.aiCweSuggestions === true" class="d-flex align-items-center">
-
+  <div class="d-flex align-items-center">
     <i
       v-osim-loading.grow="isFetchingSuggestion"
       class="bi-stars label-icon"
