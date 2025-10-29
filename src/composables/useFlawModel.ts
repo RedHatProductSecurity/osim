@@ -40,12 +40,13 @@ import { useAffectsModel } from './useAffectsModel';
 function useAffectsModelV2() {
   if (osimRuntime.value.flags?.affectsV2) {
     const {
-      actions: { initializeAffects, removeAffects, saveAffects },
+      actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
       state: { removedAffects, wereAffectsEditedOrAdded },
     } = useAffectsModel();
 
     return {
       setInitialAffects: () => initializeAffects(useFlaw().flaw.value.affects),
+      resetSavedAffects: resetSavedAffects,
       saveAffects,
       wereAffectsEditedOrAdded,
       removeAffects,
@@ -58,7 +59,10 @@ function useAffectsModelV2() {
       },
     };
   }
-  return useFlawAffectsModel();
+  return {
+    ...useFlawAffectsModel(),
+    resetSavedAffects: undefined,
+  };
 }
 
 export function useFlawModel() {
@@ -85,6 +89,7 @@ export function useFlawModel() {
   const {
     affectsToDelete,
     removeAffects,
+    resetSavedAffects,
     saveAffects,
     setInitialAffects,
     wereAffectsEditedOrAdded,
@@ -201,12 +206,21 @@ export function useFlawModel() {
       queue.push(async () => {
         const response = await saveAffects();
 
-        if (osimRuntime.value.flags?.affectsV2) {
-          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, response, 'uuid'), 'affects'));
+        if (osimRuntime.value.flags?.affectsV2 && typeof response === 'object' && 'savedAffects' in response) {
+          const { hasErrors, savedAffects } = response;
+          // Always merge saved affects into flaw state (even on partial success)
+          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
+
+          // If no errors, do full reset; if partial success, only reset saved items
+          if (hasErrors && resetSavedAffects) {
+            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
+          } else {
+            afterSuccessQueue.push(setInitialAffects);
+          }
         } else {
           afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+          afterSuccessQueue.push(setInitialAffects);
         }
-        afterSuccessQueue.push(setInitialAffects);
       });
     }
 
@@ -231,13 +245,24 @@ export function useFlawModel() {
     if (affectsToDelete.value.length) {
       if (osimRuntime.value.flags?.affectsV2) {
         queue.push(async () => {
-          const removedAffects = await removeAffects();
-          if (removedAffects) {
-            afterSuccessQueue.push(() =>
-              setFlaw(flaw.value.affects.filter(({ uuid }) => uuid && !removedAffects.includes(uuid)), 'affects'),
-            );
+          const response = await removeAffects();
+
+          if (response && typeof response === 'object' && 'deletedUuids' in response) {
+            const { deletedUuids, hasErrors } = response;
+
+            // Remove successfully deleted affects from flaw state
+            if (deletedUuids.length > 0) {
+              afterSuccessQueue.push(() =>
+                setFlaw(flaw.value.affects.filter(({ uuid }) => uuid && !deletedUuids.includes(uuid)), 'affects'),
+              );
+            }
+
+            // Only do full reset if all deletions succeeded
+            if (!hasErrors) {
+              afterSuccessQueue.push(setInitialAffects);
+            }
+            // If hasErrors, failed deletions stay in removedAffects Set for retry
           }
-          afterSuccessQueue.push(setInitialAffects);
         });
       } else {
         queue.push(removeAffects);
@@ -248,12 +273,21 @@ export function useFlawModel() {
       queue.push(async () => {
         const response = await saveAffects();
 
-        if (osimRuntime.value.flags?.affectsV2) {
-          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, response, 'uuid'), 'affects'));
+        if (osimRuntime.value.flags?.affectsV2 && typeof response === 'object' && 'savedAffects' in response) {
+          const { hasErrors, savedAffects } = response;
+          // Always merge saved affects into flaw state (even on partial success)
+          afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
+
+          // If no errors, do full reset; if partial success, only reset saved items
+          if (hasErrors && resetSavedAffects) {
+            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
+          } else {
+            afterSuccessQueue.push(setInitialAffects);
+          }
         } else {
           afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
+          afterSuccessQueue.push(setInitialAffects);
         }
-        afterSuccessQueue.push(setInitialAffects);
       });
     }
 
