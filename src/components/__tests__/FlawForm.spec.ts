@@ -371,7 +371,7 @@ describe('flawForm', () => {
         'Promote to Triage',
         'Reject',
         'Reset',
-        'Revert',
+        'Revert to Empty',
       ]).includes(button.text().trim())).toBe(true);
     }
   });

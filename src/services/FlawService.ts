@@ -214,7 +214,7 @@ export async function promoteFlawWorkflow(uuid: string) {
     .then((response) => {
       addToast({
         title: 'Flaw Promoted',
-        body: response.data.classification.state,
+        body: `Flaw promoted to ${response.data.classification.state}`,
         css: 'success',
       });
       return response.data;

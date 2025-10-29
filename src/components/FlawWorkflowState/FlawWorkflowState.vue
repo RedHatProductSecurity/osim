@@ -6,6 +6,7 @@ import Modal from '@/widgets/Modal/Modal.vue';
 import { promoteFlawWorkflow, rejectFlawWorkflow, resetFlawWorkflow, revertFlawWorkflow } from '@/services/FlawService';
 import { ZodFlawClassification } from '@/types/zodShared';
 import DropDownMenu from '@/widgets/DropDownMenu/DropDownMenu.vue';
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const props = defineProps<{
   classification: any;
@@ -17,6 +18,8 @@ const emit = defineEmits<{ 'create:jiraTask': []; 'refresh:flaw': [] }>();
 
 const shouldShowRejectionModal = ref(false);
 const rejectionReason = ref('');
+const isRequesting = ref(false);
+const dropdownMenuRef = ref<InstanceType<typeof DropDownMenu>>();
 
 const workflowStates = ZodFlawClassification.shape.state.enum;
 
@@ -40,6 +43,7 @@ function toggleCreateJiraTask() {
 
 function openRejectionModal() {
   shouldShowRejectionModal.value = true;
+  dropdownMenuRef.value?.close();
 }
 
 function closeRejectionModal() {
@@ -47,12 +51,23 @@ function closeRejectionModal() {
 }
 
 function onReject(flawId: string) {
+  isRequesting.value = true;
   closeRejectionModal();
-  rejectFlawWorkflow(flawId, { reason: rejectionReason.value }).then(() => emit('refresh:flaw'));
+  rejectFlawWorkflow(flawId, { reason: rejectionReason.value }).then(() => {
+    emit('refresh:flaw');
+  }).finally(() => {
+    isRequesting.value = false;
+  });
 }
 
 function onPromote(flawId: string) {
-  promoteFlawWorkflow(flawId).then(() => emit('refresh:flaw'));
+  dropdownMenuRef.value?.close();
+  isRequesting.value = true;
+  promoteFlawWorkflow(flawId).then(() => {
+    emit('refresh:flaw');
+  }).finally(() => {
+    isRequesting.value = false;
+  });
 }
 
 function nextPhase(workflowState: WorkflowPhases) {
@@ -61,14 +76,30 @@ function nextPhase(workflowState: WorkflowPhases) {
   return labels[index + 1] || labels.slice(-1)[0];
 }
 
+function previousPhase(workflowState: WorkflowPhases) {
+  const [labels, phases] = [Object.keys(workflowStates), Object.values(workflowStates)];
+  const index = phases.indexOf(workflowState);
+  return labels[index - 1] || labels[0];
+}
+
 async function onRevert(flawId: string) {
-  await revertFlawWorkflow(flawId);
-  emit('refresh:flaw');
+  dropdownMenuRef.value?.close();
+  isRequesting.value = true;
+  revertFlawWorkflow(flawId).then(() => {
+    emit('refresh:flaw');
+  }).finally(() => {
+    isRequesting.value = false;
+  });
 }
 
 async function onReset(flawId: string) {
-  await resetFlawWorkflow(flawId);
-  emit('refresh:flaw');
+  dropdownMenuRef.value?.close();
+  isRequesting.value = true;
+  resetFlawWorkflow(flawId).then(() => {
+    emit('refresh:flaw');
+  }).finally(() => {
+    isRequesting.value = false;
+  });
 }
 </script>
 
@@ -79,14 +110,15 @@ async function onReset(flawId: string) {
         <span class="form-control rounded-0">{{ classification.state || 'Legacy Flaw without Jira task' }}</span>
         <div class="col-auto">
           <div v-if="shouldShowWorkflowButtons" class="osim-workflow-state-buttons">
-            <DropDownMenu>
+            <DropDownMenu ref="dropdownMenuRef">
               <template #trigger>
-                <button type="button" class="btn btn-secondary dropdown-toggle">
+                <button type="button" class="btn btn-secondary dropdown-toggle" :disabled="isRequesting">
                   Change State
+                  <LoadingSpinner v-if="isRequesting" type="grow" />
                 </button>
               </template>
               <template #content>
-                <div class="workflow-dropdown-menu">
+                <div v-if="!isRequesting" class="workflow-dropdown-menu">
                   <li class="dropdown-item">
                     <button
                       type="button"
@@ -99,19 +131,31 @@ async function onReset(flawId: string) {
                     </button>
                   </li>
                   <li class="dropdown-item">
-                    <button type="button" class="btn" @click="onRevert(flawId)">
+                    <button
+                      type="button"
+                      class="btn"
+                      @click="onRevert(flawId)"
+                    >
                       <i class="bi bi-chevron-double-left" />
-                      Revert
+                      Revert to {{ previousPhase(classification.state as WorkflowPhases) }}
                     </button>
                   </li>
                   <li class="dropdown-item">
-                    <button type="button" class="btn" @click="openRejectionModal">
+                    <button
+                      type="button"
+                      class="btn"
+                      @click="openRejectionModal"
+                    >
                       <i class="bi bi-chevron-bar-down"></i>
                       Reject
                     </button>
                   </li>
                   <li class="dropdown-item">
-                    <button type="button" class="btn" @click="onReset(flawId)">
+                    <button
+                      type="button"
+                      class="btn"
+                      @click="onReset(flawId)"
+                    >
                       <i class="bi bi-arrow-counterclockwise"></i>
                       Reset
                     </button>
@@ -165,4 +209,3 @@ async function onReset(flawId: string) {
   }
 }
 </style>
-

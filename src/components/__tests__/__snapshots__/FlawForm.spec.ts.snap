@@ -328,7 +328,9 @@ exports[`flawForm > mounts and renders 1`] = `
                 <div data-v-79158bda="" class="col-auto">
                   <div data-v-79158bda="" class="osim-workflow-state-buttons">
                     <div data-v-846ac2ce="" data-v-79158bda="" class="dropdown-container">
-                      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button data-v-79158bda="" type="button" class="btn btn-secondary dropdown-toggle"> Change State </button></div>
+                      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button data-v-79158bda="" type="button" class="btn btn-secondary dropdown-toggle"> Change State
+                          <!--v-if-->
+                        </button></div>
                       <teleport-stub data-v-846ac2ce="" to="#app">
                         <!--v-if-->
                       </teleport-stub>
