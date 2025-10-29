@@ -1,9 +1,8 @@
-
 import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestCwe } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -23,6 +22,7 @@ const analyzeMock = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
   AegisAIService: vi.fn().mockImplementation(() => ({
     analyzeCVEWithContext: analyzeMock,
+    isFetching: ref(false),
   })),
 }));
 
@@ -44,7 +44,7 @@ function createContext(overrides?: Partial<Parameters<typeof serializeAegisConte
   return ctx;
 }
 
-describe('useAegisSuggestCwe', () => {
+describe('useAegisSuggestion', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -56,7 +56,7 @@ describe('useAegisSuggestCwe', () => {
     const context = createContext({ cveId: ref('INVALID') });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     expect(composable.canSuggest.value).toBe(false);
@@ -64,7 +64,7 @@ describe('useAegisSuggestCwe', () => {
 
     expect(analyzeMock).not.toHaveBeenCalled();
     expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
-    expect(composable.isSuggesting.value).toBe(false);
+    expect(composable.isFetchingSuggestion.value).toBe(false);
   });
 
   it('calls service with expected payload when suggesting', async () => {
@@ -79,7 +79,7 @@ describe('useAegisSuggestCwe', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     expect(composable.canSuggest.value).toBe(true);
@@ -106,16 +106,18 @@ describe('useAegisSuggestCwe', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
+    console.log(composable.details.value);
 
     expect(valueRef.value).toBe('CWE-89');
     expect(composable.details.value).toEqual({
       cwe: ['CWE-89'],
       confidence: 0.9,
       explanation: 'Reasoning',
+      impact: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -140,7 +142,7 @@ describe('useAegisSuggestCwe', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -148,7 +150,7 @@ describe('useAegisSuggestCwe', () => {
 
     expect(valueRef.value).toBe('CWE-79');
     expect(composable.hasAppliedSuggestion.value).toBe(false);
-    expect(composable.details.value).toBeNull();
+    expect(composable.details.value).toEqual({ cwe: null, impact: null });
   });
 
   it('handles no-suggestion response', async () => {
@@ -160,13 +162,13 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockResolvedValueOnce({ cwe: [] });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
     await composable.suggestCwe();
 
     expect(valueRef.value).toBe('CWE-79');
     expect(composable.hasAppliedSuggestion.value).toBe(false);
-    expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
+    expect(addToast).toHaveBeenCalledWith({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
   });
 
   it('handles service errors and shows toast', async () => {
@@ -178,12 +180,12 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockRejectedValueOnce({ data: { detail: 'Backend error' } });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
     await composable.suggestCwe();
 
     expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion Error', body: 'Backend error' });
-    expect(composable.isSuggesting.value).toBe(false);
+    expect(composable.isFetchingSuggestion.value).toBe(false);
   });
 
   it('tracks AI metadata when suggestion is applied', async () => {
@@ -195,7 +197,7 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -214,7 +216,7 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -234,7 +236,7 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -259,7 +261,7 @@ describe('useAegisSuggestCwe', () => {
     analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -277,7 +279,7 @@ describe('useAegisSuggestCwe', () => {
   });
 });
 
-describe('useAegisSuggestCwe - Multiple Suggestions', () => {
+describe('useAegisSuggestion - Multiple Suggestions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -294,7 +296,7 @@ describe('useAegisSuggestCwe - Multiple Suggestions', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -318,7 +320,7 @@ describe('useAegisSuggestCwe - Multiple Suggestions', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -350,7 +352,7 @@ describe('useAegisSuggestCwe - Multiple Suggestions', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -373,7 +375,7 @@ describe('useAegisSuggestCwe - Multiple Suggestions', () => {
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestCwe({ context: context as AegisSuggestionContextRefs, valueRef }), [],
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
     );
 
     await composable.suggestCwe();
@@ -381,7 +383,7 @@ describe('useAegisSuggestCwe - Multiple Suggestions', () => {
     composable.revert();
 
     expect(composable.selectedSuggestionIndex.value).toBe(0);
-    expect(composable.details.value).toBeNull();
+    expect(composable.details.value).toEqual({ cwe: null, impact: null });
     expect(valueRef.value).toBe('CWE-79');
   });
 });

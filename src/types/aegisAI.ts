@@ -1,5 +1,5 @@
 // AI Change Tracking Types
-import type { ValueOf } from '.';
+import type { Nullable, ValueOf } from '.';
 import type { AegisChangeType } from './zodFlaw';
 import type { ImpactEnumWithBlank } from './zodShared';
 
@@ -49,17 +49,19 @@ export type AegisAIValidationErrorType = {
 };
 
 // AEGIS AI Fields Types
+export type SuggestionFields = 'cwe_id' | 'impact';
+
 export type CweSuggestionDetails = {
-  cwe: string[];
 } & SuggestionDetails;
 
 export type ImpactSuggestionDetails = {
-  impact: ValueOf<typeof ImpactEnumWithBlank>;
 } & SuggestionDetails;
 
 export type SuggestionDetails = {
   confidence?: number | string;
+  cwe: Nullable<string[]>;
   explanation?: string;
+  impact: Nullable<ValueOf<typeof ImpactEnumWithBlank>>;
   tools_used?: string[];
 };
 // HTTP Validation Error

@@ -10,21 +10,21 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type {
-  CweSuggestionDetails,
   AegisAIComponentFeatureNameType,
   SuggestionDetails,
-  ImpactSuggestionDetails,
+  SuggestionFields,
 } from '@/types/aegisAI';
 
-const FIELD_NAME_TO_FEATURE_NAME: Record<string, AegisAIComponentFeatureNameType> = {
-  cwe_id: 'suggest-cwe',
-  impact: 'suggest-impact',
+type DetailsFeatureField = 'cwe' | 'impact';
+const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureField> = {
+  cwe_id: 'cwe',
+  impact: 'impact',
 };
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<null | string>,
-  fieldName: string,
+  fieldName: SuggestionFields,
 ) {
   const toastStore = useToastStore();
   const service = new AegisAIService();
@@ -32,7 +32,12 @@ export function useAegisSuggestion(
   const previousValue = ref<null | string>(null);
   const selectedSuggestionIndex = ref(0);
   // TODO: revisit type handling for details
-  const details = ref<CweSuggestionDetails | null | SuggestionDetails>(null);
+  const detailsField = DetailsFieldFromSuggestionField[fieldName];
+
+  const details = ref<SuggestionDetails>({
+    cwe: null,
+    impact: null,
+  });
 
   const canShowFeedback = computed(
     () => aegisSuggestionWatcher.hasAppliedSuggestion.value && !service.isFetching.value,
@@ -47,15 +52,13 @@ export function useAegisSuggestion(
   const canSuggest = computed(() => isCveIdValid.value && !service.isFetching.value);
 
   async function suggestCwe() {
-    if (fieldName !== 'cwe_id') return;
     const data = await getSuggestion();
-    const first = data.cwe?.[0] ?? '';
-    if (!first) {
-      toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
-      return;
+    if (!data?.cwe || data.cwe.length === 0) {
+      toastStore.addToast({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
+    } else {
+      details.value.cwe = data.cwe;
+      applySuggestion(data.cwe[0]);
     }
-    (details.value as CweSuggestionDetails).cwe = [first];
-    applySuggestion(first);
   }
 
   async function applySuggestion(suggestion: string) {
@@ -73,11 +76,14 @@ export function useAegisSuggestion(
   }
 
   async function suggestImpact() {
-    if (fieldName !== 'impact') return;
     const data = await getSuggestion();
-    const { impact } = data;
-    (details.value as ImpactSuggestionDetails).impact = impact;
-    applySuggestion(impact);
+    if (!data || !data.impact) {
+      toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
+    } else {
+      const { impact } = data;
+      details.value.impact = impact;
+      applySuggestion(impact);
+    };
   }
 
   async function getSuggestion() {
@@ -89,6 +95,10 @@ export function useAegisSuggestion(
       if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
         previousValue.value = valueRef.value;
       }
+      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestionFields, AegisAIComponentFeatureNameType> = {
+        cwe_id: 'suggest-cwe',
+        impact: 'suggest-impact',
+      };
       const data = await service.analyzeCVEWithContext({
         feature: FIELD_NAME_TO_FEATURE_NAME[fieldName],
         ...serializeAegisContext(context),
@@ -103,6 +113,8 @@ export function useAegisSuggestion(
       //   cwe: suggestions,
       details.value = {
         // cwe: [first],
+        cwe: null,
+        impact: null,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -127,29 +139,35 @@ export function useAegisSuggestion(
       valueRef.value = previousValue.value;
     }
     previousValue.value = null;
-    details.value = null;
+    details.value = {
+      cwe: null,
+      impact: null,
+    };
     selectedSuggestionIndex.value = 0;
     aegisSuggestionWatcher.revertAISuggestion();
   }
 
   function selectSuggestion(index: number) {
-    if (!details.value || !details.value[fieldName] || index < 0 || index >= details.value[fieldName].length) {
+    if (
+      !details.value
+      || !(details.value)[detailsField]
+      || index < 0 || index >= details.value[detailsField]!.length) {
       return;
     }
     selectedSuggestionIndex.value = index;
-    const selectedCwe = details.value[fieldName][index];
+    const selectedCwe = details.value[detailsField]![index];
     aegisSuggestionWatcher.applyAISuggestion(selectedCwe);
   }
 
   const currentSuggestion = computed(() => {
-    if (!details.value?[fieldName] || selectedSuggestionIndex.value >= details.value[fieldName].length) {
+    if (!details.value?.[detailsField] || selectedSuggestionIndex.value >= details.value[detailsField]!.length) {
       return null;
     }
-    return details.value[fieldName][selectedSuggestionIndex.value];
+    return details.value[detailsField]![selectedSuggestionIndex.value];
   });
 
   const allSuggestions = computed(() => {
-    return details.value?[fieldName] || [];
+    return details.value?.[detailsField] || [];
   });
 
   const hasMultipleSuggestions = computed(() => {
@@ -215,7 +233,7 @@ export function useAegisSuggestion(
     details,
     hasMultipleSuggestions,
     hasAppliedSuggestion: aegisSuggestionWatcher.hasAppliedSuggestion,
-    isFetching: service.isFetching,
+    isFetchingSuggestion: service.isFetching,
     revert,
     selectSuggestion,
     selectedSuggestionIndex: readonly(selectedSuggestionIndex),

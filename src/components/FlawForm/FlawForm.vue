@@ -268,20 +268,6 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             :initialImpact="initialFlaw.impact ?? null"
             :workflowState="flaw.classification?.state ?? ''"
           />
-          <!-- <LabelSelect
-            v-model="flaw.impact"
-            label="Impact"
-            :options="flawImpactEnum"
-            :error="errors.impact"
-            :withBlank="true"
-          >
-            <template #nudge>
-              <Nudge
-                v-if="shouldShowImpactNudge"
-                tooltip="Ensure that you have left a comment justifying the impact change."
-              />
-            </template>
-          </LabelSelect> -->
           <CvssCalculator />
           <CvssSection
             :highlightedNvdCvssString

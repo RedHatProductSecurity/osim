@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
+import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
 import { loadCweData } from '@/services/CweService';
@@ -9,7 +10,7 @@ import type { CWEMemberType } from '@/types/mitreCwe';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
   error?: null | string;
   label?: string;
@@ -26,21 +27,11 @@ const queryRef = ref('');
 const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
 const selectedIndex = ref(-1);
+const aegisCweActionsRef = ref<InstanceType<typeof AegisCweActions> | null>(null);
 
-const {
-  canShowFeedback: _canShowFeedback,
-  canSuggest: _canSuggest,
-  details: _suggestionDetails,
-  hasAppliedSuggestion: _hasAppliedSuggestion,
-  isFetching,
-  revert: _revertCwe,
-  sendFeedback: _sendFeedback,
-  suggestCwe: _suggestCwe,
-} = useAegisSuggestion(
-  props.aegisContext as AegisSuggestionContextRefs,
-  modelValue,
-  'cwe_id',
-);
+const isLoadingSuggestions = computed(() => {
+  return aegisCweActionsRef.value?.isFetchingSuggestion || false;
+});
 
 function filterSuggestions(query: string) {
   queryRef.value = query;
@@ -105,13 +96,21 @@ function getUsageClass(usage: string) {
 </script>
 
 <template>
-  <LabelDiv :label :loading="isFetching" class="mb-2">
+  <LabelDiv :label :loading="isLoadingSuggestions" class="mb-2">
+    <template #labelSlot>
+      <AegisCweActions
+        ref="aegisCweActionsRef"
+        v-model="modelValue"
+        :aegisContext="aegisContext"
+        :cweData="cweData"
+      />
+    </template>
     <div tabindex="0" @keydown="handleKeyDown($event)">
       <EditableTextWithSuggestions
         v-model="modelValue"
         :error
         class="col-12"
-        :read-only="isFetching"
+        :read-only="isLoadingSuggestions"
         @update:query="filterSuggestions"
       >
         <template v-if="suggestions.length > 0" #suggestions="{ abort }">
