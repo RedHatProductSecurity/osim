@@ -3,6 +3,8 @@ import type { Router } from 'vue-router';
 
 import type { ZodFlawType } from '@/types/zodFlaw';
 
+import affectsV2 from './affectsv2';
+
 /**
  * Context provided to tour setup functions
  */
@@ -24,7 +26,9 @@ export interface Tour {
  * Registry of all available tours in the application.
  * Add new tours here to make them available in the tour dropdown.
  */
-export const TOURS: Tour[] = [];
+export const TOURS: Tour[] = [
+  affectsV2,
+];
 
 /**
  * Get a tour by its ID
