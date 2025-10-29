@@ -10,9 +10,9 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type {
+  AegisAIComponentFeatureNameType,
   SuggestionDetails,
   SuggestionFields,
-  AegisAIComponentFeatureNameType,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
@@ -20,11 +20,6 @@ type DetailsFeatureField = 'cwe' | 'impact';
 const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
-};
-
-const FIELD_NAME_TO_FEATURE_NAME: Record<string, AegisAIComponentFeatureNameType> = {
-  cwe_id: 'suggest-cwe',
-  impact: 'suggest-impact',
 };
 
 export function useAegisSuggestion(
@@ -101,9 +96,10 @@ export function useAegisSuggestion(
       if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
         previousValue.value = valueRef.value;
       }
-      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestionFields, 'suggest-cwe' | 'suggest-impact'> = {
+      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestionFields, AegisAIComponentFeatureNameType> = {
         cwe_id: 'suggest-cwe',
         impact: 'suggest-impact',
+        // description: 'suggest-description',
       };
       const feature = FIELD_NAME_TO_FEATURE_NAME[fieldName];
       const data = await service.analyzeCVEWithContext({
@@ -155,27 +151,26 @@ export function useAegisSuggestion(
   }
 
   function selectSuggestion(index: number) {
-    const value = details.value?.[detailsField];
-    if (!value) return;
-    const suggestions = Array.isArray(value) ? value : [value];
-    if (index < 0 || index >= suggestions.length) return;
+    if (
+      !details.value
+      || !(details.value)[detailsField]
+      || index < 0 || index >= details.value[detailsField]!.length) {
+      return;
+    }
     selectedSuggestionIndex.value = index;
-    aegisSuggestionWatcher.applyAISuggestion(suggestions[index]);
+    const selectedCwe = details.value[detailsField]![index];
+    aegisSuggestionWatcher.applyAISuggestion(selectedCwe);
   }
 
   const currentSuggestion = computed(() => {
-    const value = details.value?.[detailsField];
-    if (!value) return null;
-    const suggestions = Array.isArray(value) ? value : [value];
-    if (selectedSuggestionIndex.value >= suggestions.length) return null;
-    return suggestions[selectedSuggestionIndex.value];
+    if (!details.value?.[detailsField] || selectedSuggestionIndex.value >= details.value[detailsField]!.length) {
+      return null;
+    }
+    return details.value[detailsField]![selectedSuggestionIndex.value];
   });
 
   const allSuggestions = computed(() => {
-    const value = details.value?.[detailsField];
-    if (!value) return [];
-    // Normalize to array - impact might be a single string
-    return Array.isArray(value) ? value : [value];
+    return details.value?.[detailsField] || [];
   });
 
   const hasMultipleSuggestions = computed(() => {

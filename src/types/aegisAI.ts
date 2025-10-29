@@ -63,6 +63,7 @@ export type ImpactSuggestionDetails = {
 
 export type SuggestionDetailOptionals = {
   confidence?: number | string;
+  cwe: Nullable<string[]>;
   explanation?: string;
   tools_used?: string[];
 };

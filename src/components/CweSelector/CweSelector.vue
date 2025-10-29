@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 
+import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
@@ -26,6 +28,7 @@ const queryRef = ref('');
 const cweData = ref<CWEMemberType[]>([]);
 const suggestions = ref<CWEMemberType[]>([]);
 const selectedIndex = ref(-1);
+const aegisCweActionsRef = ref<InstanceType<typeof AegisCweActions> | null>(null);
 
 const {
   canShowFeedback: _canShowFeedback,
@@ -106,6 +109,14 @@ function getUsageClass(usage: string) {
 
 <template>
   <LabelDiv :label :loading="isFetchingSuggestion" class="mb-2">
+    <template #labelSlot>
+      <AegisCweActions
+        ref="aegisCweActionsRef"
+        v-model="modelValue"
+        :aegisContext="aegisContext"
+        :cweData="cweData"
+      />
+    </template>
     <div tabindex="0" @keydown="handleKeyDown($event)">
       <EditableTextWithSuggestions
         v-model="modelValue"
