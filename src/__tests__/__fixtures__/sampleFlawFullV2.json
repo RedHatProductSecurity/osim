@@ -33,6 +33,7 @@
             "ps_update_stream": "xxxx-0-001",
             "purl": "",
             "impact": "LOW",
+            "labels":["cloud"],
             "tracker": {
                 "affects": [
                     "3484da83-c08c-4bf8-87c0-640bfb8334f5"
@@ -67,6 +68,7 @@
             "purl": "",
             "ps_update_stream": "xxxx-0-002",
             "impact": "LOW",
+            "labels":["cloud"],
             "tracker": {
                 "affects": [
                     "f300fbec-29ef-4b4d-8a01-bb210bd09d50"
@@ -101,6 +103,7 @@
             "ps_update_stream": "xxxx-0-005",
             "purl": "",
             "impact": "LOW",
+            "labels":["cloud"],
             "tracker": null,
             "delegated_resolution": null,
             "cvss_scores": [],

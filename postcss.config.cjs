@@ -26,6 +26,7 @@ module.exports = {
         /^router-link(|-exact)-active$/,
         /data-v-.*/,
         /data-bs.*/, // Bootstrap 5 javascript data attributes
+        /driver-.*/
       ],
     })
   ]

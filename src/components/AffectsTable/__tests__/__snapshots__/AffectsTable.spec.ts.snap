@@ -213,9 +213,7 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
-          <!---->
-        </td>
+        <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1-1</span></td>
@@ -244,9 +242,7 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
-          <!---->
-        </td>
+        <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2-1</span></td>
@@ -275,9 +271,7 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
-          <!---->
-        </td>
+        <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3-1</span></td>
