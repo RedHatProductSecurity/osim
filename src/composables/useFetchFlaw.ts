@@ -7,6 +7,7 @@ import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTr
 import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
 import type { ZodAffectType } from '@/types';
 import { useToastStore } from '@/stores/ToastStore';
+import { useTourStore } from '@/stores/TourStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import { getAffects } from '@/services/AffectService';
 
@@ -44,6 +45,13 @@ export function useFetchFlaw() {
   }
 
   async function fetchFlaw(flawCveOrId: string) {
+    // Skip API calls during tours - tour data is pre-loaded
+    const tourStore = useTourStore();
+    if (tourStore.isTourActive) {
+      console.log('[Tour Mode] Skipping fetchFlaw API call');
+      return;
+    }
+
     try {
       didFetchFail.value = false;
       const fetchedFlaw = getFlaw(flawCveOrId);
