@@ -16,6 +16,8 @@ import { osimRuntime } from '@/stores/osimRuntime';
 import { cveRegex } from '@/utils/helpers';
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 
+import TourMenu from '../TourMenu/TourMenu.vue';
+
 const userStore = useUserStore();
 const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
@@ -91,7 +93,7 @@ const usernameDisplay = computed(() => {
         <!--  <RouterLink class="nav-link" to="/flaw-details">Flaw Details</RouterLink>-->
         <!--</li>-->
       </ul>
-
+      <TourMenu />
       <button
         type="button"
         class="osim-notification-button position-relative me-3"

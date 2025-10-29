@@ -509,7 +509,7 @@ exports[`flawForm > mounts and renders 1`] = `
       </div>
     </div>
   </div>
-  <div data-v-76e7a15d="" class="row osim-flaw-form-section">
+  <div data-v-76e7a15d="" id="affected-offerings" class="row osim-flaw-form-section">
     <h4 data-v-76e7a15d="">Affected Offerings</h4>
     <div data-v-76e7a15d="" class="col">
       <div data-v-2d3c4208="" data-v-76e7a15d="" class="osim-affects-section">

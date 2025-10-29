@@ -32,6 +32,7 @@ export const PersistentSettingsSchema = z.object({
   unifiedCommentsView: z.boolean().default(false),
   affectsColumnWidths: z.array(z.number()).default([]),
   trackersColumnWidths: z.array(z.number()).default([]),
+  toursNotificationShown: z.array(z.string()).default([]),
 });
 
 export const SettingsSchema = ApiKeysSchema.merge(PersistentSettingsSchema);
@@ -58,6 +59,8 @@ const defaultPersistentSettings: PersistentSettingsType = {
   affectsColumnWidths: [],
   affectsColumnOrder: [],
   trackersColumnWidths: [],
+  affectsGrouping: false,
+  toursNotificationShown: [],
 };
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';

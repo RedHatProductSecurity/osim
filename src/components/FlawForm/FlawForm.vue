@@ -438,7 +438,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
           @acknowledgment:delete="deleteAcknowledgment"
         />
       </div>
-      <div v-if="mode === 'edit'" class="row osim-flaw-form-section">
+      <div v-if="mode === 'edit'" id="affected-offerings" class="row osim-flaw-form-section">
         <h4>Affected Offerings</h4>
         <div class="col">
           <div v-if="isFetchingAffects">

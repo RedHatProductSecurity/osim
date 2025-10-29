@@ -34,6 +34,14 @@ const _osidbHealth = ref<OsidbHealthyType>({
 });
 export const osidbHealth = readonly(_osidbHealth);
 
+/**
+ * Set the readOnly mode for OSIM
+ * When enabled, all non-GET requests will be blocked
+ */
+export function setReadOnly(value: boolean): void {
+  runtime.value.readOnly = value;
+}
+
 let setupCallCount = 0;
 export async function configureBackends() {
   if (setupCallCount > 0) {
