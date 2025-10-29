@@ -1,7 +1,7 @@
 // AI Change Tracking Types
-import type { ValueOf } from '.';
+import type { Nullable } from '.';
 import type { AegisChangeType } from './zodFlaw';
-import type { ImpactEnumWithBlank } from './zodShared';
+import type { ImpactEnumWithBlankType } from './zodShared';
 
 // Component Feature Names for CVE Analysis
 export type AegisAIComponentFeatureNameType =
@@ -49,17 +49,19 @@ export type AegisAIValidationErrorType = {
 };
 
 // AEGIS AI Fields Types
+export type SuggestionFields = 'cwe_id' | 'impact';
+
 export type CweSuggestionDetails = {
-  cwe: string[];
 } & SuggestionDetails;
 
 export type ImpactSuggestionDetails = {
-  impact: ValueOf<typeof ImpactEnumWithBlank>;
 } & SuggestionDetails;
 
 export type SuggestionDetails = {
   confidence?: number | string;
+  cwe: Nullable<string[]>;
   explanation?: string;
+  impact: Nullable<ImpactEnumWithBlankType | ImpactEnumWithBlankType[]>;
   tools_used?: string[];
 };
 
@@ -91,6 +93,7 @@ export type AegisMetadata = {
 export type AegisFeatureResponseMap = {
   'suggest-cwe': CweSuggestionDetails;
   'suggest-description': DescriptionSuggestionDetails;
+  'suggest-impact': ImpactSuggestionDetails;
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;

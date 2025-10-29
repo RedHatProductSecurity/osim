@@ -45,7 +45,7 @@ const suggestionTooltip = computed(() => {
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedDescriptionSuggestion"
     :hasMultipleSuggestions="false"
-    :isSuggesting="isSuggesting"
+    :isFetchingSuggestion="isSuggesting"
     :canShowFeedback="canShowDescriptionFeedback"
     :suggestions="[]"
     :selectedIndex="0"

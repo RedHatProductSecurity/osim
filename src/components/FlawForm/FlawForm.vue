@@ -35,6 +35,7 @@ import {
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
+import type { ImpactEnumWithBlankType } from '@/types';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -282,26 +283,12 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             </div>
           </div>
           <FlawFormImpact
-            v-model="flaw.impact"
+            v-model="flaw.impact as ImpactEnumWithBlankType"
             :aegisContext="aegisContext"
             :error="errors.impact"
             :initialImpact="initialFlaw.impact ?? null"
             :workflowState="flaw.classification?.state ?? ''"
           />
-          <!-- <LabelSelect
-            v-model="flaw.impact"
-            label="Impact"
-            :options="flawImpactEnum"
-            :error="errors.impact"
-            :withBlank="true"
-          >
-            <template #nudge>
-              <Nudge
-                v-if="shouldShowImpactNudge"
-                tooltip="Ensure that you have left a comment justifying the impact change."
-              />
-            </template>
-          </LabelSelect> -->
           <CvssCalculator />
           <CvssSection
             :highlightedNvdCvssString

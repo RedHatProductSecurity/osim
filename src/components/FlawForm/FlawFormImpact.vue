@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, type Ref } from 'vue';
 
 import Nudge from '@/components/Nudge/Nudge.vue';
 
@@ -29,13 +29,13 @@ const {
   // canSuggest,
   details: impactSuggestionDetails,
   hasAppliedSuggestion,
-  isFetching,
+  isFetchingSuggestion,
   revert: revertImpact,
   sendFeedback,
   suggestImpact,
 } = useAegisSuggestion(
   props.aegisContext as AegisSuggestionContextRefs,
-  modelValue,
+  modelValue as Ref<ImpactEnumWithBlankType | null | string>,
   'impact',
 );
 
@@ -61,7 +61,7 @@ const shouldShowImpactNudge = computed(() => {
     :withBlank="true"
   >
     <template #label="{ label }">
-      <span v-if="isFetching" v-osim-loading.grow="isFetching" class="throbber" />
+      <span v-if="isFetchingSuggestion" v-osim-loading.grow="isFetchingSuggestion" class="throbber" />
       <i
         v-if="osimRuntime.flags?.aiCweSuggestions === true"
         class="bi-stars label-icon"
@@ -78,12 +78,12 @@ const shouldShowImpactNudge = computed(() => {
         <i
           class="bi-hand-thumbs-up label-icon"
           title="Mark suggestion helpful"
-          @click.prevent.stop="sendFeedback('up')"
+          @click.prevent.stop="sendFeedback('positive')"
         />
         <i
           class="bi-hand-thumbs-down label-icon"
           title="Mark suggestion unhelpful"
-          @click.prevent.stop="sendFeedback('down')"
+          @click.prevent.stop="sendFeedback('negative')"
         />
       </span>
       {{ label }}
