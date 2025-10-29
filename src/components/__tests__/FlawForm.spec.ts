@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 
-import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
+import FlawWorkflowState from '@/components/FlawWorkflowState/FlawWorkflowState.vue';
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
@@ -340,7 +340,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('displays correct State field value from props', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject.findComponent(IssueFieldState);
+    const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
     expect(workflowStateField?.props().classification.state).toBe('NEW');
   });
@@ -348,7 +348,7 @@ describe('flawForm', () => {
   osimFullFlawTest('displays with impact nudge when workflow state is after triage', async ({ flaw }) => {
     flaw.classification!.state = FlawClassificationStateEnum.PreSecondaryAssessment;
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject.findComponent(IssueFieldState);
+    const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.props().classification.state).toBe('PRE_SECONDARY_ASSESSMENT');
     (subject.vm as any).flaw.impact = 'CRITICAL';
     await flushPromises();
@@ -358,7 +358,7 @@ describe('flawForm', () => {
   osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const menu = subject
-      .findComponent(IssueFieldState)
+      .findComponent(FlawWorkflowState)
       .findComponent(DropDownMenu);
 
     const menuButton = menu.find('button[type="button"]');
@@ -379,7 +379,7 @@ describe('flawForm', () => {
   osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const menu = subject
-      .findComponent(IssueFieldState)
+      .findComponent(FlawWorkflowState)
       .findComponent(DropDownMenu);
 
     const menuButton = menu.find('button[type="button"]');
