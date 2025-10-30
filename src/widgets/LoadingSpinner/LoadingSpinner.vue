@@ -22,3 +22,10 @@ export default {
     <span class="visually-hidden">Loading...</span>
   </div>
 </template>
+
+<style scoped>
+div[role='status'] {
+  width: 1rem;
+  height: 1rem;
+}
+</style>
