@@ -63,20 +63,16 @@ export type ImpactSuggestionDetails = {
 
 export type SuggestionDetailOptionals = {
   confidence?: number | string;
-  cwe: Nullable<string[]>;
   explanation?: string;
   tools_used?: string[];
 };
 
 export type DescriptionSuggestionDetails = {
-  confidence?: number | string;
   description?: string;
-  explanation?: string;
   suggested_description?: string;
   suggested_title?: string;
   title?: string;
-  tools_used?: string[];
-};
+} & SuggestionDetailOptionals;
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];
@@ -93,10 +89,14 @@ export type AegisMetadata = {
   [fieldName: string]: AegisChangeEntry[];
 };
 
+export type ImpactSuggestionResponse = {
+  impact: ImpactEnumWithBlankType;
+} & SuggestionDetailOptionals;
+
 export type AegisFeatureResponseMap = {
   'suggest-cwe': CweSuggestionDetails;
   'suggest-description': DescriptionSuggestionDetails;
-  'suggest-impact': ImpactSuggestionDetails;
+  'suggest-impact': ImpactSuggestionResponse;
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;

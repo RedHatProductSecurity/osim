@@ -11,6 +11,8 @@ import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type {
   AegisAIComponentFeatureNameType,
+  CweSuggestionDetails,
+  ImpactSuggestionDetails,
   SuggestionDetails,
   SuggestionFields,
 } from '@/types/aegisAI';
@@ -52,7 +54,7 @@ export function useAegisSuggestion(
   const canSuggest = computed(() => isCveIdValid.value && !service.isFetching.value);
 
   async function suggestCwe() {
-    const data = await getSuggestion();
+    const data = await getSuggestion() as CweSuggestionDetails;
     if (!data?.cwe || data.cwe.length === 0) {
       toastStore.addToast({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
     } else {
@@ -76,13 +78,12 @@ export function useAegisSuggestion(
   }
 
   async function suggestImpact() {
-    const data = await getSuggestion();
+    const data = await getSuggestion() as ImpactSuggestionDetails;
     if (!data || !data.impact) {
       toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
     } else {
-      // Handle both string and array responses
-      const impact = Array.isArray(data.impact) ? data.impact[0] : data.impact;
-      details.value.impact = data.impact;
+      const { impact } = data;
+      details.value.impact = [impact];
       applySuggestion(impact);
     };
   }
@@ -105,7 +106,7 @@ export function useAegisSuggestion(
       const data = await service.analyzeCVEWithContext({
         feature,
         ...serializeAegisContext(context),
-      }) as SuggestionDetails;
+      });
       // requestDuration.value = Date.now() - requestStartTime;
       // const suggestions = data.cwe || [];
       // if (suggestions.length === 0) {
