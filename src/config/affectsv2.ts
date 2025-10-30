@@ -1,6 +1,4 @@
 import { setReadOnly } from '@/stores/osimRuntime';
-import SampleFlawFullV2 from '@/__tests__/__fixtures__/sampleFlawFullV2.json';
-import type { ZodFlawType } from '@/types';
 
 import type { Tour } from './tours';
 
@@ -12,11 +10,12 @@ const affectsV2: Tour = {
     // Enable read-only mode to prevent network requests on mock data
     setReadOnly(true);
 
-    // Load mock flaw data from test fixture
-    setFlaw(structuredClone(SampleFlawFullV2 as unknown as ZodFlawType));
+    // Load mock flaw data from fixture
+    const mockFlaw = await (await fetch('/mock-flaw.json')).json();
+    setFlaw(mockFlaw);
 
     // Navigate to the flaw edit view
-    await router.push(`/flaws/${SampleFlawFullV2.uuid}`);
+    await router.push(`/flaws/${mockFlaw.uuid}`);
   },
   cleanup: ({ router }) => {
     // Navigate away from the mock flaw to the flaws list
