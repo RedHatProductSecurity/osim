@@ -56,6 +56,36 @@ function useAffects() {
     removedAffects.clear();
   }
 
+  function resetSavedAffects(savedAffects: ZodAffectType[]) {
+    // Create a set of saved affect UUIDs for quick lookup
+    const savedUuids = new Set(savedAffects.map(affect => affect.uuid));
+
+    // Remove successfully saved modified affects from tracking
+    for (const uuid of modifiedAffects) {
+      if (savedUuids.has(uuid)) {
+        modifiedAffects.delete(uuid);
+      }
+    }
+
+    // Remove successfully created affects from newAffects tracking
+    // Match by comparing ps_update_stream, ps_module, and ps_component
+    for (const affect of savedAffects) {
+      // Find if this saved affect was previously tracked as new
+      const wasNew = currentAffects.value.find(
+        currentAffect =>
+          currentAffect._uuid
+          && newAffects.has(currentAffect._uuid)
+          && currentAffect.ps_update_stream === affect.ps_update_stream
+          && currentAffect.ps_module === affect.ps_module
+          && currentAffect.ps_component === affect.ps_component,
+      );
+
+      if (wasNew?._uuid) {
+        newAffects.delete(wasNew._uuid);
+      }
+    }
+  }
+
   function markModified(uuid: string) {
     if (!newAffects.has(uuid)) {
       modifiedAffects.add(uuid);
@@ -204,10 +234,12 @@ function useAffects() {
       ),
     ];
 
-    const { successful: savedCvssScores } = await executeOperations(operations);
+    const { failed, successful: savedCvssScores } = await executeOperations(operations);
 
     // Update state with successful operations
     updateCvssScoresInAffects(updatedAffects, savedCvssScores.filter(Boolean), toDelete);
+
+    return failed.length > 0;
   }
 
   async function saveAffects() {
@@ -218,16 +250,17 @@ function useAffects() {
       ...(toUpdate.length ? [putAffects(toUpdate)] : []),
     ];
 
-    const { successful: results } = await executeOperations(operations);
+    const { failed, successful: results } = await executeOperations(operations);
 
     // Flatten successful results
     const savedAffects: ZodAffectType[] = results.flatMap(result => result?.data.results ?? []);
 
     // Save CVSS scores (this also updates the affects)
-    await saveCvssScores(savedAffects);
+    const cvssHasErrors = await saveCvssScores(savedAffects);
 
-    // TODO: We could use the erroredAffects to only reset the saved ones
-    return savedAffects;
+    const hasErrors = failed.length > 0 || cvssHasErrors;
+
+    return { savedAffects, hasErrors };
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
@@ -246,10 +279,25 @@ function useAffects() {
   }
 
   async function removeAffects() {
-    await deleteAffects([...removedAffects.values()]);
-    currentAffects.value = currentAffects.value.filter(({ uuid }) => !removedAffects.has(uuid!));
+    const uuidsToDelete = [...removedAffects.values()];
 
-    return [...removedAffects.values()];
+    if (uuidsToDelete.length === 0) {
+      return { deletedUuids: [], hasErrors: false };
+    }
+
+    try {
+      await deleteAffects(uuidsToDelete);
+
+      // If successful, remove from currentAffects and clear removedAffects tracking
+      currentAffects.value = currentAffects.value.filter(({ uuid }) => !removedAffects.has(uuid!));
+      removedAffects.clear();
+
+      return { deletedUuids: uuidsToDelete, hasErrors: false };
+    } catch (error) {
+      // If delete fails, keep affects in removedAffects Set so user can retry
+      // The error toast will be shown by the createCatchHandler in the service
+      return { deletedUuids: [], hasErrors: true };
+    }
   }
 
   return {
@@ -273,6 +321,7 @@ function useAffects() {
       markRemoved,
       refreshData,
       reset,
+      resetSavedAffects,
       revertAffect,
 
       // External
