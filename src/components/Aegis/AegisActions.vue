@@ -6,7 +6,7 @@ defineProps<{
   canSuggest: boolean;
   hasAppliedSuggestion: boolean;
   hasMultipleSuggestions: boolean;
-  isSuggesting: boolean;
+  isFetchingSuggestion: boolean;
   selectedIndex: number;
   suggestions: string[];
   tooltipText: string;
@@ -33,7 +33,7 @@ function selectSuggestion(index: number) {
       @click.prevent.stop="canSuggest && emit('suggest')"
     />
     <div
-      v-if="hasMultipleSuggestions && !isSuggesting"
+      v-if="hasMultipleSuggestions && !isFetchingSuggestion"
       class="dropdown ms-1"
     >
       <i
@@ -72,7 +72,7 @@ function selectSuggestion(index: number) {
         </slot>
       </ul>
     </div>
-    <span v-if="canShowFeedback && !isSuggesting" class="ms-2">
+    <span v-if="canShowFeedback && !isFetchingSuggestion" class="ms-2">
       <i
         class="bi-arrow-counterclockwise label-icon"
         title="Revert to previous value"

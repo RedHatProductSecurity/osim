@@ -19,8 +19,8 @@ import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
 import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
-import Nudge from '@/components/Nudge/Nudge.vue';
 import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
+import FlawFormImpact from '@/components/FlawForm/FlawFormImpact.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -32,6 +32,7 @@ import {
 } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
+import type { ImpactEnumWithBlankType } from '@/types';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
@@ -41,7 +42,6 @@ import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import {
   MajorIncidentStateEnumWithBlank,
   descriptionRequiredStates,
-  flawImpactEnum,
   flawSources,
   type ZodFlawType,
 } from '@/types/zodFlaw';
@@ -49,7 +49,6 @@ import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
-import { FlawClassificationStateEnum } from '@/generated-client';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
@@ -145,19 +144,6 @@ const onUnembargoed = (isEmbargoed: boolean) => {
     flaw.value.unembargo_dt = DateTime.now().toUTC().toISO();
   }
 };
-
-const shouldShowImpactNudge = computed(() => {
-  const currentState = flaw.value.classification?.state;
-  const postTriageStates: FlawClassificationStateEnum[] = [
-    FlawClassificationStateEnum.Rejected,
-    FlawClassificationStateEnum.PreSecondaryAssessment,
-    FlawClassificationStateEnum.SecondaryAssessment,
-    FlawClassificationStateEnum.Done,
-  ];
-  const hasBeenTriaged = currentState && postTriageStates.includes(currentState);
-  const didImpactChange = flaw.value.impact !== initialFlaw.value?.impact;
-  return hasBeenTriaged && didImpactChange;
-});
 
 const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
@@ -276,20 +262,13 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
               />
             </div>
           </div>
-          <LabelSelect
-            v-model="flaw.impact"
-            label="Impact"
-            :options="flawImpactEnum"
+          <FlawFormImpact
+            v-model="flaw.impact as ImpactEnumWithBlankType"
+            :aegisContext="aegisContext"
             :error="errors.impact"
-            :withBlank="true"
-          >
-            <template #nudge>
-              <Nudge
-                v-if="shouldShowImpactNudge"
-                tooltip="Ensure that you have left a comment justifying the impact change."
-              />
-            </template>
-          </LabelSelect>
+            :initialImpact="initialFlaw.impact ?? null"
+            :workflowState="flaw.classification?.state ?? ''"
+          />
           <CvssCalculator />
           <CvssSection
             :highlightedNvdCvssString

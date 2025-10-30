@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { DateTime } from 'luxon';
 
 import { ImpactEnum } from '@/generated-client';
+import type { ValueOf } from '@/types';
 
 import type {
   FlawCVSSSchemaType,
@@ -23,7 +24,7 @@ export const ZodFlawClassification = z.object({
 });
 
 export const ImpactEnumWithBlank = { None: '', ...ImpactEnum } as const;
-
+export type ImpactEnumWithBlankType = ValueOf<typeof ImpactEnumWithBlank>;
 export const zodOsimDateTime = () =>
   z
     .date()

@@ -6,6 +6,7 @@
 ## [Unreleased]
 ### Added
 * Allow grouping affects by ps_module (`OSIDB-4546`)
+* Offer Impact suggestions from Aegis (`AEGIS-224`)
 
 ## [2025.10.0]
 ### Fixed

@@ -7,8 +7,8 @@ import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
 
-vi.mock('@/composables/aegis/useAegisSuggestCwe', () => ({
-  useAegisSuggestCwe: vi.fn(() => ({
+vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
+  useAegisSuggestion: vi.fn(() => ({
     allSuggestions: computed(() => []),
     canShowFeedback: computed(() => false),
     canSuggest: computed(() => true),
@@ -16,7 +16,7 @@ vi.mock('@/composables/aegis/useAegisSuggestCwe', () => ({
     details: computed(() => null),
     hasAppliedSuggestion: computed(() => false),
     hasMultipleSuggestions: computed(() => false),
-    isSuggesting: computed(() => false),
+    isFetchingSuggestion: computed(() => false),
     revert: vi.fn(),
     selectedSuggestionIndex: computed(() => 0),
     selectSuggestion: vi.fn(),
@@ -66,34 +66,35 @@ describe('aegisCweActions', () => {
     expect(wrapper.findComponent({ name: 'AegisActions' }).exists()).toBe(true);
   });
 
-  it('exposes isSuggesting state', () => {
+  it('exposes isFetchingSuggestion state', () => {
     const wrapper = mountWithConfig(AegisCweActions, {
       props: {
         modelValue: null,
       },
     });
 
-    expect(wrapper.vm.isSuggesting).toBeDefined();
+    expect(wrapper.vm.isFetchingSuggestion).toBeDefined();
   });
 
   it('updates model value when suggestion is selected', async () => {
-    const { useAegisSuggestCwe } = await import('@/composables/aegis/useAegisSuggestCwe');
+    const { useAegisSuggestion } = await import('@/composables/aegis/useAegisSuggestion');
     const mockSelectSuggestion = vi.fn();
 
-    vi.mocked(useAegisSuggestCwe).mockReturnValueOnce({
+    vi.mocked(useAegisSuggestion).mockReturnValueOnce({
       allSuggestions: computed(() => ['CWE-79', 'CWE-89']),
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => 'CWE-79'),
-      details: computed(() => ({ cwe: ['CWE-79', 'CWE-89'] })),
+      details: computed(() => ({ cwe: ['CWE-79', 'CWE-89'], impact: null })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
-      isSuggesting: computed(() => false),
+      isFetchingSuggestion: computed(() => false),
       revert: vi.fn(),
       selectedSuggestionIndex: computed(() => 0),
       selectSuggestion: mockSelectSuggestion,
       sendFeedback: vi.fn(),
       suggestCwe: vi.fn(),
+      suggestImpact: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCweActions, {
