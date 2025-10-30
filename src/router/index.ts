@@ -7,7 +7,7 @@ import {
   type RouteLocationNormalized,
 } from 'vue-router';
 
-import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { notifyApiKeyUnset } from '@/services/ApiKeyService';
 import FlawCreateView from '@/views/FlawCreateView.vue';
@@ -79,8 +79,8 @@ export const routes = [
       hideNavbar: true,
     },
     beforeEnter() {
-      const userStore = useUserStore();
-      if (userStore.isAuthenticated) {
+      const authStore = useAuthStore();
+      if (authStore.isAuthenticated) {
         return { name: 'index' };
       }
     },
@@ -155,14 +155,14 @@ router.beforeEach(async (to, from) => {
 
   // await workerReady;
 
-  const userStore = useUserStore();
-  const isAuthenticated = userStore.isAuthenticated;
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
 
   const { canVisitWithoutAuth } = to.meta;
   const manualLocationNavigation = from.name === undefined;
 
   if (
-    userStore.isLoggedIn
+    authStore.isLoggedIn
     && to.name !== 'logout'
     && to.name !== 'login'
   ) {
@@ -176,12 +176,12 @@ router.beforeEach(async (to, from) => {
 
   if (!canVisitWithoutAuth && !isAuthenticated) {
     // If user is logged in but token is expired/missing, try to refresh first
-    if (userStore.isLoggedIn) {
+    if (authStore.isLoggedIn) {
       try {
         console.debug('Router: Attempting token refresh for authenticated user');
         await getNextAccessToken();
         // If refresh succeeds, continue with navigation
-        if (userStore.isAuthenticated) {
+        if (authStore.isAuthenticated) {
           return;
         }
       } catch (error) {

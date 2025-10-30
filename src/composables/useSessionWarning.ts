@@ -4,15 +4,15 @@ import jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
 import { DateTime } from 'luxon';
 
-import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 
 export function useSessionWarning() {
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
   const isReauthenticating = ref(false);
 
   const isRefreshTokenExpiringInOneHour = computed(() => {
     try {
-      const refreshToken = userStore.refreshToken;
+      const refreshToken = authStore.refreshToken;
       if (!refreshToken) return false;
 
       const decoded = jwtDecode<JwtPayload>(refreshToken);
@@ -31,7 +31,7 @@ export function useSessionWarning() {
 
   const timeUntilExpiration = computed(() => {
     try {
-      const refreshToken = userStore.refreshToken;
+      const refreshToken = authStore.refreshToken;
       if (!refreshToken) return null;
 
       const decoded = jwtDecode<JwtPayload>(refreshToken);
@@ -55,9 +55,9 @@ export function useSessionWarning() {
 
     try {
       isReauthenticating.value = true;
-      await userStore.login();
+      await authStore.login();
     } catch (error) {
-      userStore.logout();
+      authStore.logout();
       throw error;
     } finally {
       isReauthenticating.value = false;

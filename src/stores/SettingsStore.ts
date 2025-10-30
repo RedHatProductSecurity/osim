@@ -158,19 +158,19 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   const isApiKeysInitialized = ref(false);
 
   async function initializeApiKeys() {
-    console.debug('SettingsStore: Setting up API keys initialization...');
+    console.debug('SettingsStore: Initializing API keys...');
 
-    // Import UserStore dynamically to avoid circular dependencies
-    const { useUserStore } = await import('./UserStore');
-    const userStore = useUserStore();
+    // Import AuthStore dynamically to avoid circular dependencies
+    const { useAuthStore } = await import('./AuthStore');
+    const authStore = useAuthStore();
 
     // Watch for authentication changes and load API keys when authenticated
     // Watch both isAuthenticated (computed from token) and isLoggedIn (boolean flag)
     // to handle any potential timing edge cases
     watch(
       () => ({
-        isAuthenticated: userStore.isAuthenticated,
-        isLoggedIn: userStore.isLoggedIn,
+        isAuthenticated: authStore.isAuthenticated,
+        isLoggedIn: authStore.isLoggedIn,
       }),
       async ({ isAuthenticated, isLoggedIn }) => {
         if (isAuthenticated && !isApiKeysInitialized.value) {

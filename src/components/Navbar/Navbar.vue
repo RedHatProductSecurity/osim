@@ -8,6 +8,7 @@ import { useElementBounding } from '@vueuse/core';
 import { useSearchParams } from '@/composables/useSearchParams';
 
 import { useUserStore } from '@/stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 import router from '@/router';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
@@ -19,6 +20,7 @@ import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import TourMenu from '../TourMenu/TourMenu.vue';
 
 const userStore = useUserStore();
+const authStore = useAuthStore();
 const { settings } = useSettingsStore();
 const { toasts } = useToastStore();
 const elHeader = ref<HTMLElement | null>(null);
@@ -168,7 +170,7 @@ const usernameDisplay = computed(() => {
             <hr class="dropdown-divider">
           </li>
           <li>
-            <button class="dropdown-item" type="button" @click.prevent="userStore.logout">
+            <button class="dropdown-item" type="button" @click.prevent="authStore.logout">
               Logout
             </button>
           </li>

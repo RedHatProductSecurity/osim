@@ -2,8 +2,7 @@ import { z } from 'zod';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
-
-import { useUserStore } from '../stores/UserStore';
+import { useAuthStore } from '@/stores/AuthStore';
 
 const RefreshResponse = z.object({
   access: z.string(),
@@ -133,16 +132,16 @@ export async function getNextAccessToken(forceRefresh: boolean = false) {
   // Moving this to module scope results in "cannot access before initialization" -
   // probably a vite or typescript bug
   const url = `${osimRuntime.value.backends.osidb}/auth/token/refresh`;
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
   let response;
-  if (!forceRefresh && userStore.accessToken && !userStore.isAccessTokenExpired()) {
-    return userStore.accessToken;
+  if (!forceRefresh && authStore.accessToken && !authStore.isAccessTokenExpired()) {
+    return authStore.accessToken;
   }
 
   try {
     if (osimRuntime.value.env === 'dev') {
       // For local development: Use POST with refresh token from localStorage
-      const refreshToken = userStore.getDevRefreshToken();
+      const refreshToken = authStore.getDevRefreshToken();
       if (!refreshToken) {
         throw new Error('No refresh token available in localStorage for dev environment');
       }
@@ -173,18 +172,18 @@ export async function getNextAccessToken(forceRefresh: boolean = false) {
     const parsedResponse = RefreshResponse.parse(responseData);
 
     // Update the access token in the store
-    userStore.accessToken = parsedResponse.access;
-    userStore.isLoggedIn = true;
+    authStore.accessToken = parsedResponse.access;
+    authStore.isLoggedIn = true;
 
     // For dev environments, update the refresh token if provided
     if (osimRuntime.value.env === 'dev' && parsedResponse.refresh) {
-      userStore.setDevRefreshToken(parsedResponse.refresh);
+      authStore.setDevRefreshToken(parsedResponse.refresh);
     }
 
     return parsedResponse.access;
   } catch (e) {
     console.error('OsidbAuthService::getNextAccessToken() Error refreshing access token', e);
-    return userStore.logout()
+    return authStore.logout()
       .finally(() => {
         throw new Error('Unable to refresh access token');
       });
