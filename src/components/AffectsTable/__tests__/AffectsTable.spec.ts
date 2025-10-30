@@ -1,4 +1,4 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, type DOMWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
 import { useFlaw } from '@/composables/useFlaw';
@@ -239,40 +239,40 @@ describe('affectsTable', () => {
         const wrapper = await mountAffectsTable();
 
         const sortableHeaders = wrapper.findAll('thead th.sortable');
-        if (sortableHeaders.length > 0) {
-          const firstSortableHeader = sortableHeaders[0];
+        expect(sortableHeaders.length).toBeGreaterThan(0);
 
-          await firstSortableHeader.trigger('click');
-          await flushPromises();
+        const firstSortableHeader = sortableHeaders[0];
 
-          const sortIcon = firstSortableHeader.find('.sort-icon');
-          expect(sortIcon.exists()).toBe(true);
-        }
+        await firstSortableHeader.trigger('click');
+        await flushPromises();
+
+        const sortIcon = firstSortableHeader.find('.sort-icon');
+        expect(sortIcon.exists()).toBe(true);
       });
 
       it('should display sort icon on sorted columns', async () => {
         const wrapper = await mountAffectsTable();
 
         const sortableHeaders = wrapper.findAll('thead th.sortable');
-        if (sortableHeaders.length > 0) {
-          const firstSortableHeader = sortableHeaders[0];
+        expect(sortableHeaders.length).toBeGreaterThan(0);
 
-          await firstSortableHeader.trigger('click');
-          await flushPromises();
+        const firstSortableHeader = sortableHeaders[0];
 
-          let sortIcon = firstSortableHeader.find('.sort-icon');
-          expect(sortIcon.exists()).toBe(true);
+        await firstSortableHeader.trigger('click');
+        await flushPromises();
 
-          const initialClasses = [...sortIcon.classes()];
+        let sortIcon = firstSortableHeader.find('.sort-icon');
+        expect(sortIcon.exists()).toBe(true);
 
-          await firstSortableHeader.trigger('click');
-          await flushPromises();
+        const initialClasses = [...sortIcon.classes()];
 
-          sortIcon = firstSortableHeader.find('.sort-icon');
-          const newClasses = [...sortIcon.classes()];
+        await firstSortableHeader.trigger('click');
+        await flushPromises();
 
-          expect(initialClasses).not.toEqual(newClasses);
-        }
+        sortIcon = firstSortableHeader.find('.sort-icon');
+        const newClasses = [...sortIcon.classes()];
+
+        expect(initialClasses).not.toEqual(newClasses);
       });
     });
 
@@ -318,31 +318,31 @@ describe('affectsTable', () => {
         expect(deleteBtn.exists()).toBe(false);
 
         const checkboxes = wrapper.findAll('tbody input[type="checkbox"]');
-        if (checkboxes.length > 0) {
-          await checkboxes[0].setValue(true);
-          await flushPromises();
+        expect(checkboxes.length).toBeGreaterThan(0);
 
-          deleteBtn = wrapper.find('button[title="Remove selected affects"]');
-          expect(deleteBtn.exists()).toBe(true);
-        }
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        deleteBtn = wrapper.find('button[title="Remove selected affects"]');
+        expect(deleteBtn.exists()).toBe(true);
       });
 
       it('should mark rows as removed when delete button is clicked', async () => {
         const wrapper = await mountAffectsTable();
 
         const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
-        if (checkboxes.length > 0) {
-          await checkboxes[0].setValue(true);
-          await flushPromises();
+        expect(checkboxes.length).toBeGreaterThan(0);
 
-          const deleteBtn = wrapper.find('button[title="Remove selected affects"]');
-          await deleteBtn.trigger('click');
-          await flushPromises();
+        await checkboxes[0].setValue(true);
+        await flushPromises();
 
-          const rows = wrapper.findAll('tbody tr');
-          const removedRow = rows.find(row => row.classes('removed'));
-          expect(removedRow).toBeDefined();
-        }
+        const deleteBtn = wrapper.find('button[title="Remove selected affects"]');
+        await deleteBtn.trigger('click');
+        await flushPromises();
+
+        const rows = wrapper.findAll('tbody tr');
+        const removedRow = rows.find(row => row.classes('removed'));
+        expect(removedRow).toBeDefined();
       });
 
       it('should show create trackers button when affects without trackers are selected', async () => {
@@ -351,14 +351,15 @@ describe('affectsTable', () => {
         const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
         const affectWithoutTracker = SampleFlawFullV2.affects.findIndex(affect => !affect.tracker);
 
-        if (affectWithoutTracker !== -1 && checkboxes.length > affectWithoutTracker) {
-          await checkboxes[affectWithoutTracker].setValue(true);
-          await flushPromises();
+        expect(affectWithoutTracker).not.toBe(-1);
+        expect(checkboxes.length).toBeGreaterThan(affectWithoutTracker);
 
-          const createTrackersBtn = wrapper.find('button[title="File trackers for selected affects"]');
-          expect(createTrackersBtn.exists()).toBe(true);
-          expect(createTrackersBtn.text()).toContain('Create trackers');
-        }
+        await checkboxes[affectWithoutTracker].setValue(true);
+        await flushPromises();
+
+        const createTrackersBtn = wrapper.find('button[title="File trackers for selected affects"]');
+        expect(createTrackersBtn.exists()).toBe(true);
+        expect(createTrackersBtn.text()).toContain('Create trackers');
       });
 
       it('should show revert all changes button when there are changes', async () => {
@@ -461,18 +462,268 @@ describe('affectsTable', () => {
         const wrapper = await mountAffectsTable();
 
         const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
-        if (checkboxes.length > 0) {
-          await checkboxes[0].setValue(true);
-          await flushPromises();
+        expect(checkboxes.length).toBeGreaterThan(0);
 
-          const deleteBtn = wrapper.find('button[title="Remove selected affects"]');
-          await deleteBtn.trigger('click');
-          await flushPromises();
+        await checkboxes[0].setValue(true);
+        await flushPromises();
 
-          const rows = wrapper.findAll('tbody tr');
-          const removedRow = rows.find(row => row.classes('removed'));
-          expect(removedRow).toBeDefined();
-        }
+        const deleteBtn = wrapper.find('button[title="Remove selected affects"]');
+        await deleteBtn.trigger('click');
+        await flushPromises();
+
+        const rows = wrapper.findAll('tbody tr');
+        const removedRow = rows.find(row => row.classes('removed'));
+        expect(removedRow).toBeDefined();
+      });
+    });
+
+    describe('bulk edit', () => {
+      beforeEach(async () => {
+        const { settings } = useSettingsStore();
+        settings.affectsPerPage = SampleFlawFullV2.affects.length;
+        await flushPromises();
+      });
+
+      it('should show bulk edit button when rows are selected', async () => {
+        const wrapper = await mountAffectsTable();
+
+        let bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        expect(bulkEditBtn.exists()).toBe(false);
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        expect(bulkEditBtn.exists()).toBe(true);
+        expect(bulkEditBtn.text()).toContain('Bulk Edit');
+      });
+
+      it('should enter bulk edit mode when bulk edit button is clicked', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        const bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        expect(bulkEditRow.exists()).toBe(true);
+      });
+
+      it('should render bulk edit row with correct styling', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        const bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        expect(bulkEditRow.exists()).toBe(true);
+
+        const firstCell = bulkEditRow.findAll('td')[0];
+        expect(firstCell.find('.bi-pencil-square').exists()).toBe(true);
+      });
+
+      it('should show Apply Changes and Cancel buttons in bulk edit mode', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        const applyBtn = wrapper.find('button[title="Apply changes to selected affects"]');
+        const cancelBtn = wrapper.find('button[title="Cancel bulk edit"]');
+
+        expect(applyBtn.exists()).toBe(true);
+        expect(applyBtn.text()).toContain('Apply Changes');
+        expect(cancelBtn.exists()).toBe(true);
+        expect(cancelBtn.text()).toContain('Cancel');
+      });
+
+      it('should hide bulk edit button in bulk edit mode', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        let bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        expect(bulkEditBtn.exists()).toBe(true);
+
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        expect(bulkEditBtn.exists()).toBe(false);
+      });
+
+      it('should hide delete button in bulk edit mode', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        let deleteBtn = wrapper.find('button[title="Remove selected affects"]');
+        expect(deleteBtn.exists()).toBe(true);
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        deleteBtn = wrapper.find('button[title="Remove selected affects"]');
+        expect(deleteBtn.exists()).toBe(false);
+      });
+
+      it('should exit bulk edit mode when cancel button is clicked', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        let bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        expect(bulkEditRow.exists()).toBe(true);
+
+        const cancelBtn = wrapper.find('button[title="Cancel bulk edit"]');
+        await cancelBtn.trigger('click');
+        await flushPromises();
+
+        bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        expect(bulkEditRow.exists()).toBe(false);
+      });
+
+      it('should render BulkEditCell components for each column in bulk edit mode', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        const bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        const cells = bulkEditRow.findAll('td');
+
+        expect(cells.length).toBeGreaterThan(1);
+      });
+
+      it('should support changing fields in bulk edit row', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        // Select a row
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        // Enter bulk edit mode
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        // Verify bulk edit row has input fields
+        const bulkEditRow = wrapper.find('tbody tr.bulk-edit');
+        const inputs = bulkEditRow.findAll('input, select');
+
+        // Should have multiple editable fields
+        expect(inputs.length).toBeGreaterThan(1);
+
+        // Apply changes button should work
+        const applyBtn = wrapper.find('button[title="Apply changes to selected affects"]');
+        await applyBtn.trigger('click');
+        await flushPromises();
+
+        // Should exit bulk edit mode
+        expect(wrapper.find('tbody tr.bulk-edit').exists()).toBe(false);
+      });
+
+      it('should reset selection after applying bulk edit', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes: DOMWrapper<HTMLInputElement>[] = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        // Verify row is selected
+        expect(checkboxes[0].element.checked).toBe(true);
+
+        const applyBtn = wrapper.find('button[title="Apply changes to selected affects"]');
+        await applyBtn.trigger('click');
+        await flushPromises();
+
+        // Verify selection is cleared
+        expect(checkboxes[0].element.checked).toBe(false);
+      });
+
+      it('should only modify fields that were changed in bulk edit', async () => {
+        const wrapper = await mountAffectsTable();
+        const { flaw } = useFlaw();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        // Store all original values
+        const originalAffect = { ...flaw.value.affects[0] };
+
+        // Enter bulk edit mode
+        const bulkEditBtn = wrapper.find('button[title="Bulk edit selected affects"]');
+        await bulkEditBtn.trigger('click');
+        await flushPromises();
+
+        // Apply changes without modifying anything
+        const applyBtn = wrapper.find('button[title="Apply changes to selected affects"]');
+        await applyBtn.trigger('click');
+        await flushPromises();
+
+        // Verify nothing changed
+        expect(flaw.value.affects[0].ps_module).toBe(originalAffect.ps_module);
+        expect(flaw.value.affects[0].ps_component).toBe(originalAffect.ps_component);
+        expect(flaw.value.affects[0].affectedness).toBe(originalAffect.affectedness);
       });
     });
   });

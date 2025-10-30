@@ -6,6 +6,7 @@
 ## [Unreleased]
 ### Added
 * Allow grouping affects by ps_module (`OSIDB-4546`)
+* Add bulk editing to affects (`OSIDB-4515`)
 
 ## [2025.10.0]
 ### Fixed

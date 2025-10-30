@@ -16,6 +16,7 @@ import DebouncedInput from '@/widgets/DebouncedInput/DebouncedInput.vue';
 
 import ColumnFilter from './ColumnFilter.vue';
 import ColumnOptions from './ColumnOptions.vue';
+import BulkEditCell from './BulkEditCell.vue';
 
 const { settings } = storeToRefs(useSettingsStore());
 
@@ -30,19 +31,26 @@ const {
   actions: {
     changeItemsPerPage,
     changePage,
+    commitBulkEdits,
     deleteSelectedRows,
+    enterBulkEditMode,
+    exitBulkEditMode,
     fileSelectedTrackers,
     fitColumnWidth,
     refreshData,
     revertAllChanges,
     selectRelatedTrackers,
     toggleColumnVisibility,
+    updateBulkEditField,
   },
   state: {
+    bulkEditData,
+    bulkEditVirtualRow,
     columnFilters,
     currentAffects,
     currentPage,
     globalFilter,
+    isBulkEditMode,
     isFetchingSuggestedTrackers,
     modifiedAffects,
     newAffects,
@@ -89,7 +97,37 @@ onMounted(() => {
         Create trackers
       </button>
       <button
-        v-if="table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()"
+        v-if="!isBulkEditMode && (table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())"
+        class="btn btn-primary text-nowrap"
+        type="button"
+        title="Bulk edit selected affects"
+        @click="enterBulkEditMode()"
+      >
+        <i class="bi-pencil"></i>
+        Bulk Edit
+      </button>
+      <button
+        v-if="isBulkEditMode"
+        class="btn btn-success text-nowrap"
+        type="button"
+        title="Apply changes to selected affects"
+        @click="commitBulkEdits()"
+      >
+        <i class="bi-check-lg"></i>
+        Apply Changes
+      </button>
+      <button
+        v-if="isBulkEditMode"
+        class="btn btn-secondary text-nowrap"
+        type="button"
+        title="Cancel bulk edit"
+        @click="exitBulkEditMode()"
+      >
+        <i class="bi-x-lg"></i>
+        Cancel
+      </button>
+      <button
+        v-if="!isBulkEditMode && (table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())"
         class="btn btn-danger"
         type="button"
         title="Remove selected affects"
@@ -191,6 +229,26 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
+        <!-- Bulk Edit Row -->
+        <tr v-if="isBulkEditMode" class="bulk-edit">
+          <td
+            v-for="header in table.getHeaderGroups()[0].headers"
+            :key="header.id"
+            :style="{ width: `${header.getSize()}px` }"
+          >
+            <div v-if="header.id === 'Select'" class="d-flex align-items-center gap-1">
+              <i class="bi-pencil-square text-primary"></i>
+            </div>
+            <BulkEditCell
+              v-else
+              :column="header.column"
+              :modelValue="bulkEditData[header.id as keyof typeof bulkEditData]"
+              :virtualRow="bulkEditVirtualRow"
+              @fieldChanged="(columnId, value) => updateBulkEditField(columnId as any, value)"
+            />
+          </td>
+        </tr>
+        <!-- Normal Rows -->
         <tr
           v-for="row in table.getRowModel().rows"
           :key="row.id"
@@ -296,6 +354,13 @@ table {
       border-color: #adadad;
       background-color: #adadad;
       cursor: progress;
+    }
+
+    &.bulk-edit td {
+      border-color: #e0d4ff !important;
+      background-color: #f0e8ff;
+      color: #4a148c;
+      font-weight: 500;
     }
   }
 
