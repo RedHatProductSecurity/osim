@@ -14,6 +14,7 @@ import type {
   SuggestionDetails,
   SuggestionFields,
 } from '@/types/aegisAI';
+import type { ImpactEnumWithBlankType } from '@/types';
 
 type DetailsFeatureField = 'cwe' | 'impact';
 const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureField> = {
@@ -23,7 +24,7 @@ const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureFi
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
-  valueRef: Ref<null | string>,
+  valueRef: Ref<ImpactEnumWithBlankType | null | string>,
   fieldName: SuggestionFields,
 ) {
   const toastStore = useToastStore();
@@ -31,7 +32,6 @@ export function useAegisSuggestion(
   const aegisSuggestionWatcher = useAISuggestionsWatcher(fieldName, valueRef);
   const previousValue = ref<null | string>(null);
   const selectedSuggestionIndex = ref(0);
-  // TODO: revisit type handling for details
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
 
   const details = ref<SuggestionDetails>({
@@ -81,7 +81,7 @@ export function useAegisSuggestion(
       toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
     } else {
       const { impact } = data;
-      details.value.impact = impact;
+      details.value.impact = [impact];
       applySuggestion(impact);
     };
   }

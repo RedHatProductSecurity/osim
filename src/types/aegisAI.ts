@@ -1,7 +1,7 @@
 // AI Change Tracking Types
-import type { Nullable, ValueOf } from '.';
+import type { Nullable } from '.';
 import type { AegisChangeType } from './zodFlaw';
-import type { ImpactEnumWithBlank } from './zodShared';
+import type { ImpactEnumWithBlankType } from './zodShared';
 
 // Component Feature Names for CVE Analysis
 export type AegisAIComponentFeatureNameType =
@@ -61,7 +61,7 @@ export type SuggestionDetails = {
   confidence?: number | string;
   cwe: Nullable<string[]>;
   explanation?: string;
-  impact: Nullable<ValueOf<typeof ImpactEnumWithBlank>>;
+  impact: Nullable<ImpactEnumWithBlankType[]>;
   tools_used?: string[];
 };
 // HTTP Validation Error
