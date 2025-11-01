@@ -126,7 +126,6 @@ export type ZodFlawCommentType = z.infer<typeof ZodFlawCommentSchema>;
 export const ZodFlawCommentSchema = z.object({
   uuid: z.string(),
   external_system_id: z.string(),
-  order: z.number(),
   text: z.string().nullish(),
   creator: z.string().nullish(),
   is_private: z
