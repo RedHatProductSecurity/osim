@@ -25,14 +25,17 @@ export type AegisChangeType = z.infer<typeof ZodAegisChangeTypeEnum>;
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;
-// TODO: Remove once OSIDB-3959 is resolved
 export const MajorIncidentStateEnumWithBlank = {
   '': '',
-  'Major Incident Approved': MajorIncidentStateEnum.Approved,
-  'Exploits (KEV) Approved': MajorIncidentStateEnum.CisaApproved,
-  'Minor Incident Approved': MajorIncidentStateEnum.Minor,
-  'Major Incident Requested': MajorIncidentStateEnum.Requested,
-  'Major Incident Rejected': MajorIncidentStateEnum.Rejected,
+  'Major Incident Requested': MajorIncidentStateEnum.MajorIncidentRequested,
+  'Major Incident Approved': MajorIncidentStateEnum.MajorIncidentApproved,
+  'Major Incident Rejected': MajorIncidentStateEnum.MajorIncidentRejected,
+  'Exploits (KEV) Requested': MajorIncidentStateEnum.ExploitsKevRequested,
+  'Exploits (KEV) Approved': MajorIncidentStateEnum.ExploitsKevApproved,
+  'Exploits (KEV) Rejected': MajorIncidentStateEnum.ExploitsKevRejected,
+  'Minor Incident Requested': MajorIncidentStateEnum.MinorIncidentRequested,
+  'Minor Incident Approved': MajorIncidentStateEnum.MinorIncidentApproved,
+  'Minor Incident Rejected': MajorIncidentStateEnum.MinorIncidentRejected,
 } as const;
 export const NistCvssValidationEnumWithBlank = { '': '', ...NistCvssValidationEnum } as const;
 

@@ -213,11 +213,6 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
-          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
-            <!---->
-          </div>
-        </td>
         <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
@@ -247,11 +242,6 @@ exports[`affectsTable > should render 1`] = `
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
-          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
-            <!---->
-          </div>
-        </td>
         <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
         <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
@@ -276,11 +266,6 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="">
-          <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
-            <!---->
-          </div>
-        </td>
         <td data-v-17587d65="">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
