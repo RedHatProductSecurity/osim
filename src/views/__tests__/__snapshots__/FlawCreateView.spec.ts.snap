@@ -264,11 +264,15 @@ exports[`flawCreateView > should render 1`] = `
               <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
                   <!--v-if-->
                   <option data-v-001a00e0="" selected="" value=""></option>
-                  <option data-v-001a00e0="" value="APPROVED">Major Incident Approved</option>
-                  <option data-v-001a00e0="" value="CISA_APPROVED">Exploits (KEV) Approved</option>
-                  <option data-v-001a00e0="" value="MINOR">Minor Incident Approved</option>
-                  <option data-v-001a00e0="" value="REQUESTED">Major Incident Requested</option>
-                  <option data-v-001a00e0="" value="REJECTED">Major Incident Rejected</option>
+                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_REQUESTED">Major Incident Requested</option>
+                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_APPROVED">Major Incident Approved</option>
+                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_REJECTED">Major Incident Rejected</option>
+                  <option data-v-001a00e0="" value="EXPLOITS_KEV_REQUESTED">Exploits (KEV) Requested</option>
+                  <option data-v-001a00e0="" value="EXPLOITS_KEV_APPROVED">Exploits (KEV) Approved</option>
+                  <option data-v-001a00e0="" value="EXPLOITS_KEV_REJECTED">Exploits (KEV) Rejected</option>
+                  <option data-v-001a00e0="" value="MINOR_INCIDENT_REQUESTED">Minor Incident Requested</option>
+                  <option data-v-001a00e0="" value="MINOR_INCIDENT_APPROVED">Minor Incident Approved</option>
+                  <option data-v-001a00e0="" value="MINOR_INCIDENT_REJECTED">Minor Incident Rejected</option>
                 </select>
                 <!--v-if-->
               </div>

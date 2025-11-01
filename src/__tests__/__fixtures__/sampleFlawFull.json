@@ -19,7 +19,7 @@
     "source": "GIT",
     "reported_dt": "2012-01-10T00:00:00Z",
     "mitigation": "CVE mitigation",
-    "major_incident_state": "APPROVED",
+    "major_incident_state": "MAJOR_INCIDENT_APPROVED",
     "nist_cvss_validation": "",
     "affects": [
         {
