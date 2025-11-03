@@ -3,6 +3,9 @@
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 
+### Changed
+* Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
+
 ## [Unreleased]
 ### Added
 * Allow grouping affects by ps_module (`OSIDB-4546`)
