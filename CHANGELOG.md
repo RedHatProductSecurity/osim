@@ -3,6 +3,7 @@
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 * Add bulk editing to affects (`OSIDB-4515`)
+* Support Aegis suggestions for title and description (`AEGIS-226`)
 
 ### Changed
 * Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
