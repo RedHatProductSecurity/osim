@@ -50,7 +50,7 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
 
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
     params,
   });
 }
@@ -75,7 +75,7 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
 
     const response = await osidbFetch({
       method: 'get',
-      url: '/osidb/api/v1/flaws',
+      url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
       params: {
         include_fields,
         affects__ps_module: firstAffectPsModule,
@@ -101,7 +101,7 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
 export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/v1/flaws/${uuidOrCve}`,
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws/${uuidOrCve}`,
     cache: breakCache ? 'no-cache' : 'default',
     params: {
       include_meta_attr: 'bz_id',
@@ -125,7 +125,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
   try {
     const response = await osidbFetch({
       method: 'put',
-      url: `/osidb/api/v1/flaws/${uuid}`,
+      url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws/${uuid}`,
       data: flawObject,
       params: {
         include_history: 'true',
@@ -204,7 +204,7 @@ export async function postFlawComment(
     .catch(createCatchHandler(`Error saving ${type} comment`));
 }
 
-// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
+// Source openapi.yaml schema definition for `/osidb/api/v2/flaws/{flaw_id}/promote`
 export async function promoteFlaw(uuid: string) {
   const { addToast } = useToastStore();
   return osidbFetch({
@@ -230,7 +230,7 @@ export async function promoteFlaw(uuid: string) {
       throw error;
     });
 }
-// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
+// Source openapi.yaml schema definition for `/osidb/api/v2/flaws/{flaw_id}/reject`
 export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
   const { addToast } = useToastStore();
   return osidbFetch({
@@ -263,7 +263,7 @@ export async function rejectFlaw(uuid: string, data: Record<'reason', string>) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
     params: {
       include_fields: FLAW_LIST_FIELDS.join(','),
       search: query,
@@ -276,7 +276,7 @@ export async function searchFlaws(query: string) {
 export async function advancedSearchFlaws(params: Record<string, string>) {
   return osidbFetch({
     method: 'get',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
     params: {
       ...params,
       include_fields: FLAW_LIST_FIELDS.join(','),
@@ -289,7 +289,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
 export async function postFlaw(requestBody: ZodFlawType) {
   return osidbFetch({
     method: 'post',
-    url: '/osidb/api/v1/flaws',
+    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
     data: requestBody,
   }).then((response) => {
     return response.data;

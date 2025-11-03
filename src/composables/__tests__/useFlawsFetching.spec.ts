@@ -40,7 +40,7 @@ describe('useFlawsFetching', () => {
       {
         results: mockIusses.slice(0, 20),
         count: 30,
-        next: 'https://osidb-stage.prodsec.redhat.com/osidb/api/v1/flaws?offset=20',
+        next: 'https://osidb-stage.prodsec.redhat.com/osidb/api/v2/flaws?offset=20',
       },
     }).mockResolvedValueOnce({
       data:
