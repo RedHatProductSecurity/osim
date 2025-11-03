@@ -5,6 +5,8 @@
 * Tour guide for new features (`OSIDB-4583`)
 * Allow grouping affects by ps_module (`OSIDB-4546`)
 
+### Changed
+* Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
 
 ## [2025.10.0]
 ### Fixed
