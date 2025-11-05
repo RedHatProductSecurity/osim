@@ -49,7 +49,13 @@ export type AegisAIValidationErrorType = {
 };
 
 // AEGIS AI Fields Types
-export type SuggestionFields = 'cwe_id' | 'impact';
+export type SuggestableFlawFields = '_cvss3_vector' | 'cwe_id' | 'impact';
+
+export type SuggestionDetails = CvssSuggestionDetails & CweSuggestionDetails & ImpactSuggestionDetails;
+
+export type CvssSuggestionDetails = {
+  cvss3_vector: Nullable<string>;
+} & SuggestionDetailOptionals;
 
 export type SuggestionDetails = CweSuggestionDetails & ImpactSuggestionDetails;
 
