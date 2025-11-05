@@ -6,7 +6,7 @@ import { watchOnce } from '@vueuse/core';
 
 import { IssuerEnum } from '@/generated-client';
 import { CVSS_V3 } from '@/constants';
-import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType } from '@/types';
+import type { ZodAffectType, ZodAffectCVSSType, ZodFlawCommentType, CvssEntity } from '@/types';
 
 import type { DeepMapValues } from './typeHelpers';
 
@@ -87,7 +87,7 @@ export function isCVSS3issuedByRH(score: ZodAffectCVSSType) {
   return score?.issuer === IssuerEnum.Rh && score?.cvss_version === CVSS_V3;
 }
 
-export function affectRhCvss3(affect: ZodAffectType) {
+export function affectRhCvss3(affect: CvssEntity) {
   return affect.cvss_scores.find(isCVSS3issuedByRH);
 }
 
