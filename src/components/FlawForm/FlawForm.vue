@@ -269,7 +269,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             :initialImpact="initialFlaw.impact ?? null"
             :workflowState="flaw.classification?.state ?? ''"
           />
-          <CvssCalculator />
+          <CvssCalculator :aegisContext="aegisContext" />
           <CvssSection
             :highlightedNvdCvssString
             :shouldDisplayEmailNistForm

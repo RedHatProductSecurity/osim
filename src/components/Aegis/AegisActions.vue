@@ -26,6 +26,7 @@ function selectSuggestion(index: number) {
 
 <template>
   <div v-if="osimRuntime.flags?.aiCweSuggestions === true" class="d-flex align-items-center">
+
     <i
       v-osim-loading.grow="isFetchingSuggestion"
       class="bi-stars label-icon"

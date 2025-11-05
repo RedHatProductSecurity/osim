@@ -70,7 +70,7 @@ exports[`flawCreateView > should render 1`] = `
             </div>
           </label>
           <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
-            <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
+            <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><!--v-if--><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
                 <div data-v-ffda1b6f="" class="input-wrapper col">
                   <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;"></span>
                     <!--v-if-->
