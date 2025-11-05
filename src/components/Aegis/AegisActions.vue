@@ -30,6 +30,7 @@ function selectSuggestion(index: number) {
 <template>
   <div v-if="props.featureFlag && osimRuntime.flags?.[props.featureFlag] === true" class="d-flex align-items-center">
     <i
+      v-osim-loading.grow="isFetchingSuggestion"
       class="bi-stars label-icon"
       :class="{ disabled: !canSuggest, applied: hasAppliedSuggestion }"
       :title="tooltipText"

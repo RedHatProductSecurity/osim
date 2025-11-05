@@ -14,20 +14,21 @@ import type {
   CweSuggestionDetails,
   ImpactSuggestionDetails,
   SuggestionDetails,
-  SuggestionFields,
+  SuggestableFlawFields,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
-type DetailsFeatureField = 'cwe' | 'impact';
-const DetailsFieldFromSuggestionField: Record<SuggestionFields, DetailsFeatureField> = {
+type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact';
+const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
+  _cvss3_vector: 'cvss3_vector',
 };
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<ImpactEnumWithBlankType | null | string>,
-  fieldName: SuggestionFields,
+  fieldName: SuggestableFlawFields,
 ) {
   const toastStore = useToastStore();
   const service = new AegisAIService();
@@ -39,6 +40,7 @@ export function useAegisSuggestion(
   const details = ref<SuggestionDetails>({
     cwe: null,
     impact: null,
+    cvss3_vector: null,
   });
 
   const canShowFeedback = computed(
@@ -88,49 +90,43 @@ export function useAegisSuggestion(
     };
   }
 
+  async function suggestCvss() {
+    const data = await getSuggestion();
+    if (!data?.cvss3_vector || data.cvss3_vector.length === 0) {
+      toastStore.addToast({ title: 'AI CVSS Vector Suggestions', body: 'No valid CVSS vector suggestion received.' });
+    } else {
+      details.value.cvss3_vector = [data.cvss3_vector];
+      applySuggestion(data.cvss3_vector);
+    }
+  }
+
   async function getSuggestion() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
       return;
     }
     try {
-      if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value == null) {
+      if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value === null) {
         previousValue.value = valueRef.value;
       }
-      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestionFields, AegisAIComponentFeatureNameType> = {
+      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestableFlawFields, AegisAIComponentFeatureNameType> = {
         cwe_id: 'suggest-cwe',
         impact: 'suggest-impact',
-        // description: 'suggest-description',
+        _cvss3_vector: 'suggest-impact',
       };
       const feature = FIELD_NAME_TO_FEATURE_NAME[fieldName];
       const data = await service.analyzeCVEWithContext({
         feature,
         ...serializeAegisContext(context),
       });
-      // requestDuration.value = Date.now() - requestStartTime;
-      // const suggestions = data.cwe || [];
-      // if (suggestions.length === 0) {
-      //   toastStore.addToast({ title: 'AI Suggestion', body: 'No valid suggestion received.' });
-      //   return;
-      // }
-      // details.value = {
-      //   cwe: suggestions,
       details.value = {
-        // cwe: [first],
         cwe: null,
+        cvss3_vector: null,
         impact: null,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
       };
-      // selectedSuggestionIndex.value = 0;
-      // aegisCweSuggestionWatcher.applyAISuggestion(suggestions[0]);
-      // toastStore.addToast({
-      //   title: 'AI Suggestion Applied',
-      //   body: 'Suggestion applied. Always review AI generated responses prior to use.',
-      //   css: 'info',
-      //   timeoutMs: 8000,
-      // });
       return data;
     } catch (e: any) {
       const msg = e?.data?.detail ?? e?.message ?? 'Request failed';
@@ -139,12 +135,13 @@ export function useAegisSuggestion(
   }
 
   function revert() {
-    if (previousValue.value !== null) {
+    if (previousValue.value !== null || fieldName === '_cvss3_vector') {
       valueRef.value = previousValue.value;
     }
     previousValue.value = null;
     details.value = {
       cwe: null,
+      cvss3_vector: null,
       impact: null,
     };
     selectedSuggestionIndex.value = 0;
@@ -244,5 +241,6 @@ export function useAegisSuggestion(
     sendFeedback,
     suggestCwe,
     suggestImpact,
+    suggestCvss,
   };
 }

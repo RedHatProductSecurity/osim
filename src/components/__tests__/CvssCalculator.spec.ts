@@ -36,7 +36,14 @@ describe('cvssCalculator', () => {
     } = await importActual('@/composables/useCvssScores');
     vi.mocked(useCvssScores).mockImplementation(_useCvssScores);
     vi.mocked(validateCvssVector).mockImplementation(_validateCvssVector);
-    subject = mount(CvssCalculator, { error: null });
+    const mountOptions = {
+      global: {
+        stubs: {
+          AegisCvssActions: true,
+        },
+      },
+    };
+    subject = mount(CvssCalculator, { error: null, ...mountOptions });
   });
 
   afterEach(() => {

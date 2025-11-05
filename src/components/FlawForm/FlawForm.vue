@@ -289,7 +289,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             :initialImpact="initialFlaw.impact ?? null"
             :workflowState="flaw.classification?.state ?? ''"
           />
-          <CvssCalculator />
+          <CvssCalculator :aegisContext="aegisContext" />
           <CvssSection
             :highlightedNvdCvssString
             :shouldDisplayEmailNistForm
