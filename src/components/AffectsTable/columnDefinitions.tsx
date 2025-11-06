@@ -8,6 +8,8 @@ import type {
   Table,
 } from '@tanstack/vue-table';
 
+import { useMultiFlawTrackers } from '@/composables/useMultiFlawTrackers';
+
 import type { ZodAffectType } from '@/types';
 import {
   affectAffectedness,
@@ -41,6 +43,7 @@ const editableCellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, any>> =
 
 export default function AffectColumnDefinitions() {
   const columnHelper = createColumnHelper<ZodAffectType>();
+  const { actions: { getRelatedCvesForAffect } } = useMultiFlawTrackers();
 
   const columns = [
     columnHelper.display({
@@ -92,6 +95,35 @@ export default function AffectColumnDefinitions() {
       },
       size: 40,
       enableResizing: false,
+      enableSorting: false,
+      enableGlobalFilter: false,
+      enableColumnFilter: false,
+      meta: {
+        filter: false,
+      },
+    }),
+    columnHelper.display({
+      id: 'cve',
+      header: 'Related CVEs',
+      cell: ({ row }) => {
+        const relatedCves = getRelatedCvesForAffect(row.original);
+        if (!relatedCves.length) return null;
+
+        return (
+          <div class="d-flex gap-1 flex-wrap">
+            {relatedCves.map(cve => (
+              <span
+                key={cve}
+                class="badge bg-info text-dark"
+                title={`This stream is also affected by ${cve}`}
+              >
+                {cve}
+              </span>
+            ))}
+          </div>
+        );
+      },
+      size: 150,
       enableSorting: false,
       enableGlobalFilter: false,
       enableColumnFilter: false,

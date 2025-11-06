@@ -63,6 +63,9 @@ export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
 
 export const isCveValid = (cve: string) => cveRegex.test(cve);
 
+export const UUID4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+export const isUUID4Valid = (uuid: string) => UUID4Regex.test(uuid);
+
 export const uniques = <T>(array: T[]) => Array.from(new Set(array));
 
 export function formatDate(date: Date | string, includeTime: boolean): string {

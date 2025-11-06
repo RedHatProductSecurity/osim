@@ -17,6 +17,7 @@ import DebouncedInput from '@/widgets/DebouncedInput/DebouncedInput.vue';
 import ColumnFilter from './ColumnFilter.vue';
 import ColumnOptions from './ColumnOptions.vue';
 import BulkEditCell from './BulkEditCell.vue';
+import MultiFlawTracker from './MultiFlawTracker.vue';
 
 const { settings } = storeToRefs(useSettingsStore());
 
@@ -26,7 +27,6 @@ const {
   actions: { initializeAffects },
   state: { hasChanges, initialAffects },
 } = useAffectsModel();
-
 const {
   actions: {
     changeItemsPerPage,
@@ -159,6 +159,9 @@ onMounted(() => {
         class="form-control"
         type="text"
         placeholder="Search..."
+      />
+      <MultiFlawTracker
+        v-if="currentAffects.length > 0"
       />
       <button
         v-if="currentAffects.length > 0"

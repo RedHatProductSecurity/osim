@@ -7,7 +7,8 @@ import { osimRuntime } from '@/stores/osimRuntime';
 
 import { beforeFetch } from './FlawService';
 
-export async function getAffects(cveOrUuid: string) {
+export async function getAffects(cveOrUuid: string):
+Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   const pageSize = 100;
 

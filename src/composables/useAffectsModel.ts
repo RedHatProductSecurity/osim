@@ -265,17 +265,41 @@ function useAffects() {
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
-  async function fileTracker({ ps_update_stream, updated_dt, uuid }: fileTrackerFields) {
+  async function fileTracker(
+    affectOrUuids: { affects: string[]; ps_update_stream: string } | fileTrackerFields,
+  ) {
+    if ('uuid' in affectOrUuids) {
+      const { ps_update_stream, updated_dt, uuid } = affectOrUuids;
+      const trackerToFile = {
+        embargoed: useFlaw().flaw.value.embargoed,
+        affects: [uuid!],
+        ps_update_stream: ps_update_stream!,
+        updated_dt: updated_dt!,
+      };
+
+      const result = await fileTrackingFor(trackerToFile);
+      if (result && 'uuid' in result) {
+        currentAffects.value.find(affect => affect.uuid === uuid)!.tracker = result;
+      }
+      return;
+    }
+
+    if (!('affects' in affectOrUuids)) return;
+    const { affects, ps_update_stream } = affectOrUuids;
     const trackerToFile = {
       embargoed: useFlaw().flaw.value.embargoed,
-      affects: [uuid!],
-      ps_update_stream: ps_update_stream!,
-      updated_dt: updated_dt!,
+      affects,
+      ps_update_stream,
     };
 
     const result = await fileTrackingFor(trackerToFile);
     if (result && 'uuid' in result) {
-      currentAffects.value.find(affect => affect.uuid === uuid)!.tracker = result;
+      for (const affectUuid of affects) {
+        const affect = currentAffects.value.find(a => a.uuid === affectUuid);
+        if (affect) {
+          affect.tracker = result;
+        }
+      }
     }
   }
 
