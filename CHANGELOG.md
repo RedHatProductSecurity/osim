@@ -1,5 +1,10 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Added CWE title to suggestion hover details (`AEGIS-236`)
+
+
 ## [2025.11.2]
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
