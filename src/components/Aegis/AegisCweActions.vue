@@ -45,7 +45,12 @@ const suggestionTooltip = computed(() => {
   if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CWE via AEGIS-AI';
   const { confidence, explanation, tools_used } = suggestionDetails.value;
   const currentCwe = currentSuggestion.value;
-  const parts: string[] = [`Value: ${currentCwe}`];
+
+  const cweDetails = currentCwe ? getCweDetails(currentCwe) : null;
+  const valueWithTitle = cweDetails?.name ? `${currentCwe} ${cweDetails.name}` : currentCwe;
+
+  const parts: string[] = [`Value: ${valueWithTitle}`];
+
   if (hasMultipleSuggestions.value) {
     parts.push(`Suggestion ${selectedSuggestionIndex.value + 1} of ${allSuggestions.value.length}`);
   }
