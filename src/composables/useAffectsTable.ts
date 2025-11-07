@@ -265,7 +265,6 @@ export function useAffectsTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
-    debugAll: true,
   });
 
   function toggleColumnVisibility(column: Column<any, any>) {
