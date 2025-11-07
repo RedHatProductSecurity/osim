@@ -4,6 +4,9 @@
 * Add affect loading progress indicator (`OSIDB-4631`)
 * `Create Jira Task` option not working if there are no changes (`OSIDB-4632`)
 
+### Changed
+* Removed Affects V1 implementation (`OSIDB-4660`)
+
 
 ## [2025.11.3]
 ### Added
