@@ -320,13 +320,23 @@ exports[`flawForm > mounts and renders 1`] = `
       </label>
     </div>
     <div data-v-76e7a15d="" class="col-6">
-      <div data-v-d6c306ee="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
-        <div data-v-0e2ae48e="" data-v-d6c306ee="" class="osim-input ps-3 osim-workflow-state-display mb-2">
+      <div data-v-79158bda="" data-v-76e7a15d="" class="osim-workflow-state-container mb-2">
+        <div data-v-0e2ae48e="" data-v-79158bda="" class="osim-input ps-3 osim-workflow-state-display mb-2">
           <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
             <div data-v-0e2ae48e="" class="col-9">
-              <div data-v-d6c306ee="" class="d-flex"><span data-v-d6c306ee="" class="form-control rounded-0">NEW</span>
-                <div data-v-d6c306ee="" class="col-auto">
-                  <div data-v-d6c306ee="" class="osim-workflow-state-buttons"><button data-v-d6c306ee="" type="button" class="btn btn-secondary rounded-0"> Reject </button><button data-v-d6c306ee="" type="button" class="btn btn-warning osim-last-field-button" title="Promote to Triage"> Promote to Triage</button></div>
+              <div data-v-79158bda="" class="d-flex"><span data-v-79158bda="" class="form-control rounded-0">NEW</span>
+                <div data-v-79158bda="" class="col-auto">
+                  <div data-v-79158bda="" class="osim-workflow-state-buttons">
+                    <div data-v-846ac2ce="" data-v-79158bda="" class="dropdown-container">
+                      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button data-v-79158bda="" type="button" class="btn btn-secondary dropdown-toggle"> Change State
+                          <!--v-if-->
+                        </button></div>
+                      <teleport-stub data-v-846ac2ce="" to="#app">
+                        <!--v-if-->
+                      </teleport-stub>
+                      <!--v-if-->
+                    </div>
+                  </div>
                 </div>
               </div>
               <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">

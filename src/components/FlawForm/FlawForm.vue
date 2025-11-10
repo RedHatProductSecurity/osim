@@ -7,7 +7,7 @@ import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.
 import CveRequestForm from '@/components/CveRequestForm/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import CvssSection from '@/components/CvssSection/CvssSection.vue';
-import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
+import FlawWorkflowState from '@/components/FlawWorkflowState/FlawWorkflowState.vue';
 import IssueFieldReferences from '@/components/IssueFieldReferences/IssueFieldReferences.vue';
 import IssueFieldAcknowledgments from '@/components/IssueFieldAcknowledgments/IssueFieldAcknowledgments.vue';
 import FlawComments from '@/components/FlawComments/FlawComments.vue';
@@ -316,7 +316,7 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
           />
         </div>
         <div class="col-6">
-          <IssueFieldState
+          <FlawWorkflowState
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"

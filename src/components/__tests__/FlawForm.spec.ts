@@ -1,8 +1,10 @@
+import { nextTick } from 'vue';
+
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 
-import IssueFieldState from '@/components/IssueFieldState/IssueFieldState.vue';
+import FlawWorkflowState from '@/components/FlawWorkflowState/FlawWorkflowState.vue';
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
 import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
@@ -12,6 +14,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
+import DropDownMenu from '@/widgets/DropDownMenu/DropDownMenu.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
@@ -77,8 +80,7 @@ function mountWithProps(flaw: ZodFlawType, props: FlawFormProps) {
     },
     global: {
       stubs: {
-        // osimFormatDate not defined on test run, so we need to stub it
-        // EditableDate: true,
+        Teleport: true,
         RouterLink: true,
         AffectExpandableForm: true,
       },
@@ -338,7 +340,7 @@ describe('flawForm', () => {
 
   osimFullFlawTest('displays correct State field value from props', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject.findComponent(IssueFieldState);
+    const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
     expect(workflowStateField?.props().classification.state).toBe('NEW');
   });
@@ -346,7 +348,7 @@ describe('flawForm', () => {
   osimFullFlawTest('displays with impact nudge when workflow state is after triage', async ({ flaw }) => {
     flaw.classification!.state = FlawClassificationStateEnum.PreSecondaryAssessment;
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject.findComponent(IssueFieldState);
+    const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.props().classification.state).toBe('PRE_SECONDARY_ASSESSMENT');
     (subject.vm as any).flaw.impact = 'CRITICAL';
     await flushPromises();
@@ -355,29 +357,36 @@ describe('flawForm', () => {
 
   osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject
-      .findAllComponents(IssueFieldState)
-      .find(component => component.text().includes('State'));
-    expect(
-      workflowStateField
-        ?.findAll('button')
-        ?.find(el => el.text() === 'Reject')
-        ?.text(),
-    ).toBe('Reject');
-    expect(
-      workflowStateField
-        ?.findAll('button')
-        ?.find(el => el.text().includes('Promote to'))
-        ?.text(),
-    ).toBe('Promote to Triage');
+    const menu = subject
+      .findComponent(FlawWorkflowState)
+      .findComponent(DropDownMenu);
+
+    const menuButton = menu.find('button[type="button"]');
+    await menuButton.trigger('click');
+    await nextTick();
+
+    for (const button of menu.findAll('button')) {
+      expect(([
+        'Change State',
+        'Promote to Triage',
+        'Reject',
+        'Reset',
+        'Revert to Empty',
+      ]).includes(button.text().trim())).toBe(true);
+    }
   });
 
   osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const workflowStateField = subject
-      .findAllComponents(IssueFieldState)
-      .find(component => component.text().includes('State'));
-    const rejectButton = workflowStateField?.findAll('button')?.find(el => el.text() === 'Reject');
+    const menu = subject
+      .findComponent(FlawWorkflowState)
+      .findComponent(DropDownMenu);
+
+    const menuButton = menu.find('button[type="button"]');
+    await menuButton.trigger('click');
+    await nextTick();
+
+    const rejectButton = menu?.findAll('button')?.find(el => el.text() === 'Reject');
     await rejectButton?.trigger('click');
     await flushPromises();
     expect(subject.find('.modal-dialog').exists()).toBe(true);
