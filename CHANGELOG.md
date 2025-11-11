@@ -1,20 +1,30 @@
 # OSIM Changelog
-## [Unreleased]
+
+## [2025.11.2]
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 * Add bulk editing to affects (`OSIDB-4515`)
 * Add Multi-flaw tracker creation (`OSIDB-4519`)
+* Support revert and reset workflow functions (`OSIDB-4489`)
 
 
+## [2025.11.1-hotfix]
 ### Changed
 * Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
+
+
+## [2025.11.1]
+### Fixed
+* Remove deprecated `order` attribute from Comment model
+
+### Changed
+* Update incident state field to match OSIDB (`OSIDB-3850`)
 
 
 ## [2025.11.0]
 ### Added
 * Tour guide for new features (`OSIDB-4583`)
 * Allow grouping affects by ps_module (`OSIDB-4546`)
-* Support revert and reset workflow functions (`OSIDB-4489`)
 
 
 ## [2025.10.0]
@@ -536,7 +546,10 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...HEAD
+[2025.11.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1-hotfix...v2025.11.2
+[2025.11.1-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1...v2025.11.1-hotfix
+[2025.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.0...v2025.11.1
 [2025.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.10.0...v2025.11.0
 [2025.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.9.0...v2025.10.0
 [2025.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.8.0...v2025.9.0
