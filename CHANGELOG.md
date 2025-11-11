@@ -20,6 +20,8 @@
 ## [2025.11.4]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
+
+### Fixed
 * `Create Jira Task` option not working if there are no changes (`OSIDB-4632`)
 * Added a counter of selected rows in affects table (`OSIDB-4608`)
 * Offer Aegis-suggested statement text (`AEGIS-250`)
