@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Add affect loading progress indicator (`OSIDB-4631`)
+
 
 ## [2025.11.2]
 ### Added
