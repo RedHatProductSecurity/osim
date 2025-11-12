@@ -30,7 +30,7 @@ const selectedIndex = ref(-1);
 const aegisCweActionsRef = ref<InstanceType<typeof AegisCweActions> | null>(null);
 
 const isLoadingSuggestions = computed(() => {
-  return aegisCweActionsRef.value?.isSuggesting || false;
+  return aegisCweActionsRef.value?.isFetchingSuggestion || false;
 });
 
 function filterSuggestions(query: string) {

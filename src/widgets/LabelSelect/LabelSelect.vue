@@ -27,9 +27,10 @@ defineOptions({
 <template>
   <label class="osim-input mb-2 ps-3">
     <div class="row">
-      <span v-if="label" class="form-label col-3">
-        {{ label }}
-        <slot name="nudge" />
+      <span class="form-label col-3">
+        <slot name="label" :label>
+          {{ label }}
+        </slot>
       </span>
       <div class="col-9">
         <select
