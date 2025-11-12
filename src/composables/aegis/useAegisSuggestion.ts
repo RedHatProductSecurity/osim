@@ -10,7 +10,8 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type {
-  AegisAIComponentFeatureNameType,
+  CweSuggestionDetails,
+  ImpactSuggestionDetails,
   SuggestionDetails,
   SuggestableFlawFields,
 } from '@/types/aegisAI';
@@ -55,7 +56,7 @@ export function useAegisSuggestion(
 
   async function suggestCwe() {
     const data = await getSuggestion();
-    if (!data?.cwe || data.cwe.length === 0) {
+    if (!data || !('cwe' in data) || !data.cwe || data.cwe.length === 0) {
       toastStore.addToast({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
     } else {
       details.value.cwe = data.cwe;
@@ -79,7 +80,7 @@ export function useAegisSuggestion(
 
   async function suggestImpact() {
     const data = await getSuggestion();
-    if (!data || !data.impact) {
+    if (!data || !('impact' in data) || !data.impact) {
       toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
     } else {
       const { impact } = data;
@@ -90,7 +91,7 @@ export function useAegisSuggestion(
 
   async function suggestCvss() {
     const data = await getSuggestion();
-    if (!data?.cvss3_vector || data.cvss3_vector.length === 0) {
+    if (!data || !('cvss3_vector' in data) || !data.cvss3_vector || typeof data.cvss3_vector !== 'string') {
       toastStore.addToast({ title: 'AI CVSS Vector Suggestions', body: 'No valid CVSS vector suggestion received.' });
     } else {
       details.value.cvss3_vector = data.cvss3_vector;
@@ -107,15 +108,23 @@ export function useAegisSuggestion(
       if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value === null) {
         previousValue.value = valueRef.value;
       }
-      const FIELD_NAME_TO_FEATURE_NAME: Record<SuggestableFlawFields, AegisAIComponentFeatureNameType> = {
-        cwe_id: 'suggest-cwe',
-        impact: 'suggest-impact',
-        _cvss3_vector: 'suggest-impact',
-      };
-      const data = await service.analyzeCVEWithContext({
-        feature: FIELD_NAME_TO_FEATURE_NAME[fieldName],
-        ...serializeAegisContext(context),
-      });
+      const contextData = serializeAegisContext(context);
+
+      let data: CweSuggestionDetails | ImpactSuggestionDetails | undefined;
+      if (fieldName === 'cwe_id') {
+        data = await service.analyzeCVEWithContext({
+          feature: 'suggest-cwe',
+          ...contextData,
+        });
+      } else if (fieldName === 'impact' || fieldName === '_cvss3_vector') {
+        data = await service.analyzeCVEWithContext({
+          feature: 'suggest-impact',
+          ...contextData,
+        });
+      }
+
+      if (!data) return;
+
       details.value = {
         cwe: null,
         cvss3_vector: null,

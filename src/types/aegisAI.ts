@@ -98,8 +98,8 @@ export type AegisMetadata = {
 };
 
 export type AegisFeatureResponseMap = {
-  'suggest-cwe': CweSuggestionDetails;
   'suggest-cvss': CvssSuggestionDetails;
+  'suggest-cwe': CweSuggestionDetails;
   'suggest-description': DescriptionSuggestionDetails;
   'suggest-impact': ImpactSuggestionDetails;
 };
