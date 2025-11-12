@@ -5,6 +5,7 @@
 * Added CWE title to suggestion hover details (`AEGIS-236`)
 * Offer Impact suggestions from Aegis (`AEGIS-224`)
 * Offer CVSS suggestions from Aegis (`AEGIS-225`)
+* Support Aegis suggestions for title and description (`AEGIS-226`)
 
 ## [2025.11.2]
 ### Added

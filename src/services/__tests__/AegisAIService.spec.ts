@@ -4,9 +4,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { server } from '@/__tests__/setup';
 import type {
+  AegisAIComponentFeatureNameType,
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
-  AegisAICVEAnalysisWithContextParamsType,
 } from '@/types/aegisAI';
 
 import { AegisAIService } from '../AegisAIService';
@@ -118,8 +118,9 @@ describe('aegisAIService', () => {
   describe('analyzeCVEWithContext', () => {
     it('should make correct API call with context data', async () => {
       const mockResponse = { cve_id: 'CVE-2021-47553', analysis: 'Enhanced CVE analysis' };
-      const params: AegisAICVEAnalysisWithContextParamsType = {
-        feature: 'suggest-cwe',
+      const feature: AegisAIComponentFeatureNameType = 'suggest-cwe';
+      const params = {
+        feature,
         cve_id: 'CVE-2021-47553',
         components: ['kernel', 'sched/scs'],
         title: 'Reset task stack state in bringup_cpu()',
@@ -151,13 +152,14 @@ describe('aegisAIService', () => {
     });
 
     it('should handle errors', async () => {
-      const params: AegisAICVEAnalysisWithContextParamsType = {
-        feature: 'suggest-impact',
+      const feature: AegisAIComponentFeatureNameType = 'suggest-cwe';
+      const params = {
+        feature,
         cve_id: 'CVE-2024-invalid',
       };
 
       server.use(
-        http.post(`${mockBaseUrl}/analysis/cve/suggest-impact`, () =>
+        http.post(`${mockBaseUrl}/analysis/cve/suggest-cwe`, () =>
           HttpResponse.json({ error: 'Invalid CVE format' }, { status: 400 }),
         ),
       );

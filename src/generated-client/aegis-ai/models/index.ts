@@ -15,6 +15,55 @@ export interface AegisAiWebSrcMainComponentFeatureName1 {
 export interface AegisAiWebSrcMainComponentFeatureName2 {
 }
 /**
+ * Data structure for feedback.
+ * @export
+ * @interface Feedback
+ */
+export interface Feedback {
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    accept?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    actual?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    cveId?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    email?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    expected?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    feature: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    requestTime?: any | null;
+}
+/**
  * 
  * @export
  * @interface HTTPValidationError

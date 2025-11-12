@@ -1,3 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`aegisCvssActions > renders correctly 1`] = `"<!--v-if-->"`;
+exports[`aegisCvssActions > renders correctly 1`] = `
+"<div data-v-e049df0b="" data-v-9bd1ee59="" class="d-flex align-items-center"><i data-v-e049df0b="" class="bi-stars label-icon" title="Suggest CVSS via AEGIS-AI"></i>
+  <!--v-if-->
+  <!--v-if-->
+</div>"
+`;

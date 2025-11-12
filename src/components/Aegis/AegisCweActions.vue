@@ -6,6 +6,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import { loadCweData } from '@/services/CweService';
 import type { CWEMemberType } from '@/types/mitreCwe';
 
@@ -77,6 +78,7 @@ onMounted(() => {
 
 <template>
   <AegisActions
+    v-if="osimRuntime.flags?.aiCweSuggestions === true"
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
