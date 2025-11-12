@@ -2,7 +2,7 @@ import { computed } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
+import AegisCvssActions from '@/components/Aegis/AegisCvssActions.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -25,21 +25,21 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
   })),
 }));
 
-describe('aegisImpactActions', () => {
+describe('aegisCvssActions', () => {
   beforeEach(() => {
     // @ts-expect-error - osimRuntime is readonly in tests
     osimRuntime.value = {
       ...osimRuntime.value,
       flags: {
         ...osimRuntime.value.flags,
-        aiImpactSuggestions: true,
+        aiCvssSuggestions: true,
       },
     };
     vi.clearAllMocks();
   });
 
   it('renders correctly', () => {
-    const wrapper = mountWithConfig(AegisImpactActions, {
+    const wrapper = mountWithConfig(AegisCvssActions, {
       props: {
         modelValue: null,
       },
@@ -50,7 +50,7 @@ describe('aegisImpactActions', () => {
   });
 
   it('uses AegisActions component', () => {
-    const wrapper = mountWithConfig(AegisImpactActions, {
+    const wrapper = mountWithConfig(AegisCvssActions, {
       props: {
         modelValue: '',
       },
@@ -60,7 +60,7 @@ describe('aegisImpactActions', () => {
   });
 
   it('exposes isFetchingSuggestion state', () => {
-    const wrapper = mountWithConfig(AegisImpactActions, {
+    const wrapper = mountWithConfig(AegisCvssActions, {
       props: {
         modelValue: null,
       },
@@ -73,13 +73,13 @@ describe('aegisImpactActions', () => {
     const { useAegisSuggestion } = await import('@/composables/aegis/useAegisSuggestion');
     const mockSelectSuggestion = vi.fn();
 
-    const suggestedImpact = 'IMPORTANT';
+    const suggestedCvss = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L';
     vi.mocked(useAegisSuggestion).mockReturnValueOnce({
-      allSuggestions: computed(() => [suggestedImpact]),
+      allSuggestions: computed(() => [suggestedCvss]),
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
-      currentSuggestion: computed(() => suggestedImpact),
-      details: computed(() => ({ cvss3_vector: null, cwe: null, impact: suggestedImpact })),
+      currentSuggestion: computed(() => suggestedCvss),
+      details: computed(() => ({ cvss3_vector: suggestedCvss, cwe: null, impact: null })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -88,13 +88,13 @@ describe('aegisImpactActions', () => {
       selectSuggestion: mockSelectSuggestion,
       sendFeedback: vi.fn(),
       suggestCwe: vi.fn(),
-      suggestCvss: vi.fn(),
       suggestImpact: vi.fn(),
+      suggestCvss: vi.fn(),
     });
 
-    const wrapper = mountWithConfig(AegisImpactActions, {
+    const wrapper = mountWithConfig(AegisCvssActions, {
       props: {
-        modelValue: 'LOW',
+        modelValue: '',
       },
     });
 

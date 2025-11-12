@@ -1,8 +1,10 @@
 import { ref, readonly, watch, type Ref } from 'vue';
 
+import type { SuggestableFlawFields } from '@/types/aegisAI';
+
 import { useAegisMetadataTracking } from './useAegisMetadataTracking';
 
-export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string>) {
+export function useAISuggestionsWatcher(fieldName: SuggestableFlawFields, valueRef: Ref<null | string>) {
   const { trackAIChange, untrackAIChange } = useAegisMetadataTracking();
 
   const hasAppliedSuggestion = ref(false);

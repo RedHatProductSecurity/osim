@@ -110,7 +110,6 @@ describe('useAegisSuggestion', () => {
     );
 
     await composable.suggestCwe();
-    console.log(composable.details.value);
 
     expect(valueRef.value).toBe('CWE-89');
     expect(composable.details.value).toEqual({
@@ -118,6 +117,7 @@ describe('useAegisSuggestion', () => {
       confidence: 0.9,
       explanation: 'Reasoning',
       impact: null,
+      cvss3_vector: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -150,7 +150,11 @@ describe('useAegisSuggestion', () => {
 
     expect(valueRef.value).toBe('CWE-79');
     expect(composable.hasAppliedSuggestion.value).toBe(false);
-    expect(composable.details.value).toEqual({ cwe: null, impact: null });
+    expect(composable.details.value).toEqual({
+      cwe: null,
+      impact: null,
+      cvss3_vector: null,
+    });
   });
 
   it('handles no-suggestion response', async () => {
@@ -383,7 +387,11 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
     composable.revert();
 
     expect(composable.selectedSuggestionIndex.value).toBe(0);
-    expect(composable.details.value).toEqual({ cwe: null, impact: null });
+    expect(composable.details.value).toEqual({
+      cwe: null,
+      impact: null,
+      cvss3_vector: null,
+    });
     expect(valueRef.value).toBe('CWE-79');
   });
 });

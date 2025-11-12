@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import AegisCvssActions from '@/components/Aegis/AegisCvssActions.vue';
 import CvssVectorInput from '@/components/CvssCalculator/CvssVectorInput.vue';
 import Cvss3Calculator from '@/components/CvssCalculator/Cvss3Calculator/Cvss3Calculator.vue';
 import Cvss4Calculator from '@/components/CvssCalculator/Cvss4Calculator/Cvss4Calculator.vue';
 
 import { useCvssScores } from '@/composables/useCvssScores';
 import { parseCvss3Factors } from '@/composables/useCvss3Calculator';
+import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 import { CvssVersions, CvssVersionDisplayMap, isCvss4Enabled } from '@/constants';
+
+defineProps<{ aegisContext?: AegisSuggestionContextRefs }>();
 
 const {
   cvss3Factors,
@@ -90,6 +95,11 @@ function highlightFactorValue(factor: null | string) {
     <div class="osim-input mb-2">
       <label class="label-group row" role="red-hat-cvss">
         <span class="form-label col-3 pe-3">
+          <AegisCvssActions
+            v-if="osimRuntime.flags?.aiCvssSuggestions === true"
+            :aegisContext="aegisContext"
+            @update:cvssVector="updateVector"
+          />
           <img
             :src="RedHatIconSvg"
             alt="Red Hat Logo"
