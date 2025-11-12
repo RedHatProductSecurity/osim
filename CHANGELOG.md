@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2025.11.3]
 ### Added
 * Added CWE title to suggestion hover details (`AEGIS-236`)
 * Offer Impact suggestions from Aegis (`AEGIS-224`)
@@ -552,7 +552,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.3...HEAD
+[2025.11.3]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...v2025.11.3
 [2025.11.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1-hotfix...v2025.11.2
 [2025.11.1-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1...v2025.11.1-hotfix
 [2025.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.0...v2025.11.1
