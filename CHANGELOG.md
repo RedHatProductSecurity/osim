@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
+* `Create Jira Task` option not working if there are no changes (`OSIDB-4632`)
 
 
 ## [2025.11.3]
@@ -11,12 +12,14 @@
 * Offer CVSS suggestions from Aegis (`AEGIS-225`)
 * Support Aegis suggestions for title and description (`AEGIS-226`)
 
+
 ## [2025.11.2]
 ### Added
 * Support multiple Aegis-AI CWE suggestions (`AEGIS-202`)
 * Add bulk editing to affects (`OSIDB-4515`)
 * Add Multi-flaw tracker creation (`OSIDB-4519`)
 * Support revert and reset workflow functions (`OSIDB-4489`)
+
 
 ## [2025.11.1-hotfix]
 ### Changed
