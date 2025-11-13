@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { resetInitialAffects } from '@/composables/useFlawAffectsModel';
@@ -13,11 +13,18 @@ import { getAffects } from '@/services/AffectService';
 
 const isFetchingRelatedFlaws = ref(false);
 const isFetchingAffects = ref(false);
+const totalAffectCount = ref(0);
+const currentlyFetchedAffectCount = ref(0);
 
 export function useFetchFlaw() {
   const { flaw, relatedFlaws, resetFlaw, setFlaw } = useFlaw();
   const { addToast } = useToastStore();
   const { setAegisMetadata } = useAegisMetadataTracking();
+
+  const fetchedAffectsPercentage = computed(
+    () => ((currentlyFetchedAffectCount.value / totalAffectCount.value) * 100)
+      .toFixed(0),
+  );
 
   const didFetchFail = ref<boolean>(false);
 
@@ -37,7 +44,10 @@ export function useFetchFlaw() {
   async function fetchFlawAffects(flawCveOrId: string) {
     try {
       isFetchingAffects.value = true;
-      return await getAffects(flawCveOrId);
+      return await getAffects(flawCveOrId, (fetchedCount, totalCount) => {
+        totalAffectCount.value = totalCount;
+        currentlyFetchedAffectCount.value = fetchedCount;
+      });
     } catch (error) {
       console.error(`Error while fetching affects for flaw ${flawCveOrId}:`, error);
       throw error;
@@ -89,8 +99,11 @@ export function useFetchFlaw() {
     relatedFlaws,
     isFetchingRelatedFlaws,
     isFetchingAffects,
+    totalAffectCount,
+    currentlyFetchedAffectCount,
     fetchRelatedFlaws,
     flaw,
+    fetchedAffectsPercentage,
     fetchFlaw,
     didFetchFail,
   };

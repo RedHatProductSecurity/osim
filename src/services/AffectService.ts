@@ -7,7 +7,8 @@ import { osimRuntime } from '@/stores/osimRuntime';
 
 import { beforeFetch } from './FlawService';
 
-export async function getAffects(cveOrUuid: string):
+type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
+export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
 Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   const pageSize = 100;
@@ -25,6 +26,10 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const allAffects = [...firstResponse.data.results];
   let nextUrl = firstResponse.data.next;
 
+  if (onFetchedCallback) {
+    onFetchedCallback(allAffects.length, firstResponse.data.count);
+  }
+
   // Fetch remaining affects using the next URL
   while (nextUrl !== null) {
     // Extract the path and query parameters from the full URL
@@ -38,6 +43,10 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
 
     allAffects.push(...response.data.results);
     nextUrl = response.data.next;
+
+    if (onFetchedCallback) {
+      onFetchedCallback(allAffects.length, firstResponse.data.count);
+    }
 
     // Safety check to prevent infinite loops
     if (response.data.results.length === 0) {

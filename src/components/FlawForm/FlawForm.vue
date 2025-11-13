@@ -90,8 +90,7 @@ const {
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel();
-const { isFetchingAffects } = useFetchFlaw();
-
+const { currentlyFetchedAffectCount, fetchedAffectsPercentage, isFetchingAffects, totalAffectCount } = useFetchFlaw();
 const { flaw, initialFlaw } = useFlaw();
 
 const {
@@ -450,11 +449,31 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
         <h4>Affected Offerings</h4>
         <div class="col">
           <div v-if="isFetchingAffects">
-            <LoadingSpinner
-              type="border"
-              class="spinner-border-sm me-1"
-            />
-            <span class="ms-1">Fetching affects...</span>
+            <template v-if="totalAffectCount <= 100">
+              <LoadingSpinner
+                type="border"
+                class="spinner-border-sm me-1"
+              />
+              <span class="ms-1">Loading affects...</span>
+            </template>
+            <template v-else>
+              <span>Loading {{ totalAffectCount }} affects...</span>
+              <div
+                v-if="totalAffectCount >= 100"
+                class="mt-1 progress"
+                role="progressbar"
+                aria-label="Example with label"
+                :aria-valuenow="fetchedAffectsPercentage"
+                :style="{width: '160px'}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  :style="{width: `${fetchedAffectsPercentage}%`,}"
+                >{{ currentlyFetchedAffectCount }}</div>
+              </div>
+            </template>
           </div>
           <template v-else>
             <AffectsTable v-if="osimRuntime.flags?.affectsV2" />
