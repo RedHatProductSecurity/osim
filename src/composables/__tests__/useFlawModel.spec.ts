@@ -10,6 +10,7 @@ import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType } from '@/types';
 import { postFlaw, putFlaw } from '@/services/FlawService';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 import { useFlaw } from '../useFlaw';
 
@@ -119,13 +120,26 @@ describe('useFlawModel', () => {
 
     it('should prevent saving if CVSS scores are invalid', async () => {
       const { setFlaw } = useFlaw();
-      setFlaw(sampleFlawFull as ZodFlawType);
+      setFlaw(deepCopyFromRaw(sampleFlawFull as ZodFlawType));
       const { updateFlaw, updateVector } = mountFlawModel();
+
       updateVector('not valid');
       await flushPromises();
       updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();
+    });
+
+    it('should call putFlaw when `shouldCreateJiraTask` is true', async () => {
+      const { flaw } = useFlaw();
+      flaw.value = sampleFlawFull as ZodFlawType;
+      const { shouldCreateJiraTask, updateFlaw } = mountFlawModel();
+
+      shouldCreateJiraTask.value = true;
+      await flushPromises();
+      await updateFlaw();
+
+      expect(putFlaw).toHaveBeenCalled();
     });
   });
 });

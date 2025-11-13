@@ -225,7 +225,7 @@ export function useFlawModel() {
       });
     }
 
-    if (isFlawUpdated.value) {
+    if (isFlawUpdated.value || shouldCreateJiraTask.value) {
       queue.push(async () => {
         // Add aegis metadata if there are AI changes
         const response = await putFlaw(flaw.value.uuid, {
