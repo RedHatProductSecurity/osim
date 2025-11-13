@@ -568,4 +568,28 @@ describe('flawForm', () => {
 
     expect(flawForm?.exists()).toBeFalsy();
   });
+
+  osimFullFlawTest('should hide blank option in incident state when value is set', async ({ flaw }) => {
+    flaw.major_incident_state = 'MAJOR_INCIDENT_REQUESTED';
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+
+    const incidentStateField = subject
+      .findAllComponents(LabelSelect)
+      .find(component => component.props().label === 'Incident State');
+
+    expect(incidentStateField?.exists()).toBe(true);
+    expect(incidentStateField?.props().optionsHidden).toEqual(['']);
+  });
+
+  osimFullFlawTest('should show blank option in incident state when no value is set', async ({ flaw }) => {
+    flaw.major_incident_state = null;
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+
+    const incidentStateField = subject
+      .findAllComponents(LabelSelect)
+      .find(component => component.props().label === 'Incident State');
+
+    expect(incidentStateField?.exists()).toBe(true);
+    expect(incidentStateField?.props().optionsHidden).toEqual([]);
+  });
 });

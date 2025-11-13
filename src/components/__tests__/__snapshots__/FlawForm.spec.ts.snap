@@ -354,7 +354,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
           <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MAJOR_INCIDENT_APPROVED">
               <!--v-if-->
-              <option data-v-001a00e0="" value=""></option>
+              <option data-v-001a00e0="" hidden="" value=""></option>
               <option data-v-001a00e0="" value="MAJOR_INCIDENT_REQUESTED">Major Incident Requested</option>
               <option data-v-001a00e0="" selected="" value="MAJOR_INCIDENT_APPROVED">Major Incident Approved</option>
               <option data-v-001a00e0="" value="MAJOR_INCIDENT_REJECTED">Major Incident Rejected</option>

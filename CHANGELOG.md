@@ -24,6 +24,7 @@
 ## [2025.11.1-hotfix]
 ### Changed
 * Migrate flaws endpoint from v1 to v2 API (`OSIDB-4617`)
+* Prevent reverting Incident State to blank after a value has been set (`OSIDB-4028`)
 
 
 ## [2025.11.1]

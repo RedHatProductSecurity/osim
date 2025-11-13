@@ -153,6 +153,11 @@ const hiddenSources = computed(() => {
   return flawSources.filter(source => !allowedSources.includes(source));
 });
 
+// Hide blank option if there is already a value
+const hiddenIncidentStates = computed(() => {
+  return initialFlaw.value?.major_incident_state ? [''] : [];
+});
+
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
 const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
 
@@ -327,6 +332,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             label="Incident State"
             :options="MajorIncidentStateEnumWithBlank"
             :error="errors.major_incident_state"
+            :optionsHidden="hiddenIncidentStates"
           />
           <LabelEditable
             v-model="flaw.reported_dt"
