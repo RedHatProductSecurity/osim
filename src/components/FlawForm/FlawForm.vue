@@ -21,6 +21,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import Nudge from '@/components/Nudge/Nudge.vue';
 import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
+import IncidentRequestDialog from '@/components/IncidentRequestDialog/IncidentRequestDialog.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -118,6 +119,25 @@ watch(() => flaw.value, () => { // Shallow watch so as to avoid reseting on any 
 const isEmbargoed = ref<boolean>(false);
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
+
+const showIncidentRequestModal = ref(false);
+const canRequestIncident = computed(() =>
+  props.mode === 'edit'
+  && flaw.value.uuid
+  && !flaw.value.major_incident_state,
+);
+
+function openIncidentRequestDialog() {
+  showIncidentRequestModal.value = true;
+}
+
+function closeIncidentRequestDialog() {
+  showIncidentRequestModal.value = false;
+}
+
+function handleIncidentRequestSubmitted() {
+  emit('refresh:flaw');
+}
 
 const onSubmit = async () => {
   if (props.mode === 'edit') {
@@ -324,12 +344,22 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
             @refresh:flaw="emit('refresh:flaw')"
             @create:jiraTask="toggleShouldCreateJiraTask()"
           />
-          <LabelSelect
-            v-model="flaw.major_incident_state"
-            label="Incident State"
-            :options="MajorIncidentStateEnumWithBlank"
-            :error="errors.major_incident_state"
-          />
+          <div class="osim-incident-state-container mb-2">
+            <LabelSelect
+              v-model="flaw.major_incident_state"
+              label="Incident State"
+              :options="MajorIncidentStateEnumWithBlank"
+              :error="errors.major_incident_state"
+            />
+            <button
+              v-if="canRequestIncident"
+              type="button"
+              class="btn btn-secondary btn-sm osim-incident-request-btn"
+              @click="openIncidentRequestDialog"
+            >
+              Request Incident
+            </button>
+          </div>
           <LabelEditable
             v-model="flaw.reported_dt"
             label="Reported Date"
@@ -504,6 +534,13 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
       </template>
     </div>
   </form>
+
+  <IncidentRequestDialog
+    :showModal="showIncidentRequestModal"
+    :flawId="flaw.uuid"
+    @hideModal="closeIncidentRequestDialog"
+    @requestSubmitted="handleIncidentRequestSubmitted"
+  />
 </template>
 
 <style scoped lang="scss">
@@ -648,5 +685,24 @@ form.osim-flaw-form :deep(*) {
   border-color: rgba(var(--bs-primary-rgb));
   inset: -1rem -1.5rem 0;
   z-index: -1;
+}
+
+.osim-incident-state-container {
+  position: relative;
+
+  .osim-incident-request-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    height: 38px;
+  }
+
+  :deep(.osim-input select) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 </style>
