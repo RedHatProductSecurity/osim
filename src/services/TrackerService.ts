@@ -69,7 +69,7 @@ export async function postTracker(requestBody: TrackersPost, shouldSyncToBz: boo
 
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/trackers`,
+    url: '/osidb/api/v2/trackers',
     data: requestBody,
   })
     .then(({ data }) => data as ZodTrackerType);
@@ -82,7 +82,7 @@ export type TrackersFilePost = {
 export async function getTrackersForFlaws(requestBody: TrackersFilePost) {
   return osidbFetch({
     method: 'post',
-    url: `/trackers/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/file`,
+    url: '/trackers/api/v2/file',
     data: requestBody,
   })
     .then(({ data }) => data)

@@ -5,7 +5,6 @@ import { cveRegex } from '@/utils/helpers';
 import { loadCweData } from '@/services/CweService';
 import { CommentType } from '@/constants';
 import type { ValueOf } from '@/types';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 import {
   NistCvssValidationEnum,
@@ -303,9 +302,7 @@ export const ZodFlawSchema = z.object({
 const duplicatedAffects = (affects: ZodAffectType[]) => {
   const map: Record<string, boolean> = {};
   for (let i = 0; i < affects.length; i++) {
-    const key = osimRuntime.value.flags?.affectsV2
-      ? `${affects[i].ps_update_stream}-${affects[i].ps_module}-${affects[i].ps_component}`
-      : `${affects[i].ps_module}-${affects[i].ps_component}`;
+    const key = `${affects[i].ps_update_stream}-${affects[i].ps_module}-${affects[i].ps_component}`;
     if (map[key]) {
       return {
         index: i,

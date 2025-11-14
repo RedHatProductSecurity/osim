@@ -3,7 +3,7 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { useFlaw } from '@/composables/useFlaw';
 
-import SampleFlawFullV2 from '@/__tests__/__fixtures__/sampleFlawFullV2.json';
+import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import * as TrackerService from '@/services/TrackerService';
@@ -33,7 +33,7 @@ describe('affectsTable', () => {
     const { flaw, resetFlaw } = useFlaw();
     resetFlaw();
 
-    flaw.value = structuredClone(SampleFlawFullV2 as unknown as ZodFlawType);
+    flaw.value = structuredClone(SampleFlawFull as unknown as ZodFlawType);
     vi.useFakeTimers();
   });
 
@@ -60,7 +60,7 @@ describe('affectsTable', () => {
 
       afterAll(async () => {
         const { settings } = useSettingsStore();
-        settings.affectsPerPage = SampleFlawFullV2.affects.length;
+        settings.affectsPerPage = SampleFlawFull.affects.length;
         await flushPromises();
       });
 
@@ -87,14 +87,14 @@ describe('affectsTable', () => {
         await wrapper.find('#toggleAllAffects').setValue(true);
         await flushPromises();
 
-        expect(wrapper.findAll('tbody tr').length).equals(SampleFlawFullV2.affects.length);
+        expect(wrapper.findAll('tbody tr').length).equals(SampleFlawFull.affects.length);
       });
     });
 
     describe('global filter', () => {
       beforeEach(async () => {
         const { settings } = useSettingsStore();
-        settings.affectsPerPage = SampleFlawFullV2.affects.length;
+        settings.affectsPerPage = SampleFlawFull.affects.length;
         await flushPromises();
       });
 
@@ -223,7 +223,7 @@ describe('affectsTable', () => {
   describe('table', () => {
     beforeEach(async () => {
       const { settings } = useSettingsStore();
-      settings.affectsPerPage = SampleFlawFullV2.affects.length;
+      settings.affectsPerPage = SampleFlawFull.affects.length;
       await flushPromises();
     });
 
@@ -349,7 +349,7 @@ describe('affectsTable', () => {
         const wrapper = await mountAffectsTable();
 
         const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
-        const affectWithoutTracker = SampleFlawFullV2.affects.findIndex(affect => !affect.tracker);
+        const affectWithoutTracker = SampleFlawFull.affects.findIndex(affect => !affect.tracker);
 
         expect(affectWithoutTracker).not.toBe(-1);
         expect(checkboxes.length).toBeGreaterThan(affectWithoutTracker);
@@ -395,7 +395,7 @@ describe('affectsTable', () => {
         const wrapper = await mountAffectsTable();
 
         // Use the third affect which doesn't have a tracker (index 2)
-        const affectWithoutTracker = SampleFlawFullV2.affects[2];
+        const affectWithoutTracker = SampleFlawFull.affects[2];
 
         const mockTrackerSuggestions = {
           streams_components: [
@@ -432,7 +432,7 @@ describe('affectsTable', () => {
 
         const mockTrackerSuggestions = {
           streams_components: [],
-          not_applicable: [SampleFlawFullV2.affects[0]],
+          not_applicable: [SampleFlawFull.affects[0]],
         };
 
         vi.spyOn(TrackerService, 'getTrackersForFlaws').mockResolvedValue(mockTrackerSuggestions);
@@ -480,7 +480,7 @@ describe('affectsTable', () => {
     describe('bulk edit', () => {
       beforeEach(async () => {
         const { settings } = useSettingsStore();
-        settings.affectsPerPage = SampleFlawFullV2.affects.length;
+        settings.affectsPerPage = SampleFlawFull.affects.length;
         await flushPromises();
       });
 

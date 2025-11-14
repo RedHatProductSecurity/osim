@@ -4,7 +4,6 @@ import type { ComputedRef } from 'vue';
 import { equals, groupWith } from 'ramda';
 import { z } from 'zod';
 
-import { useFlawAffectsModel } from '@/composables/useFlawAffectsModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useCvss4Calculator } from '@/composables/useCvss4Calculator';
 import {
@@ -107,7 +106,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
       getCvssData(flaw.value, IssuerEnum.Rh, version) as ZodFlawCVSSType ?? newFlawCvss(version),
     ]),
   ));
-  const { updateAffectCvss } = useFlawAffectsModel();
   const { cvss4Score, cvss4Selections, cvss4Vector, errorV4, parseVectorV4String, setMetric } = useCvss4Calculator();
   const rhCvssScores = ref(rhCvssByVersion());
 
@@ -175,13 +173,6 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     if (!isAffect(entity)) {
       flawRhCvss.value.score = rhCvss.value.score ?? null;
       flawRhCvss.value.vector = rhCvss.value.vector ?? null;
-    } else {
-      updateAffectCvss(
-        entity,
-        rhCvss.value.vector ?? '',
-        rhCvss.value.score ?? null,
-        entity.cvss_scores.findIndex(cvss => cvss.uuid == maybeCvss?.uuid),
-      );
     }
     if (shouldSyncVectors.value) synchronizeFactors();
   }, { deep: true });

@@ -187,7 +187,7 @@ export function useAffectsTable() {
           ps_update_stream: '',
           embargoed: flaw.value.embargoed,
           alerts: [],
-          trackers: [],
+          labels: [],
           cvss_scores: [],
           tracker: null,
         }, ...currentAffects.value];
@@ -265,7 +265,6 @@ export function useAffectsTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
-    debugAll: true,
   });
 
   function toggleColumnVisibility(column: Column<any, any>) {

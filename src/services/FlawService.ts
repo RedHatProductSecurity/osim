@@ -50,7 +50,7 @@ export async function getFlaws(offset = 0, limit = 20, args = {}) {
 
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
+    url: '/osidb/api/v2/flaws',
     params,
   });
 }
@@ -75,7 +75,7 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
 
     const response = await osidbFetch({
       method: 'get',
-      url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
+      url: '/osidb/api/v2/flaws',
       params: {
         include_fields,
         affects__ps_module: firstAffectPsModule,
@@ -101,7 +101,7 @@ export async function getRelatedFlaws(affects: ZodAffectType[]): Promise<ZodFlaw
 export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<ZodFlawType> {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws/${uuidOrCve}`,
+    url: `/osidb/api/v2/flaws/${uuidOrCve}`,
     cache: breakCache ? 'no-cache' : 'default',
     params: {
       include_meta_attr: 'bz_id',
@@ -125,7 +125,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
   try {
     const response = await osidbFetch({
       method: 'put',
-      url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws/${uuid}`,
+      url: `/osidb/api/v2/flaws/${uuid}`,
       data: flawObject,
       params: {
         include_history: 'true',
@@ -309,7 +309,7 @@ export async function resetFlawWorkflow(uuid: string) {
 export async function searchFlaws(query: string) {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
+    url: `/osidb/api/v2/flaws`,
     params: {
       include_fields: FLAW_LIST_FIELDS.join(','),
       search: query,
@@ -322,7 +322,7 @@ export async function searchFlaws(query: string) {
 export async function advancedSearchFlaws(params: Record<string, string>) {
   return osidbFetch({
     method: 'get',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
+    url: `/osidb/api/v2/flaws`,
     params: {
       ...params,
       include_fields: FLAW_LIST_FIELDS.join(','),
@@ -335,7 +335,7 @@ export async function advancedSearchFlaws(params: Record<string, string>) {
 export async function postFlaw(requestBody: ZodFlawType) {
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/${osimRuntime.value?.flags?.affectsV2 ? 'v2' : 'v1'}/flaws`,
+    url: `/osidb/api/v2/flaws`,
     data: requestBody,
   }).then((response) => {
     return response.data;

@@ -29,7 +29,7 @@ describe('useAegisSuggestionContext', () => {
     expect(ctx.references!.value).toEqual(flaw.value.references);
     expect(ctx.embargoed!.value).toBe(false);
     expect(ctx.cvssScores!.value).toEqual(flaw.value.cvss_scores);
-    expect(ctx.affects!.value).toEqual(flaw.value.affects.map(affect => omit(['trackers'], affect)));
+    expect(ctx.affects!.value).toEqual(flaw.value.affects.map(affect => omit(['tracker'], affect)));
   });
 
   it('builds request context with expected keys and fallbacks', async () => {
@@ -48,7 +48,7 @@ describe('useAegisSuggestionContext', () => {
       requires_cve_description: 'APPROVED',
       statement: 'Statement for None',
       components: ['kernel'],
-      affects: flaw.value.affects.map(affect => omit(['trackers'], affect)),
+      affects: flaw.value.affects.map(affect => omit(['tracker'], affect)),
       cvss_scores: flaw.value.cvss_scores,
       comments: serializePublicComments(flaw.value.comments),
       references: flaw.value.references,

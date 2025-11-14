@@ -30,75 +30,26 @@
             "ps_module": "openshift-1",
             "ps_product": null,
             "ps_component": "openshift-1-1",
+            "ps_update_stream": "xxxx-0-001",
             "purl": "",
             "impact": "LOW",
-            "trackers": [
-                {
-                    "affects": [
-                        "3484da83-c08c-4bf8-87c0-640bfb8334f5"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0001",
-                    "ps_update_stream": "xxxx-0-001",
-                    "status": "New",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "71c60db4-0d33-4a86-b912-3d8f5c8b8658",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-12-01T13:05:53Z",
-                    "updated_dt": "2024-12-01T13:06:28Z"
-                },
-                {
-                    "affects": [
-                        "3484da83-c08c-4bf8-87c0-640bfb8334f5"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0002",
-                    "ps_update_stream": "xxxx-0-002",
-                    "status": "Closed",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "cf1d329b-5ddc-48e2-a8ae-5e2f01411424",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-11-01T13:05:53Z",
-                    "updated_dt": "2024-11-01T13:06:28Z"
-                },
-                {
-                    "affects": [
-                        "3484da83-c08c-4bf8-87c0-640bfb8334f5"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0003",
-                    "ps_update_stream": "xxxx-0-003",
-                    "status": "New",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "56f0eb75-c565-4d2e-ad73-da995607f191",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-10-01T13:05:53Z",
-                    "updated_dt": "2024-10-01T13:06:28Z"
-                },
-                {
-                    "affects": [
-                        "3484da83-c08c-4bf8-87c0-640bfb8334f5",
-                        "525735df-4cb0-4ac4-83cb-2ec41c75e785"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0004",
-                    "ps_update_stream": "xxxx-0-004",
-                    "status": "Closed",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "8a63211f-8e0b-4709-94e1-c4bb1ebb2620",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-09-01T13:05:53Z",
-                    "updated_dt": "2024-09-01T13:06:28Z"
-                }
-            ],
+            "labels": ["cloud"],
+            "tracker": {
+                "affects": [
+                    "3484da83-c08c-4bf8-87c0-640bfb8334f5"
+                ],
+                "errata": [],
+                "external_system_id": "XXXX-0001",
+                "ps_update_stream": "xxxx-0-001",
+                "status": "New",
+                "resolution": "Won't Do",
+                "type": "JIRA",
+                "uuid": "71c60db4-0d33-4a86-b912-3d8f5c8b8658",
+                "embargoed": false,
+                "alerts": [],
+                "created_dt": "2024-12-01T13:05:53Z",
+                "updated_dt": "2024-12-01T13:06:28Z"
+            },
             "delegated_resolution": null,
             "cvss_scores": [],
             "embargoed": false,
@@ -115,8 +66,25 @@
             "ps_product": null,
             "ps_component": "openshift-2-1",
             "purl": "",
+            "ps_update_stream": "xxxx-0-002",
             "impact": "LOW",
-            "trackers": [],
+            "labels": ["cloud", "special-handling"],
+            "tracker": {
+                "affects": [
+                    "f300fbec-29ef-4b4d-8a01-bb210bd09d50"
+                ],
+                "errata": [],
+                "external_system_id": "XXXX-0002",
+                "ps_update_stream": "xxxx-0-002",
+                "status": "Closed",
+                "resolution": "",
+                "type": "JIRA",
+                "uuid": "cf1d329b-5ddc-48e2-a8ae-5e2f01411424",
+                "embargoed": false,
+                "alerts": [],
+                "created_dt": "2024-11-01T13:05:53Z",
+                "updated_dt": "2024-11-01T13:06:28Z"
+            },
             "delegated_resolution": null,
             "cvss_scores": [],
             "embargoed": false,
@@ -132,96 +100,11 @@
             "ps_module": "openshift-3",
             "ps_product": null,
             "ps_component": "openshift-3-1",
+            "ps_update_stream": "xxxx-0-005",
             "purl": "",
+            "labels":[],
             "impact": "LOW",
-            "trackers": [],
-            "delegated_resolution": null,
-            "cvss_scores": [],
-            "embargoed": false,
-            "alerts": [],
-            "created_dt": "2021-09-13T09:09:38Z",
-            "updated_dt": "2023-12-06T17:12:21Z"
-        },
-        {
-            "uuid": "c0d31d9f-0e7d-4bc6-9134-5eba6acb483c",
-            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
-            "affectedness": "AFFECTED",
-            "resolution": "FIX",
-            "ps_module": "openshift-4",
-            "ps_product": null,
-            "ps_component": "openshift-4-1",
-            "purl": "",
-            "impact": "LOW",
-            "trackers": [],
-            "delegated_resolution": null,
-            "cvss_scores": [],
-            "embargoed": false,
-            "alerts": [],
-            "created_dt": "2021-09-13T09:09:38Z",
-            "updated_dt": "2023-12-06T17:12:21Z"
-        },
-        {
-            "uuid": "525735df-4cb0-4ac4-83cb-2ec41c75e785",
-            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
-            "affectedness": "AFFECTED",
-            "resolution": "FIX",
-            "ps_module": "openshift-5",
-            "ps_product": null,
-            "ps_component": "openshift-5-1",
-            "purl": "",
-            "impact": "LOW",
-            "trackers": [
-                {
-                    "affects": [
-                        "525735df-4cb0-4ac4-83cb-2ec41c75e785"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0005",
-                    "ps_update_stream": "xxxx-0-005",
-                    "status": "New",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "22563242-36b3-46dd-99e7-c337cd675fce",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-08-01T13:05:53Z",
-                    "updated_dt": "2024-08-01T13:06:28Z"
-                },
-                {
-                    "affects": [
-                        "525735df-4cb0-4ac4-83cb-2ec41c75e785"
-                    ],
-                    "errata": [],
-                    "external_system_id": "XXXX-0006",
-                    "ps_update_stream": "xxxx-0-006",
-                    "status": "Closed",
-                    "resolution": "",
-                    "type": "JIRA",
-                    "uuid": "62e7b08b-0e06-47dc-9a0c-c39c3c818fb2",
-                    "embargoed": false,
-                    "alerts": [],
-                    "created_dt": "2024-07-01T13:05:53Z",
-                    "updated_dt": "2024-07-01T13:06:28Z"
-                }
-            ],
-            "delegated_resolution": null,
-            "cvss_scores": [],
-            "embargoed": false,
-            "alerts": [],
-            "created_dt": "2021-09-13T09:09:38Z",
-            "updated_dt": "2023-12-06T17:12:21Z"
-        },
-        {
-            "uuid": "70d82cd8-74a3-4020-9181-5d2a7a57e591",
-            "flaw": "734e9a1a-80d9-4ff5-a5b9-e2214da66dc0",
-            "affectedness": "",
-            "resolution": "WONTFIX",
-            "ps_module": "openshift-6",
-            "ps_product": null,
-            "ps_component": "openshift-6-1",
-            "purl": "",
-            "impact": "CRITICAL",
-            "trackers": [],
+            "tracker": null,
             "delegated_resolution": null,
             "cvss_scores": [],
             "embargoed": false,

@@ -55,6 +55,7 @@ describe('useMultiFlawTrackers', () => {
       alerts: [],
       cvss_scores: [],
       trackers: [],
+      labels: [],
     } as ZodAffectType,
     {
       uuid: 'affect-uuid-4',
@@ -68,6 +69,8 @@ describe('useMultiFlawTrackers', () => {
       alerts: [],
       cvss_scores: [],
       trackers: [],
+      labels: [],
+
     } as ZodAffectType,
   ];
 
@@ -84,6 +87,7 @@ describe('useMultiFlawTrackers', () => {
       alerts: [],
       cvss_scores: [],
       trackers: [],
+      labels: [],
     } as ZodAffectType,
   ];
 
@@ -432,6 +436,7 @@ describe('useMultiFlawTrackers', () => {
           alerts: [],
           cvss_scores: [],
           trackers: [],
+          labels: [],
         } as ZodAffectType,
       ];
 
@@ -484,6 +489,7 @@ describe('useMultiFlawTrackers', () => {
           alerts: [],
           cvss_scores: [],
           trackers: [],
+          labels: [],
         } as ZodAffectType,
       ];
 

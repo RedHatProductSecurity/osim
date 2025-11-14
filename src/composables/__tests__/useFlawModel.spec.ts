@@ -114,7 +114,6 @@ describe('useFlawModel', () => {
       flaw.value.title = 'altered';
       await flushPromises();
       await updateFlaw();
-
       expect(putFlaw).toHaveBeenCalled();
     });
 
@@ -125,7 +124,7 @@ describe('useFlawModel', () => {
 
       updateVector('not valid');
       await flushPromises();
-      updateFlaw();
+      await updateFlaw();
 
       expect(putFlaw).not.toHaveBeenCalled();
     });

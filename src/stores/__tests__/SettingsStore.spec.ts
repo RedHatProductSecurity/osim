@@ -46,7 +46,6 @@ describe('settingsStore', () => {
       ...initialState,
       showNotifications: !initialState.showNotifications,
       affectsPerPage: 1337,
-      trackersPerPage: 1337,
       isHidingLabels: !initialState.isHidingLabels,
     };
 

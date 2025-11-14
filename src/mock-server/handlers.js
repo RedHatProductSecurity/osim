@@ -23,42 +23,58 @@ const next = () => {
 export const handlers = [
   http.get(`${baseURL}/auth/token`, async () => {
     const resultArray = [
-      [getAuthTokenRetrieve200Response(), { status: 200 }],
+      [await getAuthTokenRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/auth/token`, async () => {
     const resultArray = [
-      [getAuthTokenCreate200Response(), { status: 200 }],
+      [await getAuthTokenCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/auth/token/refresh`, async () => {
     const resultArray = [
-      [getAuthTokenRefreshCreate200Response(), { status: 200 }],
+      [await getAuthTokenRefreshRetrieve200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/auth/token/refresh`, async () => {
+    const resultArray = [
+      [await getAuthTokenRefreshCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/auth/token/verify`, async () => {
     const resultArray = [
-      [getAuthTokenVerifyCreate200Response(), { status: 200 }],
+      [await getAuthTokenVerifyCreate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v1/available-flaws/*`, async () => {
+    const resultArray = [
+      [undefined, { status: 204 }],
+      [await getOsidbApiV1AvailableFlawsRetrieve400Response(), { status: 400 }],
+      [await getOsidbApiV1AvailableFlawsRetrieve404Response(), { status: 404 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsList200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1FlawsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -66,7 +82,7 @@ export const handlers = [
   http.get(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments`, async () => {
     const resultArray = [
       [
-        getOsidbApiV1FlawsAcknowledgmentsList200Response(),
+        await getOsidbApiV1FlawsAcknowledgmentsList200Response(),
         { status: 200 },
       ],
     ];
@@ -76,7 +92,7 @@ export const handlers = [
   http.post(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments`, async () => {
     const resultArray = [
       [
-        getOsidbApiV1FlawsAcknowledgmentsCreate201Response(),
+        await getOsidbApiV1FlawsAcknowledgmentsCreate201Response(),
         { status: 201 },
       ],
     ];
@@ -86,7 +102,7 @@ export const handlers = [
   http.get(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        getOsidbApiV1FlawsAcknowledgmentsRetrieve200Response(),
+        await getOsidbApiV1FlawsAcknowledgmentsRetrieve200Response(),
         { status: 200 },
       ],
     ];
@@ -96,7 +112,7 @@ export const handlers = [
   http.put(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        getOsidbApiV1FlawsAcknowledgmentsUpdate200Response(),
+        await getOsidbApiV1FlawsAcknowledgmentsUpdate200Response(),
         { status: 200 },
       ],
     ];
@@ -106,7 +122,7 @@ export const handlers = [
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/acknowledgments/*`, async () => {
     const resultArray = [
       [
-        getOsidbApiV1FlawsAcknowledgmentsDestroy200Response(),
+        await getOsidbApiV1FlawsAcknowledgmentsDestroy200Response(),
         { status: 200 },
       ],
     ];
@@ -115,35 +131,35 @@ export const handlers = [
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/comments`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCommentsList200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsCommentsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/comments`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCommentsCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1FlawsCommentsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/comments/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCommentsRetrieve200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsCommentsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCvssScoresList200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsCvssScoresList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCvssScoresCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1FlawsCvssScoresCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -160,42 +176,42 @@ export const handlers = [
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCvssScoresUpdate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsCvssScoresUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/cvss_scores/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsCvssScoresDestroy200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsCvssScoresDestroy200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -260,21 +276,21 @@ export const handlers = [
   ),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/promote`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsPromoteCreate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsPromoteCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*/references`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsReferencesList200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsReferencesList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/references`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsReferencesCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1FlawsReferencesCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -291,84 +307,183 @@ export const handlers = [
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*/references/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsReferencesUpdate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsReferencesUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.delete(`${baseURL}/osidb/api/v1/flaws/*/references/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsReferencesDestroy200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsReferencesDestroy200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/osidb/api/v1/flaws/*/reject`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsRejectCreate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsRejectCreate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v1/flaws/*/reset`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsResetCreate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v1/flaws/*/revert`, async () => {
+    const resultArray = [
+      [await getOsidbApiV1FlawsRevertCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/flaws/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsRetrieve200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.put(`${baseURL}/osidb/api/v1/flaws/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1FlawsUpdate200Response(), { status: 200 }],
+      [await getOsidbApiV1FlawsUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/labels`, async () => {
     const resultArray = [
-      [getOsidbApiV1LabelsList200Response(), { status: 200 }],
+      [await getOsidbApiV1LabelsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/labels/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1LabelsRetrieve200Response(), { status: 200 }],
+      [await getOsidbApiV1LabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/trackers`, async () => {
     const resultArray = [
-      [getOsidbApiV1TrackersList200Response(), { status: 200 }],
-    ];
-
-    return HttpResponse.json(...resultArray[next() % resultArray.length]);
-  }),
-  http.post(`${baseURL}/osidb/api/v1/trackers`, async () => {
-    const resultArray = [
-      [getOsidbApiV1TrackersCreate201Response(), { status: 201 }],
+      [await getOsidbApiV1TrackersList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.get(`${baseURL}/osidb/api/v1/trackers/*`, async () => {
     const resultArray = [
-      [getOsidbApiV1TrackersRetrieve200Response(), { status: 200 }],
+      [await getOsidbApiV1TrackersRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.put(`${baseURL}/osidb/api/v1/trackers/*`, async () => {
+  http.get(`${baseURL}/osidb/api/v2/flaws`, async () => {
     const resultArray = [
-      [getOsidbApiV1TrackersUpdate200Response(), { status: 200 }],
+      [await getOsidbApiV2FlawsList200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v2/flaws`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsCreate201Response(), { status: 201 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v2/flaws/*/cvss-scores`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsCvssScoresList200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v2/flaws/*/cvss-scores`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsCvssScoresCreate201Response(), { status: 201 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v2/flaws/*/cvss-scores/*`, async () => {
+    const resultArray = [
+      [
+        await getOsidbApiV2FlawsCvssScoresRetrieve200Response(),
+        { status: 200 },
+      ],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.put(`${baseURL}/osidb/api/v2/flaws/*/cvss-scores/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsCvssScoresUpdate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.delete(`${baseURL}/osidb/api/v2/flaws/*/cvss-scores/*`, async () => {
+    const resultArray = [[undefined, { status: 204 }]];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v2/flaws/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsRetrieve200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.put(`${baseURL}/osidb/api/v2/flaws/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2FlawsUpdate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v2/trackers`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2TrackersList200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/osidb/api/v2/trackers`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2TrackersCreate201Response(), { status: 201 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.get(`${baseURL}/osidb/api/v2/trackers/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2TrackersRetrieve200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.put(`${baseURL}/osidb/api/v2/trackers/*`, async () => {
+    const resultArray = [
+      [await getOsidbApiV2TrackersUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
   http.post(`${baseURL}/trackers/api/v1/file`, async () => {
     const resultArray = [
-      [getTrackersApiV1FileCreate200Response(), { status: 200 }],
+      [await getTrackersApiV1FileCreate200Response(), { status: 200 }],
+    ];
+
+    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  }),
+  http.post(`${baseURL}/trackers/api/v2/file`, async () => {
+    const resultArray = [
+      [await getTrackersApiV2FileCreate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -388,10 +503,18 @@ export function getAuthTokenRetrieve200Response() {
 
 export function getAuthTokenCreate200Response() {
   return {
-    username: faker.person.fullName(),
-    password: faker.lorem.words(),
     access: faker.lorem.words(),
     refresh: faker.lorem.words(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getAuthTokenRefreshRetrieve200Response() {
+  return {
+    access: faker.lorem.words(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -402,7 +525,6 @@ export function getAuthTokenCreate200Response() {
 export function getAuthTokenRefreshCreate200Response() {
   return {
     access: faker.lorem.words(),
-    refresh: faker.lorem.words(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -412,7 +534,33 @@ export function getAuthTokenRefreshCreate200Response() {
 
 export function getAuthTokenVerifyCreate200Response() {
   return {
-    token: faker.lorem.words(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1AvailableFlawsRetrieve204Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1AvailableFlawsRetrieve400Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1AvailableFlawsRetrieve404Response() {
+  return {
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -557,13 +705,15 @@ export function getOsidbApiV1FlawsList200Response() {
       mitigation: faker.lorem.words(),
       major_incident_state: faker.helpers.arrayElement([
         faker.helpers.arrayElement([
-          "REQUESTED",
-          "REJECTED",
-          "APPROVED",
-          "CISA_APPROVED",
-          "MINOR",
-          "ZERO_DAY",
-          "INVALID",
+          "MAJOR_INCIDENT_REQUESTED",
+          "MAJOR_INCIDENT_REJECTED",
+          "MAJOR_INCIDENT_APPROVED",
+          "EXPLOITS_KEV_REQUESTED",
+          "EXPLOITS_KEV_REJECTED",
+          "EXPLOITS_KEV_APPROVED",
+          "MINOR_INCIDENT_REQUESTED",
+          "MINOR_INCIDENT_REJECTED",
+          "MINOR_INCIDENT_APPROVED",
         ]),
         faker.helpers.arrayElement([""]),
       ]),
@@ -595,8 +745,9 @@ export function getOsidbApiV1FlawsList200Response() {
           faker.helpers.arrayElement([""]),
         ]),
         ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        cve_id: faker.lorem.words(),
         ps_product: faker.lorem.words(),
-        ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        ps_component: faker.lorem.words(),
         impact: faker.helpers.arrayElement([
           faker.helpers.arrayElement([
             "LOW",
@@ -616,6 +767,7 @@ export function getOsidbApiV1FlawsList200Response() {
               faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
             ).keys(),
           ].map((_) => faker.string.uuid()),
+          cve_id: faker.lorem.words(),
           errata: [
             ...new Array(
               faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -633,39 +785,34 @@ export function getOsidbApiV1FlawsList200Response() {
           }),
           status: faker.lorem.words(),
           resolution: faker.lorem.words(),
+          not_affected_justification: faker.helpers.arrayElement([
+            faker.helpers.arrayElement([
+              "Component not Present",
+              "Inline Mitigations already Exist",
+              "Vulnerable Code cannot be Controlled by Adversary",
+              "Vulnerable Code not in Execute Path",
+              "Vulnerable Code not Present",
+            ]),
+            faker.helpers.arrayElement([""]),
+          ]),
           type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
           uuid: faker.string.uuid(),
-          embargoed: faker.datatype.boolean(),
-          alerts: [
+          special_handling: [
             ...new Array(
               faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
             ).keys(),
-          ].map((_) => ({
-            uuid: faker.string.uuid(),
-            name: faker.person.fullName(),
-            description: faker.lorem.words(),
-            alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
-            resolution_steps: faker.lorem.words(),
-            parent_uuid: faker.string.uuid(),
-            parent_model: faker.lorem.words(),
-          })),
-          created_dt: faker.date.past(),
-          updated_dt: faker.date.past(),
-          sync_to_bz: faker.datatype.boolean(),
-        })),
-        delegated_resolution: faker.lorem.words(),
-        cvss_scores: [
-          ...new Array(
-            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-          ).keys(),
-        ].map((_) => ({
-          affect: faker.string.uuid(),
-          comment: faker.lorem.words(),
-          cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-          issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
-          score: faker.number.int(),
-          uuid: faker.string.uuid(),
-          vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+          ].map((_) =>
+            faker.helpers.arrayElement([
+              "Major Incident",
+              "KEV (active exploit case)",
+              "compliance-priority",
+              "contract-priority",
+              "Minor Incident",
+              "security-select",
+              "support-exception",
+            ]),
+          ),
+          resolved_dt: faker.date.past(),
           embargoed: faker.datatype.boolean(),
           alerts: [
             ...new Array(
@@ -683,7 +830,14 @@ export function getOsidbApiV1FlawsList200Response() {
           created_dt: faker.date.past(),
           updated_dt: faker.date.past(),
         })),
+        delegated_resolution: faker.lorem.words(),
+        cvss_scores: faker.lorem.words(),
         purl: faker.internet.url(),
+        not_affected_justification: faker.string.alpha({
+          length: { min: 0, max: 100 },
+        }),
+        delegated_not_affected_justification: faker.lorem.words(),
+        resolved_dt: faker.date.past(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -711,7 +865,6 @@ export function getOsidbApiV1FlawsList200Response() {
         external_system_id: faker.string.alpha({
           length: { min: 0, max: 100 },
         }),
-        order: faker.number.int({ min: -2147483648, max: 2147483647 }),
         creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
         is_private: faker.datatype.boolean(),
         alerts: [
@@ -730,6 +883,7 @@ export function getOsidbApiV1FlawsList200Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      aegis_meta: null,
       package_versions: [
         ...new Array(
           faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -742,7 +896,6 @@ export function getOsidbApiV1FlawsList200Response() {
           ).keys(),
         ].map((_) => ({
           version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
-          status: faker.lorem.words(),
         })),
         alerts: [
           ...new Array(
@@ -825,7 +978,13 @@ export function getOsidbApiV1FlawsList200Response() {
         flaw: faker.string.uuid(),
         comment: faker.lorem.words(),
         cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-        issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
         score: faker.number.int(),
         uuid: faker.string.uuid(),
         vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -852,7 +1011,6 @@ export function getOsidbApiV1FlawsList200Response() {
         ).keys(),
       ].map((_) => ({
         uuid: faker.string.uuid(),
-        flaw: faker.string.uuid(),
         label: faker.string.alpha({ length: { min: 0, max: 255 } }),
         state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
         contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -876,7 +1034,7 @@ export function getOsidbApiV1FlawsList200Response() {
       },
       group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
       owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
-      task_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+      task_key: faker.lorem.words(),
       team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
       alerts: [
         ...new Array(
@@ -1021,13 +1179,15 @@ export function getOsidbApiV1FlawsCreate201Response() {
     mitigation: faker.lorem.words(),
     major_incident_state: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        "REQUESTED",
-        "REJECTED",
-        "APPROVED",
-        "CISA_APPROVED",
-        "MINOR",
-        "ZERO_DAY",
-        "INVALID",
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
       ]),
       faker.helpers.arrayElement([""]),
     ]),
@@ -1057,8 +1217,9 @@ export function getOsidbApiV1FlawsCreate201Response() {
         faker.helpers.arrayElement([""]),
       ]),
       ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      cve_id: faker.lorem.words(),
       ps_product: faker.lorem.words(),
-      ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      ps_component: faker.lorem.words(),
       impact: faker.helpers.arrayElement([
         faker.helpers.arrayElement([
           "LOW",
@@ -1078,6 +1239,7 @@ export function getOsidbApiV1FlawsCreate201Response() {
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
           ).keys(),
         ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
         errata: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -1093,39 +1255,34 @@ export function getOsidbApiV1FlawsCreate201Response() {
         ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
         status: faker.lorem.words(),
         resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
         type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
         uuid: faker.string.uuid(),
-        embargoed: faker.datatype.boolean(),
-        alerts: [
+        special_handling: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
           ).keys(),
-        ].map((_) => ({
-          uuid: faker.string.uuid(),
-          name: faker.person.fullName(),
-          description: faker.lorem.words(),
-          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
-          resolution_steps: faker.lorem.words(),
-          parent_uuid: faker.string.uuid(),
-          parent_model: faker.lorem.words(),
-        })),
-        created_dt: faker.date.past(),
-        updated_dt: faker.date.past(),
-        sync_to_bz: faker.datatype.boolean(),
-      })),
-      delegated_resolution: faker.lorem.words(),
-      cvss_scores: [
-        ...new Array(
-          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-        ).keys(),
-      ].map((_) => ({
-        affect: faker.string.uuid(),
-        comment: faker.lorem.words(),
-        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-        issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
-        score: faker.number.int(),
-        uuid: faker.string.uuid(),
-        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -1143,7 +1300,14 @@ export function getOsidbApiV1FlawsCreate201Response() {
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
       })),
+      delegated_resolution: faker.lorem.words(),
+      cvss_scores: faker.lorem.words(),
       purl: faker.internet.url(),
+      not_affected_justification: faker.string.alpha({
+        length: { min: 0, max: 100 },
+      }),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -1167,7 +1331,6 @@ export function getOsidbApiV1FlawsCreate201Response() {
       uuid: faker.string.uuid(),
       text: faker.lorem.words(),
       external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
-      order: faker.number.int({ min: -2147483648, max: 2147483647 }),
       creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
       is_private: faker.datatype.boolean(),
       alerts: [
@@ -1186,6 +1349,7 @@ export function getOsidbApiV1FlawsCreate201Response() {
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
     })),
+    aegis_meta: null,
     package_versions: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
@@ -1196,7 +1360,6 @@ export function getOsidbApiV1FlawsCreate201Response() {
         ).keys(),
       ].map((_) => ({
         version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
-        status: faker.lorem.words(),
       })),
       alerts: [
         ...new Array(
@@ -1273,7 +1436,13 @@ export function getOsidbApiV1FlawsCreate201Response() {
       flaw: faker.string.uuid(),
       comment: faker.lorem.words(),
       cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-      issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
       score: faker.number.int(),
       uuid: faker.string.uuid(),
       vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -1298,7 +1467,6 @@ export function getOsidbApiV1FlawsCreate201Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      flaw: faker.string.uuid(),
       label: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -1322,7 +1490,7 @@ export function getOsidbApiV1FlawsCreate201Response() {
     },
     group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
     owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
-    task_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
     team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -1484,7 +1652,6 @@ export function getOsidbApiV1FlawsCommentsList200Response() {
       text: faker.lorem.words(),
       uuid: faker.string.uuid(),
       external_system_id: faker.lorem.words(),
-      order: faker.number.int(),
       creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
       is_private: faker.datatype.boolean(),
       alerts: [
@@ -1517,7 +1684,6 @@ export function getOsidbApiV1FlawsCommentsCreate201Response() {
     text: faker.lorem.words(),
     uuid: faker.string.uuid(),
     external_system_id: faker.lorem.words(),
-    order: faker.number.int(),
     creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
     is_private: faker.datatype.boolean(),
     alerts: [
@@ -1547,7 +1713,6 @@ export function getOsidbApiV1FlawsCommentsRetrieve200Response() {
     text: faker.lorem.words(),
     uuid: faker.string.uuid(),
     external_system_id: faker.lorem.words(),
-    order: faker.number.int(),
     creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
     is_private: faker.datatype.boolean(),
     alerts: [
@@ -1582,7 +1747,13 @@ export function getOsidbApiV1FlawsCvssScoresList200Response() {
       flaw: faker.string.uuid(),
       comment: faker.lorem.words(),
       cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-      issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
       score: faker.number.int(),
       uuid: faker.string.uuid(),
       vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -1615,7 +1786,7 @@ export function getOsidbApiV1FlawsCvssScoresCreate201Response() {
     flaw: faker.string.uuid(),
     comment: faker.lorem.words(),
     cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
     score: faker.number.int(),
     uuid: faker.string.uuid(),
     vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -1645,7 +1816,7 @@ export function getOsidbApiV1FlawsCvssScoresRetrieve200Response() {
     flaw: faker.string.uuid(),
     comment: faker.lorem.words(),
     cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
     score: faker.number.int(),
     uuid: faker.string.uuid(),
     vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -1675,7 +1846,7 @@ export function getOsidbApiV1FlawsCvssScoresUpdate200Response() {
     flaw: faker.string.uuid(),
     comment: faker.lorem.words(),
     cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
     score: faker.number.int(),
     uuid: faker.string.uuid(),
     vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -1718,7 +1889,6 @@ export function getOsidbApiV1FlawsLabelsList200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      flaw: faker.string.uuid(),
       label: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -1735,7 +1905,6 @@ export function getOsidbApiV1FlawsLabelsList200Response() {
 export function getOsidbApiV1FlawsLabelsCreate201Response() {
   return {
     uuid: faker.string.uuid(),
-    flaw: faker.string.uuid(),
     label: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -1751,7 +1920,6 @@ export function getOsidbApiV1FlawsLabelsCreate201Response() {
 export function getOsidbApiV1FlawsLabelsRetrieve200Response() {
   return {
     uuid: faker.string.uuid(),
-    flaw: faker.string.uuid(),
     label: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -1767,7 +1935,6 @@ export function getOsidbApiV1FlawsLabelsRetrieve200Response() {
 export function getOsidbApiV1FlawsLabelsUpdate200Response() {
   return {
     uuid: faker.string.uuid(),
-    flaw: faker.string.uuid(),
     label: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -2055,6 +2222,24 @@ export function getOsidbApiV1FlawsRejectCreate200Response() {
   };
 }
 
+export function getOsidbApiV1FlawsResetCreate200Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1FlawsRevertCreate200Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
 export function getOsidbApiV1FlawsRetrieve200Response() {
   return {
     uuid: faker.string.uuid(),
@@ -2177,13 +2362,15 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
     mitigation: faker.lorem.words(),
     major_incident_state: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        "REQUESTED",
-        "REJECTED",
-        "APPROVED",
-        "CISA_APPROVED",
-        "MINOR",
-        "ZERO_DAY",
-        "INVALID",
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
       ]),
       faker.helpers.arrayElement([""]),
     ]),
@@ -2212,7 +2399,9 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
       ps_product: faker.lorem.words(),
       ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
       impact: faker.helpers.arrayElement([
@@ -2224,16 +2413,13 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      trackers: [
-        ...new Array(
-          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-        ).keys(),
-      ].map((_) => ({
+      tracker: {
         affects: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
           ).keys(),
         ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
         errata: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -2249,8 +2435,34 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
         status: faker.lorem.words(),
         resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
         type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
         uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -2267,8 +2479,7 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         })),
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
-        sync_to_bz: faker.datatype.boolean(),
-      })),
+      },
       delegated_resolution: faker.lorem.words(),
       cvss_scores: [
         ...new Array(
@@ -2278,7 +2489,13 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         affect: faker.string.uuid(),
         comment: faker.lorem.words(),
         cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-        issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
         score: faker.number.int(),
         uuid: faker.string.uuid(),
         vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -2300,6 +2517,23 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         updated_dt: faker.date.past(),
       })),
       purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -2323,7 +2557,6 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       uuid: faker.string.uuid(),
       text: faker.lorem.words(),
       external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
-      order: faker.number.int({ min: -2147483648, max: 2147483647 }),
       creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
       is_private: faker.datatype.boolean(),
       alerts: [
@@ -2342,6 +2575,7 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
     })),
+    aegis_meta: null,
     package_versions: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
@@ -2352,7 +2586,6 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
         ).keys(),
       ].map((_) => ({
         version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
-        status: faker.lorem.words(),
       })),
       alerts: [
         ...new Array(
@@ -2429,7 +2662,13 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       flaw: faker.string.uuid(),
       comment: faker.lorem.words(),
       cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-      issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
       score: faker.number.int(),
       uuid: faker.string.uuid(),
       vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -2454,7 +2693,6 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      flaw: faker.string.uuid(),
       label: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -2478,7 +2716,7 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
     },
     group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
     owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
-    task_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
     team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -2620,13 +2858,15 @@ export function getOsidbApiV1FlawsUpdate200Response() {
     mitigation: faker.lorem.words(),
     major_incident_state: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        "REQUESTED",
-        "REJECTED",
-        "APPROVED",
-        "CISA_APPROVED",
-        "MINOR",
-        "ZERO_DAY",
-        "INVALID",
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
       ]),
       faker.helpers.arrayElement([""]),
     ]),
@@ -2655,7 +2895,9 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
       ps_product: faker.lorem.words(),
       ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
       impact: faker.helpers.arrayElement([
@@ -2667,16 +2909,13 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      trackers: [
-        ...new Array(
-          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-        ).keys(),
-      ].map((_) => ({
+      tracker: {
         affects: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
           ).keys(),
         ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
         errata: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -2692,8 +2931,34 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
         status: faker.lorem.words(),
         resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
         type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
         uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -2710,8 +2975,7 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         })),
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
-        sync_to_bz: faker.datatype.boolean(),
-      })),
+      },
       delegated_resolution: faker.lorem.words(),
       cvss_scores: [
         ...new Array(
@@ -2721,7 +2985,13 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         affect: faker.string.uuid(),
         comment: faker.lorem.words(),
         cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-        issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
         score: faker.number.int(),
         uuid: faker.string.uuid(),
         vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -2743,6 +3013,23 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         updated_dt: faker.date.past(),
       })),
       purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(
@@ -2766,7 +3053,6 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       uuid: faker.string.uuid(),
       text: faker.lorem.words(),
       external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
-      order: faker.number.int({ min: -2147483648, max: 2147483647 }),
       creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
       is_private: faker.datatype.boolean(),
       alerts: [
@@ -2785,6 +3071,7 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
     })),
+    aegis_meta: null,
     package_versions: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
@@ -2795,7 +3082,6 @@ export function getOsidbApiV1FlawsUpdate200Response() {
         ).keys(),
       ].map((_) => ({
         version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
-        status: faker.lorem.words(),
       })),
       alerts: [
         ...new Array(
@@ -2872,7 +3158,13 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       flaw: faker.string.uuid(),
       comment: faker.lorem.words(),
       cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-      issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
       score: faker.number.int(),
       uuid: faker.string.uuid(),
       vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -2897,7 +3189,6 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      flaw: faker.string.uuid(),
       label: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
@@ -2921,7 +3212,7 @@ export function getOsidbApiV1FlawsUpdate200Response() {
     },
     group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
     owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
-    task_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
     team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -2983,6 +3274,7 @@ export function getOsidbApiV1TrackersList200Response() {
           faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
         ).keys(),
       ].map((_) => faker.string.uuid()),
+      cve_id: faker.lorem.words(),
       errata: [
         ...new Array(
           faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -2998,7 +3290,1024 @@ export function getOsidbApiV1TrackersList200Response() {
       ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
       status: faker.lorem.words(),
       resolution: faker.lorem.words(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
       type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+      uuid: faker.string.uuid(),
+      special_handling: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) =>
+        faker.helpers.arrayElement([
+          "Major Incident",
+          "KEV (active exploit case)",
+          "compliance-priority",
+          "contract-priority",
+          "Minor Incident",
+          "security-select",
+          "support-exception",
+        ]),
+      ),
+      resolved_dt: faker.date.past(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV1TrackersRetrieve200Response() {
+  return {
+    affects: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.string.uuid()),
+    cve_id: faker.lorem.words(),
+    errata: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      et_id: faker.number.int(),
+      advisory_name: faker.person.fullName(),
+      shipped_dt: faker.date.past(),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    external_system_id: faker.lorem.words(),
+    ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+    status: faker.lorem.words(),
+    resolution: faker.lorem.words(),
+    not_affected_justification: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "Component not Present",
+        "Inline Mitigations already Exist",
+        "Vulnerable Code cannot be Controlled by Adversary",
+        "Vulnerable Code not in Execute Path",
+        "Vulnerable Code not Present",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+    uuid: faker.string.uuid(),
+    special_handling: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) =>
+      faker.helpers.arrayElement([
+        "Major Incident",
+        "KEV (active exploit case)",
+        "compliance-priority",
+        "contract-priority",
+        "Minor Incident",
+        "security-select",
+        "support-exception",
+      ]),
+    ),
+    resolved_dt: faker.date.past(),
+    embargoed: faker.datatype.boolean(),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsList200Response() {
+  return {
+    count: 123,
+    next: "http://api.example.org/accounts/?offset=400&limit=100",
+    previous: "http://api.example.org/accounts/?offset=200&limit=100",
+    results: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      cve_id: faker.lorem.words(),
+      impact: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "LOW",
+          "MODERATE",
+          "IMPORTANT",
+          "CRITICAL",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      components: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.string.alpha({ length: { min: 0, max: 100 } })),
+      title: faker.lorem.words(),
+      trackers: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
+      comment_zero: faker.lorem.words(),
+      cve_description: faker.lorem.words(),
+      requires_cve_description: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      statement: faker.lorem.words(),
+      cwe_id: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      unembargo_dt: faker.date.past(),
+      source: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "ADOBE",
+          "APPLE",
+          "ASF",
+          "BIND",
+          "BK",
+          "BUGTRAQ",
+          "BUGZILLA",
+          "CERT",
+          "CERTIFI",
+          "CORELABS",
+          "CUSTOMER",
+          "CVE",
+          "CVEORG",
+          "DAILYDAVE",
+          "DEBIAN",
+          "DISTROS",
+          "FEDORA",
+          "FETCHMAIL",
+          "FREEDESKTOP",
+          "FREERADIUS",
+          "FRSIRT",
+          "FULLDISCLOSURE",
+          "GAIM",
+          "GENTOO",
+          "GENTOOBZ",
+          "GIT",
+          "GNOME",
+          "GNUPG",
+          "GOOGLE",
+          "HP",
+          "HW_VENDOR",
+          "IBM",
+          "IDEFENSE",
+          "INTERNET",
+          "ISC",
+          "ISEC",
+          "IT",
+          "JBOSS",
+          "JPCERT",
+          "KERNELBUGZILLA",
+          "KERNELSEC",
+          "LKML",
+          "LWN",
+          "MACROMEDIA",
+          "MAGEIA",
+          "MAILINGLIST",
+          "MILW0RM",
+          "MIT",
+          "MITRE",
+          "MOZILLA",
+          "MUTTDEV",
+          "NETDEV",
+          "NISCC",
+          "NVD",
+          "OCERT",
+          "OPENOFFICE",
+          "OPENSSL",
+          "OPENSUSE",
+          "ORACLE",
+          "OSS",
+          "OSSSECURITY",
+          "OSV",
+          "PHP",
+          "PIDGIN",
+          "POSTGRESQL",
+          "PRESS",
+          "REAL",
+          "REDHAT",
+          "RESEARCHER",
+          "RT",
+          "SAMBA",
+          "SECALERT",
+          "SECUNIA",
+          "SECURITYFOCUS",
+          "SKO",
+          "SQUID",
+          "SQUIRRELMAIL",
+          "SUN",
+          "SUNSOLVE",
+          "SUSE",
+          "TWITTER",
+          "UBUNTU",
+          "UPSTREAM",
+          "VENDORSEC",
+          "VULNWATCH",
+          "WIRESHARK",
+          "XCHAT",
+          "XEN",
+          "XPDF",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      reported_dt: faker.date.past(),
+      mitigation: faker.lorem.words(),
+      major_incident_state: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "MAJOR_INCIDENT_REQUESTED",
+          "MAJOR_INCIDENT_REJECTED",
+          "MAJOR_INCIDENT_APPROVED",
+          "EXPLOITS_KEV_REQUESTED",
+          "EXPLOITS_KEV_REJECTED",
+          "EXPLOITS_KEV_APPROVED",
+          "MINOR_INCIDENT_REQUESTED",
+          "MINOR_INCIDENT_REJECTED",
+          "MINOR_INCIDENT_APPROVED",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      major_incident_start_dt: faker.date.past(),
+      nist_cvss_validation: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      affects: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        flaw: faker.string.uuid(),
+        affectedness: faker.helpers.arrayElement([
+          faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        resolution: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "FIX",
+            "DEFER",
+            "WONTFIX",
+            "OOSS",
+            "DELEGATED",
+            "WONTREPORT",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        ps_update_stream: faker.lorem.words(),
+        ps_module: faker.lorem.words(),
+        cve_id: faker.lorem.words(),
+        ps_product: faker.lorem.words(),
+        ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        impact: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "LOW",
+            "MODERATE",
+            "IMPORTANT",
+            "CRITICAL",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        tracker: {
+          affects: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => faker.string.uuid()),
+          cve_id: faker.lorem.words(),
+          errata: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            et_id: faker.number.int(),
+            advisory_name: faker.person.fullName(),
+            shipped_dt: faker.date.past(),
+            created_dt: faker.date.past(),
+            updated_dt: faker.date.past(),
+          })),
+          external_system_id: faker.lorem.words(),
+          ps_update_stream: faker.string.alpha({
+            length: { min: 0, max: 100 },
+          }),
+          status: faker.lorem.words(),
+          resolution: faker.lorem.words(),
+          not_affected_justification: faker.helpers.arrayElement([
+            faker.helpers.arrayElement([
+              "Component not Present",
+              "Inline Mitigations already Exist",
+              "Vulnerable Code cannot be Controlled by Adversary",
+              "Vulnerable Code not in Execute Path",
+              "Vulnerable Code not Present",
+            ]),
+            faker.helpers.arrayElement([""]),
+          ]),
+          type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+          uuid: faker.string.uuid(),
+          special_handling: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) =>
+            faker.helpers.arrayElement([
+              "Major Incident",
+              "KEV (active exploit case)",
+              "compliance-priority",
+              "contract-priority",
+              "Minor Incident",
+              "security-select",
+              "support-exception",
+            ]),
+          ),
+          resolved_dt: faker.date.past(),
+          embargoed: faker.datatype.boolean(),
+          alerts: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            uuid: faker.string.uuid(),
+            name: faker.person.fullName(),
+            description: faker.lorem.words(),
+            alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+            resolution_steps: faker.lorem.words(),
+            parent_uuid: faker.string.uuid(),
+            parent_model: faker.lorem.words(),
+          })),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        },
+        delegated_resolution: faker.lorem.words(),
+        cvss_scores: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          affect: faker.string.uuid(),
+          comment: faker.lorem.words(),
+          cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+          issuer: faker.helpers.arrayElement([
+            "CVEORG",
+            "RH",
+            "NIST",
+            "OSV",
+            "CISA",
+          ]),
+          score: faker.number.int(),
+          uuid: faker.string.uuid(),
+          vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+          embargoed: faker.datatype.boolean(),
+          alerts: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            uuid: faker.string.uuid(),
+            name: faker.person.fullName(),
+            description: faker.lorem.words(),
+            alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+            resolution_steps: faker.lorem.words(),
+            parent_uuid: faker.string.uuid(),
+            parent_model: faker.lorem.words(),
+          })),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        purl: faker.internet.url(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        delegated_not_affected_justification: faker.lorem.words(),
+        resolved_dt: faker.date.past(),
+        labels: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.lorem.words()),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      comments: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        text: faker.lorem.words(),
+        external_system_id: faker.string.alpha({
+          length: { min: 0, max: 100 },
+        }),
+        creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        is_private: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      aegis_meta: null,
+      package_versions: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        package: faker.string.alpha({ length: { min: 0, max: 2048 } }),
+        versions: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
+        })),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+      })),
+      acknowledgments: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        name: faker.person.fullName(),
+        affiliation: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        from_upstream: faker.datatype.boolean(),
+        flaw: faker.string.uuid(),
+        uuid: faker.string.uuid(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      references: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        description: faker.lorem.words(),
+        flaw: faker.string.uuid(),
+        type: faker.helpers.arrayElement([
+          "ARTICLE",
+          "EXTERNAL",
+          "SOURCE",
+          "UPSTREAM",
+        ]),
+        url: faker.internet.url(),
+        uuid: faker.string.uuid(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      cvss_scores: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        flaw: faker.string.uuid(),
+        comment: faker.lorem.words(),
+        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
+        score: faker.number.int(),
+        uuid: faker.string.uuid(),
+        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+        contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        relevant: faker.datatype.boolean(),
+        type: faker.lorem.words(),
+      })),
+      embargoed: faker.datatype.boolean(),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+      classification: {
+        workflow: faker.lorem.words(),
+        state: faker.helpers.arrayElement([
+          "",
+          "NEW",
+          "TRIAGE",
+          "PRE_SECONDARY_ASSESSMENT",
+          "SECONDARY_ASSESSMENT",
+          "DONE",
+          "REJECTED",
+        ]),
+      },
+      group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+      owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
+      task_key: faker.lorem.words(),
+      team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsCreate201Response() {
+  return {
+    uuid: faker.string.uuid(),
+    cve_id: faker.lorem.words(),
+    impact: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["LOW", "MODERATE", "IMPORTANT", "CRITICAL"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    components: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.string.alpha({ length: { min: 0, max: 100 } })),
+    title: faker.lorem.words(),
+    trackers: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.lorem.words()),
+    comment_zero: faker.lorem.words(),
+    cve_description: faker.lorem.words(),
+    requires_cve_description: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    statement: faker.lorem.words(),
+    cwe_id: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    unembargo_dt: faker.date.past(),
+    source: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "ADOBE",
+        "APPLE",
+        "ASF",
+        "BIND",
+        "BK",
+        "BUGTRAQ",
+        "BUGZILLA",
+        "CERT",
+        "CERTIFI",
+        "CORELABS",
+        "CUSTOMER",
+        "CVE",
+        "CVEORG",
+        "DAILYDAVE",
+        "DEBIAN",
+        "DISTROS",
+        "FEDORA",
+        "FETCHMAIL",
+        "FREEDESKTOP",
+        "FREERADIUS",
+        "FRSIRT",
+        "FULLDISCLOSURE",
+        "GAIM",
+        "GENTOO",
+        "GENTOOBZ",
+        "GIT",
+        "GNOME",
+        "GNUPG",
+        "GOOGLE",
+        "HP",
+        "HW_VENDOR",
+        "IBM",
+        "IDEFENSE",
+        "INTERNET",
+        "ISC",
+        "ISEC",
+        "IT",
+        "JBOSS",
+        "JPCERT",
+        "KERNELBUGZILLA",
+        "KERNELSEC",
+        "LKML",
+        "LWN",
+        "MACROMEDIA",
+        "MAGEIA",
+        "MAILINGLIST",
+        "MILW0RM",
+        "MIT",
+        "MITRE",
+        "MOZILLA",
+        "MUTTDEV",
+        "NETDEV",
+        "NISCC",
+        "NVD",
+        "OCERT",
+        "OPENOFFICE",
+        "OPENSSL",
+        "OPENSUSE",
+        "ORACLE",
+        "OSS",
+        "OSSSECURITY",
+        "OSV",
+        "PHP",
+        "PIDGIN",
+        "POSTGRESQL",
+        "PRESS",
+        "REAL",
+        "REDHAT",
+        "RESEARCHER",
+        "RT",
+        "SAMBA",
+        "SECALERT",
+        "SECUNIA",
+        "SECURITYFOCUS",
+        "SKO",
+        "SQUID",
+        "SQUIRRELMAIL",
+        "SUN",
+        "SUNSOLVE",
+        "SUSE",
+        "TWITTER",
+        "UBUNTU",
+        "UPSTREAM",
+        "VENDORSEC",
+        "VULNWATCH",
+        "WIRESHARK",
+        "XCHAT",
+        "XEN",
+        "XPDF",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    reported_dt: faker.date.past(),
+    mitigation: faker.lorem.words(),
+    major_incident_state: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    major_incident_start_dt: faker.date.past(),
+    nist_cvss_validation: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    affects: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      affectedness: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      resolution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "FIX",
+          "DEFER",
+          "WONTFIX",
+          "OOSS",
+          "DELEGATED",
+          "WONTREPORT",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
+      ps_product: faker.lorem.words(),
+      ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      impact: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "LOW",
+          "MODERATE",
+          "IMPORTANT",
+          "CRITICAL",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      tracker: {
+        affects: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
+        errata: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          et_id: faker.number.int(),
+          advisory_name: faker.person.fullName(),
+          shipped_dt: faker.date.past(),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        external_system_id: faker.lorem.words(),
+        ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        status: faker.lorem.words(),
+        resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+        uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      },
+      delegated_resolution: faker.lorem.words(),
+      cvss_scores: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        affect: faker.string.uuid(),
+        comment: faker.lorem.words(),
+        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
+        score: faker.number.int(),
+        uuid: faker.string.uuid(),
+        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    comments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      text: faker.lorem.words(),
+      external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      is_private: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    aegis_meta: null,
+    package_versions: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      package: faker.string.alpha({ length: { min: 0, max: 2048 } }),
+      versions: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
+      })),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+    })),
+    acknowledgments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      name: faker.person.fullName(),
+      affiliation: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      from_upstream: faker.datatype.boolean(),
+      flaw: faker.string.uuid(),
       uuid: faker.string.uuid(),
       embargoed: faker.datatype.boolean(),
       alerts: [
@@ -3016,7 +4325,109 @@ export function getOsidbApiV1TrackersList200Response() {
       })),
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
-      sync_to_bz: faker.datatype.boolean(),
+    })),
+    references: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      description: faker.lorem.words(),
+      flaw: faker.string.uuid(),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
+      url: faker.internet.url(),
+      uuid: faker.string.uuid(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    cvss_scores: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      flaw: faker.string.uuid(),
+      comment: faker.lorem.words(),
+      cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
+      score: faker.number.int(),
+      uuid: faker.string.uuid(),
+      vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
+    })),
+    embargoed: faker.datatype.boolean(),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    classification: {
+      workflow: faker.lorem.words(),
+      state: faker.helpers.arrayElement([
+        "",
+        "NEW",
+        "TRIAGE",
+        "PRE_SECONDARY_ASSESSMENT",
+        "SECONDARY_ASSESSMENT",
+        "DONE",
+        "REJECTED",
+      ]),
+    },
+    group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
+    team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
     })),
     dt: faker.date.past(),
     env: faker.lorem.words(),
@@ -3025,25 +4436,60 @@ export function getOsidbApiV1TrackersList200Response() {
   };
 }
 
-export function getOsidbApiV1TrackersCreate201Response() {
+export function getOsidbApiV2FlawsCvssScoresList200Response() {
   return {
-    affects: [
-      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
-    ].map((_) => faker.string.uuid()),
-    errata: [
+    count: 123,
+    next: "http://api.example.org/accounts/?offset=400&limit=100",
+    previous: "http://api.example.org/accounts/?offset=200&limit=100",
+    results: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
-      et_id: faker.number.int(),
-      advisory_name: faker.person.fullName(),
-      shipped_dt: faker.date.past(),
+      flaw: faker.string.uuid(),
+      comment: faker.lorem.words(),
+      cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
+      score: faker.number.int(),
+      uuid: faker.string.uuid(),
+      vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
       created_dt: faker.date.past(),
       updated_dt: faker.date.past(),
     })),
-    ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
-    status: faker.lorem.words(),
-    resolution: faker.lorem.words(),
-    type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsCvssScoresCreate201Response() {
+  return {
+    flaw: faker.string.uuid(),
+    comment: faker.lorem.words(),
+    cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
+    score: faker.number.int(),
     uuid: faker.string.uuid(),
+    vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
     embargoed: faker.datatype.boolean(),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -3058,7 +4504,6 @@ export function getOsidbApiV1TrackersCreate201Response() {
     })),
     created_dt: faker.date.past(),
     updated_dt: faker.date.past(),
-    sync_to_bz: faker.datatype.boolean(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -3066,11 +4511,1219 @@ export function getOsidbApiV1TrackersCreate201Response() {
   };
 }
 
-export function getOsidbApiV1TrackersRetrieve200Response() {
+export function getOsidbApiV2FlawsCvssScoresRetrieve200Response() {
+  return {
+    flaw: faker.string.uuid(),
+    comment: faker.lorem.words(),
+    cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
+    score: faker.number.int(),
+    uuid: faker.string.uuid(),
+    vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+    embargoed: faker.datatype.boolean(),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsCvssScoresUpdate200Response() {
+  return {
+    flaw: faker.string.uuid(),
+    comment: faker.lorem.words(),
+    cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+    issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV", "CISA"]),
+    score: faker.number.int(),
+    uuid: faker.string.uuid(),
+    vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+    embargoed: faker.datatype.boolean(),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsCvssScoresDestroy204Response() {
+  return {
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsRetrieve200Response() {
+  return {
+    uuid: faker.string.uuid(),
+    cve_id: faker.lorem.words(),
+    impact: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["LOW", "MODERATE", "IMPORTANT", "CRITICAL"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    components: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.string.alpha({ length: { min: 0, max: 100 } })),
+    title: faker.lorem.words(),
+    trackers: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.lorem.words()),
+    comment_zero: faker.lorem.words(),
+    cve_description: faker.lorem.words(),
+    requires_cve_description: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    statement: faker.lorem.words(),
+    cwe_id: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    unembargo_dt: faker.date.past(),
+    source: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "ADOBE",
+        "APPLE",
+        "ASF",
+        "BIND",
+        "BK",
+        "BUGTRAQ",
+        "BUGZILLA",
+        "CERT",
+        "CERTIFI",
+        "CORELABS",
+        "CUSTOMER",
+        "CVE",
+        "CVEORG",
+        "DAILYDAVE",
+        "DEBIAN",
+        "DISTROS",
+        "FEDORA",
+        "FETCHMAIL",
+        "FREEDESKTOP",
+        "FREERADIUS",
+        "FRSIRT",
+        "FULLDISCLOSURE",
+        "GAIM",
+        "GENTOO",
+        "GENTOOBZ",
+        "GIT",
+        "GNOME",
+        "GNUPG",
+        "GOOGLE",
+        "HP",
+        "HW_VENDOR",
+        "IBM",
+        "IDEFENSE",
+        "INTERNET",
+        "ISC",
+        "ISEC",
+        "IT",
+        "JBOSS",
+        "JPCERT",
+        "KERNELBUGZILLA",
+        "KERNELSEC",
+        "LKML",
+        "LWN",
+        "MACROMEDIA",
+        "MAGEIA",
+        "MAILINGLIST",
+        "MILW0RM",
+        "MIT",
+        "MITRE",
+        "MOZILLA",
+        "MUTTDEV",
+        "NETDEV",
+        "NISCC",
+        "NVD",
+        "OCERT",
+        "OPENOFFICE",
+        "OPENSSL",
+        "OPENSUSE",
+        "ORACLE",
+        "OSS",
+        "OSSSECURITY",
+        "OSV",
+        "PHP",
+        "PIDGIN",
+        "POSTGRESQL",
+        "PRESS",
+        "REAL",
+        "REDHAT",
+        "RESEARCHER",
+        "RT",
+        "SAMBA",
+        "SECALERT",
+        "SECUNIA",
+        "SECURITYFOCUS",
+        "SKO",
+        "SQUID",
+        "SQUIRRELMAIL",
+        "SUN",
+        "SUNSOLVE",
+        "SUSE",
+        "TWITTER",
+        "UBUNTU",
+        "UPSTREAM",
+        "VENDORSEC",
+        "VULNWATCH",
+        "WIRESHARK",
+        "XCHAT",
+        "XEN",
+        "XPDF",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    reported_dt: faker.date.past(),
+    mitigation: faker.lorem.words(),
+    major_incident_state: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    major_incident_start_dt: faker.date.past(),
+    nist_cvss_validation: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    affects: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      affectedness: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      resolution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "FIX",
+          "DEFER",
+          "WONTFIX",
+          "OOSS",
+          "DELEGATED",
+          "WONTREPORT",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
+      ps_product: faker.lorem.words(),
+      ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      impact: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "LOW",
+          "MODERATE",
+          "IMPORTANT",
+          "CRITICAL",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      tracker: {
+        affects: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
+        errata: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          et_id: faker.number.int(),
+          advisory_name: faker.person.fullName(),
+          shipped_dt: faker.date.past(),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        external_system_id: faker.lorem.words(),
+        ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        status: faker.lorem.words(),
+        resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+        uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      },
+      delegated_resolution: faker.lorem.words(),
+      cvss_scores: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        affect: faker.string.uuid(),
+        comment: faker.lorem.words(),
+        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
+        score: faker.number.int(),
+        uuid: faker.string.uuid(),
+        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    comments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      text: faker.lorem.words(),
+      external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      is_private: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    aegis_meta: null,
+    package_versions: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      package: faker.string.alpha({ length: { min: 0, max: 2048 } }),
+      versions: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
+      })),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+    })),
+    acknowledgments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      name: faker.person.fullName(),
+      affiliation: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      from_upstream: faker.datatype.boolean(),
+      flaw: faker.string.uuid(),
+      uuid: faker.string.uuid(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    references: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      description: faker.lorem.words(),
+      flaw: faker.string.uuid(),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
+      url: faker.internet.url(),
+      uuid: faker.string.uuid(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    cvss_scores: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      flaw: faker.string.uuid(),
+      comment: faker.lorem.words(),
+      cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
+      score: faker.number.int(),
+      uuid: faker.string.uuid(),
+      vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
+    })),
+    embargoed: faker.datatype.boolean(),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    classification: {
+      workflow: faker.lorem.words(),
+      state: faker.helpers.arrayElement([
+        "",
+        "NEW",
+        "TRIAGE",
+        "PRE_SECONDARY_ASSESSMENT",
+        "SECONDARY_ASSESSMENT",
+        "DONE",
+        "REJECTED",
+      ]),
+    },
+    group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
+    team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2FlawsUpdate200Response() {
+  return {
+    uuid: faker.string.uuid(),
+    cve_id: faker.lorem.words(),
+    impact: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["LOW", "MODERATE", "IMPORTANT", "CRITICAL"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    components: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.string.alpha({ length: { min: 0, max: 100 } })),
+    title: faker.lorem.words(),
+    trackers: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.lorem.words()),
+    comment_zero: faker.lorem.words(),
+    cve_description: faker.lorem.words(),
+    requires_cve_description: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    statement: faker.lorem.words(),
+    cwe_id: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    unembargo_dt: faker.date.past(),
+    source: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "ADOBE",
+        "APPLE",
+        "ASF",
+        "BIND",
+        "BK",
+        "BUGTRAQ",
+        "BUGZILLA",
+        "CERT",
+        "CERTIFI",
+        "CORELABS",
+        "CUSTOMER",
+        "CVE",
+        "CVEORG",
+        "DAILYDAVE",
+        "DEBIAN",
+        "DISTROS",
+        "FEDORA",
+        "FETCHMAIL",
+        "FREEDESKTOP",
+        "FREERADIUS",
+        "FRSIRT",
+        "FULLDISCLOSURE",
+        "GAIM",
+        "GENTOO",
+        "GENTOOBZ",
+        "GIT",
+        "GNOME",
+        "GNUPG",
+        "GOOGLE",
+        "HP",
+        "HW_VENDOR",
+        "IBM",
+        "IDEFENSE",
+        "INTERNET",
+        "ISC",
+        "ISEC",
+        "IT",
+        "JBOSS",
+        "JPCERT",
+        "KERNELBUGZILLA",
+        "KERNELSEC",
+        "LKML",
+        "LWN",
+        "MACROMEDIA",
+        "MAGEIA",
+        "MAILINGLIST",
+        "MILW0RM",
+        "MIT",
+        "MITRE",
+        "MOZILLA",
+        "MUTTDEV",
+        "NETDEV",
+        "NISCC",
+        "NVD",
+        "OCERT",
+        "OPENOFFICE",
+        "OPENSSL",
+        "OPENSUSE",
+        "ORACLE",
+        "OSS",
+        "OSSSECURITY",
+        "OSV",
+        "PHP",
+        "PIDGIN",
+        "POSTGRESQL",
+        "PRESS",
+        "REAL",
+        "REDHAT",
+        "RESEARCHER",
+        "RT",
+        "SAMBA",
+        "SECALERT",
+        "SECUNIA",
+        "SECURITYFOCUS",
+        "SKO",
+        "SQUID",
+        "SQUIRRELMAIL",
+        "SUN",
+        "SUNSOLVE",
+        "SUSE",
+        "TWITTER",
+        "UBUNTU",
+        "UPSTREAM",
+        "VENDORSEC",
+        "VULNWATCH",
+        "WIRESHARK",
+        "XCHAT",
+        "XEN",
+        "XPDF",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    reported_dt: faker.date.past(),
+    mitigation: faker.lorem.words(),
+    major_incident_state: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "MAJOR_INCIDENT_REQUESTED",
+        "MAJOR_INCIDENT_REJECTED",
+        "MAJOR_INCIDENT_APPROVED",
+        "EXPLOITS_KEV_REQUESTED",
+        "EXPLOITS_KEV_REJECTED",
+        "EXPLOITS_KEV_APPROVED",
+        "MINOR_INCIDENT_REQUESTED",
+        "MINOR_INCIDENT_REJECTED",
+        "MINOR_INCIDENT_APPROVED",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    major_incident_start_dt: faker.date.past(),
+    nist_cvss_validation: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(["REQUESTED", "APPROVED", "REJECTED"]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    affects: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      affectedness: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      resolution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "FIX",
+          "DEFER",
+          "WONTFIX",
+          "OOSS",
+          "DELEGATED",
+          "WONTREPORT",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
+      ps_product: faker.lorem.words(),
+      ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      impact: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "LOW",
+          "MODERATE",
+          "IMPORTANT",
+          "CRITICAL",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      tracker: {
+        affects: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
+        errata: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          et_id: faker.number.int(),
+          advisory_name: faker.person.fullName(),
+          shipped_dt: faker.date.past(),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        external_system_id: faker.lorem.words(),
+        ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        status: faker.lorem.words(),
+        resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+        uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      },
+      delegated_resolution: faker.lorem.words(),
+      cvss_scores: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        affect: faker.string.uuid(),
+        comment: faker.lorem.words(),
+        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
+        score: faker.number.int(),
+        uuid: faker.string.uuid(),
+        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    comments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      text: faker.lorem.words(),
+      external_system_id: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      creator: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      is_private: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    aegis_meta: null,
+    package_versions: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      package: faker.string.alpha({ length: { min: 0, max: 2048 } }),
+      versions: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        version: faker.string.alpha({ length: { min: 0, max: 1024 } }),
+      })),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+    })),
+    acknowledgments: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      name: faker.person.fullName(),
+      affiliation: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      from_upstream: faker.datatype.boolean(),
+      flaw: faker.string.uuid(),
+      uuid: faker.string.uuid(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    references: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      description: faker.lorem.words(),
+      flaw: faker.string.uuid(),
+      type: faker.helpers.arrayElement([
+        "ARTICLE",
+        "EXTERNAL",
+        "SOURCE",
+        "UPSTREAM",
+      ]),
+      url: faker.internet.url(),
+      uuid: faker.string.uuid(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    cvss_scores: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      flaw: faker.string.uuid(),
+      comment: faker.lorem.words(),
+      cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+      issuer: faker.helpers.arrayElement([
+        "CVEORG",
+        "RH",
+        "NIST",
+        "OSV",
+        "CISA",
+      ]),
+      score: faker.number.int(),
+      uuid: faker.string.uuid(),
+      vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    labels: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
+      contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      relevant: faker.datatype.boolean(),
+      type: faker.lorem.words(),
+    })),
+    embargoed: faker.datatype.boolean(),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    classification: {
+      workflow: faker.lorem.words(),
+      state: faker.helpers.arrayElement([
+        "",
+        "NEW",
+        "TRIAGE",
+        "PRE_SECONDARY_ASSESSMENT",
+        "SECONDARY_ASSESSMENT",
+        "DONE",
+        "REJECTED",
+      ]),
+    },
+    group_key: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    owner: faker.string.alpha({ length: { min: 0, max: 60 } }),
+    task_key: faker.lorem.words(),
+    team_id: faker.string.alpha({ length: { min: 0, max: 8 } }),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2TrackersList200Response() {
+  return {
+    count: 123,
+    next: "http://api.example.org/accounts/?offset=400&limit=100",
+    previous: "http://api.example.org/accounts/?offset=200&limit=100",
+    results: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      affects: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.string.uuid()),
+      cve_id: faker.lorem.words(),
+      errata: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        et_id: faker.number.int(),
+        advisory_name: faker.person.fullName(),
+        shipped_dt: faker.date.past(),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      external_system_id: faker.lorem.words(),
+      ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      status: faker.lorem.words(),
+      resolution: faker.lorem.words(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+      uuid: faker.string.uuid(),
+      special_handling: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) =>
+        faker.helpers.arrayElement([
+          "Major Incident",
+          "KEV (active exploit case)",
+          "compliance-priority",
+          "contract-priority",
+          "Minor Incident",
+          "security-select",
+          "support-exception",
+        ]),
+      ),
+      resolved_dt: faker.date.past(),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2TrackersCreate201Response() {
   return {
     affects: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => faker.string.uuid()),
+    cve_id: faker.lorem.words(),
+    errata: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      et_id: faker.number.int(),
+      advisory_name: faker.person.fullName(),
+      shipped_dt: faker.date.past(),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+    status: faker.lorem.words(),
+    resolution: faker.lorem.words(),
+    not_affected_justification: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "Component not Present",
+        "Inline Mitigations already Exist",
+        "Vulnerable Code cannot be Controlled by Adversary",
+        "Vulnerable Code not in Execute Path",
+        "Vulnerable Code not Present",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
+    type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+    uuid: faker.string.uuid(),
+    special_handling: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) =>
+      faker.helpers.arrayElement([
+        "Major Incident",
+        "KEV (active exploit case)",
+        "compliance-priority",
+        "contract-priority",
+        "Minor Incident",
+        "security-select",
+        "support-exception",
+      ]),
+    ),
+    resolved_dt: faker.date.past(),
+    embargoed: faker.datatype.boolean(),
+    alerts: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      name: faker.person.fullName(),
+      description: faker.lorem.words(),
+      alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+      resolution_steps: faker.lorem.words(),
+      parent_uuid: faker.string.uuid(),
+      parent_model: faker.lorem.words(),
+    })),
+    created_dt: faker.date.past(),
+    updated_dt: faker.date.past(),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getOsidbApiV2TrackersRetrieve200Response() {
+  return {
+    affects: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => faker.string.uuid()),
+    cve_id: faker.lorem.words(),
     errata: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
@@ -3084,8 +5737,32 @@ export function getOsidbApiV1TrackersRetrieve200Response() {
     ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
     status: faker.lorem.words(),
     resolution: faker.lorem.words(),
+    not_affected_justification: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "Component not Present",
+        "Inline Mitigations already Exist",
+        "Vulnerable Code cannot be Controlled by Adversary",
+        "Vulnerable Code not in Execute Path",
+        "Vulnerable Code not Present",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
     type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
     uuid: faker.string.uuid(),
+    special_handling: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) =>
+      faker.helpers.arrayElement([
+        "Major Incident",
+        "KEV (active exploit case)",
+        "compliance-priority",
+        "contract-priority",
+        "Minor Incident",
+        "security-select",
+        "support-exception",
+      ]),
+    ),
+    resolved_dt: faker.date.past(),
     embargoed: faker.datatype.boolean(),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -3100,7 +5777,6 @@ export function getOsidbApiV1TrackersRetrieve200Response() {
     })),
     created_dt: faker.date.past(),
     updated_dt: faker.date.past(),
-    sync_to_bz: faker.datatype.boolean(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -3108,11 +5784,12 @@ export function getOsidbApiV1TrackersRetrieve200Response() {
   };
 }
 
-export function getOsidbApiV1TrackersUpdate200Response() {
+export function getOsidbApiV2TrackersUpdate200Response() {
   return {
     affects: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => faker.string.uuid()),
+    cve_id: faker.lorem.words(),
     errata: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
@@ -3126,8 +5803,32 @@ export function getOsidbApiV1TrackersUpdate200Response() {
     ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
     status: faker.lorem.words(),
     resolution: faker.lorem.words(),
+    not_affected_justification: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([
+        "Component not Present",
+        "Inline Mitigations already Exist",
+        "Vulnerable Code cannot be Controlled by Adversary",
+        "Vulnerable Code not in Execute Path",
+        "Vulnerable Code not Present",
+      ]),
+      faker.helpers.arrayElement([""]),
+    ]),
     type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
     uuid: faker.string.uuid(),
+    special_handling: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) =>
+      faker.helpers.arrayElement([
+        "Major Incident",
+        "KEV (active exploit case)",
+        "compliance-priority",
+        "contract-priority",
+        "Minor Incident",
+        "security-select",
+        "support-exception",
+      ]),
+    ),
+    resolved_dt: faker.date.past(),
     embargoed: faker.datatype.boolean(),
     alerts: [
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
@@ -3142,7 +5843,6 @@ export function getOsidbApiV1TrackersUpdate200Response() {
     })),
     created_dt: faker.date.past(),
     updated_dt: faker.date.past(),
-    sync_to_bz: faker.datatype.boolean(),
     dt: faker.date.past(),
     env: faker.lorem.words(),
     revision: faker.lorem.words(),
@@ -3187,7 +5887,9 @@ export function getTrackersApiV1FileCreate200Response() {
           ]),
           faker.helpers.arrayElement([""]),
         ]),
-        ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        ps_update_stream: faker.lorem.words(),
+        ps_module: faker.lorem.words(),
+        cve_id: faker.lorem.words(),
         ps_product: faker.lorem.words(),
         ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
         impact: faker.helpers.arrayElement([
@@ -3199,16 +5901,13 @@ export function getTrackersApiV1FileCreate200Response() {
           ]),
           faker.helpers.arrayElement([""]),
         ]),
-        trackers: [
-          ...new Array(
-            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-          ).keys(),
-        ].map((_) => ({
+        tracker: {
           affects: [
             ...new Array(
               faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
             ).keys(),
           ].map((_) => faker.string.uuid()),
+          cve_id: faker.lorem.words(),
           errata: [
             ...new Array(
               faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -3226,8 +5925,34 @@ export function getTrackersApiV1FileCreate200Response() {
           }),
           status: faker.lorem.words(),
           resolution: faker.lorem.words(),
+          not_affected_justification: faker.helpers.arrayElement([
+            faker.helpers.arrayElement([
+              "Component not Present",
+              "Inline Mitigations already Exist",
+              "Vulnerable Code cannot be Controlled by Adversary",
+              "Vulnerable Code not in Execute Path",
+              "Vulnerable Code not Present",
+            ]),
+            faker.helpers.arrayElement([""]),
+          ]),
           type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
           uuid: faker.string.uuid(),
+          special_handling: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) =>
+            faker.helpers.arrayElement([
+              "Major Incident",
+              "KEV (active exploit case)",
+              "compliance-priority",
+              "contract-priority",
+              "Minor Incident",
+              "security-select",
+              "support-exception",
+            ]),
+          ),
+          resolved_dt: faker.date.past(),
           embargoed: faker.datatype.boolean(),
           alerts: [
             ...new Array(
@@ -3244,8 +5969,7 @@ export function getTrackersApiV1FileCreate200Response() {
           })),
           created_dt: faker.date.past(),
           updated_dt: faker.date.past(),
-          sync_to_bz: faker.datatype.boolean(),
-        })),
+        },
         delegated_resolution: faker.lorem.words(),
         cvss_scores: [
           ...new Array(
@@ -3255,7 +5979,13 @@ export function getTrackersApiV1FileCreate200Response() {
           affect: faker.string.uuid(),
           comment: faker.lorem.words(),
           cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-          issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+          issuer: faker.helpers.arrayElement([
+            "CVEORG",
+            "RH",
+            "NIST",
+            "OSV",
+            "CISA",
+          ]),
           score: faker.number.int(),
           uuid: faker.string.uuid(),
           vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -3277,6 +6007,23 @@ export function getTrackersApiV1FileCreate200Response() {
           updated_dt: faker.date.past(),
         })),
         purl: faker.internet.url(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        delegated_not_affected_justification: faker.lorem.words(),
+        resolved_dt: faker.date.past(),
+        labels: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.lorem.words()),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -3315,7 +6062,9 @@ export function getTrackersApiV1FileCreate200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      ps_module: faker.string.alpha({ length: { min: 0, max: 100 } }),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
       ps_product: faker.lorem.words(),
       ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
       impact: faker.helpers.arrayElement([
@@ -3327,16 +6076,13 @@ export function getTrackersApiV1FileCreate200Response() {
         ]),
         faker.helpers.arrayElement([""]),
       ]),
-      trackers: [
-        ...new Array(
-          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
-        ).keys(),
-      ].map((_) => ({
+      tracker: {
         affects: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
           ).keys(),
         ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
         errata: [
           ...new Array(
             faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
@@ -3352,8 +6098,34 @@ export function getTrackersApiV1FileCreate200Response() {
         ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
         status: faker.lorem.words(),
         resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
         type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
         uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
         embargoed: faker.datatype.boolean(),
         alerts: [
           ...new Array(
@@ -3370,8 +6142,7 @@ export function getTrackersApiV1FileCreate200Response() {
         })),
         created_dt: faker.date.past(),
         updated_dt: faker.date.past(),
-        sync_to_bz: faker.datatype.boolean(),
-      })),
+      },
       delegated_resolution: faker.lorem.words(),
       cvss_scores: [
         ...new Array(
@@ -3381,7 +6152,13 @@ export function getTrackersApiV1FileCreate200Response() {
         affect: faker.string.uuid(),
         comment: faker.lorem.words(),
         cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
-        issuer: faker.helpers.arrayElement(["CVEORG", "RH", "NIST", "OSV"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
         score: faker.number.int(),
         uuid: faker.string.uuid(),
         vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
@@ -3403,6 +6180,390 @@ export function getTrackersApiV1FileCreate200Response() {
         updated_dt: faker.date.past(),
       })),
       purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
+      embargoed: faker.datatype.boolean(),
+      alerts: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        uuid: faker.string.uuid(),
+        name: faker.person.fullName(),
+        description: faker.lorem.words(),
+        alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+        resolution_steps: faker.lorem.words(),
+        parent_uuid: faker.string.uuid(),
+        parent_model: faker.lorem.words(),
+      })),
+      created_dt: faker.date.past(),
+      updated_dt: faker.date.past(),
+    })),
+    dt: faker.date.past(),
+    env: faker.lorem.words(),
+    revision: faker.lorem.words(),
+    version: faker.lorem.words(),
+  };
+}
+
+export function getTrackersApiV2FileCreate200Response() {
+  return {
+    streams_components: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      ps_update_stream: faker.lorem.words(),
+      ps_component: faker.lorem.words(),
+      offer: {
+        ps_update_stream: faker.lorem.words(),
+        selected: faker.datatype.boolean(),
+        acked: faker.datatype.boolean(),
+        eus: faker.datatype.boolean(),
+        aus: faker.datatype.boolean(),
+      },
+      selected: faker.datatype.boolean(),
+      affect: {
+        uuid: faker.string.uuid(),
+        flaw: faker.string.uuid(),
+        affectedness: faker.helpers.arrayElement([
+          faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        resolution: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "FIX",
+            "DEFER",
+            "WONTFIX",
+            "OOSS",
+            "DELEGATED",
+            "WONTREPORT",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        ps_update_stream: faker.lorem.words(),
+        ps_module: faker.lorem.words(),
+        cve_id: faker.lorem.words(),
+        ps_product: faker.lorem.words(),
+        ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        impact: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "LOW",
+            "MODERATE",
+            "IMPORTANT",
+            "CRITICAL",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        tracker: {
+          affects: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => faker.string.uuid()),
+          cve_id: faker.lorem.words(),
+          errata: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            et_id: faker.number.int(),
+            advisory_name: faker.person.fullName(),
+            shipped_dt: faker.date.past(),
+            created_dt: faker.date.past(),
+            updated_dt: faker.date.past(),
+          })),
+          external_system_id: faker.lorem.words(),
+          ps_update_stream: faker.string.alpha({
+            length: { min: 0, max: 100 },
+          }),
+          status: faker.lorem.words(),
+          resolution: faker.lorem.words(),
+          not_affected_justification: faker.helpers.arrayElement([
+            faker.helpers.arrayElement([
+              "Component not Present",
+              "Inline Mitigations already Exist",
+              "Vulnerable Code cannot be Controlled by Adversary",
+              "Vulnerable Code not in Execute Path",
+              "Vulnerable Code not Present",
+            ]),
+            faker.helpers.arrayElement([""]),
+          ]),
+          type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+          uuid: faker.string.uuid(),
+          special_handling: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) =>
+            faker.helpers.arrayElement([
+              "Major Incident",
+              "KEV (active exploit case)",
+              "compliance-priority",
+              "contract-priority",
+              "Minor Incident",
+              "security-select",
+              "support-exception",
+            ]),
+          ),
+          resolved_dt: faker.date.past(),
+          embargoed: faker.datatype.boolean(),
+          alerts: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            uuid: faker.string.uuid(),
+            name: faker.person.fullName(),
+            description: faker.lorem.words(),
+            alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+            resolution_steps: faker.lorem.words(),
+            parent_uuid: faker.string.uuid(),
+            parent_model: faker.lorem.words(),
+          })),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        },
+        delegated_resolution: faker.lorem.words(),
+        cvss_scores: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          affect: faker.string.uuid(),
+          comment: faker.lorem.words(),
+          cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+          issuer: faker.helpers.arrayElement([
+            "CVEORG",
+            "RH",
+            "NIST",
+            "OSV",
+            "CISA",
+          ]),
+          score: faker.number.int(),
+          uuid: faker.string.uuid(),
+          vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+          embargoed: faker.datatype.boolean(),
+          alerts: [
+            ...new Array(
+              faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+            ).keys(),
+          ].map((_) => ({
+            uuid: faker.string.uuid(),
+            name: faker.person.fullName(),
+            description: faker.lorem.words(),
+            alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+            resolution_steps: faker.lorem.words(),
+            parent_uuid: faker.string.uuid(),
+            parent_model: faker.lorem.words(),
+          })),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        purl: faker.internet.url(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        delegated_not_affected_justification: faker.lorem.words(),
+        resolved_dt: faker.date.past(),
+        labels: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.lorem.words()),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      },
+    })),
+    not_applicable: [
+      ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
+    ].map((_) => ({
+      uuid: faker.string.uuid(),
+      flaw: faker.string.uuid(),
+      affectedness: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(["NEW", "AFFECTED", "NOTAFFECTED"]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      resolution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "FIX",
+          "DEFER",
+          "WONTFIX",
+          "OOSS",
+          "DELEGATED",
+          "WONTREPORT",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      ps_update_stream: faker.lorem.words(),
+      ps_module: faker.lorem.words(),
+      cve_id: faker.lorem.words(),
+      ps_product: faker.lorem.words(),
+      ps_component: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      impact: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "LOW",
+          "MODERATE",
+          "IMPORTANT",
+          "CRITICAL",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      tracker: {
+        affects: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => faker.string.uuid()),
+        cve_id: faker.lorem.words(),
+        errata: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          et_id: faker.number.int(),
+          advisory_name: faker.person.fullName(),
+          shipped_dt: faker.date.past(),
+          created_dt: faker.date.past(),
+          updated_dt: faker.date.past(),
+        })),
+        external_system_id: faker.lorem.words(),
+        ps_update_stream: faker.string.alpha({ length: { min: 0, max: 100 } }),
+        status: faker.lorem.words(),
+        resolution: faker.lorem.words(),
+        not_affected_justification: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([
+            "Component not Present",
+            "Inline Mitigations already Exist",
+            "Vulnerable Code cannot be Controlled by Adversary",
+            "Vulnerable Code not in Execute Path",
+            "Vulnerable Code not Present",
+          ]),
+          faker.helpers.arrayElement([""]),
+        ]),
+        type: faker.helpers.arrayElement(["JIRA", "BUGZILLA"]),
+        uuid: faker.string.uuid(),
+        special_handling: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) =>
+          faker.helpers.arrayElement([
+            "Major Incident",
+            "KEV (active exploit case)",
+            "compliance-priority",
+            "contract-priority",
+            "Minor Incident",
+            "security-select",
+            "support-exception",
+          ]),
+        ),
+        resolved_dt: faker.date.past(),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      },
+      delegated_resolution: faker.lorem.words(),
+      cvss_scores: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => ({
+        affect: faker.string.uuid(),
+        comment: faker.lorem.words(),
+        cvss_version: faker.helpers.arrayElement(["V2", "V3", "V4"]),
+        issuer: faker.helpers.arrayElement([
+          "CVEORG",
+          "RH",
+          "NIST",
+          "OSV",
+          "CISA",
+        ]),
+        score: faker.number.int(),
+        uuid: faker.string.uuid(),
+        vector: faker.string.alpha({ length: { min: 0, max: 200 } }),
+        embargoed: faker.datatype.boolean(),
+        alerts: [
+          ...new Array(
+            faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+          ).keys(),
+        ].map((_) => ({
+          uuid: faker.string.uuid(),
+          name: faker.person.fullName(),
+          description: faker.lorem.words(),
+          alert_type: faker.helpers.arrayElement(["WARNING", "ERROR"]),
+          resolution_steps: faker.lorem.words(),
+          parent_uuid: faker.string.uuid(),
+          parent_model: faker.lorem.words(),
+        })),
+        created_dt: faker.date.past(),
+        updated_dt: faker.date.past(),
+      })),
+      purl: faker.internet.url(),
+      not_affected_justification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          "Component not Present",
+          "Inline Mitigations already Exist",
+          "Vulnerable Code cannot be Controlled by Adversary",
+          "Vulnerable Code not in Execute Path",
+          "Vulnerable Code not Present",
+        ]),
+        faker.helpers.arrayElement([""]),
+      ]),
+      delegated_not_affected_justification: faker.lorem.words(),
+      resolved_dt: faker.date.past(),
+      labels: [
+        ...new Array(
+          faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH }),
+        ).keys(),
+      ].map((_) => faker.lorem.words()),
       embargoed: faker.datatype.boolean(),
       alerts: [
         ...new Array(

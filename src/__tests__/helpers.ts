@@ -78,6 +78,9 @@ export const mountWithConfig: MountConfig = (
       resizableTableColumns: vi.fn(),
       ...options?.global?.directives,
     },
+    stubs: {
+      Teleport: true,
+    },
     plugins: plugins ?? [createTestingPinia(), router],
   },
 });
