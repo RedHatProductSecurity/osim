@@ -6,6 +6,7 @@
 
 ### Changed
 * Removed Affects V1 implementation (`OSIDB-4660`)
+* Make affects actions columns always visible (`OSIDB-4606`)
 
 
 ## [2025.11.3]
