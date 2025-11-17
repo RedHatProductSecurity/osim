@@ -3,9 +3,8 @@ import { computed, type Ref } from 'vue';
 import { groupBy, mergeDeepWith, prop, concat } from 'ramda';
 
 import { type ZodFlawType } from '@/types/zodFlaw';
-import { type ZodTrackerType, type ZodAffectCVSSType } from '@/types/zodAffect';
+import { type ZodAffectCVSSType } from '@/types/zodAffect';
 import { type ZodAlertType, ZodAlertSchema } from '@/types/zodShared';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 function groupAlertsByType(alerts: ZodAlertType[]) {
   return mergeDeepWith(
@@ -82,11 +81,7 @@ export function useAlertsModel(flaw: Ref<ZodFlawType>) {
   });
 
   const trackersAlerts = computed(() => {
-    const trackers = osimRuntime.value.flags?.affectsV2
-      ? flaw.value.affects.map(affect => affect.tracker ?? {})
-      : flaw.value.affects.reduce(
-        (acc: ZodTrackerType[], obj) => acc.concat(obj.trackers ?? []), [] as ZodTrackerType[],
-      );
+    const trackers = flaw.value.affects.map(affect => affect.tracker ?? {});
     return groupAlertsByType(joinAlerts(trackers));
   });
 

@@ -16,7 +16,6 @@ import FlawAlertsList from '@/components/FlawAlertsList/FlawAlertsList.vue';
 import FlawHistory from '@/components/FlawHistory/FlawHistory.vue';
 import FlawContributors from '@/components/FlawContributors/FlawContributors.vue';
 import CvssExplainForm from '@/components/CvssExplainForm/CvssExplainForm.vue';
-import FlawAffects from '@/components/FlawAffects/FlawAffects.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
@@ -54,7 +53,6 @@ import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
-import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   mode: 'create' | 'edit';
@@ -137,9 +135,8 @@ const onSubmit = async () => {
 const onReset = () => {
   // is deepCopyFromRaw needed?
   flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
-  if (osimRuntime.value.flags?.affectsV2) {
-    useAffectsModel().actions.initializeAffects(flaw.value.affects);
-  }
+  useAffectsModel().actions.initializeAffects(flaw.value.affects);
+
   shouldCreateJiraTask.value = false;
 };
 
@@ -481,15 +478,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
               </div>
             </template>
           </div>
-          <template v-else>
-            <AffectsTable v-if="osimRuntime.flags?.affectsV2" />
-            <FlawAffects
-              v-else
-              :errors="errors.affects"
-              :embargoed="flaw.embargoed"
-            />
-          </template>
-
+          <AffectsTable v-else />
         </div>
       </div>
       <div class="row osim-flaw-form-section">

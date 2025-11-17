@@ -1,7 +1,6 @@
 import { computed, ref } from 'vue';
 
 import { useFlaw } from '@/composables/useFlaw';
-import { resetInitialAffects } from '@/composables/useFlawAffectsModel';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
@@ -66,7 +65,6 @@ export function useFetchFlaw() {
       didFetchFail.value = false;
       const fetchedFlaw = getFlaw(flawCveOrId);
       const fetchedAffects = fetchFlawAffects(flawCveOrId);
-      resetInitialAffects();
 
       const flawResult = await fetchedFlaw;
       setFlaw(Object.assign({ affects: [] }, flawResult));
@@ -86,7 +84,6 @@ export function useFetchFlaw() {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
       resetFlaw();
-      resetInitialAffects();
       addToast({
         title: 'Error loading Flaw',
         body: getDisplayedOsidbError(error),

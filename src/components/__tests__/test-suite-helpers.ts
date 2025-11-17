@@ -46,8 +46,10 @@ export function mockAffect({ ps_component, ps_module }: { ps_component: string; 
   return {
     ps_module,
     ps_component,
+    ps_update_stream: ps_module,
     embargoed: false,
-    trackers: [],
+    tracker: null,
+    labels: [],
     alerts: [],
     cvss_scores: [{
       comment: 'hardcoded comment',
