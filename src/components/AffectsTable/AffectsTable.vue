@@ -86,6 +86,12 @@ onMounted(() => {
       />
     </div>
     <div class="d-flex flex-row gap-2">
+      <span
+        v-if="table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()"
+        class="badge bg-secondary text-nowrap align-self-center fs-6 px-3 py-2"
+      >
+        {{ table.getSelectedRowModel().flatRows.length }} Selected
+      </span>
       <button
         v-if="(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())
           && table.getSelectedRowModel().flatRows.filter(row => !row.original.tracker).length"
