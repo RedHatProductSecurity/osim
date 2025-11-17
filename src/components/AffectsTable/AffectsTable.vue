@@ -199,8 +199,14 @@ onMounted(() => {
             v-for="header in headerGroup.headers"
             :key="header.id"
             :colspan="header.colSpan"
-            :class="header.column.getCanSort() ? 'sortable' : ''"
-            :style="{ width: `${header.getSize()}px` }"
+            :class="[
+              header.column.getCanSort() ? 'sortable' : '',
+              header.column.getIsPinned() === 'right' ? 'pinned-right' : ''
+            ]"
+            :style="{
+              width: `${header.getSize()}px`,
+              ...(header.column.getIsPinned() === 'right' ? { right: `${header.column.getAfter('right')}px` } : {})
+            }"
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
             <FlexRender
@@ -237,7 +243,11 @@ onMounted(() => {
           <td
             v-for="header in table.getHeaderGroups()[0].headers"
             :key="header.id"
-            :style="{ width: `${header.getSize()}px` }"
+            :class="header.column.getIsPinned() === 'right' ? 'pinned-right' : ''"
+            :style="{
+              width: `${header.getSize()}px`,
+              ...(header.column.getIsPinned() === 'right' ? { right: `${header.column.getAfter('right')}px` } : {})
+            }"
           >
             <div v-if="header.id === 'Select'" class="d-flex align-items-center gap-1">
               <i class="bi-pencil-square text-primary"></i>
@@ -265,6 +275,8 @@ onMounted(() => {
           <td
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
+            :class="cell.column.getIsPinned() === 'right' ? 'pinned-right' : ''"
+            :style="cell.column.getIsPinned() === 'right' ? { right: `${cell.column.getAfter('right')}px` } : {}"
           >
             <FlexRender
               :render="cell.column.columnDef.cell"
@@ -371,6 +383,18 @@ table {
     tr {
       height: 2.5rem;
     }
+  }
+
+  // Pinned columns
+  th.pinned-right,
+  td.pinned-right {
+    position: sticky;
+    z-index: 1;
+    box-shadow: -2px 0 4px rgb(0 0 0 / 20%);
+  }
+
+  thead th.pinned-right {
+    z-index: 3;
   }
 }
 </style>

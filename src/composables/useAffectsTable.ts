@@ -9,7 +9,13 @@ import {
   useVueTable,
   getExpandedRowModel,
 } from '@tanstack/vue-table';
-import type { SortingState, Column, ColumnFiltersState, RowData } from '@tanstack/vue-table';
+import type {
+  SortingState,
+  Column,
+  ColumnFiltersState,
+  RowData,
+  ColumnPinningState,
+} from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
 
 import columnDefinitions from '@/components/AffectsTable/columnDefinitions';
@@ -134,6 +140,12 @@ export function useAffectsTable() {
     original: bulkEditData.value as ZodAffectType,
   }));
 
+  // Column pinning state - pin actions column to the right
+  const columnPinning = computed<ColumnPinningState>(() => ({
+    left: [],
+    right: ['actions'],
+  }));
+
   const { changePage, currentPage, pages } = usePagination(totalPages);
 
   const pagination = computed(() => ({
@@ -165,6 +177,7 @@ export function useAffectsTable() {
     },
     filterFromLeafRows: true,
     enableSubRowSelection: false,
+    enableColumnPinning: true,
     state: {
       get columnVisibility() { return settings.value.affectsVisibility; },
       get pagination() { return pagination.value; },
@@ -174,6 +187,7 @@ export function useAffectsTable() {
       get columnOrder() { return settings.value.affectsColumnOrder; },
       get columnSizing() { return settings.value.affectsSizing; },
       get expanded() { return expandedRows.value; },
+      get columnPinning() { return columnPinning.value; },
     },
     meta: {
       createData: () => {

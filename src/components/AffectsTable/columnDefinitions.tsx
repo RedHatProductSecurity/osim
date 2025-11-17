@@ -322,6 +322,7 @@ export default function AffectColumnDefinitions() {
       enableColumnFilter: false,
       enableGlobalFilter: false,
       enableResizing: false,
+      enablePinning: true,
       size: 80,
       meta: {
         filter: false,
