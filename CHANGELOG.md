@@ -20,6 +20,7 @@
 ## [2025.11.4]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
+* Force internal comment on Incident Request (`OSIDB-4589`)
 
 ### Fixed
 * `Create Jira Task` option not working if there are no changes (`OSIDB-4632`)
