@@ -3,6 +3,7 @@ import { isStringArray } from '@/utils/guards';
 
 withDefaults(
   defineProps<{
+    disabled?: boolean;
     error: null | string;
     label: string;
     modelValue?: null | string;
@@ -13,6 +14,7 @@ withDefaults(
   {
     modelValue: '',
     optionsHidden: null,
+    disabled: false,
   },
 );
 defineEmits<{
@@ -35,6 +37,7 @@ defineOptions({
       <div class="col-9">
         <select
           :value="modelValue"
+          :disabled="disabled"
           v-bind="{
             ...$attrs,
             // onChange: $event => {
