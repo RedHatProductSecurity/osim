@@ -2,6 +2,8 @@ import { computed, reactive, readonly, toRaw, shallowRef, triggerRef } from 'vue
 
 import { createSharedComposable } from '@vueuse/core';
 
+import { executeOperationsInParallel, showSuccessToast } from '@/composables/service-helpers';
+
 import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import {
   deleteAffectCvssScore,
@@ -15,22 +17,6 @@ import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from 
 import { fileTrackingFor } from '@/services/TrackerService';
 
 import { useFlaw } from './useFlaw';
-
-async function executeOperations<T>(operations: Array<Promise<T>>): Promise<{ failed: any[]; successful: T[] }> {
-  const results = await Promise.allSettled(operations);
-  const successful: T[] = [];
-  const failed: any[] = [];
-
-  for (const result of results) {
-    if (result.status === 'fulfilled') {
-      successful.push(result.value);
-    } else {
-      failed.push(result.reason?.data || result.reason);
-    }
-  }
-
-  return { successful, failed };
-}
 
 function useAffects() {
   // Metadata
@@ -223,24 +209,42 @@ function useAffects() {
   async function saveCvssScores(updatedAffects: ZodAffectType[]) {
     const { toCreate, toDelete, toUpdate } = buildCvssOperations(updatedAffects);
 
-    const operations = [
-      ...Object.entries(toCreate).map(([affectUuid, cvssScore]) =>
-        postAffectCvssScore(affectUuid, cvssScore),
-      ),
-      ...Object.entries(toUpdate).map(([affectUuid, cvssScore]) =>
-        putAffectCvssScore(affectUuid, cvssScore.uuid!, cvssScore),
-      ),
-      ...Object.entries(toDelete).map(([affectUuid, scoreUuid]) =>
-        deleteAffectCvssScore(affectUuid, scoreUuid),
-      ),
-    ];
+    const savedCvssScores: ZodAffectCVSSType[] = [];
+    const deletedScores: Record<string, string> = {};
 
-    const { failed, successful: savedCvssScores } = await executeOperations(operations);
+    // Create operations in parallel
+    const createOps = Object.entries(toCreate).map(([affectUuid, cvssScore]) =>
+      postAffectCvssScore(affectUuid, cvssScore),
+    );
+
+    const updateOps = Object.entries(toUpdate).map(([affectUuid, cvssScore]) =>
+      putAffectCvssScore(affectUuid, cvssScore.uuid!, cvssScore),
+    );
+
+    const deleteOps = Object.entries(toDelete).map(([affectUuid, scoreUuid]) =>
+      deleteAffectCvssScore(affectUuid, scoreUuid).then(() => ({ affectUuid, scoreUuid })),
+    );
+
+    // Execute all operations in parallel
+    const createResults = await executeOperationsInParallel(createOps);
+    const updateResults = await executeOperationsInParallel(updateOps);
+    const deleteResults = await executeOperationsInParallel(deleteOps);
+
+    // Collect successful results
+    savedCvssScores.push(...createResults.successful, ...updateResults.successful);
+    deleteResults.successful.forEach(({ affectUuid, scoreUuid }) => {
+      deletedScores[affectUuid] = scoreUuid;
+    });
 
     // Update state with successful operations
-    updateCvssScoresInAffects(updatedAffects, savedCvssScores.filter(Boolean), toDelete);
+    updateCvssScoresInAffects(updatedAffects, savedCvssScores, deletedScores);
 
-    return failed.length > 0;
+    // Show separate success notifications for each operation type
+    showSuccessToast(createResults.successful.length, 'CVSS score', 'created');
+    showSuccessToast(updateResults.successful.length, 'CVSS score', 'updated');
+    showSuccessToast(deleteResults.successful.length, 'CVSS score', 'deleted');
+
+    return createResults.hasErrors || updateResults.hasErrors || deleteResults.hasErrors;
   }
 
   async function saveAffects() {
@@ -251,17 +255,27 @@ function useAffects() {
       ...(toUpdate.length ? [putAffects(toUpdate)] : []),
     ];
 
-    const { failed, successful: results } = await executeOperations(operations);
+    const { hasErrors, successful: results } = await executeOperationsInParallel(operations);
 
     // Flatten successful results
     const savedAffects: ZodAffectType[] = results.flatMap(result => result?.data.results ?? []);
 
+    // Show separate toast for each operation type (based on order in operations array)
+    let resultIndex = 0;
+    if (toCreate.length && results[resultIndex]) {
+      const createdCount = results[resultIndex]?.data.results?.length ?? 0;
+      showSuccessToast(createdCount, 'affect', 'created');
+      resultIndex++;
+    }
+    if (toUpdate.length && results[resultIndex]) {
+      const updatedCount = results[resultIndex]?.data.results?.length ?? 0;
+      showSuccessToast(updatedCount, 'affect', 'updated');
+    }
+
     // Save CVSS scores (this also updates the affects)
     const cvssHasErrors = await saveCvssScores(savedAffects);
 
-    const hasErrors = failed.length > 0 || cvssHasErrors;
-
-    return { savedAffects, hasErrors };
+    return { savedAffects, hasErrors: hasErrors || cvssHasErrors };
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
@@ -316,6 +330,9 @@ function useAffects() {
       // If successful, remove from currentAffects and clear removedAffects tracking
       currentAffects.value = currentAffects.value.filter(({ uuid }) => !removedAffects.has(uuid!));
       removedAffects.clear();
+
+      // Show success notification
+      showSuccessToast(uuidsToDelete.length, 'affect', 'deleted');
 
       return { deletedUuids: uuidsToDelete, hasErrors: false };
     } catch (error) {

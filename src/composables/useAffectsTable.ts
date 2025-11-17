@@ -19,10 +19,11 @@ import { useFlaw } from '@/composables/useFlaw';
 import { usePagination } from '@/composables/usePagination';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 import { useMultiFlawTrackers } from '@/composables/useMultiFlawTrackers';
+import { showSuccessToast } from '@/composables/service-helpers';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
-import { getTrackersForFlaws } from '@/services/TrackerService';
 import { useToastStore } from '@/stores/ToastStore';
+import { getTrackersForFlaws } from '@/services/TrackerService';
 import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
 import { affectUUID } from '@/utils/helpers';
 
@@ -223,7 +224,11 @@ export function useAffectsTable() {
         // Filter out already filing trackers
         const trackersToFile = rows.filter(row => row.uuid && !table.options.meta?.filingTracker.has(row.uuid));
 
+        // Mark all as filing and track successes
+        let successCount = 0;
         trackersToFile.forEach(({ uuid }) => table.options.meta?.filingTracker.add(uuid!));
+
+        // File trackers sequentially (as per user requirement)
         for (const trackerToFile of trackersToFile) {
           const streamKey = `${trackerToFile.ps_update_stream}:${trackerToFile.ps_component}`;
           const affectUuidsForStream = getAffectUuidsForStream(streamKey);
@@ -233,14 +238,20 @@ export function useAffectsTable() {
               affects: affectUuidsForStream,
               ps_update_stream: trackerToFile.ps_update_stream!,
             })
-              .catch(() => {}) // Error is handled by the service, but without a catch handler we stop the loop
+              .then(() => successCount++)
+              .catch(() => {}) // Error is handled by the service
               .finally(() => table.options.meta?.filingTracker.delete(trackerToFile.uuid!));
           } else {
             await fileTracker(trackerToFile)
-              .catch(() => {}) // Error is handled by the service, but without a catch handler we stop the loop
+              .then(() => successCount++)
+              .catch(() => {}) // Error is handled by the service
               .finally(() => table.options.meta?.filingTracker.delete(trackerToFile.uuid!));
           }
         }
+
+        // Show success notification
+        showSuccessToast(successCount, 'tracker', 'filed');
+
         refreshData();
       },
       filingTracker: reactive(new Set()),

@@ -8,6 +8,7 @@
 ### Changed
 * Removed Affects V1 implementation (`OSIDB-4660`)
 * Make affects actions columns always visible (`OSIDB-4606`)
+* Consolidated success toast notifications for affects and trackers (`OSIDB-4518`)
 
 
 ## [2025.11.3]
