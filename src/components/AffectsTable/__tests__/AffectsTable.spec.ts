@@ -89,6 +89,21 @@ describe('affectsTable', () => {
 
         expect(wrapper.findAll('tbody tr').length).equals(SampleFlawFull.affects.length);
       });
+
+      it('should pin new affect to top across all pages', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const nextPageBtn = wrapper.find('.pagination-controls button:last-of-type');
+        await nextPageBtn.trigger('click');
+        await flushPromises();
+
+        const addBtn = wrapper.find('button:has(.bi-plus-lg)');
+        await addBtn.trigger('click');
+        await flushPromises();
+
+        const rows = wrapper.findAll('tbody tr:not(.bulk-edit)');
+        expect(rows[0].classes()).toContain('new');
+      });
     });
 
     describe('global filter', () => {
