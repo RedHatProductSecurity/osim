@@ -1,9 +1,12 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Pin new affect rows on top  (`OSIDB-4342`)
+
 ## [2025.11.4-hotfix]
 ### Fixed
 * Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
-
 
 ## [2025.11.4]
 ### Added
