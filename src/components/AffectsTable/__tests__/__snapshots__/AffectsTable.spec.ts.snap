@@ -226,7 +226,8 @@ exports[`affectsTable > should render 1`] = `
     <tbody data-v-17587d65="">
       <!-- Bulk Edit Row -->
       <!--v-if-->
-      <!-- Normal Rows -->
+      <!-- Pinned Top Rows (New Affects - Always Visible) -->
+      <!-- Center Rows (Paginated Existing Affects) -->
       <tr data-v-17587d65="" class="">
         <td data-v-17587d65="" class="">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
