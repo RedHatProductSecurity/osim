@@ -1,4 +1,9 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Pin new affect rows on top  (`OSIDB-4342`)
+
+
 ## [2025.11.4]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
