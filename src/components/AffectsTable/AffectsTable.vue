@@ -261,9 +261,30 @@ onMounted(() => {
             />
           </td>
         </tr>
-        <!-- Normal Rows -->
+        <!-- Pinned Top Rows (New Affects - Always Visible) -->
         <tr
-          v-for="row in table.getRowModel().rows"
+          v-for="row in table.getTopRows()"
+          :key="row.id"
+          :class="{
+            'modified': modifiedAffects.has(row.id),
+            'new': newAffects.has(row.id),
+            'removed': removedAffects.has(row.id),
+            'disabled': table.options.meta?.filingTracker.has(row.id)
+          }"
+        >
+          <td
+            v-for="cell in row.getVisibleCells()"
+            :key="cell.id"
+          >
+            <FlexRender
+              :render="cell.column.columnDef.cell"
+              :props="cell.getContext()"
+            />
+          </td>
+        </tr>
+        <!-- Center Rows (Paginated Existing Affects) -->
+        <tr
+          v-for="row in table.getCenterRows()"
           :key="row.id"
           :class="{
             'modified': modifiedAffects.has(row.id),
