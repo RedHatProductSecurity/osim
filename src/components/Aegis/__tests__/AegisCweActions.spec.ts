@@ -89,7 +89,11 @@ describe('aegisCweActions', () => {
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => 'CWE-79'),
       details: computed(() => ({
-        cvss3_vector: null, cwe: ['CWE-79', 'CWE-89'], impact: null, suggested_statement: null,
+        cvss3_vector: null,
+        cwe: ['CWE-79', 'CWE-89'],
+        impact: null,
+        suggested_mitigation: null,
+        suggested_statement: null,
       })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
@@ -102,6 +106,7 @@ describe('aegisCweActions', () => {
       suggestImpact: vi.fn(),
       suggestCvss: vi.fn(),
       suggestStatement: vi.fn(),
+      suggestMitigation: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCweActions, {

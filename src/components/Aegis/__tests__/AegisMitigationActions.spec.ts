@@ -2,7 +2,7 @@ import { computed } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
+import AegisMitigationActions from '@/components/Aegis/AegisMitigationActions.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -21,25 +21,25 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     selectedSuggestionIndex: computed(() => 0),
     selectSuggestion: vi.fn(),
     sendFeedback: vi.fn(),
-    suggestStatement: vi.fn(),
+    suggestCwe: vi.fn(),
   })),
 }));
 
-describe('aegisStatementActions', () => {
+describe('aegisMitigationActions', () => {
   beforeEach(() => {
     // @ts-expect-error - osimRuntime is readonly in tests
     osimRuntime.value = {
       ...osimRuntime.value,
       flags: {
         ...osimRuntime.value.flags,
-        aiStatementSuggestions: true,
+        aiMitigationSuggestions: true,
       },
     };
     vi.clearAllMocks();
   });
 
   it('renders correctly', () => {
-    const wrapper = mountWithConfig(AegisStatementActions, {
+    const wrapper = mountWithConfig(AegisMitigationActions, {
       props: {
         modelValue: null,
       },
@@ -50,7 +50,7 @@ describe('aegisStatementActions', () => {
   });
 
   it('uses AegisActions component', () => {
-    const wrapper = mountWithConfig(AegisStatementActions, {
+    const wrapper = mountWithConfig(AegisMitigationActions, {
       props: {
         modelValue: '',
       },
@@ -60,7 +60,7 @@ describe('aegisStatementActions', () => {
   });
 
   it('exposes isFetchingSuggestion state', () => {
-    const wrapper = mountWithConfig(AegisStatementActions, {
+    const wrapper = mountWithConfig(AegisMitigationActions, {
       props: {
         modelValue: null,
       },
@@ -73,19 +73,18 @@ describe('aegisStatementActions', () => {
     const { useAegisSuggestion } = await import('@/composables/aegis/useAegisSuggestion');
     const mockSelectSuggestion = vi.fn();
 
-    const suggestedStatement = 'This is a suggested statement';
+    const suggestedMitigation = 'Mitigation';
     vi.mocked(useAegisSuggestion).mockReturnValueOnce({
-      allSuggestions: computed(() => [suggestedStatement]),
+      allSuggestions: computed(() => [suggestedMitigation]),
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
-      currentSuggestion: computed(() => suggestedStatement),
+      currentSuggestion: computed(() => suggestedMitigation),
       details: computed(() => ({
         cvss3_vector: null,
         cwe: null,
         impact: null,
-        suggested_statement: suggestedStatement,
-        suggested_mitigation: null,
-
+        suggested_mitigation: suggestedMitigation,
+        suggested_statement: null,
       })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
@@ -95,15 +94,15 @@ describe('aegisStatementActions', () => {
       selectSuggestion: mockSelectSuggestion,
       sendFeedback: vi.fn(),
       suggestCwe: vi.fn(),
-      suggestCvss: vi.fn(),
       suggestImpact: vi.fn(),
-      suggestStatement: vi.fn(),
+      suggestCvss: vi.fn(),
       suggestMitigation: vi.fn(),
+      suggestStatement: vi.fn(),
     });
 
-    const wrapper = mountWithConfig(AegisStatementActions, {
+    const wrapper = mountWithConfig(AegisMitigationActions, {
       props: {
-        modelValue: 'Old statement',
+        modelValue: '',
       },
     });
 
