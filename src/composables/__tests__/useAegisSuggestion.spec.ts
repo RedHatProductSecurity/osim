@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion, defaultDetails } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -113,11 +113,10 @@ describe('useAegisSuggestion', () => {
 
     expect(valueRef.value).toBe('CWE-89');
     expect(composable.details.value).toEqual({
+      ...defaultDetails(),
       cwe: ['CWE-89'],
       confidence: 0.9,
       explanation: 'Reasoning',
-      impact: null,
-      cvss3_vector: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -151,9 +150,7 @@ describe('useAegisSuggestion', () => {
     expect(valueRef.value).toBe('CWE-79');
     expect(composable.hasAppliedSuggestion.value).toBe(false);
     expect(composable.details.value).toEqual({
-      cwe: null,
-      impact: null,
-      cvss3_vector: null,
+      ...defaultDetails(),
     });
   });
 
@@ -388,10 +385,33 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
 
     expect(composable.selectedSuggestionIndex.value).toBe(0);
     expect(composable.details.value).toEqual({
-      cwe: null,
-      impact: null,
-      cvss3_vector: null,
+      ...defaultDetails(),
     });
     expect(valueRef.value).toBe('CWE-79');
+  });
+
+  it('handles statement suggestions correctly', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    const resolvedValue = {
+      statement: 'Statement',
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['statement_tool'],
+    };
+    analyzeMock.mockResolvedValueOnce(resolvedValue);
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'statement'), [],
+    );
+
+    await composable.suggestStatement();
+
+    expect(composable.details.value).toEqual({
+      ...defaultDetails(),
+      ...resolvedValue,
+    });
+    expect(valueRef.value).toBe('Statement');
   });
 });

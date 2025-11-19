@@ -49,9 +49,12 @@ export type AegisAIValidationErrorType = {
 };
 
 // AEGIS AI Fields Types
-export type SuggestableFlawFields = '_cvss3_vector' | 'cwe_id' | 'impact';
+export type SuggestableFlawFields = '_cvss3_vector' | 'cwe_id' | 'impact' | 'statement';
 
-export type SuggestionDetails = CvssSuggestionDetails & CweSuggestionDetails & ImpactSuggestionDetails;
+export type SuggestionDetails = CvssSuggestionDetails
+  & CweSuggestionDetails
+  & ImpactSuggestionDetails
+  & StatementSuggestionDetails;
 
 export type CvssSuggestionDetails = {
   cvss3_vector: Nullable<string>;
@@ -63,6 +66,10 @@ export type CweSuggestionDetails = {
 
 export type ImpactSuggestionDetails = {
   impact: Nullable<ImpactEnumWithBlankType>;
+} & SuggestionDetailOptionals;
+
+export type StatementSuggestionDetails = {
+  statement: Nullable<string>;
 } & SuggestionDetailOptionals;
 
 export type SuggestionDetailOptionals = {
@@ -102,6 +109,7 @@ export type AegisFeatureResponseMap = {
   'suggest-cwe': CweSuggestionDetails;
   'suggest-description': DescriptionSuggestionDetails;
   'suggest-impact': ImpactSuggestionDetails;
+  'suggest-statement': StatementSuggestionDetails;
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;

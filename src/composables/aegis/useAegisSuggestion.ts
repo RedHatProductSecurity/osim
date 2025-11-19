@@ -14,15 +14,26 @@ import type {
   ImpactSuggestionDetails,
   SuggestionDetails,
   SuggestableFlawFields,
+  StatementSuggestionDetails,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
-type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact';
+type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact' | 'statement';
 const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
   _cvss3_vector: 'cvss3_vector',
+  statement: 'statement',
 };
+
+export function defaultDetails(): SuggestionDetails {
+  return {
+    cwe: null,
+    cvss3_vector: null,
+    impact: null,
+    statement: null,
+  };
+}
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
@@ -36,11 +47,7 @@ export function useAegisSuggestion(
   const selectedSuggestionIndex = ref(0);
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
 
-  const details = ref<SuggestionDetails>({
-    cwe: null,
-    impact: null,
-    cvss3_vector: null,
-  });
+  const details = ref<SuggestionDetails>(defaultDetails());
 
   const canShowFeedback = computed(
     () => aegisSuggestionWatcher.hasAppliedSuggestion.value && !service.isFetching.value,
@@ -99,6 +106,16 @@ export function useAegisSuggestion(
     }
   }
 
+  async function suggestStatement() {
+    const data = await getSuggestion();
+    if (!data || !('statement' in data) || !data.statement) {
+      toastStore.addToast({ title: 'AI Statement Suggestions', body: 'No valid statement suggestion received.' });
+    } else {
+      details.value.statement = data.statement;
+      applySuggestion(data.statement);
+    }
+  }
+
   async function getSuggestion() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
@@ -110,7 +127,7 @@ export function useAegisSuggestion(
       }
       const contextData = serializeAegisContext(context);
 
-      let data: CweSuggestionDetails | ImpactSuggestionDetails | undefined;
+      let data: CweSuggestionDetails | ImpactSuggestionDetails | StatementSuggestionDetails | undefined;
       if (fieldName === 'cwe_id') {
         data = await service.analyzeCVEWithContext({
           feature: 'suggest-cwe',
@@ -121,14 +138,17 @@ export function useAegisSuggestion(
           feature: 'suggest-impact',
           ...contextData,
         });
+      } else if (fieldName === 'statement') {
+        data = await service.analyzeCVEWithContext({
+          feature: 'suggest-statement',
+          ...contextData,
+        });
       }
 
       if (!data) return;
 
       details.value = {
-        cwe: null,
-        cvss3_vector: null,
-        impact: null,
+        ...defaultDetails(),
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -145,11 +165,7 @@ export function useAegisSuggestion(
       valueRef.value = previousValue.value;
     }
     previousValue.value = null;
-    details.value = {
-      cwe: null,
-      cvss3_vector: null,
-      impact: null,
-    };
+    details.value = defaultDetails();
     selectedSuggestionIndex.value = 0;
     aegisSuggestionWatcher.revertAISuggestion();
   }
@@ -237,5 +253,6 @@ export function useAegisSuggestion(
     suggestCwe,
     suggestImpact,
     suggestCvss,
+    suggestStatement,
   };
 }

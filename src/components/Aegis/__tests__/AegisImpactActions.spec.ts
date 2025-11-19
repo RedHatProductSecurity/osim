@@ -79,7 +79,7 @@ describe('aegisImpactActions', () => {
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => suggestedImpact),
-      details: computed(() => ({ cvss3_vector: null, cwe: null, impact: suggestedImpact })),
+      details: computed(() => ({ cvss3_vector: null, cwe: null, impact: suggestedImpact, statement: null })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -90,6 +90,7 @@ describe('aegisImpactActions', () => {
       suggestCwe: vi.fn(),
       suggestCvss: vi.fn(),
       suggestImpact: vi.fn(),
+      suggestStatement: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisImpactActions, {

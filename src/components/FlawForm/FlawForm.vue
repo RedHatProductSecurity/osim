@@ -22,6 +22,7 @@ import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 import FlawFormImpact from '@/components/FlawForm/FlawFormImpact.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
+import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -53,6 +54,7 @@ import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { deepCopyFromRaw } from '@/utils/helpers';
 import { allowedSources } from '@/constants/';
 import { jiraTaskUrl } from '@/services/JiraService';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   mode: 'create' | 'edit';
@@ -408,11 +410,17 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
         </div>
         <div class="col-6">
           <LabelTextarea
-            v-model="flaw.statement"
             label="Statement"
             placeholder="Statement Text ..."
             :error="errors.statement"
-          />
+          >
+            <template v-if="osimRuntime.flags?.aiStatementSuggestions" #label>
+              <span class="form-label col-3 position-relative">
+                <span class="me-2">Statement</span>
+                <AegisStatementActions v-model="flaw.statement" :aegisContext="aegisContext" />
+              </span>
+            </template>
+          </LabelTextarea>
         </div>
         <div class="col-6">
           <LabelTextarea

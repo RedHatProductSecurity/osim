@@ -2,7 +2,7 @@ import { computed } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import AegisCvssActions from '@/components/Aegis/AegisCvssActions.vue';
+import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -25,21 +25,21 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
   })),
 }));
 
-describe('aegisCvssActions', () => {
+describe('aegisStatementActions', () => {
   beforeEach(() => {
     // @ts-expect-error - osimRuntime is readonly in tests
     osimRuntime.value = {
       ...osimRuntime.value,
       flags: {
         ...osimRuntime.value.flags,
-        aiCvssSuggestions: true,
+        aiStatementSuggestions: true,
       },
     };
     vi.clearAllMocks();
   });
 
   it('renders correctly', () => {
-    const wrapper = mountWithConfig(AegisCvssActions, {
+    const wrapper = mountWithConfig(AegisStatementActions, {
       props: {
         modelValue: null,
       },
@@ -50,7 +50,7 @@ describe('aegisCvssActions', () => {
   });
 
   it('uses AegisActions component', () => {
-    const wrapper = mountWithConfig(AegisCvssActions, {
+    const wrapper = mountWithConfig(AegisStatementActions, {
       props: {
         modelValue: '',
       },
@@ -60,7 +60,7 @@ describe('aegisCvssActions', () => {
   });
 
   it('exposes isFetchingSuggestion state', () => {
-    const wrapper = mountWithConfig(AegisCvssActions, {
+    const wrapper = mountWithConfig(AegisStatementActions, {
       props: {
         modelValue: null,
       },
@@ -73,13 +73,13 @@ describe('aegisCvssActions', () => {
     const { useAegisSuggestion } = await import('@/composables/aegis/useAegisSuggestion');
     const mockSelectSuggestion = vi.fn();
 
-    const suggestedCvss = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L';
+    const suggestedStatement = 'Statement';
     vi.mocked(useAegisSuggestion).mockReturnValueOnce({
-      allSuggestions: computed(() => [suggestedCvss]),
+      allSuggestions: computed(() => [suggestedStatement]),
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
-      currentSuggestion: computed(() => suggestedCvss),
-      details: computed(() => ({ cvss3_vector: suggestedCvss, cwe: null, impact: null, statement: null })),
+      currentSuggestion: computed(() => suggestedStatement),
+      details: computed(() => ({ cvss3_vector: null, cwe: null, impact: null, statement: suggestedStatement })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -93,7 +93,7 @@ describe('aegisCvssActions', () => {
       suggestStatement: vi.fn(),
     });
 
-    const wrapper = mountWithConfig(AegisCvssActions, {
+    const wrapper = mountWithConfig(AegisStatementActions, {
       props: {
         modelValue: '',
       },
@@ -105,3 +105,4 @@ describe('aegisCvssActions', () => {
     expect(mockSelectSuggestion).toHaveBeenCalledWith(1);
   });
 });
+

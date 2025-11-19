@@ -85,7 +85,7 @@ describe('aegisCweActions', () => {
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => 'CWE-79'),
-      details: computed(() => ({ cvss3_vector: null, cwe: ['CWE-79', 'CWE-89'], impact: null })),
+      details: computed(() => ({ cvss3_vector: null, cwe: ['CWE-79', 'CWE-89'], impact: null, statement: null })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -96,6 +96,7 @@ describe('aegisCweActions', () => {
       suggestCwe: vi.fn(),
       suggestImpact: vi.fn(),
       suggestCvss: vi.fn(),
+      suggestStatement: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCweActions, {
