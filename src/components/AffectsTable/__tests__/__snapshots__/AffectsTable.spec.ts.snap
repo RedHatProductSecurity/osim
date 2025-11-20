@@ -18,6 +18,7 @@ exports[`affectsTable > should render 1`] = `
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->
+    <!--v-if-->
     <!--v-if--><input data-v-17587d65="" class="form-control" type="text" placeholder="Search...">
     <div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container">
       <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button type="button" title="Open Tracker Manager" class="btn btn-secondary text-nowrap"><i class="bi-collection-fill"></i></button></div>
@@ -337,6 +338,7 @@ exports[`affectsTable > should render empty state 1`] = `
     <!--v-if-->
   </div>
   <div data-v-17587d65="" class="d-flex flex-row gap-2">
+    <!--v-if-->
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->

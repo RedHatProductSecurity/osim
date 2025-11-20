@@ -446,6 +446,20 @@ describe('affectsTable', () => {
         expect(TrackerService.getTrackersForFlaws).toHaveBeenCalled();
       });
 
+      it('should show selection count badge when rows are selected', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const selectionBadge = wrapper.find('span.badge.bg-secondary');
+        expect(selectionBadge.exists()).toBe(true);
+        expect(selectionBadge.text()).toContain('1 Selected');
+      });
+
       it('should apply styling to new rows', async () => {
         const wrapper = await mountAffectsTable();
 
