@@ -216,7 +216,7 @@ exports[`affectsTable > should render 1`] = `
           </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
           <div data-v-17587d65="" class="resizer ltr"></div>
         </th>
-        <th data-v-17587d65="" colspan="1" class="" style="width: 80px;">Actions
+        <th data-v-17587d65="" colspan="1" class="sticky-actions" style="width: 80px;">Actions
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
@@ -228,31 +228,31 @@ exports[`affectsTable > should render 1`] = `
       <!--v-if-->
       <!-- Normal Rows -->
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <!---->
         </td>
-        <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1-1</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX / Won't Do</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i class="bi-box-arrow-up-right"></i></a></td>
-        <td data-v-17587d65="">NEW</td>
-        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
-        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
-        <td data-v-17587d65="">2024-12-01 13:05 UTC</td>
-        <td data-v-17587d65="">2024-12-01 13:06 UTC</td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX / Won't Do</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i class="bi-box-arrow-up-right"></i></a></td>
+        <td data-v-17587d65="" class="">NEW</td>
+        <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65="" class="">2024-12-01 13:05 UTC</td>
+        <td data-v-17587d65="" class="">2024-12-01 13:06 UTC</td>
+        <td data-v-17587d65="" class="sticky-actions">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if-->
             <!--v-if-->
@@ -260,31 +260,31 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <!---->
         </td>
-        <td data-v-17587d65=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2-1</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">DELEGATED</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i class="bi-box-arrow-up-right"></i></a></td>
-        <td data-v-17587d65="">CLOSED</td>
-        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
-        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
-        <td data-v-17587d65="">2024-11-01 13:05 UTC</td>
-        <td data-v-17587d65="">2024-11-01 13:06 UTC</td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">DELEGATED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i class="bi-box-arrow-up-right"></i></a></td>
+        <td data-v-17587d65="" class="">CLOSED</td>
+        <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65="" class="">2024-11-01 13:05 UTC</td>
+        <td data-v-17587d65="" class="">2024-11-01 13:06 UTC</td>
+        <td data-v-17587d65="" class="sticky-actions">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if-->
             <!--v-if-->
@@ -292,35 +292,35 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
         </td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <!---->
         </td>
-        <td data-v-17587d65=""></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3-1</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class=""></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class="">
           <!--v-if-->
         </td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">
           <!---->
         </td>
-        <td data-v-17587d65="">2021-09-13 09:09 UTC</td>
-        <td data-v-17587d65="">2023-12-06 17:12 UTC</td>
-        <td data-v-17587d65=""></td>
-        <td data-v-17587d65=""></td>
-        <td data-v-17587d65="">
+        <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
+        <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
+        <td data-v-17587d65="" class=""></td>
+        <td data-v-17587d65="" class=""></td>
+        <td data-v-17587d65="" class="sticky-actions">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if--><button type="button" title="File tracker" class="btn btn-dark btn-sm"><i class="bi-file-earmark-diff"></i></button>
           </div>

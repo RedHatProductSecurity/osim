@@ -205,7 +205,10 @@ onMounted(() => {
             v-for="header in headerGroup.headers"
             :key="header.id"
             :colspan="header.colSpan"
-            :class="header.column.getCanSort() ? 'sortable' : ''"
+            :class="[
+              header.column.getCanSort() ? 'sortable' : '',
+              header.id === 'actions' ? 'sticky-actions' : ''
+            ]"
             :style="{ width: `${header.getSize()}px` }"
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
@@ -243,6 +246,7 @@ onMounted(() => {
           <td
             v-for="header in table.getHeaderGroups()[0].headers"
             :key="header.id"
+            :class="header.id === 'actions' ? 'sticky-actions' : ''"
             :style="{ width: `${header.getSize()}px` }"
           >
             <div v-if="header.id === 'Select'" class="d-flex align-items-center gap-1">
@@ -271,6 +275,7 @@ onMounted(() => {
           <td
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
+            :class="cell.column.id === 'actions' ? 'sticky-actions' : ''"
           >
             <FlexRender
               :render="cell.column.columnDef.cell"
@@ -377,6 +382,19 @@ table {
     tr {
       height: 2.5rem;
     }
+  }
+
+  // Sticky actions column
+  th.sticky-actions,
+  td.sticky-actions {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    box-shadow: -2px 0 4px rgb(0 0 0 / 20%);
+  }
+
+  thead th.sticky-actions {
+    z-index: 3;
   }
 }
 </style>
