@@ -347,7 +347,7 @@ exports[`flawCreateView > should render 1`] = `
             </div>
           </label></div>
         <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-            <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Statement <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
+            <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--> Statement </span><!--    @focus="resizeTextarea"-->
               <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
               <!--v-if-->
             </div>
