@@ -22,6 +22,7 @@ import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 import FlawFormImpact from '@/components/FlawForm/FlawFormImpact.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
+import IncidentRequestDialog from '@/components/IncidentRequestDialog/IncidentRequestDialog.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -120,6 +121,30 @@ const isEmbargoed = ref<boolean>(false);
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
+const showIncidentRequestModal = ref(false);
+const canRequestIncident = computed(() =>
+  props.mode === 'edit'
+  && flaw.value.uuid
+  && !flaw.value.major_incident_state,
+);
+
+const isIncidentStateDisabled = computed(() =>
+  props.mode === 'edit'
+  && !flaw.value.major_incident_state,
+);
+
+function openIncidentRequestDialog() {
+  showIncidentRequestModal.value = true;
+}
+
+function closeIncidentRequestDialog() {
+  showIncidentRequestModal.value = false;
+}
+
+function handleIncidentRequestSubmitted() {
+  emit('refresh:flaw');
+}
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
     if (isValid() && unembargoing.value) {
@@ -152,7 +177,13 @@ const hiddenSources = computed(() => {
 
 // Hide blank option if there is already a value
 const hiddenIncidentStates = computed(() => {
-  return initialFlaw.value?.major_incident_state ? [''] : [];
+  const hidden = [];
+
+  if (initialFlaw.value?.major_incident_state) {
+    hidden.push('');
+  }
+
+  return hidden;
 });
 
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
@@ -324,13 +355,24 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             @refresh:flaw="emit('refresh:flaw')"
             @create:jiraTask="toggleShouldCreateJiraTask()"
           />
-          <LabelSelect
-            v-model="flaw.major_incident_state"
-            label="Incident State"
-            :options="MajorIncidentStateEnumWithBlank"
-            :error="errors.major_incident_state"
-            :optionsHidden="hiddenIncidentStates"
-          />
+          <div class="osim-incident-state-container mb-2">
+            <LabelSelect
+              v-model="flaw.major_incident_state"
+              label="Incident State"
+              :options="MajorIncidentStateEnumWithBlank"
+              :error="errors.major_incident_state"
+              :optionsHidden="hiddenIncidentStates"
+              :disabled="isIncidentStateDisabled"
+            />
+            <button
+              v-if="canRequestIncident"
+              type="button"
+              class="btn btn-secondary btn-sm osim-incident-request-btn"
+              @click="openIncidentRequestDialog"
+            >
+              Request Incident
+            </button>
+          </div>
           <LabelEditable
             v-model="flaw.reported_dt"
             label="Reported Date"
@@ -526,6 +568,13 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
       </template>
     </div>
   </form>
+
+  <IncidentRequestDialog
+    :showModal="showIncidentRequestModal"
+    :flawId="flaw.uuid"
+    @hideModal="closeIncidentRequestDialog"
+    @requestSubmitted="handleIncidentRequestSubmitted"
+  />
 </template>
 
 <style scoped lang="scss">
@@ -675,5 +724,24 @@ form.osim-flaw-form :deep(*) {
 .throbber {
   position: absolute;
   left: 1rem;
+}
+
+.osim-incident-state-container {
+  position: relative;
+
+  .osim-incident-request-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    height: 38px;
+  }
+
+  :deep(.osim-input select) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 </style>
