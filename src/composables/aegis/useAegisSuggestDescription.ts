@@ -160,6 +160,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
    * Builds a Google Form URL with prepopulated fields for title feedback.
    *
    * Form fields:
+   * - entry.1910793631: Feature name ("suggest-title")
    * - entry.62718102: CVE ID
    * - entry.77590445: Title suggested by Aegis
    * - entry.432941906: Request time (in milliseconds)
@@ -171,6 +172,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     // Get flaw data from context
     const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
     const suggestedTitle = options.titleRef.value;
+
+    // Add feature name (matches Google Form multiple choice option)
+    params.set('entry.1910793631', 'suggest-title');
 
     // Add CVE ID if available
     if (cveId) {
@@ -197,6 +201,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
    * Builds a Google Form URL with prepopulated fields for description feedback.
    *
    * Form fields:
+   * - entry.1910793631: Feature name ("suggest-description")
    * - entry.62718102: CVE ID
    * - entry.77590445: Description suggested by Aegis (truncated to first 100 chars)
    * - entry.432941906: Request time (in milliseconds)
@@ -208,6 +213,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     // Get flaw data from context
     const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
     const suggestedDescription = options.descriptionRef.value;
+
+    // Add feature name (matches Google Form multiple choice option)
+    params.set('entry.1910793631', 'suggest-description');
 
     // Add CVE ID if available
     if (cveId) {
