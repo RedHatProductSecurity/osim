@@ -32,7 +32,7 @@ describe('aegisTitleActions', () => {
       ...osimRuntime.value,
       flags: {
         ...osimRuntime.value.flags,
-        aiDescriptionSuggestions: true,
+        aiTitleSuggestions: true,
       },
     };
     vi.clearAllMocks();
