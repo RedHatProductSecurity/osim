@@ -19,7 +19,8 @@ function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
 
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  const jiraRegex = /\[([^|]+)\|([^\]]+)\]/g;
+  // Match Jira-style links [text|url] where url must start with http:// or https://
+  const jiraRegex = /\[([^|\]]+)\|(https?:\/\/[^\]]+)\]/g;
 
   return text
     .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
