@@ -83,7 +83,6 @@ export async function putAffects(affectObjects: any[]) {
     url: '/osidb/api/v2/affects/bulk',
     data: affectObjects,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Affects Updated.' }))
     .catch(createCatchHandler('Error updating Affects:'));
 }
 
@@ -94,7 +93,6 @@ export async function postAffects(affectObjects: AffectPost[]) {
     url: '/osidb/api/v2/affects/bulk',
     data: affectObjects,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Affects Created.' }))
     .catch(createCatchHandler('Error creating Affects:'));
 }
 
@@ -107,7 +105,6 @@ export async function deleteAffects(affectUuids: string[]) {
     url: '/osidb/api/v2/affects/bulk',
     data: affectUuids,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: `${affectUuids.length} Affect(s) Deleted.` }))
     .catch(createCatchHandler('Error deleting Affect:'));
 }
 

@@ -34,3 +34,37 @@ export function createSuccessHandler<T>({
     return response;
   };
 }
+
+export function showSuccessToast(count: number, entityType: string, operation: string) {
+  if (count === 0) return;
+
+  const entityWithPlural = count !== 1 ? entityType + 's' : entityType;
+  const { addToast } = useToastStore();
+  addToast({
+    title: 'Success!',
+    body: `${count} ${entityWithPlural} ${operation}`,
+    css: 'success',
+  });
+}
+
+export async function executeOperationsInParallel<T>(
+  operations: Array<Promise<T>>,
+): Promise<{ failed: any[]; hasErrors: boolean; successful: T[] }> {
+  const results = await Promise.allSettled(operations);
+  const successful: T[] = [];
+  const failed: any[] = [];
+
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      successful.push(result.value);
+    } else {
+      failed.push(result.reason?.data || result.reason);
+    }
+  }
+
+  return {
+    successful,
+    failed,
+    hasErrors: failed.length > 0,
+  };
+}
