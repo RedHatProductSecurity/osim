@@ -24,6 +24,13 @@ const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeat
   _cvss3_vector: 'cvss3_vector',
 };
 
+// Map field names to Google Form feature values
+const FeatureNameForFeedback: Record<SuggestableFlawFields, string> = {
+  cwe_id: 'suggest-cwe',
+  impact: 'suggest-impact',
+  _cvss3_vector: 'suggest-cvss',
+};
+
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<ImpactEnumWithBlankType | null | string>,
@@ -188,9 +195,10 @@ export function useAegisSuggestion(
    * Builds a Google Form URL with prepopulated fields containing flaw data.
    *
    * Form fields:
+   * - entry.1910793631: Feature name (e.g., "suggest-cwe", "suggest-impact", etc.)
    * - entry.62718102: CVE ID
-   * - entry.77590445: CWE suggested by Aegis
-   * - entry.432941906: CWE Request time (in milliseconds)
+   * - entry.77590445: Suggested value by Aegis
+   * - entry.432941906: Request time (in milliseconds)
    * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
    */
   function buildFeedbackUrl(baseUrl: string, feedbackKind: 'negative' | 'positive'): string {
@@ -198,19 +206,22 @@ export function useAegisSuggestion(
 
     // Get flaw data from context
     const cveId = unref(context?.cveId?.value ?? context?.cveId);
-    const suggestedCwe = unref(valueRef.value);
+    const suggestedValue = unref(valueRef.value);
+
+    // Add feature name (matches Google Form multiple choice option)
+    params.set('entry.1910793631', FeatureNameForFeedback[fieldName]);
 
     // Add CVE ID if available
     if (cveId) {
       params.set('entry.62718102', cveId);
     }
 
-    // Add suggested CWE if available
-    if (suggestedCwe) {
-      params.set('entry.77590445', suggestedCwe);
+    // Add suggested value if available
+    if (suggestedValue) {
+      params.set('entry.77590445', suggestedValue);
     }
 
-    // Add CWE request time if available
+    // Add request time if available
     if (service.requestDuration.value !== null) {
       params.set('entry.432941906', `${service.requestDuration.value}ms`);
     }
