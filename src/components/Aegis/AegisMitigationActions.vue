@@ -18,6 +18,7 @@ const {
   allSuggestions,
   canShowFeedback,
   canSuggest,
+  currentSuggestion,
   details: suggestionDetails,
   hasAppliedSuggestion,
   hasMultipleSuggestions,
@@ -40,7 +41,10 @@ defineExpose({
 const suggestionTooltip = computed(() => {
   if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest Mitigation via AEGIS-AI';
   const { confidence, explanation, tools_used } = suggestionDetails.value;
-  const parts: string[] = [];
+  const currentMitigationSuggestion = currentSuggestion.value;
+  // Display "EMPTY" for empty string suggestions
+  const displayValue = currentMitigationSuggestion === '' ? 'EMPTY' : currentMitigationSuggestion;
+  const parts: string[] = [`Value: ${displayValue}`];
   if (hasMultipleSuggestions.value) {
     parts.push(`Suggestion ${selectedSuggestionIndex.value + 1} of ${allSuggestions.value.length}`);
   }
