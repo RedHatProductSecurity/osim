@@ -133,7 +133,7 @@ describe('aegisDescriptionActions', () => {
     const mockComposable = createMockComposable({
       hasAppliedDescriptionSuggestion: computed(() => true),
       details: computed(() => ({
-        description: longDescription,
+        suggested_description: longDescription,
         confidence: 0.88,
         explanation: 'Test explanation for description',
         tools_used: ['analyzer', 'parser'],

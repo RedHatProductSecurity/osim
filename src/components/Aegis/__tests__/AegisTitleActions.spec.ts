@@ -132,7 +132,7 @@ describe('aegisTitleActions', () => {
     const mockComposable = createMockComposable({
       hasAppliedTitleSuggestion: computed(() => true),
       details: computed(() => ({
-        title: 'Test Title',
+        suggested_title: 'Test Title',
         confidence: 0.95,
         explanation: 'Test explanation',
         tools_used: ['tool1', 'tool2'],

@@ -118,6 +118,7 @@ describe('useAegisSuggestion', () => {
       explanation: 'Reasoning',
       impact: null,
       cvss3_vector: null,
+      suggested_statement: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -154,6 +155,7 @@ describe('useAegisSuggestion', () => {
       cwe: null,
       impact: null,
       cvss3_vector: null,
+      suggested_statement: null,
     });
   });
 
@@ -391,6 +393,7 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
       cwe: null,
       impact: null,
       cvss3_vector: null,
+      suggested_statement: null,
     });
     expect(valueRef.value).toBe('CWE-79');
   });

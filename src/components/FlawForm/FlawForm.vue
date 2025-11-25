@@ -22,6 +22,7 @@ import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 import FlawFormImpact from '@/components/FlawForm/FlawFormImpact.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
+import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -412,7 +413,17 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             label="Statement"
             placeholder="Statement Text ..."
             :error="errors.statement"
-          />
+          >
+            <template #label>
+              <span class="form-label col-3 osim-folder-tab-label position-relative">
+                <AegisStatementActions
+                  v-model="flaw.statement"
+                  :aegisContext="aegisContext"
+                />
+                Statement
+              </span>
+            </template>
+          </LabelTextarea>
         </div>
         <div class="col-6">
           <LabelTextarea

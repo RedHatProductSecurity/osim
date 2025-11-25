@@ -22,6 +22,9 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     selectSuggestion: vi.fn(),
     sendFeedback: vi.fn(),
     suggestCwe: vi.fn(),
+    suggestCvss: vi.fn(),
+    suggestImpact: vi.fn(),
+    suggestStatement: vi.fn(),
   })),
 }));
 
@@ -79,7 +82,7 @@ describe('aegisCvssActions', () => {
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => suggestedCvss),
-      details: computed(() => ({ cvss3_vector: suggestedCvss, cwe: null, impact: null })),
+      details: computed(() => ({ cvss3_vector: suggestedCvss, cwe: null, impact: null, suggested_statement: null })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -90,6 +93,7 @@ describe('aegisCvssActions', () => {
       suggestCwe: vi.fn(),
       suggestImpact: vi.fn(),
       suggestCvss: vi.fn(),
+      suggestStatement: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCvssActions, {

@@ -30,9 +30,9 @@ const suggestionTooltip = computed(() => {
   if (!hasAppliedDescriptionSuggestion.value || !suggestionDetails.value) {
     return 'Suggest Description via AEGIS-AI';
   }
-  const { confidence, description, explanation, tools_used } = suggestionDetails.value;
+  const { confidence, explanation, suggested_description, tools_used } = suggestionDetails.value;
   const parts: string[] = [];
-  if (description) parts.push(`Value: ${description.substring(0, 100)}...`);
+  if (suggested_description) parts.push(`Value: ${suggested_description.substring(0, 100)}...`);
   if (confidence != null && confidence !== '') parts.push(`Confidence: ${confidence}`);
   if (explanation) parts.push(`Explanation: ${explanation}`);
   if (tools_used && tools_used.length > 0) {

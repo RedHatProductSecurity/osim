@@ -134,8 +134,8 @@ describe('useAegisSuggestDescription', () => {
     expect(composable.hasAppliedTitleSuggestion.value).toBe(true);
     expect(composable.hasAppliedDescriptionSuggestion.value).toBe(true);
     expect(composable.details.value).toMatchObject({
-      title: 'New Suggested Title',
-      description: 'New Suggested Description',
+      suggested_title: 'New Suggested Title',
+      suggested_description: 'New Suggested Description',
       confidence: 0.95,
     });
     expect(addToast).toHaveBeenCalledWith(expect.objectContaining({

@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`aegisStatementActions > renders correctly 1`] = `
+"<div data-v-e049df0b="" data-v-306729da="" class="d-flex align-items-center"><i data-v-e049df0b="" class="bi-stars label-icon" title="Suggest Statement via AEGIS-AI"></i>
+  <!--v-if-->
+  <!--v-if-->
+</div>"
+`;
