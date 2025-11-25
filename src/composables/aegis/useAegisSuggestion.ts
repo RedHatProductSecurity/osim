@@ -15,15 +15,17 @@ import type {
   StatementSuggestionDetails,
   SuggestionDetails,
   SuggestableFlawFields,
+  MitigationSuggestionDetails,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
-type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact' | 'suggested_statement';
+type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact' | 'suggested_mitigation' | 'suggested_statement';
 const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
   _cvss3_vector: 'cvss3_vector',
   statement: 'suggested_statement',
+  mitigation: 'suggested_mitigation',
 };
 
 // Map field names to Google Form feature values
@@ -32,7 +34,18 @@ const FeatureNameForFeedback: Record<SuggestableFlawFields, string> = {
   impact: 'suggest-impact',
   _cvss3_vector: 'suggest-cvss',
   statement: 'suggest-statement',
+  mitigation: 'suggest-mitigation',
 };
+
+export function defaultDetails(): SuggestionDetails {
+  return {
+    cwe: null,
+    cvss3_vector: null,
+    impact: null,
+    suggested_mitigation: null,
+    suggested_statement: null,
+  };
+}
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
@@ -46,12 +59,7 @@ export function useAegisSuggestion(
   const selectedSuggestionIndex = ref(0);
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
 
-  const details = ref<SuggestionDetails>({
-    cwe: null,
-    impact: null,
-    cvss3_vector: null,
-    suggested_statement: null,
-  });
+  const details = ref<SuggestionDetails>(defaultDetails());
 
   const canShowFeedback = computed(
     () => aegisSuggestionWatcher.hasAppliedSuggestion.value && !service.isFetching.value,
@@ -120,6 +128,15 @@ export function useAegisSuggestion(
       applySuggestion(suggested_statement);
     };
   }
+  async function suggestMitigation() {
+    const data = await getSuggestion();
+    if (!data || !('suggested_mitigation' in data) || !data.suggested_mitigation) {
+      toastStore.addToast({ title: 'AI Mitigation Suggestions', body: 'No valid mitigation suggestion received.' });
+    } else {
+      details.value.suggested_mitigation = data.suggested_mitigation;
+      applySuggestion(data.suggested_mitigation);
+    }
+  }
 
   async function getSuggestion() {
     if (!canSuggest.value) {
@@ -132,7 +149,11 @@ export function useAegisSuggestion(
       }
       const contextData = serializeAegisContext(context);
 
-      let data: CweSuggestionDetails | ImpactSuggestionDetails | StatementSuggestionDetails | undefined;
+      let data: CweSuggestionDetails
+        | ImpactSuggestionDetails
+        | MitigationSuggestionDetails
+        | StatementSuggestionDetails
+        | undefined;
       if (fieldName === 'cwe_id') {
         data = await service.analyzeCVEWithContext({
           feature: 'suggest-cwe',
@@ -143,7 +164,7 @@ export function useAegisSuggestion(
           feature: 'suggest-impact',
           ...contextData,
         });
-      } else if (fieldName === 'statement') {
+      } else if (fieldName === 'statement' || fieldName === 'mitigation') {
         data = await service.analyzeCVEWithContext({
           feature: 'suggest-statement',
           ...contextData,
@@ -157,6 +178,7 @@ export function useAegisSuggestion(
         cvss3_vector: null,
         impact: null,
         suggested_statement: null,
+        suggested_mitigation: null,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -173,12 +195,7 @@ export function useAegisSuggestion(
       valueRef.value = previousValue.value;
     }
     previousValue.value = null;
-    details.value = {
-      cwe: null,
-      cvss3_vector: null,
-      impact: null,
-      suggested_statement: null,
-    };
+    details.value = defaultDetails();
     selectedSuggestionIndex.value = 0;
     aegisSuggestionWatcher.revertAISuggestion();
   }
@@ -271,5 +288,6 @@ export function useAegisSuggestion(
     suggestImpact,
     suggestCvss,
     suggestStatement,
+    suggestMitigation,
   };
 }

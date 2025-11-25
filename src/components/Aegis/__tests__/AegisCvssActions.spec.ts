@@ -82,7 +82,13 @@ describe('aegisCvssActions', () => {
       canShowFeedback: computed(() => false),
       canSuggest: computed(() => false),
       currentSuggestion: computed(() => suggestedCvss),
-      details: computed(() => ({ cvss3_vector: suggestedCvss, cwe: null, impact: null, suggested_statement: null })),
+      details: computed(() => ({
+        cvss3_vector: suggestedCvss,
+        cwe: null,
+        impact: null,
+        suggested_mitigation: null,
+        suggested_statement: null,
+      })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
@@ -92,6 +98,7 @@ describe('aegisCvssActions', () => {
       sendFeedback: vi.fn(),
       suggestCwe: vi.fn(),
       suggestImpact: vi.fn(),
+      suggestMitigation: vi.fn(),
       suggestCvss: vi.fn(),
       suggestStatement: vi.fn(),
     });

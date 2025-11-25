@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion, defaultDetails } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -113,12 +113,14 @@ describe('useAegisSuggestion', () => {
 
     expect(valueRef.value).toBe('CWE-89');
     expect(composable.details.value).toEqual({
+      ...defaultDetails(),
       cwe: ['CWE-89'],
       confidence: 0.9,
       explanation: 'Reasoning',
       impact: null,
       cvss3_vector: null,
       suggested_statement: null,
+      suggested_mitigation: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -156,6 +158,7 @@ describe('useAegisSuggestion', () => {
       impact: null,
       cvss3_vector: null,
       suggested_statement: null,
+      suggested_mitigation: null,
     });
   });
 
@@ -394,7 +397,33 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
       impact: null,
       cvss3_vector: null,
       suggested_statement: null,
+      suggested_mitigation: null,
     });
     expect(valueRef.value).toBe('CWE-79');
+  });
+
+  it('handles mitigation suggestions correctly', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    const resolvedValue = {
+      suggested_mitigation: 'Mitigation',
+      confidence: 0.9,
+      explanation: 'Reasoning',
+      tools_used: ['mitigation_tool'],
+    };
+    analyzeMock.mockResolvedValueOnce(resolvedValue);
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'mitigation'), [],
+    );
+
+    await composable.suggestMitigation();
+
+    expect(composable.details.value).toEqual({
+      ...defaultDetails(),
+      ...resolvedValue,
+    });
+    expect(valueRef.value).toBe('Mitigation');
   });
 });

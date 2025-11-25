@@ -20,6 +20,7 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 import FlawLabelsTable from '@/components/FlawLabels/FlawLabelsTable.vue';
 import AffectsTable from '@/components/AffectsTable/AffectsTable.vue';
 import FlawFormImpact from '@/components/FlawForm/FlawFormImpact.vue';
+import FlawMitigation from '@/components/FlawForm/FlawMitigation.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
@@ -426,10 +427,9 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
           </LabelTextarea>
         </div>
         <div class="col-6">
-          <LabelTextarea
+          <FlawMitigation
             v-model="flaw.mitigation"
-            label="Mitigation"
-            placeholder="Mitigation Text ..."
+            :aegisContext="aegisContext"
             :error="errors.mitigation"
           />
         </div>
