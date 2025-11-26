@@ -36,13 +36,6 @@ onMounted(() => {
   priorValues.value = deepCopyFromRaw(items.value);
 });
 
-// Watch modelValue changes and update internal state
-watch(() => items.value, (newItems) => {
-  savedValues.value = deepCopyFromRaw(newItems);
-  priorValues.value = deepCopyFromRaw(newItems);
-  indexBeingEdited.value = null;
-}, { deep: true });
-
 const indexBeingEdited = ref<null | number>(null);
 const isBeingEdited = (index: number) => indexBeingEdited.value === index;
 const priorValues = ref<any[]>([]);
@@ -87,7 +80,12 @@ function commitEdit() {
   indexBeingEdited.value = null;
 }
 
-defineExpose({ isExpanded });
+function onSaveComplete() {
+  savedValues.value = deepCopyFromRaw(items.value);
+  priorValues.value = deepCopyFromRaw(items.value);
+}
+
+defineExpose({ isExpanded, onSaveComplete });
 </script>
 
 <template>
@@ -197,7 +195,7 @@ defineExpose({ isExpanded });
         </Modal>
       </div>
     </LabelCollapsible>
-    <form>
+    <div>
       <button
         v-if="props.mode !== 'create'"
         type="button"
@@ -210,7 +208,7 @@ defineExpose({ isExpanded });
       <button type="button" class="btn btn-secondary" @click="addItem()">
         Add {{ entityName }}
       </button>
-    </form>
+    </div>
   </div>
 </template>
 
