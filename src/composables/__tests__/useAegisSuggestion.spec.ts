@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestion, defaultDetails } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -113,7 +113,6 @@ describe('useAegisSuggestion', () => {
 
     expect(valueRef.value).toBe('CWE-89');
     expect(composable.details.value).toEqual({
-      ...defaultDetails(),
       cwe: ['CWE-89'],
       confidence: 0.9,
       explanation: 'Reasoning',
@@ -401,18 +400,110 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
     });
     expect(valueRef.value).toBe('CWE-79');
   });
+});
 
-  it('handles mitigation suggestions correctly', async () => {
-    const valueRef = ref<null | string>('CWE-79');
+describe('useAegisSuggestion - Empty Suggestions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('accepts empty string as valid statement suggestion', async () => {
+    const toastStore = (await import('@/stores/ToastStore')).useToastStore();
+    const addToast = vi.mocked(toastStore.addToast);
+    const valueRef = ref<null | string>('Some existing statement');
     const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
 
-    const resolvedValue = {
-      suggested_mitigation: 'Mitigation',
-      confidence: 0.9,
-      explanation: 'Reasoning',
+    analyzeMock.mockResolvedValueOnce({
+      suggested_statement: '',
+      confidence: 0.95,
+      explanation: 'This CVE should have an empty statement',
+      tools_used: ['statement_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'statement'), [],
+    );
+
+    await composable.suggestStatement();
+
+    expect(valueRef.value).toBe('');
+    expect(composable.details.value.suggested_statement).toBe('');
+    expect(composable.hasAppliedSuggestion.value).toBe(true);
+    expect(composable.canShowFeedback.value).toBe(true);
+    expect(composable.allSuggestions.value).toEqual(['']);
+    expect(addToast).toHaveBeenCalledWith({
+      title: 'AI Suggestion Applied',
+      body: 'Suggestion applied. Always review AI generated responses prior to use.',
+      css: 'info',
+      timeoutMs: 8000,
+    });
+  });
+
+  it('rejects null as invalid statement suggestion', async () => {
+    const toastStore = (await import('@/stores/ToastStore')).useToastStore();
+    const addToast = vi.mocked(toastStore.addToast);
+    const valueRef = ref<null | string>('Some existing statement');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      suggested_statement: null,
+      confidence: 0.5,
+      explanation: 'Could not determine statement',
+      tools_used: ['statement_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'statement'), [],
+    );
+
+    await composable.suggestStatement();
+
+    expect(valueRef.value).toBe('Some existing statement');
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+    expect(addToast).toHaveBeenCalledWith({
+      title: 'AI Statement Suggestions',
+      body: 'No valid statement suggestion received.',
+    });
+  });
+
+  it('rejects undefined as invalid statement suggestion', async () => {
+    const toastStore = (await import('@/stores/ToastStore')).useToastStore();
+    const addToast = vi.mocked(toastStore.addToast);
+    const valueRef = ref<null | string>('Some existing statement');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      confidence: 0.5,
+      explanation: 'Could not determine statement',
+      tools_used: ['statement_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'statement'), [],
+    );
+
+    await composable.suggestStatement();
+
+    expect(valueRef.value).toBe('Some existing statement');
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+    expect(addToast).toHaveBeenCalledWith({
+      title: 'AI Statement Suggestions',
+      body: 'No valid statement suggestion received.',
+    });
+  });
+
+  it('accepts empty string as valid mitigation suggestion', async () => {
+    const toastStore = (await import('@/stores/ToastStore')).useToastStore();
+    const addToast = vi.mocked(toastStore.addToast);
+    const valueRef = ref<null | string>('Some existing mitigation');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      suggested_mitigation: '',
+      confidence: 0.95,
+      explanation: 'This CVE should have an empty mitigation',
       tools_used: ['mitigation_tool'],
-    };
-    analyzeMock.mockResolvedValueOnce(resolvedValue);
+    });
 
     const [composable] = withSetup(
       () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'mitigation'), [],
@@ -420,10 +511,43 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
 
     await composable.suggestMitigation();
 
-    expect(composable.details.value).toEqual({
-      ...defaultDetails(),
-      ...resolvedValue,
+    expect(valueRef.value).toBe('');
+    expect(composable.details.value.suggested_mitigation).toBe('');
+    expect(composable.hasAppliedSuggestion.value).toBe(true);
+    expect(composable.canShowFeedback.value).toBe(true);
+    expect(composable.allSuggestions.value).toEqual(['']);
+    expect(addToast).toHaveBeenCalledWith({
+      title: 'AI Suggestion Applied',
+      body: 'Suggestion applied. Always review AI generated responses prior to use.',
+      css: 'info',
+      timeoutMs: 8000,
     });
-    expect(valueRef.value).toBe('Mitigation');
+  });
+
+  it('rejects null as invalid mitigation suggestion', async () => {
+    const toastStore = (await import('@/stores/ToastStore')).useToastStore();
+    const addToast = vi.mocked(toastStore.addToast);
+    const valueRef = ref<null | string>('Some existing mitigation');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      suggested_mitigation: null,
+      confidence: 0.5,
+      explanation: 'Could not determine mitigation',
+      tools_used: ['mitigation_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'mitigation'), [],
+    );
+
+    await composable.suggestMitigation();
+
+    expect(valueRef.value).toBe('Some existing mitigation');
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+    expect(addToast).toHaveBeenCalledWith({
+      title: 'AI Mitigation Suggestions',
+      body: 'No valid mitigation suggestion received.',
+    });
   });
 });

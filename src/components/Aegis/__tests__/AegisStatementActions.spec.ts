@@ -21,6 +21,7 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     selectedSuggestionIndex: computed(() => 0),
     selectSuggestion: vi.fn(),
     sendFeedback: vi.fn(),
+    suggestMitigation: vi.fn(),
     suggestStatement: vi.fn(),
   })),
 }));
@@ -85,7 +86,6 @@ describe('aegisStatementActions', () => {
         impact: null,
         suggested_statement: suggestedStatement,
         suggested_mitigation: null,
-
       })),
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => true),

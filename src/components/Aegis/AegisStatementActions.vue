@@ -44,7 +44,9 @@ const suggestionTooltip = computed(() => {
   if (!hasAppliedSuggestion.value || !statementSuggestionDetails.value) return 'Suggest Statement via AEGIS-AI';
   const { confidence, explanation, tools_used } = statementSuggestionDetails.value;
   const currentStatementSuggestion = currentSuggestion.value;
-  const parts: string[] = [`Value: ${currentStatementSuggestion}`];
+  // Display "EMPTY" for empty string suggestions
+  const displayValue = currentStatementSuggestion === '' ? 'EMPTY' : currentStatementSuggestion;
+  const parts: string[] = [`Value: ${displayValue}`];
   if (hasMultipleSuggestions.value) {
     parts.push(`Suggestion ${selectedSuggestionIndex.value + 1} of ${allSuggestions.value.length}`);
   }

@@ -120,22 +120,40 @@ export function useAegisSuggestion(
 
   async function suggestStatement() {
     const data = await getSuggestion();
-    if (!data || !('suggested_statement' in data) || !data.suggested_statement) {
-      toastStore.addToast({ title: 'AI Statement Suggestions', body: 'No valid statement suggestion received.' });
+    const hasValidField = data
+      && ('suggested_statement' in data)
+      && data.suggested_statement !== null
+      && data.suggested_statement !== undefined;
+
+    if (!hasValidField) {
+      toastStore.addToast({
+        title: 'AI Statement Suggestions',
+        body: 'No valid statement suggestion received.',
+      });
     } else {
       const { suggested_statement } = data;
       details.value.suggested_statement = suggested_statement;
-      applySuggestion(suggested_statement);
+      applySuggestion(suggested_statement || '');
     };
   }
+
   async function suggestMitigation() {
     const data = await getSuggestion();
-    if (!data || !('suggested_mitigation' in data) || !data.suggested_mitigation) {
-      toastStore.addToast({ title: 'AI Mitigation Suggestions', body: 'No valid mitigation suggestion received.' });
+    const hasValidField = data
+      && ('suggested_mitigation' in data)
+      && data.suggested_mitigation !== null
+      && data.suggested_mitigation !== undefined;
+
+    if (!hasValidField) {
+      toastStore.addToast({
+        title: 'AI Mitigation Suggestions',
+        body: 'No valid mitigation suggestion received.',
+      });
     } else {
-      details.value.suggested_mitigation = data.suggested_mitigation;
-      applySuggestion(data.suggested_mitigation);
-    }
+      const { suggested_mitigation } = data;
+      details.value.suggested_mitigation = suggested_mitigation;
+      applySuggestion(suggested_mitigation || '');
+    };
   }
 
   async function getSuggestion() {
@@ -149,7 +167,8 @@ export function useAegisSuggestion(
       }
       const contextData = serializeAegisContext(context);
 
-      let data: CweSuggestionDetails
+      let data:
+        | CweSuggestionDetails
         | ImpactSuggestionDetails
         | MitigationSuggestionDetails
         | StatementSuggestionDetails
@@ -195,7 +214,13 @@ export function useAegisSuggestion(
       valueRef.value = previousValue.value;
     }
     previousValue.value = null;
-    details.value = defaultDetails();
+    details.value = {
+      cwe: null,
+      cvss3_vector: null,
+      impact: null,
+      suggested_mitigation: null,
+      suggested_statement: null,
+    };
     selectedSuggestionIndex.value = 0;
     aegisSuggestionWatcher.revertAISuggestion();
   }
@@ -210,7 +235,7 @@ export function useAegisSuggestion(
 
   const allSuggestions = computed(() => {
     const fieldValue = details.value?.[detailsField];
-    if (!fieldValue) return [];
+    if (fieldValue === null || fieldValue === undefined) return [];
     return Array.isArray(fieldValue) ? fieldValue : [fieldValue];
   });
 

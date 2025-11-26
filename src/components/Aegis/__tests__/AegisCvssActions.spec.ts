@@ -24,6 +24,7 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     suggestCwe: vi.fn(),
     suggestCvss: vi.fn(),
     suggestImpact: vi.fn(),
+    suggestMitigation: vi.fn(),
     suggestStatement: vi.fn(),
   })),
 }));
