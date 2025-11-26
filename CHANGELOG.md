@@ -3,6 +3,9 @@
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 
+### Changed
+* Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
+
 
 ## [2025.11.4]
 ### Added
