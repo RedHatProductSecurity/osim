@@ -24,8 +24,8 @@ describe('issueFieldAcknowledgements', () => {
     });
 
   it.each([
-    ['create', 'form .btn-secondary', 'acknowledgment:new'],
-    ['update', 'form .btn-primary', 'acknowledgment:update'],
+    ['create', '.btn-secondary', 'acknowledgment:new'],
+    ['update', '.btn-primary', 'acknowledgment:update'],
   ])('should emit an event on %s', async (name, selector, event) => {
     const wrapper = mountIssueFieldAcknowledgments();
 
