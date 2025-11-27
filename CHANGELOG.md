@@ -8,6 +8,9 @@
 * Offer Aegis-suggested mitigation text (`AEGIS-251`)
 
 
+### Fixed
+* Fix issues when parsing links in internal comments (`OSIDB-4669`)
+
 ### Changed
 * Removed Affects V1 implementation (`OSIDB-4660`)
 * Make affects actions columns always visible (`OSIDB-4606`)
