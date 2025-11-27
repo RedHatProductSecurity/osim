@@ -367,9 +367,9 @@ exports[`flawCreateView > should render 1`] = `
                 <div data-v-4715e8e2="" class="visually-hidden"></div>
               </div>
             </div>
-            <form data-v-b4f0a608="">
+            <div data-v-b4f0a608="">
               <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Reference</button>
-            </form>
+            </div>
           </div>
         </div>
         <div data-v-0ecea5ec="" data-v-76e7a15d="" class="col-6">
@@ -379,9 +379,9 @@ exports[`flawCreateView > should render 1`] = `
                 <div data-v-4715e8e2="" class="visually-hidden"></div>
               </div>
             </div>
-            <form data-v-b4f0a608="">
+            <div data-v-b4f0a608="">
               <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
-            </form>
+            </div>
           </div>
         </div>
       </div>

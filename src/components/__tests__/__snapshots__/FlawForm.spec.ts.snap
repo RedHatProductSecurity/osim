@@ -492,7 +492,7 @@ exports[`flawForm > mounts and renders 1`] = `
             </div>
           </div>
         </div>
-        <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to References</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Reference</button></form>
+        <div data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to References</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Reference</button></div>
       </div>
     </div>
     <div data-v-0ecea5ec="" data-v-76e7a15d="" class="col-6">
@@ -521,7 +521,7 @@ exports[`flawForm > mounts and renders 1`] = `
             </div>
           </div>
         </div>
-        <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
+        <div data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></div>
       </div>
     </div>
   </div>
