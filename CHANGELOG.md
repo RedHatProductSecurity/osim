@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
+* Suggest trackers across all existing rows (`OSIDB-4638`)
 
 
 ## [2025.11.4]
