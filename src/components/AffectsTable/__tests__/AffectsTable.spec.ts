@@ -442,6 +442,48 @@ describe('affectsTable', () => {
         expect(selectedCheckboxes.length).toBeGreaterThan(0);
       });
 
+      it('should select affects across all pages when suggesting trackers', async () => {
+        const { settings } = useSettingsStore();
+        settings.affectsPerPage = 1;
+
+        const wrapper = await mountAffectsTable();
+
+        // Use the third affect which doesn't have a tracker and would be on page 3
+        const affectWithoutTracker = SampleFlawFull.affects[2];
+
+        const mockTrackerSuggestions = {
+          streams_components: [
+            {
+              affect: affectWithoutTracker,
+              ps_component: affectWithoutTracker.ps_component,
+              ps_update_stream: affectWithoutTracker.ps_update_stream,
+              selected: true,
+              offer: {
+                acked: false,
+                aus: false,
+                eus: false,
+                ps_update_stream: affectWithoutTracker.ps_update_stream,
+                selected: false,
+              },
+            },
+          ],
+          not_applicable: [],
+        };
+
+        vi.spyOn(TrackerService, 'getTrackersForFlaws').mockResolvedValue(mockTrackerSuggestions);
+
+        const selectTrackersBtn = wrapper.find('button[title="Select suggested trackers"]');
+        await selectTrackersBtn.trigger('click');
+        await flushPromises();
+
+        // Should see selection badge indicating the row is selected even though it's on another page
+        const selectionBadge = wrapper.find('span.badge.bg-secondary');
+        expect(selectionBadge.exists()).toBe(true);
+        expect(selectionBadge.text()).toContain('1 Selected');
+
+        settings.affectsPerPage = SampleFlawFull.affects.length;
+      });
+
       it('should show toast when some trackers are not applicable', async () => {
         const wrapper = await mountAffectsTable();
 
