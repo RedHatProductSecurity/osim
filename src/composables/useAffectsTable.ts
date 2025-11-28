@@ -347,7 +347,7 @@ export function useAffectsTable() {
     table.options.meta?.unavailableTrackers.clear();
 
     const trackers: TrackerSuggestions = await getTrackersForFlaws({ flaw_uuids: [flaw.value.uuid] });
-    const rows = table.getRowModel().flatRows;
+    const rows = table.getFilteredRowModel().flatRows;
 
     trackers.streams_components.forEach((stream) => {
       if (stream.selected || stream.offer?.selected) {
