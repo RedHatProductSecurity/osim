@@ -4,6 +4,9 @@
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
 
+### Changed
+* Updated aegis feedback method (`AEGIS-203`)
+
 
 ## [2025.11.4]
 ### Added
