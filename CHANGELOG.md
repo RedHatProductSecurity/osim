@@ -20,6 +20,9 @@
 * Pin select column to the left in affects table (`OSIDB-4715`)
 * Improve Aegis AI error messages for network and backend failures (`AEGIS-272`)
 
+### Changed
+* Updated aegis feedback method (`AEGIS-203`)
+
 
 ## [2025.11.4]
 ### Added
