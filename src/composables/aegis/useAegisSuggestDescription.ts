@@ -2,7 +2,7 @@ import { computed, ref, type Ref } from 'vue';
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
-import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '@/stores/UserStore';
 import type { AegisAIComponentFeatureNameType, DescriptionSuggestionDetails } from '@/types/aegisAI';
 
 import { useAISuggestionsWatcher } from './useAISuggestionsWatcher';
@@ -18,6 +18,7 @@ export type UseAegisSuggestDescriptionReturn = ReturnType<typeof useAegisSuggest
 
 export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOptions) {
   const toastStore = useToastStore();
+  const userStore = useUserStore();
   const service = new AegisAIService();
   const aegisTitleSuggestionWatcher = useAISuggestionsWatcher('title', options.titleRef);
   const aegisDescriptionSuggestionWatcher = useAISuggestionsWatcher('cve_description', options.descriptionRef);
@@ -128,114 +129,70 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     }
   }
 
-  function sendTitleFeedback(kind: 'negative' | 'positive') {
-    const baseUrl = osimRuntime.value.aegisFeedbackUrl;
+  async function sendTitleFeedback(kind: 'negative' | 'positive') {
+    try {
+      const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
+      const suggestedTitle = details.value?.suggested_title ?? '';
+      const actualTitle = previousTitleValue.value ?? '';
 
-    if (baseUrl) {
-      const url = buildTitleFeedbackUrl(baseUrl, kind);
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
+      await service.sendFeedback({
+        feature: 'suggest-title',
+        cveId: cveId || '',
+        email: userStore.userEmail,
+        requestTime: `${requestDuration.value ?? 0}ms`,
+        actual: actualTitle,
+        expected: suggestedTitle,
+        accept: kind === 'positive',
+      });
+
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
         body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+        css: 'info',
+      });
+    } catch (error: any) {
+      const detail = error?.data?.detail ?? error?.response?.data?.detail;
+      const msg = typeof detail === 'string'
+        ? detail
+        : (error?.message ?? 'Failed to submit feedback');
+      toastStore.addToast({
+        title: 'Feedback Error',
+        body: msg,
       });
     }
   }
 
-  function sendDescriptionFeedback(kind: 'negative' | 'positive') {
-    const baseUrl = osimRuntime.value.aegisFeedbackUrl;
+  async function sendDescriptionFeedback(kind: 'negative' | 'positive') {
+    try {
+      const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
+      const suggestedDescription = details.value?.suggested_description ?? '';
+      const actualDescription = previousDescriptionValue.value ?? '';
 
-    if (baseUrl) {
-      const url = buildDescriptionFeedbackUrl(baseUrl, kind);
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
+      await service.sendFeedback({
+        feature: 'suggest-description',
+        cveId: cveId || '',
+        email: userStore.userEmail,
+        requestTime: `${requestDuration.value ?? 0}ms`,
+        actual: actualDescription,
+        expected: suggestedDescription,
+        accept: kind === 'positive',
+      });
+
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
         body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+        css: 'info',
+      });
+    } catch (error: any) {
+      const detail = error?.data?.detail ?? error?.response?.data?.detail;
+      const msg = typeof detail === 'string'
+        ? detail
+        : (error?.message ?? 'Failed to submit feedback');
+      toastStore.addToast({
+        title: 'Feedback Error',
+        body: msg,
       });
     }
-  }
-
-  /**
-   * Builds a Google Form URL with prepopulated fields for title feedback.
-   *
-   * Form fields:
-   * - entry.1910793631: Feature name ("suggest-title")
-   * - entry.62718102: CVE ID
-   * - entry.77590445: Title suggested by Aegis
-   * - entry.432941906: Request time (in milliseconds)
-   * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
-   */
-  function buildTitleFeedbackUrl(baseUrl: string, feedbackKind: 'negative' | 'positive'): string {
-    const params = new URLSearchParams();
-
-    // Get flaw data from context
-    const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
-    const suggestedTitle = options.titleRef.value;
-
-    // Add feature name (matches Google Form multiple choice option)
-    params.set('entry.1910793631', 'suggest-title');
-
-    // Add CVE ID if available
-    if (cveId) {
-      params.set('entry.62718102', cveId);
-    }
-
-    // Add suggested title if available
-    if (suggestedTitle) {
-      params.set('entry.77590445', suggestedTitle);
-    }
-
-    // Add request time if available
-    if (requestDuration.value !== null) {
-      params.set('entry.432941906', `${requestDuration.value}ms`);
-    }
-
-    // Add feedback type
-    params.set('entry.810710028', feedbackKind === 'positive' ? 'accept' : 'reject');
-
-    return `${baseUrl}?${params.toString()}`;
-  }
-
-  /**
-   * Builds a Google Form URL with prepopulated fields for description feedback.
-   *
-   * Form fields:
-   * - entry.1910793631: Feature name ("suggest-description")
-   * - entry.62718102: CVE ID
-   * - entry.77590445: Description suggested by Aegis (truncated to first 100 chars)
-   * - entry.432941906: Request time (in milliseconds)
-   * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
-   */
-  function buildDescriptionFeedbackUrl(baseUrl: string, feedbackKind: 'negative' | 'positive'): string {
-    const params = new URLSearchParams();
-
-    // Get flaw data from context
-    const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
-    const suggestedDescription = options.descriptionRef.value;
-
-    // Add feature name (matches Google Form multiple choice option)
-    params.set('entry.1910793631', 'suggest-description');
-
-    // Add CVE ID if available
-    if (cveId) {
-      params.set('entry.62718102', cveId);
-    }
-
-    // Add suggested description if available
-    if (suggestedDescription) {
-      params.set('entry.77590445', suggestedDescription);
-    }
-
-    // Add request time if available
-    if (requestDuration.value !== null) {
-      params.set('entry.432941906', `${requestDuration.value}ms`);
-    }
-
-    // Add feedback type
-    params.set('entry.810710028', feedbackKind === 'positive' ? 'accept' : 'reject');
-
-    return `${baseUrl}?${params.toString()}`;
   }
 
   return {
