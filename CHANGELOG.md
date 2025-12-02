@@ -16,6 +16,9 @@
 ### Changed
 * Updated aegis feedback method (`AEGIS-203`)
 
+### Changed
+* Updated aegis feedback method (`AEGIS-203`)
+
 
 ## [2025.11.4]
 ### Added
