@@ -30,12 +30,20 @@ const REJECTED_STATE = workflowStates.Rejected as string;
 const EMPTY_STATE = workflowStates.Empty as string;
 
 const shouldShowWorkflowButtons = computed(
-  () => ![DONE_STATE, EMPTY_STATE, REJECTED_STATE].includes(props.classification.state),
+  () => ![EMPTY_STATE].includes(props.classification.state),
 );
 
 const shouldShowCreateJiraTaskButton = computed(
   () => props.classification.state === EMPTY_STATE,
 );
+
+const canPromote = computed(() => {
+  return ![DONE_STATE, REJECTED_STATE].includes(props.classification.state);
+});
+
+const canRevert = computed(() => {
+  return props.classification.state !== REJECTED_STATE;
+});
 
 function toggleCreateJiraTask() {
   emit('create:jiraTask');
@@ -119,7 +127,7 @@ async function onReset(flawId: string) {
               </template>
               <template #content>
                 <div v-if="!isRequesting" class="workflow-dropdown-menu">
-                  <li class="dropdown-item">
+                  <li v-if="canPromote" class="dropdown-item">
                     <button
                       type="button"
                       class="btn"
@@ -130,7 +138,7 @@ async function onReset(flawId: string) {
                       Promote to {{ nextPhase(classification.state as WorkflowPhases) }}
                     </button>
                   </li>
-                  <li class="dropdown-item">
+                  <li v-if="canRevert" class="dropdown-item">
                     <button
                       type="button"
                       class="btn"
@@ -140,7 +148,7 @@ async function onReset(flawId: string) {
                       Revert to {{ previousPhase(classification.state as WorkflowPhases) }}
                     </button>
                   </li>
-                  <li class="dropdown-item">
+                  <li v-if="classification.state !== REJECTED_STATE" class="dropdown-item">
                     <button
                       type="button"
                       class="btn"
