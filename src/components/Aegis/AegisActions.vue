@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
+import AegisFeedbackModal from './AegisFeedbackModal.vue';
+
 defineProps<{
   canShowFeedback: boolean;
   canSuggest: boolean;
@@ -11,14 +15,29 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  feedback: ['negative' | 'positive'];
+  feedback: ['negative' | 'positive', string];
   revert: [];
   selectSuggestion: [index: number];
   suggest: [];
 }>();
 
+const showFeedbackModal = ref(false);
+
 function selectSuggestion(index: number) {
   emit('selectSuggestion', index);
+}
+
+function handleThumbsDown() {
+  showFeedbackModal.value = true;
+}
+
+function handleFeedbackSubmit(comment: string) {
+  showFeedbackModal.value = false;
+  emit('feedback', 'negative', comment);
+}
+
+function handleFeedbackCancel() {
+  showFeedbackModal.value = false;
 }
 </script>
 
@@ -80,14 +99,19 @@ function selectSuggestion(index: number) {
       <i
         class="bi-hand-thumbs-up label-icon"
         title="Mark suggestion helpful"
-        @click.prevent.stop="emit('feedback', 'positive')"
+        @click.prevent.stop="emit('feedback', 'positive', '')"
       />
       <i
         class="bi-hand-thumbs-down label-icon"
         title="Mark suggestion unhelpful"
-        @click.prevent.stop="emit('feedback', 'negative')"
+        @click.prevent.stop="handleThumbsDown"
       />
     </span>
+    <AegisFeedbackModal
+      :show="showFeedbackModal"
+      @submit="handleFeedbackSubmit"
+      @cancel="handleFeedbackCancel"
+    />
   </div>
 </template>
 
