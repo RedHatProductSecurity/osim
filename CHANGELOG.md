@@ -1,4 +1,10 @@
 # OSIM Changelog
+## [2025.11.4-hotfix]
+### Fixed
+* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
+* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
+
+
 ## [2025.11.4]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
@@ -569,7 +575,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...HEAD
+[2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
 [2025.11.4]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.3...v2025.11.4
 [2025.11.3]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...v2025.11.3
 [2025.11.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1-hotfix...v2025.11.2
