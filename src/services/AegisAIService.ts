@@ -5,6 +5,7 @@ import type {
   AegisAIComponentAnalysisParamsType,
   AegisAICVEAnalysisWithContextParamsType,
   AegisFeature,
+  AegisFeedbackPayload,
   AegisFeatureResponseMap,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -263,6 +264,24 @@ export class AegisAIService {
       return result.data;
     } catch (error) {
       console.error('AegisAIService::getConsole() Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send feedback for an Aegis AI suggestion
+   * @param payload Feedback payload
+   * @returns Feedback response from backend
+   */
+  async sendFeedback(payload: AegisFeedbackPayload): Promise<void> {
+    try {
+      await this.fetch({
+        method: 'POST',
+        url: '/feedback',
+        data: payload,
+      });
+    } catch (error) {
+      console.error('AegisAIService::sendFeedback() Error:', error);
       throw error;
     }
   }
