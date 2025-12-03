@@ -132,12 +132,20 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
   async function sendTitleFeedback(kind: 'negative' | 'positive') {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
+      if (!cveId) {
+        toastStore.addToast({
+          title: 'Feedback Error',
+          body: 'Cannot submit feedback without a valid CVE ID.',
+        });
+        return;
+      }
+
       const suggestedTitle = details.value?.suggested_title ?? '';
       const actualTitle = previousTitleValue.value ?? '';
 
       await service.sendFeedback({
         feature: 'suggest-title',
-        cveId: cveId || '',
+        cveId,
         email: userStore.userEmail,
         requestTime: `${requestDuration.value ?? 0}ms`,
         actual: actualTitle,
@@ -165,12 +173,20 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
   async function sendDescriptionFeedback(kind: 'negative' | 'positive') {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
+      if (!cveId) {
+        toastStore.addToast({
+          title: 'Feedback Error',
+          body: 'Cannot submit feedback without a valid CVE ID.',
+        });
+        return;
+      }
+
       const suggestedDescription = details.value?.suggested_description ?? '';
       const actualDescription = previousDescriptionValue.value ?? '';
 
       await service.sendFeedback({
         feature: 'suggest-description',
-        cveId: cveId || '',
+        cveId,
         email: userStore.userEmail,
         requestTime: `${requestDuration.value ?? 0}ms`,
         actual: actualDescription,

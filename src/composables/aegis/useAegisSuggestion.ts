@@ -245,12 +245,20 @@ export function useAegisSuggestion(
   async function sendFeedback(kind: 'negative' | 'positive') {
     try {
       const cveId = unref(context?.cveId?.value ?? context?.cveId);
+      if (!cveId) {
+        toastStore.addToast({
+          title: 'Feedback Error',
+          body: 'Cannot submit feedback without a valid CVE ID.',
+        });
+        return;
+      }
+
       const suggestedValue = currentSuggestion.value ?? '';
       const actualValue = previousValue.value ?? '';
 
       await service.sendFeedback({
         feature: FeatureNameForFeedback[fieldName],
-        cveId: cveId || '',
+        cveId,
         email: userStore.userEmail,
         requestTime: `${service.requestDuration.value}ms`,
         actual: actualValue,
