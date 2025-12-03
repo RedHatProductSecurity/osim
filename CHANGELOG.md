@@ -6,6 +6,9 @@
 * Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
+### Changed
+* Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
+
 
 ## [2025.11.4]
 ### Added
