@@ -160,6 +160,16 @@ const hiddenIncidentStates = computed(() => {
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
 const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
 
+async function handleSaveReferences(references: any[]) {
+  await saveReferences(references);
+  referencesComp.value?.editableListComp?.onSaveComplete();
+}
+
+async function handleSaveAcknowledgments(acknowledgments: any[]) {
+  await saveAcknowledgments(acknowledgments);
+  acknowledgmentsComp.value?.editableListComp?.onSaveComplete();
+}
+
 const expandFocusedComponent = (parent_uuid: string) => {
   // Expand Flaw References section
   const reference = flawReferences.value.find(refer => refer.uuid === parent_uuid);
@@ -442,7 +452,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
           class="col-6"
           :mode="mode"
           :error="errors.references"
-          @reference:update="saveReferences"
+          @reference:update="handleSaveReferences"
           @reference:new="addBlankReference(flaw.embargoed)"
           @reference:cancel-new="cancelAddReference"
           @reference:delete="deleteReference"
@@ -453,7 +463,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
           class="col-6"
           :mode="mode"
           :error="errors.acknowledgments"
-          @acknowledgment:update="saveAcknowledgments"
+          @acknowledgment:update="handleSaveAcknowledgments"
           @acknowledgment:new="addBlankAcknowledgment(flaw.embargoed)"
           @acknowledgment:cancel-new="cancelAddAcknowledgment"
           @acknowledgment:delete="deleteAcknowledgment"

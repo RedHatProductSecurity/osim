@@ -21,6 +21,8 @@
 * Make affects actions columns always visible (`OSIDB-4606`)
 * Consolidated success toast notifications for affects and trackers (`OSIDB-4518`)
 
+### Fixed
+* Corrected problems when editing references and acknowledgements (`OSIDB-4641`)
 
 ## [2025.11.3]
 ### Added

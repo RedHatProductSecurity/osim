@@ -27,9 +27,9 @@ exports[`issueFieldAcknowledgements > should render the acknowledgements field i
         </div>
       </div>
     </div>
-    <form data-v-b4f0a608="">
+    <div data-v-b4f0a608="">
       <!--v-if--><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button>
-    </form>
+    </div>
   </div>
 </div>"
 `;
@@ -61,7 +61,7 @@ exports[`issueFieldAcknowledgements > should render the acknowledgements field i
         </div>
       </div>
     </div>
-    <form data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></form>
+    <div data-v-b4f0a608=""><button data-v-b4f0a608="" type="button" class="btn btn-primary me-2"> Save Changes to Acknowledgments</button><button data-v-b4f0a608="" type="button" class="btn btn-secondary"> Add Acknowledgment</button></div>
   </div>
 </div>"
 `;
