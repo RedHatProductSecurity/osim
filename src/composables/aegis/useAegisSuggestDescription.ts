@@ -222,10 +222,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       params.set('entry.62718102', cveId);
     }
 
-    // Add suggested description if available (truncated for URL)
+    // Add suggested description if available
     if (suggestedDescription) {
-      const truncated = suggestedDescription.substring(0, 100);
-      params.set('entry.77590445', truncated);
+      params.set('entry.77590445', suggestedDescription);
     }
 
     // Add request time if available
