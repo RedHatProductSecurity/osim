@@ -8,7 +8,7 @@ import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWat
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
-import { osimRuntime } from '@/stores/osimRuntime';
+import { useUserStore } from '@/stores/UserStore';
 import type {
   CweSuggestionDetails,
   ImpactSuggestionDetails,
@@ -28,7 +28,7 @@ const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeat
   mitigation: 'suggested_mitigation',
 };
 
-// Map field names to Google Form feature values
+// Map field names to feature values for feedback API
 const FeatureNameForFeedback: Record<SuggestableFlawFields, string> = {
   cwe_id: 'suggest-cwe',
   impact: 'suggest-impact',
@@ -53,6 +53,7 @@ export function useAegisSuggestion(
   fieldName: SuggestableFlawFields,
 ) {
   const toastStore = useToastStore();
+  const userStore = useUserStore();
   const service = new AegisAIService();
   const aegisSuggestionWatcher = useAISuggestionsWatcher(fieldName, valueRef);
   const previousValue = ref<null | string>(null);
@@ -241,59 +242,45 @@ export function useAegisSuggestion(
 
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
-  function sendFeedback(kind: 'negative' | 'positive') {
-    const baseUrl = osimRuntime.value.aegisFeedbackUrl;
+  async function sendFeedback(kind: 'negative' | 'positive') {
+    try {
+      const cveId = unref(context?.cveId?.value ?? context?.cveId);
+      if (!cveId) {
+        toastStore.addToast({
+          title: 'Feedback Error',
+          body: 'Cannot submit feedback without a valid CVE ID.',
+        });
+        return;
+      }
 
-    if (baseUrl) {
-      const url = buildFeedbackUrl(baseUrl, kind);
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
+      const suggestedValue = currentSuggestion.value ?? '';
+      const actualValue = previousValue.value ?? '';
+
+      await service.sendFeedback({
+        feature: FeatureNameForFeedback[fieldName],
+        cveId,
+        email: userStore.userEmail,
+        requestTime: `${service.requestDuration.value}ms`,
+        actual: actualValue,
+        expected: suggestedValue,
+        accept: kind === 'positive',
+      });
+
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
         body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+        css: 'info',
+      });
+    } catch (error: any) {
+      const detail = error?.data?.detail ?? error?.response?.data?.detail;
+      const msg = typeof detail === 'string'
+        ? detail
+        : (error?.message ?? 'Failed to submit feedback');
+      toastStore.addToast({
+        title: 'Feedback Error',
+        body: msg,
       });
     }
-  }
-
-  /**
-   * Builds a Google Form URL with prepopulated fields containing flaw data.
-   *
-   * Form fields:
-   * - entry.1910793631: Feature name (e.g., "suggest-cwe", "suggest-impact", etc.)
-   * - entry.62718102: CVE ID
-   * - entry.77590445: Suggested value by Aegis
-   * - entry.432941906: Request time (in milliseconds)
-   * - entry.810710028: Feedback type ("accept" for thumbs up, "reject" for thumbs down)
-   */
-  function buildFeedbackUrl(baseUrl: string, feedbackKind: 'negative' | 'positive'): string {
-    const params = new URLSearchParams();
-
-    // Get flaw data from context
-    const cveId = unref(context?.cveId?.value ?? context?.cveId);
-    const suggestedValue = unref(valueRef.value);
-
-    // Add feature name (matches Google Form multiple choice option)
-    params.set('entry.1910793631', FeatureNameForFeedback[fieldName]);
-
-    // Add CVE ID if available
-    if (cveId) {
-      params.set('entry.62718102', cveId);
-    }
-
-    // Add suggested value if available
-    if (suggestedValue) {
-      params.set('entry.77590445', suggestedValue);
-    }
-
-    // Add request time if available
-    if (service.requestDuration.value !== null) {
-      params.set('entry.432941906', `${service.requestDuration.value}ms`);
-    }
-
-    // Add feedback type
-    params.set('entry.810710028', feedbackKind === 'positive' ? 'accept' : 'reject');
-
-    return `${baseUrl}?${params.toString()}`;
   }
 
   return {

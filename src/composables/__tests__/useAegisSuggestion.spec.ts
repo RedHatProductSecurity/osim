@@ -18,11 +18,20 @@ vi.mock('@/stores/ToastStore', () => ({
   })),
 }));
 
+vi.mock('@/stores/UserStore', () => ({
+  useUserStore: vi.fn(() => ({
+    userEmail: 'test@example.com',
+  })),
+}));
+
 const analyzeMock = vi.fn();
+const sendFeedbackMock = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
   AegisAIService: vi.fn().mockImplementation(() => ({
     analyzeCVEWithContext: analyzeMock,
+    sendFeedback: sendFeedbackMock,
     isFetching: ref(false),
+    requestDuration: ref(1000),
   })),
 }));
 
