@@ -3,6 +3,8 @@
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
+* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
+* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 
 ## [2025.11.4]
