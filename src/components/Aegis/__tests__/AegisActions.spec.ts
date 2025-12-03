@@ -123,13 +123,20 @@ describe('aegisActions', () => {
     await wrapper.find('.bi-arrow-counterclockwise').trigger('click');
     expect(wrapper.emitted('revert')).toHaveLength(1);
 
+    // Thumbs up emits feedback with positive and empty comment
     await wrapper.find('.bi-hand-thumbs-up').trigger('click');
     expect(wrapper.emitted('feedback')).toHaveLength(1);
-    expect(wrapper.emitted('feedback')?.[0]).toEqual(['positive']);
+    expect(wrapper.emitted('feedback')?.[0]).toEqual(['positive', '']);
 
+    // Thumbs down opens modal instead of directly emitting
     await wrapper.find('.bi-hand-thumbs-down').trigger('click');
+    // Modal should now be visible
+    expect(wrapper.find('.modal').exists()).toBe(true);
+
+    // Submit feedback via modal
+    await wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.emitted('feedback')).toHaveLength(2);
-    expect(wrapper.emitted('feedback')?.[1]).toEqual(['negative']);
+    expect(wrapper.emitted('feedback')?.[1]).toEqual(['negative', '']);
   });
 
   it('disables suggest icon when canSuggest is false', () => {
