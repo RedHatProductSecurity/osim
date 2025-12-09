@@ -6461,6 +6461,11 @@ vue-component-type-helpers@^2.0.0:
   resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-2.0.21.tgz#f2cb9ce72da78b5974122ec168379be146760ae8"
   integrity sha512-3NaicyZ7N4B6cft4bfb7dOnPbE9CjLcx+6wZWAg5zwszfO4qXRh+U52dN5r5ZZfc6iMaxKCEcoH9CmxxoFZHLg==
 
+vue-data-ui@^3.8.0:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/vue-data-ui/-/vue-data-ui-3.8.0.tgz#3459c1f72c493ebd7259d0e9dd4acd4743becc91"
+  integrity sha512-415J7UQi6nLuvmyZ9p4ZpVURgPjubiQ/TacjudZ1K/9hUDCOLOQ7Dsyg7JhnVsh2XO2BhnQgLusrglfX9PJUQw==
+
 vue-demi@>=0.14.5, vue-demi@^0.14.7:
   version "0.14.8"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.8.tgz#00335e9317b45e4a68d3528aaf58e0cec3d5640a"

@@ -14,6 +14,8 @@ import { configureBackends } from './stores/osimRuntime';
 import './scss/index.scss';
 import './assets/main.css';
 import 'bootstrap';
+// Import vue-data-ui CSS after Bootstrap to ensure its styles take precedence
+import 'vue-data-ui/style.css';
 
 configureBackends();
 
