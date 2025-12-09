@@ -113,3 +113,14 @@ export type AegisFeatureResponseMap = {
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;
+
+export type AegisKpiMetricsFeature = {
+  acceptance_percentage: number;
+  entries: {
+    accepted: boolean;
+    aegis_version: string;
+    datetime: string;
+  }[];
+};
+
+export type AegisKpiMetrics = Record<AegisFeature, AegisKpiMetricsFeature>;
