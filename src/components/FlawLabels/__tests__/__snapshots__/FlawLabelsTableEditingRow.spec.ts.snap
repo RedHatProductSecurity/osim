@@ -7,7 +7,16 @@ exports[`flawLabelsTableEditingRow > should render 1`] = `
     <option data-v-627548cb="" value="SKIP">SKIP</option>
     <option data-v-627548cb="" value="DONE">DONE</option>
   </select></td>
-<td data-v-627548cb="" class="text-decoration-line-through"><select data-v-627548cb="" class="form-select" required=""></select></td>
+<td data-v-627548cb="">
+  <!-- Type is only editable for new labels --><select data-v-627548cb="" class="form-select" title="Label type">
+    <option data-v-627548cb="" value="context_based">context_based</option>
+    <option data-v-627548cb="" value="alias">alias</option>
+  </select>
+</td>
+<td data-v-627548cb="" class="text-decoration-line-through">
+  <!-- Product family labels are read-only -->
+  <!-- Context-based labels use dropdown --><select data-v-627548cb="" class="form-select" required=""></select>
+</td>
 <td data-v-627548cb="">
   <flaw-labels-contributor-stub data-v-627548cb="" modelvalue=""></flaw-labels-contributor-stub>
 </td>

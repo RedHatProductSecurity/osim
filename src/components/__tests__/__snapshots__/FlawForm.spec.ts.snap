@@ -581,9 +581,23 @@ exports[`flawForm > mounts and renders 1`] = `
     <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
       <div data-v-4715e8e2="" class="ps-3 border-start">
         <div data-v-4715e8e2="" class="visually-hidden">
-          <div data-v-5d530569="">
-            <p data-v-5d530569="">No available labels</p>
-          </div>
+          <table data-v-5d530569="" class="table table-striped table-hover">
+            <thead data-v-5d530569="" class="table-dark">
+              <tr data-v-5d530569="">
+                <th data-v-5d530569="">State</th>
+                <th data-v-5d530569="">Type</th>
+                <th data-v-5d530569="">Label</th>
+                <th data-v-5d530569="">Contributor</th>
+                <th data-v-5d530569="" class="table-actions-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody data-v-5d530569="">
+              <!--v-if-->
+              <tr data-v-5d530569="" class="table-new-row">
+                <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

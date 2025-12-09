@@ -8,6 +8,7 @@ exports[`flawLabelsTable > should handle add label 1`] = `
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
             <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Type</th>
             <th data-v-5d530569="">Label</th>
             <th data-v-5d530569="">Contributor</th>
             <th data-v-5d530569="" class="table-actions-header">Actions</th>
@@ -16,6 +17,7 @@ exports[`flawLabelsTable > should handle add label 1`] = `
         <tbody data-v-5d530569="">
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -26,6 +28,7 @@ exports[`flawLabelsTable > should handle add label 1`] = `
           </tr>
           <tr data-v-5d530569="" class="new">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -35,7 +38,9 @@ exports[`flawLabelsTable > should handle add label 1`] = `
             </td>
           </tr>
           <!--v-if-->
-          <!--v-if-->
+          <tr data-v-5d530569="" class="table-new-row">
+            <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -51,6 +56,7 @@ exports[`flawLabelsTable > should handle delete label 1`] = `
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
             <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Type</th>
             <th data-v-5d530569="">Label</th>
             <th data-v-5d530569="">Contributor</th>
             <th data-v-5d530569="" class="table-actions-header">Actions</th>
@@ -59,6 +65,7 @@ exports[`flawLabelsTable > should handle delete label 1`] = `
         <tbody data-v-5d530569="">
           <tr data-v-5d530569="" class="deleted">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -87,6 +94,7 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
             <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Type</th>
             <th data-v-5d530569="">Label</th>
             <th data-v-5d530569="">Contributor</th>
             <th data-v-5d530569="" class="table-actions-header">Actions</th>
@@ -95,6 +103,7 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
         <tbody data-v-5d530569="">
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -105,6 +114,7 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
           </tr>
           <tr data-v-5d530569="" class="updated">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -114,7 +124,9 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
             </td>
           </tr>
           <!--v-if-->
-          <!--v-if-->
+          <tr data-v-5d530569="" class="table-new-row">
+            <td data-v-5d530569="" colspan="100%" class="text-center" title="Add new label"><i data-v-5d530569="" class="bi bi-plus"></i></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -130,6 +142,7 @@ exports[`flawLabelsTable > should handle undo delete label 1`] = `
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
             <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Type</th>
             <th data-v-5d530569="">Label</th>
             <th data-v-5d530569="">Contributor</th>
             <th data-v-5d530569="" class="table-actions-header">Actions</th>
@@ -138,6 +151,7 @@ exports[`flawLabelsTable > should handle undo delete label 1`] = `
         <tbody data-v-5d530569="">
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
@@ -165,6 +179,7 @@ exports[`flawLabelsTable > should render flaw labels table 1`] = `
         <thead data-v-5d530569="" class="table-dark">
           <tr data-v-5d530569="">
             <th data-v-5d530569="">State</th>
+            <th data-v-5d530569="">Type</th>
             <th data-v-5d530569="">Label</th>
             <th data-v-5d530569="">Contributor</th>
             <th data-v-5d530569="" class="table-actions-header">Actions</th>
@@ -173,6 +188,7 @@ exports[`flawLabelsTable > should render flaw labels table 1`] = `
         <tbody data-v-5d530569="">
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
+            <td data-v-5d530569="">context_based</td>
             <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
