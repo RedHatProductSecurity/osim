@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Add subpackages PURL column on affects table (`OSIDB-4697`)
+
 ## [2025.11.4-hotfix]
 ### Fixed
 * Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
