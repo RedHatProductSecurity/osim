@@ -5,6 +5,7 @@ import type { Column, Getter, Row, Table } from '@tanstack/vue-table';
 
 import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import { affectRhCvss3 } from '@/utils/helpers';
+import TagsInput from '@/widgets/TagsInput/TagsInput.vue';
 
 import CvssCalculatorBase from '../CvssCalculator/CvssCalculatorBase.vue';
 
@@ -15,11 +16,22 @@ const props = defineProps<{
   table: Table<ZodAffectType>;
 }>();
 
-const cellValue = ref(props.getValue());
+const columnMeta = props.column.columnDef.meta;
+
+const isSubpackagePurls = props.column.id === 'subpackage_purls';
+
+const getInitialValue = () => {
+  const value = props.getValue();
+  // Ensure subpackage_purls always has an array value
+  if (isSubpackagePurls && !Array.isArray(value)) {
+    return [];
+  }
+  return value;
+};
+
+const cellValue = ref(getInitialValue());
 const editMode = ref(false);
 const inputRef = ref();
-
-const columnMeta = props.column.columnDef.meta;
 const tableMeta = props.table.options.meta;
 const metaEnum = computed(() =>
   columnMeta?.enum
@@ -33,6 +45,10 @@ const displayValue = computed(() => {
   if (columnMeta?.cvss) {
     value = affectRhCvss3({ cvss_scores: cellValue.value } as ZodAffectType)?.score ?? 0;
   }
+  if (isSubpackagePurls) {
+    const purls = cellValue.value as string[];
+    value = purls?.length ? `${purls.length} PURL(s)` : '';
+  }
   if (columnMeta?.extraColumn) {
     // Access object using dot notation
     const extraValue = columnMeta?.extraColumn?.split('.')
@@ -43,6 +59,14 @@ const displayValue = computed(() => {
     }
   }
   return value;
+});
+
+const tooltipValue = computed(() => {
+  if (isSubpackagePurls) {
+    const purls = cellValue.value as string[];
+    return purls?.length ? purls.join('\n') : '';
+  }
+  return '';
 });
 
 const onBlur = () => {
@@ -72,13 +96,18 @@ const toggleEditMode = () => {
 };
 
 watch(() => props.getValue(), (newValue) => {
-  cellValue.value = newValue;
+  if (isSubpackagePurls && !Array.isArray(newValue)) {
+    cellValue.value = [];
+  } else {
+    cellValue.value = newValue;
+  }
 });
 </script>
 <template>
   <span
     v-if="!editMode"
     tabindex="0"
+    :title="tooltipValue"
     @dblclick="toggleEditMode"
     @keyup.tab="toggleEditMode"
   >{{ displayValue || '&nbsp;' }}</span>
@@ -102,6 +131,12 @@ watch(() => props.getValue(), (newValue) => {
         class="overlayed"
         :cvssEntity="{cvss_scores: cellValue as ZodAffectCVSSType[], ps_component: ''}"
         @change:cvss_scores="(newCvssScores) => cellValue = newCvssScores"
+        @blur="onBlur"
+      />
+    </template>
+    <template v-else-if="isSubpackagePurls">
+      <TagsInput
+        v-model="cellValue as string[]"
         @blur="onBlur"
       />
     </template>

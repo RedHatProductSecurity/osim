@@ -191,6 +191,7 @@ export function useAffectsTable() {
           labels: [],
           cvss_scores: [],
           tracker: null,
+          subpackage_purls: [],
         }, ...currentAffects.value];
       },
 

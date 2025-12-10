@@ -5,6 +5,7 @@ import type { Column, Row } from '@tanstack/vue-table';
 
 import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import { affectRhCvss3 } from '@/utils/helpers';
+import TagsInput from '@/widgets/TagsInput/TagsInput.vue';
 
 import CvssCalculatorBase from '../CvssCalculator/CvssCalculatorBase.vue';
 
@@ -20,7 +21,11 @@ const emit = defineEmits<{
 }>();
 
 const columnMeta = props.column.columnDef.meta;
-const cellValue = ref<string | ZodAffectCVSSType[]>(props.modelValue ?? columnMeta?.cvss ? [] : '');
+const isSubpackagePurls = props.column.id === 'subpackage_purls';
+const cellValue = ref<string | string[] | ZodAffectCVSSType[]>(
+  (props.modelValue as string | string[] | undefined | ZodAffectCVSSType[])
+  ?? (columnMeta?.cvss ? [] : isSubpackagePurls ? [] : ''),
+);
 const isCalculatorOpen = ref(false);
 
 // Determine if this column has an enum (dropdown)
@@ -71,6 +76,12 @@ const onChange = () => {
         class="overlayed"
         :cvssEntity="{cvss_scores: cellValue as ZodAffectCVSSType[], ps_component: ''}"
         @change:cvss_scores="(newCvssScores) => cellValue = newCvssScores"
+        @blur="onChange"
+      />
+    </template>
+    <template v-else-if="isSubpackagePurls">
+      <TagsInput
+        v-model="cellValue as string[]"
         @blur="onChange"
       />
     </template>

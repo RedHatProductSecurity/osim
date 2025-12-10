@@ -179,6 +179,19 @@ export default function AffectColumnDefinitions() {
         bulkEditable: true,
       },
     }),
+    columnHelper.accessor('subpackage_purls', {
+      cell: editableCellRenderer,
+      header: 'Subpackage PURLs',
+      size: 280,
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.original.subpackage_purls?.length || 0;
+        const b = rowB.original.subpackage_purls?.length || 0;
+        return a - b;
+      },
+      meta: {
+        bulkEditable: true,
+      },
+    }),
     columnHelper.accessor('affectedness', {
       cell: editableCellRenderer,
       header: 'Affectedness',
