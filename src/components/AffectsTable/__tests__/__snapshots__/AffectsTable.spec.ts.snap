@@ -39,6 +39,7 @@ exports[`affectsTable > should render 1`] = `
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Subpackage PURLs</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
@@ -109,6 +110,15 @@ exports[`affectsTable > should render 1`] = `
           <div data-v-17587d65="" class="resizer ltr"></div>
         </th>
         <th data-v-17587d65="" colspan="1" class="sortable" style="width: 220px;">Analyzed Component<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
+            <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
+            <teleport-stub data-v-846ac2ce="" to="#app">
+              <!--v-if-->
+            </teleport-stub>
+            <!--v-if-->
+          </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
+          <div data-v-17587d65="" class="resizer ltr"></div>
+        </th>
+        <th data-v-17587d65="" colspan="1" class="sortable" style="width: 280px;">Subpackage PURLs<div data-v-846ac2ce="" data-v-17587d65="" class="dropdown-container px-1">
             <div data-v-846ac2ce="" class="dropdown-trigger px-1"><i class="bi-funnel"></i></div>
             <teleport-stub data-v-846ac2ce="" to="#app">
               <!--v-if-->
@@ -238,15 +248,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-001</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-1-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX / Won't Do</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-001</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-1-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">FIX / Won't Do</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
         <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i class="bi-box-arrow-up-right"></i></a></td>
         <td data-v-17587d65="" class="">NEW</td>
         <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
@@ -270,15 +281,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-002</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-2-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">DELEGATED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-002</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-2</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-2-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">DELEGATED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
         <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i class="bi-box-arrow-up-right"></i></a></td>
         <td data-v-17587d65="" class="">CLOSED</td>
         <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
@@ -302,15 +314,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">xxxx-0-005</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">openshift-3-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">FIX</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-005</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-3</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-3-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">FIX</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
         <td data-v-17587d65="" class="">
           <!--v-if-->
         </td>
@@ -362,6 +375,7 @@ exports[`affectsTable > should render empty state 1`] = `
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Module</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Analyzed Component</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
+      <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Subpackage PURLs</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Affectedness</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Not Affected Justification</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
       <li data-v-12d45215="" class="dropdown-item draggable" draggable="true"><label data-v-12d45215="" class="w-100"><input data-v-12d45215="" type="checkbox" class="form-check-input" checked=""> Resolution</label><i data-v-12d45215="" class="bi-grip-vertical text-secondary"></i></li>
