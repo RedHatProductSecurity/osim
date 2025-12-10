@@ -604,6 +604,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream1',
@@ -614,6 +615,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
     ];
 
@@ -637,6 +639,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream1',
@@ -648,6 +651,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
     ];
 
@@ -672,6 +676,7 @@ describe('flawForm', () => {
           alerts: [],
           labels: [],
           tracker: null,
+          subpackage_purls: [],
         },
         {
           ps_update_stream: 'stream1',
@@ -683,6 +688,7 @@ describe('flawForm', () => {
           alerts: [],
           labels: [],
           tracker: null,
+          subpackage_purls: [],
         },
       ];
 
@@ -706,6 +712,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream1',
@@ -717,6 +724,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
     ];
 
@@ -738,6 +746,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream2', // Different stream
@@ -749,6 +758,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream1',
@@ -760,6 +770,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
       {
         ps_update_stream: 'stream1',
@@ -771,6 +782,7 @@ describe('flawForm', () => {
         alerts: [],
         labels: [],
         tracker: null,
+        subpackage_purls: [],
       },
     ];
 
