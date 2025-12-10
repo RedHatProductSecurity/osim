@@ -592,4 +592,205 @@ describe('flawForm', () => {
     expect(incidentStateField?.exists()).toBe(true);
     expect(incidentStateField?.props().optionsHidden).toEqual([]);
   });
+
+  osimFullFlawTest('should trigger validation error for duplicate affects without purl', async ({ flaw }) => {
+    flaw.affects = [
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1', // Same component
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+    ];
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    expect(vm.errors.affects[1].ps_component).toBe(
+      'Affected component cannot be registered on the affected component/PURL twice',
+    );
+  });
+
+  osimFullFlawTest('should trigger validation error for duplicate affects with same purl', async ({ flaw }) => {
+    flaw.affects = [
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1',
+        purl: 'pkg:npm/package@1.0.0',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'different_component', // Different component but same normalized purl
+        purl: 'pkg:npm/package@1.0.0',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+    ];
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    expect(vm.errors.affects[1].ps_component).toBe(
+      'Affected component cannot be registered on the affected component/PURL twice',
+    );
+  });
+
+  osimFullFlawTest('should trigger validation error for purls with same qualifiers in different order',
+    async ({ flaw }) => {
+      flaw.affects = [
+        {
+          ps_update_stream: 'stream1',
+          ps_module: 'module1',
+          ps_component: 'component1',
+          purl: 'pkg:npm/package@1.0.0?qualifier1=value1&qualifier2=value2',
+          embargoed: false,
+          cvss_scores: [],
+          alerts: [],
+          labels: [],
+          tracker: null,
+          subpackage_purls: [],
+        },
+        {
+          ps_update_stream: 'stream1',
+          ps_module: 'module1',
+          ps_component: 'component2',
+          purl: 'pkg:npm/package@1.0.0?qualifier2=value2&qualifier1=value1', // Same qualifiers but different order
+          embargoed: false,
+          cvss_scores: [],
+          alerts: [],
+          labels: [],
+          tracker: null,
+          subpackage_purls: [],
+        },
+      ];
+
+      const subject = mountWithProps(flaw, { mode: 'edit' });
+      const vm = subject.findComponent(FlawForm).vm as any;
+
+      expect(vm.errors.affects[1].ps_component).toBe(
+        'Affected component cannot be registered on the affected component/PURL twice',
+      );
+    });
+
+  osimFullFlawTest('should not trigger validation error for purls with different qualifiers', async ({ flaw }) => {
+    flaw.affects = [
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1',
+        purl: 'pkg:npm/package@1.0.0?qualifier1=value1',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component2',
+        purl: 'pkg:npm/package@1.0.0?qualifier2=value2', // Different qualifier
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+    ];
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    expect(vm.errors.affects[1].ps_component).toBe(null);
+  });
+
+  osimFullFlawTest('should not trigger validation error for different affects', async ({ flaw }) => {
+    flaw.affects = [
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1',
+        purl: '',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream2', // Different stream
+        ps_module: 'module1',
+        ps_component: 'component1',
+        purl: '',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component1',
+        purl: 'pkg:npm/package1@1.0.0', // Different purl
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+      {
+        ps_update_stream: 'stream1',
+        ps_module: 'module1',
+        ps_component: 'component2', // Different component, no purl
+        purl: '',
+        embargoed: false,
+        cvss_scores: [],
+        alerts: [],
+        labels: [],
+        tracker: null,
+        subpackage_purls: [],
+      },
+    ];
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    for (let i = 0; i < flaw.affects.length; i++) {
+      expect(vm.errors.affects[i].ps_component).toBe(null);
+    }
+  });
 });
