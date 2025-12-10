@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Add subpackages PURL column on affects table (`OSIDB-4697`)
+
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
