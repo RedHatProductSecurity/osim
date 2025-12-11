@@ -247,16 +247,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-001</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-1-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">FIX / Won't Do</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-001</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-1-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">FIX / Won't Do</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
         <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0001" target="_blank">XXXX-0001 <i class="bi-box-arrow-up-right"></i></a></td>
         <td data-v-17587d65="" class="">NEW</td>
         <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
@@ -280,16 +280,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-002</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-2</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-2-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">DELEGATED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-002</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-2</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-2-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">DELEGATED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
         <td data-v-17587d65="" class=""><a data-v-17587d65="" href="http://jira-service:8002/browse/XXXX-0002" target="_blank">XXXX-0002 <i class="bi-box-arrow-up-right"></i></a></td>
         <td data-v-17587d65="" class="">CLOSED</td>
         <td data-v-17587d65="" class="">2021-09-13 09:09 UTC</td>
@@ -313,16 +313,16 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class=""></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">xxxx-0-005</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-3</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">openshift-3-1</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">AFFECTED</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">FIX</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">LOW</span></td>
-        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-005</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-3</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-3-1</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">AFFECTED</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">FIX</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">LOW</span></td>
+        <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
         <td data-v-17587d65="" class="">
           <!--v-if-->
         </td>
