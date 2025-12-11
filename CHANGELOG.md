@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Added
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
+* Add validations to PURLs in affect table fields (`OSIDB-4698`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
