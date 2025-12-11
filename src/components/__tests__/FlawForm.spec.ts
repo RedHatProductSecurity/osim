@@ -663,14 +663,15 @@ describe('flawForm', () => {
     );
   });
 
-  osimFullFlawTest('should trigger validation error for purls with same qualifiers in different order',
+  osimFullFlawTest('should trigger validation error for purls with same base but different qualifiers',
     async ({ flaw }) => {
+      // OSIDB uses purl_normalized (without qualifiers) for uniqueness
       flaw.affects = [
         {
           ps_update_stream: 'stream1',
           ps_module: 'module1',
           ps_component: 'component1',
-          purl: 'pkg:npm/package@1.0.0?qualifier1=value1&qualifier2=value2',
+          purl: 'pkg:npm/package@1.0.0?qualifier1=value1',
           embargoed: false,
           cvss_scores: [],
           alerts: [],
@@ -682,7 +683,7 @@ describe('flawForm', () => {
           ps_update_stream: 'stream1',
           ps_module: 'module1',
           ps_component: 'component2',
-          purl: 'pkg:npm/package@1.0.0?qualifier2=value2&qualifier1=value1', // Same qualifiers but different order
+          purl: 'pkg:npm/package@1.0.0?qualifier2=value2', // Different qualifiers but same normalized purl
           embargoed: false,
           cvss_scores: [],
           alerts: [],
@@ -700,13 +701,13 @@ describe('flawForm', () => {
       );
     });
 
-  osimFullFlawTest('should not trigger validation error for purls with different qualifiers', async ({ flaw }) => {
+  osimFullFlawTest('should not trigger validation error for purls with different versions', async ({ flaw }) => {
     flaw.affects = [
       {
         ps_update_stream: 'stream1',
         ps_module: 'module1',
         ps_component: 'component1',
-        purl: 'pkg:npm/package@1.0.0?qualifier1=value1',
+        purl: 'pkg:npm/package@1.0.0',
         embargoed: false,
         cvss_scores: [],
         alerts: [],
@@ -718,7 +719,7 @@ describe('flawForm', () => {
         ps_update_stream: 'stream1',
         ps_module: 'module1',
         ps_component: 'component2',
-        purl: 'pkg:npm/package@1.0.0?qualifier2=value2', // Different qualifier
+        purl: 'pkg:npm/package@2.0.0', // Different version
         embargoed: false,
         cvss_scores: [],
         alerts: [],
