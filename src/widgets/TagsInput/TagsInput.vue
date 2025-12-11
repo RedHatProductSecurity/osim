@@ -13,6 +13,10 @@ const props = withDefaults(defineProps<{
 
 const modelValue = defineModel<string[]>({ required: true });
 
+const emit = defineEmits<{
+  blur: [];
+}>();
+
 const elInput = ref<HTMLInputElement | null>(null);
 const elDragZone = ref<HTMLElement | null>(null);
 const newItem = ref('');
@@ -61,6 +65,15 @@ function edit(index: number, event: Event) {
     target.removeAttribute('contenteditable');
   }
 }
+
+function onFocusOut(event: FocusEvent) {
+  // Check if focus is leaving the entire component
+  const relatedTarget = event.relatedTarget as HTMLElement | null;
+  if (!relatedTarget || !elDragZone.value?.contains(relatedTarget)) {
+    add(); // Add any pending input
+    emit('blur');
+  }
+}
 </script>
 
 <template>
@@ -73,6 +86,7 @@ function edit(index: number, event: Event) {
     @dragover="dragOver"
     @dragstart="dragStart"
     @dragend="dragEnd"
+    @focusout="onFocusOut"
   >
     <TransitionGroup :name="draggableClass">
       <span
@@ -129,8 +143,10 @@ function edit(index: number, event: Event) {
 
   display: flex;
   flex-flow: row wrap;
-  gap: 1em;
+  gap: 0.5em;
   align-items: center;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .osim-pill-list:focus-within {
@@ -142,6 +158,22 @@ function edit(index: number, event: Event) {
 .osim-pill-list-item {
   font-size: 0.85rem;
   padding-block: 0.1rem;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  > i {
+    flex-shrink: 0;
+  }
 }
 
 .osim-pill-list-input {

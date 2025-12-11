@@ -32,6 +32,7 @@
             "ps_component": "openshift-1-1",
             "ps_update_stream": "xxxx-0-001",
             "purl": "",
+            "subpackage_purls": [],
             "impact": "LOW",
             "labels": ["cloud"],
             "tracker": {
@@ -66,6 +67,7 @@
             "ps_product": null,
             "ps_component": "openshift-2-1",
             "purl": "",
+            "subpackage_purls": [],
             "ps_update_stream": "xxxx-0-002",
             "impact": "LOW",
             "labels": ["cloud", "special-handling"],
@@ -102,6 +104,7 @@
             "ps_component": "openshift-3-1",
             "ps_update_stream": "xxxx-0-005",
             "purl": "",
+            "subpackage_purls": [],
             "labels":[],
             "impact": "LOW",
             "tracker": null,

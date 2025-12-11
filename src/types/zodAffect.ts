@@ -102,6 +102,20 @@ export const ZodAffectSchema = z.object({
       });
     }
   }),
+  subpackage_purls: z.array(z.string()).default([]).superRefine((purls, zodContext) => {
+    purls.forEach((purl, index) => {
+      if (!purl) return;
+      try {
+        PackageURL.fromString(purl);
+      } catch (e: any) {
+        zodContext.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid PURL at index ${index}: ${e.message}`,
+          path: [index],
+        });
+      }
+    });
+  }),
   ps_component: z.string().max(255),
   ps_product: z.string().nullish(),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullish(),
