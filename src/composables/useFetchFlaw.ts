@@ -3,20 +3,18 @@ import { computed, ref } from 'vue';
 import { useFlaw } from '@/composables/useFlaw';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
-import { getFlaw, getRelatedFlaws } from '@/services/FlawService';
-import type { ZodAffectType } from '@/types';
+import { getFlaw } from '@/services/FlawService';
 import { useToastStore } from '@/stores/ToastStore';
 import { useTourStore } from '@/stores/TourStore';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import { getAffects } from '@/services/AffectService';
 
-const isFetchingRelatedFlaws = ref(false);
 const isFetchingAffects = ref(false);
 const totalAffectCount = ref(0);
 const currentlyFetchedAffectCount = ref(0);
 
 export function useFetchFlaw() {
-  const { flaw, relatedFlaws, resetFlaw, setFlaw } = useFlaw();
+  const { flaw, resetFlaw, setFlaw } = useFlaw();
   const { addToast } = useToastStore();
   const { setAegisMetadata } = useAegisMetadataTracking();
 
@@ -26,19 +24,6 @@ export function useFetchFlaw() {
   );
 
   const didFetchFail = ref<boolean>(false);
-
-  async function fetchRelatedFlaws(affects: ZodAffectType[]) {
-    isFetchingRelatedFlaws.value = true;
-    try {
-      return getRelatedFlaws(affects);
-    } catch (error) {
-      console.error(`Error while fetching related flaws for ${affects.length} affects:`, error);
-      didFetchFail.value = true;
-      throw error;
-    } finally {
-      isFetchingRelatedFlaws.value = false;
-    }
-  }
 
   async function fetchFlawAffects(flawCveOrId: string) {
     try {
@@ -77,9 +62,6 @@ export function useFetchFlaw() {
       flaw.value.affects = affectResults;
       isFetchingAffects.value = false;
       setFlaw(flaw.value);
-
-      const fetchedRelatedFlaws = fetchRelatedFlaws(affectResults);
-      relatedFlaws.value = await fetchedRelatedFlaws;
     } catch (error) {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
@@ -93,12 +75,9 @@ export function useFetchFlaw() {
   }
 
   return {
-    relatedFlaws,
-    isFetchingRelatedFlaws,
     isFetchingAffects,
     totalAffectCount,
     currentlyFetchedAffectCount,
-    fetchRelatedFlaws,
     flaw,
     fetchedAffectsPercentage,
     fetchFlaw,
