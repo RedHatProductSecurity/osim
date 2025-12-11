@@ -1,17 +1,19 @@
 # OSIM Changelog
-## [Unreleased]
+## [2025.12.0]
 ### Added
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
-* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
-* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 ### Changed
 * Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
 
+## [2025.11.4-hotfix]
+### Fixed
+* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
+* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 ## [2025.11.4]
 ### Added
@@ -588,7 +590,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...HEAD
+[2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
+[2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
 [2025.11.4]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.3...v2025.11.4
 [2025.11.3]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...v2025.11.3
 [2025.11.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1-hotfix...v2025.11.2
