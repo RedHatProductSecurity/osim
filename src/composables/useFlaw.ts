@@ -6,12 +6,10 @@ import type { ZodAffectType } from '@/types';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
 const initialFlaw = ref<ZodFlawType>(blankFlaw());
-const relatedFlaws = ref<ZodFlawType[]>([]);
 
 function resetFlaw() {
   flaw.value = blankFlaw();
   initialFlaw.value = blankFlaw();
-  relatedFlaws.value = [];
 }
 
 type FlawDataType = RelatedDataType | ZodFlawType;
@@ -42,7 +40,6 @@ export function useFlaw() {
     flaw,
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
-    relatedFlaws,
     resetFlaw,
     setFlaw,
   };
