@@ -6,11 +6,8 @@ import type { AegisKpiMetrics } from '@/types/aegisAI';
 import { mountWithConfig } from '@/__tests__/helpers';
 
 // Mock the AegisAIService - must be before component import
-// Use vi.hoisted to create the mock function before vi.mock
-const { mockGetKpiMetrics } = vi.hoisted(() => {
-  const mockGetKpiMetrics = vi.fn();
-  return { mockGetKpiMetrics };
-});
+// Use hoisted to create mock function before vi.mock (compatible with all Vitest versions)
+const mockGetKpiMetrics = vi.hoisted(() => vi.fn());
 
 vi.mock('@/services/AegisAIService', () => {
   const mockServiceInstance = {
