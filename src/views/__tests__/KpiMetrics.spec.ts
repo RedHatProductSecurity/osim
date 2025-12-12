@@ -389,6 +389,8 @@ describe('kpiMetrics', () => {
   });
 
   it('should handle API errors gracefully', async () => {
+    // Prevent console.error from failing the test by mocking it
+    // due to config in tests__/setup.ts
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockGetKpiMetrics.mockRejectedValue(new Error('API Error'));
 
