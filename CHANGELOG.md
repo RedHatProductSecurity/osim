@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2025.12.0]
 ### Added
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
@@ -580,7 +580,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...HEAD
+[2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
 [2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
 [2025.11.4]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.3...v2025.11.4
 [2025.11.3]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...v2025.11.3
