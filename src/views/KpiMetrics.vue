@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 
 import { DateTime } from 'luxon';
 import { VueUiXy } from 'vue-data-ui/vue-ui-xy';
@@ -30,12 +30,16 @@ const chosenFeature = ref<FeatureLabelsWithAllType>('all');
 
 async function fetchKpiMetrics(feature: FeatureLabelsWithAllType = 'all') {
   const featureKey = feature === 'all' ? 'all' : (feature as any);
-  const metrics = await new AegisAIService().getKpiMetrics(featureKey);
-  const allowedFeatures = ['suggest-cwe', 'suggest-description', 'suggest-impact', 'suggest-statement'];
-  kpiMetrics.value = Object.fromEntries(
-    Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
-  ) as AegisKpiMetrics;
-  console.log(kpiMetrics.value);
+  try {
+    const metrics = await new AegisAIService().getKpiMetrics(featureKey);
+    const allowedFeatures = ['suggest-cwe', 'suggest-description', 'suggest-impact', 'suggest-statement'];
+    kpiMetrics.value = Object.fromEntries(
+      Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
+    ) as AegisKpiMetrics;
+  } catch (error) {
+    console.error('KpiMetrics::fetchKpiMetrics() Error:', error);
+    kpiMetrics.value = null;
+  }
 }
 
 const dataByWeek = computed(() => kpiDataByWeek(kpiMetrics.value ?? {} as AegisKpiMetrics));
@@ -48,7 +52,6 @@ function kpiDataByWeek(kpiMetrics: AegisKpiMetrics) {
 }
 
 function collateEntriesByWeek(kpiMetrics: AegisKpiMetricsFeature) {
-  console.log(dateRange.value);
   return kpiMetrics.entries.reduce((acc, { accepted, datetime }) => {
     const date = DateTime.fromFormat(datetime, 'yyyy-MM-dd HH:mm:ss.SSS');
     const weekInMonth = date.weekNumber - date.startOf('month').weekNumber + 1;
@@ -66,10 +69,29 @@ const dateRange = computed(() => uniques(
   Object.values(dataByWeek.value ?? {}).flatMap(value => Object.keys(value)),
 ));
 
+const rangeSliderIndexes = ref(
+  {
+    min: 0,
+    max: dateRange.value.length - 1,
+  },
+);
+
+watch(dateRange, () => {
+  if (!dateRange.value[rangeSliderIndexes.value.min]) {
+    rangeSliderIndexes.value.min = 0;
+  }
+  if (!dateRange.value[rangeSliderIndexes.value.max]) {
+    rangeSliderIndexes.value.max = dateRange.value.length - 1;
+  }
+});
 const config = computed(() => ({
   chart: {
     tooltip: {
       showPercentage: false,
+    },
+    zoom: {
+      startIndex: rangeSliderIndexes.value.min,
+      endIndex: rangeSliderIndexes.value.max,
     },
     grid: {
       labels: {
@@ -102,8 +124,21 @@ function handleFeatureChange() {
 
 onMounted(async () => {
   await fetchKpiMetrics(chosenFeature.value);
-  // Debug: Check if component is mounted
-  // console.log('Chart component mounted:', chartRef.value);
+  document.querySelector('input.range-left')?.addEventListener('change', (event) => {
+    rangeSliderIndexes.value.min = Number((event.target as HTMLInputElement).value);
+  });
+  document.querySelector('input.range-right')?.addEventListener('change', (event) => {
+    rangeSliderIndexes.value.max = Number((event.target as HTMLInputElement).value);
+  });
+});
+
+onUnmounted(() => {
+  document.querySelector('input.range-left')?.removeEventListener('change', (event) => {
+    rangeSliderIndexes.value.min = Number((event.target as HTMLInputElement).value);
+  });
+  document.querySelector('input.range-right')?.removeEventListener('change', (event) => {
+    rangeSliderIndexes.value.max = Number((event.target as HTMLInputElement).value);
+  });
 });
 </script>
 
