@@ -35,7 +35,6 @@ async function fetchKpiMetrics(feature: FeatureLabelsWithAllType = 'all') {
   kpiMetrics.value = Object.fromEntries(
     Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
   ) as AegisKpiMetrics;
-  console.log(kpiMetrics.value);
 }
 
 const dataByWeek = computed(() => kpiDataByWeek(kpiMetrics.value ?? {} as AegisKpiMetrics));
@@ -48,7 +47,6 @@ function kpiDataByWeek(kpiMetrics: AegisKpiMetrics) {
 }
 
 function collateEntriesByWeek(kpiMetrics: AegisKpiMetricsFeature) {
-  console.log(dateRange.value);
   return kpiMetrics.entries.reduce((acc, { accepted, datetime }) => {
     const date = DateTime.fromFormat(datetime, 'yyyy-MM-dd HH:mm:ss.SSS');
     const weekInMonth = date.weekNumber - date.startOf('month').weekNumber + 1;
@@ -102,8 +100,6 @@ function handleFeatureChange() {
 
 onMounted(async () => {
   await fetchKpiMetrics(chosenFeature.value);
-  // Debug: Check if component is mounted
-  // console.log('Chart component mounted:', chartRef.value);
 });
 </script>
 
