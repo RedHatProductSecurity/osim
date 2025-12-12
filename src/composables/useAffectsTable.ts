@@ -23,6 +23,7 @@ import { showSuccessToast } from '@/composables/service-helpers';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
 import { affectUUID } from '@/utils/helpers';
@@ -109,7 +110,13 @@ export function useAffectsTable() {
 
   const { flaw } = useFlaw();
 
-  const columns = ref(columnDefinitions());
+  const columns = computed(() => {
+    const allColumns = columnDefinitions();
+    if (!osimRuntime.value.flags?.subpackagePurls) {
+      return allColumns.filter(col => col.id !== 'subpackage_purls');
+    }
+    return allColumns;
+  });
   const sorting = ref<SortingState>([]);
   const showAll = ref(false);
   const globalFilter = ref('');
