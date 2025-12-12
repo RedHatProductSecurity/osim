@@ -30,11 +30,16 @@ const chosenFeature = ref<FeatureLabelsWithAllType>('all');
 
 async function fetchKpiMetrics(feature: FeatureLabelsWithAllType = 'all') {
   const featureKey = feature === 'all' ? 'all' : (feature as any);
-  const metrics = await new AegisAIService().getKpiMetrics(featureKey);
-  const allowedFeatures = ['suggest-cwe', 'suggest-description', 'suggest-impact', 'suggest-statement'];
-  kpiMetrics.value = Object.fromEntries(
-    Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
-  ) as AegisKpiMetrics;
+  try {
+    const metrics = await new AegisAIService().getKpiMetrics(featureKey);
+    const allowedFeatures = ['suggest-cwe', 'suggest-description', 'suggest-impact', 'suggest-statement'];
+    kpiMetrics.value = Object.fromEntries(
+      Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
+    ) as AegisKpiMetrics;
+  } catch (error) {
+    console.error('KpiMetrics::fetchKpiMetrics() Error:', error);
+    kpiMetrics.value = null;
+  }
 }
 
 const dataByWeek = computed(() => kpiDataByWeek(kpiMetrics.value ?? {} as AegisKpiMetrics));
