@@ -22,6 +22,7 @@ import { affectRhCvss3, formatDateWithTimezone } from '@/utils/helpers';
 import { labelColorMap } from '@/constants';
 
 import EditableCell from './EditableCell.vue';
+import { validatePurl, validatePurlArray } from './purlValidation';
 import RowActions from './RowActions.vue';
 import TrackerLink from './TrackerLink.vue';
 
@@ -34,6 +35,7 @@ declare module '@tanstack/vue-table' {
     extraColumn?: DeepKeys<TData>;
     filter?: boolean;
     onValueChange?: (newValue: TValue, row: Row<TData>, table: Table<TData>) => void;
+    validate?: (value: TValue) => null | string | string[];
   }
 }
 
@@ -177,6 +179,7 @@ export default function AffectColumnDefinitions() {
       sortingFn: 'alphanumeric',
       meta: {
         bulkEditable: true,
+        validate: validatePurl,
       },
     }),
     columnHelper.accessor('subpackage_purls', {
@@ -190,6 +193,7 @@ export default function AffectColumnDefinitions() {
       },
       meta: {
         bulkEditable: true,
+        validate: validatePurlArray,
       },
     }),
     columnHelper.accessor('affectedness', {

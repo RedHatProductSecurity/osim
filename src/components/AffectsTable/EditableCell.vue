@@ -62,11 +62,39 @@ const displayValue = computed(() => {
 });
 
 const tooltipValue = computed(() => {
+  // Show validation error first if present
+  if (errorMessage.value) {
+    return errorMessage.value;
+  }
   if (isSubpackagePurls) {
     const purls = cellValue.value as string[];
     return purls?.length ? purls.join('\n') : '';
   }
   return '';
+});
+
+// Generic validation using column meta
+const validationError = computed(() => {
+  if (columnMeta?.validate) {
+    return columnMeta.validate(cellValue.value);
+  }
+  return null;
+});
+
+const hasError = computed(() => !!validationError.value);
+
+const errorMessage = computed(() => {
+  if (!validationError.value) return '';
+  return Array.isArray(validationError.value)
+    ? validationError.value.join(', ')
+    : validationError.value;
+});
+
+const arrayValidationError = computed(() => {
+  if (Array.isArray(validationError.value)) {
+    return validationError.value;
+  }
+  return null;
 });
 
 const onBlur = () => {
@@ -108,6 +136,7 @@ watch(() => props.getValue(), (newValue) => {
     v-if="!editMode"
     tabindex="0"
     :title="tooltipValue"
+    :class="{ 'text-danger': hasError }"
     @dblclick="toggleEditMode"
     @keyup.tab="toggleEditMode"
   >{{ displayValue || '&nbsp;' }}</span>
@@ -136,7 +165,8 @@ watch(() => props.getValue(), (newValue) => {
     </template>
     <template v-else-if="isSubpackagePurls">
       <TagsInput
-        v-model="cellValue as string[]"
+        v-model="(cellValue as string[])"
+        :error="arrayValidationError"
         @blur="onBlur"
       />
     </template>
@@ -145,6 +175,8 @@ watch(() => props.getValue(), (newValue) => {
         ref="inputRef"
         v-model="cellValue"
         class="form-control"
+        :class="{ 'is-invalid': hasError }"
+        :title="errorMessage"
         type="text"
         @blur="onBlur"
         @keypress.enter="onBlur"
