@@ -44,65 +44,66 @@ const mountKpiMetrics = (options?: any) => {
   });
 };
 
-type MockKpiMetrics = Omit<AegisKpiMetrics, 'suggest-cvss'>;
-
-const createMockKpiMetrics = (): MockKpiMetrics => ({
-  'suggest-cwe': {
-    acceptance_percentage: 75.0,
-    entries: [
-      {
-        datetime: '2025-01-15 10:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-      {
-        datetime: '2025-01-16 11:00:00.000',
-        accepted: false,
-        aegis_version: '1.0.0',
-      },
-      {
-        datetime: '2025-01-20 12:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-    ],
-  },
-  'suggest-description': {
-    acceptance_percentage: 80.0,
-    entries: [
-      {
-        datetime: '2025-01-15 10:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-      {
-        datetime: '2025-01-22 13:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-    ],
-  },
-  'suggest-impact': {
-    acceptance_percentage: 70.0,
-    entries: [
-      {
-        datetime: '2025-01-15 10:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-    ],
-  },
-  'suggest-statement': {
-    acceptance_percentage: 85.0,
-    entries: [
-      {
-        datetime: '2025-01-15 10:00:00.000',
-        accepted: true,
-        aegis_version: '1.0.0',
-      },
-    ],
-  },
-});
+const createMockKpiMetrics = () => {
+  const mockKpiMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    'suggest-cwe': {
+      acceptance_percentage: 75.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+        {
+          datetime: '2025-01-16 11:00:00.000',
+          accepted: false,
+          aegis_version: '1.0.0',
+        },
+        {
+          datetime: '2025-01-20 12:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+    'suggest-description': {
+      acceptance_percentage: 80.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+        {
+          datetime: '2025-01-22 13:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+    'suggest-impact': {
+      acceptance_percentage: 70.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+    'suggest-statement': {
+      acceptance_percentage: 85.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+  };
+  return mockKpiMetrics;
+};
 
 describe('kpiMetrics', () => {
   let wrapper: VueWrapper<any>;
@@ -208,7 +209,7 @@ describe('kpiMetrics', () => {
   });
 
   it('should calculate acceptance percentage correctly', async () => {
-    const mockMetrics: MockKpiMetrics = {
+    const mockMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -349,7 +350,7 @@ describe('kpiMetrics', () => {
   });
 
   it('should handle empty metrics gracefully', async () => {
-    const emptyMetrics: MockKpiMetrics = {
+    const emptyMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
       'suggest-cwe': {
         acceptance_percentage: 0,
         entries: [],
@@ -403,7 +404,7 @@ describe('kpiMetrics', () => {
 
   it('should handle different week calculations correctly', async () => {
     // Test with entries spanning multiple weeks
-    const multiWeekMetrics: MockKpiMetrics = {
+    const multiWeekMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -454,7 +455,7 @@ describe('kpiMetrics', () => {
     wrapper = mountKpiMetrics();
     await flushPromises();
 
-    const singleFeatureMetrics: MockKpiMetrics = {
+    const singleFeatureMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -497,7 +498,7 @@ describe('kpiMetrics', () => {
     // Reset mock call count
     mockGetKpiMetrics.mockClear();
 
-    const singleFeatureResponse: MockKpiMetrics = {
+    const singleFeatureResponse: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
