@@ -116,7 +116,7 @@ describe('kpiMetrics', () => {
   afterEach(() => {
     vi.clearAllMocks();
     mockGetKpiMetrics.mockClear();
-    wrapper?.unmount();
+    if (wrapper) wrapper.unmount();
   });
 
   it('should render correctly', () => {
