@@ -13,6 +13,8 @@
 ### Changed
 * Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
 
+### Added
+* Add KPI metrics data visualization (`AEGIS-196`)
 
 ## [2025.11.4]
 ### Added

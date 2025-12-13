@@ -6,6 +6,7 @@ import type {
   AegisAICVEAnalysisWithContextParamsType,
   AegisFeature,
   AegisFeatureResponseMap,
+  AegisKpiMetrics,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
@@ -263,6 +264,21 @@ export class AegisAIService {
       return result.data;
     } catch (error) {
       console.error('AegisAIService::getConsole() Error:', error);
+      throw error;
+    }
+  }
+
+  async getKpiMetrics(feature: 'all' | AegisFeature = 'all'): Promise<AegisKpiMetrics> {
+    try {
+      const result = await this.fetch({
+        method: 'GET',
+        url: '/analysis/kpi/cve',
+        params: { feature },
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error('AegisAIService::getKpiMetrics() Error:', error);
       throw error;
     }
   }
