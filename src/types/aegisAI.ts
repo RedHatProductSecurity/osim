@@ -113,3 +113,5 @@ export type AegisFeatureResponseMap = {
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;
+
+export type { Feedback as AegisFeedbackPayload } from '@/generated-client/aegis-ai/models';
