@@ -284,7 +284,13 @@ describe('kpiMetrics', () => {
       expect(series).toHaveProperty('suffix', '%');
       expect(series).toHaveProperty('type', 'line');
       expect(series).toHaveProperty('datalabels', false);
-      expect(series.name).toContain('Acceptance Percentage for');
+      // The name should be one of the feature labels
+      expect([
+        'Suggest CWE',
+        'Suggest Description',
+        'Suggest Impact',
+        'Suggest Statement Mitigation',
+      ]).toContain(series.name);
       expect(Array.isArray(series.series)).toBe(true);
     });
   });

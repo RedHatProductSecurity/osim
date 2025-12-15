@@ -42,14 +42,30 @@ async function fetchKpiMetrics(feature: FeatureLabelsWithAllType = 'all') {
   }
 }
 
-const dataByWeek = computed(() => kpiDataByWeek(kpiMetrics.value ?? {} as AegisKpiMetrics));
+const dataByWeek = computed(() => kpiDataByWeek(filteredKpiData.value));
 
 function kpiDataByWeek(kpiMetrics: AegisKpiMetrics) {
   return Object.fromEntries(
-    Object.entries(kpiMetrics).map(([key, value]) => [key, collateEntriesByWeek(value)],
+    Object.entries(kpiMetrics).map(([feature, entries]) => [feature, collateEntriesByWeek(entries)],
     ),
   );
 }
+
+const filteredKpiData = computed(() => {
+  const areNoneSelected = Object.values(versionSelections.value).every(value => !value);
+  return areNoneSelected
+    ? kpiMetrics.value ?? {} as AegisKpiMetrics
+    : Object.fromEntries(Object.entries(
+      kpiMetrics.value ?? {}).map(([feature, entries]) =>
+      [
+        feature,
+        {
+          ...entries,
+          entries: entries.entries.filter(({ aegis_version }) => versionSelections.value[aegis_version]),
+        },
+      ],
+    )) as AegisKpiMetrics;
+});
 
 function collateEntriesByWeek(kpiMetrics: AegisKpiMetricsFeature) {
   return kpiMetrics.entries.reduce((acc, { accepted, datetime }) => {
@@ -65,9 +81,49 @@ function collateEntriesByWeek(kpiMetrics: AegisKpiMetricsFeature) {
   }, {} as Record<string, { accepted: number; percentage: number; total: number }>);
 }
 
+function parseDateFromString(datetime: string): DateTime {
+  const [month, year, _, week] = datetime.split(' ');
+  const monthDay = (Number(week) - 1) * 7 + 1;
+  return DateTime.fromObject({
+    year: Number(`20${year}`),
+    month: DateTime.fromFormat(month, 'MMM').month,
+    day: monthDay,
+  });
+}
+
 const dateRange = computed(() => uniques(
   Object.values(dataByWeek.value ?? {}).flatMap(value => Object.keys(value)),
 ));
+
+const aegisBuildVersions = computed(() => uniques(
+  Object.values(kpiMetrics.value ?? {}).flatMap(value => value.entries.map(entry => entry.aegis_version)),
+));
+
+const versionSelections = ref<Record<string, boolean>>({});
+watch(aegisBuildVersions, () => {
+  aegisBuildVersions.value.forEach((version: string) => {
+    versionSelections.value[version] = false;
+  });
+});
+
+const filteredDateRangeTotals = computed(() => Object.entries(filteredKpiData.value)
+  .reduce((filteredTotals, [feature, metrics]) => {
+    const filteredEntries = metrics.entries.filter(({ datetime }) => {
+      const startDateString = dateRange.value[rangeSliderIndexes.value.min];
+      const endDateString = dateRange.value[rangeSliderIndexes.value.max];
+      if (!startDateString || !endDateString) {
+        return false;
+      }
+      const startDate = parseDateFromString(startDateString);
+      const endDate = parseDateFromString(endDateString);
+      const datetimeDate = DateTime.fromFormat(datetime, 'yyyy-MM-dd HH:mm:ss.SSS', { zone: 'utc' });
+      return datetimeDate.toMillis() >= startDate.toMillis() && datetimeDate.toMillis() <= endDate.toMillis();
+    });
+    filteredTotals[feature] = filteredEntries.reduce(
+      (total, { accepted }) => total + (accepted ? 1 : 0), 0,
+    ) / filteredEntries.length * 100;
+    return filteredTotals;
+  }, {} as Record<string, number>));
 
 const rangeSliderIndexes = ref(
   {
@@ -92,6 +148,7 @@ const config = computed(() => ({
     zoom: {
       startIndex: rangeSliderIndexes.value.min,
       endIndex: rangeSliderIndexes.value.max,
+      minimap: { show: true },
     },
     grid: {
       labels: {
@@ -108,15 +165,14 @@ const config = computed(() => ({
 }));
 
 const dataset = computed(() => Object.entries(dataByWeek.value ?? {}).map(([key, value]) => ({
-  name: 'Acceptance Percentage for ' + FeatureLabels[key as FeatureLabel],
+  name: FeatureLabels[key as FeatureLabel],
   series: Object.values(value).map(({ percentage }) => percentage),
   suffix: '%',
   type: 'line',
   datalabels: false,
-}),
-));
-
-// const chartRef = ref<InstanceType<typeof VueUiXy> | null>(null);
+  smooth: true,
+  comments: Object.values(value).map(({ accepted, total }) => `${accepted} of ${total} suggestions accepted`),
+})));
 
 function handleFeatureChange() {
   fetchKpiMetrics(chosenFeature.value as FeatureLabel);
@@ -140,6 +196,8 @@ onUnmounted(() => {
     rangeSliderIndexes.value.max = Number((event.target as HTMLInputElement).value);
   });
 });
+const isFilteredDateRange = computed(
+  () => rangeSliderIndexes.value.min !== 0 || rangeSliderIndexes.value.max !== dateRange.value.length - 1);
 </script>
 
 <template>
@@ -154,11 +212,40 @@ onUnmounted(() => {
       </select>
     </div>
     <div v-if="kpiMetrics !== null" class="kpi-chart-container">
-      <VueUiXy
-        :dataset="dataset"
-        :config="config"
-      />
-
+      <div class="row">
+        <div class="col-8">
+          <VueUiXy :dataset="dataset" :config="config" />
+        </div>
+        <div class="col-4">
+          <section class="mb-3">
+            <h3>Filter By Version</h3>
+            <button
+              v-for="aegisBuildVersion in aegisBuildVersions"
+              :key="aegisBuildVersion"
+              class="btn"
+              :class="{
+                'btn-outline-secondary': !versionSelections[aegisBuildVersion],
+                'btn-secondary': versionSelections[aegisBuildVersion]
+              }"
+              type="button"
+              @click="versionSelections[aegisBuildVersion] = !versionSelections[aegisBuildVersion]"
+            >
+              {{ aegisBuildVersion }}
+            </button>
+          </section>
+          <h3 v-if="!isFilteredDateRange">Average (All Time)</h3>
+          <h3 v-if="isFilteredDateRange">Average (AcrossDate Range)</h3>
+          <section v-if="!isFilteredDateRange">
+            <p v-for="[feature, metrics] in Object.entries(kpiMetrics)" :key="feature">
+              {{ metrics.acceptance_percentage }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}</p>
+          </section>
+          <section v-if="isFilteredDateRange">
+            <p v-for="[feature, acceptancePercentage] in Object.entries(filteredDateRangeTotals)" :key="feature">
+              {{ acceptancePercentage.toFixed(1) }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}
+            </p>
+          </section>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -181,6 +268,7 @@ onUnmounted(() => {
 
 .kpi-chart-container {
   position: relative;
-  max-width: 800px;
+  max-width: 80%;
+  max-height: 40vh;
 }
 </style>
