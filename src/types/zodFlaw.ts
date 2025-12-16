@@ -306,13 +306,21 @@ const duplicatedAffects = (affects: ZodAffectType[]) => {
     let key: string;
     const affect = affects[i];
     if (affect.purl) {
-      // If purl is present: unique on (ps_update_stream, purl)
-      // Order qualifiers alphabetically to avoid duplicates due to different order
-      const normalizedPurl = PackageURL.fromString(affect.purl).toString();
-      key = `${affects[i].ps_update_stream}-${normalizedPurl}`;
+      // If purl is present: unique on (ps_update_stream, purl_normalized)
+      // purl_normalized is the purl without qualifiers (matching OSIDB behavior)
+      const parsedPurl = PackageURL.fromString(affect.purl);
+      const normalizedPurl = new PackageURL(
+        parsedPurl.type,
+        parsedPurl.namespace,
+        parsedPurl.name,
+        parsedPurl.version,
+        null, // Remove qualifiers
+        parsedPurl.subpath,
+      ).toString();
+      key = `${affect.ps_update_stream}-${normalizedPurl}`;
     } else {
       // If no purl: unique on (ps_update_stream, ps_component)
-      key = `${affects[i].ps_update_stream}-${affects[i].ps_component}`;
+      key = `${affect.ps_update_stream}-${affect.ps_component}`;
     }
 
     if (map[key]) {
