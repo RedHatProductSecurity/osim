@@ -30,7 +30,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
             </div>
           </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-            <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
+            <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Source Component</span>
               <div data-v-76f6bf34="" class="col-9">
                 <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control is-invalid">
                   <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">

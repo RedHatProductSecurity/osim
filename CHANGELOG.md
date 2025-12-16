@@ -4,6 +4,9 @@
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
 
+### Changed
+* Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
+
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)

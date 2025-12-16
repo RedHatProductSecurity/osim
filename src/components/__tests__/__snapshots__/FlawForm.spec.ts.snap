@@ -91,7 +91,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
         </div>
       </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-        <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Components</span>
+        <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Source Component</span>
           <div data-v-76f6bf34="" class="col-9">
             <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
               <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"><span data-v-8bc603c3="" class="osim-pill-list-item badge text-bg-secondary" draggable="true" data-index="0"><span data-v-8bc603c3="" style="cursor: text;">kernel</span><i data-v-8bc603c3="" class="bi bi-x-square ms-1" style="cursor: pointer;" tabindex="0"><span data-v-8bc603c3="" class="visually-hidden">Remove</span></i></span></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
