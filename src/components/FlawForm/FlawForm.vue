@@ -256,7 +256,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
           </LabelDiv>
           <LabelTagsInput
             v-model="flaw.components"
-            label="Components"
+            label="Source Component"
             :error="errors.components"
           />
           <div class="row">

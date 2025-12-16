@@ -105,7 +105,7 @@ describe('flawForm', () => {
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find(component => component.props().label === 'Components');
+      .find(component => component.props().label === 'Source Component');
     expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
@@ -188,7 +188,7 @@ describe('flawForm', () => {
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find(component => component.props().label === 'Components');
+      .find(component => component.props().label === 'Source Component');
     expect(componentsField?.exists()).toBe(true);
 
     const cveIdField = subject
@@ -275,7 +275,7 @@ describe('flawForm', () => {
 
     const componentsField = subject
       .findAllComponents(LabelTagsInput)
-      .find(component => component.props().label === 'Components')
+      .find(component => component.props().label === 'Source Component')
       ?.find('.is-invalid');
     expect(componentsField?.exists()).toBe(true);
 

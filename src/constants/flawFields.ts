@@ -57,7 +57,7 @@ export const flawFieldNamesMapping: Record<string, string> = {
   impact: 'Impact',
   source: 'Source',
   statement: 'Statement',
-  components: 'Components',
+  components: 'Source Component',
   mitigation: 'Mitigation',
   reported_dt: 'Reported Date',
   unembargo_dt: 'Public Date',
