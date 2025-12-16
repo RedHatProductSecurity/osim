@@ -277,7 +277,7 @@ export const ZodFlawSchema = z.object({
   const affect = duplicatedAffects(zodFlaw.affects);
   if (affect) {
     raiseIssue(
-      'Affected component cannot be registered on the affected module twice',
+      'Affected component cannot be registered on the affected component/PURL twice',
       ['affects', `${affect.index}`, 'ps_component'],
     );
   }
