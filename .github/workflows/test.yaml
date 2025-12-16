@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/iron' # '20.x'
+          node-version: '22'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn test:unit:nowatch
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/iron' # '20.x'
+          node-version: '22'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn build
