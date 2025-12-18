@@ -3,6 +3,7 @@
 ### Added
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
+* Added optional comment popup for Aegis suggestions feedback (`AEGIS-266`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
@@ -12,8 +13,6 @@
 
 ### Changed
 * Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
-
-### Changed
 * Updated aegis feedback method (`AEGIS-203`)
 
 

@@ -1,4 +1,6 @@
 // AI Change Tracking Types
+import type { Feedback } from '@/generated-client/aegis-ai/models';
+
 import type { Nullable } from '.';
 import type { AegisChangeType } from './zodFlaw';
 import type { ImpactEnumWithBlankType } from './zodShared';
@@ -114,4 +116,5 @@ export type AegisFeatureResponseMap = {
 
 export type AegisFeature = keyof AegisFeatureResponseMap;
 
-export type { Feedback as AegisFeedbackPayload } from '@/generated-client/aegis-ai/models';
+// Extend generated Feedback type with optional comment field (for negative feedback)
+export type AegisFeedbackPayload = { comment?: string } & Feedback;

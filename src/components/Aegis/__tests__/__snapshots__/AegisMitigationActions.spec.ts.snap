@@ -4,5 +4,11 @@ exports[`aegisMitigationActions > renders correctly 1`] = `
 "<div data-v-e049df0b="" data-v-1b6ef09d="" class="d-flex align-items-center"><i data-v-e049df0b="" class="bi-stars label-icon" title="Suggest Mitigation via AEGIS-AI"></i>
   <!--v-if-->
   <!--v-if-->
+  <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
+  <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+    <!--v-if-->
+  </transition-stub>
 </div>"
 `;
