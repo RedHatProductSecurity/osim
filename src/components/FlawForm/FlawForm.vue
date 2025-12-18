@@ -24,6 +24,7 @@ import FlawMitigation from '@/components/FlawForm/FlawMitigation.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
+import IncidentRequestButton from '@/components/IncidentRequestDialog/IncidentRequestButton.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -122,6 +123,11 @@ const isEmbargoed = ref<boolean>(false);
 const showUnembargoingModal = ref(false);
 const unembargoing = computed(() => isEmbargoed.value && !flaw.value.embargoed);
 
+const isIncidentStateDisabled = computed(() =>
+  props.mode === 'edit'
+  && !flaw.value.major_incident_state,
+);
+
 const onSubmit = async () => {
   if (props.mode === 'edit') {
     if (isValid() && unembargoing.value) {
@@ -153,9 +159,7 @@ const hiddenSources = computed(() => {
 });
 
 // Hide blank option if there is already a value
-const hiddenIncidentStates = computed(() => {
-  return initialFlaw.value?.major_incident_state ? [''] : [];
-});
+const hiddenIncidentStates = computed(() => initialFlaw.value?.major_incident_state ? [''] : []);
 
 const referencesComp = ref<InstanceType<typeof IssueFieldReferences> | null>(null);
 const acknowledgmentsComp = ref<InstanceType<typeof IssueFieldAcknowledgments> | null>(null);
@@ -336,13 +340,22 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
             @refresh:flaw="emit('refresh:flaw')"
             @create:jiraTask="toggleShouldCreateJiraTask()"
           />
-          <LabelSelect
-            v-model="flaw.major_incident_state"
-            label="Incident State"
-            :options="MajorIncidentStateEnumWithBlank"
-            :error="errors.major_incident_state"
-            :optionsHidden="hiddenIncidentStates"
-          />
+          <div class="osim-incident-state-container mb-2">
+            <LabelSelect
+              v-model="flaw.major_incident_state"
+              label="Incident State"
+              :options="MajorIncidentStateEnumWithBlank"
+              :error="errors.major_incident_state"
+              :optionsHidden="hiddenIncidentStates"
+              :disabled="isIncidentStateDisabled"
+            />
+            <IncidentRequestButton
+              :mode="mode"
+              :flawUuid="flaw.uuid"
+              :majorIncidentState="flaw.major_incident_state"
+              @requestSubmitted="emit('refresh:flaw')"
+            />
+          </div>
           <LabelEditable
             v-model="flaw.reported_dt"
             label="Reported Date"
@@ -696,5 +709,24 @@ form.osim-flaw-form :deep(*) {
 .throbber {
   position: absolute;
   left: 1rem;
+}
+
+.osim-incident-state-container {
+  position: relative;
+
+  :deep(.osim-incident-request-btn) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    height: 38px;
+  }
+
+  :deep(.osim-input select) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 </style>

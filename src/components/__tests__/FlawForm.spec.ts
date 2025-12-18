@@ -581,7 +581,7 @@ describe('flawForm', () => {
     expect(incidentStateField?.props().optionsHidden).toEqual(['']);
   });
 
-  osimFullFlawTest('should show blank option in incident state when no value is set', async ({ flaw }) => {
+  osimFullFlawTest('should disable incident state dropdown when no value is set', async ({ flaw }) => {
     flaw.major_incident_state = null;
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
@@ -590,7 +590,8 @@ describe('flawForm', () => {
       .find(component => component.props().label === 'Incident State');
 
     expect(incidentStateField?.exists()).toBe(true);
-    expect(incidentStateField?.props().optionsHidden).toEqual([]);
+    const selectElement = incidentStateField?.find('select');
+    expect(selectElement?.attributes('disabled')).toBeDefined();
   });
 
   osimFullFlawTest('should trigger validation error for duplicate affects without purl', async ({ flaw }) => {

@@ -325,3 +325,26 @@ const duplicatedAffects = (affects: ZodAffectType[]) => {
   }
   return null;
 };
+
+// Incident Request Types
+export enum IncidentKindEnum {
+  EXPLOITS_KEV_REQUESTED = 'EXPLOITS_KEV_REQUESTED',
+  MAJOR_INCIDENT_REQUESTED = 'MAJOR_INCIDENT_REQUESTED',
+  MINOR_INCIDENT_REQUESTED = 'MINOR_INCIDENT_REQUESTED',
+}
+
+export const IncidentKindEnumLabels: Record<IncidentKindEnum, string> = {
+  [IncidentKindEnum.MAJOR_INCIDENT_REQUESTED]: 'Major',
+  [IncidentKindEnum.MINOR_INCIDENT_REQUESTED]: 'Minor',
+  [IncidentKindEnum.EXPLOITS_KEV_REQUESTED]: 'KEV',
+};
+
+export type IncidentRequestPost = {
+  comment: string;
+  kind: IncidentKindEnum;
+};
+
+export const ZodIncidentRequestSchema = z.object({
+  comment: z.string().min(1, 'Incident reason is required'),
+  kind: z.nativeEnum(IncidentKindEnum),
+});

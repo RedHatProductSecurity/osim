@@ -407,3 +407,20 @@ export async function deleteFlawAcknowledgment(
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment deleted.' }))
     .catch(createCatchHandler('Error deleting Acknowledgment:'));
 }
+
+export type IncidentRequestPost = {
+  comment: string;
+  kind: string;
+};
+
+export async function postIncidentRequest(
+  flawId: string,
+  requestBody: IncidentRequestPost,
+) {
+  const response = await osidbFetch({
+    method: 'post',
+    url: `/osidb/api/v1/flaws/${flawId}/incident-requests`,
+    data: requestBody,
+  });
+  return response.data;
+}
