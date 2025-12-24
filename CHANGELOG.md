@@ -3,6 +3,7 @@
 ### Added
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
+* Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)

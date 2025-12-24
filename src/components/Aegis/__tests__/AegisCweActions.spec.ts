@@ -30,6 +30,7 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
 }));
 
 vi.mock('@/services/CweService', () => ({
+  getMitreUrl: vi.fn((id: string) => `https://cwe.mitre.org/data/definitions/${id}.html`),
   loadCweData: vi.fn(() => [
     { id: '79', name: 'Cross-site Scripting', isProhibited: false },
     { id: '89', name: 'SQL Injection', isProhibited: false },
