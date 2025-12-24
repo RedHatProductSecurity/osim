@@ -97,7 +97,12 @@ function onBlur(e: FocusEvent | null) {
             'form-control': !readOnly,
             'is-invalid': error != null
           }"
-        >{{ modelValue === '' ? placeholder : modelValue }}</span>
+        >
+          <!-- Use #display slot to customize how the value is rendered (e.g., as links) -->
+          <slot name="display" :value="modelValue" :placeholder>
+            {{ modelValue === '' ? placeholder : modelValue }}
+          </slot>
+        </span>
         <!--if a button is inside a label, clicking the label clicks the button?-->
         <button
           v-if="!readOnly"

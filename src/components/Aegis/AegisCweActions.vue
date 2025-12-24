@@ -7,7 +7,7 @@ import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
 import { osimRuntime } from '@/stores/osimRuntime';
-import { loadCweData } from '@/services/CweService';
+import { getMitreUrl, loadCweData } from '@/services/CweService';
 import type { CWEMemberType } from '@/types/mitreCwe';
 
 const props = withDefaults(defineProps<{
@@ -108,7 +108,7 @@ onMounted(() => {
           </div>
           <a
             v-if="getCweDetails(suggestion)"
-            :href="`https://cwe.mitre.org/data/definitions/${getCweDetails(suggestion)!.id}.html`"
+            :href="getMitreUrl(getCweDetails(suggestion)!.id)"
             class="icon-link"
             target="_blank"
             @click.stop
