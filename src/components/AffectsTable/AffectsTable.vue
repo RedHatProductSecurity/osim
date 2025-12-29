@@ -207,7 +207,8 @@ onMounted(() => {
             :colspan="header.colSpan"
             :class="[
               header.column.getCanSort() ? 'sortable' : '',
-              header.id === 'actions' ? 'sticky-actions' : ''
+              header.id === 'Select' ? 'sticky-column sticky-left' : '',
+              header.id === 'actions' ? 'sticky-column sticky-right' : ''
             ]"
             :style="{ width: `${header.getSize()}px` }"
             @click="header.column.getToggleSortingHandler()?.($event)"
@@ -246,7 +247,10 @@ onMounted(() => {
           <td
             v-for="header in table.getHeaderGroups()[0].headers"
             :key="header.id"
-            :class="header.id === 'actions' ? 'sticky-actions' : ''"
+            :class="[
+              header.id === 'Select' ? 'sticky-column sticky-left' : '',
+              header.id === 'actions' ? 'sticky-column sticky-right' : ''
+            ]"
             :style="{ width: `${header.getSize()}px` }"
           >
             <div v-if="header.id === 'Select'" class="d-flex align-items-center gap-1">
@@ -276,6 +280,7 @@ onMounted(() => {
           <td
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
+            :class="cell.column.id === 'Select' ? 'sticky-column sticky-left' : ''"
           >
             <FlexRender
               :render="cell.column.columnDef.cell"
@@ -298,7 +303,10 @@ onMounted(() => {
           <td
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
-            :class="cell.column.id === 'actions' ? 'sticky-actions' : ''"
+            :class="[
+              cell.column.id === 'Select' ? 'sticky-column sticky-left' : '',
+              cell.column.id === 'actions' ? 'sticky-column sticky-right' : ''
+            ]"
           >
             <FlexRender
               :render="cell.column.columnDef.cell"
@@ -412,16 +420,24 @@ table {
     }
   }
 
-  // Sticky actions column
-  th.sticky-actions,
-  td.sticky-actions {
+  // Sticky columns
+  th.sticky-column,
+  td.sticky-column {
     position: sticky;
-    right: 0;
     z-index: 1;
-    box-shadow: -2px 0 4px rgb(0 0 0 / 20%);
+
+    &.sticky-left {
+      left: 0;
+      box-shadow: 2px 0 4px rgb(0 0 0 / 20%);
+    }
+
+    &.sticky-right {
+      right: 0;
+      box-shadow: -2px 0 4px rgb(0 0 0 / 20%);
+    }
   }
 
-  thead th.sticky-actions {
+  thead th.sticky-column {
     z-index: 3;
   }
 }
