@@ -266,6 +266,7 @@ onMounted(() => {
           v-for="row in table.getTopRows()"
           :key="row.id"
           :class="{
+            'selected': row.getIsSelected(),
             'modified': modifiedAffects.has(row.id),
             'new': newAffects.has(row.id),
             'removed': removedAffects.has(row.id),
@@ -287,6 +288,7 @@ onMounted(() => {
           v-for="row in table.getCenterRows()"
           :key="row.id"
           :class="{
+            'selected': row.getIsSelected(),
             'modified': modifiedAffects.has(row.id),
             'new': newAffects.has(row.id),
             'removed': removedAffects.has(row.id),
@@ -396,6 +398,11 @@ table {
       background-color: #f0e8ff;
       color: #4a148c;
       font-weight: 500;
+    }
+
+    &.selected td {
+      border-color: #ffd54f !important;
+      background-color: #fff8e1;
     }
   }
 
