@@ -60,7 +60,7 @@ exports[`affectsTable > should render 1`] = `
   <table data-v-17587d65="" class="table table-striped mb-0 z-0">
     <thead data-v-17587d65="" class="sticky-top table-dark">
       <tr data-v-17587d65="">
-        <th data-v-17587d65="" colspan="1" class="" style="width: 40px;">
+        <th data-v-17587d65="" colspan="1" class="sticky-column sticky-left" style="width: 40px;">
           <div data-v-17587d65=""><input type="checkbox" class="form-check-input">
             <!---->
           </div>
@@ -226,7 +226,7 @@ exports[`affectsTable > should render 1`] = `
           </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
           <div data-v-17587d65="" class="resizer ltr"></div>
         </th>
-        <th data-v-17587d65="" colspan="1" class="sticky-actions" style="width: 80px;">Actions
+        <th data-v-17587d65="" colspan="1" class="sticky-column sticky-right" style="width: 80px;">Actions
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
@@ -239,7 +239,7 @@ exports[`affectsTable > should render 1`] = `
       <!-- Pinned Top Rows (New Affects - Always Visible) -->
       <!-- Center Rows (Paginated Existing Affects) -->
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="" class="">
+        <td data-v-17587d65="" class="sticky-column sticky-left">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
@@ -264,7 +264,7 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
         <td data-v-17587d65="" class="">2024-12-01 13:05 UTC</td>
         <td data-v-17587d65="" class="">2024-12-01 13:06 UTC</td>
-        <td data-v-17587d65="" class="sticky-actions">
+        <td data-v-17587d65="" class="sticky-column sticky-right">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if-->
             <!--v-if-->
@@ -272,7 +272,7 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="" class="">
+        <td data-v-17587d65="" class="sticky-column sticky-left">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
@@ -297,7 +297,7 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
         <td data-v-17587d65="" class="">2024-11-01 13:05 UTC</td>
         <td data-v-17587d65="" class="">2024-11-01 13:06 UTC</td>
-        <td data-v-17587d65="" class="sticky-actions">
+        <td data-v-17587d65="" class="sticky-column sticky-right">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if-->
             <!--v-if-->
@@ -305,7 +305,7 @@ exports[`affectsTable > should render 1`] = `
         </td>
       </tr>
       <tr data-v-17587d65="" class="">
-        <td data-v-17587d65="" class="">
+        <td data-v-17587d65="" class="sticky-column sticky-left">
           <div data-v-17587d65="" style="padding-left: 0px;"><input type="checkbox" class="form-check-input">
             <!---->
           </div>
@@ -334,7 +334,7 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class="">2023-12-06 17:12 UTC</td>
         <td data-v-17587d65="" class=""></td>
         <td data-v-17587d65="" class=""></td>
-        <td data-v-17587d65="" class="sticky-actions">
+        <td data-v-17587d65="" class="sticky-column sticky-right">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if--><button type="button" title="File tracker" class="btn btn-dark btn-sm"><i class="bi-file-earmark-diff"></i></button>
           </div>
