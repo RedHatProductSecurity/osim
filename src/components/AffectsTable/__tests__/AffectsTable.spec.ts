@@ -546,6 +546,20 @@ describe('affectsTable', () => {
         const removedRow = rows.find(row => row.classes('removed'));
         expect(removedRow).toBeDefined();
       });
+
+      it('should apply styling to selected rows', async () => {
+        const wrapper = await mountAffectsTable();
+
+        const checkboxes = wrapper.findAll('tbody tr input[type="checkbox"]');
+        expect(checkboxes.length).toBeGreaterThan(0);
+
+        await checkboxes[0].setValue(true);
+        await flushPromises();
+
+        const rows = wrapper.findAll('tbody tr');
+        const selectedRow = rows.find(row => row.classes('selected'));
+        expect(selectedRow).toBeDefined();
+      });
     });
 
     describe('bulk edit', () => {
