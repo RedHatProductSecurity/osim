@@ -9,6 +9,7 @@
 * Suggest trackers across all existing rows (`OSIDB-4638`)
 * Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
+* Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
 
 ### Changed
 * Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
