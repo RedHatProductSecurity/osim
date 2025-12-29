@@ -11,9 +11,6 @@
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 ### Changed
-* Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
-
-### Changed
 * Updated aegis feedback method (`AEGIS-203`)
 
 

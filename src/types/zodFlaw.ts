@@ -1,6 +1,5 @@
 import { nativeEnum, z } from 'zod';
 import { DateTime } from 'luxon';
-import { PackageURL } from 'packageurl-js';
 
 import { cveRegex } from '@/utils/helpers';
 import { loadCweData } from '@/services/CweService';
@@ -277,7 +276,7 @@ export const ZodFlawSchema = z.object({
   const affect = duplicatedAffects(zodFlaw.affects);
   if (affect) {
     raiseIssue(
-      'Affected component cannot be registered on the affected component/PURL twice',
+      'Affected component cannot be registered on the affected module twice',
       ['affects', `${affect.index}`, 'ps_component'],
     );
   }
@@ -303,18 +302,7 @@ export const ZodFlawSchema = z.object({
 const duplicatedAffects = (affects: ZodAffectType[]) => {
   const map: Record<string, boolean> = {};
   for (let i = 0; i < affects.length; i++) {
-    let key: string;
-    const affect = affects[i];
-    if (affect.purl) {
-      // If purl is present: unique on (ps_update_stream, purl)
-      // Order qualifiers alphabetically to avoid duplicates due to different order
-      const normalizedPurl = PackageURL.fromString(affect.purl).toString();
-      key = `${affects[i].ps_update_stream}-${normalizedPurl}`;
-    } else {
-      // If no purl: unique on (ps_update_stream, ps_component)
-      key = `${affects[i].ps_update_stream}-${affects[i].ps_component}`;
-    }
-
+    const key = `${affects[i].ps_update_stream}-${affects[i].ps_module}-${affects[i].ps_component}`;
     if (map[key]) {
       return {
         index: i,
