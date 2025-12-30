@@ -98,8 +98,8 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         timeoutMs: 8000,
       });
     } catch (e: any) {
-      const msg = e?.data?.detail ?? e?.message ?? 'Request failed';
-      toastStore.addToast({ title: 'AI Suggestion Error', body: `${msg}` });
+      const msg = e?.message ?? e?.data?.detail ?? 'Request failed';
+      toastStore.addToast({ title: 'AI Suggestion Error', body: msg });
     } finally {
       isSuggesting.value = false;
     }

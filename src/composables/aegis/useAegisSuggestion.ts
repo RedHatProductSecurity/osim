@@ -76,12 +76,13 @@ export function useAegisSuggestion(
 
   async function suggestCwe() {
     const data = await getSuggestion();
-    if (!data || !('cwe' in data) || !data.cwe || data.cwe.length === 0) {
+    if (!data) return; // Error already handled by getSuggestion
+    if (!('cwe' in data) || !data.cwe || data.cwe.length === 0) {
       toastStore.addToast({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
-    } else {
-      details.value.cwe = data.cwe;
-      applySuggestion(data.cwe[0]);
+      return;
     }
+    details.value.cwe = data.cwe;
+    applySuggestion(data.cwe[0]);
   }
 
   async function applySuggestion(suggestion: string) {
@@ -100,29 +101,30 @@ export function useAegisSuggestion(
 
   async function suggestImpact() {
     const data = await getSuggestion();
-    if (!data || !('impact' in data) || !data.impact) {
+    if (!data) return;
+    if (!('impact' in data) || !data.impact) {
       toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
-    } else {
-      const { impact } = data;
-      details.value.impact = impact;
-      applySuggestion(impact);
-    };
+      return;
+    }
+    details.value.impact = data.impact;
+    applySuggestion(data.impact);
   }
 
   async function suggestCvss() {
     const data = await getSuggestion();
-    if (!data || !('cvss3_vector' in data) || !data.cvss3_vector || typeof data.cvss3_vector !== 'string') {
+    if (!data) return;
+    if (!('cvss3_vector' in data) || !data.cvss3_vector || typeof data.cvss3_vector !== 'string') {
       toastStore.addToast({ title: 'AI CVSS Vector Suggestions', body: 'No valid CVSS vector suggestion received.' });
-    } else {
-      details.value.cvss3_vector = data.cvss3_vector;
-      applySuggestion(data.cvss3_vector);
+      return;
     }
+    details.value.cvss3_vector = data.cvss3_vector;
+    applySuggestion(data.cvss3_vector);
   }
 
   async function suggestStatement() {
     const data = await getSuggestion();
-    const hasValidField = data
-      && ('suggested_statement' in data)
+    if (!data) return;
+    const hasValidField = ('suggested_statement' in data)
       && data.suggested_statement !== null
       && data.suggested_statement !== undefined;
 
@@ -131,17 +133,16 @@ export function useAegisSuggestion(
         title: 'AI Statement Suggestions',
         body: 'No valid statement suggestion received.',
       });
-    } else {
-      const { suggested_statement } = data;
-      details.value.suggested_statement = suggested_statement;
-      applySuggestion(suggested_statement || '');
-    };
+      return;
+    }
+    details.value.suggested_statement = data.suggested_statement;
+    applySuggestion(data.suggested_statement || '');
   }
 
   async function suggestMitigation() {
     const data = await getSuggestion();
-    const hasValidField = data
-      && ('suggested_mitigation' in data)
+    if (!data) return;
+    const hasValidField = ('suggested_mitigation' in data)
       && data.suggested_mitigation !== null
       && data.suggested_mitigation !== undefined;
 
@@ -150,11 +151,10 @@ export function useAegisSuggestion(
         title: 'AI Mitigation Suggestions',
         body: 'No valid mitigation suggestion received.',
       });
-    } else {
-      const { suggested_mitigation } = data;
-      details.value.suggested_mitigation = suggested_mitigation;
-      applySuggestion(suggested_mitigation || '');
-    };
+      return;
+    }
+    details.value.suggested_mitigation = data.suggested_mitigation;
+    applySuggestion(data.suggested_mitigation || '');
   }
 
   async function getSuggestion() {
@@ -205,8 +205,9 @@ export function useAegisSuggestion(
       };
       return data;
     } catch (e: any) {
-      const msg = e?.data?.detail ?? e?.message ?? 'Request failed';
-      toastStore.addToast({ title: 'AI Suggestion Error', body: `${msg}` });
+      const msg = e?.message ?? e?.data?.detail ?? 'Request failed';
+      toastStore.addToast({ title: 'AI Suggestion Error', body: msg });
+      return; // Return undefined, don't throw
     }
   }
 
