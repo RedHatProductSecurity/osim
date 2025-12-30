@@ -12,10 +12,12 @@
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 ### Changed
+* Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
 * Updated aegis feedback method (`AEGIS-203`)
 * Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
 * Highlight selected rows in affects table (`OSIDB-4715`)
 * Pin select column to the left in affects table (`OSIDB-4715`)
+* Improve Aegis AI error messages for network and backend failures (`AEGIS-272`)
 
 
 ## [2025.11.4]
