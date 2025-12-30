@@ -12,9 +12,10 @@ import type {
 import { AegisAIService } from '../AegisAIService';
 
 // Mock the stores
+const mockAddToast = vi.fn();
 vi.mock('@/stores/ToastStore', () => ({
   useToastStore: vi.fn(() => ({
-    addToast: vi.fn(),
+    addToast: mockAddToast,
   })),
 }));
 
@@ -33,6 +34,7 @@ describe('aegisAIService', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    mockAddToast.mockClear();
   });
 
   describe('analyzeComponent', () => {
@@ -225,6 +227,31 @@ describe('aegisAIService', () => {
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       await expect(service.getConsole()).rejects.toBeDefined();
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('network errors', () => {
+    it('should reject with descriptive error on network connection failure', async () => {
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/cve`, () => {
+          return HttpResponse.error();
+        }),
+      );
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const params: AegisAICVEAnalysisParamsType = {
+        feature: 'suggest-impact',
+        cve_id: 'CVE-2024-1234',
+      };
+
+      await expect(service.analyzeCVE(params)).rejects.toMatchObject({
+        message: 'Unable to connect to AEGIS-AI server. Please check your network connection or try again later.',
+        isNetworkError: true,
+      });
+
+      // Toast is now handled by composables, not service
+      expect(mockAddToast).not.toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });
