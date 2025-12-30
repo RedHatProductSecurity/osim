@@ -9,7 +9,6 @@ import type {
   AegisFeatureResponseMap,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { useToastStore } from '@/stores/ToastStore';
 
 export type AegisAIFetchCallbacks = {
   beforeFetch?: (options: AegisAIFetchOptions) => Promise<void> | void;
@@ -48,13 +47,9 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
   const baseUrl = osimRuntime.value.backends.aegisai;
 
   if (!baseUrl) {
-    const errorMsg = 'AEGIS-AI backend not configured in runtime';
-    console.error(errorMsg);
-    useToastStore().addToast({
-      title: 'Configuration Error',
-      body: 'AEGIS-AI service is not available.',
-    });
-    return Promise.reject(errorMsg);
+    const errorMsg = 'AEGIS-AI service is not available. Backend not configured.';
+    console.error('AEGIS-AI backend not configured in runtime');
+    return Promise.reject({ errorMsg, isConfigError: true });
   }
 
   let response: Response;
@@ -69,7 +64,11 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
     });
   } catch (e) {
     console.error('❌ AEGIS-AI Fetch failed:', e);
-    return Promise.reject(e);
+    const isNetworkError = e instanceof TypeError;
+    const errorMsg = isNetworkError
+      ? 'Unable to connect to AEGIS-AI server. Please check your network connection or try again later.'
+      : 'AEGIS-AI request failed unexpectedly.';
+    return Promise.reject({ message: errorMsg, isNetworkError, originalError: e });
   }
 
   if (!response.ok) {
@@ -87,6 +86,12 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
       }
     }
 
+    const detail = data?.detail ?? data?.error ?? data?.message;
+    const statusInfo = `HTTP ${response.status} ${response.statusText}`;
+    const errorMsg = detail
+      ? `${detail} (${statusInfo})`
+      : `AEGIS-AI server error (${statusInfo}). Please try again or contact support.`;
+
     return Promise.reject({
       response: {
         headers: Object.fromEntries(response.headers.entries()),
@@ -99,6 +104,7 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
         data,
       },
       data,
+      message: errorMsg,
     });
   }
 
