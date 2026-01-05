@@ -258,7 +258,7 @@ describe('aegisAIService', () => {
   });
 
   describe('getKpiMetrics', () => {
-    const mockKpiMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const mockKpiMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.5,
         entries: [
@@ -303,6 +303,14 @@ describe('aegisAIService', () => {
             aegis_version: '1.0.0',
           },
         ],
+      },
+      'suggest-title': {
+        acceptance_percentage: 78.0,
+        entries: [],
+      },
+      'suggest-cvss': {
+        acceptance_percentage: 82.0,
+        entries: [],
       },
     };
 

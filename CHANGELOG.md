@@ -4,6 +4,7 @@
 * Add subpackages PURL column on affects table (`OSIDB-4697`)
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
 * Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
+* Add KPI metrics data visualization (`AEGIS-196`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
@@ -12,9 +13,9 @@
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 ### Changed
+* Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
 * Adjust uniqueness check on ps_component/purl (`OSIDB-4667`)
 * Updated aegis feedback method (`AEGIS-203`)
-* Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
 * Highlight selected rows in affects table (`OSIDB-4715`)
 * Pin select column to the left in affects table (`OSIDB-4715`)
 * Improve Aegis AI error messages for network and backend failures (`AEGIS-272`)

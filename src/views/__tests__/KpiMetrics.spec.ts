@@ -35,7 +35,7 @@ const mountKpiMetrics = (options?: any) => {
 };
 
 const createMockKpiMetrics = () => {
-  const mockKpiMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+  const mockKpiMetrics: Omit<AegisKpiMetrics, 'all'> = {
     'suggest-cwe': {
       acceptance_percentage: 75.0,
       entries: [
@@ -66,6 +66,36 @@ const createMockKpiMetrics = () => {
         },
         {
           datetime: '2025-01-22 13:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+    'suggest-title': {
+      acceptance_percentage: 78.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+        {
+          datetime: '2025-01-18 14:00:00.000',
+          accepted: false,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
+    'suggest-cvss': {
+      acceptance_percentage: 82.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+        {
+          datetime: '2025-01-19 15:00:00.000',
           accepted: true,
           aegis_version: '1.0.0',
         },
@@ -135,17 +165,21 @@ describe('kpiMetrics', () => {
     const select = wrapper.find('select#feature-select');
     const options = select.findAll('option');
 
-    expect(options.length).toBe(5); // 'all' + 4 features
+    expect(options.length).toBe(7); // 'all' + 6 features
     expect(options[0].text()).toBe('All');
     expect(options[0].attributes('value')).toBe('all');
     expect(options[1].text()).toBe('Suggest CWE');
     expect(options[1].attributes('value')).toBe('suggest-cwe');
     expect(options[2].text()).toBe('Suggest Description');
     expect(options[2].attributes('value')).toBe('suggest-description');
-    expect(options[3].text()).toBe('Suggest Impact');
-    expect(options[3].attributes('value')).toBe('suggest-impact');
-    expect(options[4].text()).toBe('Suggest Statement Mitigation');
-    expect(options[4].attributes('value')).toBe('suggest-statement');
+    expect(options[3].text()).toBe('Suggest Title');
+    expect(options[3].attributes('value')).toBe('suggest-title');
+    expect(options[4].text()).toBe('Suggest CVSS');
+    expect(options[4].attributes('value')).toBe('suggest-cvss');
+    expect(options[5].text()).toBe('Suggest Impact');
+    expect(options[5].attributes('value')).toBe('suggest-impact');
+    expect(options[6].text()).toBe('Suggest Statement Mitigation');
+    expect(options[6].attributes('value')).toBe('suggest-statement');
   });
 
   it('should fetch metrics when feature selection changes', async () => {
@@ -204,7 +238,7 @@ describe('kpiMetrics', () => {
   });
 
   it('should calculate acceptance percentage correctly', async () => {
-    const mockMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const mockMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -221,6 +255,14 @@ describe('kpiMetrics', () => {
         ],
       },
       'suggest-description': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
+      'suggest-title': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
+      'suggest-cvss': {
         acceptance_percentage: 100.0,
         entries: [],
       },
@@ -288,6 +330,8 @@ describe('kpiMetrics', () => {
       expect([
         'Suggest CWE',
         'Suggest Description',
+        'Suggest Title',
+        'Suggest CVSS',
         'Suggest Impact',
         'Suggest Statement Mitigation',
       ]).toContain(series.name);
@@ -336,6 +380,14 @@ describe('kpiMetrics', () => {
         acceptance_percentage: 90.0,
         entries: [],
       },
+      'suggest-title': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-cvss': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
     };
 
     mockGetKpiMetrics.mockResolvedValueOnce(metricsWithExtraFeature);
@@ -346,17 +398,27 @@ describe('kpiMetrics', () => {
     expect(vm.kpiMetrics).not.toHaveProperty('invalid-feature');
     expect(vm.kpiMetrics).toHaveProperty('suggest-cwe');
     expect(vm.kpiMetrics).toHaveProperty('suggest-description');
+    expect(vm.kpiMetrics).toHaveProperty('suggest-title');
+    expect(vm.kpiMetrics).toHaveProperty('suggest-cvss');
     expect(vm.kpiMetrics).toHaveProperty('suggest-impact');
     expect(vm.kpiMetrics).toHaveProperty('suggest-statement');
   });
 
   it('should handle empty metrics gracefully', async () => {
-    const emptyMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const emptyMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 0,
         entries: [],
       },
       'suggest-description': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-title': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-cvss': {
         acceptance_percentage: 0,
         entries: [],
       },
@@ -405,7 +467,7 @@ describe('kpiMetrics', () => {
 
   it('should handle different week calculations correctly', async () => {
     // Test with entries spanning multiple weeks
-    const multiWeekMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const multiWeekMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -427,6 +489,14 @@ describe('kpiMetrics', () => {
         ],
       },
       'suggest-description': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
+      'suggest-title': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
+      'suggest-cvss': {
         acceptance_percentage: 100.0,
         entries: [],
       },
@@ -456,7 +526,7 @@ describe('kpiMetrics', () => {
     wrapper = mountKpiMetrics();
     await flushPromises();
 
-    const singleFeatureMetrics: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const singleFeatureMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -468,6 +538,14 @@ describe('kpiMetrics', () => {
         ],
       },
       'suggest-description': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-title': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-cvss': {
         acceptance_percentage: 0,
         entries: [],
       },
@@ -499,7 +577,7 @@ describe('kpiMetrics', () => {
     // Reset mock call count
     mockGetKpiMetrics.mockClear();
 
-    const singleFeatureResponse: Omit<AegisKpiMetrics, 'suggest-cvss'> = {
+    const singleFeatureResponse: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.0,
         entries: [
@@ -511,6 +589,14 @@ describe('kpiMetrics', () => {
         ],
       },
       'suggest-description': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-title': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-cvss': {
         acceptance_percentage: 0,
         entries: [],
       },

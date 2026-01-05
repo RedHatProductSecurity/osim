@@ -4,35 +4,37 @@ import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import { DateTime } from 'luxon';
 import { VueUiXy } from 'vue-data-ui/vue-ui-xy';
 
-import type { AegisKpiMetrics, AegisKpiMetricsFeature } from '@/types/aegisAI';
+import type { AegisKpiFeatureParamType, AegisKpiMetrics, AegisKpiMetricsFeature } from '@/types/aegisAI';
 import { AegisAIService } from '@/services/AegisAIService';
 import { uniques } from '@/utils/helpers';
 
-const FeatureLabels = {
+const FeatureLabels: Record<AegisKpiFeatureParamType, string> = {
+  'all': 'All',
   'suggest-cwe': 'Suggest CWE',
   'suggest-description': 'Suggest Description',
+  'suggest-title': 'Suggest Title',
+  'suggest-cvss': 'Suggest CVSS',
   'suggest-impact': 'Suggest Impact',
   'suggest-statement': 'Suggest Statement Mitigation',
 };
 
 type FeatureLabel = keyof typeof FeatureLabels;
 
-const FeatureLabelsWithAll = {
-  all: 'All',
-  ...FeatureLabels,
-};
-
-type FeatureLabelsWithAllType = keyof typeof FeatureLabelsWithAll;
-
 const kpiMetrics = ref<AegisKpiMetrics | null>(null);
-// const chosenFeature = ref<keyof typeof FeatureLabels>('all');
-const chosenFeature = ref<FeatureLabelsWithAllType>('all');
+const chosenFeature = ref<AegisKpiFeatureParamType>('all');
 
-async function fetchKpiMetrics(feature: FeatureLabelsWithAllType = 'all') {
-  const featureKey = feature === 'all' ? 'all' : (feature as any);
+async function fetchKpiMetrics(feature: AegisKpiFeatureParamType = 'all') {
+  const featureKey = feature === 'all' ? 'all' : feature;
   try {
     const metrics = await new AegisAIService().getKpiMetrics(featureKey);
-    const allowedFeatures = ['suggest-cwe', 'suggest-description', 'suggest-impact', 'suggest-statement'];
+    const allowedFeatures = [
+      'suggest-cwe',
+      'suggest-description',
+      'suggest-impact',
+      'suggest-statement',
+      'suggest-title',
+      'suggest-cvss',
+    ];
     kpiMetrics.value = Object.fromEntries(
       Object.entries(metrics).filter(([key]) => allowedFeatures.includes(key)),
     ) as AegisKpiMetrics;
@@ -206,7 +208,7 @@ const isFilteredDateRange = computed(
     <div class="kpi-controls">
       <label for="feature-select">Feature:</label>
       <select id="feature-select" v-model="chosenFeature" @change="handleFeatureChange">
-        <option v-for="(label, key) in FeatureLabelsWithAll" :key="key" :value="key">
+        <option v-for="(label, key) in FeatureLabels" :key="key" :value="key">
           {{ label }}
         </option>
       </select>
@@ -233,8 +235,7 @@ const isFilteredDateRange = computed(
               {{ aegisBuildVersion }}
             </button>
           </section>
-          <h3 v-if="!isFilteredDateRange">Average (All Time)</h3>
-          <h3 v-if="isFilteredDateRange">Average (AcrossDate Range)</h3>
+          <h3>Mean Acceptance Rates</h3>
           <section v-if="!isFilteredDateRange">
             <p v-for="[feature, metrics] in Object.entries(kpiMetrics)" :key="feature">
               {{ metrics.acceptance_percentage }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}</p>

@@ -125,4 +125,13 @@ export type AegisKpiMetricsFeature = {
   }[];
 };
 
-export type AegisKpiMetrics = Record<AegisFeature, AegisKpiMetricsFeature>;
+export type AegisKpiMetrics = Record<AegisKpiFeatureParamType, AegisKpiMetricsFeature>;
+
+export type AegisKpiFeatureParamType =
+  'all'
+  | 'suggest-cvss'
+  | 'suggest-cwe'
+  | 'suggest-description'
+  | 'suggest-impact'
+  | 'suggest-statement'
+  | 'suggest-title';

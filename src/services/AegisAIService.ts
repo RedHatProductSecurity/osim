@@ -8,6 +8,7 @@ import type {
   AegisFeedbackPayload,
   AegisFeatureResponseMap,
   AegisKpiMetrics,
+  AegisKpiFeatureParamType,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -275,7 +276,7 @@ export class AegisAIService {
     }
   }
 
-  async getKpiMetrics(feature: 'all' | AegisFeature = 'all'): Promise<AegisKpiMetrics> {
+  async getKpiMetrics(feature: AegisKpiFeatureParamType = 'all'): Promise<AegisKpiMetrics> {
     try {
       const result = await this.fetch({
         method: 'GET',
