@@ -5,9 +5,6 @@
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
 * Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
 
-### Changed
-* Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
-
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
@@ -16,6 +13,9 @@
 
 ### Changed
 * Updated aegis feedback method (`AEGIS-203`)
+* Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
+* Highlight selected rows in affects table (`OSIDB-4715`)
+* Pin select column to the left in affects table (`OSIDB-4715`)
 
 
 ## [2025.11.4]
