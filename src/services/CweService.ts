@@ -4,6 +4,10 @@ import type { CWEMemberType } from '@/types/mitreCwe';
 export const DATA_KEY = 'CWE:API-DATA';
 const VERSION_KEY = 'CWE:API-VERSION';
 
+export function getMitreUrl(cweId: string) {
+  return `https://cwe.mitre.org/data/definitions/${cweId}.html`;
+}
+
 interface CweViews {
   Views: {
     Members: {

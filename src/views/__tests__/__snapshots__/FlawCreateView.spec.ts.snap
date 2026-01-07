@@ -148,7 +148,7 @@ exports[`flawCreateView > should render 1`] = `
                   <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
                     <!--<Transition name="flash-bg" :duration="2000">-->
                     <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                      <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
+                      <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"><!-- Use #display slot to customize how the value is rendered (e.g., as links) --><span data-v-478878c2=""></span></span>
                         <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
                       </div>
                     </transition-stub>
@@ -317,7 +317,7 @@ exports[`flawCreateView > should render 1`] = `
                 <div class="position-relative col-9 osim-editable-field osim-text col-12">
                   <!--<Transition name="flash-bg" :duration="2000">-->
                   <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
+                    <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"><!-- Use #display slot to customize how the value is rendered (e.g., as links) --></span>
                       <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button><button type="button" class="btn btn-primary osim-self-assign"> Self Assign </button>
                     </div>
                   </transition-stub>

@@ -5,7 +5,7 @@ import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
 
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
-import { loadCweData } from '@/services/CweService';
+import { getMitreUrl, loadCweData } from '@/services/CweService';
 import type { CWEMemberType } from '@/types/mitreCwe';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
@@ -93,6 +93,16 @@ const usageClassMap: { [key: string]: string } = {
 function getUsageClass(usage: string) {
   return usageClassMap[usage.toLowerCase()] ?? 'text-bg-secondary';
 };
+
+function parseDisplayValue(value: null | string) {
+  if (!value) return [];
+  return value.split(/(CWE-\d+)/gi).filter(Boolean).map((part) => {
+    const match = part.match(/^CWE-(\d+)$/i);
+    return match
+      ? { content: part, id: match[1], type: 'cwe' as const }
+      : { content: part, type: 'text' as const };
+  });
+}
 </script>
 
 <template>
@@ -113,6 +123,22 @@ function getUsageClass(usage: string) {
         :read-only="isLoadingSuggestions"
         @update:query="filterSuggestions"
       >
+        <template #display="{ value, placeholder }">
+          <template v-if="value">
+            <template v-for="(part, idx) in parseDisplayValue(value)" :key="idx">
+              <span v-if="part.type === 'text'">{{ part.content }}</span>
+              <a
+                v-else
+                :href="getMitreUrl(part.id!)"
+                class="cwe-mitre-link"
+                target="_blank"
+                title="View on MITRE"
+                @click.stop
+              >{{ part.content }}</a>
+            </template>
+          </template>
+          <span v-else>{{ placeholder }}</span>
+        </template>
         <template v-if="suggestions.length > 0" #suggestions="{ abort }">
           <div class="dropdown-header">
             <span class="flex-1">ID</span>
@@ -140,7 +166,7 @@ function getUsageClass(usage: string) {
                   : '') + cwe.summary"
               />
               <a
-                :href="`https://cwe.mitre.org/data/definitions/${cwe.id}.html`"
+                :href="getMitreUrl(cwe.id)"
                 class="icon"
                 target="_blank"
                 @click.stop
@@ -212,5 +238,15 @@ function getUsageClass(usage: string) {
   font-size: 1.25rem;
   float: right;
   margin-left: 0.5rem;
+}
+
+.cwe-mitre-link {
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+
+  &:hover {
+    color: #0d6efd;
+    text-decoration: underline;
+  }
 }
 </style>

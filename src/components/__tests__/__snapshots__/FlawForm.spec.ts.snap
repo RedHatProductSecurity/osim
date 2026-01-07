@@ -209,7 +209,7 @@ exports[`flawForm > mounts and renders 1`] = `
               <div data-v-478878c2="" class="position-relative col-9 osim-editable-field osim-text col-12">
                 <!--<Transition name="flash-bg" :duration="2000">-->
                 <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                  <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control">CWE-1</span>
+                  <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"><!-- Use #display slot to customize how the value is rendered (e.g., as links) --><a data-v-478878c2="" href="https://cwe.mitre.org/data/definitions/1.html" class="cwe-mitre-link" target="_blank" title="View on MITRE">CWE-1</a></span>
                     <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button>
                   </div>
                 </transition-stub>
@@ -408,7 +408,7 @@ exports[`flawForm > mounts and renders 1`] = `
             <div class="position-relative col-9 osim-editable-field osim-text col-12">
               <!--<Transition name="flash-bg" :duration="2000">-->
               <transition-stub name="flash-bg" appear="false" persisted="true" css="true">
-                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"></span>
+                <div class="osim-editable-text" tabindex="0"><span class="osim-editable-text-value form-control"><!-- Use #display slot to customize how the value is rendered (e.g., as links) --></span>
                   <!--if a button is inside a label, clicking the label clicks the button?--><button type="button" class="osim-editable-text-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button><button type="button" class="btn btn-primary osim-self-assign"> Self Assign </button>
                 </div>
               </transition-stub>
