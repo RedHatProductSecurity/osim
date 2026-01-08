@@ -7,6 +7,7 @@ import type {
   AegisAIComponentFeatureNameType,
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
+  AegisKpiMetrics,
 } from '@/types/aegisAI';
 
 import { AegisAIService } from '../AegisAIService';
@@ -253,6 +254,141 @@ describe('aegisAIService', () => {
       // Toast is now handled by composables, not service
       expect(mockAddToast).not.toHaveBeenCalled();
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('getKpiMetrics', () => {
+    const mockKpiMetrics: Omit<AegisKpiMetrics, 'all'> = {
+      'suggest-cwe': {
+        acceptance_percentage: 75.5,
+        entries: [
+          {
+            datetime: '2025-01-15 10:00:00.000',
+            accepted: true,
+            aegis_version: '1.0.0',
+          },
+          {
+            datetime: '2025-01-16 11:00:00.000',
+            accepted: false,
+            aegis_version: '1.0.0',
+          },
+        ],
+      },
+      'suggest-description': {
+        acceptance_percentage: 80.0,
+        entries: [
+          {
+            datetime: '2025-01-15 10:00:00.000',
+            accepted: true,
+            aegis_version: '1.0.0',
+          },
+        ],
+      },
+      'suggest-impact': {
+        acceptance_percentage: 70.0,
+        entries: [
+          {
+            datetime: '2025-01-15 10:00:00.000',
+            accepted: true,
+            aegis_version: '1.0.0',
+          },
+        ],
+      },
+      'suggest-statement': {
+        acceptance_percentage: 85.0,
+        entries: [
+          {
+            datetime: '2025-01-15 10:00:00.000',
+            accepted: true,
+            aegis_version: '1.0.0',
+          },
+        ],
+      },
+      'suggest-title': {
+        acceptance_percentage: 78.0,
+        entries: [],
+      },
+      'suggest-cvss': {
+        acceptance_percentage: 82.0,
+        entries: [],
+      },
+    };
+
+    it('should make correct API call with "all" feature parameter', async () => {
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get('feature')).toBe('all');
+          return HttpResponse.json(mockKpiMetrics);
+        }),
+      );
+
+      const result = await service.getKpiMetrics('all');
+      expect(result).toEqual(mockKpiMetrics);
+    });
+
+    it('should make correct API call with specific feature parameter', async () => {
+      const singleFeatureMetrics = {
+        'suggest-cwe': mockKpiMetrics['suggest-cwe'],
+      };
+
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get('feature')).toBe('suggest-cwe');
+          return HttpResponse.json(singleFeatureMetrics);
+        }),
+      );
+
+      const result = await service.getKpiMetrics('suggest-cwe');
+      expect(result).toEqual(singleFeatureMetrics);
+    });
+
+    it('should default to "all" when no feature parameter is provided', async () => {
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get('feature')).toBe('all');
+          return HttpResponse.json(mockKpiMetrics);
+        }),
+      );
+
+      const result = await service.getKpiMetrics();
+      expect(result).toEqual(mockKpiMetrics);
+    });
+
+    it('should handle errors', async () => {
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, () =>
+          HttpResponse.json({ error: 'Internal server error' }, { status: 500 }),
+        ),
+      );
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      await expect(service.getKpiMetrics('all')).rejects.toBeDefined();
+      consoleSpy.mockRestore();
+    });
+
+    it('should update isFetching state during request', async () => {
+      let resolveRequest: (value: any) => void;
+      const requestPromise = new Promise((resolve) => {
+        resolveRequest = resolve;
+      });
+
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, async () => {
+          await requestPromise;
+          return HttpResponse.json(mockKpiMetrics);
+        }),
+      );
+
+      const fetchPromise = service.getKpiMetrics('all');
+      expect(service.isFetching.value).toBe(true);
+
+      resolveRequest!(null);
+      await fetchPromise;
+
+      expect(service.isFetching.value).toBe(false);
     });
   });
 });

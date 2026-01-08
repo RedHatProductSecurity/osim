@@ -7,6 +7,8 @@ import type {
   AegisFeature,
   AegisFeedbackPayload,
   AegisFeatureResponseMap,
+  AegisKpiMetrics,
+  AegisKpiFeatureParamType,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -274,6 +276,21 @@ export class AegisAIService {
     }
   }
 
+  async getKpiMetrics(feature: AegisKpiFeatureParamType = 'all'): Promise<AegisKpiMetrics> {
+    try {
+      const result = await this.fetch({
+        method: 'GET',
+        url: '/analysis/kpi/cve',
+        params: { feature },
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error('AegisAIService::getKpiMetrics() Error:', error);
+      throw error;
+    }
+  }
+
   /**
    * Send feedback for an Aegis AI suggestion
    * @param payload Feedback payload
@@ -288,7 +305,6 @@ export class AegisAIService {
       });
     } catch (error) {
       console.error('AegisAIService::sendFeedback() Error:', error);
-      throw error;
     }
   }
 }

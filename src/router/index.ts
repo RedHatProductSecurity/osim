@@ -15,6 +15,7 @@ import NotFoundView from '@/views/NotFoundView.vue';
 import FlawSearchView from '@/views/FlawSearchView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import LogoutView from '@/views/LogoutView.vue';
+import KpiMetricsView from '@/views/KpiMetrics.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
 
@@ -100,6 +101,14 @@ export const routes = [
     component: SettingsView,
     meta: {
       title: 'Settings',
+    },
+  },
+  {
+    path: '/kpi',
+    name: 'kpi-metrics',
+    component: KpiMetricsView,
+    meta: {
+      title: 'KPI Metrics',
     },
   },
   {

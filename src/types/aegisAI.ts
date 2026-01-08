@@ -115,3 +115,23 @@ export type AegisFeatureResponseMap = {
 export type AegisFeature = keyof AegisFeatureResponseMap;
 
 export type { Feedback as AegisFeedbackPayload } from '@/generated-client/aegis-ai/models';
+
+export type AegisKpiMetricsFeature = {
+  acceptance_percentage: number;
+  entries: {
+    accepted: boolean;
+    aegis_version: string;
+    datetime: string;
+  }[];
+};
+
+export type AegisKpiMetrics = Record<AegisKpiFeatureParamType, AegisKpiMetricsFeature>;
+
+export type AegisKpiFeatureParamType =
+  'all'
+  | 'suggest-cvss'
+  | 'suggest-cwe'
+  | 'suggest-description'
+  | 'suggest-impact'
+  | 'suggest-statement'
+  | 'suggest-title';
