@@ -10,6 +10,7 @@ import type {
   ZodFlawType,
   ZodFlawCommentType,
   DeepNullableRef,
+  ImpactEnumWithBlankType,
   NullableRef,
 } from '@/types';
 import { CommentType } from '@/constants';
@@ -34,6 +35,7 @@ export type AegisSuggestionContextRefs = {
   cveId?: DeepNullableRef<string>;
   cvssScores?: DeepNullableRef<ZodAffectCVSSType[] | ZodFlawCVSSType[]>;
   embargoed?: DeepNullableRef<boolean>;
+  impact?: DeepNullableRef<ImpactEnumWithBlankType>;
   references?: DeepNullableRef<ZodFlawReferenceType[]>;
   requiresCveDescription?: DeepNullableRef<string | undefined>;
   statement?: DeepNullableRef<string | undefined>;
@@ -52,6 +54,7 @@ export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggest
     comments: computed(() => serializePublicComments(flaw.value.comments)),
     references: computed(() => flaw.value.references),
     embargoed: computed(() => flaw.value.embargoed),
+    impact: computed(() => flaw.value.impact),
     cvssScores: computed(() => flaw.value.cvss_scores),
     affects: computed(() => flaw.value.affects.map(affect => omit(['tracker'], affect))),
   };
@@ -69,6 +72,7 @@ export function serializeAegisContext(ctx: AegisSuggestionContextRefs) {
     comments: ctx.comments?.value ?? undefined,
     references: ctx.references?.value ?? undefined,
     embargoed: ctx.embargoed?.value ?? undefined,
+    impact: ctx.impact?.value ?? undefined,
     cvss_scores: ctx.cvssScores?.value ?? undefined,
     affects: ctx.affects?.value ?? undefined,
   };

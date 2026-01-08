@@ -37,6 +37,7 @@ export type AegisAICVEAnalysisWithContextParamsType = {
   cve_id: string;
   detail?: boolean;
   feature: AegisAIComponentFeatureNameType;
+  impact?: ImpactEnumWithBlankType | null;
   requires_cve_description?: string;
   statement?: string;
   title?: string;
@@ -115,8 +116,6 @@ export type AegisFeatureResponseMap = {
 };
 
 export type AegisFeature = keyof AegisFeatureResponseMap;
-
-export type { Feedback as AegisFeedbackPayload } from '@/generated-client/aegis-ai/models';
 
 export type AegisKpiMetricsFeature = {
   acceptance_percentage: number;
