@@ -28,6 +28,7 @@ describe('useAegisSuggestionContext', () => {
     expect(ctx.comments!.value).toBe('');
     expect(ctx.references!.value).toEqual(flaw.value.references);
     expect(ctx.embargoed!.value).toBe(false);
+    expect(ctx.impact!.value).toBe('MODERATE');
     expect(ctx.cvssScores!.value).toEqual(flaw.value.cvss_scores);
     expect(ctx.affects!.value).toEqual(flaw.value.affects.map(affect => omit(['tracker'], affect)));
   });
@@ -53,6 +54,7 @@ describe('useAegisSuggestionContext', () => {
       comments: serializePublicComments(flaw.value.comments),
       references: flaw.value.references,
       embargoed: flaw.value.embargoed,
+      impact: 'MODERATE',
     });
   });
 });
