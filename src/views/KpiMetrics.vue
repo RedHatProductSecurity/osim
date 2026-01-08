@@ -200,6 +200,15 @@ onUnmounted(() => {
 });
 const isFilteredDateRange = computed(
   () => rangeSliderIndexes.value.min !== 0 || rangeSliderIndexes.value.max !== dateRange.value.length - 1);
+
+const metricsToDisplay = computed(() => (
+  isFilteredDateRange.value ? filteredDateRangeTotals.value : kpiMetrics.value
+) ?? {});
+
+const overallAcceptancePercentage = computed(
+  () => Object.values(metricsToDisplay.value).reduce(
+    (acc, { acceptance_percentage }) => acc + acceptance_percentage, 0,
+  ) / Object.values(metricsToDisplay.value).length);
 </script>
 
 <template>
@@ -236,14 +245,14 @@ const isFilteredDateRange = computed(
             </button>
           </section>
           <h3>Mean Acceptance Rates</h3>
-          <section v-if="!isFilteredDateRange">
-            <p v-for="[feature, metrics] in Object.entries(kpiMetrics)" :key="feature">
-              {{ metrics.acceptance_percentage }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}</p>
+          <h4>Overall</h4>
+          <section>
+            <p>{{ overallAcceptancePercentage }}% Acceptance Rate</p>
           </section>
-          <section v-if="isFilteredDateRange">
-            <p v-for="[feature, acceptancePercentage] in Object.entries(filteredDateRangeTotals)" :key="feature">
-              {{ acceptancePercentage.toFixed(1) }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}
-            </p>
+          <h4>Per Feature</h4>
+          <section>
+            <p v-for="[feature, metrics] in Object.entries(metricsToDisplay)" :key="feature">
+              {{ metrics.acceptance_percentage }}% Acceptance Rate for {{ FeatureLabels[feature as FeatureLabel] }}</p>
           </section>
         </div>
       </div>
