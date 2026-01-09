@@ -181,4 +181,87 @@ describe('flawHistory', () => {
     const aiBadge = subject.find('.badge');
     expect(aiBadge.exists()).toBe(false);
   });
+
+  osimFullFlawTest('displays AI badge for statement Aegis changes', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(historyFixtures.aegisStatementHistoryItem as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(true);
+    expect(aiBadge.text()).toContain('AI');
+    expect(aiBadge.find('i.bi-robot').exists()).toBe(true);
+  });
+
+  osimFullFlawTest('displays Partial AI badge for modified title suggestion', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(historyFixtures.aegisTitleHistoryItem as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(true);
+    expect(aiBadge.text()).toContain('Partial AI');
+    expect(aiBadge.find('i.bi-robot').exists()).toBe(true);
+  });
+
+  osimFullFlawTest('displays correct badge for sequential AI changes (AI then Partial AI)', async ({ flaw }) => {
+    // Scenario: User saves AI suggestion, then modifies and saves again
+    // Entry 1 should show AI, Entry 2 should show Partial AI
+    const aiSaveEntry = {
+      pgh_created_at: '2024-10-04T16:00:00.000000Z',
+      pgh_slug: 'osidb.FlawAudit:100001',
+      pgh_label: 'update',
+      pgh_context: { url: 'osidb/api/v1/flaws/test', user: 1 },
+      pgh_diff: {
+        mitigation: ['', 'AI generated mitigation'],
+        aegis_meta: [{}, { mitigation: [{ type: 'AI', timestamp: '2024-10-04T16:00:00.000Z' }] }],
+      },
+    };
+
+    const partialAiSaveEntry = {
+      pgh_created_at: '2024-10-04T17:00:00.000000Z',
+      pgh_slug: 'osidb.FlawAudit:100002',
+      pgh_label: 'update',
+      pgh_context: { url: 'osidb/api/v1/flaws/test', user: 1 },
+      pgh_diff: {
+        mitigation: ['AI generated mitigation', 'AI mitigation modified by user'],
+        aegis_meta: [
+          { mitigation: [{ type: 'AI', timestamp: '2024-10-04T16:00:00.000Z' }] },
+          { mitigation: [
+            { type: 'AI', timestamp: '2024-10-04T16:00:00.000Z' },
+            { type: 'Partial AI', timestamp: '2024-10-04T17:00:00.000Z' },
+          ] },
+        ],
+      },
+    };
+
+    flaw.history = [aiSaveEntry, partialAiSaveEntry] as ZodFlawHistoryItemType[];
+
+    const subject = mount(FlawHistory, {
+      props: { history: flaw.history },
+      global: { stubs: { EditableDate: true } },
+    });
+
+    const badges = subject.findAll('.badge');
+    expect(badges.length).toBe(2);
+    expect(badges[0].text()).toContain('AI');
+    expect(badges[0].text()).not.toContain('Partial');
+    expect(badges[1].text()).toContain('Partial AI');
+  });
 });
