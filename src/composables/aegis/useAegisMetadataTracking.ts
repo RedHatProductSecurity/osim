@@ -30,33 +30,14 @@ function hasAegisChanges(): boolean {
   return Object.keys(aegisMetadata.value).length > 0;
 }
 
-function findMatchingAegisMetadataEntry(fieldMetadata: AegisChangeEntry[], historyTimestamp: Date) {
-  // Find the closest aegis metadata entry by timestamp
-  let closestEntry = null;
-  let smallestDiff = Infinity;
-
-  for (const entry of fieldMetadata) {
-    const entryTimestamp = new Date(entry.timestamp);
-    const timeDiff = Math.abs(entryTimestamp.getTime() - historyTimestamp.getTime());
-
-    if (timeDiff < 15000 && timeDiff < smallestDiff) { // Within 15 second tolerance
-      smallestDiff = timeDiff;
-      closestEntry = entry;
-    }
-  }
-
-  return closestEntry;
-}
-
 function getFieldAegisTypeFromHistory(
-  fieldMetadata: AegisChangeEntry[],
-  historyTimestamp: string): AegisChangeType | null {
+  fieldMetadata: AegisChangeEntry[]): AegisChangeType | null {
   if (!Array.isArray(fieldMetadata) || fieldMetadata.length === 0) return null;
 
-  const timestamp = new Date(historyTimestamp);
-  const matchingEntry = findMatchingAegisMetadataEntry(fieldMetadata, timestamp);
-
-  return matchingEntry ? matchingEntry.type : null;
+  // Return the most recent aegis change type for this field
+  // The presence of the field in aegis_meta for this history entry indicates it was AI-assisted
+  const lastEntry = fieldMetadata[fieldMetadata.length - 1];
+  return lastEntry?.type ?? null;
 }
 
 function getFieldAegisType(historyEntry: ZodFlawHistoryItemType, fieldName: string): null | string {
@@ -67,7 +48,7 @@ function getFieldAegisType(historyEntry: ZodFlawHistoryItemType, fieldName: stri
     const newAegisMetaValue = aegisHistoryChanges[1];
     if (newAegisMetaValue && typeof newAegisMetaValue === 'object') {
       const fieldMetadata = newAegisMetaValue[fieldName];
-      return getFieldAegisTypeFromHistory(fieldMetadata, historyEntry.pgh_created_at || '');
+      return getFieldAegisTypeFromHistory(fieldMetadata);
     }
   }
 
