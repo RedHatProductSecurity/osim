@@ -243,7 +243,7 @@ export function useAegisSuggestion(
 
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
-  async function sendFeedback(kind: 'negative' | 'positive') {
+  async function sendFeedback(kind: 'negative' | 'positive', comment?: string) {
     try {
       const cveId = unref(context?.cveId?.value ?? context?.cveId);
       if (!cveId) {
@@ -265,6 +265,7 @@ export function useAegisSuggestion(
         actual: actualValue,
         expected: suggestedValue,
         accept: kind === 'positive',
+        ...(comment && { rejection_comment: comment }),
       });
 
       toastStore.addToast({

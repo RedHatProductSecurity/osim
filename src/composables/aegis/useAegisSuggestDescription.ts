@@ -129,7 +129,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     }
   }
 
-  async function sendTitleFeedback(kind: 'negative' | 'positive') {
+  async function sendTitleFeedback(kind: 'negative' | 'positive', comment?: string) {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
       if (!cveId) {
@@ -151,6 +151,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         actual: actualTitle,
         expected: suggestedTitle,
         accept: kind === 'positive',
+        ...(comment && { comment }),
       });
 
       toastStore.addToast({
@@ -170,7 +171,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     }
   }
 
-  async function sendDescriptionFeedback(kind: 'negative' | 'positive') {
+  async function sendDescriptionFeedback(kind: 'negative' | 'positive', comment?: string) {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
       if (!cveId) {
@@ -192,6 +193,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         actual: actualDescription,
         expected: suggestedDescription,
         accept: kind === 'positive',
+        ...(comment && { comment }),
       });
 
       toastStore.addToast({

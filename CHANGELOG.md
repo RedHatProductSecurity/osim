@@ -5,6 +5,7 @@
 * Add validations to PURLs in affect table fields (`OSIDB-4698`)
 * Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
 * Add KPI metrics data visualization (`AEGIS-196`)
+* Added optional comment popup for Aegis suggestions feedback (`AEGIS-266`)
 
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
@@ -19,6 +20,7 @@
 * Highlight selected rows in affects table (`OSIDB-4715`)
 * Pin select column to the left in affects table (`OSIDB-4715`)
 * Improve Aegis AI error messages for network and backend failures (`AEGIS-272`)
+* Updated aegis feedback method (`AEGIS-203`)
 
 
 ## [2025.11.4]
