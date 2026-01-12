@@ -3,8 +3,10 @@ import { computed, nextTick, ref, watch } from 'vue';
 
 import type { Column, Getter, Row, Table } from '@tanstack/vue-table';
 
+import { useAffectsModel } from '@/composables/useAffectsModel';
+
 import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
-import { affectRhCvss3 } from '@/utils/helpers';
+import { affectRhCvss3, affectUUID } from '@/utils/helpers';
 import TagsInput from '@/widgets/TagsInput/TagsInput.vue';
 
 import CvssCalculatorBase from '../CvssCalculator/CvssCalculatorBase.vue';
@@ -123,11 +125,22 @@ const toggleEditMode = () => {
   });
 };
 
-watch(() => props.getValue(), (newValue) => {
-  if (isSubpackagePurls && !Array.isArray(newValue)) {
-    cellValue.value = [];
-  } else {
-    cellValue.value = newValue;
+// Watch currentAffects from the model to detect data changes (including reverts)
+const { state: { currentAffects } } = useAffectsModel();
+
+watch(currentAffects, () => {
+  // Only update if not in edit mode to avoid losing user edits
+  if (!editMode.value) {
+    const uuid = affectUUID(props.row.original);
+    const sourceAffect = currentAffects.value.find(a => affectUUID(a) === uuid);
+    if (sourceAffect) {
+      const newValue = sourceAffect[props.column.id as keyof ZodAffectType];
+      if (isSubpackagePurls && !Array.isArray(newValue)) {
+        cellValue.value = [];
+      } else {
+        cellValue.value = newValue as typeof cellValue.value;
+      }
+    }
   }
 });
 </script>

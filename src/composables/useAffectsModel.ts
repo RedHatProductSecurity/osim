@@ -112,8 +112,11 @@ function useAffects() {
       );
       if (originalAffect) {
         const index = affectUUIDMap.value.get(uuid);
-        if (index) {
-          currentAffects.value[index] = structuredClone(toRaw(originalAffect));
+        if (index !== undefined) {
+          // Create new array to trigger shallowRef reactivity
+          currentAffects.value = currentAffects.value.map((affect, i) =>
+            i === index ? structuredClone(toRaw(originalAffect)) : affect,
+          );
         }
       }
       modifiedAffects.delete(uuid);

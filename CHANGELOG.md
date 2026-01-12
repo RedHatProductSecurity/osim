@@ -11,6 +11,7 @@
 * Suggest trackers across all existing rows (`OSIDB-4638`)
 * Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
 * Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
+* Affects revert button not working (`OSIDB-4702`)
 
 ### Changed
 * Rename flaw "Components" field to "Source Component" (`OSIDB-4690`)
