@@ -4,6 +4,9 @@
 * Force internal comment on Incident Request (`OSIDB-4589`)
 * Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
 
+### Fixed
+* Affects revert button not working (`OSIDB-4702`)
+
 ## [2026.1.0-hotfix]
 ### Fixed
 * Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
