@@ -144,3 +144,15 @@ export type AegisFeedbackPayload = {
   rejection_comment?: string;
   request_time?: string;
 };
+// Extend generated Feedback type with optional comment field (for negative feedback)
+
+// Programmatic feedback payload for automatic feedback when saving flaws
+// Note: acceptance_score is calculated server-side, not sent by clients
+export type AegisProgrammaticFeedbackPayload = {
+  acceptance_score?: null | number; // 0-1 with max 2 decimal places, or null
+  cveId?: string;
+  email?: string;
+  feature: string;
+  submitted_value?: string;
+  suggested_value?: string;
+};

@@ -9,6 +9,7 @@ import type {
   AegisFeatureResponseMap,
   AegisKpiMetrics,
   AegisKpiFeatureParamType,
+  AegisProgrammaticFeedbackPayload,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -305,6 +306,30 @@ export class AegisAIService {
       });
     } catch (error) {
       console.error('AegisAIService::sendFeedback() Error:', error);
+    }
+  }
+
+  /**
+   * Send programmatic feedback when user saves a flaw with AI suggestions
+   * @param payload Programmatic feedback payload
+   * @returns Promise that resolves when feedback is sent
+   */
+  async sendProgrammaticFeedback(payload: AegisProgrammaticFeedbackPayload): Promise<void> {
+    try {
+      await this.fetch({
+        method: 'POST',
+        url: '/programmatic-feedback',
+        data: {
+          feature: payload.feature,
+          cve_id: payload.cveId,
+          email: payload.email,
+          suggested_value: payload.suggested_value,
+          submitted_value: payload.submitted_value,
+        },
+      });
+    } catch (error) {
+      // Log but don't throw - programmatic feedback should not block flaw save
+      console.error('AegisAIService::sendProgrammaticFeedback() Error:', error);
     }
   }
 }
