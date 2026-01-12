@@ -18,8 +18,10 @@ import {
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
+import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { useUserStore } from '@/stores/UserStore';
 import { deepMap, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
@@ -36,15 +38,69 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useAffectsModel } from './useAffectsModel';
 
+// Map field names to feature names for programmatic feedback
+const FieldToFeatureName: Record<string, string> = {
+  cwe_id: 'suggest-cwe',
+  impact: 'suggest-impact',
+  _cvss3_vector: 'suggest-cvss',
+  statement: 'suggest-statement',
+  mitigation: 'suggest-mitigation',
+};
+
 export function useFlawModel() {
   const { flaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
+  const userStore = useUserStore();
   const shouldCreateJiraTask = ref(false);
   const { getAegisMetadata, hasAegisChanges } = useAegisMetadataTracking();
+  const aegisService = new AegisAIService();
 
   function getAegisMetadataIfChanged() {
     return hasAegisChanges() ? { aegis_meta: getAegisMetadata() } : {};
+  }
+
+  function getFlawFieldValue(fieldName: string): string {
+    // Handle special field name mappings
+    if (fieldName === '_cvss3_vector') {
+      return cvssVector.value ?? '';
+    }
+    const value = (flaw.value as Record<string, unknown>)[fieldName];
+    return value != null ? String(value) : '';
+  }
+
+  function calculateAcceptanceScore(suggested: string, submitted: string): number | null {
+    if (!suggested || !submitted) return null;
+    if (suggested === submitted) return 1.0;
+    // For partial matches, return null (can be enhanced later with fuzzy matching)
+    return null;
+  }
+
+  async function sendProgrammaticFeedbackForSave() {
+    const aegisMetadata = getAegisMetadata();
+    if (Object.keys(aegisMetadata).length === 0) return;
+
+    const cveId = flaw.value.cve_id;
+    if (!cveId) return;
+
+    for (const [fieldName, changes] of Object.entries(aegisMetadata)) {
+      const feature = FieldToFeatureName[fieldName];
+      if (!feature || !changes.length) continue;
+
+      const lastChange = changes[changes.length - 1];
+      const suggestedValue = lastChange.value ?? '';
+      const submittedValue = getFlawFieldValue(fieldName);
+      const acceptanceScore = calculateAcceptanceScore(suggestedValue, submittedValue);
+
+      await aegisService.sendProgrammaticFeedback({
+        feature,
+        cveId,
+        email: userStore.userEmail,
+        suggested_value: suggestedValue,
+        submitted_value: submittedValue,
+        acceptance_score: acceptanceScore,
+      });
+    }
   }
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
@@ -108,6 +164,8 @@ export function useFlawModel() {
             const references = await flawAttributionsModel.saveReferences(flaw.value.references);
             response.references = references;
           }
+          // Send programmatic feedback for AI suggestions
+          await sendProgrammaticFeedbackForSave();
           return response;
         })
         .catch(createCatchHandler('Error creating Flaw'))
@@ -267,7 +325,10 @@ export function useFlawModel() {
     }
 
     try {
-      return await execute(...queue);
+      const result = await execute(...queue);
+      // Send programmatic feedback for AI suggestions after successful save
+      await sendProgrammaticFeedbackForSave();
+      return result;
     } catch (error) {
       console.error('useFlawModel::updateFlaw() Error updating flaw:', error);
       isSaving.value = false;
