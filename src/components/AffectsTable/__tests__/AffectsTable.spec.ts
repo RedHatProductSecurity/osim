@@ -2,6 +2,7 @@ import { flushPromises, mount, type DOMWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
 import { useFlaw } from '@/composables/useFlaw';
+import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodFlawType } from '@/types';
@@ -389,6 +390,74 @@ describe('affectsTable', () => {
 
         revertBtn = wrapper.find('button[title="Revert ALL changes"]');
         expect(revertBtn.exists()).toBe(true);
+      });
+
+      it('should revert single row changes when revert button is clicked', async () => {
+        const wrapper = await mountAffectsTable();
+        const {
+          state: { currentAffects, initialAffects },
+        } = useAffectsModel();
+
+        // Get original value
+        const originalValue = initialAffects.value[0].affectedness;
+
+        // Modify the first affect
+        currentAffects.value[0].affectedness = 'NEW';
+        const { actions: { markModified } } = useAffectsModel();
+        markModified(currentAffects.value[0].uuid!);
+        await flushPromises();
+
+        // Verify row is marked as modified
+        const modifiedRow = wrapper.find('tbody tr.modified');
+        expect(modifiedRow.exists()).toBe(true);
+
+        // Click revert button on the row
+        const revertBtn = modifiedRow.find('button[title="Revert changes"]');
+        expect(revertBtn.exists()).toBe(true);
+        await revertBtn.trigger('click');
+        await flushPromises();
+
+        // Verify value is reverted
+        expect(currentAffects.value[0].affectedness).toBe(originalValue);
+
+        // Verify row is no longer marked as modified
+        expect(wrapper.find('tbody tr.modified').exists()).toBe(false);
+      });
+
+      it('should revert all changes when revert all button is clicked', async () => {
+        const wrapper = await mountAffectsTable();
+        const {
+          actions: { markModified },
+          state: { currentAffects, initialAffects },
+        } = useAffectsModel();
+
+        // Store original values
+        const originalValue0 = initialAffects.value[0].affectedness;
+        const originalValue1 = initialAffects.value[1].affectedness;
+
+        // Modify multiple affects
+        currentAffects.value[0].affectedness = 'NEW';
+        currentAffects.value[1].affectedness = 'NEW';
+        markModified(currentAffects.value[0].uuid!);
+        markModified(currentAffects.value[1].uuid!);
+        await flushPromises();
+
+        // Verify rows are marked as modified
+        const modifiedRows = wrapper.findAll('tbody tr.modified');
+        expect(modifiedRows.length).toBe(2);
+
+        // Click revert all button
+        const revertAllBtn = wrapper.find('button[title="Revert ALL changes"]');
+        expect(revertAllBtn.exists()).toBe(true);
+        await revertAllBtn.trigger('click');
+        await flushPromises();
+
+        // Verify all values are reverted
+        expect(currentAffects.value[0].affectedness).toBe(originalValue0);
+        expect(currentAffects.value[1].affectedness).toBe(originalValue1);
+
+        // Verify no rows are marked as modified
+        expect(wrapper.findAll('tbody tr.modified').length).toBe(0);
       });
 
       it('should render select suggested trackers button when affects exist', async () => {
