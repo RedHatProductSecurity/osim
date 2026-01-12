@@ -618,4 +618,211 @@ describe('kpiMetrics', () => {
 
     expect(mockGetKpiMetrics).toHaveBeenCalledWith('suggest-description');
   });
+
+  describe('mean Acceptance Rates section', () => {
+    it('should display Mean Acceptance Rates heading when metrics are loaded', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const headings = wrapper.findAll('h3');
+      const meanAcceptanceHeading = headings.find(h => h.text() === 'Mean Acceptance Rates');
+      expect(meanAcceptanceHeading).toBeDefined();
+      expect(meanAcceptanceHeading?.exists()).toBe(true);
+    });
+
+    it('should display Overall acceptance percentage', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const overallSection = wrapper.findAll('h4').find(h => h.text() === 'Overall');
+      expect(overallSection).toBeDefined();
+      expect(overallSection?.exists()).toBe(true);
+
+      const overallText = wrapper.text();
+      expect(overallText).toContain('% Acceptance Rate');
+    });
+
+    it('should calculate and display correct overall acceptance percentage', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const vm = wrapper.vm;
+      const expectedOverall = (
+        75.0 + 80.0 + 78.0 + 82.0 + 70.0 + 85.0
+      ) / 6; // Average of all feature acceptance percentages
+
+      expect(vm.overallAcceptancePercentage).toBeCloseTo(expectedOverall, 1);
+
+      const overallParagraph = wrapper.findAll('p').find(p =>
+        p.text().includes('Acceptance Rate') && !p.text().includes('for'),
+      );
+      expect(overallParagraph?.exists()).toBe(true);
+      // Check that it contains the percentage (allowing for formatting differences)
+      expect(overallParagraph?.text()).toMatch(/\d+(\.\d+)?% Acceptance Rate/);
+    });
+
+    it('should display Per Feature heading', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const perFeatureHeading = wrapper.findAll('h4').find(h => h.text() === 'Per Feature');
+      expect(perFeatureHeading).toBeDefined();
+      expect(perFeatureHeading?.exists()).toBe(true);
+    });
+
+    it('should display acceptance percentage for each feature', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const vm = wrapper.vm;
+      const features = Object.keys(vm.metricsToDisplay);
+
+      // Should have 6 features (excluding 'all')
+      expect(features.length).toBe(6);
+
+      // Check that each feature is displayed
+      const text = wrapper.text();
+      expect(text).toContain('75% Acceptance Rate for Suggest CWE');
+      expect(text).toContain('80% Acceptance Rate for Suggest Description');
+      expect(text).toContain('78% Acceptance Rate for Suggest Title');
+      expect(text).toContain('82% Acceptance Rate for Suggest CVSS');
+      expect(text).toContain('70% Acceptance Rate for Suggest Impact');
+      expect(text).toContain('85% Acceptance Rate for Suggest Statement Mitigation');
+    });
+
+    it('should display all features with correct labels', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const featureParagraphs = wrapper.findAll('p').filter(p =>
+        p.text().includes('Acceptance Rate for'),
+      );
+
+      expect(featureParagraphs.length).toBe(6);
+
+      const featureLabels = [
+        'Suggest CWE',
+        'Suggest Description',
+        'Suggest Title',
+        'Suggest CVSS',
+        'Suggest Impact',
+        'Suggest Statement Mitigation',
+      ];
+
+      featureLabels.forEach((label) => {
+        const found = featureParagraphs.some(p => p.text().includes(label));
+        expect(found).toBe(true);
+      });
+    });
+
+    it('should handle empty metrics for Mean Acceptance Rates', async () => {
+      const emptyMetrics: Omit<AegisKpiMetrics, 'all'> = {
+        'suggest-cwe': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-description': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-title': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-cvss': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-impact': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-statement': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+      };
+
+      mockGetKpiMetrics.mockResolvedValueOnce(emptyMetrics);
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const vm = wrapper.vm;
+      expect(vm.overallAcceptancePercentage).toBe(0);
+
+      const overallParagraph = wrapper.findAll('p').find(p =>
+        p.text().includes('Acceptance Rate') && !p.text().includes('for'),
+      );
+      expect(overallParagraph?.text()).toContain('0% Acceptance Rate');
+    });
+
+    it('should not display Mean Acceptance Rates section when metrics are null', () => {
+      wrapper = mountKpiMetrics();
+      const chartContainer = wrapper.find('.kpi-chart-container');
+      expect(chartContainer.exists()).toBe(false);
+    });
+
+    it('should update overall acceptance percentage when metrics change', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const initialOverall = wrapper.vm.overallAcceptancePercentage;
+
+      const updatedMetrics: Omit<AegisKpiMetrics, 'all'> = {
+        'suggest-cwe': {
+          acceptance_percentage: 90.0,
+          entries: [],
+        },
+        'suggest-description': {
+          acceptance_percentage: 95.0,
+          entries: [],
+        },
+        'suggest-title': {
+          acceptance_percentage: 88.0,
+          entries: [],
+        },
+        'suggest-cvss': {
+          acceptance_percentage: 92.0,
+          entries: [],
+        },
+        'suggest-impact': {
+          acceptance_percentage: 85.0,
+          entries: [],
+        },
+        'suggest-statement': {
+          acceptance_percentage: 93.0,
+          entries: [],
+        },
+      };
+
+      mockGetKpiMetrics.mockResolvedValueOnce(updatedMetrics);
+
+      // Trigger a re-fetch by changing feature
+      const select = wrapper.find('select#feature-select');
+      await select.setValue('suggest-cwe');
+      await flushPromises();
+
+      const updatedOverall = wrapper.vm.overallAcceptancePercentage;
+      const expectedUpdated = (90.0 + 95.0 + 88.0 + 92.0 + 85.0 + 93.0) / 6;
+
+      expect(updatedOverall).toBeCloseTo(expectedUpdated, 1);
+      expect(updatedOverall).not.toBe(initialOverall);
+    });
+
+    it('should format acceptance percentages correctly in the UI', async () => {
+      wrapper = mountKpiMetrics();
+      await flushPromises();
+
+      const featureParagraphs = wrapper.findAll('p').filter(p =>
+        p.text().includes('Acceptance Rate for'),
+      );
+
+      expect(featureParagraphs.length).toBeGreaterThan(0);
+      featureParagraphs.forEach((paragraph) => {
+        const text = paragraph.text();
+        // Should match pattern: "XX% Acceptance Rate for Feature Name"
+        expect(text).toContain('Acceptance Rate for ');
+      });
+    });
+  });
 });
