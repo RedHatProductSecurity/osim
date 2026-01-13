@@ -1,8 +1,6 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.1.0]
 ### Added
-* Add subpackages PURL column on affects table (`OSIDB-4697`)
-* Add validations to PURLs in affect table fields (`OSIDB-4698`)
 * Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
 * Add KPI metrics data visualization (`AEGIS-196`)
 * Added optional comment popup for Aegis suggestions feedback (`AEGIS-266`)
@@ -10,8 +8,6 @@
 ### Fixed
 * Pin new affect rows on top  (`OSIDB-4342`)
 * Suggest trackers across all existing rows (`OSIDB-4638`)
-* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
-* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 * Fix Aegis AI badges missing in history for most suggestion types (`OSIDB-4711`)
 
 ### Changed
@@ -22,6 +18,16 @@
 * Pin select column to the left in affects table (`OSIDB-4715`)
 * Improve Aegis AI error messages for network and backend failures (`AEGIS-272`)
 * Updated aegis feedback method (`AEGIS-203`)
+
+## [2025.12.0]
+### Added
+* Add subpackages PURL column on affects table (`OSIDB-4697`)
+* Add validations to PURLs in affect table fields (`OSIDB-4698`)
+
+## [2025.11.4-hotfix]
+### Fixed
+* Allow Reset and Revert on "Done" workflow state (`OSIDB-4686`)
+* Allow Reset on "Rejected" workflow state (`OSIDB-4686`)
 
 
 ## [2025.11.4]
@@ -599,7 +605,10 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...HEAD
+[2026.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...v2026.1.0
+[2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
+[2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
 [2025.11.4]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.3...v2025.11.4
 [2025.11.3]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.2...v2025.11.3
 [2025.11.2]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.1-hotfix...v2025.11.2
