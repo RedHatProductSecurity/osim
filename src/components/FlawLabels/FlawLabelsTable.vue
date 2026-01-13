@@ -67,13 +67,11 @@ function handleUndoDelete(label: ZodFlawLabelType) {
     <template #label>
       <span class="section-label">Contributors</span>
     </template>
-    <div v-if="!(Object.keys(labels).length || availableLabels.length)">
-      <p>No available labels</p>
-    </div>
-    <table v-else class="table table-striped table-hover">
+    <table class="table table-striped table-hover">
       <thead class="table-dark">
         <tr>
           <th>State</th>
+          <th>Type</th>
           <th>Label</th>
           <th>Contributor</th>
           <th class="table-actions-header">Actions</th>
@@ -102,6 +100,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                 'fw-bold': label.state === 'REQ',
               }"
             >{{ label.state }}</td>
+            <td>{{ label.type }}</td>
             <td
               :class="{
                 'fw-bold': label.state === 'REQ',
@@ -131,7 +130,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                   <i class="bi bi-arrow-counterclockwise" />
                 </button>
                 <button
-                  v-if="label.type === FlawLabelTypeEnum.CONTEXT_BASED && !isDeletedLabel(label)"
+                  v-if="label.type !== FlawLabelTypeEnum.PRODUCT_FAMILY && !isDeletedLabel(label)"
                   type="button"
                   title="Delete label"
                   class="btn btn-sm btn-dark"
@@ -150,7 +149,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
             @cancel="isCreatingLabel = false"
           />
         </tr>
-        <tr v-if="!isCreatingLabel && availableLabels.length" class="table-new-row">
+        <tr v-if="!isCreatingLabel" class="table-new-row">
           <td
             colspan="100%"
             class="text-center"

@@ -25,7 +25,8 @@ describe('flawLabelsTableEditingRow', () => {
       },
     });
 
-    await wrapper.findAll('select')[1].setValue('test');
+    // Select index: 0 = State, 1 = Type, 2 = Label
+    await wrapper.findAll('select')[2].setValue('test');
     await wrapper.find('button[title="Save"]').trigger('click');
 
     expect(wrapper.emitted()).toHaveProperty('save');
