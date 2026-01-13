@@ -90,22 +90,24 @@ function handleFeedbackCancel() {
         </slot>
       </ul>
     </div>
-    <span v-if="canShowFeedback && !isFetchingSuggestion" class="ms-2">
+    <span v-if="hasAppliedSuggestion && !isFetchingSuggestion" class="ms-2">
       <i
         class="bi-arrow-counterclockwise label-icon"
         title="Revert to previous value"
         @click.prevent.stop="emit('revert')"
       />
-      <i
-        class="bi-hand-thumbs-up label-icon"
-        title="Mark suggestion helpful"
-        @click.prevent.stop="emit('feedback', 'positive', '')"
-      />
-      <i
-        class="bi-hand-thumbs-down label-icon"
-        title="Mark suggestion unhelpful"
-        @click.prevent.stop="handleThumbsDown"
-      />
+      <template v-if="canShowFeedback">
+        <i
+          class="bi-hand-thumbs-up label-icon"
+          title="Mark suggestion helpful"
+          @click.prevent.stop="emit('feedback', 'positive', '')"
+        />
+        <i
+          class="bi-hand-thumbs-down label-icon"
+          title="Mark suggestion unhelpful"
+          @click.prevent.stop="handleThumbsDown"
+        />
+      </template>
     </span>
     <AegisFeedbackModal
       :show="showFeedbackModal"

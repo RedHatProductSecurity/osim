@@ -27,13 +27,26 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
   const previousDescriptionValue = ref<null | string | undefined>(null);
   const details = ref<DescriptionSuggestionDetails | null>(null);
   const requestDuration = ref<null | number>(null);
+  const titleFeedbackSubmitted = ref<Set<string>>(new Set());
+  const descriptionFeedbackSubmitted = ref<Set<string>>(new Set());
 
-  const canShowTitleFeedback = computed(() =>
-    aegisTitleSuggestionWatcher.hasAppliedSuggestion.value && !isSuggesting.value,
-  );
-  const canShowDescriptionFeedback = computed(() =>
-    aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value && !isSuggesting.value,
-  );
+  const canShowTitleFeedback = computed(() => {
+    const hasApplied = aegisTitleSuggestionWatcher.hasAppliedSuggestion.value;
+    const notSuggesting = !isSuggesting.value;
+    const titleValue = details.value?.suggested_title ?? '';
+    const feedbackNotSubmitted = !titleFeedbackSubmitted.value.has(titleValue);
+
+    return hasApplied && notSuggesting && feedbackNotSubmitted;
+  });
+
+  const canShowDescriptionFeedback = computed(() => {
+    const hasApplied = aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value;
+    const notSuggesting = !isSuggesting.value;
+    const descriptionValue = details.value?.suggested_description ?? '';
+    const feedbackNotSubmitted = !descriptionFeedbackSubmitted.value.has(descriptionValue);
+
+    return hasApplied && notSuggesting && feedbackNotSubmitted;
+  });
 
   const isCveIdValid = computed(() => {
     const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
@@ -143,6 +156,16 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       const suggestedTitle = details.value?.suggested_title ?? '';
       const actualTitle = previousTitleValue.value ?? '';
 
+      // Check if feedback already submitted for this suggestion
+      if (titleFeedbackSubmitted.value.has(suggestedTitle)) {
+        toastStore.addToast({
+          title: 'Feedback Already Submitted',
+          body: 'You have already provided feedback for this title suggestion.',
+          css: 'warning',
+        });
+        return;
+      }
+
       await service.sendFeedback({
         feature: 'suggest-title',
         cveId,
@@ -153,6 +176,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         accept: kind === 'positive',
         ...(comment && { comment }),
       });
+
+      // Mark feedback as submitted for this suggestion
+      titleFeedbackSubmitted.value.add(suggestedTitle);
 
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
@@ -185,6 +211,16 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       const suggestedDescription = details.value?.suggested_description ?? '';
       const actualDescription = previousDescriptionValue.value ?? '';
 
+      // Check if feedback already submitted for this suggestion
+      if (descriptionFeedbackSubmitted.value.has(suggestedDescription)) {
+        toastStore.addToast({
+          title: 'Feedback Already Submitted',
+          body: 'You have already provided feedback for this description suggestion.',
+          css: 'warning',
+        });
+        return;
+      }
+
       await service.sendFeedback({
         feature: 'suggest-description',
         cveId,
@@ -195,6 +231,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         accept: kind === 'positive',
         ...(comment && { comment }),
       });
+
+      // Mark feedback as submitted for this suggestion
+      descriptionFeedbackSubmitted.value.add(suggestedDescription);
 
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
