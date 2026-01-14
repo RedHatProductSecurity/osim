@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Allow single feedback per Aegis suggestion (`AEGIS-283`)
+
 ## [2026.1.0]
 ### Added
 * Add clickable MITRE links for CWE values in the CWE field (`OSIDB-4362`)
