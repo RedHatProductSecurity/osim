@@ -559,4 +559,70 @@ describe('useAegisSuggestion - Empty Suggestions', () => {
       body: 'No valid mitigation suggestion received.',
     });
   });
+
+  describe('feedback limitation', () => {
+    it('should prevent multiple feedback submissions for the same suggestion', async () => {
+      const valueRef = ref<string>('');
+      const context = {
+        cveId: ref('CVE-2024-1234'),
+      };
+
+      analyzeMock.mockResolvedValue({
+        impact: 'MODERATE',
+      });
+
+      const [composable] = withSetup(
+        () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'impact'), [],
+      );
+
+      // Apply suggestion first
+      await composable.suggestImpact();
+      expect(composable.canShowFeedback.value).toBe(true);
+
+      // Submit feedback
+      await composable.sendFeedback('positive');
+      expect(sendFeedbackMock).toHaveBeenCalledTimes(1);
+      expect(composable.canShowFeedback.value).toBe(false);
+
+      // Try to submit feedback again - should be prevented
+      await composable.sendFeedback('negative', 'Not helpful');
+      expect(sendFeedbackMock).toHaveBeenCalledTimes(1); // Still only called once
+      expect(mockAddToast).toHaveBeenCalledWith({
+        title: 'Feedback Already Submitted',
+        body: 'You have already provided feedback for this suggestion.',
+        css: 'warning',
+      });
+    });
+
+    it('should allow feedback for different suggestions', async () => {
+      const valueRef = ref<string>('');
+      const context = {
+        cveId: ref('CVE-2024-1234'),
+      };
+
+      // First suggestion
+      analyzeMock.mockResolvedValueOnce({
+        impact: 'MODERATE',
+      });
+
+      const [composable] = withSetup(
+        () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'impact'), [],
+      );
+
+      await composable.suggestImpact();
+      await composable.sendFeedback('positive');
+      expect(sendFeedbackMock).toHaveBeenCalledTimes(1);
+
+      // Second different suggestion
+      analyzeMock.mockResolvedValueOnce({
+        impact: 'CRITICAL',
+      });
+
+      await composable.suggestImpact();
+      expect(composable.canShowFeedback.value).toBe(true); // Should allow feedback for new suggestion
+
+      await composable.sendFeedback('negative');
+      expect(sendFeedbackMock).toHaveBeenCalledTimes(2); // Should be called again
+    });
+  });
 });

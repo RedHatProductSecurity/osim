@@ -59,12 +59,18 @@ export function useAegisSuggestion(
   const previousValue = ref<null | string>(null);
   const selectedSuggestionIndex = ref(0);
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
+  const feedbackSubmitted = ref<Set<string>>(new Set());
 
   const details = ref<SuggestionDetails>(defaultDetails());
 
-  const canShowFeedback = computed(
-    () => aegisSuggestionWatcher.hasAppliedSuggestion.value && !service.isFetching.value,
-  );
+  const canShowFeedback = computed(() => {
+    const hasApplied = aegisSuggestionWatcher.hasAppliedSuggestion.value;
+    const notFetching = !service.isFetching.value;
+    const currentSuggestionValue = currentSuggestion.value ?? '';
+    const feedbackNotSubmitted = !feedbackSubmitted.value.has(currentSuggestionValue);
+
+    return hasApplied && notFetching && feedbackNotSubmitted;
+  });
 
   const isCveIdValid = computed(() => {
     const cveId = unref(context?.cveId?.value ?? context?.cveId);
@@ -257,6 +263,16 @@ export function useAegisSuggestion(
       const suggestedValue = currentSuggestion.value ?? '';
       const actualValue = previousValue.value ?? '';
 
+      // Check if feedback already submitted for this suggestion
+      if (feedbackSubmitted.value.has(suggestedValue)) {
+        toastStore.addToast({
+          title: 'Feedback Already Submitted',
+          body: 'You have already provided feedback for this suggestion.',
+          css: 'warning',
+        });
+        return;
+      }
+
       await service.sendFeedback({
         feature: FeatureNameForFeedback[fieldName],
         cveId,
@@ -267,6 +283,9 @@ export function useAegisSuggestion(
         accept: kind === 'positive',
         ...(comment && { rejection_comment: comment }),
       });
+
+      // Mark feedback as submitted for this suggestion
+      feedbackSubmitted.value.add(suggestedValue);
 
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
