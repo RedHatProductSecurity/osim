@@ -820,7 +820,6 @@ describe('kpiMetrics', () => {
       expect(featureParagraphs.length).toBeGreaterThan(0);
       featureParagraphs.forEach((paragraph) => {
         const text = paragraph.text();
-        // Should match pattern: "XX% Acceptance Rate for Feature Name"
         expect(text).toContain('Acceptance Rate for ');
       });
     });
