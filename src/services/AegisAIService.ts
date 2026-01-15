@@ -327,8 +327,16 @@ export class AegisAIService {
           submitted_value: payload.submitted_value,
         },
       });
-    } catch (error) {
-      // Log but don't throw - programmatic feedback should not block flaw save
+    } catch (error: unknown) {
+      // 409 Conflict means duplicate feedback - this is expected and not an error
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response?.status === 409) {
+          console.debug('AegisAIService::sendProgrammaticFeedback() Duplicate feedback ignored');
+          return;
+        }
+      }
+      // Log other errors but don't throw - programmatic feedback should not block flaw save
       console.error('AegisAIService::sendProgrammaticFeedback() Error:', error);
     }
   }
