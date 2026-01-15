@@ -1,4 +1,7 @@
 # OSIM Changelog
+## [Unreleased]
+* Force internal comment on Incident Request (`OSIDB-4589`)
+
 ## [2026.1.0-hotfix]
 ### Fixed
 * Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
@@ -38,7 +41,6 @@
 ## [2025.11.4]
 ### Added
 * Add affect loading progress indicator (`OSIDB-4631`)
-* Force internal comment on Incident Request (`OSIDB-4589`)
 
 ### Fixed
 * `Create Jira Task` option not working if there are no changes (`OSIDB-4632`)
