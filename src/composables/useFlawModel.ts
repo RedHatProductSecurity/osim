@@ -69,7 +69,7 @@ export function useFlawModel() {
     return value != null ? String(value) : '';
   }
 
-  async function sendProgrammaticFeedbackForSave() {
+  async function maybeReportProgrammaticFeedback() {
     const aegisMetadata = getAegisMetadata();
     if (Object.keys(aegisMetadata).length === 0) return;
 
@@ -164,7 +164,7 @@ export function useFlawModel() {
             response.references = references;
           }
           // Send programmatic feedback for AI suggestions
-          await sendProgrammaticFeedbackForSave();
+          await maybeReportProgrammaticFeedback();
           return response;
         })
         .catch(createCatchHandler('Error creating Flaw'))
@@ -331,7 +331,7 @@ export function useFlawModel() {
     try {
       const result = await execute(...queue);
       // Send programmatic feedback for AI suggestions after successful save
-      await sendProgrammaticFeedbackForSave();
+      await maybeReportProgrammaticFeedback();
       return result;
     } catch (error) {
       console.error('useFlawModel::updateFlaw() Error updating flaw:', error);
