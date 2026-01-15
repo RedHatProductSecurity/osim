@@ -261,25 +261,34 @@ exports[`flawCreateView > should render 1`] = `
           </label>
         </div>
         <div data-v-76e7a15d="" class="col-6">
-          <!--v-if--><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-            <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
-              <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
+          <!--v-if-->
+          <div data-v-76e7a15d="" class="osim-incident-state-container mb-2"><label data-v-001a00e0="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
+              <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3">Incident State</span>
+                <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="">
+                    <!--v-if-->
+                    <option data-v-001a00e0="" selected="" value=""></option>
+                    <option data-v-001a00e0="" value="MAJOR_INCIDENT_REQUESTED">Major Incident Requested</option>
+                    <option data-v-001a00e0="" value="MAJOR_INCIDENT_APPROVED">Major Incident Approved</option>
+                    <option data-v-001a00e0="" value="MAJOR_INCIDENT_REJECTED">Major Incident Rejected</option>
+                    <option data-v-001a00e0="" value="EXPLOITS_KEV_REQUESTED">Exploits (KEV) Requested</option>
+                    <option data-v-001a00e0="" value="EXPLOITS_KEV_APPROVED">Exploits (KEV) Approved</option>
+                    <option data-v-001a00e0="" value="EXPLOITS_KEV_REJECTED">Exploits (KEV) Rejected</option>
+                    <option data-v-001a00e0="" value="MINOR_INCIDENT_REQUESTED">Minor Incident Requested</option>
+                    <option data-v-001a00e0="" value="MINOR_INCIDENT_APPROVED">Minor Incident Approved</option>
+                    <option data-v-001a00e0="" value="MINOR_INCIDENT_REJECTED">Minor Incident Rejected</option>
+                  </select>
                   <!--v-if-->
-                  <option data-v-001a00e0="" selected="" value=""></option>
-                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_REQUESTED">Major Incident Requested</option>
-                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_APPROVED">Major Incident Approved</option>
-                  <option data-v-001a00e0="" value="MAJOR_INCIDENT_REJECTED">Major Incident Rejected</option>
-                  <option data-v-001a00e0="" value="EXPLOITS_KEV_REQUESTED">Exploits (KEV) Requested</option>
-                  <option data-v-001a00e0="" value="EXPLOITS_KEV_APPROVED">Exploits (KEV) Approved</option>
-                  <option data-v-001a00e0="" value="EXPLOITS_KEV_REJECTED">Exploits (KEV) Rejected</option>
-                  <option data-v-001a00e0="" value="MINOR_INCIDENT_REQUESTED">Minor Incident Requested</option>
-                  <option data-v-001a00e0="" value="MINOR_INCIDENT_APPROVED">Minor Incident Approved</option>
-                  <option data-v-001a00e0="" value="MINOR_INCIDENT_REJECTED">Minor Incident Rejected</option>
-                </select>
-                <!--v-if-->
+                </div>
               </div>
-            </div>
-          </label><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
+            </label>
+            <!--v-if-->
+            <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+            <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+              <!--v-if-->
+            </transition-stub>
+          </div><label data-v-76509415="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
             <div data-v-76509415="" class="row"><span data-v-76509415="" class="form-label col-3">Reported Date</span><!-- for invalid-tooltip positioning -->
               <div data-v-76509415="" class="position-relative col-9 osim-editable-field osim-date">
                 <div class="osim-editable-date" tabindex="0"><span class="osim-editable-date-value form-control text-start form-control">2024-09-24</span><button type="button" class="osim-editable-date-pen input-group-text" tabindex="-1"><i class="bi bi-pencil"></i></button></div>
