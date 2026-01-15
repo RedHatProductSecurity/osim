@@ -18,6 +18,7 @@ import {
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
+
 import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
@@ -87,8 +88,11 @@ export function useFlawModel() {
       const feature = FieldToFeatureName[fieldName];
       if (!feature || !changes.length) continue;
 
-      const lastChange = changes[changes.length - 1];
-      const suggestedValue = lastChange.value ?? '';
+      // Get the original AI suggestion (first entry with type 'AI'), not the last modification
+      const originalAiChange = changes.find((change) => change.type === 'AI');
+      if (!originalAiChange) continue; // Skip if no original AI suggestion found
+
+      const suggestedValue = originalAiChange.value ?? '';
       const submittedValue = getFlawFieldValue(fieldName);
       const acceptanceScore = calculateAcceptanceScore(suggestedValue, submittedValue);
 
