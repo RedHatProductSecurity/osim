@@ -1,6 +1,7 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.1.0-hotfix]
 ### Fixed
+* Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
 * Allow single feedback per Aegis suggestion (`AEGIS-283`)
 
 ## [2026.1.0]
@@ -609,7 +610,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0-hotfix...HEAD
+[2026.1.0-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.0-hotfix
 [2026.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...v2026.1.0
 [2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
 [2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
