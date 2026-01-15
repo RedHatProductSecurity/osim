@@ -325,7 +325,6 @@ export class AegisAIService {
           email: payload.email,
           suggested_value: payload.suggested_value,
           submitted_value: payload.submitted_value,
-          acceptance_score: payload.acceptance_score,
         },
       });
     } catch (error) {

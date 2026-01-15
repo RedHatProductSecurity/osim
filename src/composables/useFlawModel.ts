@@ -18,7 +18,6 @@ import {
   postFlaw,
   putFlaw,
 } from '@/services/FlawService';
-
 import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
@@ -70,13 +69,6 @@ export function useFlawModel() {
     return value != null ? String(value) : '';
   }
 
-  function calculateAcceptanceScore(suggested: string, submitted: string): number | null {
-    if (!suggested || !submitted) return null;
-    if (suggested === submitted) return 1.0;
-    // For partial matches, return null (can be enhanced later with fuzzy matching)
-    return null;
-  }
-
   async function sendProgrammaticFeedbackForSave() {
     const aegisMetadata = getAegisMetadata();
     if (Object.keys(aegisMetadata).length === 0) return;
@@ -89,12 +81,11 @@ export function useFlawModel() {
       if (!feature || !changes.length) continue;
 
       // Get the original AI suggestion (first entry with type 'AI'), not the last modification
-      const originalAiChange = changes.find((change) => change.type === 'AI');
+      const originalAiChange = changes.find(change => change.type === 'AI');
       if (!originalAiChange) continue; // Skip if no original AI suggestion found
 
       const suggestedValue = originalAiChange.value ?? '';
       const submittedValue = getFlawFieldValue(fieldName);
-      const acceptanceScore = calculateAcceptanceScore(suggestedValue, submittedValue);
 
       await aegisService.sendProgrammaticFeedback({
         feature,
@@ -102,7 +93,6 @@ export function useFlawModel() {
         email: userStore.userEmail,
         suggested_value: suggestedValue,
         submitted_value: submittedValue,
-        acceptance_score: acceptanceScore,
       });
     }
   }

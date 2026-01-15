@@ -141,11 +141,11 @@ export type AegisKpiFeatureParamType =
 export type AegisFeedbackPayload = { comment?: string } & Feedback;
 
 // Programmatic feedback payload for automatic feedback when saving flaws
+// Note: acceptance_score is calculated server-side, not sent by clients
 export type AegisProgrammaticFeedbackPayload = {
   feature: string;
   cveId?: string;
   email?: string;
   suggested_value?: string;
   submitted_value?: string;
-  acceptance_score?: number | null; // 0-1 with max 2 decimal places, or null
 };
