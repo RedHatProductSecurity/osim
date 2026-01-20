@@ -59,7 +59,7 @@ export function useFlawModel() {
 
   const {
     actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
-    state: { removedAffects, wereAffectsEditedOrAdded },
+    state: { currentAffects, removedAffects, wereAffectsEditedOrAdded },
   } = useAffectsModel();
 
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
@@ -75,7 +75,12 @@ export function useFlawModel() {
   );
 
   function isValid() {
-    return ZodFlawSchema.safeParse(flaw.value).success;
+    const flawForValidation = {
+      ...flaw.value,
+      affects: currentAffects.value,
+    };
+
+    return ZodFlawSchema.safeParse(flawForValidation).success;
   }
 
   async function createFlaw() {
@@ -129,7 +134,12 @@ export function useFlawModel() {
   }
 
   function validate() {
-    const validatedFlaw = ZodFlawSchema.safeParse(flaw.value);
+    const flawForValidation = {
+      ...flaw.value,
+      affects: currentAffects.value,
+    };
+
+    const validatedFlaw = ZodFlawSchema.safeParse(flawForValidation);
     if (!validatedFlaw.success) {
       const errorMessage = ({ message, path }: ZodIssue) => `${path.join('/')}: ${message}`;
 

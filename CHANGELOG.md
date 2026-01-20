@@ -8,6 +8,9 @@
 * Affects revert button not working (`OSIDB-4702`)
 * Adjusted duplicated affects validation to be less strict (`OSIDB-4740`)
 
+### Fixed
+* Update PURL validation to use latest affect data (`OSIDB-4724`)
+
 ## [2026.1.0-hotfix]
 ### Fixed
 * Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
