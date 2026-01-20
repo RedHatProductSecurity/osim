@@ -2910,10 +2910,10 @@ export interface FlawCollaborator {
     relevant?: boolean;
     /**
      * 
-     * @type {string}
+     * @type {FlawLabelType}
      * @memberof FlawCollaborator
      */
-    readonly type: string;
+    type?: FlawLabelType;
 }
 /**
  * FlawCollaborator serializer
@@ -2939,7 +2939,24 @@ export interface FlawCollaboratorPostRequest {
      * @memberof FlawCollaboratorPostRequest
      */
     contributor?: string;
+    /**
+     * 
+     * @type {FlawCollaboratorPostTypeEnum}
+     * @memberof FlawCollaboratorPostRequest
+     */
+    type?: FlawCollaboratorPostTypeEnum;
 }
+
+/**
+ * 
+ * @export
+ */
+export const FlawCollaboratorPostTypeEnum = {
+    Alias: 'alias',
+    ContextBased: 'context_based'
+} as const;
+export type FlawCollaboratorPostTypeEnum = typeof FlawCollaboratorPostTypeEnum[keyof typeof FlawCollaboratorPostTypeEnum];
+
 /**
  * FlawCollaborator serializer
  * @export
@@ -2976,6 +2993,12 @@ export interface FlawCollaboratorRequest {
      * @memberof FlawCollaboratorRequest
      */
     relevant?: boolean;
+    /**
+     * 
+     * @type {FlawLabelType}
+     * @memberof FlawCollaboratorRequest
+     */
+    type?: FlawLabelType;
 }
 /**
  * FlawComment serializer for use by flaw_comments endpoint
@@ -3094,6 +3117,18 @@ export interface FlawLabel {
      */
     readonly type: string;
 }
+
+/**
+ * 
+ * @export
+ */
+export const FlawLabelType = {
+    Alias: 'alias',
+    ContextBased: 'context_based',
+    ProductFamily: 'product_family'
+} as const;
+export type FlawLabelType = typeof FlawLabelType[keyof typeof FlawLabelType];
+
 /**
  * @type FlawMajorIncidentState
  * 
@@ -5688,10 +5723,10 @@ export interface OsidbApiV1FlawsLabelsCreate201Response {
     relevant?: boolean;
     /**
      * 
-     * @type {string}
+     * @type {FlawLabelType}
      * @memberof OsidbApiV1FlawsLabelsCreate201Response
      */
-    readonly type: string;
+    type?: FlawLabelType;
     /**
      * 
      * @type {string}
