@@ -19,7 +19,8 @@
         "inputSpec": "openapi-aegis-ai.yml",
         "additionalProperties": {
           "supportsES6": "true",
-          "withoutRuntimeChecks": true
+          "withoutRuntimeChecks": true,
+          "modelPropertyNaming": "original"
         }
       }
     }
