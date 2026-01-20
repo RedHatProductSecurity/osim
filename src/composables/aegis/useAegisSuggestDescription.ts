@@ -154,7 +154,6 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       }
 
       const suggestedTitle = details.value?.suggested_title ?? '';
-      const actualTitle = previousTitleValue.value ?? '';
 
       // Check if feedback already submitted for this suggestion
       if (titleFeedbackSubmitted.value.has(suggestedTitle)) {
@@ -168,13 +167,12 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
 
       await service.sendFeedback({
         feature: 'suggest-title',
-        cveId,
+        cve_id: cveId,
         email: userStore.userEmail,
-        requestTime: `${requestDuration.value ?? 0}ms`,
-        actual: actualTitle,
-        expected: suggestedTitle,
+        request_time: `${requestDuration.value ?? 0}ms`,
+        actual: suggestedTitle,
         accept: kind === 'positive',
-        ...(comment && { comment }),
+        ...(comment && { rejection_comment: comment }),
       });
 
       // Mark feedback as submitted for this suggestion
@@ -209,7 +207,6 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       }
 
       const suggestedDescription = details.value?.suggested_description ?? '';
-      const actualDescription = previousDescriptionValue.value ?? '';
 
       // Check if feedback already submitted for this suggestion
       if (descriptionFeedbackSubmitted.value.has(suggestedDescription)) {
@@ -223,13 +220,12 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
 
       await service.sendFeedback({
         feature: 'suggest-description',
-        cveId,
+        cve_id: cveId,
         email: userStore.userEmail,
-        requestTime: `${requestDuration.value ?? 0}ms`,
-        actual: actualDescription,
-        expected: suggestedDescription,
+        request_time: `${requestDuration.value ?? 0}ms`,
+        actual: suggestedDescription,
         accept: kind === 'positive',
-        ...(comment && { comment }),
+        ...(comment && { rejection_comment: comment }),
       });
 
       // Mark feedback as submitted for this suggestion

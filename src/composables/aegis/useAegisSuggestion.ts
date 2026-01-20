@@ -261,7 +261,6 @@ export function useAegisSuggestion(
       }
 
       const suggestedValue = currentSuggestion.value ?? '';
-      const actualValue = previousValue.value ?? '';
 
       // Check if feedback already submitted for this suggestion
       if (feedbackSubmitted.value.has(suggestedValue)) {
@@ -275,11 +274,10 @@ export function useAegisSuggestion(
 
       await service.sendFeedback({
         feature: FeatureNameForFeedback[fieldName],
-        cveId,
+        cve_id: cveId,
         email: userStore.userEmail,
-        requestTime: `${service.requestDuration.value}ms`,
-        actual: actualValue,
-        expected: suggestedValue,
+        request_time: `${service.requestDuration.value}ms`,
+        actual: suggestedValue,
         accept: kind === 'positive',
         ...(comment && { rejection_comment: comment }),
       });
