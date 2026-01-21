@@ -1,6 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
 * Force internal comment on Incident Request (`OSIDB-4589`)
+* Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
 
 ## [2026.1.0-hotfix]
 ### Fixed

@@ -325,6 +325,11 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
+.table-responsive {
+  max-height: 70vh;
+  overflow: auto;
+}
+
 .sort-icon {
   position: absolute;
   right: 1rem;
