@@ -48,7 +48,7 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { flaw, isFlawUpdated, setFlaw } = useFlaw();
+  const { flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const userStore = useUserStore();
@@ -69,6 +69,12 @@ export function useFlawModel() {
     return value != null ? String(value) : '';
   }
 
+  function getFlawFieldValueIfChanged(fieldName: string): null | string {
+    const initialValue = (initialFlaw.value as Record<string, unknown>)[fieldName];
+    const currentValue = getFlawFieldValue(fieldName);
+    return (initialValue === currentValue) ? null : currentValue;
+  }
+
   async function maybeReportProgrammaticFeedback() {
     const aegisMetadata = getAegisMetadata();
     if (Object.keys(aegisMetadata).length === 0) return;
@@ -85,7 +91,9 @@ export function useFlawModel() {
       if (!originalAiChange) continue; // Skip if no original AI suggestion found
 
       const suggestedValue = originalAiChange.value ?? '';
-      const submittedValue = getFlawFieldValue(fieldName);
+      const submittedValue = getFlawFieldValueIfChanged(fieldName);
+
+      if (!submittedValue) continue; // Skip if no change was made
 
       await aegisService.sendProgrammaticFeedback({
         feature,
