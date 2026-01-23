@@ -261,11 +261,16 @@ describe('useAegisSuggestion', () => {
     // User modifies the suggestion
     valueRef.value = 'CWE-89 (with additional context)';
 
-    // Wait for the watcher to trigger
+    // Wait for watcher to detect change and track immediately
     await new Promise(resolve => setTimeout(resolve, 0));
 
+    // Should detect partial modification and track immediately
+    expect(composable.hasPartialModification.value).toBe(true);
+
     const metadata = tracking.getAegisMetadata();
-    expect(metadata.cwe_id[metadata.cwe_id.length - 1].type).toBe('Partial AI');
+    expect(metadata.cwe_id).toHaveLength(1); // Only Partial AI (replaces AI)
+    expect(metadata.cwe_id[0].type).toBe('Partial AI');
+    expect(metadata.cwe_id[0].value).toBe('CWE-89 (with additional context)');
     expect(tracking.hasAegisChanges()).toBe(true);
   });
 
@@ -286,13 +291,54 @@ describe('useAegisSuggestion', () => {
     // User completely changes the value
     valueRef.value = 'CWE-456';
 
-    // Wait for the watcher to trigger
+    // Wait for watcher to detect change and track immediately
     await new Promise(resolve => setTimeout(resolve, 0));
 
+    // Should detect partial modification and track immediately
+    expect(composable.hasPartialModification.value).toBe(true);
+
     const metadata = tracking.getAegisMetadata();
-    expect(metadata.cwe_id[metadata.cwe_id.length - 1].type).toBe('Partial AI');
+    expect(metadata.cwe_id).toHaveLength(1); // Only Partial AI (replaces AI)
+    expect(metadata.cwe_id[0].type).toBe('Partial AI');
+    expect(metadata.cwe_id[0].value).toBe('CWE-456');
     expect(tracking.hasAegisChanges()).toBe(true);
     expect(composable.hasAppliedSuggestion.value).toBe(true);
+  });
+
+  it('creates only one metadata entry for multiple sequential edits', async () => {
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+    const tracking = useAegisMetadataTracking();
+    tracking.setAegisMetadata({});
+
+    analyzeMock.mockResolvedValueOnce({ cwe: ['CWE-89'], confidence: 0.9, explanation: 'Reasoning' });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
+    );
+
+    // Apply suggestion first
+    await composable.suggestCwe();
+
+    // Simulate multiple sequential edits
+    valueRef.value = 'CWE-8';
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    valueRef.value = 'CWE-79';
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    valueRef.value = 'CWE-798';
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    valueRef.value = 'CWE-79 (final)';
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    // Should have only ONE metadata entry (Partial AI) with first modification value
+    const metadata = tracking.getAegisMetadata();
+    expect(metadata.cwe_id).toHaveLength(1);
+    expect(metadata.cwe_id[0].type).toBe('Partial AI');
+    expect(metadata.cwe_id[0].value).toBe('CWE-8'); // First modification value (not final)
+    expect(composable.hasPartialModification.value).toBe(true);
   });
 });
 
