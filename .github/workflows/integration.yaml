@@ -141,6 +141,7 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: config.settings_ci
           OSIDB_DEBUG: 1
+          OSIDB_CORS_ALLOWED_ORIGINS: '["http://localhost:8080"]'
           ET_URL: https://example.com
           PRODUCT_DEF_URL: https://example.com
           PS_CONSTANTS_URL: https://example.com
@@ -157,6 +158,7 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: config.settings_ci
           OSIDB_DEBUG: 1
+          OSIDB_CORS_ALLOWED_ORIGINS: '["http://localhost:8080"]'
           ET_URL: https://example.com
           PRODUCT_DEF_URL: https://example.com
           PS_CONSTANTS_URL: https://example.com
