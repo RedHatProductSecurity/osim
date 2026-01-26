@@ -664,9 +664,9 @@ describe('flawForm', () => {
     );
   });
 
-  osimFullFlawTest('should trigger validation error for purls with same base but different qualifiers',
+  osimFullFlawTest('should not trigger validation error for purls with different qualifiers',
     async ({ flaw }) => {
-      // OSIDB uses purl_normalized (without qualifiers) for uniqueness
+      // Full PURL is used for uniqueness - different qualifiers means different affects
       flaw.affects = [
         {
           ps_update_stream: 'stream1',
@@ -684,7 +684,7 @@ describe('flawForm', () => {
           ps_update_stream: 'stream1',
           ps_module: 'module1',
           ps_component: 'component2',
-          purl: 'pkg:npm/package@1.0.0?qualifier2=value2', // Different qualifiers but same normalized purl
+          purl: 'pkg:npm/package@1.0.0?qualifier2=value2', // Different qualifiers = different affect
           embargoed: false,
           cvss_scores: [],
           alerts: [],
@@ -697,9 +697,8 @@ describe('flawForm', () => {
       const subject = mountWithProps(flaw, { mode: 'edit' });
       const vm = subject.findComponent(FlawForm).vm as any;
 
-      expect(vm.errors.affects[1].ps_component).toBe(
-        'Affected component cannot be registered on the affected component/PURL twice',
-      );
+      // No validation error expected - different qualifiers means different affects
+      expect(vm.errors.affects?.[1]?.ps_component).toBeNull();
     });
 
   osimFullFlawTest('should not trigger validation error for purls with different versions', async ({ flaw }) => {

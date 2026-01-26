@@ -6,6 +6,7 @@
 
 ### Fixed
 * Affects revert button not working (`OSIDB-4702`)
+* Adjusted duplicated affects validation to be less strict (`OSIDB-4740`)
 
 ## [2026.1.0-hotfix]
 ### Fixed
