@@ -310,6 +310,7 @@ export function useAegisSuggestion(
     details,
     hasMultipleSuggestions,
     hasAppliedSuggestion: aegisSuggestionWatcher.hasAppliedSuggestion,
+    hasPartialModification: aegisSuggestionWatcher.hasPartialModification,
     isFetchingSuggestion: service.isFetching,
     revert,
     selectSuggestion,

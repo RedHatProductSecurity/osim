@@ -91,6 +91,7 @@ describe('aegisCvssActions', () => {
         suggested_statement: null,
       })),
       hasAppliedSuggestion: computed(() => true),
+      hasPartialModification: computed(() => false),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
       revert: vi.fn(),

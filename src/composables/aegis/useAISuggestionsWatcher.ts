@@ -7,11 +7,20 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
 
   const hasAppliedSuggestion = ref(false);
   const originalSuggestion = ref<null | string>(null);
+  const hasPartialModification = ref(false);
+  const hasTrackedPartialChange = ref(false);
 
-  // Watch for manual changes after AI suggestion has been applied
+  // Watch for changes and mark as "Partial AI" only if AI was applied in current session
   watch(valueRef, (newValue, oldValue) => {
     if (hasAppliedSuggestion.value && newValue !== originalSuggestion.value && newValue !== oldValue) {
-      trackAIChange(fieldName, 'Partial AI', newValue || undefined);
+      hasPartialModification.value = true;
+
+      // Substitute AI with Partial AI if necessary
+      if (!hasTrackedPartialChange.value) {
+        untrackAIChange(fieldName);
+        trackAIChange(fieldName, 'Partial AI', newValue || undefined);
+        hasTrackedPartialChange.value = true;
+      }
     }
   });
 
@@ -19,6 +28,8 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
     hasAppliedSuggestion.value = true;
     originalSuggestion.value = suggestion;
     valueRef.value = suggestion;
+    hasPartialModification.value = false;
+    hasTrackedPartialChange.value = false; // Reset tracking flag
     trackAIChange(fieldName, 'AI', suggestion);
   };
 
@@ -26,10 +37,13 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
     untrackAIChange(fieldName);
     hasAppliedSuggestion.value = false;
     originalSuggestion.value = null;
+    hasPartialModification.value = false;
+    hasTrackedPartialChange.value = false;
   };
 
   return {
     hasAppliedSuggestion: readonly(hasAppliedSuggestion),
+    hasPartialModification: readonly(hasPartialModification),
     applyAISuggestion,
     revertAISuggestion,
   };
