@@ -1,15 +1,16 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Added
-* Force internal comment on Incident Request (`OSIDB-4589`)
-* Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
+* Automatically record suggestion quality feedback on Flaw save (`AEGIS-291`)
 
 ### Fixed
 * Affects revert button not working (`OSIDB-4702`)
 * Adjusted duplicated affects validation to be less strict (`OSIDB-4740`)
-
-### Fixed
 * Update PURL validation to use latest affect data (`OSIDB-4724`)
+
+### Changed
+* Force internal comment on Incident Request (`OSIDB-4589`)
+* Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
 
 ## [2026.1.0-hotfix]
 ### Fixed
