@@ -1,9 +1,11 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.1.1]
 ### Added
 * Automatically record suggestion quality feedback on Flaw save (`AEGIS-291`)
 
 ### Fixed
+* Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
+* Allow single feedback per Aegis suggestion (`AEGIS-283`)
 * Affects revert button not working (`OSIDB-4702`)
 * Adjusted duplicated affects validation to be less strict (`OSIDB-4740`)
 * Update PURL validation to use latest affect data (`OSIDB-4724`)
@@ -11,11 +13,6 @@
 ### Changed
 * Force internal comment on Incident Request (`OSIDB-4589`)
 * Keep affects table horizontal scrollbar visible within viewport (`OSIDB-4714`)
-
-## [2026.1.0-hotfix]
-### Fixed
-* Remove requirement for versions in Analyzed Component Field (`OSIDB-4696`)
-* Allow single feedback per Aegis suggestion (`AEGIS-283`)
 
 ## [2026.1.0]
 ### Added
@@ -611,8 +608,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0-hotfix...HEAD
-[2026.1.0-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.0-hotfix
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.1...HEAD
+[2026.1.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.1
 [2026.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...v2026.1.0
 [2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
 [2025.11.4-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4...v2025.11.4-hotfix
