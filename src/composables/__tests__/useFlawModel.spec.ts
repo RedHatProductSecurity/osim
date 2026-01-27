@@ -8,11 +8,12 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
-import type { ZodFlawType } from '@/types';
+import type { ZodFlawType, ZodAffectType } from '@/types';
 import { postFlaw, putFlaw } from '@/services/FlawService';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import { useFlaw } from '../useFlaw';
+import { useAffectsModel } from '../useAffectsModel';
 
 vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
@@ -139,6 +140,68 @@ describe('useFlawModel', () => {
       await updateFlaw();
 
       expect(putFlaw).toHaveBeenCalled();
+    });
+  });
+
+  describe('affect validation', () => {
+    it('should reflect affect changes in validation', () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+
+      const affectWithInvalidPurl: ZodAffectType = {
+        ...flawData.affects[0],
+        purl: 'pkg:oci/namespace/image@1.0.0',
+      };
+
+      flawData.affects = [affectWithInvalidPurl];
+      setFlaw(flawData);
+
+      const { isValid } = mountFlawModel();
+      const { initializeAffects } = useAffectsModel().actions;
+      const { currentAffects } = useAffectsModel().state;
+
+      initializeAffects(flaw.value.affects);
+
+      expect(isValid()).toBe(false);
+
+      const updatedAffect = {
+        ...currentAffects.value[0],
+        purl: 'pkg:oci/image@1.0.0',
+      };
+      currentAffects.value[0] = updatedAffect;
+
+      expect(isValid()).toBe(true);
+    });
+
+    it('should validate with currentAffects, not flaw.value.affects', () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+
+      const affectWithValidPurl: ZodAffectType = {
+        ...flawData.affects[0],
+        purl: 'pkg:rpm/redhat/kernel@5.14.0',
+      };
+
+      flawData.affects = [affectWithValidPurl];
+      setFlaw(flawData);
+
+      const { isValid } = mountFlawModel();
+      const { initializeAffects } = useAffectsModel().actions;
+      const { currentAffects } = useAffectsModel().state;
+
+      initializeAffects(flaw.value.affects);
+
+      expect(isValid()).toBe(true);
+
+      currentAffects.value[0] = {
+        ...currentAffects.value[0],
+        purl: 'pkg:oci/namespace/image@1.0.0',
+      };
+
+      expect(isValid()).toBe(false);
+
+      expect(flaw.value.affects[0].purl).toBe('pkg:rpm/redhat/kernel@5.14.0');
+      expect(currentAffects.value[0].purl).toBe('pkg:oci/namespace/image@1.0.0');
     });
   });
 });
