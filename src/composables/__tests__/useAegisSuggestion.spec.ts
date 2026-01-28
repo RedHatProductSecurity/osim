@@ -268,9 +268,15 @@ describe('useAegisSuggestion', () => {
     expect(composable.hasPartialModification.value).toBe(true);
 
     const metadata = tracking.getAegisMetadata();
-    expect(metadata.cwe_id).toHaveLength(1); // Only Partial AI (replaces AI)
-    expect(metadata.cwe_id[0].type).toBe('Partial AI');
-    expect(metadata.cwe_id[0].value).toBe('CWE-89 (with additional context)');
+    // Both AI and Partial AI entries should exist - AI entry is preserved
+    expect(metadata.cwe_id).toHaveLength(2);
+    const aiEntry = metadata.cwe_id.find(entry => entry.type === 'AI');
+    const partialAiEntry = metadata.cwe_id.find(entry => entry.type === 'Partial AI');
+    expect(aiEntry).toBeDefined();
+    expect(aiEntry?.value).toBe('CWE-89'); // Original AI suggestion
+    expect(partialAiEntry).toBeDefined();
+    expect(partialAiEntry?.type).toBe('Partial AI');
+    expect(partialAiEntry?.value).toBe('CWE-89 (with additional context)');
     expect(tracking.hasAegisChanges()).toBe(true);
   });
 
@@ -298,9 +304,15 @@ describe('useAegisSuggestion', () => {
     expect(composable.hasPartialModification.value).toBe(true);
 
     const metadata = tracking.getAegisMetadata();
-    expect(metadata.cwe_id).toHaveLength(1); // Only Partial AI (replaces AI)
-    expect(metadata.cwe_id[0].type).toBe('Partial AI');
-    expect(metadata.cwe_id[0].value).toBe('CWE-456');
+    // Both AI and Partial AI entries should exist - AI entry is preserved
+    expect(metadata.cwe_id).toHaveLength(2);
+    const aiEntry = metadata.cwe_id.find(entry => entry.type === 'AI');
+    const partialAiEntry = metadata.cwe_id.find(entry => entry.type === 'Partial AI');
+    expect(aiEntry).toBeDefined();
+    expect(aiEntry?.value).toBe('CWE-89'); // Original AI suggestion
+    expect(partialAiEntry).toBeDefined();
+    expect(partialAiEntry?.type).toBe('Partial AI');
+    expect(partialAiEntry?.value).toBe('CWE-456');
     expect(tracking.hasAegisChanges()).toBe(true);
     expect(composable.hasAppliedSuggestion.value).toBe(true);
   });
@@ -333,11 +345,17 @@ describe('useAegisSuggestion', () => {
     valueRef.value = 'CWE-79 (final)';
     await new Promise(resolve => setTimeout(resolve, 0));
 
-    // Should have only ONE metadata entry (Partial AI) with first modification value
+    // Should have both AI and Partial AI entries - AI entry is preserved
+    // Partial AI entry contains first modification value (not final)
     const metadata = tracking.getAegisMetadata();
-    expect(metadata.cwe_id).toHaveLength(1);
-    expect(metadata.cwe_id[0].type).toBe('Partial AI');
-    expect(metadata.cwe_id[0].value).toBe('CWE-8'); // First modification value (not final)
+    expect(metadata.cwe_id).toHaveLength(2);
+    const aiEntry = metadata.cwe_id.find(entry => entry.type === 'AI');
+    const partialAiEntry = metadata.cwe_id.find(entry => entry.type === 'Partial AI');
+    expect(aiEntry).toBeDefined();
+    expect(aiEntry?.value).toBe('CWE-89'); // Original AI suggestion
+    expect(partialAiEntry).toBeDefined();
+    expect(partialAiEntry?.type).toBe('Partial AI');
+    expect(partialAiEntry?.value).toBe('CWE-8'); // First modification value (not final)
     expect(composable.hasPartialModification.value).toBe(true);
   });
 });

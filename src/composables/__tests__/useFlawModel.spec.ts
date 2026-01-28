@@ -264,13 +264,24 @@ describe('useFlawModel', () => {
 
       const { updateFlaw } = mountFlawModel();
 
-      // Set up Partial AI metadata (user modified the suggestion)
+      const aiTimestamp = new Date('2024-01-01T00:00:00Z').toISOString();
+      const partialAiTimestamp = new Date('2024-01-02T00:00:00Z').toISOString();
+
+      // Set up metadata with both AI and Partial AI entries
+      // AI entry is preserved when Partial AI is added
       setAegisMetadata({
-        cwe_id: [{
-          type: 'Partial AI',
-          timestamp: new Date().toISOString(),
-          value: 'CWE-79 (modified)',
-        }],
+        cwe_id: [
+          {
+            type: 'AI',
+            timestamp: aiTimestamp,
+            value: 'CWE-79', // Original AI suggestion
+          },
+          {
+            type: 'Partial AI',
+            timestamp: partialAiTimestamp,
+            value: 'CWE-79 (modified)', // User-modified value
+          },
+        ],
       });
 
       // Change the field value and title to ensure isFlawUpdated is true
@@ -281,12 +292,13 @@ describe('useFlawModel', () => {
       await updateFlaw();
 
       expect(putFlaw).toHaveBeenCalled();
+      // suggested_value should use the AI entry value, not the Partial AI value
       expect(sendProgrammaticFeedbackMock).toHaveBeenCalledWith({
         feature: 'suggest-cwe',
         cveId: 'CVE-2024-1234',
         email: expect.any(String),
-        suggested_value: 'CWE-79 (modified)',
-        submitted_value: 'CWE-79 (modified)',
+        suggested_value: 'CWE-79', // Original AI suggestion from AI entry
+        submitted_value: 'CWE-79 (modified)', // User-modified value
       });
     });
 
@@ -385,14 +397,14 @@ describe('useFlawModel', () => {
       await flushPromises();
       await updateFlaw();
 
-      // Should use the most recent (Partial AI with MODERATE)
+      // Should always use the AI entry value for suggested_value, not the Partial AI value
       expect(putFlaw).toHaveBeenCalled();
       expect(sendProgrammaticFeedbackMock).toHaveBeenCalledWith({
         feature: 'suggest-impact',
         cveId: 'CVE-2024-1234',
         email: expect.any(String),
-        suggested_value: 'MODERATE',
-        submitted_value: 'MODERATE',
+        suggested_value: 'LOW', // Original AI suggestion from AI entry
+        submitted_value: 'MODERATE', // User-modified value
       });
     });
 

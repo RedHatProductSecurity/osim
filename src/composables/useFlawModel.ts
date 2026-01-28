@@ -90,10 +90,12 @@ export function useFlawModel() {
       const sortedChanges = changes.toSorted(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      const originalAiChange = sortedChanges.find(change => change.type === 'AI' || change.type === 'Partial AI');
-      if (!originalAiChange) continue; // Skip if no original AI suggestion found
+      // Always find the "AI" entry first - it should always exist and contains the original suggestion
+      // The "AI" entry is never removed when "Partial AI" is added, so we can rely on finding it
+      const mostRecentSuggestion = sortedChanges.find(change => change.type === 'AI');
+      if (!mostRecentSuggestion) continue; // Skip if no AI entry found (should not happen in normal flow)
 
-      const suggestedValue = originalAiChange.value ?? '';
+      const suggestedValue = mostRecentSuggestion.value;
       const submittedValue = getFlawFieldValueIfChanged(fieldName);
 
       if (!submittedValue) continue; // Skip if no change was made
