@@ -72,6 +72,24 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   const apiKeys = ref<ApiKeysType>(structuredClone(defaultApiKeys));
 
+  // In dev mode, immediately load API keys from localStorage on store creation
+  // This ensures keys are available before navigation guards check them
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const stored = localStorage.getItem(DEV_API_KEYS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const validated = ApiKeysSchema.safeParse(parsed);
+        if (validated.success && (validated.data.bugzillaApiKey || validated.data.jiraApiKey)) {
+          apiKeys.value = validated.data;
+          console.debug('SettingsStore: Loaded API keys from localStorage on store creation');
+        }
+      }
+    } catch (e) {
+      console.debug('SettingsStore: Failed to load API keys from localStorage on init:', e);
+    }
+  }
+
   const isLoadingApiKeys = ref<boolean>(false);
   const isSavingApiKeys = ref<boolean>(false);
 
