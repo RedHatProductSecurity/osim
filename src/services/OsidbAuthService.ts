@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
 import { useAuthStore } from '@/stores/AuthStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const RefreshResponse = z.object({
   access: z.string(),
@@ -106,10 +107,21 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
 
 async function osimRequestHeaders() {
   const token = await getNextAccessToken();
-  return new Headers({
+  const settingsStore = useSettingsStore();
+  const headers: Record<string, string> = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-  });
+  };
+
+  // Include API keys if available (required for CRUD operations)
+  if (settingsStore.apiKeys.bugzillaApiKey) {
+    headers['Bugzilla-Api-Key'] = settingsStore.apiKeys.bugzillaApiKey;
+  }
+  if (settingsStore.apiKeys.jiraApiKey) {
+    headers['Jira-Api-Key'] = settingsStore.apiKeys.jiraApiKey;
+  }
+
+  return new Headers(headers);
 }
 
 function paramsFrom(params: Record<string, any>) {
