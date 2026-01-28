@@ -14,6 +14,14 @@ function trackAIChange(fieldName: string, changeType: AegisChangeType, value?: s
   });
 }
 
+/**
+ * Removes all AI tracking entries for a field.
+ *
+ * IMPORTANT: This should NOT be called when transitioning from "AI" to "Partial AI".
+ * The "AI" entry must be preserved so that programmatic feedback can always find
+ * the original AI suggestion value. Only call this when completely reverting/removing
+ * AI tracking for a field (e.g., when user reverts the suggestion).
+ */
 function untrackAIChange(fieldName: string) {
   delete aegisMetadata.value[fieldName];
 }

@@ -86,20 +86,21 @@ export function useFlawModel() {
       const feature = FieldToFeatureName[fieldName];
       if (!feature || !changes.length) continue;
 
-      // Get the original AI suggestion (first entry with type 'AI'), not the last modification
-      const originalAiChange = changes.find(change => change.type === 'AI');
-      if (!originalAiChange) continue; // Skip if no original AI suggestion found
+      // Sort changes by timestamp in descending order
+      const sortedChanges = changes.toSorted(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      const suggestedValue = originalAiChange.value ?? '';
+      const mostRecentSuggestion = sortedChanges.find(change => change.type === 'AI');
       const submittedValue = getFlawFieldValueIfChanged(fieldName);
 
-      if (!submittedValue) continue; // Skip if no change was made
+      // Skip if there was no original suggestion or if no change was made
+      if (!mostRecentSuggestion || !submittedValue) continue;
 
       await aegisService.sendProgrammaticFeedback({
         feature,
         cveId,
         email: userStore.userEmail,
-        suggested_value: suggestedValue,
+        suggested_value: mostRecentSuggestion.value,
         submitted_value: submittedValue,
       });
     }
