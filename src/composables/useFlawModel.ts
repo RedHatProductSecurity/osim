@@ -86,8 +86,11 @@ export function useFlawModel() {
       const feature = FieldToFeatureName[fieldName];
       if (!feature || !changes.length) continue;
 
-      // Get the original AI suggestion (first entry with type 'AI'), not the last modification
-      const originalAiChange = changes.find(change => change.type === 'AI');
+      // Sort changes by timestamp in descending order
+      const sortedChanges = changes.toSorted(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      const originalAiChange = sortedChanges.find(change => change.type === 'AI' || change.type === 'Partial AI');
       if (!originalAiChange) continue; // Skip if no original AI suggestion found
 
       const suggestedValue = originalAiChange.value ?? '';
