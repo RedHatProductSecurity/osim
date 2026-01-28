@@ -201,6 +201,18 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
   async function initializeApiKeys() {
     console.debug('SettingsStore: Initializing API keys...');
 
+    // In dev mode, immediately try to load API keys from localStorage
+    // This handles the case where the page reloads with saved browser state
+    // and isAuthenticated is false until token refresh
+    if (osimRuntime.value.env === 'dev' && !isApiKeysInitialized.value) {
+      const localKeys = loadApiKeysFromLocalStorage();
+      if (localKeys && (localKeys.bugzillaApiKey || localKeys.jiraApiKey)) {
+        apiKeys.value = localKeys;
+        isApiKeysInitialized.value = true;
+        console.debug('✅ API keys loaded from localStorage (dev mode early init)');
+      }
+    }
+
     // Import AuthStore dynamically to avoid circular dependencies
     const { useAuthStore } = await import('./AuthStore');
     const authStore = useAuthStore();
