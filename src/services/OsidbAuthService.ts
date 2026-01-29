@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useToastStore } from '@/stores/ToastStore';
 import { useAuthStore } from '@/stores/AuthStore';
+import { useSettingsStore } from '@/stores/SettingsStore';
 
 const RefreshResponse = z.object({
   access: z.string(),
@@ -106,10 +107,34 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
 
 async function osimRequestHeaders() {
   const token = await getNextAccessToken();
-  return new Headers({
+  const headers: Record<string, string> = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-  });
+  };
+
+  // Include API keys if available (required for CRUD operations)
+  // Try from SettingsStore first, fallback to localStorage for dev mode
+  try {
+    const settingsStore = useSettingsStore();
+    if (settingsStore.apiKeys.bugzillaApiKey) {
+      headers['Bugzilla-Api-Key'] = settingsStore.apiKeys.bugzillaApiKey;
+    }
+    if (settingsStore.apiKeys.jiraApiKey) {
+      headers['Jira-Api-Key'] = settingsStore.apiKeys.jiraApiKey;
+    }
+  } catch {
+    // Store might not be ready, try localStorage directly (dev mode)
+    try {
+      const stored = localStorage.getItem('OSIM::DEV-API-KEYS');
+      if (stored) {
+        const keys = JSON.parse(stored);
+        if (keys.bugzillaApiKey) headers['Bugzilla-Api-Key'] = keys.bugzillaApiKey;
+        if (keys.jiraApiKey) headers['Jira-Api-Key'] = keys.jiraApiKey;
+      }
+    } catch { /* ignore */ }
+  }
+
+  return new Headers(headers);
 }
 
 function paramsFrom(params: Record<string, any>) {

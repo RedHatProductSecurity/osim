@@ -65,11 +65,30 @@ export const defaultPersistentSettings: PersistentSettingsType = {
 };
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';
+const DEV_API_KEYS_KEY = 'OSIM::DEV-API-KEYS';
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const { addToast } = useToastStore();
 
   const apiKeys = ref<ApiKeysType>(structuredClone(defaultApiKeys));
+
+  // In dev mode, immediately load API keys from localStorage on store creation
+  // This ensures keys are available before navigation guards check them
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const stored = localStorage.getItem(DEV_API_KEYS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const validated = ApiKeysSchema.safeParse(parsed);
+        if (validated.success && (validated.data.bugzillaApiKey || validated.data.jiraApiKey)) {
+          apiKeys.value = validated.data;
+          console.debug('SettingsStore: Loaded API keys from localStorage on store creation');
+        }
+      }
+    } catch (e) {
+      console.debug('SettingsStore: Failed to load API keys from localStorage on init:', e);
+    }
+  }
 
   const isLoadingApiKeys = ref<boolean>(false);
   const isSavingApiKeys = ref<boolean>(false);
@@ -139,6 +158,39 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
     }
   }
 
+  // Dev mode fallback: read API keys from localStorage when backend is unavailable
+  function loadApiKeysFromLocalStorage(): ApiKeysType | null {
+    if (osimRuntime.value.env !== 'dev') {
+      return null;
+    }
+    try {
+      const stored = localStorage.getItem(DEV_API_KEYS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const validated = ApiKeysSchema.safeParse(parsed);
+        if (validated.success) {
+          console.debug('SettingsStore: Loaded API keys from localStorage (dev mode fallback)');
+          return validated.data;
+        }
+      }
+    } catch (e) {
+      console.debug('SettingsStore: Failed to load API keys from localStorage:', e);
+    }
+    return null;
+  }
+
+  // Dev mode: save API keys to localStorage as fallback
+  function saveApiKeysToLocalStorage(keys: ApiKeysType) {
+    if (osimRuntime.value.env === 'dev') {
+      try {
+        localStorage.setItem(DEV_API_KEYS_KEY, JSON.stringify(keys));
+        console.debug('SettingsStore: Saved API keys to localStorage (dev mode)');
+      } catch (e) {
+        console.debug('SettingsStore: Failed to save API keys to localStorage:', e);
+      }
+    }
+  }
+
   async function loadApiKeysFromBackend() {
     try {
       isLoadingApiKeys.value = true;
@@ -148,8 +200,15 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
         bugzillaApiKey: retrievedKeys.bugzilla || '',
         jiraApiKey: retrievedKeys.jira || '',
       };
+      // In dev mode, also save to localStorage as fallback for when backend is unavailable
+      saveApiKeysToLocalStorage(apiKeys.value);
     } catch (error) {
       console.debug('SettingsStore: No API keys found on server or failed to retrieve them:', error);
+      // Dev mode fallback: try to load from localStorage
+      const localKeys = loadApiKeysFromLocalStorage();
+      if (localKeys) {
+        apiKeys.value = localKeys;
+      }
     } finally {
       isLoadingApiKeys.value = false;
     }
@@ -159,6 +218,18 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
 
   async function initializeApiKeys() {
     console.debug('SettingsStore: Initializing API keys...');
+
+    // In dev mode, immediately try to load API keys from localStorage
+    // This handles the case where the page reloads with saved browser state
+    // and isAuthenticated is false until token refresh
+    if (osimRuntime.value.env === 'dev' && !isApiKeysInitialized.value) {
+      const localKeys = loadApiKeysFromLocalStorage();
+      if (localKeys && (localKeys.bugzillaApiKey || localKeys.jiraApiKey)) {
+        apiKeys.value = localKeys;
+        isApiKeysInitialized.value = true;
+        console.debug('✅ API keys loaded from localStorage (dev mode early init)');
+      }
+    }
 
     // Import AuthStore dynamically to avoid circular dependencies
     const { useAuthStore } = await import('./AuthStore');
