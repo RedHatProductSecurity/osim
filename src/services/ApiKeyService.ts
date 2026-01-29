@@ -10,6 +10,7 @@ import { createCatchHandler } from '@/composables/service-helpers';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 import { osidbFetch } from '@/services/OsidbAuthService';
 // import { useRouter } from 'vue-router';
 
@@ -24,6 +25,13 @@ export interface IntegrationTokensPatchRequest {
 }
 
 export function notifyApiKeyUnset() {
+  // Skip notification in dev mode - API keys may be in localStorage
+  // and will be loaded asynchronously
+  if (osimRuntime.value.env === 'dev') {
+    console.debug('ApiKeyService: Skipping API key notification in dev mode');
+    return;
+  }
+
   const settingsStore = useSettingsStore();
   const { bugzillaApiKey, jiraApiKey } = settingsStore.apiKeys;
   const unsetKeys: string[] = [];
