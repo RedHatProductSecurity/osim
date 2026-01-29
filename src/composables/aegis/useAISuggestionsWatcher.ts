@@ -15,9 +15,9 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
     if (hasAppliedSuggestion.value && newValue !== originalSuggestion.value && newValue !== oldValue) {
       hasPartialModification.value = true;
 
-      // Substitute AI with Partial AI if necessary
+      // Add Partial AI entry while preserving the original AI entry
+      // This allows us to track both the original suggestion and the modified value
       if (!hasTrackedPartialChange.value) {
-        untrackAIChange(fieldName);
         trackAIChange(fieldName, 'Partial AI', newValue || undefined);
         hasTrackedPartialChange.value = true;
       }

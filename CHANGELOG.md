@@ -1,4 +1,8 @@
 # OSIM Changelog
+## Unreleased
+### Fixed
+* Send partially modified Aegis-suggestions (`OSIDB-4764`)
+
 ## [2026.1.1]
 ### Added
 * Automatically record suggestion quality feedback on Flaw save (`AEGIS-291`)
