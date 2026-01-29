@@ -1,0 +1,374 @@
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+      - uat
+    paths-ignore:
+      - 'selenium/**'
+      - 'features/**'
+      - 'scripts/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'selenium/**'
+      - 'features/**'
+      - 'scripts/**'
+      - '*.md'
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser to run tests on'
+        required: false
+        default: 'chromium'
+        type: choice
+        options:
+          - all
+          - chromium
+          - firefox
+      test_filter:
+        description: 'Test file filter (e.g., flaw.spec.ts)'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      # PostgreSQL for OSIDB (same version as OSIDB workflow)
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      # OpenLDAP for authentication
+      testldap:
+        image: osixia/openldap:1.5.0
+        env:
+          LDAP_DOMAIN: redhat.com
+          LDAP_BASE_DN: dc=redhat,dc=com
+          LDAP_ADMIN_PASSWORD: adminpassword
+        ports:
+          - 1389:389
+
+      # Redis for caching
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout OSIM
+        uses: actions/checkout@v4
+
+      - name: Checkout OSIDB
+        uses: actions/checkout@v4
+        with:
+          repository: RedHatProductSecurity/osidb
+          path: osidb
+
+      - name: Checkout osim-ui-tests
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/osim-ui-tests
+          # TODO: Change to 'main' after merging osim-ui-tests PRs
+          ref: temp/ci-integration-tests
+          path: osim-ui-tests
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Add service hostnames
+        run: |
+          # settings_ci.py expects services at hostnames 'postgres', 'testldap', 'redis'
+          echo "127.0.0.1 postgres testldap redis" | sudo tee -a /etc/hosts
+
+      - name: Install LDAP client tools
+        run: sudo apt-get update && sudo apt-get install -y ldap-utils
+
+      - name: Setup PostgreSQL
+        run: |
+          # Create osidb database first
+          PGPASSWORD=test psql -h postgres -U postgres -c "CREATE DATABASE osidb;"
+          # Create user and grant permissions (must be done in osidb database)
+          PGPASSWORD=test psql -h postgres -U postgres -d osidb <<EOF
+          CREATE ROLE osidb_app_user WITH LOGIN PASSWORD 'passw0rd';
+          GRANT ALL PRIVILEGES ON DATABASE osidb TO osidb_app_user;
+          GRANT ALL ON SCHEMA public TO osidb_app_user;
+          GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO osidb_app_user;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO osidb_app_user;
+          EOF
+          # Run template permissions
+          PGPASSWORD=test psql -h postgres -U postgres -d osidb -f osidb/etc/pg/template-permissions.sql
+
+      - name: Setup LDAP users
+        run: |
+          # Wait for LDAP to be ready
+          sleep 5
+          ldapadd -c -H "ldap://testldap:1389" -x -D "cn=admin,dc=redhat,dc=com" -w "adminpassword" -f osidb/etc/openldap/local-export.ldif || true
+
+      - name: Install OSIDB build dependencies
+        run: |
+          # Fix for python-ldap
+          echo "INPUT ( libldap.so )" | sudo tee /usr/lib/x86_64-linux-gnu/libldap_r.so
+          sudo apt-get install -y libldap2-dev libsasl2-dev libpq-dev libffi-dev libkrb5-dev
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.3"
+
+      - name: Install OSIDB dependencies with uv
+        working-directory: osidb
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
+
+      - name: Run OSIDB migrations
+        working-directory: osidb
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings_ci
+          OSIDB_DEBUG: 1
+          OSIDB_CORS_ALLOWED_ORIGINS: '["http://localhost:8080"]'
+          # Allow custom headers for API keys in CORS preflight
+          OSIDB_CORS_ALLOW_HEADERS: '["bugzilla-api-key", "jira-api-key"]'
+          # Vault settings (fake values for CI - no real Vault connection)
+          OSIDB_VAULT_ADDR: http://localhost:8200
+          OSIDB_ROLE_ID: fake-role-id
+          OSIDB_SECRET_ID: fake-secret-id
+          ET_URL: https://example.com
+          PRODUCT_DEF_URL: https://example.com
+          PS_CONSTANTS_URL: https://example.com
+          JIRA_TASKMAN_URL: https://example.com
+          BZIMPORT_BZ_URL: https://example.com
+          BZIMPORT_BZ_API_KEY: fake
+          JIRA_AUTH_TOKEN: fake
+        run: |
+          source .venv/bin/activate
+          python manage.py migrate
+
+      - name: Create test product data
+        working-directory: osidb
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings_ci
+        run: |
+          source .venv/bin/activate
+          python -c "
+          import django
+          django.setup()
+          from osidb.models import PsProduct, PsModule, PsUpdateStream
+
+          # Create PS Product (top level)
+          product, created = PsProduct.objects.update_or_create(
+              short_name='rhel',
+              defaults={
+                  'name': 'Red Hat Enterprise Linux',
+                  'business_unit': 'Core RHEL',
+              }
+          )
+          print(f'PsProduct rhel: created={created}')
+
+          # Create PS Module for RHEL 8
+          module, created = PsModule.objects.update_or_create(
+              name='rhel-8',
+              defaults={
+                  'public_description': 'Red Hat Enterprise Linux 8',
+                  'bts_name': 'bugzilla',
+                  'bts_key': 'Red Hat Enterprise Linux 8',
+                  'bts_groups': {'public': ['rhel-8']},
+                  'ps_product': product,
+              }
+          )
+          print(f'PsModule rhel-8: created={created}')
+
+          # Create PS Update Stream
+          stream, created = PsUpdateStream.objects.update_or_create(
+              name='rhel-8.10.0',
+              defaults={
+                  'version': '8.10.0',
+                  'ps_module': module,
+                  'active_to_ps_module': module,
+              }
+          )
+          print(f'PsUpdateStream rhel-8.10.0: created={created}')
+          print('Test product data created successfully')
+          "
+
+      - name: Start OSIDB
+        working-directory: osidb
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings_ci
+          OSIDB_DEBUG: 1
+          OSIDB_CORS_ALLOWED_ORIGINS: '["http://localhost:8080"]'
+          # Allow custom headers for API keys in CORS preflight
+          OSIDB_CORS_ALLOW_HEADERS: '["bugzilla-api-key", "jira-api-key"]'
+          # Vault settings (fake values for CI - no real Vault connection)
+          OSIDB_VAULT_ADDR: http://localhost:8200
+          OSIDB_ROLE_ID: fake-role-id
+          OSIDB_SECRET_ID: fake-secret-id
+          ET_URL: https://example.com
+          PRODUCT_DEF_URL: https://example.com
+          PS_CONSTANTS_URL: https://example.com
+          JIRA_TASKMAN_URL: https://example.com
+          BZIMPORT_BZ_URL: https://example.com
+          BZIMPORT_BZ_API_KEY: fake
+          JIRA_AUTH_TOKEN: fake
+        run: |
+          source .venv/bin/activate
+          python manage.py runserver 0.0.0.0:8000 &
+          # Wait for OSIDB to be ready
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/osidb/healthy > /dev/null 2>&1; then
+              echo "OSIDB is ready!"
+              curl -s http://localhost:8000/osidb/healthy
+              exit 0
+            fi
+            echo "Waiting for OSIDB... attempt $i/30"
+            sleep 2
+          done
+          
+          echo "ERROR: OSIDB failed to become ready"
+          exit 1
+
+      - name: Build OSIM Docker image
+        run: docker build -t osim:pr -f Dockerfile .
+
+      - name: Start OSIM
+        run: |
+          docker run -d \
+            --name osim-app \
+            --network host \
+            -e OSIM_ENV="dev" \
+            -e OSIM_BACKENDS_OSIDB="http://localhost:8000" \
+            -e OSIM_BACKENDS_OSIDB_AUTH="credentials" \
+            -e OSIM_BACKENDS_BUGZILLA="https://example.com" \
+            -e OSIM_BACKENDS_JIRA="https://example.com" \
+            -e OSIM_BACKENDS_JIRA_DISPLAY="https://example.com" \
+            -e OSIM_BACKENDS_ERRATA="https://example.com" \
+            -e OSIM_BACKENDS_MITRE="http://localhost:8080/proxy/mitre" \
+            osim:pr
+          
+          # Check if container started
+          if ! docker ps | grep -q osim-app; then
+            echo "ERROR: OSIM container failed to start"
+            docker logs osim-app 2>/dev/null || true
+            exit 1
+          fi
+          
+          # Wait for OSIM to be ready
+          echo "Waiting for OSIM to start..."
+          for i in {1..30}; do
+            if curl -sk http://localhost:8080/runtime.json > /dev/null 2>&1; then
+              echo "OSIM is ready!"
+              curl -sk http://localhost:8080/runtime.json
+              exit 0
+            fi
+            echo "Attempt $i/30..."
+            sleep 2
+          done
+          
+          echo "ERROR: OSIM failed to become ready"
+          docker logs osim-app 2>/dev/null || true
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/iron'
+          cache: 'yarn'
+          cache-dependency-path: osim-ui-tests/yarn.lock
+
+      - name: Install test dependencies
+        working-directory: osim-ui-tests
+        run: yarn install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright-version
+        working-directory: osim-ui-tests
+        run: echo "version=$(node -p "require('./package.json').devDependencies['@playwright/test']")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: osim-ui-tests
+        run: yarn playwright install chromium --with-deps
+      
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Run integration tests
+        working-directory: osim-ui-tests
+        env:
+          OSIDB_URL: localhost:8000
+          OSIM_URL: localhost:8080
+          OSIM_USERNAME: testuser
+          OSIM_PASSWORD: password
+          JIRA_API_KEY: fake
+          BUGZILLA_API_KEY: fake
+          JIRA_USERNAME: testuser
+          CI: true
+        run: |
+          # Build test command (-x = fail fast, stop on first failure)
+          if [ "${{ inputs.browser || 'chromium' }}" = "all" ]; then
+            TEST_CMD="yarn test -x"
+          else
+            TEST_CMD="yarn test --project=${{ inputs.browser || 'chromium' }} -x"
+          fi
+          
+          if [ -n "${{ inputs.test_filter }}" ]; then
+            TEST_CMD="$TEST_CMD ${{ inputs.test_filter }}"
+          fi
+          
+          $TEST_CMD
+
+      - name: Show OSIM logs on failure
+        if: failure()
+        run: docker logs osim-app 2>/dev/null || echo "OSIM container not found"
+
+      - name: Show OSIDB logs on failure
+        if: failure()
+        run: |
+          echo "=== OSIDB Process ==="
+          ps aux | grep manage.py || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f osim-app 2>/dev/null || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: |
+            osim-ui-tests/results.xml
+            osim-ui-tests/test-results/
+          retention-days: 30
+
+      - name: Upload Playwright traces
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: osim-ui-tests/test-results/
+          retention-days: 7
