@@ -1,7 +1,8 @@
 # OSIM Changelog
-## Unreleased
+## [2026.1.2]
 ### Fixed
 * Send partially modified Aegis-suggestions (`OSIDB-4764`)
+* Workaround for critical OSIDB performance issues (`OSIDB-4684`)
 
 ## [2026.1.1]
 ### Added
@@ -612,7 +613,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.2...HEAD
+[2026.1.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.1...v2026.1.2
 [2026.1.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.1
 [2026.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...v2026.1.0
 [2025.12.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.11.4-hotfix...v2025.12.0
