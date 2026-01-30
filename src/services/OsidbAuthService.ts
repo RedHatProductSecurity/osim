@@ -51,7 +51,9 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
   }
 
   const body = config?.data ? JSON.stringify(config.data) : undefined;
-  const queryString = queryStringFromParams(config?.params ?? {});
+  // TEMPORARY: Remove include_history from OSIDB requests to avoid performance issues (OSIDB-4769)
+  const { include_history: _, ...paramsWithoutHistory } = config?.params ?? {};
+  const queryString = queryStringFromParams(paramsWithoutHistory);
   const baseUrl = osimRuntime.value.backends.osidb;
 
   if (config?.method?.toUpperCase() !== 'GET' && osimRuntime.value.readOnly) {

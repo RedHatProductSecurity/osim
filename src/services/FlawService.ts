@@ -62,7 +62,6 @@ export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<
     cache: breakCache ? 'no-cache' : 'default',
     params: {
       include_meta_attr: 'bz_id',
-      include_history: 'true',
       exclude_fields: 'affects',
     },
   }).then(response => response.data);
@@ -85,7 +84,6 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
       url: `/osidb/api/v2/flaws/${uuid}`,
       data: flawObject,
       params: {
-        include_history: 'true',
         ...(createJiraTask && { create_jira_task: true }),
       },
     }, { beforeFetch });
