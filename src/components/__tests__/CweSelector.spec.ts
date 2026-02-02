@@ -44,4 +44,30 @@ describe('cweSelector.vue', () => {
     expect(wrapper.vm.queryRef).toBe('CWE-123');
     expect(wrapper.vm.suggestions).toEqual([]);
   });
+
+  it('replaces existing CWE value when selecting a new suggestion (single CWE only)', async () => {
+    wrapper.vm.cweData = [
+      { id: '79', name: 'XSS', status: 'Stable', summary: '', usage: 'Allowed' },
+      { id: '89', name: 'SQL Injection', status: 'Stable', summary: '', usage: 'Allowed' },
+    ];
+
+    // Set initial CWE value
+    wrapper.vm.modelValue = 'CWE-79';
+    await flushPromises();
+
+    // User types to search for another CWE
+    const input = wrapper.find('input');
+    await input.setValue('89');
+
+    vi.runAllTimers();
+    await flushPromises();
+
+    // Click on the second CWE suggestion
+    const suggestionRow = wrapper.findAll('.dropdown-menu .item');
+    await suggestionRow[0].trigger('click');
+
+    // The entire value should be replaced (not appended)
+    expect(wrapper.vm.modelValue).toBe('CWE-89');
+    expect(wrapper.vm.modelValue).not.toContain('CWE-79');
+  });
 });
