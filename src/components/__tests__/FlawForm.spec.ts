@@ -794,4 +794,46 @@ describe('flawForm', () => {
       expect(vm.errors.affects[i].ps_component).toBe(null);
     }
   });
+
+  osimFullFlawTest('should trigger validation error when multiple CWEs are present', async ({ flaw }) => {
+    // Set multiple CWEs in the field
+    flaw.cwe_id = 'CWE-79, CWE-89';
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    // Validation should show error for multiple CWEs
+    expect(vm.errors.cwe_id).toBe('Only a single CWE is allowed');
+  });
+
+  osimFullFlawTest('should not trigger validation error for a single CWE', async ({ flaw }) => {
+    // Set single CWE
+    flaw.cwe_id = 'CWE-79';
+
+    const subject = mountWithProps(flaw, { mode: 'edit' });
+    const vm = subject.findComponent(FlawForm).vm as any;
+
+    // No validation error expected for single CWE
+    expect(vm.errors.cwe_id).toBeNull();
+  });
+
+  osimFullFlawTest('should trigger validation error for multiple CWEs with different separators',
+    async ({ flaw }) => {
+      // Test various separator patterns that might contain multiple CWEs
+      const testCases = [
+        'CWE-79 -> CWE-89', // Arrow separator
+        'CWE-79 | CWE-89', // Pipe separator
+        'CWE-79 (related to CWE-89)', // Parentheses with text
+      ];
+
+      for (const cweValue of testCases) {
+        flaw.cwe_id = cweValue;
+
+        const subject = mountWithProps(flaw, { mode: 'edit' });
+        const vm = subject.findComponent(FlawForm).vm as any;
+
+        // Each should trigger the validation error
+        expect(vm.errors.cwe_id).toBe('Only a single CWE is allowed');
+      }
+    });
 });
