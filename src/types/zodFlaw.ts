@@ -284,7 +284,14 @@ export const ZodFlawSchema = z.object({
 
   if (zodFlaw.cwe_id) {
     const cweData = loadCweData();
-    zodFlaw.cwe_id?.match(/CWE-\d+/gi)?.forEach((flawCWE) => {
+    const cweMatches = zodFlaw.cwe_id?.match(/CWE-\d+/gi);
+
+    // Enforce single CWE only
+    if (cweMatches && cweMatches.length > 1) {
+      raiseIssue('Only a single CWE is allowed', ['cwe_id']);
+    }
+
+    cweMatches?.forEach((flawCWE) => {
       cweData
         .filter(member => `CWE-${member.id}` === flawCWE && (member.isProhibited || member.isDiscouraged))
         .forEach((member) => {
