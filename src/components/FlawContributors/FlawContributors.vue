@@ -100,7 +100,7 @@ const remove = (index: number) => {
         <div
           v-for="contributor in results"
           :key="contributor.name"
-          @click="add(contributor)"
+          @mousedown.prevent="add(contributor)"
         >
           <JiraUser v-bind="contributor" :query />
         </div>
