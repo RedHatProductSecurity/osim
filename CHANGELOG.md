@@ -2,6 +2,7 @@
 ## Unreleased
 ### Fixed
 * Send partially modified Aegis-suggestions (`OSIDB-4764`)
+* Fix contributors input cleared on suggestion click (`OSIDB-4770`)
 
 ## [2026.1.1]
 ### Added
