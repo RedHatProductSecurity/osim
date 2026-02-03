@@ -154,14 +154,34 @@ export function useAffectsTable() {
 
   // Automatically filter affects to show only those with related CVEs when they exist
   const displayAffects = computed(() => {
-    const baseData = settings.value.affectsGrouping ? groupedAffects.value : currentAffects.value;
+    if (relatedAffects.size === 0) {
+      return settings.value.affectsGrouping ? groupedAffects.value : currentAffects.value;
+    }
 
-    return relatedAffects.size === 0
-      ? baseData
-      : baseData.filter(affect => getAffectUuidsForStream(
-        `${affect.ps_update_stream}:${affect.ps_component}`,
-      ).length > 1,
-      );
+    const hasSharedStream = (affect: ZodAffectType) =>
+      getAffectUuidsForStream(`${affect.ps_update_stream}:${affect.ps_component}`).length > 1;
+
+    const filteredAffects = currentAffects.value.filter(hasSharedStream);
+
+    if (!settings.value.affectsGrouping) {
+      return filteredAffects;
+    }
+
+    // Group filtered affects by ps_module
+    const groupsByModule = new Map<string, ZodAffectType[]>();
+    for (const affect of filteredAffects) {
+      if (newAffects.has(affectUUID(affect) ?? '')) continue;
+
+      const module = affect.ps_module ?? '';
+      const group = groupsByModule.get(module) ?? [];
+      if (group.length === 0) groupsByModule.set(module, group);
+      group.push(affect);
+    }
+
+    return Array.from(groupsByModule.values()).map(group => ({
+      ...group[0],
+      rows: group.length > 1 ? group.slice(1) : [],
+    }));
   });
 
   const table = useVueTable({
