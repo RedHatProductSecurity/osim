@@ -1,5 +1,9 @@
 # OSIM Changelog
-## Unreleased
+## [Unreleased]
+### Fixed
+* Group by module on multi flaw affects not showing correct values (`OSIDB-4684`)
+
+## [2026.1.2]
 ### Fixed
 * Send partially modified Aegis-suggestions (`OSIDB-4764`)
 
