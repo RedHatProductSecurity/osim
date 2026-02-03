@@ -93,11 +93,27 @@ describe('flawContributors', () => {
     await flushPromises();
 
     const user = wrapper.find('.menu > :first-child');
-    await user.trigger('click');
+    await user.trigger('mousedown');
 
     expect(useJiraContributors.contributors.value).toEqual([contributor]);
     expect(wrapper.find('.badge').exists()).toBe(true);
     expect(wrapper.find('.badge').text()).toContain('test user');
+  });
+
+  it('should clear input after selecting contributor', async () => {
+    useJiraContributors.searchContributors.mockResolvedValue([contributor]);
+    const wrapper = mountComponent();
+    const input = wrapper.find('input');
+    await input.setValue('test');
+
+    vi.runAllTimers();
+    await flushPromises();
+
+    const user = wrapper.find('.menu > :first-child');
+    await user.trigger('mousedown');
+
+    expect((input.element as HTMLInputElement).value).toBe('');
+    expect(wrapper.find('.menu').exists()).toBe(false);
   });
 
   it('should remove contributor when clicked', async () => {
