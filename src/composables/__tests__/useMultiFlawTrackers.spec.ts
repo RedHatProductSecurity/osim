@@ -591,4 +591,61 @@ describe('useMultiFlawTrackers', () => {
       expect(affectUuids).toEqual([]);
     });
   });
+
+  describe('grouped affects filtering (multi-flaw tracker filing)', () => {
+    it('should correctly identify which affects have shared streams for filtering', () => {
+      const { actions, state } = useMultiFlawTrackers();
+      state.relatedAffects.set('CVE-2024-0002', mockAffectsForCVE2);
+
+      // Shared stream returns multiple UUIDs
+      const sharedStreamUuids = actions.getAffectUuidsForStream('stream-1:component-1');
+      expect(sharedStreamUuids.length).toBeGreaterThan(1);
+
+      // Non-shared stream returns empty array
+      const nonSharedStreamUuids = actions.getAffectUuidsForStream('stream-2:component-2');
+      expect(nonSharedStreamUuids).toEqual([]);
+    });
+
+    it('should filter affects correctly when multiple affects share same ps_module but different streams', () => {
+      const flawWithMultipleStreamsPerModule: ZodFlawType = {
+        ...defaultMockFlaw,
+        affects: [
+          {
+            uuid: 'affect-shared',
+            ps_component: 'component-1',
+            ps_module: 'module-1',
+            ps_update_stream: 'stream-1',
+            tracker: null,
+          } as ZodAffectType,
+          {
+            uuid: 'affect-not-shared',
+            ps_component: 'component-99',
+            ps_module: 'module-1',
+            ps_update_stream: 'stream-99',
+            tracker: null,
+          } as ZodAffectType,
+        ],
+      } as ZodFlawType;
+
+      mockFlawRef.value = flawWithMultipleStreamsPerModule;
+
+      const { actions, state } = useMultiFlawTrackers();
+      state.relatedAffects.set('CVE-2024-0002', mockAffectsForCVE2);
+
+      const sharedUuids = actions.getAffectUuidsForStream('stream-1:component-1');
+      expect(sharedUuids.length).toBeGreaterThan(1);
+      expect(sharedUuids).toContain('affect-shared');
+
+      const nonSharedUuids = actions.getAffectUuidsForStream('stream-99:component-99');
+      expect(nonSharedUuids).toEqual([]);
+    });
+
+    it('should return empty for streams only in related flaws', () => {
+      const { actions, state } = useMultiFlawTrackers();
+      state.relatedAffects.set('CVE-2024-0002', mockAffectsForCVE2);
+
+      const relatedOnlyUuids = actions.getAffectUuidsForStream('stream-3:component-3');
+      expect(relatedOnlyUuids).toEqual([]);
+    });
+  });
 });
