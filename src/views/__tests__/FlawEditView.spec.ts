@@ -26,6 +26,14 @@ vi.mock('@/services/AffectService', async (importOriginal) => {
     getAffects: vi.fn().mockResolvedValue({ data: { results: sampleFlawRequired.affects } }),
   });
 });
+
+vi.mock('@/services/AuditService', async (importOriginal) => {
+  return ({
+    ...await importOriginal<typeof import('@/services/AuditService')>(),
+    getFlawAuditHistory: vi.fn().mockResolvedValue([]),
+  });
+});
+
 vi.mock('@/components/FlawForm.vue');
 
 const mountFlawEditView = () => mountWithConfig(FlawEditView, {
