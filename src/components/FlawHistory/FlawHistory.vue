@@ -10,11 +10,16 @@ import { flawFieldNamesMapping } from '@/constants/flawFields';
 import type { ZodFlawHistoryItemType } from '@/types/zodFlaw';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  error?: boolean;
   history: null | undefined | ZodFlawHistoryItemType[];
-}>();
+}>(), {
+  error: false,
+});
 
 const { getFieldAegisType, isFieldAegisChange } = useAegisMetadataTracking();
+
+const isLoading = computed(() => props.history === undefined || props.history === null);
 
 const startDate = ref<null | string | undefined>(null);
 const endDate = ref<null | string | undefined>(null);
@@ -68,7 +73,14 @@ const {
 const paginatedHistoryItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return filteredHistoryItems.value?.slice(start, end);
+  // Filter out history entries that only contain last_validated_dt or aegis_meta changes
+  return filteredHistoryItems.value?.slice(start, end).filter((item) => {
+    if (!item.pgh_diff) return false;
+    const visibleKeys = Object.keys(item.pgh_diff).filter(
+      key => key !== 'last_validated_dt' && key !== 'aegis_meta',
+    );
+    return visibleKeys.length > 0;
+  });
 });
 
 function isDateField(field: string) {
@@ -93,7 +105,21 @@ function clearFilters() {
         <h4 :class="{'mb-0': !historyExpanded}">History</h4>
       </label>
     </template>
-    <template v-if="!history?.length">
+    <template v-if="isLoading">
+      <div class="d-flex align-items-center gap-2">
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
+          <span class="visually-hidden">Loading history...</span>
+        </div>
+        <span class="text-muted">Loading history...</span>
+      </div>
+    </template>
+    <template v-else-if="error">
+      <div class="alert alert-warning mb-0 d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>Failed to load history. Please try refreshing the page.</span>
+      </div>
+    </template>
+    <template v-else-if="!history?.length">
       <span>There are no tracked changes for this flaw.</span>
     </template>
     <template v-else>
@@ -133,7 +159,7 @@ function clearFilters() {
               <ul class="mb-2">
                 <li
                   v-for="(diffEntry, diffKey) in historyEntry.pgh_diff"
-                  v-show="diffKey !== 'aegis_meta'"
+                  v-show="diffKey !== 'aegis_meta' && diffKey !== 'last_validated_dt'"
                   :key="diffKey"
                 >
                   <div class="ms-3 pb-0">

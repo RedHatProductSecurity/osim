@@ -1,5 +1,9 @@
 # OSIM Changelog
-## Unreleased
+## [Unreleased]
+### Fixed
+* Re-enabled flaw history (`OSIDB-4778`)
+
+## [2026.1.2]
 ### Fixed
 * Send partially modified Aegis-suggestions (`OSIDB-4764`)
 
