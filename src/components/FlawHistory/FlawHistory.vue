@@ -16,6 +16,8 @@ const props = defineProps<{
 
 const { getFieldAegisType, isFieldAegisChange } = useAegisMetadataTracking();
 
+const isLoading = computed(() => props.history === undefined || props.history === null);
+
 const startDate = ref<null | string | undefined>(null);
 const endDate = ref<null | string | undefined>(null);
 
@@ -93,7 +95,15 @@ function clearFilters() {
         <h4 :class="{'mb-0': !historyExpanded}">History</h4>
       </label>
     </template>
-    <template v-if="!history?.length">
+    <template v-if="isLoading">
+      <div class="d-flex align-items-center gap-2">
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
+          <span class="visually-hidden">Loading history...</span>
+        </div>
+        <span class="text-muted">Loading history...</span>
+      </div>
+    </template>
+    <template v-else-if="!history?.length">
       <span>There are no tracked changes for this flaw.</span>
     </template>
     <template v-else>
