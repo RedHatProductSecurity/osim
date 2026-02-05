@@ -73,7 +73,14 @@ const {
 const paginatedHistoryItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return filteredHistoryItems.value?.slice(start, end);
+  // Filter out history entries that only contain last_validated_dt or aegis_meta changes
+  return filteredHistoryItems.value?.slice(start, end).filter((item) => {
+    if (!item.pgh_diff) return false;
+    const visibleKeys = Object.keys(item.pgh_diff).filter(
+      key => key !== 'last_validated_dt' && key !== 'aegis_meta',
+    );
+    return visibleKeys.length > 0;
+  });
 });
 
 function isDateField(field: string) {
@@ -152,7 +159,7 @@ function clearFilters() {
               <ul class="mb-2">
                 <li
                   v-for="(diffEntry, diffKey) in historyEntry.pgh_diff"
-                  v-show="diffKey !== 'aegis_meta'"
+                  v-show="diffKey !== 'aegis_meta' && diffKey !== 'last_validated_dt'"
                   :key="diffKey"
                 >
                   <div class="ms-3 pb-0">
