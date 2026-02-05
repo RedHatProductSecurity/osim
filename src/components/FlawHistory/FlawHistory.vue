@@ -10,9 +10,12 @@ import { flawFieldNamesMapping } from '@/constants/flawFields';
 import type { ZodFlawHistoryItemType } from '@/types/zodFlaw';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  error?: boolean;
   history: null | undefined | ZodFlawHistoryItemType[];
-}>();
+}>(), {
+  error: false,
+});
 
 const { getFieldAegisType, isFieldAegisChange } = useAegisMetadataTracking();
 
@@ -101,6 +104,12 @@ function clearFilters() {
           <span class="visually-hidden">Loading history...</span>
         </div>
         <span class="text-muted">Loading history...</span>
+      </div>
+    </template>
+    <template v-else-if="error">
+      <div class="alert alert-warning mb-0 d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>Failed to load history. Please try refreshing the page.</span>
       </div>
     </template>
     <template v-else-if="!history?.length">
