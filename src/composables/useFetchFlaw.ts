@@ -13,6 +13,7 @@ import { getAffects } from '@/services/AffectService';
 const isFetchingAffects = ref(false);
 const totalAffectCount = ref(0);
 const currentlyFetchedAffectCount = ref(0);
+const historyFetchError = ref(false);
 
 export function useFetchFlaw() {
   const { flaw, resetFlaw, setFlaw } = useFlaw();
@@ -49,6 +50,7 @@ export function useFetchFlaw() {
 
     try {
       didFetchFail.value = false;
+      historyFetchError.value = false;
       const fetchedFlaw = getFlaw(flawCveOrId);
       const fetchedAffects = fetchFlawAffects(flawCveOrId);
 
@@ -63,12 +65,14 @@ export function useFetchFlaw() {
       getFlawAuditHistory(flawResult.uuid)
         .then((auditHistory) => {
           flaw.value.history = auditHistory;
+          historyFetchError.value = false;
           setFlaw(flaw.value);
         })
         .catch((historyError) => {
           console.error('useFetchFlaw::fetchFlaw() Error loading audit history:', historyError);
-          // Don't fail the entire flaw fetch if history fails
+          // Don't fail the entire flaw fetch if history fails, but set error flag
           flaw.value.history = [];
+          historyFetchError.value = true;
           setFlaw(flaw.value);
         });
 
@@ -96,5 +100,6 @@ export function useFetchFlaw() {
     fetchedAffectsPercentage,
     fetchFlaw,
     didFetchFail,
+    historyFetchError,
   };
 }

@@ -91,7 +91,13 @@ const {
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel();
-const { currentlyFetchedAffectCount, fetchedAffectsPercentage, isFetchingAffects, totalAffectCount } = useFetchFlaw();
+const {
+  currentlyFetchedAffectCount,
+  fetchedAffectsPercentage,
+  historyFetchError,
+  isFetchingAffects,
+  totalAffectCount,
+} = useFetchFlaw();
 const { flaw, initialFlaw } = useFlaw();
 
 const {
@@ -532,7 +538,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
       </div>
       <div class="row border-top">
         <div class="col">
-          <FlawHistory v-if="mode === 'edit'" :history="flaw.history" />
+          <FlawHistory v-if="mode === 'edit'" :history="flaw.history" :error="historyFetchError" />
         </div>
       </div>
     </div>
