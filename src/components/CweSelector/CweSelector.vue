@@ -53,10 +53,8 @@ function filterSuggestions(query: string) {
 }
 
 function handleSuggestionClick(fn: (args?: any) => void, suggestion: string) {
-  const queryParts = queryRef.value.split(/(->|\(|\)|\|)/);
-  const lastIndex = queryParts.length - 1;
-  queryParts[lastIndex] = suggestion;
-  modelValue.value = queryParts.join('');
+  // Replace the entire value with the selected CWE (single CWE only)
+  modelValue.value = suggestion;
   queryRef.value = modelValue.value;
   suggestions.value = [];
   nextTick(fn);
