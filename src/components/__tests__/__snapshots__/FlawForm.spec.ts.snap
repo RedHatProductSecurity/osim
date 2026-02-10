@@ -651,7 +651,11 @@ exports[`flawForm > mounts and renders 1`] = `
             <h4 data-v-f4fcc8d4="" class="">History</h4>
           </label></button>
         <div data-v-4715e8e2="" class="ps-3 border-start">
-          <div data-v-4715e8e2="" class=""><span data-v-f4fcc8d4="">There are no tracked changes for this flaw.</span></div>
+          <div data-v-4715e8e2="" class="">
+            <div data-v-f4fcc8d4="" class="d-flex align-items-center gap-2">
+              <div data-v-f4fcc8d4="" class="spinner-border spinner-border-sm text-primary" role="status"><span data-v-f4fcc8d4="" class="visually-hidden">Loading history...</span></div><span data-v-f4fcc8d4="" class="text-muted">Loading history...</span>
+            </div>
+          </div>
         </div>
       </div>
       <!--v-if-->
