@@ -3,6 +3,7 @@
 ### Fixed
 * Re-enabled flaw history (`OSIDB-4778`)
 * Fix contributors input cleared on suggestion click (`OSIDB-4770`)
+* Group by module on multi flaw affects not showing correct values (`OSIDB-4684`)
 
 ### Changed
 * Allow single CWE value only (`OSIDB-4745`)
