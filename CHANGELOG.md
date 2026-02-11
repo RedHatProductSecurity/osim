@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.2.0]
 ### Fixed
 * Re-enabled flaw history (`OSIDB-4778`)
 * Fix contributors input cleared on suggestion click (`OSIDB-4770`)
@@ -622,7 +622,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.2.0...HEAD
+[2026.2.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.2...v2026.2.0
 [2026.1.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.1...v2026.1.2
 [2026.1.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.1
 [2026.1.0]: https://github.com/RedHatProductSecurity/osim/compare/v2025.12.0...v2026.1.0
