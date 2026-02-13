@@ -193,11 +193,8 @@ export const ZodFlawSchema = z.object({
     { message: 'You must specify a source for this Flaw before saving.' },
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
-  aegis_meta: z.record(z.string(), z.array(z.object({
-    type: ZodAegisChangeTypeEnum,
-    timestamp: z.string(),
-    value: z.string().optional(),
-  }))).nullish(),
+  // Flexible schema to handle evolving backend formats without blocking flaw operations
+  aegis_meta: z.any().nullish(),
   mitigation: z.string().nullish(),
   major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullable(),
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
