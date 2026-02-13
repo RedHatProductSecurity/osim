@@ -90,7 +90,7 @@ export function useFlawModel() {
       const sortedChanges = changes.toSorted(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      const mostRecentSuggestion = sortedChanges.find(change => change.type === 'AI');
+      const mostRecentSuggestion = sortedChanges.find(change => change.type === 'AI' || change.type === 'AI-Bot');
       const submittedValue = getFlawFieldValueIfChanged(fieldName);
 
       // Skip if there was no original suggestion or if no change was made

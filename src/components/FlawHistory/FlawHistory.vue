@@ -169,7 +169,9 @@ function clearFilters() {
                       style="cursor: default;"
                       :title="getFieldAegisType(historyEntry, diffKey) === 'AI'
                         ? 'This change was suggested by Aegis-AI'
-                        : 'This change was a modified Aegis-AI suggestion'"
+                        : getFieldAegisType(historyEntry, diffKey) === 'AI-Bot'
+                          ? 'This change was automatically applied by Aegis-AI Bot'
+                          : 'This change was a modified Aegis-AI suggestion'"
                       data-bs-toggle="tooltip"
                     >
                       <i class="bi bi-robot"></i> {{ getFieldAegisType(historyEntry, diffKey) }}
