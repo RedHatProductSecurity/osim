@@ -430,7 +430,35 @@ describe('useFlawModel', () => {
       expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
     });
 
-    it('should skip changes that are neither AI nor Partial AI type', async () => {
+    it('should send programmatic feedback for AI-Bot changes', async () => {
+      const { flaw } = useFlaw();
+      flaw.value = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+
+      setAegisMetadata({
+        cwe_id: [{
+          type: 'AI-Bot',
+          timestamp: new Date('2024-01-01T00:00:00Z').toISOString(),
+          value: 'CWE-89',
+        }],
+      });
+
+      flaw.value.cwe_id = 'CWE-79'; // Different from suggested value
+
+      const { updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+
+      expect(putFlaw).toHaveBeenCalled();
+      expect(sendProgrammaticFeedbackMock).toHaveBeenCalledWith({
+        feature: 'suggest-cwe',
+        cveId: 'CVE-2024-1234',
+        suggested_value: 'CWE-89',
+        submitted_value: 'CWE-79',
+        email: '',
+      });
+    });
+
+    it('should skip changes that are not AI, Partial AI, or AI-Bot type', async () => {
       const { flaw } = useFlaw();
       flaw.value = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
 

@@ -29,6 +29,15 @@ describe('useAegisMetadataTracking', () => {
       expect(tracking.hasAegisChanges()).toBe(true);
     });
 
+    it('should track AI-Bot changes', () => {
+      tracking.trackAIChange('impact', 'AI-Bot');
+
+      const metadata = tracking.getAegisMetadata();
+      expect(metadata.impact).toHaveLength(1);
+      expect(metadata.impact[0].type).toBe('AI-Bot');
+      expect(tracking.hasAegisChanges()).toBe(true);
+    });
+
     it('should track multiple changes to the same field', () => {
       tracking.trackAIChange('cwe_id', 'AI', 'CWE-123');
       tracking.trackAIChange('cwe_id', 'Partial AI', 'CWE-123 modified');
