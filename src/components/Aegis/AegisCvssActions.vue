@@ -5,6 +5,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
+import { useCvssScores } from '@/composables/useCvssScores';
 
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
@@ -15,7 +16,15 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ 'update:cvssVector': [vector: null | string] }>();
 const emitUpdateCvssVector = (vector: null | string) => emit('update:cvssVector', vector);
 
-const suggestedCvssVector = ref<null | string>(null);
+// Initialize with the actual current CVSS vector
+const { cvssVector } = useCvssScores();
+const suggestedCvssVector = ref<null | string>(cvssVector.value);
+
+// Keep in sync with actual CVSS changes
+watch(cvssVector, (newVector) => {
+  suggestedCvssVector.value = newVector;
+});
+
 watch(suggestedCvssVector, emitUpdateCvssVector);
 
 const {
