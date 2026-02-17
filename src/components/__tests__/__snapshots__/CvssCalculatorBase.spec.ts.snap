@@ -5,7 +5,7 @@ exports[`cvssCalculatorBase > mounts and renders correctly 1`] = `
   <div data-v-707feb84="" class="p-3">
     <div data-v-39ed26bb="" class="osim-input">
       <div data-v-39ed26bb="" class="input-wrapper col">
-        <div data-v-1d5c2355="" data-v-39ed26bb="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input" style="height: 30.8px;"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;">0 </span>
+        <div data-v-1d5c2355="" data-v-39ed26bb="" tabindex="0" class="dark-background text-cursor vector-input form-control vector-input" style="height: 30.8px;"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: white;"></span>
           <!--v-if-->
           <!--v-if-->
         </div>

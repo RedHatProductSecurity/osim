@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Revert CVSS Aegis suggestion removes all value (`OSIDB-4780`)
+
 ## [2026.2.0]
 ### Fixed
 * Re-enabled flaw history (`OSIDB-4778`)

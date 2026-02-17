@@ -29,6 +29,7 @@ const {
   setMetric,
   shouldSyncVectors,
   updateScore,
+  updateUsingV3Vector,
   updateVector,
 } = useCvssScores();
 
@@ -98,7 +99,7 @@ function highlightFactorValue(factor: null | string) {
           <AegisCvssActions
             v-if="osimRuntime.flags?.aiCvssSuggestions === true"
             :aegisContext="aegisContext"
-            @update:cvssVector="updateVector"
+            @update:cvssVector="updateUsingV3Vector"
           />
           <img
             :src="RedHatIconSvg"

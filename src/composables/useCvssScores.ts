@@ -285,7 +285,8 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
 
     updateVector(newCvssVector ?? '');
     const factors = parseCvss3Factors(newCvssVector ?? '');
-    updateScore(calculateCvss3Score(factors) ?? 0);
+    const newScore = calculateCvss3Score(factors);
+    updateScore(newScore);
   }
 
   function reset() {

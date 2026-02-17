@@ -170,6 +170,39 @@ describe('useAegisSuggestion', () => {
     });
   });
 
+  it('cvss revert preserves original values and does not clear field completely', async () => {
+    // This test verifies the main bug fix: revert should restore original values, not clear them
+    const originalVector = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N';
+    const aiSuggestion = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H';
+    const valueRef = ref<null | string>(originalVector);
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    analyzeMock.mockResolvedValueOnce({
+      cvss3_vector: aiSuggestion,
+      confidence: 0.9,
+      explanation: 'AI CVSS suggestion',
+      tools_used: ['cvss_tool'],
+    });
+
+    const [composable] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, '_cvss3_vector'), [],
+    );
+
+    // Verify initial state
+    expect(valueRef.value).toBe(originalVector);
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+
+    // Apply AI suggestion
+    await composable.suggestCvss();
+    expect(valueRef.value).toBe(aiSuggestion);
+    expect(composable.hasAppliedSuggestion.value).toBe(true);
+
+    // Revert - this should restore the original value, NOT clear the field
+    composable.revert();
+    expect(valueRef.value).toBe(originalVector); // Should restore original, not null/empty
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+  });
+
   it('handles no-suggestion response', async () => {
     const toastStore = (await import('@/stores/ToastStore')).useToastStore();
     const addToast = vi.mocked(toastStore.addToast);
