@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { DateTime, } from 'luxon';
-import sanitizeHtml from 'sanitize-html';
 import { ref, watch } from 'vue';
 
-import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
+import { DateTime } from 'luxon';
+import sanitizeHtml from 'sanitize-html';
 
 import { CommentTypeDisplay } from '@/composables/useFlawCommentsModel';
 
-import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { CommentType, commentTooltips } from '@/constants';
-import { jiraUserUrl, getJiraUser } from '@/services/JiraService';
+import { getJiraUser, jiraUserUrl } from '@/services/JiraService';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { type ZodFlawCommentType } from '@/types/zodFlaw';
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const props = defineProps<{
   commentList: ZodFlawCommentType[];
@@ -66,11 +66,10 @@ async function parseJiraTags(text: string): Promise<string> {
 watch(() => props.commentList, async (comments) => {
   isParsingComments.value = true;
   parsedComments.value = await Promise.all(
-    comments.map(c => parseJiraTags(linkify(sanitizeHtml(c.text ?? ''))))
+    comments.map(c => parseJiraTags(linkify(sanitizeHtml(c.text ?? '')))),
   );
   isParsingComments.value = false;
 }, { immediate: true });
-
 
 function getCommentTooltip(type: CommentType | undefined) {
   if (!type) {
@@ -120,7 +119,7 @@ function getCommentTooltip(type: CommentType | undefined) {
           {{ CommentTypeDisplay(comment.type) }}
         </span>
       </div>
-      <LoadingSpinner v-if="isParsingComments" class="mt-2" />
+      <LoadingSpinner v-if="isParsingComments" type="border" class="mt-2" />
       <!--eslint-disable-next-line vue/no-v-html -->
       <p v-else class="osim-flaw-comment" v-html="parsedComments[commentIndex]" />
     </li>
