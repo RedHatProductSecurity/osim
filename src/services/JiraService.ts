@@ -1,9 +1,8 @@
 import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
 
-import { useSettingsStore } from '@/stores/SettingsStore';
+import { useUserStore } from '@/stores/UserStore';
 import { useToastStore } from '@/stores/ToastStore';
-import { getNextAccessToken } from '@/services/OsidbAuthService';
-import { getApiKeysFromBackend } from '@/services/ApiKeyService';
+import { useSettingsStore } from '@/stores/SettingsStore';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
@@ -49,7 +48,7 @@ async function jiraFetch<T = any>(config: JiraFetchOptions, factoryOptions?: Jir
   try {
     response = await fetch(`${baseUrl}${config.url}${queryString}`, {
       method: config?.method ?? 'GET',
-      headers: await osimRequestHeaders(),
+      headers: getJiraCloudAuthHeaders(),
       mode: 'cors',
       credentials: 'include',
       body,
@@ -153,7 +152,7 @@ export async function getJiraUsername() {
     url: '/rest/api/2/myself',
   }).then((res) => {
     if (res.response.ok) {
-      return res.data.name;
+      return res.data.displayName || res.data.name || res.data.accountId || res.data.emailAddress;
     }
   }).catch((error) => {
     console.error('JiraService::getJiraUsername() Error getting your username from jira', error);
@@ -168,23 +167,18 @@ export async function getJiraUsername() {
   });
 }
 
-async function osimRequestHeaders() {
-  const settingsStore = useSettingsStore();
-  const osidbToken = await getNextAccessToken();
-  if (osimRuntime.value.env === 'prod') {
+function getJiraCloudAuthHeaders(): Headers {
+  const userEmail = useUserStore().userEmail;
+  const jiraApiToken = useSettingsStore().apiKeys.jiraApiKey;
+
+  if (userEmail && jiraApiToken) {
     return new Headers({
-      'Authorization': `Bearer ${settingsStore.apiKeys.jiraApiKey}`,
+      'Authorization': `Basic ${btoa(`${userEmail}:${jiraApiToken}`)}`,
       'Content-Type': 'application/json',
-    });
-  } else {
-    const integrationTokens = await getApiKeysFromBackend();
-    return new Headers({
-      'Authorization': `Bearer ${osidbToken}`,
-      'Content-Type': 'application/json',
-      'Jira-Api-Key': integrationTokens.jira || '',
       'User-Agent': 'OSIM',
     });
   }
+  throw new Error('Jira Authentication Failed:Invalid user email or API token');
 }
 
 function paramsFrom(params: Record<string, any>) {
