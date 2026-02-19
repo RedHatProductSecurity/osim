@@ -81,17 +81,20 @@ const calculateDropdownPosition = (lastWord: string) => {
   caretPos.value[1] = (textAreaOffset + paddingTop + Math.min(lineHeight * verticalPos, textAreaRect.height)) + 'px';
 };
 
-const handleSuggestionClick = (user: any) => {
+const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
   const lastWord = getLastWord();
   if (!lastWord) {
     return;
   }
 
-  const username = `[~${user.name}]`;
+  const mention = user.accountId
+    ? `[~accountid:${user.accountId}]`
+    : `[~${user.name}]`;
+
   const contentBefore = newComment.value.slice(0, newComment.value.lastIndexOf(lastWord));
   const contentAfter = newComment.value.slice(newComment.value.lastIndexOf(lastWord) + lastWord.length);
 
-  newComment.value = contentBefore + username + contentAfter;
+  newComment.value = contentBefore + mention + contentAfter;
 
   suggestions.value = [];
   refTextArea.value?.elTextArea?.focus();
