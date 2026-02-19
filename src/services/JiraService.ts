@@ -94,12 +94,21 @@ export async function getJiraComments(taskId: string) {
   });
 }
 
-export async function searchJiraUsers(query: string, issueKey: string) {
-  return jiraFetch<{ users: ZodJiraUserAssignableType[] }>({
+export async function getJiraUser(accountId: string) {
+  return jiraFetch<{ accountId: string; displayName: string }>({
     method: 'get',
-    url: '/rest/internal/2/users/assignee',
+    url: '/rest/api/2/user',
+    params: { accountId },
+  }).then(res => res.data).catch(() => null);
+}
+
+export async function searchJiraUsers(query: string, issueKey: string) {
+  // Jira Cloud uses /rest/api/2/user/assignable/search, on-premise uses /rest/internal/2/users/assignee
+  return jiraFetch<ZodJiraUserAssignableType[]>({
+    method: 'get',
+    url: '/rest/api/2/user/assignable/search',
     params: { issueKey, query },
-  });
+  }).then(res => ({ data: { users: res.data } }));
 }
 
 export async function getJiraIssue(taskId: string) {

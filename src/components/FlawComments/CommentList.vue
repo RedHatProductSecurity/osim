@@ -1,39 +1,76 @@
 <script setup lang="ts">
-import { DateTime } from 'luxon';
+import { DateTime, } from 'luxon';
 import sanitizeHtml from 'sanitize-html';
+import { ref, watch } from 'vue';
+
+import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 import { CommentTypeDisplay } from '@/composables/useFlawCommentsModel';
 
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
 import { CommentType, commentTooltips } from '@/constants';
-import { jiraUserUrl } from '@/services/JiraService';
+import { jiraUserUrl, getJiraUser } from '@/services/JiraService';
 import { osimRuntime } from '@/stores/osimRuntime';
 
-defineProps<{
+const props = defineProps<{
   commentList: ZodFlawCommentType[];
 }>();
 
-const parseCommentDisplayText = (text: string) => parseJiraTags(linkify(sanitizeHtml(text)));
+const userDisplayNameCache: Record<string, string> = {};
+const parsedComments = ref<string[]>([]);
+const isParsingComments = ref(false);
 
 function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
-
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  // Match Jira-style links [text|url] where url must start with http:// or https://
-  const jiraRegex = /\[([^|\]]+)\|(https?:\/\/[^\]]+)\]/g;
+  // On-premise format: [display text|https://url]
+  const jiraLinkRegex = /\[([^|\]]+)\|(https?:\/\/[^\]]+)\]/g;
+  // Jira Cloud smart link format: [https://url|smart-link]
+  const jiraSmartLinkRegex = /\[(https?:\/\/[^\]|]+)\|smart-link\]/g;
 
   return text
     .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
-    .replace(jiraRegex, '<a target="_blank" href="$2">$2</a>');
+    .replace(jiraSmartLinkRegex, '<a target="_blank" href="$1">$1</a>')
+    .replace(jiraLinkRegex, '<a target="_blank" href="$2">$1</a>');
 }
 
-function parseJiraTags(text: string) {
-  const jiraUserLink = `${osimRuntime.value.backends.jiraDisplay}/ViewProfile.jspa?name=`;
+async function resolveAccountId(accountId: string): Promise<string> {
+  if (userDisplayNameCache[accountId]) {
+    return userDisplayNameCache[accountId];
+  }
+  const user = await getJiraUser(accountId);
+  const displayName = user?.displayName ?? accountId;
+  userDisplayNameCache[accountId] = displayName;
+  return displayName;
+}
+
+async function parseJiraTags(text: string): Promise<string> {
   const jiraTagRegex = /\[~([^[\]]+)\]/g;
+  const matches = [...text.matchAll(jiraTagRegex)];
 
-  return text
-    .replace(jiraTagRegex, (match, p1) => `<a target="_blank" href="${jiraUserLink}${p1}">${p1}</a>`);
+  for (const [match, p1] of matches) {
+    const accountIdMatch = p1.match(/^accountid:(.+)$/);
+    if (accountIdMatch) {
+      const accountId = accountIdMatch[1];
+      const displayName = await resolveAccountId(accountId);
+      const url = `${osimRuntime.value.backends.jiraDisplay}/jira/people/${accountId}`;
+      text = text.replace(match, `<a target="_blank" href="${url}">@${displayName}</a>`);
+    } else {
+      const url = `${osimRuntime.value.backends.jiraDisplay}/ViewProfile.jspa?name=${p1}`;
+      text = text.replace(match, `<a target="_blank" href="${url}">${p1}</a>`);
+    }
+  }
+  return text;
 }
+
+watch(() => props.commentList, async (comments) => {
+  isParsingComments.value = true;
+  parsedComments.value = await Promise.all(
+    comments.map(c => parseJiraTags(linkify(sanitizeHtml(c.text ?? ''))))
+  );
+  isParsingComments.value = false;
+}, { immediate: true });
+
 
 function getCommentTooltip(type: CommentType | undefined) {
   if (!type) {
@@ -83,8 +120,9 @@ function getCommentTooltip(type: CommentType | undefined) {
           {{ CommentTypeDisplay(comment.type) }}
         </span>
       </div>
+      <LoadingSpinner v-if="isParsingComments" class="mt-2" />
       <!--eslint-disable-next-line vue/no-v-html -->
-      <p class="osim-flaw-comment" v-html="parseCommentDisplayText(comment.text ?? '')" />
+      <p v-else class="osim-flaw-comment" v-html="parsedComments[commentIndex]" />
     </li>
   </ul>
 </template>
