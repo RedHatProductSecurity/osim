@@ -59,7 +59,7 @@ watchDebounced(newComment, async () => {
   }
   calculateDropdownPosition(lastWord);
   nextTick(() => {
-    suggestions.value = users.data?.users;
+    suggestions.value = users.data?.users ?? [];
   });
 }, { debounce: 500 });
 

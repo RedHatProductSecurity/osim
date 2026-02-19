@@ -49,7 +49,7 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
-  contributor.value = toValue(user.name);
+  contributor.value = toValue(user.name ?? user.accountId ?? '');
   modelValue.value = contributor.value;
   results.value = [];
 };

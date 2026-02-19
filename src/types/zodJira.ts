@@ -3,18 +3,21 @@ import { z } from 'zod';
 export type ZodJiraUserAssignableType = z.infer<typeof JiraUserAssignableSchema>;
 export const JiraUserAssignableSchema = z.object({
   displayName: z.string(),
-  name: z.string(),
-  emailAddress: z.string().email().optional(),
-  avatarUrl: z.string().url(),
+  name: z.string().nullish(),             // On-premise; null on Cloud
+  accountId: z.string().optional(),       // Jira Cloud; never null, absent for on-prem users
+  emailAddress: z.string().email().nullish(), // null when user has hidden their email
+});
+
+export type ZodJiraUserAssignableType = z.infer<typeof JiraUserAssignableSchema>;
+export const JiraUserAssignableSchema = JiraUserBaseSchema.extend({
+  avatarUrl: z.string().url().nullish(),
+  avatarUrls: z.record(z.string()).nullish(), // Jira Cloud returns avatarUrls object
 });
 
 export type ZodJiraContributorType = z.infer<typeof JiraContributorSchema>;
 export const JiraContributorSchema = z.object({
   self: z.string().url(),
-  name: z.string(),
-  key: z.string().optional(),
-  displayName: z.string(),
-  emailAddress: z.string().email(),
+  key: z.string().nullish(),
 });
 
 export type ZodJiraIssueType = z.infer<typeof JiraIssueSchema>;

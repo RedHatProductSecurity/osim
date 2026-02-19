@@ -60,7 +60,7 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssignableType) => {
-  owner.value = toValue(user.name);
+  owner.value = toValue(user.name ?? user.accountId ?? null);
   results.value = [];
   nextTick(fn);
 };
