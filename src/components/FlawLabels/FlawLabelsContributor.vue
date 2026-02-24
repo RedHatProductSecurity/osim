@@ -35,7 +35,7 @@ const cacheJiraUsers = useMemoize(async (query: string) => {
   const users = await searchJiraUsers(query, flaw.value.task_key)
     .catch(createCatchHandler('Failed to search jira users', false));
   isLoading.value = false;
-  return users?.data?.users ?? [];
+  return users?.data ?? [];
 });
 
 const onQueryChange = async (query: string) => {
@@ -49,7 +49,7 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
-  contributor.value = toValue(user.name ?? user.accountId ?? '');
+  contributor.value = toValue(user.emailAddress ?? user.name ?? '');
   modelValue.value = contributor.value;
   results.value = [];
 };
