@@ -266,9 +266,7 @@ describe('flawComments', () => {
 
   it('should call `searchJiraUsers` on internal comments', async () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
-      data: {
-        users: [{ name: 'test', displayName: 'Test User', avatarUrl: '' }],
-      },
+      data: [{ accountId: 'test-id', displayName: 'Test User' }],
     });
 
     const navLinks = subject.findAll('button');
