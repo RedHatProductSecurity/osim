@@ -11,31 +11,27 @@ vi.mock('@/services/JiraService', () => ({
 describe('useJiraContributors', () => {
   const mockUsers: ZodJiraUserAssignableType[] = [
     {
+      accountId: 'account-id-1',
       displayName: 'Alvaro Tinoco',
-      name: 'atinoco',
-      emailAddress: '',
-      avatarUrl: '',
+      emailAddress: 'atinoco@example.com',
     },
     {
+      accountId: 'account-id-2',
       displayName: 'John Doe',
-      name: 'jdoe',
-      emailAddress: '',
-      avatarUrl: '',
+      emailAddress: 'jdoe@example.com',
     },
   ];
 
   const mockContributors: ZodJiraContributorType[] = [
     {
+      accountId: 'account-id-1',
       displayName: 'Alvaro Tinoco',
-      name: 'atinoco',
-      emailAddress: 'email@test.com',
-      self: 'https://jira.com',
+      emailAddress: 'atinoco@example.com',
     },
     {
+      accountId: 'account-id-2',
       displayName: 'John Doe',
-      name: 'jdoe',
-      emailAddress: 'email@test.com',
-      self: 'https://jira.com',
+      emailAddress: 'jdoe@example.com',
     },
   ];
 
@@ -55,7 +51,7 @@ describe('useJiraContributors', () => {
         self: 'https://jira.com',
         key: 'key',
         fields: {
-          customfield_12315950: mockContributors,
+          customfield_10396: mockContributors,
         },
       },
     });
@@ -70,9 +66,7 @@ describe('useJiraContributors', () => {
   describe('searchContributors', () => {
     beforeEach(() => {
       vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValue({
-        data: {
-          users: mockUsers,
-        },
+        data: mockUsers,
       });
     });
 
