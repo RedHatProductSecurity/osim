@@ -95,9 +95,9 @@ export async function getJiraComments(taskId: string) {
 }
 
 export async function searchJiraUsers(query: string, issueKey: string) {
-  return jiraFetch<{ users: ZodJiraUserAssignableType[] }>({
+  return jiraFetch<ZodJiraUserAssignableType[]>({
     method: 'get',
-    url: '/rest/internal/2/users/assignee',
+    url: '/rest/api/2/user/assignable/search',
     params: { issueKey, query },
   });
 }
