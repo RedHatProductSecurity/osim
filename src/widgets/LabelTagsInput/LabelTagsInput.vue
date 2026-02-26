@@ -3,10 +3,12 @@ import TagsInput from '@/widgets/TagsInput/TagsInput.vue';
 
 withDefaults(defineProps<{
   error?: (null | string)[] | null | string;
+  highlighted?: boolean;
   label?: string;
 }>(), {
-  label: '',
   error: undefined,
+  highlighted: false,
+  label: '',
 });
 
 const modelValue = defineModel<string[]>({ required: true });
@@ -15,7 +17,10 @@ const modelValue = defineModel<string[]>({ required: true });
 <template>
   <label class="osim-input ps-3 mb-2 input-group">
     <div class="row">
-      <span class="form-label col-3">
+      <span
+        class="form-label col-3"
+        :class="{ 'border-start border-primary border-3 bg-primary bg-opacity-10 ps-2': highlighted }"
+      >
         <slot name="label">
           {{ label }}
         </slot>

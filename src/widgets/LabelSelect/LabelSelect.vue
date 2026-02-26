@@ -5,6 +5,7 @@ withDefaults(
   defineProps<{
     disabled?: boolean;
     error: null | string;
+    highlighted?: boolean;
     label: string;
     modelValue?: null | string;
     options: Record<string, string> | string[];
@@ -15,6 +16,7 @@ withDefaults(
     modelValue: '',
     optionsHidden: null,
     disabled: false,
+    highlighted: false,
   },
 );
 defineEmits<{
@@ -29,7 +31,10 @@ defineOptions({
 <template>
   <label class="osim-input mb-2 ps-3">
     <div class="row">
-      <span class="form-label col-3">
+      <span
+        class="form-label col-3"
+        :class="{ 'border-start border-primary border-3 bg-primary bg-opacity-10 ps-2': highlighted }"
+      >
         <slot name="label" :label>
           {{ label }}
         </slot>
