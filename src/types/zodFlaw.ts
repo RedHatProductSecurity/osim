@@ -19,7 +19,7 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 // Aegis AI Change Types
-export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI']);
+export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI', 'AI-Bot']);
 export type AegisChangeType = z.infer<typeof ZodAegisChangeTypeEnum>;
 
 export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
@@ -193,11 +193,8 @@ export const ZodFlawSchema = z.object({
     { message: 'You must specify a source for this Flaw before saving.' },
   ),
   meta_attr: z.record(z.string(), z.string().nullish()).nullish(),
-  aegis_meta: z.record(z.string(), z.array(z.object({
-    type: ZodAegisChangeTypeEnum,
-    timestamp: z.string(),
-    value: z.string().optional(),
-  }))).nullish(),
+  // Flexible schema to handle evolving backend formats without blocking flaw operations
+  aegis_meta: z.any().nullish(),
   mitigation: z.string().nullish(),
   major_incident_state: z.nativeEnum(MajorIncidentStateEnumWithBlank).nullable(),
   nist_cvss_validation: z.nativeEnum(NistCvssValidationEnumWithBlank).nullish(),
