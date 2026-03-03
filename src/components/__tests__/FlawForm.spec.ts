@@ -836,4 +836,109 @@ describe('flawForm', () => {
         expect(vm.errors.cwe_id).toBe('Only a single CWE is allowed');
       }
     });
+
+  describe('field highlighting for AI-Bot suggestions', () => {
+    it('should render Source Component field with highlighting when aegis metadata matches', async () => {
+      // Import the aegis metadata tracking composable
+      const { useAegisMetadataTracking } = await import('@/composables/aegis/useAegisMetadataTracking');
+      const { isFieldValueAIBot, setAegisMetadata } = useAegisMetadataTracking();
+
+      // Set up aegis metadata
+      setAegisMetadata({
+        components: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2024-01-01T00:00:00Z',
+            value: JSON.stringify(['kernel', 'openssl']),
+          },
+        ],
+      });
+
+      // Test the helper function logic directly
+      const currentValue = ['kernel', 'openssl'];
+      const serializedValue = JSON.stringify(currentValue);
+
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(true);
+
+      // Clear metadata for next test
+      setAegisMetadata({});
+    });
+
+    it('should not highlight when aegis metadata does not match', async () => {
+      // Import the aegis metadata tracking composable
+      const { useAegisMetadataTracking } = await import('@/composables/aegis/useAegisMetadataTracking');
+      const { isFieldValueAIBot, setAegisMetadata } = useAegisMetadataTracking();
+
+      // Set up aegis metadata with different value
+      setAegisMetadata({
+        components: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2024-01-01T00:00:00Z',
+            value: JSON.stringify(['httpd', 'mod_ssl']),
+          },
+        ],
+      });
+
+      // Test the helper function logic directly
+      const currentValue = ['kernel', 'openssl'];
+      const serializedValue = JSON.stringify(currentValue);
+
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
+
+      // Clear metadata for next test
+      setAegisMetadata({});
+    });
+
+    it('should not highlight when no aegis metadata exists', async () => {
+      // Import the aegis metadata tracking composable
+      const { useAegisMetadataTracking } = await import('@/composables/aegis/useAegisMetadataTracking');
+      const { isFieldValueAIBot, setAegisMetadata } = useAegisMetadataTracking();
+
+      // Clear metadata
+      setAegisMetadata({});
+
+      // Test the helper function logic directly
+      const currentValue = ['kernel', 'openssl'];
+      const serializedValue = JSON.stringify(currentValue);
+
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
+    });
+
+    it('should handle multiple metadata entries correctly', async () => {
+      // Import the aegis metadata tracking composable
+      const { useAegisMetadataTracking } = await import('@/composables/aegis/useAegisMetadataTracking');
+      const { isFieldValueAIBot, setAegisMetadata } = useAegisMetadataTracking();
+
+      // Set up aegis metadata with multiple entries
+      setAegisMetadata({
+        components: [
+          {
+            type: 'AI',
+            timestamp: '2024-01-01T00:00:00Z',
+            value: JSON.stringify(['httpd']),
+          },
+          {
+            type: 'AI-Bot',
+            timestamp: '2024-01-01T01:00:00Z',
+            value: JSON.stringify(['kernel', 'openssl']), // This should match
+          },
+          {
+            type: 'AI-Bot',
+            timestamp: '2024-01-01T02:00:00Z',
+            value: JSON.stringify(['glibc']),
+          },
+        ],
+      });
+
+      // Test the helper function logic directly
+      const currentValue = ['kernel', 'openssl'];
+      const serializedValue = JSON.stringify(currentValue);
+
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(true);
+
+      // Clear metadata for next test
+      setAegisMetadata({});
+    });
+  });
 });
