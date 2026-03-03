@@ -210,6 +210,6 @@ export function jiraTaskUrl(id: string): string {
   return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
 }
 
-export function jiraUserUrl(name: string): string {
-  return (new URL(`/ViewProfile.jspa?name=${name}`, osimRuntime.value.backends.jiraDisplay)).href;
+export function jiraUserUrl(accountId: string): string {
+  return (new URL(`/jira/people/${accountId}`, osimRuntime.value.backends.jiraDisplay)).href;
 }
