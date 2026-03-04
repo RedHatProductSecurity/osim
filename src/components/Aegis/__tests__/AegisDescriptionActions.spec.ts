@@ -113,6 +113,7 @@ describe('aegisDescriptionActions', () => {
     const mockSendDescriptionFeedback = vi.fn();
     const mockComposable = createMockComposable({
       canShowDescriptionFeedback: computed(() => true),
+      hasAppliedDescriptionSuggestion: computed(() => true),
       sendDescriptionFeedback: mockSendDescriptionFeedback,
     });
 
@@ -125,7 +126,7 @@ describe('aegisDescriptionActions', () => {
     const aegisActions = wrapper.findComponent({ name: 'AegisActions' });
     await aegisActions.vm.$emit('feedback', 'negative');
 
-    expect(mockSendDescriptionFeedback).toHaveBeenCalledWith('negative');
+    expect(mockSendDescriptionFeedback).toHaveBeenCalledWith('negative', '');
   });
 
   it('displays correct tooltip when suggestion is applied', () => {

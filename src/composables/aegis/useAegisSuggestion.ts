@@ -47,6 +47,14 @@ export function defaultDetails(): SuggestionDetails {
   };
 }
 
+// Global feedback tracking for suggestions
+const suggestionFeedbackSubmitted = ref<Set<string>>(new Set());
+
+// For testing: clear feedback state
+export function clearSuggestionFeedbackState() {
+  suggestionFeedbackSubmitted.value.clear();
+}
+
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<ImpactEnumWithBlankType | null | string>,
@@ -59,7 +67,6 @@ export function useAegisSuggestion(
   const previousValue = ref<null | string>(null);
   const selectedSuggestionIndex = ref(0);
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
-  const feedbackSubmitted = ref<Set<string>>(new Set());
 
   const details = ref<SuggestionDetails>(defaultDetails());
 
@@ -67,7 +74,7 @@ export function useAegisSuggestion(
     const hasApplied = aegisSuggestionWatcher.hasAppliedSuggestion.value;
     const notFetching = !service.isFetching.value;
     const currentSuggestionValue = currentSuggestion.value ?? '';
-    const feedbackNotSubmitted = !feedbackSubmitted.value.has(currentSuggestionValue);
+    const feedbackNotSubmitted = !suggestionFeedbackSubmitted.value.has(currentSuggestionValue);
 
     return hasApplied && notFetching && feedbackNotSubmitted;
   });
@@ -263,7 +270,7 @@ export function useAegisSuggestion(
       const suggestedValue = currentSuggestion.value ?? '';
 
       // Check if feedback already submitted for this suggestion
-      if (feedbackSubmitted.value.has(suggestedValue)) {
+      if (suggestionFeedbackSubmitted.value.has(suggestedValue)) {
         toastStore.addToast({
           title: 'Feedback Already Submitted',
           body: 'You have already provided feedback for this suggestion.',
@@ -283,7 +290,7 @@ export function useAegisSuggestion(
       });
 
       // Mark feedback as submitted for this suggestion
-      feedbackSubmitted.value.add(suggestedValue);
+      suggestionFeedbackSubmitted.value.add(suggestedValue);
 
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
