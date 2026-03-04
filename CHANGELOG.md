@@ -3,6 +3,7 @@
 ### Added
 * Add highlighting on OSIDB Bot edited fields (`OSIDB-4790`)
 * Remove OSIDB Bot highlighting on flaw state change (`OSIDB-4824`)
+* Add feedback actions for OSIDB-Bot values (`OSIDB-4823`)
 
 ### Fixed
 * Revert CVSS Aegis suggestion removes all value (`OSIDB-4780`)
