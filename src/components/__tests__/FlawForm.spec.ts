@@ -940,5 +940,36 @@ describe('flawForm', () => {
       // Clear metadata for next test
       setAegisMetadata({});
     });
+
+    it('should show components feedback buttons when components are highlighted', async () => {
+      // Import the aegis metadata tracking composable
+      const { useAegisMetadataTracking } = await import('@/composables/aegis/useAegisMetadataTracking');
+      const { setAegisMetadata } = useAegisMetadataTracking();
+
+      // Create a flaw with components and UUID
+      const flaw = blankFlaw();
+      flaw.uuid = 'test-uuid-123';
+      flaw.components = ['kernel', 'openssl'];
+
+      // Set up aegis metadata for components
+      setAegisMetadata({
+        components: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2024-01-01T01:00:00Z',
+            value: ['kernel', 'openssl'],
+          },
+        ],
+      });
+
+      const subject = mountWithProps(flaw, { mode: 'edit' });
+
+      // Check that components feedback buttons are shown
+      const componentsFeedbackButtons = subject.findAll('.bi-hand-thumbs-up, .bi-hand-thumbs-down');
+      expect(componentsFeedbackButtons.length).toBeGreaterThan(0);
+
+      // Clear metadata for next test
+      setAegisMetadata({});
+    });
   });
 });
