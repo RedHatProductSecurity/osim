@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Add highlighting on OSIDB Bot edited fields (`OSIDB-4790`)
+
 ### Fixed
 * Revert CVSS Aegis suggestion removes all value (`OSIDB-4780`)
 

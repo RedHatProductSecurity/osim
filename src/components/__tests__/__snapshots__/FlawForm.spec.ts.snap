@@ -75,7 +75,7 @@ exports[`flawForm > mounts and renders 1`] = `
   <div data-v-76e7a15d="" class="row osim-flaw-form-section">
     <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6">
       <div data-v-0e2ae48e="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
-        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--> Title <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--><!--v-if--> Title <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <!-- for invalid-tooltip positioning -->
             <div data-v-76e7a15d="" class="position-relative col-9 osim-editable-field osim-text col-12">
@@ -91,7 +91,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </div>
         </div>
       </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-        <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3">Source Component</span>
+        <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3"><!--v-if--> Source Component </span>
           <div data-v-76f6bf34="" class="col-9">
             <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
               <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"><span data-v-8bc603c3="" class="osim-pill-list-item badge text-bg-secondary" draggable="true" data-index="0"><span data-v-8bc603c3="" style="cursor: text;">kernel</span><i data-v-8bc603c3="" class="bi bi-x-square ms-1" style="cursor: pointer;" tabindex="0"><span data-v-8bc603c3="" class="visually-hidden">Remove</span></i></span></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
@@ -119,7 +119,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </label></div>
         <!--v-if-->
       </div><label data-v-001a00e0="" data-v-1c54faf9="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3"><!--v-if--> Impact <!--v-if--></span>
+        <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3"><!--v-if--><!--v-if--> Impact <!--v-if--></span>
           <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MODERATE">
               <option data-v-001a00e0="" selected="" disabled="" value=""></option>
               <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
@@ -133,7 +133,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </label>
       <div data-v-ffda1b6f="" data-v-76e7a15d="" tabindex="0">
-        <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><!--v-if--><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
+        <div data-v-ffda1b6f="" class="osim-input mb-2"><label data-v-ffda1b6f="" class="label-group row" role="red-hat-cvss"><span data-v-ffda1b6f="" class="form-label col-3 pe-3"><!--v-if--><!--v-if--><img data-v-ffda1b6f="" src="/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg" alt="Red Hat Logo" width="24px" class="me-2"> CVSSv3 <!-- TODO: Remove this once we have a proper CVSS4 selector --><!--v-if--><!--v-if--></span>
             <div data-v-ffda1b6f="" class="input-wrapper col">
               <div data-v-1d5c2355="" data-v-ffda1b6f="" tabindex="0" class="vector-input form-control vector-input"><span data-v-1d5c2355="" class="osim-cvss-score" style="color: black;">2.2 </span><span data-v-1d5c2355="" style="color: black;">CVSS:3.1</span><span data-v-1d5c2355="" style="color: black;">/AV:N</span><span data-v-1d5c2355="" style="color: black;">/AC:H</span><span data-v-1d5c2355="" style="color: black;">/PR:H</span><span data-v-1d5c2355="" style="color: black;">/UI:N</span><span data-v-1d5c2355="" style="color: black;">/S:U</span><span data-v-1d5c2355="" style="color: black;">/C:L</span><span data-v-1d5c2355="" style="color: black;">/I:N</span><span data-v-1d5c2355="" style="color: black;">/A:N</span>
                 <!--v-if-->
@@ -202,7 +202,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <!--v-if-->
       </div>
       <div data-v-0e2ae48e="" data-v-478878c2="" data-v-76e7a15d="" class="osim-input ps-3 mb-2">
-        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
+        <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--><!--v-if--><!--v-if--> CWE ID <!--attrs: {{ $attrs }}--></span>
           <div data-v-0e2ae48e="" class="col-9">
             <div data-v-478878c2="" tabindex="0">
               <!-- for invalid-tooltip positioning -->
@@ -450,13 +450,13 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </label></div>
     <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
+        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--><!--v-if--> Description </span><span data-v-76e7a15d="" class="col-3 ps-2"><select data-v-76e7a15d="" class="form-select col-3 osim-description-required"><option data-v-76e7a15d="" disabled="" value="">Review Status</option><option data-v-76e7a15d="" value=""></option><option data-v-76e7a15d="" value="REQUESTED">REQUESTED</option><option data-v-76e7a15d="" value="APPROVED">APPROVED</option><option data-v-76e7a15d="" value="REJECTED">REJECTED</option></select></span><!--    @focus="resizeTextarea"-->
           <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="form-control col-9 d-inline-block" rows="5" value="I am a spooky CVE"></textarea>
           <!--v-if-->
         </div>
       </label></div>
     <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--> Statement </span><!--    @focus="resizeTextarea"-->
+        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--> Statement </span><!--    @focus="resizeTextarea"-->
           <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="form-control col-9 d-inline-block" rows="5" value="Statement for None"></textarea>
           <!--v-if-->
         </div>
