@@ -1,4 +1,5 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
+import { useFlawCollisionHandling } from '@/composables/useFlawCollisionHandling';
 
 import type { ZodFlawCVSSType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
@@ -92,6 +93,14 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
     createSuccessHandler({ title: 'Success!', body: 'Flaw saved' })({ data: result });
     return result;
   } catch (error) {
+    // Check if it's a 409 conflict (mid-air collision)
+    if ((error as any)?.response?.status === 409) {
+      console.log('Mid-air collision detected, attempting smart resolution...');
+      const { handleMidAirCollision } = useFlawCollisionHandling();
+      return await handleMidAirCollision(uuid, flawObject, createJiraTask, error);
+    }
+
+    // For non-409 errors, use existing error handling
     createCatchHandler('Could not update Flaw', false)(error);
     throw error;
   }
