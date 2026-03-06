@@ -67,14 +67,22 @@ function isFieldAegisChange(historyEntry: ZodFlawHistoryItemType, fieldName: str
   return !!getFieldAegisType(historyEntry, fieldName);
 }
 
-function isFieldValueAIBot(fieldName: string, currentValue: null | string | undefined): boolean {
+function isFieldValueAIBot(fieldName: string, currentValue: null | string | string[] | undefined): boolean {
   const metadata = aegisMetadata.value[fieldName];
   if (!metadata?.length) return false;
 
   // Check if any entry matches the current value with AI-Bot type
-  return metadata.some(entry =>
-    entry.type === 'AI-Bot' && entry.value === currentValue,
-  );
+  return metadata.some((entry) => {
+    if (entry.type !== 'AI-Bot') return false;
+
+    // For array fields, compare arrays directly
+    if (Array.isArray(currentValue) && Array.isArray(entry.value)) {
+      return JSON.stringify(currentValue) === JSON.stringify(entry.value);
+    }
+
+    // For string fields, compare strings directly
+    return entry.value === currentValue;
+  });
 }
 
 export function useAegisMetadataTracking() {
