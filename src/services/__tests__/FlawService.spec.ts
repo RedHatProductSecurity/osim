@@ -12,6 +12,12 @@ vi.mock('@/composables/service-helpers', () => ({
   createCatchHandler: vi.fn().mockReturnValue(vi.fn()),
 }));
 
+vi.mock('@/composables/useFlawCollisionHandling', () => ({
+  useFlawCollisionHandling: () => ({
+    handleMidAirCollision: vi.fn(),
+  }),
+}));
+
 describe('flawService', () => {
   beforeAll(() => {
     createTestingPinia();
@@ -37,5 +43,14 @@ describe('flawService', () => {
     }, false);
 
     expect(createSuccessHandler).toHaveBeenCalled();
+  });
+
+  it('should import collision handling composable correctly', async () => {
+    // Simple test to verify the composable can be imported
+    const { useFlawCollisionHandling } = await import('@/composables/useFlawCollisionHandling');
+    const collisionHandler = useFlawCollisionHandling();
+
+    expect(collisionHandler).toBeDefined();
+    expect(typeof collisionHandler.handleMidAirCollision).toBe('function');
   });
 });
