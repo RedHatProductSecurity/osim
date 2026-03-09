@@ -49,7 +49,7 @@ defineExpose({
 });
 
 const suggestionTooltip = computed(() => {
-  if (!hasAppliedSuggestion.value || !impactSuggestionDetails.value) return 'Suggest Impact via AEGIS-AI';
+  if (!hasAppliedSuggestion.value || !impactSuggestionDetails.value) return 'Suggested by Aegis-AI';
   const { confidence, explanation, tools_used } = impactSuggestionDetails.value;
   const currentImpact = currentSuggestion.value;
   const parts: string[] = [`Value: ${currentImpact}`];

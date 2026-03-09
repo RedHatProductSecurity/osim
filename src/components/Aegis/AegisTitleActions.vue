@@ -27,7 +27,7 @@ defineExpose({
 });
 
 const suggestionTooltip = computed(() => {
-  if (!hasAppliedTitleSuggestion.value || !suggestionDetails.value) return 'Suggest Title via AEGIS-AI';
+  if (!hasAppliedTitleSuggestion.value || !suggestionDetails.value) return 'Suggested by Aegis-AI';
   const { confidence, explanation, suggested_title, tools_used } = suggestionDetails.value;
   const parts: string[] = [];
   if (suggested_title) parts.push(`Value: ${suggested_title}`);
