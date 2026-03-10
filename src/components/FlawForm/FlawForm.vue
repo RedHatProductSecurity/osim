@@ -227,8 +227,7 @@ const { isFieldValueAIBot } = useAegisMetadataTracking();
 const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[] | undefined): boolean => {
   if (!currentValue) return false;
 
-  // Since Aegis stores arrays as JSON, we use JSON.stringify for comparison
-  return isFieldValueAIBot(fieldName, JSON.stringify(currentValue));
+  return isFieldValueAIBot(fieldName, currentValue);
 };
 </script>
 

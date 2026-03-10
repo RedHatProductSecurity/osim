@@ -100,7 +100,9 @@ export function useFlawModel() {
         feature,
         cveId,
         email: userStore.userEmail,
-        suggested_value: mostRecentSuggestion.value,
+        suggested_value: Array.isArray(mostRecentSuggestion.value)
+          ? JSON.stringify(mostRecentSuggestion.value)
+          : mostRecentSuggestion.value,
         submitted_value: submittedValue,
       });
     }

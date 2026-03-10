@@ -99,7 +99,7 @@ export type AegisAIHTTPValidationErrorType = {
 export type AegisChangeEntry = {
   timestamp: string;
   type: AegisChangeType;
-  value?: string;
+  value?: string | string[];
 };
 
 export type AegisMetadata = {
