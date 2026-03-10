@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import type { ZodFlawHistoryItemType, AegisChangeType } from '../../types/zodFlaw';
 import type { AegisChangeEntry, AegisMetadata } from '../../types/aegisAI';
 
@@ -70,6 +72,10 @@ function isFieldAegisChange(historyEntry: ZodFlawHistoryItemType, fieldName: str
 function isFieldValueAIBot(fieldName: string, currentValue: null | string | string[] | undefined): boolean {
   const metadata = aegisMetadata.value[fieldName];
   if (!metadata?.length) return false;
+
+  // Only show highlighting if flaw is in NEW state
+  const { flaw } = useFlaw();
+  if (flaw.value.classification?.state !== 'NEW') return false;
 
   // Check if any entry matches the current value with AI-Bot type
   return metadata.some((entry) => {
