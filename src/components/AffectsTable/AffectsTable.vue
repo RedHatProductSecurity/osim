@@ -262,6 +262,7 @@ onMounted(() => {
               :modelValue="bulkEditData[header.id as keyof typeof bulkEditData]"
               :virtualRow="bulkEditVirtualRow"
               @fieldChanged="(columnId, value) => updateBulkEditField(columnId as any, value)"
+              @applyBulkEdit="commitBulkEdits()"
             />
           </td>
         </tr>

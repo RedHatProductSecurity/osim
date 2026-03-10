@@ -16,6 +16,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  'applyBulkEdit': [];
   'fieldChanged': [columnId: string, value: any];
   'update:modelValue': [value: any];
 }>();
@@ -43,32 +44,69 @@ const metaEnum = computed(() => {
 // Determine if this field is editable in bulk mode
 const isEditable = computed(() => columnMeta?.bulkEditable ?? false);
 
+const isClearable = computed(() => columnMeta?.clearable ?? true);
+
 const onChange = () => {
   emit('update:modelValue', cellValue.value);
   emit('fieldChanged', props.column.id, cellValue.value);
   isCalculatorOpen.value = false;
 };
+
+const onClear = () => {
+  cellValue.value = (columnMeta?.cvss || isSubpackagePurls) ? [] : '';
+
+  // Trigger the change event to update bulk edit data
+  onChange();
+  // Emit event to trigger immediate application
+  emit('applyBulkEdit');
+};
 </script>
 <template>
   <template v-if="isEditable">
     <template v-if="metaEnum">
-      <select
-        v-model="cellValue"
-        class="form-select"
-        @change="onChange"
-      >
-        <option value="">—</option>
-        <option
-          v-for="(value, key) in metaEnum"
-          :key="key"
-          :value="value"
-        >{{ value }}</option>
-      </select>
+      <div class="d-flex gap-1">
+        <select
+          v-model="cellValue"
+          class="form-select"
+          @change="onChange"
+        >
+          <option value="">—</option>
+          <option
+            v-for="(value, key) in metaEnum"
+            :key="key"
+            :value="value"
+          >{{ value }}</option>
+        </select>
+        <button
+          v-if="isClearable"
+          class="btn btn-sm btn-secondary px-2"
+          type="button"
+          title="Clear this field for selected affects"
+          @click="onClear"
+        >
+          ×
+        </button>
+      </div>
     </template>
     <template v-else-if="columnMeta?.cvss">
       <template v-if="!isCalculatorOpen">
-        <div @click="isCalculatorOpen= true">
-          {{ affectRhCvss3({ cvss_scores: cellValue as ZodAffectCVSSType[] })?.score ?? 0 }}
+        <div class="d-flex gap-1">
+          <div
+            class="flex-grow-1 form-control"
+            style="cursor: pointer;"
+            @click="isCalculatorOpen= true"
+          >
+            {{ affectRhCvss3({ cvss_scores: cellValue as ZodAffectCVSSType[] })?.score ?? 0 }}
+          </div>
+          <button
+            v-if="isClearable"
+            class="btn btn-sm btn-secondary px-2"
+            type="button"
+            title="Clear CVSS scores for selected affects"
+            @click="onClear"
+          >
+            ×
+          </button>
         </div>
       </template>
       <CvssCalculatorBase
@@ -80,19 +118,42 @@ const onChange = () => {
       />
     </template>
     <template v-else-if="isSubpackagePurls">
-      <TagsInput
-        v-model="cellValue as string[]"
-        @blur="onChange"
-      />
+      <div class="d-flex gap-1">
+        <TagsInput
+          v-model="cellValue as string[]"
+          class="flex-grow-1"
+          @blur="onChange"
+        />
+        <button
+          v-if="isClearable"
+          class="btn btn-sm btn-secondary px-2"
+          type="button"
+          title="Clear subpackage PURLs for selected affects"
+          @click="onClear"
+        >
+          ×
+        </button>
+      </div>
     </template>
     <template v-else>
-      <input
-        v-model="cellValue"
-        class="form-control"
-        type="text"
-        placeholder="—"
-        @input="onChange"
-      >
+      <div class="d-flex gap-1">
+        <input
+          v-model="cellValue"
+          class="form-control"
+          type="text"
+          placeholder="—"
+          @input="onChange"
+        >
+        <button
+          v-if="isClearable"
+          class="btn btn-sm btn-secondary px-2"
+          type="button"
+          title="Clear this field for selected affects"
+          @click="onClear"
+        >
+          ×
+        </button>
+      </div>
     </template>
   </template>
   <template v-else>
