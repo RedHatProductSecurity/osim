@@ -30,6 +30,7 @@ declare module '@tanstack/vue-table' {
 
   interface ColumnMeta<TData extends RowData, TValue> {
     bulkEditable?: boolean;
+    clearable?: boolean;
     cvss?: boolean;
     enum?: ((row?: Row<TData>) => Record<string, string>) | Record<string, string>;
     extraColumn?: DeepKeys<TData>;
@@ -154,6 +155,7 @@ export default function AffectColumnDefinitions() {
       sortingFn: 'alphanumeric',
       meta: {
         bulkEditable: true,
+        clearable: false,
       },
     }),
     columnHelper.accessor('ps_module', {
@@ -162,6 +164,7 @@ export default function AffectColumnDefinitions() {
       sortingFn: 'alphanumeric',
       meta: {
         bulkEditable: true,
+        clearable: false,
       },
     }),
     columnHelper.accessor('ps_component', {
@@ -170,6 +173,7 @@ export default function AffectColumnDefinitions() {
       sortingFn: 'alphanumeric',
       meta: {
         bulkEditable: true,
+        clearable: false,
       },
     }),
     columnHelper.accessor('purl', {
