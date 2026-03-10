@@ -7,6 +7,9 @@
 ### Fixed
 * Revert CVSS Aegis suggestion removes all value (`OSIDB-4780`)
 
+### Changed
+* Changed texts on Aegis suggestion tooltips (`OSIDB-4835`)
+
 ## [2026.2.0]
 ### Fixed
 * Re-enabled flaw history (`OSIDB-4778`)

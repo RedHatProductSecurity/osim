@@ -48,7 +48,7 @@ defineExpose({
 });
 
 const suggestionTooltip = computed(() => {
-  if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CVSS via AEGIS-AI';
+  if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggested by Aegis-AI';
   const { confidence, explanation, tools_used } = suggestionDetails.value;
   const currentCVSS = currentSuggestion.value;
   const parts: string[] = [`Value: ${currentCVSS}`];

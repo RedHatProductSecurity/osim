@@ -41,7 +41,7 @@ defineExpose({
 });
 
 const suggestionTooltip = computed(() => {
-  if (!hasAppliedSuggestion.value || !statementSuggestionDetails.value) return 'Suggest Statement via AEGIS-AI';
+  if (!hasAppliedSuggestion.value || !statementSuggestionDetails.value) return 'Suggested by Aegis-AI';
   const { confidence, explanation, tools_used } = statementSuggestionDetails.value;
   const currentStatementSuggestion = currentSuggestion.value;
   // Display "EMPTY" for empty string suggestions

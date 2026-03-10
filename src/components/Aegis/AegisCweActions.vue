@@ -43,7 +43,7 @@ defineExpose({
 });
 
 const suggestionTooltip = computed(() => {
-  if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggest CWE via AEGIS-AI';
+  if (!hasAppliedSuggestion.value || !suggestionDetails.value) return 'Suggested by Aegis-AI';
   const { confidence, explanation, tools_used } = suggestionDetails.value;
   const currentCwe = currentSuggestion.value;
 
