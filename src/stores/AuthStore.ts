@@ -97,32 +97,34 @@ export const useAuthStore = defineStore('AuthStore', () => {
         useUserStore().setEnv(parsedLoginResponse.env);
         return parsedLoginResponse.access;
       })
-      .then((access) => {
-        // Fetch whoami and update user store without creating a static import cycle
-        return fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
-          credentials: 'include',
-          cache: 'no-cache',
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
-      })
-      .then(response => response.json())
-      .then(async (json) => {
-        const { whoamiResponse } = await import('./UserStore');
-        const parsedWhoamiResponse = whoamiResponse.parse(json);
-        const { useUserStore } = await import('./UserStore');
-        const userStore = useUserStore();
-        userStore.setWhoami(parsedWhoamiResponse);
-      })
-      .then(async () => {
-        const { useUserStore } = await import('./UserStore');
-        const userStore = useUserStore();
-        await userStore.updateJiraUsername();
+      .then(async (access) => {
+        // Fetch whoami - if this fails, log error but don't reset tokens
+        try {
+          const whoamiRes = await fetch(`${osimRuntime.value.backends.osidb}/osidb/whoami`, {
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: {
+              Authorization: `Bearer ${access}`,
+            },
+          });
+          const whoamiJson = await whoamiRes.json();
+          const { whoamiResponse } = await import('./UserStore');
+          const parsedWhoamiResponse = whoamiResponse.parse(whoamiJson);
+          const { useUserStore } = await import('./UserStore');
+          const userStore = useUserStore();
+          userStore.setWhoami(parsedWhoamiResponse);
+
+          // Update Jira username
+          await userStore.updateJiraUsername();
+        } catch (error) {
+          console.error('AuthStore::login() Error fetching whoami (non-fatal, user still authenticated):', error);
+          // Don't throw - tokens are valid, user is logged in
+        }
       })
       .catch((e) => {
+        // Only reaches here if the initial /auth/token request failed
         $reset();
-        console.error('AuthStore::login() unsuccessful login request', e);
+        console.error('AuthStore::login() Initial authentication failed', e);
         throw e;
       });
   }

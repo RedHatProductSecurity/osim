@@ -46,7 +46,7 @@ export const whoamiResponse = z.object({
   profile: z.object({
     bz_user_id: z.string(),
     jira_user_id: z.string(),
-  }).optional(),
+  }).nullish(),
   username: z.string(),
 });
 type WhoamiType = z.infer<typeof whoamiResponse>;
