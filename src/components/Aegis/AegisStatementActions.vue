@@ -5,6 +5,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -36,6 +37,18 @@ const {
   'statement',
 );
 
+const {
+  canShowFeedbackExtended,
+  handleFieldFeedback: handleStatementFeedback,
+  isFieldAIBot: isStatementAIBot,
+} = useAegisFieldFeedback(
+  'statement',
+  modelValue,
+  canShowFeedback,
+  hasAppliedSuggestion,
+  sendFeedback,
+);
+
 defineExpose({
   isFetchingSuggestion,
 });
@@ -61,19 +74,19 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiStatementSuggestions"
+    v-if="osimRuntime.flags?.aiStatementSuggestions || isStatementAIBot"
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"
-    :canShowFeedback="canShowFeedback"
+    :canShowFeedback="canShowFeedbackExtended"
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
     @suggest="suggestStatement"
     @selectSuggestion="selectSuggestion"
     @revert="revertStatement"
-    @feedback="sendFeedback"
+    @feedback="handleStatementFeedback"
   />
 </template>
 

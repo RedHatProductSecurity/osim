@@ -5,6 +5,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getMitreUrl, loadCweData } from '@/services/CweService';
@@ -37,6 +38,18 @@ const {
   sendFeedback,
   suggestCwe,
 } = useAegisSuggestion(props.aegisContext as AegisSuggestionContextRefs, modelValue, 'cwe_id');
+
+const {
+  canShowFeedbackExtended,
+  handleFieldFeedback: handleCweFeedback,
+  isFieldAIBot: isCweAIBot,
+} = useAegisFieldFeedback(
+  'cwe_id',
+  modelValue,
+  canShowFeedback,
+  hasAppliedSuggestion,
+  sendFeedback,
+);
 
 defineExpose({
   isFetchingSuggestion,
@@ -78,19 +91,19 @@ onMounted(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiCweSuggestions === true"
+    v-if="osimRuntime.flags?.aiCweSuggestions === true || isCweAIBot"
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"
-    :canShowFeedback="canShowFeedback"
+    :canShowFeedback="canShowFeedbackExtended"
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
     @suggest="suggestCwe"
     @selectSuggestion="selectSuggestion"
     @revert="revertCwe"
-    @feedback="sendFeedback"
+    @feedback="handleCweFeedback"
   >
     <template #suggestion-item="{ suggestions, selectedIndex, selectSuggestion: selectSuggestionFn }">
       <li v-for="(suggestion, index) in suggestions" :key="index">

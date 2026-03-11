@@ -4,11 +4,13 @@ import { computed } from 'vue';
 import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import type { UseAegisSuggestDescriptionReturn } from '@/composables/aegis/useAegisSuggestDescription';
+import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   composable: UseAegisSuggestDescriptionReturn;
+  descriptionValue?: null | string;
 }>();
 
 const {
@@ -25,6 +27,18 @@ const {
 defineExpose({
   isSuggesting,
 });
+
+const {
+  canShowFeedbackExtended: canShowDescriptionFeedbackExtended,
+  handleFieldFeedback: handleDescriptionFeedback,
+  isFieldAIBot: isDescriptionAIBot,
+} = useAegisFieldFeedback(
+  'cve_description',
+  computed(() => props.descriptionValue),
+  canShowDescriptionFeedback,
+  hasAppliedDescriptionSuggestion,
+  sendDescriptionFeedback,
+);
 
 const suggestionTooltip = computed(() => {
   if (!hasAppliedDescriptionSuggestion.value || !suggestionDetails.value) {
@@ -44,17 +58,17 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiDescriptionSuggestions === true"
+    v-if="osimRuntime.flags?.aiDescriptionSuggestions === true || isDescriptionAIBot"
     :canSuggest="canSuggest"
     :hasAppliedSuggestion="hasAppliedDescriptionSuggestion"
     :hasMultipleSuggestions="false"
     :isFetchingSuggestion="isSuggesting"
-    :canShowFeedback="canShowDescriptionFeedback"
+    :canShowFeedback="canShowDescriptionFeedbackExtended"
     :suggestions="[]"
     :selectedIndex="0"
     :tooltipText="suggestionTooltip"
     @suggest="suggestDescription"
     @revert="revertDescription"
-    @feedback="sendDescriptionFeedback"
+    @feedback="handleDescriptionFeedback"
   />
 </template>

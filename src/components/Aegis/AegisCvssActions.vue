@@ -6,6 +6,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 import { useCvssScores } from '@/composables/useCvssScores';
+import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
@@ -43,6 +44,18 @@ const {
   suggestCvss,
 } = useAegisSuggestion(props.aegisContext as AegisSuggestionContextRefs, suggestedCvssVector, '_cvss3_vector');
 
+const {
+  canShowFeedbackExtended,
+  handleFieldFeedback: handleCvssFeedback,
+  isFieldAIBot: _isCvssAIBot,
+} = useAegisFieldFeedback(
+  '_cvss3_vector',
+  cvssVector,
+  canShowFeedback,
+  hasAppliedSuggestion,
+  sendFeedback,
+);
+
 defineExpose({
   isFetchingSuggestion,
 });
@@ -70,14 +83,14 @@ const suggestionTooltip = computed(() => {
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"
-    :canShowFeedback="canShowFeedback"
+    :canShowFeedback="canShowFeedbackExtended"
     :suggestions="allSuggestions"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
     @suggest="suggestCvss"
     @selectSuggestion="selectSuggestion"
     @revert="revertCvss"
-    @feedback="sendFeedback"
+    @feedback="handleCvssFeedback"
   >
     <template #suggestion-item="{ suggestions, selectedIndex, selectSuggestion: selectSuggestionFn }">
       <li v-for="(suggestion, index) in suggestions" :key="index">
