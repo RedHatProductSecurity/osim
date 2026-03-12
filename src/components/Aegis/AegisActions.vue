@@ -90,8 +90,9 @@ function handleFeedbackCancel() {
         </slot>
       </ul>
     </div>
-    <span v-if="hasAppliedSuggestion && !isFetchingSuggestion" class="ms-2">
+    <span v-if="(hasAppliedSuggestion || canShowFeedback) && !isFetchingSuggestion" class="ms-2">
       <i
+        v-if="hasAppliedSuggestion"
         class="bi-arrow-counterclockwise label-icon"
         title="Revert to previous value"
         @click.prevent.stop="emit('revert')"
@@ -99,12 +100,12 @@ function handleFeedbackCancel() {
       <template v-if="canShowFeedback">
         <i
           class="bi-hand-thumbs-up label-icon"
-          title="Mark suggestion helpful"
+          title="Mark helpful"
           @click.prevent.stop="emit('feedback', 'positive', '')"
         />
         <i
           class="bi-hand-thumbs-down label-icon"
-          title="Mark suggestion unhelpful"
+          title="Mark unhelpful"
           @click.prevent.stop="handleThumbsDown"
         />
       </template>

@@ -77,9 +77,9 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
   const { flaw } = useFlaw();
   if (flaw.value.classification?.state !== 'NEW') return false;
 
-  // Check if any entry matches the current value with AI-Bot type
+  // Check if any entry matches the current value with AI-Bot or AI type
   return metadata.some((entry) => {
-    if (entry.type !== 'AI-Bot') return false;
+    if (entry.type !== 'AI-Bot' && entry.type !== 'AI') return false;
 
     // For array fields, compare arrays directly
     if (Array.isArray(currentValue) && Array.isArray(entry.value)) {

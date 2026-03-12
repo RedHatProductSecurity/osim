@@ -57,8 +57,8 @@ describe('flawForm helper functions', () => {
       expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
     });
 
-    it('should return false when field has metadata but not AI-Bot type', () => {
-      // Set up metadata with AI type instead of AI-Bot
+    it('should return true when field has AI type metadata', () => {
+      // Set up metadata with AI type (should now be treated same as AI-Bot)
       setAegisMetadata({
         components: [
           {
@@ -72,7 +72,7 @@ describe('flawForm helper functions', () => {
       const currentValue = ['kernel', 'openssl'];
       const serializedValue = JSON.stringify(currentValue);
 
-      expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(true);
     });
 
     it('should return true when multiple metadata entries exist and one AI-Bot entry matches', () => {

@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion, clearSuggestionFeedbackState } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -37,6 +37,7 @@ vi.mock('@/services/AegisAIService', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  clearSuggestionFeedbackState();
 });
 
 function createContext(overrides?: Partial<Parameters<typeof serializeAegisContext>[0]>) {

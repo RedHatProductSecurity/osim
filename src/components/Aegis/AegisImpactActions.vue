@@ -5,6 +5,7 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
+import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 
 import type { ImpactEnumWithBlankType } from '@/types/zodShared';
 
@@ -44,6 +45,18 @@ const {
   'impact',
 );
 
+const {
+  canShowFeedbackExtended,
+  handleFieldFeedback: handleImpactFeedback,
+  isFieldAIBot: _isImpactAIBot,
+} = useAegisFieldFeedback(
+  'impact',
+  modelValue,
+  canShowFeedback,
+  hasAppliedSuggestion,
+  sendFeedback,
+);
+
 defineExpose({
   isFetchingSuggestion,
 });
@@ -71,14 +84,14 @@ const suggestionTooltip = computed(() => {
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"
-    :canShowFeedback="canShowFeedback"
+    :canShowFeedback="canShowFeedbackExtended"
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
     @suggest="suggestImpact"
     @selectSuggestion="selectSuggestion"
     @revert="revertImpact"
-    @feedback="sendFeedback"
+    @feedback="handleImpactFeedback"
   />
 </template>
 

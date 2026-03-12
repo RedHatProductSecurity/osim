@@ -113,6 +113,7 @@ describe('aegisTitleActions', () => {
     const mockSendTitleFeedback = vi.fn();
     const mockComposable = createMockComposable({
       canShowTitleFeedback: computed(() => true),
+      hasAppliedTitleSuggestion: computed(() => true),
       sendTitleFeedback: mockSendTitleFeedback,
     });
 
@@ -125,7 +126,7 @@ describe('aegisTitleActions', () => {
     const aegisActions = wrapper.findComponent({ name: 'AegisActions' });
     await aegisActions.vm.$emit('feedback', 'positive');
 
-    expect(mockSendTitleFeedback).toHaveBeenCalledWith('positive');
+    expect(mockSendTitleFeedback).toHaveBeenCalledWith('positive', '');
   });
 
   it('displays correct tooltip when suggestion is applied', () => {
