@@ -59,10 +59,7 @@ describe('owner field', () => {
 
   it('should show results when input changes', async () => {
     vi.mocked(searchJiraUsers, { partial: true }).mockResolvedValueOnce({
-      data: {
-        users:
-          [{ name: 'test', displayName: 'Test User', avatarUrl: '' }],
-      },
+      data: [{ accountId: 'test-id', displayName: 'Test User' }],
     });
     const input = subject.find('input');
     await input.setValue('test');

@@ -15,7 +15,7 @@ vi.mock('@/stores/UserStore', () => ({
 
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: () => {
-    return Promise.resolve({ data: { users: [{ displayName: 'SkyNet', name: 'skynet' }] } });
+    return Promise.resolve({ data: [{ accountId: 'skynet-id', displayName: 'SkyNet', name: 'skynet' }] });
   },
 }));
 

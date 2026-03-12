@@ -29,20 +29,22 @@ exports[`settingsView > should render 1`] = `
           </details>
         </div>
       </div>
-      <div data-v-4b5aabe5="" class="form-control mb-3"><label data-v-4b5aabe5="" class="d-block"><span data-v-4b5aabe5="" class="form-label">JIRA API Key</span>
-          <div data-v-4b5aabe5="" class="input-group"><input data-v-4b5aabe5="" class="form-control is-invalid" type="password" placeholder="[none saved]"><button data-v-4b5aabe5="" type="button" class="btn btn-dark eye-toggle-btn"><i data-v-4b5aabe5="" class="bi bi-eye"></i></button></div><span data-v-4b5aabe5="" class="invalid-feedback d-block"> Please provide a Jira key. </span>
+      <div data-v-4b5aabe5="" class="form-control mb-3"><label data-v-4b5aabe5="" class="d-block"><span data-v-4b5aabe5="" class="form-label">JIRA API Token</span>
+          <div data-v-4b5aabe5="" class="input-group"><input data-v-4b5aabe5="" class="form-control is-invalid" type="password" placeholder="[none saved]"><button data-v-4b5aabe5="" type="button" class="btn btn-dark eye-toggle-btn"><i data-v-4b5aabe5="" class="bi bi-eye"></i></button></div><span data-v-4b5aabe5="" class="invalid-feedback d-block"> Please provide a Jira API token. </span>
         </label>
         <div data-v-4b5aabe5="" class="form-text">
-          <p data-v-4b5aabe5="">Required for actions which interface with JIRA.</p>
+          <p data-v-4b5aabe5=""> Required for actions which interface with JIRA. For Jira Cloud, this token is used with your email from OSIDB. </p>
+          <!--v-if-->
+          <!--v-if-->
           <details data-v-4b5aabe5="">
-            <summary data-v-4b5aabe5="">Steps to create an API key:</summary>
+            <summary data-v-4b5aabe5="">Steps to create an API token for Jira Cloud:</summary>
             <ul data-v-4b5aabe5="">
-              <li data-v-4b5aabe5="">Log into your JIRA account.</li>
-              <li data-v-4b5aabe5=""> Go to 'Your Profile' page under your user icon menu in the upper right corner. </li>
-              <li data-v-4b5aabe5="">Select Personal Access Tokens from the left hand sidebar menu.</li>
-              <li data-v-4b5aabe5="">Click Create token button.</li>
-              <li data-v-4b5aabe5="">Name the token meaningfully (eg. 'OSIM token') and click create.</li>
-              <li data-v-4b5aabe5="">Copy token value and close.</li>
+              <li data-v-4b5aabe5="">Go to <a data-v-4b5aabe5="" href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Atlassian Account Settings</a></li>
+              <li data-v-4b5aabe5="">Click "Create API token"</li>
+              <li data-v-4b5aabe5="">Give your token a descriptive name (e.g., "OSIM Integration")</li>
+              <li data-v-4b5aabe5="">Click "Create"</li>
+              <li data-v-4b5aabe5="">Copy the token immediately; it won't be shown again.</li>
+              <li data-v-4b5aabe5=""><strong data-v-4b5aabe5="">Note:</strong> Your email address (<code data-v-4b5aabe5="">from OSIDB</code>) is automatically used for authentication. </li>
             </ul>
           </details>
         </div>

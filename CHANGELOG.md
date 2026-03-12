@@ -9,6 +9,7 @@
 
 ### Changed
 * Changed texts on Aegis suggestion tooltips (`OSIDB-4835`)
+* New Jira authentication using user emails (`OSIDB-4533`)
 
 ## [2026.2.0]
 ### Fixed

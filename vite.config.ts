@@ -42,6 +42,16 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/proxy\/aegis-ai/, ''),
       },
+      '/proxy/jira': {
+        target: 'https://example.jira.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/proxy\/jira/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (_proxyReq, req) => {
+            console.debug('Proxying Jira request:', req.method, req.url);
+          });
+        },
+      },
     },
   },
   resolve: {
