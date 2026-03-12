@@ -1,9 +1,8 @@
 import { createSuccessHandler, createCatchHandler } from '@/composables/service-helpers';
 
-import { useSettingsStore } from '@/stores/SettingsStore';
+import { useUserStore } from '@/stores/UserStore';
 import { useToastStore } from '@/stores/ToastStore';
-import { getNextAccessToken } from '@/services/OsidbAuthService';
-import { getApiKeysFromBackend } from '@/services/ApiKeyService';
+import { useSettingsStore } from '@/stores/SettingsStore';
 import {
   osimRuntime,
 } from '@/stores/osimRuntime';
@@ -49,7 +48,7 @@ async function jiraFetch<T = any>(config: JiraFetchOptions, factoryOptions?: Jir
   try {
     response = await fetch(`${baseUrl}${config.url}${queryString}`, {
       method: config?.method ?? 'GET',
-      headers: await osimRequestHeaders(),
+      headers: getJiraCloudAuthHeaders(),
       mode: 'cors',
       credentials: 'include',
       body,
@@ -95,12 +94,21 @@ export async function getJiraComments(taskId: string) {
   });
 }
 
-export async function searchJiraUsers(query: string, issueKey: string) {
-  return jiraFetch<{ users: ZodJiraUserAssignableType[] }>({
+export async function getJiraUser(accountId: string) {
+  return jiraFetch<{ accountId: string; displayName: string }>({
     method: 'get',
-    url: '/rest/internal/2/users/assignee',
+    url: '/rest/api/2/user',
+    params: { accountId },
+  }).then(res => res.data).catch(() => null);
+}
+
+export async function searchJiraUsers(query: string, issueKey: string) {
+  // Jira Cloud uses /rest/api/2/user/assignable/search, on-premise uses /rest/internal/2/users/assignee
+  return jiraFetch<ZodJiraUserAssignableType[]>({
+    method: 'get',
+    url: '/rest/api/2/user/assignable/search',
     params: { issueKey, query },
-  });
+  }).then(res => ({ data: { users: res.data } }));
 }
 
 export async function getJiraIssue(taskId: string) {
@@ -153,7 +161,7 @@ export async function getJiraUsername() {
     url: '/rest/api/2/myself',
   }).then((res) => {
     if (res.response.ok) {
-      return res.data.name;
+      return res.data.displayName || res.data.name || res.data.accountId || res.data.emailAddress;
     }
   }).catch((error) => {
     console.error('JiraService::getJiraUsername() Error getting your username from jira', error);
@@ -168,23 +176,18 @@ export async function getJiraUsername() {
   });
 }
 
-async function osimRequestHeaders() {
-  const settingsStore = useSettingsStore();
-  const osidbToken = await getNextAccessToken();
-  if (osimRuntime.value.env === 'prod') {
+function getJiraCloudAuthHeaders(): Headers {
+  const userEmail = useUserStore().userEmail;
+  const jiraApiToken = useSettingsStore().apiKeys.jiraApiKey;
+
+  if (userEmail && jiraApiToken) {
     return new Headers({
-      'Authorization': `Bearer ${settingsStore.apiKeys.jiraApiKey}`,
+      'Authorization': `Basic ${btoa(`${userEmail}:${jiraApiToken}`)}`,
       'Content-Type': 'application/json',
-    });
-  } else {
-    const integrationTokens = await getApiKeysFromBackend();
-    return new Headers({
-      'Authorization': `Bearer ${osidbToken}`,
-      'Content-Type': 'application/json',
-      'Jira-Api-Key': integrationTokens.jira || '',
       'User-Agent': 'OSIM',
     });
   }
+  throw new Error('Jira Authentication Failed:Invalid user email or API token');
 }
 
 function paramsFrom(params: Record<string, any>) {
@@ -207,6 +210,6 @@ export function jiraTaskUrl(id: string): string {
   return (new URL(`/browse/${id}`, osimRuntime.value.backends.jiraDisplay)).href;
 }
 
-export function jiraUserUrl(name: string): string {
-  return (new URL(`/ViewProfile.jspa?name=${name}`, osimRuntime.value.backends.jiraDisplay)).href;
+export function jiraUserUrl(accountId: string): string {
+  return (new URL(`/jira/people/${accountId}`, osimRuntime.value.backends.jiraDisplay)).href;
 }

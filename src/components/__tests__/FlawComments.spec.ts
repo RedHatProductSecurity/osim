@@ -13,6 +13,7 @@ vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: vi.fn(() => Promise.resolve([])),
   jiraTaskUrl: vi.fn((taskKey: string) => `http://jira-backend/browse/${taskKey}`),
   jiraUserUrl: vi.fn(),
+  getJiraUser: vi.fn(() => Promise.resolve(null)),
 }));
 
 describe('flawComments', () => {
@@ -88,7 +89,7 @@ describe('flawComments', () => {
     expect(noCommentsMessage.text()).toBe('No public comments');
   });
 
-  it('correctly display public comments', () => {
+  it('correctly display public comments', async () => {
     subject = mount(FlawComments, {
       props: {
         commentsByType: {
@@ -107,6 +108,7 @@ describe('flawComments', () => {
         isSaving: false,
       },
     });
+    await flushPromises();
 
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
@@ -144,6 +146,7 @@ describe('flawComments', () => {
 
     const navLinks = subject.findAll('.nav-link');
     await navLinks[1].trigger('click');
+    await flushPromises();
     expect(subject.html()).toMatchSnapshot();
   });
 
@@ -192,6 +195,7 @@ describe('flawComments', () => {
     });
     const navLinks = subject.findAll('.nav-link');
     await navLinks[2].trigger('click');
+    await flushPromises();
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
     // First internal comment checks
@@ -245,6 +249,7 @@ describe('flawComments', () => {
 
     const navLinks = subject.findAll('.nav-link');
     await navLinks[3].trigger('click');
+    await flushPromises();
     const commentElements = subject.findAll('ul.comments li');
     expect(commentElements.length).toBe(2);
     // First system comment checks
