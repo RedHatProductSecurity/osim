@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useComponentsFeedback } from '@/composables/aegis/useComponentsFeedback';
+import { useComponentsFeedback, AegisFeedback } from '@/composables/aegis/useComponentsFeedback';
 
 // Mock the dependencies
 vi.mock('@/composables/aegis/useAegisMetadataTracking', () => ({
@@ -61,7 +61,7 @@ describe('useComponentsFeedback', () => {
 
     expect(canShowComponentsFeedback.value).toBe(true);
 
-    await handleComponentsFeedback('positive');
+    await handleComponentsFeedback(AegisFeedback.POSITIVE);
 
     // After feedback, should not show feedback anymore
     expect(canShowComponentsFeedback.value).toBe(false);

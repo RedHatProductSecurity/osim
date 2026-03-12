@@ -7,6 +7,11 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
 
+export enum AegisFeedback {
+  NEGATIVE = 'negative',
+  POSITIVE = 'positive',
+}
+
 export function useComponentsFeedback(componentsRef: Ref<null | string[] | undefined>) {
   const { isFieldValueAIBot } = useAegisMetadataTracking();
   const service = new AegisAIService();
@@ -36,7 +41,7 @@ export function useComponentsFeedback(componentsRef: Ref<null | string[] | undef
     return feedbackNotSubmitted;
   });
 
-  async function handleComponentsFeedback(kind: 'negative' | 'positive', comment = '') {
+  async function handleComponentsFeedback(kind: AegisFeedback, comment = '') {
     if (!componentsRef.value?.length) return;
 
     const componentsValue = JSON.stringify(componentsRef.value);
@@ -57,7 +62,7 @@ export function useComponentsFeedback(componentsRef: Ref<null | string[] | undef
         email: userStore.userEmail,
         request_time: `${service.requestDuration.value}ms`,
         actual: componentsValue,
-        accept: kind === 'positive',
+        accept: kind === AegisFeedback.POSITIVE,
         ...(comment && { rejection_comment: comment }),
       });
 
@@ -65,7 +70,7 @@ export function useComponentsFeedback(componentsRef: Ref<null | string[] | undef
 
       toastStore.addToast({
         title: 'Aegis-AI-Bot Feedback',
-        body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
+        body: kind === AegisFeedback.POSITIVE ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
         css: 'info',
       });
     } catch (error: any) {
@@ -84,7 +89,7 @@ export function useComponentsFeedback(componentsRef: Ref<null | string[] | undef
 
   function handleFeedbackSubmit(comment: string) {
     showComponentsFeedbackModal.value = false;
-    handleComponentsFeedback('negative', comment);
+    handleComponentsFeedback(AegisFeedback.NEGATIVE, comment);
   }
 
   function handleFeedbackCancel() {

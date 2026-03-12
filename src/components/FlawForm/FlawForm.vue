@@ -38,7 +38,7 @@ import {
 } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
-import { useComponentsFeedback } from '@/composables/aegis/useComponentsFeedback';
+import { useComponentsFeedback, AegisFeedback } from '@/composables/aegis/useComponentsFeedback';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -320,7 +320,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                     class="bi-hand-thumbs-up"
                     style="color: gray; cursor: pointer; margin-right: 0.25rem; font-size: 0.9em;"
                     title="Mark suggestion helpful"
-                    @click.prevent.stop="handleComponentsFeedback('positive', '')"
+                    @click.prevent.stop="handleComponentsFeedback(AegisFeedback.POSITIVE, '')"
                   />
                   <i
                     class="bi-hand-thumbs-down"
