@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-export type ZodJiraUserAssignableType = z.infer<typeof JiraUserAssignableSchema>;
-export const JiraUserAssignableSchema = z.object({
+const JiraUserBaseSchema = z.object({
   displayName: z.string(),
   name: z.string().nullish(),             // On-premise; null on Cloud
   accountId: z.string().optional(),       // Jira Cloud; never null, absent for on-prem users
@@ -15,7 +14,7 @@ export const JiraUserAssignableSchema = JiraUserBaseSchema.extend({
 });
 
 export type ZodJiraContributorType = z.infer<typeof JiraContributorSchema>;
-export const JiraContributorSchema = z.object({
+export const JiraContributorSchema = JiraUserBaseSchema.extend({
   self: z.string().url(),
   key: z.string().nullish(),
 });

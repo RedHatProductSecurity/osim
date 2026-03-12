@@ -162,7 +162,7 @@ function commentTypeString(type: CommentType | undefined): string {
       >
         <div
           v-for="user in suggestions"
-          :key="user.name"
+          :key="user.accountId ?? user.name ?? undefined"
           class="item"
           @click="handleSuggestionClick(user)"
         >

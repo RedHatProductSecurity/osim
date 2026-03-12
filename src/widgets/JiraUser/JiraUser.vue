@@ -3,8 +3,8 @@ import { computed, toValue } from 'vue';
 
 const props = defineProps<{
   displayName: string;
-  emailAddress?: string;
-  name?: string;
+  emailAddress?: null | string;
+  name?: null | string;
   query?: string;
 }>();
 
