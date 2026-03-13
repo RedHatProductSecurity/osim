@@ -502,7 +502,7 @@ describe('flawForm', () => {
   osimFullFlawTest('should show a link to bugzilla if ID exists', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
-    const bugzillaLink = subject.find('.osim-flaw-header-link > a');
+    const bugzillaLink = subject.find('.osim-flaw-header-link a[href*="show_bug.cgi"]');
     expect(bugzillaLink.exists()).toBe(true);
   });
 
@@ -519,7 +519,7 @@ describe('flawForm', () => {
 
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
-    const flawLinks = subject.findAll('.osim-flaw-header-link > a');
+    const flawLinks = subject.findAll('.osim-flaw-header-link a');
     expect(flawLinks.length).toBe(2);
     expect(flawLinks[1].text()).contain('Jira');
   });
@@ -529,7 +529,7 @@ describe('flawForm', () => {
 
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
-    const flawLinks = subject.findAll('.osim-flaw-header-link > a');
+    const flawLinks = subject.findAll('.osim-flaw-header-link a');
     expect(flawLinks.length).toBe(1);
     expect(flawLinks[0].text()).not.toContain('Jira');
   });

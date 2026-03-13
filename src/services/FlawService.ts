@@ -38,6 +38,13 @@ const FLAW_LIST_FIELDS = [
   'embargoed',
   'owner',
   'labels',
+  'aegis_meta',
+  'affects',
+  'cve_description',
+  'statement',
+  'mitigation',
+  'cwe_id',
+  'cvss_scores',
 ];
 
 export async function getFlaws(offset = 0, limit = 20, args = {}) {

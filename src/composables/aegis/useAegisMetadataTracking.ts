@@ -91,6 +91,23 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
   });
 }
 
+function hasAIBotProcessing(aegisMetadata: AegisMetadata): boolean {
+  if (!aegisMetadata) {
+    return false;
+  }
+
+  for (const metadata of Object.values(aegisMetadata)) {
+    if (Array.isArray(metadata) && metadata.length > 0) {
+      const lastEntry = metadata[metadata.length - 1];
+      if (lastEntry.type === 'AI-Bot') {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 export function useAegisMetadataTracking() {
   return {
     trackAIChange,
@@ -101,5 +118,6 @@ export function useAegisMetadataTracking() {
     getFieldAegisType,
     isFieldAegisChange,
     isFieldValueAIBot,
+    hasAIBotProcessing,
   };
 }

@@ -115,6 +115,7 @@ function relevantFields(issue: ZodFlawType) {
     owner: issue.owner,
     formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd HH:mm'),
     labels: issue.labels,
+    flaw: issue, // Include full flaw object for UnprocessedFlawLabel
   };
 }
 

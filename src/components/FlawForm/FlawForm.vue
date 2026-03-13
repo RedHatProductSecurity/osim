@@ -25,6 +25,7 @@ import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
 import IncidentRequestButton from '@/components/IncidentRequestDialog/IncidentRequestButton.vue';
+import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -241,15 +242,17 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           @expandFocusedComponent="expandFocusedComponent"
         />
         <div class="text-end osim-flaw-header-link">
-          <a
-            v-if="flaw.meta_attr?.bz_id"
-            :href="bugzillaLink"
-            target="_blank"
-            class="d-block"
-            rel="noopener noreferrer"
-          >
-            Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-          </a>
+          <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+            <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
+            <a
+              v-if="flaw.meta_attr?.bz_id"
+              :href="bugzillaLink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+            </a>
+          </div>
           <a
             v-if="flaw.task_key"
             :href="jiraTaskUrl(flaw.task_key)"
