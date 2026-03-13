@@ -38,6 +38,7 @@ import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestD
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import type { ImpactEnumWithBlankType } from '@/types';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
@@ -590,7 +591,12 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
       </div>
       <div class="row border-top">
         <div class="col">
-          <FlawHistory v-if="mode === 'edit'" :history="flaw.history" :error="historyFetchError" />
+          <FlawHistory
+            v-if="mode === 'edit'"
+            :disabled="!osimRuntime.flags?.flawHistory"
+            :history="flaw.history"
+            :error="historyFetchError"
+          />
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { getFlaw } from '@/services/FlawService';
 import { getFlawAuditHistory } from '@/services/AuditService';
 import { useToastStore } from '@/stores/ToastStore';
 import { useTourStore } from '@/stores/TourStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import { getAffects } from '@/services/AffectService';
 
@@ -61,20 +62,22 @@ export function useFetchFlaw() {
       // Initialize aegis metadata tracking with existing data
       setAegisMetadata(flawResult.aegis_meta);
 
-      // Fetch audit history asynchronously in parallel with affects
-      getFlawAuditHistory(flawResult.uuid)
-        .then((auditHistory) => {
-          flaw.value.history = auditHistory;
-          historyFetchError.value = false;
-          setFlaw(flaw.value);
-        })
-        .catch((historyError) => {
-          console.error('useFetchFlaw::fetchFlaw() Error loading audit history:', historyError);
-          // Don't fail the entire flaw fetch if history fails, but set error flag
-          flaw.value.history = [];
-          historyFetchError.value = true;
-          setFlaw(flaw.value);
-        });
+      // Fetch audit history asynchronously in parallel with affects (only if feature flag is enabled)
+      if (osimRuntime.value.flags?.flawHistory) {
+        getFlawAuditHistory(flawResult.uuid)
+          .then((auditHistory) => {
+            flaw.value.history = auditHistory;
+            historyFetchError.value = false;
+            setFlaw(flaw.value);
+          })
+          .catch((historyError) => {
+            console.error('useFetchFlaw::fetchFlaw() Error loading audit history:', historyError);
+            // Don't fail the entire flaw fetch if history fails, but set error flag
+            flaw.value.history = [];
+            historyFetchError.value = true;
+            setFlaw(flaw.value);
+          });
+      }
 
       const affectResults = (await fetchedAffects).data.results;
       flaw.value.affects = affectResults;
