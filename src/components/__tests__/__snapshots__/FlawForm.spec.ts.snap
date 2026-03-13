@@ -652,9 +652,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </label></button>
         <div data-v-4715e8e2="" class="ps-3 border-start">
           <div data-v-4715e8e2="" class="">
-            <div data-v-f4fcc8d4="" class="d-flex align-items-center gap-2">
-              <div data-v-f4fcc8d4="" class="spinner-border spinner-border-sm text-primary" role="status"><span data-v-f4fcc8d4="" class="visually-hidden">Loading history...</span></div><span data-v-f4fcc8d4="" class="text-muted">Loading history...</span>
-            </div>
+            <div data-v-f4fcc8d4="" class="alert alert-secondary mb-0 d-flex align-items-center gap-2"><i data-v-f4fcc8d4="" class="bi bi-info-circle-fill"></i><span data-v-f4fcc8d4="">History feature is currently disabled.</span></div>
           </div>
         </div>
       </div>
