@@ -1,10 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { flushPromises } from '@vue/test-utils';
 
 import CommentList from '@/components/FlawComments/CommentList.vue';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { CommentType } from '@/constants';
 import { type ZodFlawCommentType } from '@/types/zodFlaw';
+
+vi.mock('@/services/JiraService', () => ({
+  getJiraUser: vi.fn(() => Promise.resolve(null)),
+  jiraUserUrl: vi.fn(),
+}));
 
 const createTestComment = (text: string, type: CommentType = CommentType.Public): ZodFlawCommentType => ({
   uuid: 'test-uuid',
@@ -17,7 +23,7 @@ const createTestComment = (text: string, type: CommentType = CommentType.Public)
 });
 
 describe('commentList', () => {
-  it('should not parse grep output with pipes as links', () => {
+  it('should not parse grep output with pipes as links', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment(
         'rhel-8.10.z    pkg:oci/dotnet-80?repository_url=registry.example.com/rhel8/dotnet-80'
@@ -30,6 +36,7 @@ describe('commentList', () => {
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     // Should NOT contain an anchor tag since there's no valid Jira link syntax
@@ -38,7 +45,7 @@ describe('commentList', () => {
     expect(commentText.text()).toContain('pkg:oci/dotnet-80');
   });
 
-  it('should parse valid Jira link syntax [text|url]', () => {
+  it('should parse valid Jira link syntax [text|url]', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment(
         'Check this link: [Example Docs|https://example.com/docs/policy]',
@@ -50,6 +57,7 @@ describe('commentList', () => {
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     // Should contain an anchor tag with the proper URL
@@ -57,7 +65,7 @@ describe('commentList', () => {
       .toContain('<a target="_blank" href="https://example.com/docs/policy">');
   });
 
-  it('should parse bugzilla bug references', () => {
+  it('should parse bugzilla bug references', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment('See [bug 12345] for details'),
     ];
@@ -67,13 +75,14 @@ describe('commentList', () => {
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     expect(commentText.html()).toContain('[bug 12345]</a>');
     expect(commentText.html()).toContain('show_bug.cgi?id=12345');
   });
 
-  it('should parse Jira user tags', () => {
+  it('should parse Jira user tags', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment('Hey [~someuser] can you check this?'),
     ];
@@ -83,13 +92,14 @@ describe('commentList', () => {
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     expect(commentText.html()).toContain('ViewProfile.jspa?name=someuser');
     expect(commentText.html()).toContain('>someuser</a>');
   });
 
-  it('should handle text with multiple grep-style pipes without creating links', () => {
+  it('should handle text with multiple grep-style pipes without creating links', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment(`"newcli -vvs dotnet | grep rhel-8.10"
 
@@ -103,6 +113,7 @@ rhel-8.10.z    pkg:oci/dotnet-90?repository_url=registry.example.com/rhel8/dotne
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     // Should NOT contain any anchor tags from the grep output
@@ -110,7 +121,7 @@ rhel-8.10.z    pkg:oci/dotnet-90?repository_url=registry.example.com/rhel8/dotne
     expect(anchorCount).toBe(0);
   });
 
-  it('should handle mixed content with valid and invalid link patterns', () => {
+  it('should handle mixed content with valid and invalid link patterns', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment(
         'See [bug 123] and [Example Site|https://example.com] but not this: '
@@ -123,6 +134,7 @@ rhel-8.10.z    pkg:oci/dotnet-90?repository_url=registry.example.com/rhel8/dotne
         commentList: comments,
       },
     });
+    await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
     // Should have exactly 2 links: bug ref and valid Jira link

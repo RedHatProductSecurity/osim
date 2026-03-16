@@ -49,7 +49,7 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
-  contributor.value = toValue(user.name);
+  contributor.value = toValue(user.name ?? user.accountId ?? '');
   modelValue.value = contributor.value;
   results.value = [];
 };
@@ -67,7 +67,7 @@ watchDebounced(contributor, onQueryChange, { debounce: 300 });
     <DropDown v-if="results.length">
       <div
         v-for="user in results"
-        :key="user.name"
+        :key="user.accountId ?? user.name ?? undefined"
         class="item"
         @click.prevent.stop="handleSuggestionClick(user)"
       >

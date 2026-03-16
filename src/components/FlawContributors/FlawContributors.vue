@@ -73,7 +73,11 @@ const remove = (index: number) => {
   >
     <div class="dropdown form-control">
       <ul class="ps-0 mb-0 list-unstyled">
-        <li v-for="(contributor, index) in contributors" :key="contributor.name" class="badge text-bg-secondary">
+        <li
+          v-for="(contributor, index) in contributors"
+          :key="contributor.accountId ?? contributor.name ?? undefined"
+          class="badge text-bg-secondary"
+        >
           {{ contributor.displayName }}
           <i
             class="bi bi-x-square ms-1"
@@ -99,7 +103,7 @@ const remove = (index: number) => {
       <DropDown v-if="results.length > 0">
         <div
           v-for="contributor in results"
-          :key="contributor.name"
+          :key="contributor.accountId ?? contributor.name ?? undefined"
           @mousedown.prevent="add(contributor)"
         >
           <JiraUser v-bind="contributor" :query />

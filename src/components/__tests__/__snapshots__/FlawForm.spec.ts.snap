@@ -637,8 +637,7 @@ exports[`flawForm > mounts and renders 1`] = `
           <ul data-v-0b679fcf="" class="comments list-unstyled">
             <li class="p-4 mt-3 rounded-2 bg-light-green">
               <div class="d-flex border-bottom pb-3 align-items-center"><i class="bi bi-caret-right-fill me-2"></i><span>example@example.com</span> - 2021-09-13 09:09 AM UTC <span class="badge rounded-pill float-end ms-auto bg-success" style="font-size: 14px; cursor: help; user-select: none;" title="">Public</span></div>
-              <!--eslint-disable-next-line vue/no-v-html -->
-              <p class="osim-flaw-comment">Dictum maecenas congue quis quam phasellus aenean.</p>
+              <div data-v-e8e3ee68="" class="spinner-border mt-2" role="status"><span data-v-e8e3ee68="" class="visually-hidden">Loading...</span></div>
             </li>
           </ul>
         </div>

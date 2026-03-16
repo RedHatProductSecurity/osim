@@ -10,6 +10,7 @@
 ### Changed
 * Changed texts on Aegis suggestion tooltips (`OSIDB-4835`)
 * New Jira authentication using user emails (`OSIDB-4533`)
+* Support Jira Cloud internal comments, mentions and smart links (`OSIDB-4534`)
 
 ## [2026.2.0]
 ### Fixed
