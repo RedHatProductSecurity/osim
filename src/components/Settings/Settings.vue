@@ -2,9 +2,11 @@
 import { ref, watch, reactive, computed } from 'vue';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { useUserStore } from '@/stores/UserStore';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const settingsStore = useSettingsStore();
+const userStore = useUserStore();
 
 const showBugzillaKey = ref(false);
 const showJiraKey = ref(false);
@@ -108,7 +110,7 @@ const isValid = computed(() => ({
       </div>
       <div class="form-control mb-3">
         <label class="d-block">
-          <span class="form-label">JIRA API Key</span>
+          <span class="form-label">JIRA API Token</span>
           <div class="input-group">
             <input
               v-model="formData.jiraApiKey"
@@ -131,22 +133,34 @@ const isValid = computed(() => ({
             v-if="!isValid.jiraApiKey"
             class="invalid-feedback d-block"
           >
-            Please provide a Jira key.
+            Please provide a Jira API token.
           </span>
         </label>
         <div class="form-text">
-          <p>Required for actions which interface with JIRA.</p>
+          <p>
+            Required for actions which interface with JIRA. For Jira Cloud, this token is used with your email
+            from OSIDB.
+          </p>
+          <div v-if="userStore.userEmail" class="alert alert-info mt-2">
+            <strong>Jira Cloud Authentication:</strong> Your email <code>{{ userStore.userEmail }}</code>
+            will be used with this API token for Basic Authentication.
+          </div>
+          <div v-if="formData.jiraApiKey && !formData.jiraApiKey.startsWith('ATATT')" class="alert alert-warning mt-2">
+            <strong>⚠️ Token Format Warning:</strong> Jira Cloud API tokens typically start with "ATATT".
+            Make sure you're using an API token, not a Personal Access Token.
+          </div>
           <details>
-            <summary>Steps to create an API key:</summary>
+            <summary>Steps to create an API token for Jira Cloud:</summary>
             <ul>
-              <li>Log into your JIRA account.</li>
+              <li>Go to <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Atlassian Account Settings</a></li>
+              <li>Click "Create API token"</li>
+              <li>Give your token a descriptive name (e.g., "OSIM Integration")</li>
+              <li>Click "Create"</li>
+              <li>Copy the token immediately; it won't be shown again.</li>
               <li>
-                Go to 'Your Profile' page under your user icon menu in the upper right corner.
+                <strong>Note:</strong> Your email address
+                (<code>{{ userStore.userEmail || 'from OSIDB' }}</code>) is automatically used for authentication.
               </li>
-              <li>Select Personal Access Tokens from the left hand sidebar menu.</li>
-              <li>Click Create token button.</li>
-              <li>Name the token meaningfully (eg. 'OSIM token') and click create.</li>
-              <li>Copy token value and close.</li>
             </ul>
           </details>
         </div>
