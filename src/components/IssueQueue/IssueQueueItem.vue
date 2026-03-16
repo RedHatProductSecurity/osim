@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
+
+import { useUnprocessedFlawDetection } from '@/composables/unprocessedFlawCheck';
+
 import { labelColorMap } from '@/constants';
 
 import type { FilteredIssue } from './IssueQueue.vue';
@@ -14,10 +18,15 @@ const { issue, showLabels } = defineProps<{
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 //       and update the CSS for the column width in IssueQueue
 
-const nonIdFields: Exclude<keyof FilteredIssue, 'id'>[] =
+const nonIdFields: Exclude<keyof FilteredIssue, 'flaw' | 'id'>[] =
   ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
 
-const hasBadges = computed(() => issue.embargoed || (!!issue.labels?.length && showLabels));
+const { isFlawUnprocessed } = useUnprocessedFlawDetection();
+
+const hasBadges = computed(() =>
+  issue.embargoed
+  || (showLabels && (!!issue.labels?.length || (issue.flaw && isFlawUnprocessed(issue.flaw)))),
+);
 const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
   if (
     (a.state === 'REQ' && b.state !== 'REQ')
@@ -77,6 +86,7 @@ function getLabelColor(label: string, type: string): string {
           class="badge rounded-pill text-bg-danger border border-primary"
         >Embargoed</span>
         <template v-if="showLabels">
+          <UnprocessedFlawLabel v-if="issue.flaw" :flaw="issue.flaw" variant="badge" />
           <template
             v-for="label in sortedLabels"
             :key="label.label"

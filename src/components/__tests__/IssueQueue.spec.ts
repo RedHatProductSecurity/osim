@@ -210,8 +210,8 @@ describe('issueQueue', () => {
 
     const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
 
-    expect(labels.length).toBe(3);
-    expect(labels[0].text()).toBe('test-3');
+    expect(labels.length).toBe(3); // 3 regular labels (no unprocessed label due to populated fields)
+    expect(labels[0].text()).toBe('test-3'); // Regular labels, with REQ state first
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -228,7 +228,7 @@ describe('issueQueue', () => {
 
     const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
 
-    expect(labels.length).toBe(0);
+    expect(labels.length).toBe(0); // 0 regular labels (no unprocessed label due to populated fields)
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -264,6 +264,6 @@ describe('issueQueue', () => {
     await toggleBtn.setValue(false);
 
     const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
-    expect(labels.length).toBe(10);
+    expect(labels.length).toBe(10); // 10 regular labels (no unprocessed label due to populated fields)
   });
 });

@@ -4,6 +4,7 @@
 ### Added
 * Add highlighting on OSIDB Bot edited fields (`OSIDB-4790`)
 * Remove OSIDB Bot highlighting on flaw state change (`OSIDB-4824`)
+* Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
 
 ### Fixed
 * Fix contributors input cleared on suggestion click (`OSIDB-4770`)
