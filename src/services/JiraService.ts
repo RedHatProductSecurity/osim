@@ -108,7 +108,7 @@ export async function searchJiraUsers(query: string, issueKey: string) {
     method: 'get',
     url: '/rest/api/2/user/assignable/search',
     params: { issueKey, query },
-  }).then(res => ({ data: { users: res.data } }));
+  });
 }
 
 export async function getJiraIssue(taskId: string) {

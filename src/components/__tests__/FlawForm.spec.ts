@@ -61,7 +61,7 @@ vi.mock('@/services/JiraService', () => {
   return {
     getJiraComments: vi.fn(() => Promise.resolve({ response: { ok: true }, data: { comments: [] } })),
     getJiraIssue: vi.fn(() => Promise.resolve({ data: { fields: { customfield_12315950: [] } } })),
-    searchJiraUsers: vi.fn(() => Promise.resolve({ data: { users: [] } })),
+    searchJiraUsers: vi.fn(() => Promise.resolve({ data: [] })),
     jiraTaskUrl: vi.fn((id: string) => `http://jira-example.com/browse/${id}`),
     jiraUserUrl: vi.fn((name: string) => `http://jira-example.com/user/${name}`),
     postJiraComment: vi.fn(() => Promise.resolve({})),

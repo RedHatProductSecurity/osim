@@ -54,12 +54,12 @@ watchDebounced(newComment, async () => {
       nextTick(() => refTextArea.value?.elTextArea?.focus());
     });
 
-  if (!users?.data?.users) {
+  if (!users?.data?.length) {
     return;
   }
   calculateDropdownPosition(lastWord);
   nextTick(() => {
-    suggestions.value = users.data?.users ?? [];
+    suggestions.value = users.data ?? [];
   });
 }, { debounce: 500 });
 

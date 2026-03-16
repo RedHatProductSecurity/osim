@@ -7,6 +7,9 @@ import { getJiraIssue, putJiraIssue, searchJiraUsers } from '@/services/JiraServ
 
 import { createCatchHandler } from './service-helpers';
 
+// Custom field ID for the contributors field in Jira.
+const JIRA_CONTRIBUTORS_FIELD = 'customfield_10466';
+
 export default function useJiraContributors(task_key: string) {
   const contributors = ref<Partial<ZodJiraContributorType>[]>([]);
   const hasNewContributors = ref(false);
@@ -23,7 +26,7 @@ export default function useJiraContributors(task_key: string) {
       .catch(createCatchHandler('Failed to load contributors', false));
 
     ignoreUpdates(() => {
-      contributors.value = data?.data?.fields.customfield_12315950 ?? [];
+      contributors.value = (data?.data?.fields[JIRA_CONTRIBUTORS_FIELD] as Partial<ZodJiraContributorType>[]) ?? [];
     });
     isLoadingContributors.value = false;
   };
@@ -36,7 +39,7 @@ export default function useJiraContributors(task_key: string) {
     const users = await searchJiraUsers(query, task_key)
       .catch(createCatchHandler('Failed to search contributors', false));
     isLoadingContributors.value = false;
-    return users?.data?.users ?? [];
+    return users?.data ?? [];
   });
 
   const saveContributors = async () => {
@@ -44,10 +47,16 @@ export default function useJiraContributors(task_key: string) {
       return;
     }
 
+    // Jira Cloud requires only { accountId } when referencing users in custom fields.
+    // Fall back to { name } for on-premise Data Center compatibility.
+    const contributorsPayload = contributors.value.map(c =>
+      c.accountId ? { accountId: c.accountId } : { name: c.name },
+    );
+
     return await putJiraIssue(task_key, {
       data: {
         fields: {
-          customfield_12315950: contributors.value,
+          [JIRA_CONTRIBUTORS_FIELD]: contributorsPayload,
         },
       },
     });

@@ -24,7 +24,6 @@ export const JiraIssueSchema = z.object({
   id: z.string(),
   self: z.string().url(),
   key: z.string(),
-  fields: z.object({
-    customfield_12315950: z.array(JiraContributorSchema),
-  }).passthrough(),
+  // fields uses passthrough so any custom field ID can be accessed at runtime
+  fields: z.record(z.unknown()),
 });
