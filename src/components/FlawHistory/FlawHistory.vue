@@ -11,15 +11,17 @@ import type { ZodFlawHistoryItemType } from '@/types/zodFlaw';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 
 const props = withDefaults(defineProps<{
+  disabled?: boolean;
   error?: boolean;
   history: null | undefined | ZodFlawHistoryItemType[];
 }>(), {
+  disabled: false,
   error: false,
 });
 
 const { getFieldAegisType, isFieldAegisChange } = useAegisMetadataTracking();
 
-const isLoading = computed(() => props.history === undefined || props.history === null);
+const isLoading = computed(() => !props.disabled && (props.history === undefined || props.history === null));
 
 const startDate = ref<null | string | undefined>(null);
 const endDate = ref<null | string | undefined>(null);
@@ -111,6 +113,12 @@ function clearFilters() {
           <span class="visually-hidden">Loading history...</span>
         </div>
         <span class="text-muted">Loading history...</span>
+      </div>
+    </template>
+    <template v-else-if="disabled">
+      <div class="alert alert-secondary mb-0 d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>History feature is currently disabled.</span>
       </div>
     </template>
     <template v-else-if="error">
