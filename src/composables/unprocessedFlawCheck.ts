@@ -22,7 +22,7 @@ function areRequiredFieldsEmpty(flaw: ZodFlawType): boolean {
  * Composable to detect flaws that are pending bot processing
  *
  * A flaw is considered pending bot processing if:
- * 1. It's in NEW state
+ * 1. It's in NEW/empty state
  * 2. It has a valid CVE ID assigned
  * 3. It's newer than the processing threshold (24 hours or less)
  * 4. Processed meta false
@@ -41,7 +41,8 @@ export function useUnprocessedFlawDetection() {
   }
 
   function isFlawUnprocessed(flaw: ZodFlawType): boolean {
-    return flaw.classification?.state === FlawClassificationStateEnum.New
+    return (flaw.classification?.state === FlawClassificationStateEnum.New
+      || flaw.classification?.state === FlawClassificationStateEnum.Empty)
       && !!flaw.cve_id && isCveValid(flaw.cve_id)
       && !isOlderThanThreshold(flaw.created_dt)
       && areRequiredFieldsEmpty(flaw);
