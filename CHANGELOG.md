@@ -6,6 +6,7 @@
 
 ### Fixed
 * OSIDB Bot highlighting is kept when flaw state is empty (`OSIDB-4824`)
+* Self assign owner uses always user email (`OSIDB-4852`)
 
 ## [2026.3.0]
 ### Added
