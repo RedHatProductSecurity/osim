@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, computed, ref, toValue } from 'vue';
+import { nextTick, computed, ref } from 'vue';
 
 import { useMemoize } from '@vueuse/core';
 
@@ -18,24 +18,15 @@ const props = defineProps<{
 const owner = defineModel<null | string>({ default: null });
 const userStore = useUserStore();
 
-async function selfAssign() {
-  isLoading.value = true;
-  return userStore.updateJiraUsername().then(() => {
-    if (userStore.jiraUsername !== '') {
-      owner.value = userStore.jiraUsername;
-    }
-  }).finally(() => {
-    isLoading.value = false;
-  });
-}
-
-async function handleClick(fn: (arg?: any) => any) {
-  await selfAssign();
-  nextTick(fn);
+function selfAssign(fn?: (arg?: any) => any) {
+  if (userStore.userEmail) {
+    owner.value = userStore.userEmail;
+  }
+  if (fn) nextTick(fn);
 }
 
 const isAssignedToMe = computed(() =>
-  owner.value === userStore.jiraUsername && userStore.jiraUsername !== '',
+  owner.value === userStore.userEmail && userStore.userEmail !== '',
 );
 
 const isLoading = ref(false);
@@ -60,7 +51,7 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssignableType) => {
-  owner.value = toValue(user.emailAddress ?? user.name ?? null);
+  owner.value = user.emailAddress ?? user.name ?? null;
   results.value = [];
   nextTick(fn);
 };
@@ -74,7 +65,7 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssign
           type="button"
           class="btn btn-primary osim-self-assign"
           :disabled="isLoading"
-          @click.prevent.stop="handleClick(onBlur)"
+          @click.prevent.stop="selfAssign(onBlur)"
         >
           Self Assign
         </button>
@@ -84,7 +75,7 @@ const handleSuggestionClick = (fn: (args?: any) => void, user: ZodJiraUserAssign
           type="button"
           class="btn btn-primary osim-self-assign"
           :disabled="isLoading"
-          @click.prevent.stop="handleClick(onBlur)"
+          @click.prevent.stop="selfAssign(onBlur)"
         >
           Self Assign
         </button>
