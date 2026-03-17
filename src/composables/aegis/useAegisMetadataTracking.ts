@@ -73,9 +73,9 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
   const metadata = aegisMetadata.value[fieldName];
   if (!metadata?.length) return false;
 
-  // Only show highlighting if flaw is in NEW state
+  // Only show highlighting if flaw is in NEW/empty state
   const { flaw } = useFlaw();
-  if (flaw.value.classification?.state !== 'NEW') return false;
+  if (flaw.value.classification?.state !== 'NEW' && flaw.value.classification?.state !== '') return false;
 
   // Check if any entry matches the current value with AI-Bot or AI type
   return metadata.some((entry) => {
