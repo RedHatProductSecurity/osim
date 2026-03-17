@@ -4,6 +4,9 @@
 * Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
 * Add feedback actions for OSIDB-Bot values (`OSIDB-4823`)
 
+### Fixed
+* OSIDB Bot highlighting is kept when flaw state is empty (`OSIDB-4824`)
+
 ## [2026.3.0]
 ### Added
 * Add highlighting on OSIDB Bot edited fields (`OSIDB-4790`)
