@@ -11,8 +11,8 @@ vi.mock('@/services/JiraService', () => ({
 
 vi.mock('@/stores/UserStore', () => ({
   useUserStore: vi.fn().mockReturnValue({
-    jiraUsername: 'skynet',
-    updateJiraUsername: vi.fn().mockResolvedValue({}),
+    userEmail: 'skynet@redhat.com',
+    jiraUsername: 'Skynet Display Name',
   }),
 }));
 
@@ -44,8 +44,16 @@ describe('owner field', () => {
     await subject.find('button.osim-self-assign').trigger('click');
     await subject.vm.$nextTick();
 
-    expect(subject.text()).toContain('skynet');
+    expect(subject.text()).toContain('skynet@redhat.com');
     expect(subject.html()).toMatchSnapshot();
+  });
+
+  it('self assign uses user email, not jira username', async () => {
+    await subject.find('button.osim-self-assign').trigger('click');
+    await subject.vm.$nextTick();
+
+    expect(subject.text()).toContain('skynet@redhat.com');
+    expect(subject.text()).not.toContain('Skynet Display Name');
   });
 
   it('should call "searchJiraUsers" when input changes', async () => {
