@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.3.1]
 ### Added
 * Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
 * Add feedback actions for OSIDB-Bot values (`OSIDB-4823`)
@@ -638,7 +638,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.1...HEAD
+[2026.3.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.0...v2026.3.1
 [2026.3.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.2...v2026.3.0
 [2026.1.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.1...v2026.1.2
 [2026.1.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.0...v2026.1.1
