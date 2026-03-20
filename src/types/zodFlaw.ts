@@ -8,7 +8,6 @@ import type { ValueOf } from '@/types';
 
 import {
   NistCvssValidationEnum,
-  RequiresCveDescriptionEnum,
   FlawSourceEnum,
   IssuerEnum,
   FlawReferenceType,
@@ -22,7 +21,6 @@ import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI', 'AI-Bot']);
 export type AegisChangeType = z.infer<typeof ZodAegisChangeTypeEnum>;
 
-export const RequiresDescriptionEnumWithBlank = { '': '', ...RequiresCveDescriptionEnum } as const;
 export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;
 export const MajorIncidentStateEnumWithBlank = {
   '': '',
@@ -56,7 +54,6 @@ export const flawImpactEnum = Object.fromEntries(
 );
 
 export const flawIncidentStates = Object.values(MajorIncidentStateEnumWithBlank);
-export const descriptionRequiredStates = Object.values(RequiresDescriptionEnumWithBlank);
 
 export type ZodFlawAcknowledgmentType = z.infer<typeof FlawAcknowledgmentSchema>;
 export const FlawAcknowledgmentSchema = z.object({
@@ -183,7 +180,6 @@ export const ZodFlawSchema = z.object({
     { message: 'Comment#0 cannot be empty.' },
   ),
   cve_description: z.string().nullish(),
-  requires_cve_description: z.nativeEnum(RequiresDescriptionEnumWithBlank).nullish(),
   statement: z.string().nullish(),
   cwe_id: z.string().max(255).nullish(),
   unembargo_dt: zodOsimDateTime().nullish(), // $date-time,
@@ -224,14 +220,6 @@ export const ZodFlawSchema = z.object({
       path,
     });
   };
-
-  if (
-    zodFlaw.requires_cve_description
-    && ['APPROVED', 'REQUESTED'].includes(zodFlaw.requires_cve_description)
-    && zodFlaw.cve_description === ''
-  ) {
-    raiseIssue('Description cannot be blank if requested or approved.', ['cve_description']);
-  }
 
   if (zodFlaw.classification?.state !== 'REJECTED') {
     if (zodFlaw.impact === null || typeof zodFlaw.impact === 'undefined') {

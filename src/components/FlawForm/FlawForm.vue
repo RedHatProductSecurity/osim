@@ -53,7 +53,6 @@ import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import EditableText from '@/widgets/EditableText/EditableText.vue';
 import {
   MajorIncidentStateEnumWithBlank,
-  descriptionRequiredStates,
   flawSources,
   type ZodFlawType,
 } from '@/types/zodFlaw';
@@ -503,12 +502,6 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                   :descriptionValue="flaw.cve_description"
                 />
                 Description
-              </span>
-              <span class="col-3 ps-2">
-                <select v-model="flaw.requires_cve_description" class="form-select col-3 osim-description-required">
-                  <option disabled :selected="!flaw.requires_cve_description" value="">Review Status</option>
-                  <option v-for="state in descriptionRequiredStates" :key="state" :value="state">{{ state }}</option>
-                </select>
               </span>
             </template>
           </LabelTextarea>

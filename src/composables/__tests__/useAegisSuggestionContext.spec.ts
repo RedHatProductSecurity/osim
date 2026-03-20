@@ -22,7 +22,6 @@ describe('useAegisSuggestionContext', () => {
     expect(ctx.title!.value).toBe('Sample title');
     expect(ctx.commentZero!.value).toBe('Comment Zero == Patient Zero');
     expect(ctx.cveDescription!.value).toBe('I am a spooky CVE');
-    expect(ctx.requiresCveDescription!.value).toBe('APPROVED');
     expect(ctx.statement!.value).toBe('Statement for None');
     expect(ctx.components!.value).toEqual(['kernel']);
     expect(ctx.comments!.value).toBe('');
@@ -46,7 +45,6 @@ describe('useAegisSuggestionContext', () => {
       title: 'Sample title',
       comment_zero: undefined,
       cve_description: 'I am a spooky CVE',
-      requires_cve_description: 'APPROVED',
       statement: 'Statement for None',
       components: ['kernel'],
       affects: flaw.value.affects.map(affect => omit(['tracker'], affect)),

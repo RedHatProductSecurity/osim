@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Remove description review process (`OSIDB-4472`)
+
 ## [2026.3.1]
 ### Added
 * Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
