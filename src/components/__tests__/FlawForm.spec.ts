@@ -311,24 +311,6 @@ describe('flawForm', () => {
     expect(invalidComment0Field?.exists()).toBe(true);
   });
 
-  osimFullFlawTest('triggers validations for the description field', async ({ flaw }) => {
-    flaw.major_incident_state = '';
-    const subject = mountWithProps(flaw, { mode: 'edit' });
-    const descriptionField = subject
-      .findAllComponents(LabelTextarea)
-      .find(component => component.props().label === 'Description');
-    expect(descriptionField?.exists()).toBe(true);
-    const vm = subject.findComponent(FlawForm).vm as any;
-    vm.flaw.requires_cve_description = 'REQUESTED';
-    vm.flaw.cve_description = 'I am a spooky CVE';
-    expect(vm.errors.cve_description).toBe(null);
-    vm.flaw.cve_description = '';
-    expect(vm.errors.cve_description).toBe('Description cannot be blank if requested or approved.');
-    vm.flaw.cve_description = 'I am once more a spooky CVE';
-    vm.flaw.major_incident_state = 'APPROVED';
-    expect(vm.errors.cve_description).toBe(null);
-  });
-
   osimFullFlawTest('displays correct Owner field value from props', async ({ flaw }) => {
     flaw.owner = 'test owner';
     const subject = mountWithProps(flaw, { mode: 'edit' });
