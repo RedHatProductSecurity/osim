@@ -15,7 +15,6 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
         <option data-v-b86992a8="" value="cve_description">CVE Description</option>
-        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
         <option data-v-b86992a8="" value="cve_id">CVE ID</option>
         <option data-v-b86992a8="" value="source">CVE Source</option>
         <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
@@ -42,7 +41,6 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
-        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
         <option data-v-b86992a8="" value="cve_id">CVE ID</option>
         <option data-v-b86992a8="" value="source">CVE Source</option>
         <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
@@ -117,7 +115,6 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
         <option data-v-b86992a8="" value="cve_description">CVE Description</option>
-        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
         <option data-v-b86992a8="" value="cve_id">CVE ID</option>
         <option data-v-b86992a8="" value="source">CVE Source</option>
         <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
@@ -192,7 +189,6 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
         <option data-v-b86992a8="" value="cve_description">CVE Description</option>
-        <option data-v-b86992a8="" value="requires_cve_description">CVE Description Review</option>
         <option data-v-b86992a8="" value="cve_id">CVE ID</option>
         <option data-v-b86992a8="" value="source">CVE Source</option>
         <option data-v-b86992a8="" value="cvss_scores__score">CVSS Score</option>
