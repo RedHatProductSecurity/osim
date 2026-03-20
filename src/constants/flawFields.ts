@@ -37,7 +37,6 @@ const includedFields = [
   'references',
   'acknowledgments',
   'embargoed',
-  'requires_cve_description',
   'cve_description',
   'mitigation',
   'statement',
@@ -64,7 +63,6 @@ export const flawFieldNamesMapping: Record<string, string> = {
   cve_description: 'Description',
   major_incident_state: 'Incident State',
   major_incident_start_dt: 'Incident Start Date',
-  requires_cve_description: 'Requires CVE Description',
 };
 
 export const allowedEmptyFieldMapping: Record<string, string> = {

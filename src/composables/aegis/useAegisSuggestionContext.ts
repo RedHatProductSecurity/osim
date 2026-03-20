@@ -37,7 +37,6 @@ export type AegisSuggestionContextRefs = {
   embargoed?: DeepNullableRef<boolean>;
   impact?: DeepNullableRef<ImpactEnumWithBlankType>;
   references?: DeepNullableRef<ZodFlawReferenceType[]>;
-  requiresCveDescription?: DeepNullableRef<string | undefined>;
   statement?: DeepNullableRef<string | undefined>;
   title?: DeepNullableRef<string>;
 };
@@ -48,7 +47,6 @@ export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggest
     title: computed(() => flaw.value.title),
     commentZero: computed(() => flaw.value.comment_zero),
     cveDescription: computed(() => flaw.value.cve_description),
-    requiresCveDescription: computed(() => flaw.value.requires_cve_description),
     statement: computed(() => flaw.value.statement),
     components: computed(() => flaw.value.components),
     comments: computed(() => serializePublicComments(flaw.value.comments)),
@@ -66,7 +64,6 @@ export function serializeAegisContext(ctx: AegisSuggestionContextRefs) {
     title: ctx.title?.value ?? undefined,
     comment_zero: ctx.commentZero?.value ?? undefined,
     cve_description: ctx.cveDescription?.value ?? undefined,
-    requires_cve_description: ctx.requiresCveDescription?.value ?? undefined,
     statement: ctx.statement?.value ?? undefined,
     components: ctx.components?.value ?? undefined,
     comments: ctx.comments?.value ?? undefined,

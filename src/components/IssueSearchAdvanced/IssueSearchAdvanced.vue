@@ -10,7 +10,7 @@ import { useModal } from '@/composables/useModal';
 import { useSearchParams } from '@/composables/useSearchParams';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import { flawImpacts, flawSources, flawIncidentStates, descriptionRequiredStates } from '@/types/zodFlaw';
+import { flawImpacts, flawSources, flawIncidentStates } from '@/types/zodFlaw';
 import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
 import { useSearchStore } from '@/stores/SearchStore';
@@ -116,7 +116,6 @@ const optionsFor = (field: string) =>
   ({
     source: flawSources,
     impact: flawImpacts,
-    requires_cve_description: descriptionRequiredStates,
     embargoed: ['true', 'false'],
     workflow_state: [
       'DONE',
