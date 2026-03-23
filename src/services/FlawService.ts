@@ -29,7 +29,6 @@ const FLAW_LIST_FIELDS = [
   'cve_id',
   'uuid',
   'impact',
-  'source',
   'created_dt',
   'updated_dt',
   'classification',
@@ -39,12 +38,6 @@ const FLAW_LIST_FIELDS = [
   'owner',
   'labels',
   'aegis_meta',
-  'affects',
-  'cve_description',
-  'statement',
-  'mitigation',
-  'cwe_id',
-  'cvss_scores',
 ];
 
 export async function getFlaws(offset = 0, limit = 20, args = {}) {
