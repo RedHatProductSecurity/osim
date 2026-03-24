@@ -1,6 +1,15 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { ref } from 'vue';
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+import { useFlaw } from '@/composables/useFlaw';
 
 import { useAegisMetadataTracking } from '../useAegisMetadataTracking';
+
+// Mock useFlaw
+vi.mock('@/composables/useFlaw', () => ({
+  useFlaw: vi.fn(),
+}));
 
 describe('useAegisMetadataTracking', () => {
   let tracking: ReturnType<typeof useAegisMetadataTracking>;
@@ -124,6 +133,74 @@ describe('useAegisMetadataTracking', () => {
 
       expect(tracking.hasAegisChanges()).toBe(false);
       expect(tracking.getAegisMetadata()).toEqual({});
+    });
+  });
+
+  describe('isFieldValueAIBot', () => {
+    beforeEach(() => {
+      // Mock useFlaw to return a flaw in NEW state
+      vi.mocked(useFlaw).mockReturnValue({
+        flaw: ref({
+          classification: { state: 'NEW' },
+        }),
+      } as any);
+    });
+
+    it('should return false when most recent matching entry is AI type (not AI-Bot)', () => {
+      // Set up metadata where AI-Bot entry exists but AI entry is more recent
+      tracking.setAegisMetadata({
+        cwe_id: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2026-03-26T10:10:09.483331+00:00',
+            value: 'CWE-639',
+          },
+          {
+            type: 'AI',
+            timestamp: '2026-03-26T10:53:57.174Z',
+            value: 'CWE-639',
+          },
+        ],
+      });
+
+      const result = tracking.isFieldValueAIBot('cwe_id', 'CWE-639');
+      expect(result).toBe(false);
+    });
+
+    it('should return true when most recent matching entry is AI-Bot type', () => {
+      // Set up metadata where AI-Bot entry is the most recent
+      tracking.setAegisMetadata({
+        cwe_id: [
+          {
+            type: 'AI',
+            timestamp: '2026-03-26T10:10:09.483331+00:00',
+            value: 'CWE-639',
+          },
+          {
+            type: 'AI-Bot',
+            timestamp: '2026-03-26T10:53:57.174Z',
+            value: 'CWE-639',
+          },
+        ],
+      });
+
+      const result = tracking.isFieldValueAIBot('cwe_id', 'CWE-639');
+      expect(result).toBe(true);
+    });
+
+    it('should return false when no matching entries exist', () => {
+      tracking.setAegisMetadata({
+        cwe_id: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2026-03-26T10:10:09.483331+00:00',
+            value: 'CWE-123',
+          },
+        ],
+      });
+
+      const result = tracking.isFieldValueAIBot('cwe_id', 'CWE-639');
+      expect(result).toBe(false);
     });
   });
 });
