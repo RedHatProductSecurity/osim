@@ -77,10 +77,8 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
   const { flaw } = useFlaw();
   if (flaw.value.classification?.state !== 'NEW' && flaw.value.classification?.state !== '') return false;
 
-  // Check if any entry matches the current value with AI-Bot or AI type
-  return metadata.some((entry) => {
-    if (entry.type !== 'AI-Bot' && entry.type !== 'AI') return false;
-
+  // Check if the most recent entry that matches the current value is AI-Bot type
+  const matchingEntries = metadata.filter((entry) => {
     // For array fields, compare arrays directly
     if (Array.isArray(currentValue) && Array.isArray(entry.value)) {
       return JSON.stringify(currentValue) === JSON.stringify(entry.value);
@@ -89,6 +87,12 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
     // For string fields, compare strings directly
     return entry.value === currentValue;
   });
+
+  if (matchingEntries.length === 0) return false;
+
+  // Get the most recent matching entry and check if it's AI-Bot type
+  const mostRecentEntry = matchingEntries.pop();
+  return mostRecentEntry?.type === 'AI-Bot';
 }
 
 function hasAIBotProcessing(aegisMetadata: AegisMetadata): boolean {
