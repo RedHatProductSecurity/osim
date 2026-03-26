@@ -57,8 +57,8 @@ describe('flawForm helper functions', () => {
       expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
     });
 
-    it('should return true when field has AI type metadata', () => {
-      // Set up metadata with AI type (should now be treated same as AI-Bot)
+    it('should return false when field has AI type metadata (only AI-Bot should highlight)', () => {
+      // Set up metadata with AI type - should NOT trigger highlighting
       setAegisMetadata({
         components: [
           {
@@ -72,7 +72,7 @@ describe('flawForm helper functions', () => {
       const currentValue = ['kernel', 'openssl'];
       const serializedValue = JSON.stringify(currentValue);
 
-      expect(isFieldValueAIBot('components', serializedValue)).toBe(true);
+      expect(isFieldValueAIBot('components', serializedValue)).toBe(false);
     });
 
     it('should return true when multiple metadata entries exist and one AI-Bot entry matches', () => {

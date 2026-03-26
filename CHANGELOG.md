@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Fix incorrect flaw field highlighting for normal suggestions (`OSIDB-4862`)
+
 ## [2026.3.2]
 ### Changed
 * Remove description review process (`OSIDB-4472`)
