@@ -97,6 +97,7 @@ export type AegisAIHTTPValidationErrorType = {
 
 // AI Change Tracking Types
 export type AegisChangeEntry = {
+  explanation?: string;
   timestamp: string;
   type: AegisChangeType;
   value?: string | string[];
