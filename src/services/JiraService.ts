@@ -7,6 +7,7 @@ import {
   osimRuntime,
 } from '@/stores/osimRuntime';
 import type { ZodJiraUserAssignableType, ZodJiraIssueType } from '@/types/zodJira';
+import { jiraMarkupToAdf } from '@/utils/jiraAdf';
 
 type JiraFetchCallbacks = {
   beforeFetch?: (options: JiraFetchOptions) => Promise<void> | void;
@@ -91,6 +92,7 @@ export async function getJiraComments(taskId: string) {
   return jiraFetch({
     method: 'get',
     url: `/rest/api/3/issue/${taskId}/comment`,
+    params: { expand: 'renderedBody' },
   });
 }
 
@@ -146,7 +148,7 @@ export async function postJiraComment(taskId: string, comment: string) {
     method: 'post',
     url: `/rest/api/3/issue/${taskId}/comment`,
     data: {
-      body: comment,
+      body: jiraMarkupToAdf(comment),
     },
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Internal comment saved' }))

@@ -65,9 +65,24 @@ async function parseJiraTags(text: string): Promise<string> {
 
 watch(() => props.commentList, async (comments) => {
   isParsingComments.value = true;
-  parsedComments.value = await Promise.all(
-    comments.map(c => parseJiraTags(linkify(sanitizeHtml(c.text ?? '')))),
+
+  // Pre-resolve display names for internal comment authors (accountId → displayName)
+  await Promise.all(
+    comments
+      .filter(c => c.type === CommentType.Internal && c.creator)
+      .map(c => resolveAccountId(c.creator!)),
   );
+
+  parsedComments.value = await Promise.all(
+    comments.map(async (c) => {
+      if (c.type === CommentType.Internal) {
+        // renderedBody is pre-rendered HTML from Jira — only sanitize, skip wiki parsing
+        return sanitizeHtml(c.text ?? '');
+      }
+      return parseJiraTags(linkify(sanitizeHtml(c.text ?? '')));
+    }),
+  );
+
   isParsingComments.value = false;
 }, { immediate: true });
 
@@ -100,7 +115,7 @@ function getCommentTooltip(type: CommentType | undefined) {
           :href="jiraUserUrl(comment.creator || '')"
           target="_blank"
         >
-          {{ comment.creator }}
+          {{ comment.creator ? (userDisplayNameCache[comment.creator] ?? comment.creator) : '' }}
         </a>
         <span v-else>{{ comment.creator }}</span>
         - {{ DateTime.fromISO(comment.created_dt ?? '',{ setZone: true })
