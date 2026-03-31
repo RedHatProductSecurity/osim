@@ -45,26 +45,6 @@ describe('commentList', () => {
     expect(commentText.text()).toContain('pkg:oci/dotnet-80');
   });
 
-  it('should parse valid Jira link syntax [text|url]', async () => {
-    const comments: ZodFlawCommentType[] = [
-      createTestComment(
-        'Check this link: [Example Docs|https://example.com/docs/policy]',
-      ),
-    ];
-
-    const wrapper = mountWithConfig(CommentList, {
-      props: {
-        commentList: comments,
-      },
-    });
-    await flushPromises();
-
-    const commentText = wrapper.find('.osim-flaw-comment');
-    // Should contain an anchor tag with the proper URL
-    expect(commentText.html())
-      .toContain('<a target="_blank" href="https://example.com/docs/policy">');
-  });
-
   it('should parse bugzilla bug references', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment('See [bug 12345] for details'),
@@ -80,23 +60,6 @@ describe('commentList', () => {
     const commentText = wrapper.find('.osim-flaw-comment');
     expect(commentText.html()).toContain('[bug 12345]</a>');
     expect(commentText.html()).toContain('show_bug.cgi?id=12345');
-  });
-
-  it('should parse Jira user tags', async () => {
-    const comments: ZodFlawCommentType[] = [
-      createTestComment('Hey [~someuser] can you check this?'),
-    ];
-
-    const wrapper = mountWithConfig(CommentList, {
-      props: {
-        commentList: comments,
-      },
-    });
-    await flushPromises();
-
-    const commentText = wrapper.find('.osim-flaw-comment');
-    expect(commentText.html()).toContain('ViewProfile.jspa?name=someuser');
-    expect(commentText.html()).toContain('>someuser</a>');
   });
 
   it('should handle text with multiple grep-style pipes without creating links', async () => {
@@ -124,8 +87,7 @@ rhel-8.10.z    pkg:oci/dotnet-90?repository_url=registry.example.com/rhel8/dotne
   it('should handle mixed content with valid and invalid link patterns', async () => {
     const comments: ZodFlawCommentType[] = [
       createTestComment(
-        'See [bug 123] and [Example Site|https://example.com] but not this: '
-        + 'rhel-8.10.z pkg:oci/test (version, nuget)',
+        'See [bug 123] but not this: rhel-8.10.z pkg:oci/test (version, nuget)',
       ),
     ];
 
@@ -137,10 +99,9 @@ rhel-8.10.z    pkg:oci/dotnet-90?repository_url=registry.example.com/rhel8/dotne
     await flushPromises();
 
     const commentText = wrapper.find('.osim-flaw-comment');
-    // Should have exactly 2 links: bug ref and valid Jira link
+    // Should have exactly 1 link: bugzilla bug reference only
     const anchorCount = (commentText.html().match(/<a /g) || []).length;
-    expect(anchorCount).toBe(2);
+    expect(anchorCount).toBe(1);
     expect(commentText.html()).toContain('show_bug.cgi?id=123');
-    expect(commentText.html()).toContain('href="https://example.com"');
   });
 });

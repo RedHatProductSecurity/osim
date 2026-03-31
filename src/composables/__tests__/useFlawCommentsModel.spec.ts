@@ -68,7 +68,7 @@ describe('useFlawCommentsModel', () => {
   it('should load internal comments when task_key is present', async () => {
     vi.mocked(getJiraComments, { partial: true }).mockResolvedValue({
       response: { ok: true } as Response,
-      data: { comments: [{ author: { name: 'author' }, created: 'date', body: 'body' }] },
+      data: { comments: [{ author: { accountId: 'author' }, created: 'date', renderedBody: 'body' }] },
     });
     const {
       internalComments,
