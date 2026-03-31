@@ -90,23 +90,22 @@ async function jiraFetch<T = any>(config: JiraFetchOptions, factoryOptions?: Jir
 export async function getJiraComments(taskId: string) {
   return jiraFetch({
     method: 'get',
-    url: `/rest/api/2/issue/${taskId}/comment`,
+    url: `/rest/api/3/issue/${taskId}/comment`,
   });
 }
 
 export async function getJiraUser(accountId: string) {
   return jiraFetch<{ accountId: string; displayName: string }>({
     method: 'get',
-    url: '/rest/api/2/user',
+    url: '/rest/api/3/user',
     params: { accountId },
   }).then(res => res.data).catch(() => null);
 }
 
 export async function searchJiraUsers(query: string, issueKey: string) {
-  // Jira Cloud uses /rest/api/2/user/assignable/search, on-premise uses /rest/internal/2/users/assignee
   return jiraFetch<ZodJiraUserAssignableType[]>({
     method: 'get',
-    url: '/rest/api/2/user/assignable/search',
+    url: '/rest/api/3/user/assignable/search',
     params: { issueKey, query },
   });
 }
@@ -114,7 +113,7 @@ export async function searchJiraUsers(query: string, issueKey: string) {
 export async function getJiraIssue(taskId: string) {
   return jiraFetch<ZodJiraIssueType>({
     method: 'get',
-    url: `/rest/api/2/issue/${taskId}`,
+    url: `/rest/api/3/issue/${taskId}`,
   });
 }
 
@@ -137,7 +136,7 @@ export async function putJiraIssue<T extends object | undefined,
   U extends putIssueUpdate | undefined>(taskId: string, opts: putIssueOptions<T, U>) {
   return jiraFetch({
     method: 'put',
-    url: `/rest/api/2/issue/${taskId}`,
+    url: `/rest/api/3/issue/${taskId}`,
     ...opts,
   });
 }
@@ -145,7 +144,7 @@ export async function putJiraIssue<T extends object | undefined,
 export async function postJiraComment(taskId: string, comment: string) {
   return jiraFetch({
     method: 'post',
-    url: `/rest/api/2/issue/${taskId}/comment`,
+    url: `/rest/api/3/issue/${taskId}/comment`,
     data: {
       body: comment,
     },
@@ -158,7 +157,7 @@ export async function postJiraComment(taskId: string, comment: string) {
 export async function getJiraUsername() {
   return jiraFetch({
     method: 'get',
-    url: '/rest/api/2/myself',
+    url: '/rest/api/3/myself',
   }).then((res) => {
     if (res.response.ok) {
       return res.data.displayName || res.data.name || res.data.accountId || res.data.emailAddress;
