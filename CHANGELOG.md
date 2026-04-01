@@ -1,5 +1,8 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.4.0]
+### Added
+* Add explanation tooltips to Aegis Bot values (`OSIDB-4841`)
+
 ### Fixed
 * Fix incorrect flaw field highlighting for normal suggestions (`OSIDB-4862`)
 
@@ -646,7 +649,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.0...HEAD
+[2026.4.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.2...v2026.4.0
 [2026.3.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.1...v2026.3.2
 [2026.3.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.0...v2026.3.1
 [2026.3.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.1.2...v2026.3.0
