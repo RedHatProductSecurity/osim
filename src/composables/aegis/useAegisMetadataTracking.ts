@@ -104,7 +104,7 @@ function getAIBotTooltip(fieldName: string): string {
   // we know the current value matches the latest AI-Bot entry
   const explanation = metadata.findLast(entry => entry.type === 'AI-Bot')?.explanation;
 
-  return explanation ? `${baseText}\n\n${explanation}` : baseText;
+  return explanation ? `${baseText}<br><br>${explanation}` : baseText;
 }
 
 function hasAIBotProcessing(aegisMetadata: AegisMetadata): boolean {
