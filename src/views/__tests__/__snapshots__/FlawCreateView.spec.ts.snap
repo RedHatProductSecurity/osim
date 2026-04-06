@@ -33,7 +33,7 @@ exports[`flawCreateView > should render 1`] = `
               </div>
             </div>
           </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
-            <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3"><div data-v-76e7a15d="" class="d-flex align-items-center flex-nowrap" style="min-width: max-content;"><!--v-if--><!-- Feedback buttons for Aegis-AI-Bot highlighted components --><!--v-if--><span data-v-76e7a15d="" style="font-size: 0.95em;">Source Component</span></div></span>
+            <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3"><div data-v-76e7a15d="" class="d-flex align-items-center flex-wrap justify-content-end"><!--v-if--><!-- Info icon for AI-Bot tooltip --><!--v-if--><!-- Feedback buttons for Aegis-AI-Bot highlighted components --><!--v-if--><span data-v-76e7a15d="" style="font-size: 0.95em; white-space: nowrap;">Source Component</span></div></span>
             <div data-v-76f6bf34="" class="col-9">
               <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control is-invalid">
                 <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
@@ -352,23 +352,22 @@ exports[`flawCreateView > should render 1`] = `
           </div>
         </label></div>
       <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-          <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--><!--v-if--> Description </span><!--    @focus="resizeTextarea"-->
-            <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
-            <!--v-if-->
-          </div>
-        </label></div>
-      <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-          <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><!--v-if--><!--v-if--> Statement </span><!--    @focus="resizeTextarea"-->
-            <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
-            <!--v-if-->
-          </div>
-        </label></div>
-      <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-          <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-055401b4="" class="form-label col-3 position-relative"><!--v-if--> Mitigation <!--attrs: {{ $attrs }}--></span><!--    @focus="resizeTextarea"-->
-            <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Mitigation Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
-            <!--v-if-->
-          </div>
-        </label></div>
+          <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><div data-v-76e7a15d="" class="d-flex align-items-center"><!--v-if--><!--v-if--><!--v-if--><span data-v-76e7a15d="">Description</span></div></span><!--    @focus="resizeTextarea"-->
+          <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
+          <!--v-if-->
+      </div></label>
+    </div>
+    <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
+        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><div data-v-76e7a15d="" class="d-flex align-items-center"><!--v-if--><!--v-if--><span data-v-76e7a15d="">Statement</span></div></span><!--    @focus="resizeTextarea"-->
+        <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Statement Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
+        <!--v-if-->
+    </div></label></div>
+    <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
+        <div data-v-055401b4="" class="row px-0 mx-0"><span class="form-label col-3 position-relative d-flex align-items-center"><!--v-if--><!--v-if--><span>Mitigation</span></span><!--    @focus="resizeTextarea"-->
+          <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Mitigation Text ..." class="form-control col-9 d-inline-block" rows="5" value=""></textarea>
+          <!--v-if-->
+        </div>
+      </label></div>
     </div>
     <div data-v-76e7a15d="" class="row osim-flaw-form-section border-top border-bottom">
       <div data-v-58ccaadf="" data-v-76e7a15d="" class="col-6">
