@@ -29,19 +29,20 @@ function handleImpactChange(value: null | string | undefined) {
   modelValue.value = value as ImpactEnumWithBlankType | null | undefined;
 }
 
+const postTriageStates: FlawClassificationStateEnum[] = [
+  FlawClassificationStateEnum.Rejected,
+  FlawClassificationStateEnum.PreSecondaryAssessment,
+  FlawClassificationStateEnum.SecondaryAssessment,
+  FlawClassificationStateEnum.Done,
+];
+
 const shouldShowImpactNudge = computed(() => {
-  const postTriageStates: FlawClassificationStateEnum[] = [
-    FlawClassificationStateEnum.Rejected,
-    FlawClassificationStateEnum.PreSecondaryAssessment,
-    FlawClassificationStateEnum.SecondaryAssessment,
-    FlawClassificationStateEnum.Done,
-  ];
   const hasBeenTriaged = props.workflowState && postTriageStates.includes(props.workflowState);
   const didImpactChange = modelValue.value !== props.initialImpact;
   return hasBeenTriaged && didImpactChange;
 });
 
-const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { isFieldValueAIBot } = useAegisMetadataTracking();
 </script>
 
 <template>
@@ -57,7 +58,6 @@ const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
       <i
         v-if="isFieldValueAIBot('impact', modelValue)"
         class="bi bi-robot text-primary me-1"
-        :title="getAIBotTooltip('impact')"
       ></i>
       <AegisImpactActions
         v-if="osimRuntime.flags?.aiImpactSuggestions || isFieldValueAIBot('impact', modelValue)"

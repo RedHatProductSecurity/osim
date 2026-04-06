@@ -36,4 +36,21 @@ const modelValue = defineModel<string[]>({ required: true });
 .osim-input {
   display: block;
 }
+
+/* Ensure the row stretches to accommodate wrapped label content */
+.row {
+  align-items: stretch;
+}
+
+/* Make TagsInput stretch to match label height */
+.col-9 {
+  display: flex;
+  align-items: stretch;
+}
+
+.col-9 :deep(.osim-pill-list) {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+}
 </style>

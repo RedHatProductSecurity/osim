@@ -14,7 +14,7 @@ defineProps<{
 
 const modelValue = defineModel<null | string | undefined>();
 
-const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { isFieldValueAIBot } = useAegisMetadataTracking();
 </script>
 
 <template>
@@ -24,9 +24,9 @@ const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
     placeholder="Mitigation Text ..."
     :error="error"
   >
-    <template v-if="osimRuntime.flags?.aiMitigationSuggestions" #label>
+    <template #label>
       <span
-        class="form-label col-3 position-relative"
+        class="form-label col-3 position-relative d-flex align-items-center"
         :class="{
           'border-start border-primary border-3 bg-primary bg-opacity-10 ps-2':
             isFieldValueAIBot('mitigation', modelValue)
@@ -35,11 +35,13 @@ const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
         <i
           v-if="isFieldValueAIBot('mitigation', modelValue)"
           class="bi bi-robot text-primary me-1"
-          :title="getAIBotTooltip('mitigation')"
-        >
-        </i>
-        <AegisMitigationActions v-model="modelValue" :aegisContext="aegisContext" />
-        <span class="ms-2">Mitigation</span>
+        ></i>
+        <AegisMitigationActions
+          v-if="osimRuntime.flags?.aiMitigationSuggestions"
+          v-model="modelValue"
+          :aegisContext="aegisContext"
+        />
+        <span>Mitigation</span>
       </span>
     </template>
   </LabelTextarea>
