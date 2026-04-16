@@ -156,6 +156,16 @@ export type ZodFlawLabelType = NonNullable<ZodFlawType['labels']>[number];
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
 export type FlawSchemaType = typeof ZodFlawSchema;
 
+export const ZodFlawOwnerSchema = z.preprocess(
+  v => typeof v === 'string' ? v.trim() || '' : v,
+  z.union([
+    z.null(),
+    z.undefined(),
+    z.literal(''),
+    z.string().max(60, 'Owner cannot exceed 60 characters.').email('Owner must be a valid email address.'),
+  ]),
+);
+
 export const ZodFlawSchema = z.object({
   uuid: z.string().default(''),
   cve_id: z.string().nullable().refine(
@@ -170,7 +180,7 @@ export const ZodFlawSchema = z.object({
   impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
   components: z.array(z.string().min(1).max(100)),
   title: z.string().min(4),
-  owner: z.string().nullish(),
+  owner: ZodFlawOwnerSchema,
   history: z.array(z.any()).nullish(),
   team_id: z.string().nullish(),
   trackers: z.array(z.string()).nullish(), // read-only

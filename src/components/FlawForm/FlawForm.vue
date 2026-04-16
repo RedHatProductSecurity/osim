@@ -451,7 +451,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
             @updateFlaw="updateFlaw"
             @update:model-value="onUnembargoed"
           />
-          <FlawFormOwner v-model="flaw.owner" :taskKey="flaw.task_key" />
+          <FlawFormOwner v-model="flaw.owner" :taskKey="flaw.task_key" :error="errors.owner" />
           <LabelStatic
             v-if="mode === 'edit'"
             :modelValue="createdDate"
