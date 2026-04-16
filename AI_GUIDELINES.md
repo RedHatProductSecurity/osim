@@ -57,3 +57,18 @@ This application handles security advisories and vulnerability data.
 - Only run validation when explicitly asked
 - Search existing implementations before generating new ones
 - Follow established patterns in composables and services
+
+## Local Cursor Config (`.cursor/`)
+
+A richer local-only Cursor config lives at `.cursor/` (excluded from git via `.git/info/exclude` — persists across all branches).
+
+**Rules** (auto-applied by file type):
+- `rules/vue-typescript.mdc` — Vue 3 composition, Zod, security patterns (`*.vue`, `*.ts`)
+- `rules/git-workflow.mdc` — gitmoji commits, branch naming (always)
+
+**Agents** (invoke by description or `@name`):
+- `code-reviewer` — structured Vue/TS diff review, no auto-validation
+- `feature-scaffolder` — generates component + composable + service + Zod type from description
+- `pr-description` — concise PR summary from `git diff main...HEAD`
+
+See `.cursor/README.md` for usage examples and the full SDLC workflow.
