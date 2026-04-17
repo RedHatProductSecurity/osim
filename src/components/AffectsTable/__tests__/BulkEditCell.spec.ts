@@ -2,7 +2,8 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import type { Column } from '@tanstack/vue-table';
 
-import type { ZodAffectType } from '@/types';
+import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
+import { IssuerEnum } from '@/generated-client';
 
 import BulkEditCell from '../BulkEditCell.vue';
 
@@ -100,14 +101,13 @@ describe('bulkEditCell', () => {
       // Initially shows score
       expect(wrapper.text()).toContain('0');
 
-      // Click to open calculator
-      const scoreDiv = wrapper.findAll('div').find(div => div.text().includes('0'));
-      if (scoreDiv) {
-        await scoreDiv.trigger('click');
+      // Click to open calculator - find the div with form-control class that contains the score
+      const scoreDiv = wrapper.find('div.form-control');
+      expect(scoreDiv.exists()).toBe(true);
+      await scoreDiv.trigger('click');
 
-        const calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
-        expect(calculator.exists()).toBe(true);
-      }
+      const calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
+      expect(calculator.exists()).toBe(true);
     });
   });
 
@@ -214,21 +214,20 @@ describe('bulkEditCell', () => {
         },
       });
 
-      // Open calculator by clicking on score div
-      const scoreDiv = wrapper.findAll('div').find(div => div.text().includes('0'));
-      if (scoreDiv) {
-        await scoreDiv.trigger('click');
-        let calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
-        expect(calculator.exists()).toBe(true);
+      // Open calculator by clicking on score div - find the div with form-control class
+      const scoreDiv = wrapper.find('div.form-control');
+      expect(scoreDiv.exists()).toBe(true);
+      await scoreDiv.trigger('click');
+      let calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
+      expect(calculator.exists()).toBe(true);
 
-        // Trigger blur by emitting the event
-        await calculator.vm.$emit('blur');
-        await wrapper.vm.$nextTick();
+      // Trigger blur by emitting the event
+      await calculator.vm.$emit('blur');
+      await wrapper.vm.$nextTick();
 
-        // Calculator should be closed
-        calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
-        expect(calculator.exists()).toBe(false);
-      }
+      // Calculator should be closed
+      calculator = wrapper.findComponent({ name: 'CvssCalculatorBase' });
+      expect(calculator.exists()).toBe(false);
     });
   });
 
@@ -267,6 +266,158 @@ describe('bulkEditCell', () => {
 
       // CVSS score should be 0 for empty array
       expect(wrapper.text()).toContain('0');
+    });
+  });
+
+  describe('clear button', () => {
+    it('should show clear button for clearable text input field', async () => {
+      const column = createMockColumn({ bulkEditable: true, clearable: true });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'some value',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      expect(clearButton.exists()).toBe(true);
+      expect(clearButton.text()).toBe('×');
+    });
+
+    it('should show clear button for clearable select field', async () => {
+      const column = createMockColumn({
+        bulkEditable: true,
+        clearable: true,
+        enum: { value1: 'Value 1', value2: 'Value 2' },
+      });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'value1',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      expect(clearButton.exists()).toBe(true);
+      expect(clearButton.text()).toBe('×');
+    });
+
+    it('should not show clear button for non-clearable field', async () => {
+      const column = createMockColumn({ bulkEditable: true, clearable: false });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'some value',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      expect(clearButton.exists()).toBe(false);
+    });
+
+    it('should show clear button when clearable is undefined (defaults to true)', async () => {
+      const column = createMockColumn({ bulkEditable: true });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'some value',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      expect(clearButton.exists()).toBe(true);
+    });
+
+    it('should clear text input when clear button is clicked', async () => {
+      const column = createMockColumn({ bulkEditable: true, clearable: true });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'some value',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      await clearButton.trigger('click');
+
+      const emittedUpdate = wrapper.emitted('update:modelValue');
+      expect(emittedUpdate).toBeDefined();
+      expect(emittedUpdate![emittedUpdate!.length - 1]).toEqual(['']);
+
+      const emittedFieldChanged = wrapper.emitted('fieldChanged');
+      expect(emittedFieldChanged).toBeDefined();
+      expect(emittedFieldChanged![emittedFieldChanged!.length - 1]).toEqual(['test_column', '']);
+    });
+
+    it('should clear select when clear button is clicked', async () => {
+      const column = createMockColumn({
+        bulkEditable: true,
+        clearable: true,
+        enum: { value1: 'Value 1', value2: 'Value 2' },
+      });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'value1',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      await clearButton.trigger('click');
+
+      const emittedUpdate = wrapper.emitted('update:modelValue');
+      expect(emittedUpdate).toBeDefined();
+      expect(emittedUpdate![emittedUpdate!.length - 1]).toEqual(['']);
+    });
+
+    it('should clear CVSS field when clear button is clicked', async () => {
+      const column = createMockColumn({
+        bulkEditable: true,
+        clearable: true,
+        cvss: true,
+      });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: [{
+            issuer: IssuerEnum.Rh,
+            vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+            score: 9.8,
+          }] as ZodAffectCVSSType[],
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      await clearButton.trigger('click');
+
+      const emittedUpdate = wrapper.emitted('update:modelValue');
+      expect(emittedUpdate).toBeDefined();
+      expect(emittedUpdate![emittedUpdate!.length - 1]).toEqual([[]]);
+    });
+
+    it('should emit applyBulkEdit when clear button is clicked', async () => {
+      const column = createMockColumn({ bulkEditable: true, clearable: true });
+      const wrapper = mount(BulkEditCell, {
+        props: {
+          column,
+          modelValue: 'some value',
+          virtualRow: createMockVirtualRow(),
+        },
+      });
+
+      const clearButton = wrapper.find('button.btn-secondary');
+      await clearButton.trigger('click');
+
+      const emitted = wrapper.emitted('applyBulkEdit');
+      expect(emitted).toBeDefined();
+      expect(emitted!.length).toBe(1);
     });
   });
 });

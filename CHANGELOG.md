@@ -14,6 +14,7 @@
 ### Added
 * Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
 * Add feedback actions for OSIDB-Bot values (`OSIDB-4823`)
+* Support affect field bulk clearing (`OSIDB-4839`)
 
 ### Fixed
 * OSIDB Bot highlighting is kept when flaw state is empty (`OSIDB-4824`)
