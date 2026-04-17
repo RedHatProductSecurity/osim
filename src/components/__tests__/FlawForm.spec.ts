@@ -312,12 +312,12 @@ describe('flawForm', () => {
   });
 
   osimFullFlawTest('displays correct Owner field value from props', async ({ flaw }) => {
-    flaw.owner = 'test owner';
+    flaw.owner = 'test.owner@example.com';
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const assigneeField = subject.findComponent(FlawFormOwner);
     expect(assigneeField?.find('span.form-label').text()).toBe('Owner');
-    expect(assigneeField?.props().modelValue).toBe('test owner');
-    expect(assigneeField?.html()).toContain('test owner');
+    expect(assigneeField?.props().modelValue).toBe('test.owner@example.com');
+    expect(assigneeField?.html()).toContain('test.owner@example.com');
   });
 
   osimFullFlawTest('displays correct State field value from props', async ({ flaw }) => {

@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Added email validation on Flaw Owner field (`OSIDB-4846`)
+
 ## [2026.4.0]
 ### Added
 * Add explanation tooltips to Aegis Bot values (`OSIDB-4841`)
