@@ -27,13 +27,13 @@ describe('useJiraContributors', () => {
       accountId: 'account-id-1',
       displayName: 'Alvaro Tinoco',
       emailAddress: 'atinoco@example.com',
-      self: 'https://redhat.atlassian.net/rest/api/2/user?accountId=account-id-1',
+      self: 'https://redhat.atlassian.net/rest/api/3/user?accountId=account-id-1',
     },
     {
       accountId: 'account-id-2',
       displayName: 'John Doe',
       emailAddress: 'jdoe@example.com',
-      self: 'https://redhat.atlassian.net/rest/api/2/user?accountId=account-id-2',
+      self: 'https://redhat.atlassian.net/rest/api/3/user?accountId=account-id-2',
     },
   ];
 

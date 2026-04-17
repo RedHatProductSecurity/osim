@@ -23,15 +23,7 @@ const isParsingComments = ref(false);
 function linkify(text: string) {
   const bugzillaLink = `${osimRuntime.value.backends.bugzilla}/show_bug.cgi?id=`;
   const bugzillaRegex = /\[bug (\d+)\]/g;
-  // On-premise format: [display text|https://url]
-  const jiraLinkRegex = /\[([^|\]]+)\|(https?:\/\/[^\]]+)\]/g;
-  // Jira Cloud smart link format: [https://url|smart-link]
-  const jiraSmartLinkRegex = /\[(https?:\/\/[^\]|]+)\|smart-link\]/g;
-
-  return text
-    .replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`)
-    .replace(jiraSmartLinkRegex, '<a target="_blank" href="$1">$1</a>')
-    .replace(jiraLinkRegex, '<a target="_blank" href="$2">$1</a>');
+  return text.replace(bugzillaRegex, `<a target="_blank" href="${bugzillaLink}$1">[bug $1]</a>`);
 }
 
 async function resolveAccountId(accountId: string): Promise<string> {
@@ -44,30 +36,24 @@ async function resolveAccountId(accountId: string): Promise<string> {
   return displayName;
 }
 
-async function parseJiraTags(text: string): Promise<string> {
-  const jiraTagRegex = /\[~([^[\]]+)\]/g;
-  const matches = [...text.matchAll(jiraTagRegex)];
-
-  for (const [match, p1] of matches) {
-    const accountIdMatch = p1.match(/^accountid:(.+)$/);
-    if (accountIdMatch) {
-      const accountId = accountIdMatch[1];
-      const displayName = await resolveAccountId(accountId);
-      const url = `${osimRuntime.value.backends.jiraDisplay}/jira/people/${accountId}`;
-      text = text.replace(match, `<a target="_blank" href="${url}">@${displayName}</a>`);
-    } else {
-      const url = `${osimRuntime.value.backends.jiraDisplay}/ViewProfile.jspa?name=${p1}`;
-      text = text.replace(match, `<a target="_blank" href="${url}">${p1}</a>`);
-    }
-  }
-  return text;
-}
-
 watch(() => props.commentList, async (comments) => {
   isParsingComments.value = true;
-  parsedComments.value = await Promise.all(
-    comments.map(c => parseJiraTags(linkify(sanitizeHtml(c.text ?? '')))),
+
+  // Pre-resolve display names for internal comment authors (accountId → displayName)
+  await Promise.all(
+    comments
+      .filter(c => c.type === CommentType.Internal && c.creator)
+      .map(c => resolveAccountId(c.creator!)),
   );
+
+  parsedComments.value = comments.map((c) => {
+    if (c.type === CommentType.Internal) {
+      // renderedBody is pre-rendered HTML from Jira — only sanitize
+      return sanitizeHtml(c.text ?? '');
+    }
+    return linkify(sanitizeHtml(c.text ?? ''));
+  });
+
   isParsingComments.value = false;
 }, { immediate: true });
 
@@ -100,7 +86,7 @@ function getCommentTooltip(type: CommentType | undefined) {
           :href="jiraUserUrl(comment.creator || '')"
           target="_blank"
         >
-          {{ comment.creator }}
+          {{ comment.creator ? (userDisplayNameCache[comment.creator] ?? comment.creator) : '' }}
         </a>
         <span v-else>{{ comment.creator }}</span>
         - {{ DateTime.fromISO(comment.created_dt ?? '',{ setZone: true })

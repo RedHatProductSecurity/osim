@@ -111,13 +111,13 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
   }
 
   function parseJiraComments(comments: ZodFlawCommentType[]) {
-    return comments.map((comment: any) => {
-      return {
-        creator: comment.author.name,
-        created_dt: comment.created,
-        text: comment.body,
-      };
-    }) as ZodFlawCommentType[];
+    return comments.map((comment: any) => ({
+      // accountId used by CommentList.vue to build profile URL and resolve display name
+      creator: comment.author.accountId,
+      created_dt: comment.created,
+      // renderedBody is pre-rendered HTML from Jira (requires ?expand=renderedBody)
+      text: comment.renderedBody ?? '',
+    })) as ZodFlawCommentType[];
   }
 
   return {
