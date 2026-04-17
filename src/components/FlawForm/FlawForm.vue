@@ -240,6 +240,17 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
 
   return isFieldValueAIBot(fieldName, currentValue);
 };
+
+// Tooltip state for components field
+const showComponentsTooltip = ref(false);
+const componentsTooltipText = computed(() => {
+  if (!isArrayFieldValueAIBot('components', flaw.value.components)) return '';
+  const tooltip = getAIBotTooltip('components');
+  return tooltip.replace(/<br><br>/g, '\n\n');
+});
+const toggleComponentsTooltip = () => {
+  showComponentsTooltip.value = !showComponentsTooltip.value;
+};
 </script>
 
 <template>
@@ -286,7 +297,6 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                 <i
                   v-if="isFieldValueAIBot('title', flaw.title)"
                   class="bi bi-robot text-primary me-1"
-                  :title="getAIBotTooltip('title')"
                 ></i>
                 <AegisTitleActions
                   :composable="aegisSuggestDescriptionComposable"
@@ -307,28 +317,46 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
             :highlighted="isArrayFieldValueAIBot('components', flaw.components)"
           >
             <template #label>
-              <div class="d-flex align-items-center flex-nowrap" style="min-width: max-content;">
+              <div class="d-flex align-items-center flex-wrap justify-content-end">
                 <i
                   v-if="isArrayFieldValueAIBot('components', flaw.components)"
                   class="bi bi-robot text-primary me-1"
-                  :title="getAIBotTooltip('components')"
                 ></i>
+                <!-- Info icon for AI-Bot tooltip -->
+                <span
+                  v-if="isArrayFieldValueAIBot('components', flaw.components)"
+                  class="position-relative me-1"
+                >
+                  <i
+                    class="bi bi-info-circle"
+                    style="color: #6c757d; cursor: pointer; font-size: 0.9em;"
+                    title="Show explanation"
+                    @click.prevent.stop="toggleComponentsTooltip"
+                  ></i>
+                  <!-- eslint-disable vue/no-v-html -->
+                  <div
+                    v-if="showComponentsTooltip"
+                    class="aegis-tooltip"
+                    v-html="componentsTooltipText.replace(/\n/g, '<br>')"
+                  ></div>
+                  <!-- eslint-enable vue/no-v-html -->
+                </span>
                 <!-- Feedback buttons for Aegis-AI-Bot highlighted components -->
                 <template v-if="canShowComponentsFeedback">
                   <i
-                    class="bi-hand-thumbs-up"
-                    style="color: gray; cursor: pointer; margin-right: 0.25rem; font-size: 0.9em;"
+                    class="bi-hand-thumbs-up me-1"
+                    style="color: gray; cursor: pointer; font-size: 0.9em;"
                     title="Mark suggestion helpful"
                     @click.prevent.stop="handleComponentsFeedback(AegisFeedback.POSITIVE, '')"
                   />
                   <i
-                    class="bi-hand-thumbs-down"
-                    style="color: gray; cursor: pointer; margin-right: 0.25rem; font-size: 0.9em;"
+                    class="bi-hand-thumbs-down me-1"
+                    style="color: gray; cursor: pointer; font-size: 0.9em;"
                     title="Mark suggestion unhelpful"
                     @click.prevent.stop="showComponentsFeedbackModal = true"
                   />
                 </template>
-                <span style="font-size: 0.95em;">Source Component</span>
+                <span style="font-size: 0.95em; white-space: nowrap;">Source Component</span>
               </div>
             </template>
           </LabelTagsInput>
@@ -487,21 +515,22 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                     isFieldValueAIBot('cve_description', flaw.cve_description)
                 }"
               >
-                <span
-                  v-if="aegisSuggestDescriptionComposable.isSuggesting.value"
-                  v-osim-loading.grow="aegisSuggestDescriptionComposable.isSuggesting.value"
-                  class="throbber"
-                />
-                <i
-                  v-if="isFieldValueAIBot('cve_description', flaw.cve_description)"
-                  class="bi bi-robot text-primary me-1"
-                  :title="getAIBotTooltip('cve_description')"
-                ></i>
-                <AegisDescriptionActions
-                  :composable="aegisSuggestDescriptionComposable"
-                  :descriptionValue="flaw.cve_description"
-                />
-                Description
+                <div class="d-flex align-items-center">
+                  <span
+                    v-if="aegisSuggestDescriptionComposable.isSuggesting.value"
+                    v-osim-loading.grow="aegisSuggestDescriptionComposable.isSuggesting.value"
+                    class="throbber"
+                  />
+                  <i
+                    v-if="isFieldValueAIBot('cve_description', flaw.cve_description)"
+                    class="bi bi-robot text-primary me-1"
+                  ></i>
+                  <AegisDescriptionActions
+                    :composable="aegisSuggestDescriptionComposable"
+                    :descriptionValue="flaw.cve_description"
+                  />
+                  <span>Description</span>
+                </div>
               </span>
             </template>
           </LabelTextarea>
@@ -521,16 +550,17 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                     isFieldValueAIBot('statement', flaw.statement)
                 }"
               >
-                <i
-                  v-if="isFieldValueAIBot('statement', flaw.statement)"
-                  class="bi bi-robot text-primary me-1"
-                  :title="getAIBotTooltip('statement')"
-                ></i>
-                <AegisStatementActions
-                  v-model="flaw.statement"
-                  :aegisContext="aegisContext"
-                />
-                Statement
+                <div class="d-flex align-items-center">
+                  <i
+                    v-if="isFieldValueAIBot('statement', flaw.statement)"
+                    class="bi bi-robot text-primary me-1"
+                  ></i>
+                  <AegisStatementActions
+                    v-model="flaw.statement"
+                    :aegisContext="aegisContext"
+                  />
+                  <span>Statement</span>
+                </div>
               </span>
             </template>
           </LabelTextarea>
@@ -841,5 +871,25 @@ form.osim-flaw-form :deep(*) {
   &.bi-hand-thumbs-down:hover {
     color: #dc3545;
   }
+}
+
+.aegis-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 5px;
+  padding: 8px 12px;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: normal;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  min-width: 350px;
+  max-width: 500px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 </style>

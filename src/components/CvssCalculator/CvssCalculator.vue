@@ -34,7 +34,7 @@ const {
   updateVector,
 } = useCvssScores();
 
-const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { isFieldValueAIBot } = useAegisMetadataTracking();
 
 const isFocused = ref(false);
 
@@ -105,11 +105,12 @@ function highlightFactorValue(factor: null | string) {
               isFieldValueAIBot('_cvss3_vector', cvssVector)
           }"
         >
-          <i
+          <span
             v-if="isFieldValueAIBot('_cvss3_vector', cvssVector)"
-            class="bi bi-robot text-primary me-1"
-            :title="getAIBotTooltip('_cvss3_vector')"
-          ></i>
+            style="position: relative; display: inline-flex; align-items: center;"
+          >
+            <i class="bi bi-robot text-primary me-1"></i>
+          </span>
           <AegisCvssActions
             v-if="osimRuntime.flags?.aiCvssSuggestions || isFieldValueAIBot('_cvss3_vector', cvssVector)"
             :aegisContext="aegisContext"
