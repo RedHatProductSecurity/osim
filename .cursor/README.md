@@ -82,6 +82,29 @@ Add comment type filter to flaw comment list.
 
 ---
 
+### `release-manager` — Prepare a release branch and PR
+
+**When to use:** When cutting a new versioned release from `main`.
+
+**Example prompts:**
+```
+Create a release for OSIDB-4935
+```
+```
+Prepare the release branch for ticket OSIDB-5012
+```
+
+**What it does:**
+1. Checks out `main` and pulls latest
+2. Derives the version (`YYYY.M.Z`) from the current date and existing tags/CHANGELOG
+3. Creates branch `release/OSIDB-{XXXX}-v{YYYY.M.Z}`
+4. Updates `CHANGELOG.md`: renames `[Unreleased]` header and fixes the links block
+5. Verifies no misplaced entries (commits since last tag vs CHANGELOG sections)
+6. Commits with `🔖 release v{YYYY.M.Z}`
+7. Pushes branch and opens a PR with label `Internal`, reviewers `osim-devs`, and the release changelog as description
+
+---
+
 ## Workflow: Implementing a feature end-to-end
 
 ```
