@@ -1,7 +1,13 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.4.1]
 ### Added
 * Added email validation on Flaw Owner field (`OSIDB-4846`)
+* New UI elements for Aegis tooltips (`Aegis-395`)
+* Support affect field bulk clearing (`OSIDB-4839`)
+
+### Changed
+* New Jira authentication using user emails (`OSIDB-4533`)
+* Support Jira Cloud internal comments, mentions and smart links (`OSIDB-4534`)
 
 ## [2026.4.0]
 ### Added
@@ -18,7 +24,6 @@
 ### Added
 * Add labels to un processed flaws by OSIDB-Bot (`OSIDB-4791`)
 * Add feedback actions for OSIDB-Bot values (`OSIDB-4823`)
-* Support affect field bulk clearing (`OSIDB-4839`)
 
 ### Fixed
 * OSIDB Bot highlighting is kept when flaw state is empty (`OSIDB-4824`)
@@ -37,8 +42,6 @@
 ### Changed
 * Allow single CWE value only (`OSIDB-4745`)
 * Changed texts on Aegis suggestion tooltips (`OSIDB-4835`)
-* New Jira authentication using user emails (`OSIDB-4533`)
-* Support Jira Cloud internal comments, mentions and smart links (`OSIDB-4534`)
 
 ## [2026.1.2]
 ### Fixed
@@ -654,7 +657,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.1...HEAD
+[2026.4.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.0...v2026.4.1
 [2026.4.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.2...v2026.4.0
 [2026.3.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.1...v2026.3.2
 [2026.3.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.3.0...v2026.3.1
