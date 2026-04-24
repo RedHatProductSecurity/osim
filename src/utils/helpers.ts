@@ -57,9 +57,11 @@ export const deepMap: deepMapOverload = (transform: (arg: any) => any, object: D
     , object,
   );
 
-export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/;
+export const cveRegex = /^CVE-(?:1999|2\d{3})-(?!0{4})(?:0\d{3}|[1-9]\d{3,})$/i;
 
 export const isCveValid = (cve: string) => cveRegex.test(cve);
+
+export const normalizeCveId = (cve: string) => cve.toUpperCase();
 
 export const UUID4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 export const isUUID4Valid = (uuid: string) => UUID4Regex.test(uuid);

@@ -14,7 +14,7 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { navbarBottom, navbarHeight } from '@/stores/responsive';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { cveRegex } from '@/utils/helpers';
+import { cveRegex, normalizeCveId } from '@/utils/helpers';
 import RedHatIconSvg from '@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg';
 
 import TourMenu from '../TourMenu/TourMenu.vue';
@@ -52,7 +52,7 @@ function onSearch(query: string) {
   }
   const maybeCveId = quickMatchCVE(query);
   if (maybeCveId) {
-    router.push({ path: `/flaws/${maybeCveId}` });
+    router.push({ path: `/flaws/${normalizeCveId(maybeCveId)}` });
     return;
   }
   submitQuickSearch(trimmedQuery);

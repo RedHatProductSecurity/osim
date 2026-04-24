@@ -1,4 +1,7 @@
 # OSIM Changelog
+## [Unreleased]
+* Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
+
 ## [2026.4.1]
 ### Added
 * Added email validation on Flaw Owner field (`OSIDB-4846`)
