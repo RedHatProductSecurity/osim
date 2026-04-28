@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
 
 import { flawFields, allowedEmptyFieldMapping } from '@/constants/flawFields';
+import { normalizeCveId, isCveValid } from '@/utils/helpers';
 
 export type Facet = {
   field: string;
@@ -45,7 +46,8 @@ export function useSearchParams() {
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach((key) => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
-          facets.push({ field: key, value: route.query[key] as string });
+          const value = route.query[key] as string;
+          facets.push({ field: key, value: key === 'cve_id' && isCveValid(value) ? normalizeCveId(value) : value });
         }
       });
     }
@@ -79,7 +81,8 @@ export function useSearchParams() {
     if (route.query && Object.keys(route.query).length > 0) {
       Object.keys(route.query).forEach((key) => {
         if (flawFields.includes(key) && typeof route.query[key] === 'string') {
-          params[key] = route.query[key] as string;
+          const value = route.query[key] as string;
+          params[key] = key === 'cve_id' && isCveValid(value) ? normalizeCveId(value) : value;
         }
       });
     }

@@ -5,7 +5,7 @@ import { createSharedComposable } from '@vueuse/core';
 import { getAffects } from '@/services/AffectService';
 import { useToastStore } from '@/stores/ToastStore';
 import { parseOsidbErrors } from '@/services/osidb-errors-helpers';
-import { isCveValid, isUUID4Valid } from '@/utils/helpers';
+import { isCveValid, isUUID4Valid, normalizeCveId } from '@/utils/helpers';
 import type { ZodAffectType } from '@/types';
 
 import { useFlaw } from './useFlaw';
@@ -94,12 +94,11 @@ function useMultiFlawTrackersComposable() {
   const cveStreamCount = computed(() => streamData.value.cveStreamCount);
 
   function addFlaw(identifier: string) {
-    if (!isIdValid(identifier) || relatedAffects.has(identifier)) {
+    const tmpId = isCveValid(identifier) ? normalizeCveId(identifier) : identifier;
+    if (!isIdValid(tmpId) || relatedAffects.has(tmpId)) {
       return;
     }
-
-    const tmpId = identifier;
-    relatedAffects.set(identifier, 'loading');
+    relatedAffects.set(tmpId, 'loading');
 
     getAffects(tmpId)
       .then(({ data }) => {

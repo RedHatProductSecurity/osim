@@ -10,6 +10,7 @@ import { useTourStore } from '@/stores/TourStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 import { getAffects } from '@/services/AffectService';
+import { isCveValid, normalizeCveId } from '@/utils/helpers';
 
 const isFetchingAffects = ref(false);
 const totalAffectCount = ref(0);
@@ -49,11 +50,13 @@ export function useFetchFlaw() {
       return;
     }
 
+    const normalizedId = isCveValid(flawCveOrId) ? normalizeCveId(flawCveOrId) : flawCveOrId;
+
     try {
       didFetchFail.value = false;
       historyFetchError.value = false;
-      const fetchedFlaw = getFlaw(flawCveOrId);
-      const fetchedAffects = fetchFlawAffects(flawCveOrId);
+      const fetchedFlaw = getFlaw(normalizedId);
+      const fetchedAffects = fetchFlawAffects(normalizedId);
 
       const flawResult = await fetchedFlaw;
       setFlaw(Object.assign({ affects: [], history: undefined }, flawResult));
