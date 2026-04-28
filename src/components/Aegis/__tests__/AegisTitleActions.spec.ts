@@ -4,26 +4,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 
-import type { UseAegisSuggestDescriptionReturn } from '@/composables/aegis/useAegisSuggestDescription';
+import type { UseAegisSuggestTitleReturn } from '@/composables/aegis/useAegisSuggestTitle';
 
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
 
-const createMockComposable = (overrides = {}): UseAegisSuggestDescriptionReturn => ({
+const createMockComposable = (overrides = {}): UseAegisSuggestTitleReturn => ({
   canShowTitleFeedback: computed(() => false),
-  canShowDescriptionFeedback: computed(() => false),
   canSuggest: computed(() => true),
   details: computed(() => null),
   hasAppliedTitleSuggestion: computed(() => false),
-  hasAppliedDescriptionSuggestion: computed(() => false),
   isSuggesting: computed(() => false),
   revertTitle: vi.fn(),
-  revertDescription: vi.fn(),
   sendTitleFeedback: vi.fn(),
-  sendDescriptionFeedback: vi.fn(),
-  suggestDescription: vi.fn(),
+  suggestTitle: vi.fn(),
   ...overrides,
-} as UseAegisSuggestDescriptionReturn);
+} as UseAegisSuggestTitleReturn);
 
 describe('aegisTitleActions', () => {
   beforeEach(() => {
@@ -72,10 +68,10 @@ describe('aegisTitleActions', () => {
     expect(wrapper.vm.isSuggesting).toBeDefined();
   });
 
-  it('calls suggestDescription when suggest action is triggered', async () => {
-    const mockSuggestDescription = vi.fn();
+  it('calls suggestTitle when suggest action is triggered', async () => {
+    const mockSuggestTitle = vi.fn();
     const mockComposable = createMockComposable({
-      suggestDescription: mockSuggestDescription,
+      suggestTitle: mockSuggestTitle,
     });
 
     const wrapper = mountWithConfig(AegisTitleActions, {
@@ -87,7 +83,7 @@ describe('aegisTitleActions', () => {
     const aegisActions = wrapper.findComponent({ name: 'AegisActions' });
     await aegisActions.vm.$emit('suggest');
 
-    expect(mockSuggestDescription).toHaveBeenCalled();
+    expect(mockSuggestTitle).toHaveBeenCalled();
   });
 
   it('calls revertTitle when revert action is triggered', async () => {

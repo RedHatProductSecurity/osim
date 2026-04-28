@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
+import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -50,33 +50,34 @@ function createContext(overrides?: Partial<Parameters<typeof serializeAegisConte
   return ctx;
 }
 
-describe('useAegisSuggestDescription', () => {
-  it('applies description suggestion correctly', async () => {
+describe('useAegisSuggestTitle', () => {
+  it('applies title suggestion correctly', async () => {
     const toastStore = (await import('@/stores/ToastStore')).useToastStore();
     const addToast = vi.mocked(toastStore.addToast);
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
-      suggested_description: 'New Suggested Description',
+      suggested_title: 'New Suggested Title',
+      suggested_description: 'Generated description',
       confidence: 0.95,
       explanation: 'Analysis reasoning',
       tools_used: ['ai_tool'],
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
+    await composable.suggestTitle();
 
-    expect(descriptionRef.value).toBe('New Suggested Description');
-    expect(composable.hasAppliedDescriptionSuggestion.value).toBe(true);
+    expect(titleRef.value).toBe('New Suggested Title');
+    expect(composable.hasAppliedTitleSuggestion.value).toBe(true);
     expect(composable.details.value).toMatchObject({
-      suggested_description: 'New Suggested Description',
+      suggested_title: 'New Suggested Title',
       confidence: 0.95,
     });
     expect(addToast).toHaveBeenCalledWith(expect.objectContaining({
@@ -85,92 +86,95 @@ describe('useAegisSuggestDescription', () => {
     }));
   });
 
-  it('shows toast when no description suggestion received', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+  it('shows toast when no title suggestion received', async () => {
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
-      suggested_description: '',
+      suggested_title: '',
+      suggested_description: 'Some description',
       confidence: 0.95,
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
+    await composable.suggestTitle();
 
     expect(mockAddToast).toHaveBeenCalledWith({
       title: 'AI Suggestion',
-      body: 'No valid description suggestion received.',
+      body: 'No valid title suggestion received.',
     });
   });
 
-  it('reverts description correctly', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+  it('reverts title correctly', async () => {
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
+      suggested_title: 'New Title',
       suggested_description: 'New Description',
       confidence: 0.92,
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
-    expect(descriptionRef.value).toBe('New Description');
+    await composable.suggestTitle();
+    expect(titleRef.value).toBe('New Title');
 
-    composable.revertDescription();
-    expect(descriptionRef.value).toBe('Original Description');
-    expect(composable.hasAppliedDescriptionSuggestion.value).toBe(false);
+    composable.revertTitle();
+    expect(titleRef.value).toBe('Original Title');
+    expect(composable.hasAppliedTitleSuggestion.value).toBe(false);
     expect(composable.details.value).toBe(null);
   });
 
   it('shows feedback controls after suggestion is applied', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
+      suggested_title: 'New Title',
       suggested_description: 'New Description',
       confidence: 0.92,
     });
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    expect(composable.canShowDescriptionFeedback.value).toBe(false);
+    expect(composable.canShowTitleFeedback.value).toBe(false);
 
-    await composable.suggestDescription();
+    await composable.suggestTitle();
 
-    expect(composable.canShowDescriptionFeedback.value).toBe(true);
+    expect(composable.canShowTitleFeedback.value).toBe(true);
   });
 
   it('handles service errors gracefully', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockRejectedValueOnce(new Error('Service unavailable'));
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
+    await composable.suggestTitle();
 
     expect(mockAddToast).toHaveBeenCalledWith({
       title: 'AI Suggestion Error',
@@ -179,10 +183,11 @@ describe('useAegisSuggestDescription', () => {
   });
 
   it('sends feedback successfully', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
+      suggested_title: 'New Title',
       suggested_description: 'New Description',
       confidence: 0.92,
     });
@@ -190,21 +195,21 @@ describe('useAegisSuggestDescription', () => {
     sendFeedbackMock.mockResolvedValueOnce({});
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
-    await composable.sendDescriptionFeedback('positive');
+    await composable.suggestTitle();
+    await composable.sendTitleFeedback('positive');
 
     expect(sendFeedbackMock).toHaveBeenCalledWith({
-      feature: 'suggest-description',
+      feature: 'suggest-title',
       cve_id: 'CVE-2024-1234',
       email: 'test@example.com',
       request_time: expect.stringMatching(/\d+ms/),
-      actual: 'New Description',
+      actual: 'New Title',
       accept: true,
     });
 
@@ -216,10 +221,11 @@ describe('useAegisSuggestDescription', () => {
   });
 
   it('prevents duplicate feedback submission', async () => {
-    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const titleRef = ref<null | string | undefined>('Original Title');
     const context = createContext({ cveId: ref('CVE-2024-1234') });
 
     analyzeMock.mockResolvedValueOnce({
+      suggested_title: 'New Title',
       suggested_description: 'New Description',
       confidence: 0.92,
     });
@@ -227,22 +233,22 @@ describe('useAegisSuggestDescription', () => {
     sendFeedbackMock.mockResolvedValueOnce({});
 
     const [composable] = withSetup(
-      () => useAegisSuggestDescription({
+      () => useAegisSuggestTitle({
         context: context as AegisSuggestionContextRefs,
-        descriptionRef,
+        titleRef,
       }), [],
     );
 
-    await composable.suggestDescription();
-    await composable.sendDescriptionFeedback('positive');
+    await composable.suggestTitle();
+    await composable.sendTitleFeedback('positive');
 
     // Try to send feedback again
-    await composable.sendDescriptionFeedback('negative');
+    await composable.sendTitleFeedback('negative');
 
     expect(sendFeedbackMock).toHaveBeenCalledTimes(1);
     expect(mockAddToast).toHaveBeenLastCalledWith({
       title: 'Feedback Already Submitted',
-      body: 'You have already provided feedback for this description suggestion.',
+      body: 'You have already provided feedback for this title suggestion.',
       css: 'warning',
     });
   });
