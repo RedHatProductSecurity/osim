@@ -1,10 +1,13 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Added
-* Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
+* Make Aegis title and description suggestions atomic (`AEGIS-293`)
+
+### Fixed
+* Fix duplicate affect UUIDs in multiflaw tracker requests (`OSIDB-4934`)
 
 ### Changed
-* Make Aegis title and description suggestions atomic (`AEGIS-293`)
+* Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
 
 ## [2026.4.1]
 ### Added
