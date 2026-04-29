@@ -43,7 +43,7 @@ function useMultiFlawTrackersComposable() {
   });
 
   const streamData = computed(() => {
-    const sharedStreams: Record<string, string[]> = {};
+    const sharedStreams: Record<string, Set<string>> = {};
     const streamToCveMap: Record<string, Set<string>> = {};
     const cveStreamCount: Record<string, Set<string>> = {};
 
@@ -58,9 +58,9 @@ function useMultiFlawTrackersComposable() {
 
         if (affect.uuid) {
           if (!sharedStreams[streamKey]) {
-            sharedStreams[streamKey] = [currentFlawAffectUuid];
+            sharedStreams[streamKey] = new Set([currentFlawAffectUuid]);
           }
-          sharedStreams[streamKey].push(affect.uuid);
+          sharedStreams[streamKey].add(affect.uuid);
         }
 
         const flawId = getFlawIdentifier(affect);
@@ -79,7 +79,9 @@ function useMultiFlawTrackersComposable() {
     }
 
     return {
-      sharedStreams,
+      sharedStreams: Object.fromEntries(
+        Object.entries(sharedStreams).map(([stream, uuidSet]) => [stream, Array.from(uuidSet)]),
+      ),
       streamToCveMap: Object.fromEntries(
         Object.entries(streamToCveMap).map(([stream, cveSet]) => [stream, Array.from(cveSet)]),
       ),
