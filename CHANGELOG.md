@@ -1,5 +1,9 @@
 # OSIM Changelog
 ## [Unreleased]
+### Fixed
+* Fix duplicate affect UUIDs in multiflaw tracker requests (`OSIDB-4934`)
+
+### Changed
 * Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
 
 ## [2026.4.1]

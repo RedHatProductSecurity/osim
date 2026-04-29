@@ -382,6 +382,24 @@ describe('useMultiFlawTrackers', () => {
       ]);
     });
 
+    it('should not duplicate current flaw UUID when multiple related flaws share same stream', () => {
+      const { computed, state } = useMultiFlawTrackers();
+
+      state.relatedAffects.set('CVE-2024-0002', mockAffectsForCVE2);
+      state.relatedAffects.set('CVE-2024-0003', mockAffectsForCVE3);
+
+      const sharedStreams = computed.sharedStreams.value;
+      const streamUuids = sharedStreams['stream-1:component-1'];
+
+      // Ensure current flaw UUID appears exactly once
+      const currentFlawCount = streamUuids.filter(uuid => uuid === 'affect-uuid-1').length;
+      expect(currentFlawCount).toBe(1);
+
+      // Ensure all UUIDs are unique
+      const uniqueUuids = new Set(streamUuids);
+      expect(uniqueUuids.size).toBe(streamUuids.length);
+    });
+
     it('should skip loading and error states', () => {
       const { computed, state } = useMultiFlawTrackers();
 
