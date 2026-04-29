@@ -1,6 +1,10 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
 * Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
+
+### Changed
+* Make Aegis title and description suggestions atomic (`AEGIS-293`)
 
 ## [2026.4.1]
 ### Added
