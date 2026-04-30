@@ -8,29 +8,29 @@ import type { AegisAIComponentFeatureNameType, DescriptionSuggestionDetails } fr
 import { useAISuggestionsWatcher } from './useAISuggestionsWatcher';
 import { serializeAegisContext, type AegisSuggestionContextRefs } from './useAegisSuggestionContext';
 
-export type UseAegisSuggestDescriptionOptions = {
+export type UseAegisSuggestTitleOptions = {
   context: AegisSuggestionContextRefs;
-  descriptionRef: Ref<null | string | undefined>;
+  titleRef: Ref<null | string | undefined>;
 };
 
-export type UseAegisSuggestDescriptionReturn = ReturnType<typeof useAegisSuggestDescription>;
+export type UseAegisSuggestTitleReturn = ReturnType<typeof useAegisSuggestTitle>;
 
-export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOptions) {
+export function useAegisSuggestTitle(options: UseAegisSuggestTitleOptions) {
   const toastStore = useToastStore();
   const userStore = useUserStore();
   const service = new AegisAIService();
-  const aegisDescriptionSuggestionWatcher = useAISuggestionsWatcher('cve_description', options.descriptionRef);
+  const aegisTitleSuggestionWatcher = useAISuggestionsWatcher('title', options.titleRef);
   const isSuggesting = ref(false);
-  const previousDescriptionValue = ref<null | string | undefined>(null);
+  const previousTitleValue = ref<null | string | undefined>(null);
   const details = ref<DescriptionSuggestionDetails | null>(null);
   const requestDuration = ref<null | number>(null);
-  const descriptionFeedbackSubmitted = ref<Set<string>>(new Set());
+  const titleFeedbackSubmitted = ref<Set<string>>(new Set());
 
-  const canShowDescriptionFeedback = computed(() => {
-    const hasApplied = aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value;
+  const canShowTitleFeedback = computed(() => {
+    const hasApplied = aegisTitleSuggestionWatcher.hasAppliedSuggestion.value;
     const notSuggesting = !isSuggesting.value;
-    const descriptionValue = details.value?.suggested_description ?? '';
-    const feedbackNotSubmitted = !descriptionFeedbackSubmitted.value.has(descriptionValue);
+    const titleValue = details.value?.suggested_title ?? '';
+    const feedbackNotSubmitted = !titleFeedbackSubmitted.value.has(titleValue);
 
     return hasApplied && notSuggesting && feedbackNotSubmitted;
   });
@@ -43,7 +43,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
 
   const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value);
 
-  async function suggestDescription() {
+  async function suggestTitle() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
       return;
@@ -52,8 +52,8 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     const requestStartTime = Date.now();
     try {
       // Store previous value if not already stored
-      if (!aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value && previousDescriptionValue.value == null) {
-        previousDescriptionValue.value = options.descriptionRef.value;
+      if (!aegisTitleSuggestionWatcher.hasAppliedSuggestion.value && previousTitleValue.value == null) {
+        previousTitleValue.value = options.titleRef.value;
       }
 
       const feature: AegisAIComponentFeatureNameType = 'suggest-description';
@@ -61,29 +61,30 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         feature,
         ...serializeAegisContext(options.context),
       });
-      // An incoming service logic can be used here
+
       requestDuration.value = Date.now() - requestStartTime;
 
-      const description = data.suggested_description ?? '';
+      const title = data.suggested_title ?? '';
 
-      if (!description) {
-        toastStore.addToast({ title: 'AI Suggestion', body: 'No valid description suggestion received.' });
+      if (!title) {
+        toastStore.addToast({ title: 'AI Suggestion', body: 'No valid title suggestion received.' });
         return;
       }
 
       details.value = {
-        suggested_description: description,
+        suggested_title: title,
+        suggested_description: data.suggested_description,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
       };
 
-      // Apply only description suggestion
-      aegisDescriptionSuggestionWatcher.applyAISuggestion(description);
+      // Apply only title suggestion
+      aegisTitleSuggestionWatcher.applyAISuggestion(title);
 
       toastStore.addToast({
         title: 'AI Suggestion Applied',
-        body: 'Description suggestion applied. Always review AI generated responses prior to use.',
+        body: 'Title suggestion applied. Always review AI generated responses prior to use.',
         css: 'info',
         timeoutMs: 8000,
       });
@@ -95,16 +96,16 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     }
   }
 
-  function revertDescription() {
-    if (previousDescriptionValue.value !== null) {
-      options.descriptionRef.value = previousDescriptionValue.value;
+  function revertTitle() {
+    if (previousTitleValue.value !== null) {
+      options.titleRef.value = previousTitleValue.value;
     }
-    previousDescriptionValue.value = null;
-    aegisDescriptionSuggestionWatcher.revertAISuggestion();
+    previousTitleValue.value = null;
+    aegisTitleSuggestionWatcher.revertAISuggestion();
     details.value = null;
   }
 
-  async function sendDescriptionFeedback(kind: 'negative' | 'positive', comment?: string) {
+  async function sendTitleFeedback(kind: 'negative' | 'positive', comment?: string) {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;
       if (!cveId) {
@@ -115,30 +116,30 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         return;
       }
 
-      const suggestedDescription = details.value?.suggested_description ?? '';
+      const suggestedTitle = details.value?.suggested_title ?? '';
 
       // Check if feedback already submitted for this suggestion
-      if (descriptionFeedbackSubmitted.value.has(suggestedDescription)) {
+      if (titleFeedbackSubmitted.value.has(suggestedTitle)) {
         toastStore.addToast({
           title: 'Feedback Already Submitted',
-          body: 'You have already provided feedback for this description suggestion.',
+          body: 'You have already provided feedback for this title suggestion.',
           css: 'warning',
         });
         return;
       }
 
       await service.sendFeedback({
-        feature: 'suggest-description',
+        feature: 'suggest-title',
         cve_id: cveId,
         email: userStore.userEmail,
         request_time: `${requestDuration.value ?? 0}ms`,
-        actual: suggestedDescription,
+        actual: suggestedTitle,
         accept: kind === 'positive',
         ...(comment && { rejection_comment: comment }),
       });
 
       // Mark feedback as submitted for this suggestion
-      descriptionFeedbackSubmitted.value.add(suggestedDescription);
+      titleFeedbackSubmitted.value.add(suggestedTitle);
 
       toastStore.addToast({
         title: 'AI Suggestion Feedback',
@@ -158,13 +159,13 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
   }
 
   return {
-    canShowDescriptionFeedback,
+    canShowTitleFeedback,
     canSuggest,
     details,
-    hasAppliedDescriptionSuggestion: aegisDescriptionSuggestionWatcher.hasAppliedSuggestion,
+    hasAppliedTitleSuggestion: aegisTitleSuggestionWatcher.hasAppliedSuggestion,
     isSuggesting,
-    revertDescription,
-    sendDescriptionFeedback,
-    suggestDescription,
+    revertTitle,
+    sendTitleFeedback,
+    suggestTitle,
   };
 }

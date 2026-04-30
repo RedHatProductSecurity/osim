@@ -37,6 +37,7 @@ import {
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
+import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useComponentsFeedback, AegisFeedback } from '@/composables/aegis/useComponentsFeedback';
 import { useAffectsModel } from '@/composables/useAffectsModel';
@@ -218,9 +219,13 @@ const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw
 const titleRefForAegis = toRef(flaw.value, 'title');
 const descriptionRefForAegis = toRef(flaw.value, 'cve_description');
 
-const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
+const aegisSuggestTitleComposable = useAegisSuggestTitle({
   context: aegisContext,
   titleRef: titleRefForAegis,
+});
+
+const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
+  context: aegisContext,
   descriptionRef: descriptionRefForAegis,
 });
 
@@ -288,7 +293,7 @@ const toggleComponentsTooltip = () => {
         <div :id="flaw.uuid" class="col-6">
           <LabelDiv
             label="Title"
-            :loading="aegisSuggestDescriptionComposable.isSuggesting.value"
+            :loading="aegisSuggestTitleComposable.isSuggesting.value"
             :highlighted="isFieldValueAIBot('title', flaw.title)"
             class="mb-2"
           >
@@ -299,7 +304,7 @@ const toggleComponentsTooltip = () => {
                   class="bi bi-robot text-primary me-1"
                 ></i>
                 <AegisTitleActions
-                  :composable="aegisSuggestDescriptionComposable"
+                  :composable="aegisSuggestTitleComposable"
                   :titleValue="flaw.title"
                 />
               </div>

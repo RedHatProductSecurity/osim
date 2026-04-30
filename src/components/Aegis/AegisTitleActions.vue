@@ -3,14 +3,14 @@ import { computed } from 'vue';
 
 import AegisActions from '@/components/Aegis/AegisActions.vue';
 
-import type { UseAegisSuggestDescriptionReturn } from '@/composables/aegis/useAegisSuggestDescription';
+import type { UseAegisSuggestTitleReturn } from '@/composables/aegis/useAegisSuggestTitle';
 import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
-  composable: UseAegisSuggestDescriptionReturn;
+  composable: UseAegisSuggestTitleReturn;
   titleValue?: null | string;
 }>();
 
@@ -22,7 +22,7 @@ const {
   isSuggesting,
   revertTitle,
   sendTitleFeedback,
-  suggestDescription,
+  suggestTitle,
 } = props.composable;
 
 defineExpose({
@@ -74,7 +74,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="[]"
     :selectedIndex="0"
     :tooltipText="suggestionTooltip"
-    @suggest="suggestDescription"
+    @suggest="suggestTitle"
     @revert="revertTitle"
     @feedback="handleTitleFeedback"
   />
