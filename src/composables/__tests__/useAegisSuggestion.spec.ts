@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { useAegisSuggestion, clearSuggestionFeedbackState } from '@/composables/aegis/useAegisSuggestion';
+import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -24,6 +24,12 @@ vi.mock('@/stores/UserStore', () => ({
   })),
 }));
 
+vi.mock('@/composables/useFlaw', () => ({
+  useFlaw: vi.fn(() => ({
+    flaw: ref({ cve_id: 'CVE-2024-1234' }),
+  })),
+}));
+
 const analyzeMock = vi.fn();
 const sendFeedbackMock = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
@@ -37,7 +43,6 @@ vi.mock('@/services/AegisAIService', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  clearSuggestionFeedbackState();
 });
 
 function createContext(overrides?: Partial<Parameters<typeof serializeAegisContext>[0]>) {
@@ -658,8 +663,8 @@ describe('useAegisSuggestion - Empty Suggestions', () => {
     });
   });
 
-  describe('feedback limitation', () => {
-    it('should prevent multiple feedback submissions for the same suggestion', async () => {
+  describe('feedback system', () => {
+    it('should send feedback with correct parameters', async () => {
       const valueRef = ref<string>('');
       const context = {
         cveId: ref('CVE-2024-1234'),
@@ -678,17 +683,16 @@ describe('useAegisSuggestion - Empty Suggestions', () => {
       expect(composable.canShowFeedback.value).toBe(true);
 
       // Submit feedback
-      await composable.sendFeedback('positive');
+      await composable.sendFeedback('positive', 'Good suggestion');
       expect(sendFeedbackMock).toHaveBeenCalledTimes(1);
-      expect(composable.canShowFeedback.value).toBe(false);
-
-      // Try to submit feedback again - should be prevented
-      await composable.sendFeedback('negative', 'Not helpful');
-      expect(sendFeedbackMock).toHaveBeenCalledTimes(1); // Still only called once
-      expect(mockAddToast).toHaveBeenCalledWith({
-        title: 'Feedback Already Submitted',
-        body: 'You have already provided feedback for this suggestion.',
-        css: 'warning',
+      expect(sendFeedbackMock).toHaveBeenCalledWith({
+        feature: 'suggest-impact',
+        cve_id: 'CVE-2024-1234',
+        email: 'test@example.com',
+        request_time: '1000ms',
+        actual: 'MODERATE',
+        accept: true,
+        rejection_comment: 'Good suggestion',
       });
     });
 
