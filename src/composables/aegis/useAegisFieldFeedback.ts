@@ -1,24 +1,7 @@
 import { computed, ref, type Ref } from 'vue';
 
 import { useAegisMetadataTracking } from './useAegisMetadataTracking';
-
-const botFeedbackSubmitted = ref<Set<string>>(new Set());
-
-function createFeedbackKey(fieldName: string, fieldValue: unknown): null | string {
-  if (!fieldValue) return null;
-  const valueString = Array.isArray(fieldValue) ? JSON.stringify(fieldValue) : String(fieldValue);
-  return `${fieldName}:${valueString}`;
-}
-
-function markFeedbackSubmitted(fieldName: string, fieldValue: unknown): void {
-  const key = createFeedbackKey(fieldName, fieldValue);
-  if (key) botFeedbackSubmitted.value.add(key);
-}
-
-function hasFeedbackBeenSubmitted(fieldName: string, fieldValue: unknown): boolean {
-  const key = createFeedbackKey(fieldName, fieldValue);
-  return key ? botFeedbackSubmitted.value.has(key) : false;
-}
+import { useSimpleFeedback } from './useUnifiedAegisFeedback';
 
 export function useAegisFieldFeedback(
   fieldName: string,
@@ -28,21 +11,27 @@ export function useAegisFieldFeedback(
   sendSuggestionFeedback: (kind: 'negative' | 'positive', comment: string) => void,
 ) {
   const { isFieldValueAIBot } = useAegisMetadataTracking();
+  const { sendFeedback } = useSimpleFeedback();
+  const botFeedbackSent = ref(false);
 
   const isFieldAIBot = computed(() => isFieldValueAIBot(fieldName, fieldValue.value));
 
   const canShowFeedbackExtended = computed(() => {
+    // For user-triggered suggestions, use the original logic
     if (canShowSuggestionFeedback.value) return true;
-    if (isFieldAIBot.value && fieldValue.value) {
-      return !hasFeedbackBeenSubmitted(fieldName, fieldValue.value);
-    }
+
+    // For AI-Bot fields, show if there's a value and feedback hasn't been sent
+    if (isFieldAIBot.value && fieldValue.value && !botFeedbackSent.value) return true;
     return false;
   });
 
-  const handleFieldFeedback = (kind: 'negative' | 'positive', comment = '') => {
-    sendSuggestionFeedback(kind, comment);
-    if (isFieldAIBot.value && fieldValue.value) {
-      markFeedbackSubmitted(fieldName, fieldValue.value);
+  const handleFieldFeedback = async (kind: 'negative' | 'positive', comment = '') => {
+    if (isFieldAIBot.value) {
+      const result = await sendFeedback(fieldName, fieldValue.value, kind, comment);
+      if (result) botFeedbackSent.value = true;
+      return result;
+    } else {
+      return sendSuggestionFeedback(kind, comment);
     }
   };
 

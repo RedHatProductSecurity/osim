@@ -5,10 +5,10 @@ import {
   type AegisSuggestionContextRefs,
 } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWatcher';
+import { useSimpleFeedback } from '@/composables/aegis/useUnifiedAegisFeedback';
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { useToastStore } from '@/stores/ToastStore';
-import { useUserStore } from '@/stores/UserStore';
 import type {
   CweSuggestionDetails,
   ImpactSuggestionDetails,
@@ -47,21 +47,12 @@ export function defaultDetails(): SuggestionDetails {
   };
 }
 
-// Global feedback tracking for suggestions
-const suggestionFeedbackSubmitted = ref<Set<string>>(new Set());
-
-// For testing: clear feedback state
-export function clearSuggestionFeedbackState() {
-  suggestionFeedbackSubmitted.value.clear();
-}
-
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<ImpactEnumWithBlankType | null | string>,
   fieldName: SuggestableFlawFields,
 ) {
   const toastStore = useToastStore();
-  const userStore = useUserStore();
   const service = new AegisAIService();
   const aegisSuggestionWatcher = useAISuggestionsWatcher(fieldName, valueRef);
   const previousValue = ref<null | string>(null);
@@ -70,14 +61,9 @@ export function useAegisSuggestion(
 
   const details = ref<SuggestionDetails>(defaultDetails());
 
-  const canShowFeedback = computed(() => {
-    const hasApplied = aegisSuggestionWatcher.hasAppliedSuggestion.value;
-    const notFetching = !service.isFetching.value;
-    const currentSuggestionValue = currentSuggestion.value ?? '';
-    const feedbackNotSubmitted = !suggestionFeedbackSubmitted.value.has(currentSuggestionValue);
-
-    return hasApplied && notFetching && feedbackNotSubmitted;
-  });
+  // Track suggestion session ID for feedback system
+  const { sendFeedback: sendFeedbackApi } = useSimpleFeedback();
+  const userFeedbackSent = ref(false);
 
   const isCveIdValid = computed(() => {
     const cveId = unref(context?.cveId?.value ?? context?.cveId);
@@ -100,6 +86,7 @@ export function useAegisSuggestion(
 
   async function applySuggestion(suggestion: string) {
     aegisSuggestionWatcher.applyAISuggestion(suggestion);
+    userFeedbackSent.value = false; // Reset feedback state for new suggestion
     successToast();
   }
 
@@ -237,6 +224,7 @@ export function useAegisSuggestion(
       suggested_statement: null,
     };
     selectedSuggestionIndex.value = 0;
+    userFeedbackSent.value = false; // Reset feedback state
     aegisSuggestionWatcher.revertAISuggestion();
   }
 
@@ -246,66 +234,30 @@ export function useAegisSuggestion(
     if (currentSuggestion.value) aegisSuggestionWatcher.applyAISuggestion(currentSuggestion.value);
   }
 
-  const currentSuggestion = computed(() => allSuggestions.value[selectedSuggestionIndex.value] ?? null);
-
   const allSuggestions = computed(() => {
     const fieldValue = details.value?.[detailsField];
     if (fieldValue === null || fieldValue === undefined) return [];
     return Array.isArray(fieldValue) ? fieldValue : [fieldValue];
   });
 
+  const currentSuggestion = computed(() => allSuggestions.value[selectedSuggestionIndex.value] ?? null);
+
+  const canShowFeedback = computed(() => {
+    const hasApplied = aegisSuggestionWatcher.hasAppliedSuggestion.value;
+    const notFetching = !service.isFetching.value;
+    const feedbackNotSent = !userFeedbackSent.value;
+    return hasApplied && notFetching && feedbackNotSent;
+  });
+
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
   async function sendFeedback(kind: 'negative' | 'positive', comment?: string) {
-    try {
-      const cveId = unref(context?.cveId?.value ?? context?.cveId);
-      if (!cveId) {
-        toastStore.addToast({
-          title: 'Feedback Error',
-          body: 'Cannot submit feedback without a valid CVE ID.',
-        });
-        return;
-      }
-
-      const suggestedValue = currentSuggestion.value ?? '';
-
-      // Check if feedback already submitted for this suggestion
-      if (suggestionFeedbackSubmitted.value.has(suggestedValue)) {
-        toastStore.addToast({
-          title: 'Feedback Already Submitted',
-          body: 'You have already provided feedback for this suggestion.',
-          css: 'warning',
-        });
-        return;
-      }
-
-      await service.sendFeedback({
-        feature: FeatureNameForFeedback[fieldName],
-        cve_id: cveId,
-        email: userStore.userEmail,
-        request_time: `${service.requestDuration.value}ms`,
-        actual: suggestedValue,
-        accept: kind === 'positive',
-        ...(comment && { rejection_comment: comment }),
-      });
-
-      // Mark feedback as submitted for this suggestion
-      suggestionFeedbackSubmitted.value.add(suggestedValue);
-
-      toastStore.addToast({
-        title: 'AI Suggestion Feedback',
-        body: kind === 'positive' ? 'Thanks for the positive feedback.' : 'Thanks for the feedback.',
-        css: 'info',
-      });
-    } catch (error: any) {
-      const detail = error?.data?.detail ?? error?.response?.data?.detail;
-      const msg = typeof detail === 'string'
-        ? detail
-        : (error?.message ?? 'Failed to submit feedback');
-      toastStore.addToast({
-        title: 'Feedback Error',
-        body: msg,
-      });
+    const actualValue = currentSuggestion.value ?? valueRef.value;
+    const result = await sendFeedbackApi(
+      fieldName, actualValue, kind, comment || '', FeatureNameForFeedback[fieldName],
+    );
+    if (result) {
+      userFeedbackSent.value = true;
     }
   }
 
