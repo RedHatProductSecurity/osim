@@ -1,0 +1,37 @@
+---
+description: Vue 3 + TypeScript standards for osim frontend
+globs: **/*.vue,**/*.ts
+alwaysApply: false
+---
+
+# Vue 3 + TypeScript Standards
+
+## Components
+- Use `<script setup lang="ts">` with Composition API
+- Composition over inheritance; extract reusable logic into `use*` composables
+- Props via `defineProps<T>()` with explicit types — no `PropType` workarounds
+- Emit via `defineEmits<{ eventName: [payload: Type] }>()`
+
+## TypeScript
+- No `any`; prefer `unknown` + type narrowing
+- Validate API responses against Zod schemas (`ZodFlaw*` types in `@/types/zodFlaw`)
+- Use generated OpenAPI client from `@/generated/` — never hand-roll API calls
+- Run `yarn type-check` before committing
+
+## Services & State
+- API calls belong in `@/services/*Service.ts`, not in components
+- Global state in Pinia stores (`@/stores/`); local state with `ref`/`computed`
+- `osimRuntime` store for environment/backend config
+
+## Security
+- Sanitize HTML before rendering with `sanitize-html` (see `CommentList.vue`)
+- Never use `v-html` without sanitization — add `eslint-disable` comment only with sanitized input
+- Validate and encode all user-supplied URL parameters
+
+## Scripts (run only when user asks)
+- `yarn lint` — ESLint check
+- `yarn type-check` — TS type validation
+- `yarn test:unit` — Vitest unit tests
+- `yarn vibe-check` — combined lint + type-check + tests
+
+**Never auto-run these after implementation.** Wait for explicit user confirmation before triggering any validation pipeline.
