@@ -7,7 +7,6 @@ import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
-import { osimRuntime } from '@/stores/osimRuntime';
 import { flawImpactEnum } from '@/types/zodFlaw';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import { ImpactEnumWithBlank } from '@/types/zodShared';
@@ -60,7 +59,6 @@ const { isFieldValueAIBot } = useAegisMetadataTracking();
         class="bi bi-robot text-primary me-1"
       ></i>
       <AegisImpactActions
-        v-if="osimRuntime.flags?.aiImpactSuggestions || isFieldValueAIBot('impact', modelValue)"
         :aegisContext="aegisContext"
         :modelValue="modelValue"
         @update:impact="handleImpactChange"

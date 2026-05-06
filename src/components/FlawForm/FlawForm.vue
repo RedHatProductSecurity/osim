@@ -322,7 +322,10 @@ const toggleComponentsTooltip = () => {
             :highlighted="isArrayFieldValueAIBot('components', flaw.components)"
           >
             <template #label>
-              <div class="d-flex align-items-center flex-wrap justify-content-end">
+              <div
+                class="d-flex align-items-center flex-wrap justify-content-end"
+                @click="showComponentsTooltip = false"
+              >
                 <i
                   v-if="isArrayFieldValueAIBot('components', flaw.components)"
                   class="bi bi-robot text-primary me-1"
@@ -331,12 +334,17 @@ const toggleComponentsTooltip = () => {
                 <span
                   v-if="isArrayFieldValueAIBot('components', flaw.components)"
                   class="position-relative me-1"
+                  @click.stop
                 >
                   <i
                     class="bi bi-info-circle"
                     style="color: #6c757d; cursor: pointer; font-size: 0.9em;"
                     title="Show explanation"
-                    @click.prevent.stop="toggleComponentsTooltip"
+                    role="button"
+                    tabindex="0"
+                    @click.stop.prevent="toggleComponentsTooltip"
+                    @blur="showComponentsTooltip = false"
+                    @keydown.enter.space.stop.prevent="toggleComponentsTooltip"
                   ></i>
                   <!-- eslint-disable vue/no-v-html -->
                   <div
