@@ -5,6 +5,7 @@
 
 ### Fixed
 * Fix duplicate affect UUIDs in multiflaw tracker requests (`OSIDB-4934`)
+* Automatically close Aegis explanation tooltips when clicking outside of them (`OSIDB-4941`)
 
 ### Changed
 * Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)

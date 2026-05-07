@@ -26,16 +26,11 @@ const showFeedbackModal = ref(false);
 const showSuggestionTooltip = ref(false);
 
 const hasSuggestionTooltip = computed(() => {
-  // Show tooltip when a suggestion has been applied OR when field is AI-Bot highlighted
   return props.hasAppliedSuggestion || props.isFieldAIBot;
 });
 
 function toggleSuggestionTooltip() {
   showSuggestionTooltip.value = !showSuggestionTooltip.value;
-}
-
-function selectSuggestion(index: number) {
-  emit('selectSuggestion', index);
 }
 
 function handleThumbsDown() {
@@ -53,7 +48,8 @@ function handleFeedbackCancel() {
 </script>
 
 <template>
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center" @click="showSuggestionTooltip = false">
+    <!-- @ts-ignore: Global directive -->
     <i
       v-osim-loading.grow="isFetchingSuggestion"
       class="bi-stars label-icon me-1"
@@ -64,12 +60,17 @@ function handleFeedbackCancel() {
     <span
       v-if="hasSuggestionTooltip"
       style="position: relative; display: inline-flex; align-items: center;"
+      @click.stop
     >
       <i
         class="bi bi-info-circle me-1"
         style="cursor: pointer; font-size: 0.9em; color: #6c757d;"
         title="Click to see suggestion details"
-        @click.stop="toggleSuggestionTooltip"
+        role="button"
+        tabindex="0"
+        @click.stop.prevent="toggleSuggestionTooltip"
+        @blur="showSuggestionTooltip = false"
+        @keydown.enter.space.stop.prevent="toggleSuggestionTooltip"
       ></i>
       <!-- eslint-disable vue/no-v-html -->
       <div
@@ -101,14 +102,14 @@ function handleFeedbackCancel() {
           name="suggestion-item"
           :suggestions="suggestions"
           :selected-index="selectedIndex"
-          :select-suggestion="selectSuggestion"
+          :select-suggestion="(index: number) => emit('selectSuggestion', index)"
         >
           <li v-for="(suggestion, index) in suggestions" :key="index">
             <button
               class="dropdown-item"
               :class="{ 'active': index === selectedIndex }"
               type="button"
-              @click="selectSuggestion(index)"
+              @click="emit('selectSuggestion', index)"
             >
               <span class="fs-7">{{ suggestion }}</span>
               <span v-if="index === selectedIndex" class="text-success">
