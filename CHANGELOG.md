@@ -4,6 +4,7 @@
 * Make Aegis title and description suggestions atomic (`AEGIS-293`)
 
 ### Fixed
+* Prevent contributors loading when there is not Jira API key set (`OSIDB-4940`)
 * Fix duplicate affect UUIDs in multiflaw tracker requests (`OSIDB-4934`)
 * Automatically close Aegis explanation tooltips when clicking outside of them (`OSIDB-4941`)
 

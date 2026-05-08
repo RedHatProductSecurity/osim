@@ -20,6 +20,12 @@ vi.mock('@/composables/useJiraContributors', () => ({
   default: () => useJiraContributors,
 }));
 
+vi.mock('@/stores/SettingsStore', () => ({
+  useSettingsStore: vi.fn(() => ({
+    apiKeys: { jiraApiKey: 'test-token' },
+  })),
+}));
+
 const mountComponent = (props?: ExtractPublicPropTypes<typeof FlawContributors>) =>
   mount(FlawContributors, {
     props: {

@@ -6,6 +6,7 @@ import { isDefined, watchDebounced } from '@vueuse/core';
 import useJiraContributors from '@/composables/useJiraContributors';
 import { createCatchHandler } from '@/composables/service-helpers';
 
+import { useSettingsStore } from '@/stores/SettingsStore';
 import type { ZodJiraUserAssignableType } from '@/types/zodJira';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import DropDown from '@/widgets/DropDown/DropDown.vue';
@@ -27,7 +28,9 @@ const {
   searchContributors,
 } = useJiraContributors(props.taskKey);
 
-onBeforeMount(loadJiraContributors);
+onBeforeMount(() => {
+  if (useSettingsStore().apiKeys.jiraApiKey) loadJiraContributors();
+});
 
 watchDebounced(query, async () => {
   if (!isDefined(query)) {
