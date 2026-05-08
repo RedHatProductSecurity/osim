@@ -121,7 +121,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </label></div>
       <!--v-if-->
     </div><label data-v-001a00e0="" data-v-1c54faf9="" data-v-76e7a15d="" class="osim-input mb-2 ps-3">
-      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3"><!--v-if--><!--v-if--> Impact <!--v-if--></span>
+      <div data-v-001a00e0="" class="row"><span data-v-001a00e0="" class="form-label col-3"><!--v-if--><div data-v-e049df0b="" data-v-c3dcf9f5="" data-v-1c54faf9="" class="d-flex align-items-center"><!-- @ts-ignore: Global directive --><i data-v-e049df0b="" class="bi-stars label-icon me-1" title="Generate AI suggestion"></i><!--v-if--><!--v-if--><!--v-if--><transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true"><!--v-if--></transition-stub><transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true"><!--v-if--></transition-stub></div> Impact <!--v-if--></span>
         <div data-v-001a00e0="" class="col-9"><select data-v-001a00e0="" class="form-select" value="MODERATE">
             <option data-v-001a00e0="" selected="" disabled="" value=""></option>
             <option data-v-001a00e0="" value="CRITICAL">CRITICAL</option>
@@ -452,7 +452,7 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </label></div>
     <div data-v-76e7a15d="" class="col-6"><label data-v-055401b4="" data-v-76e7a15d="" class="osim-input mb-2">
-        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><div data-v-76e7a15d="" class="d-flex align-items-center"><!--v-if--><!--v-if--><!--v-if--><span data-v-76e7a15d="">Description</span></div></span><!--    @focus="resizeTextarea"-->
+        <div data-v-055401b4="" class="row px-0 mx-0"><span data-v-76e7a15d="" class="form-label col-3 osim-folder-tab-label position-relative"><div data-v-76e7a15d="" class="d-flex align-items-center"><!--v-if--><!--v-if--><div data-v-e049df0b="" data-v-76e7a15d="" class="d-flex align-items-center"><!-- @ts-ignore: Global directive --><i data-v-e049df0b="" class="bi-stars label-icon me-1" title="Generate AI suggestion"></i><!--v-if--><!--v-if--><!--v-if--><transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true"><!--v-if--></transition-stub><transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true"><!--v-if--></transition-stub></div><span data-v-76e7a15d="">Description</span></div></span><!--    @focus="resizeTextarea"-->
         <!--    @keyup="resizeTextarea"--><textarea data-v-055401b4="" placeholder="Description Text ..." class="form-control col-9 d-inline-block" rows="5" value="I am a spooky CVE"></textarea>
         <!--v-if-->
     </div></label>
