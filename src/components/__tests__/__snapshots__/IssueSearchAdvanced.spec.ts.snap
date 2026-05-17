@@ -10,7 +10,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
     <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
         <!--v-if-->
         <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__tracker__ps_update_stream">Affect Update Stream</option>
         <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
@@ -21,7 +21,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
         <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
         <option data-v-b86992a8="" value="embargoed">Embargoed</option>
-        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="affects__tracker__errata__advisory_name">Errata Advisory Name</option>
         <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
         <option data-v-b86992a8="" value="impact">Impact</option>
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
@@ -29,7 +29,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="owner">Owner</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
-        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
         <option data-v-b86992a8="" value="uuid">UUID</option>
       </select><input data-v-b86992a8="" type="text" class="form-control">
       <div data-v-b86992a8="" class="btn-group"><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Empty field search" type="button"><i data-v-b86992a8="" class="bi bi-circle fs-5"></i></button><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Non empty field search" type="button"><i data-v-b86992a8="" class="bi bi-slash-circle fs-5"></i></button></div><button data-v-b86992a8="" class="btn btn-sm btn-primary rounded-0 py-0" title="Clear field" type="button"><i data-v-b86992a8="" class="bi bi-eraser fs-5"></i></button><button data-v-b86992a8="" class="btn btn-primary py-0" type="button"><i data-v-b86992a8="" class="bi-x fs-5" aria-label="remove field"></i></button>
@@ -37,7 +37,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
     <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
         <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
         <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__tracker__ps_update_stream">Affect Update Stream</option>
         <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
@@ -47,7 +47,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
         <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
         <option data-v-b86992a8="" value="embargoed">Embargoed</option>
-        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="affects__tracker__errata__advisory_name">Errata Advisory Name</option>
         <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
         <option data-v-b86992a8="" value="impact">Impact</option>
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
@@ -55,7 +55,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="owner">Owner</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
-        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
         <option data-v-b86992a8="" value="uuid">UUID</option>
       </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->
@@ -110,7 +110,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
     <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
         <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
         <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__tracker__ps_update_stream">Affect Update Stream</option>
         <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
@@ -121,7 +121,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
         <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
         <option data-v-b86992a8="" value="embargoed">Embargoed</option>
-        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="affects__tracker__errata__advisory_name">Errata Advisory Name</option>
         <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
         <option data-v-b86992a8="" value="impact">Impact</option>
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
@@ -129,7 +129,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-b86992a8="" value="owner">Owner</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
-        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
         <option data-v-b86992a8="" value="uuid">UUID</option>
       </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->
@@ -184,7 +184,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
     <div data-v-b86992a8="" class="input-group my-1"><select data-v-b86992a8="" class="form-select search-facet-field">
         <option data-v-b86992a8="" selected="" disabled="" value="">Select field...</option>
         <option data-v-b86992a8="" value="acknowledgments__name">Acknowledgment Author</option>
-        <option data-v-b86992a8="" value="affects__trackers__ps_update_stream">Affect Update Stream</option>
+        <option data-v-b86992a8="" value="affects__tracker__ps_update_stream">Affect Update Stream</option>
         <option data-v-b86992a8="" value="affects__affectedness">Affected Affectedness</option>
         <option data-v-b86992a8="" value="affects__ps_component">Affected Component</option>
         <option data-v-b86992a8="" value="affects__ps_module">Affected Module</option>
@@ -195,7 +195,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-b86992a8="" value="cvss_scores__vector">CVSS Vector</option>
         <option data-v-b86992a8="" value="cwe_id">CWE ID</option>
         <option data-v-b86992a8="" value="embargoed">Embargoed</option>
-        <option data-v-b86992a8="" value="affects__trackers__errata__advisory_name">Errata Advisory Name</option>
+        <option data-v-b86992a8="" value="affects__tracker__errata__advisory_name">Errata Advisory Name</option>
         <option data-v-b86992a8="" value="workflow_state">Flaw State</option>
         <option data-v-b86992a8="" value="impact">Impact</option>
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
@@ -203,7 +203,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-b86992a8="" value="owner">Owner</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
-        <option data-v-b86992a8="" value="affects__trackers__external_system_id">Tracker External System ID</option>
+        <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
         <option data-v-b86992a8="" value="uuid">UUID</option>
       </select><input data-v-b86992a8="" type="text" class="form-control" disabled="">
       <!--v-if-->

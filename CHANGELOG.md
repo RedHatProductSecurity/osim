@@ -7,6 +7,7 @@
 * Prevent contributors loading when there is not Jira API key set (`OSIDB-4940`)
 * Fix duplicate affect UUIDs in multiflaw tracker requests (`OSIDB-4934`)
 * Automatically close Aegis explanation tooltips when clicking outside of them (`OSIDB-4941`)
+* Fix wrong results for affects and trackers facets in advance search (`OSIDB-4782`)
 
 ### Changed
 * Support lowercase CVE IDs on URLs (Flaw links, advance search and quick search) (`OSIDB-4925`)
