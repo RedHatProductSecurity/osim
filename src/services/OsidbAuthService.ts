@@ -108,10 +108,23 @@ export async function osidbFetch(config: OsidbFetchOptions, factoryOptions?: Osi
 
 async function osimRequestHeaders() {
   const token = await getNextAccessToken();
-  return new Headers({
+  const headers: Record<string, string> = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-  });
+  };
+
+  // Dev mode: include API keys from localStorage to bypass OSIDB Vault lookups
+  if (osimRuntime.value.env === 'dev') {
+    try {
+      const keys = JSON.parse(localStorage.getItem('OSIM::DEV-API-KEYS') || '{}');
+      if (keys.bugzillaApiKey) headers['Bugzilla-Api-Key'] = keys.bugzillaApiKey;
+      if (keys.jiraApiKey) headers['Jira-Api-Key'] = keys.jiraApiKey;
+    } catch {
+      // Ignore parse errors
+    }
+  }
+
+  return new Headers(headers);
 }
 
 function paramsFrom(params: Record<string, any>) {
