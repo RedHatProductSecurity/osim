@@ -57,6 +57,7 @@ export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
     updatedLabels,
     deletedLabels,
     areLabelsUpdated,
+    loadBuLabels,
     loadContextLabels,
     isNewLabel,
     isUpdatedLabel,
@@ -74,6 +75,22 @@ async function loadContextLabels(): Promise<string[]> {
 
   const labels = (await fetchLabels())
     .filter(({ type }) => type === FlawLabelTypeEnum.CONTEXT_BASED)
+    .map(({ name }) => name);
+
+  sessionStorage.setItem(storageKey, JSON.stringify(labels));
+
+  return labels;
+}
+
+async function loadBuLabels(): Promise<string[]> {
+  const storageKey = 'osim-bu-labels';
+  const storedLabels = sessionStorage.getItem(storageKey);
+  if (storedLabels) {
+    return JSON.parse(storedLabels);
+  }
+
+  const labels = (await fetchLabels())
+    .filter(({ type }) => type === FlawLabelTypeEnum.BU)
     .map(({ name }) => name);
 
   sessionStorage.setItem(storageKey, JSON.stringify(labels));
