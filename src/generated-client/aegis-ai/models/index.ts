@@ -3,19 +3,43 @@
 /**
  * 
  * @export
+ * @interface AegisAiWebSrcMainComponentFeatureName
+ */
+export interface AegisAiWebSrcMainComponentFeatureName {
+}
+/**
+ * 
+ * @export
  * @interface AegisAiWebSrcMainComponentFeatureName1
  */
 export interface AegisAiWebSrcMainComponentFeatureName1 {
 }
 /**
+ * Feature KPI model for CVE analysis feedback.
  * 
+ * Contains the acceptance score percentage and filtered log entries.
  * @export
- * @interface AegisAiWebSrcMainComponentFeatureName2
+ * @interface FeatureKPI
  */
-export interface AegisAiWebSrcMainComponentFeatureName2 {
+export interface FeatureKPI {
+    /**
+     * Acceptance score as a percentage (0.0 to 100.0, e.g., 75.0 for 75%)
+     * @type {any}
+     * @memberof FeatureKPI
+     */
+    acceptancePercentage: any | null;
+    /**
+     * List of log entries filtered by feature, sorted by datetime
+     * @type {any}
+     * @memberof FeatureKPI
+     */
+    entries: any | null;
 }
 /**
  * Data structure for feedback.
+ * 
+ * All fields are stored without modification to preserve original data.
+ * CSV escaping is handled automatically by the csv library during logging.
  * @export
  * @interface Feedback
  */
@@ -25,13 +49,7 @@ export interface Feedback {
      * @type {any}
      * @memberof Feedback
      */
-    accept?: any | null;
-    /**
-     * 
-     * @type {any}
-     * @memberof Feedback
-     */
-    actual?: any | null;
+    feature: any | null;
     /**
      * 
      * @type {any}
@@ -49,19 +67,31 @@ export interface Feedback {
      * @type {any}
      * @memberof Feedback
      */
+    requestTime?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
+    actual?: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof Feedback
+     */
     expected?: any | null;
     /**
      * 
      * @type {any}
      * @memberof Feedback
      */
-    feature: any | null;
+    accept?: any | null;
     /**
      * 
      * @type {any}
      * @memberof Feedback
      */
-    requestTime?: any | null;
+    rejectionComment?: any | null;
 }
 /**
  * 
@@ -75,6 +105,40 @@ export interface HTTPValidationError {
      * @memberof HTTPValidationError
      */
     detail?: any | null;
+}
+/**
+ * Individual KPI entry model.
+ * 
+ * Contains datetime, acceptance status, and AEGIS version for a feedback entry.
+ * @export
+ * @interface KPIEntry
+ */
+export interface KPIEntry {
+    /**
+     * Timestamp of the feedback entry
+     * @type {any}
+     * @memberof KPIEntry
+     */
+    datetime: any | null;
+    /**
+     * Whether the feedback was accepted
+     * @type {any}
+     * @memberof KPIEntry
+     */
+    accepted: any | null;
+    /**
+     * AEGIS version at time of feedback
+     * @type {any}
+     * @memberof KPIEntry
+     */
+    aegisVersion: any | null;
+}
+/**
+ * Sort order for datetime field.
+ * @export
+ * @interface SortOrder
+ */
+export interface SortOrder {
 }
 /**
  * 
