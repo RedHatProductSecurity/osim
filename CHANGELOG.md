@@ -4,7 +4,7 @@
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 
 ### Fixed
-* Disable "Save Changes" and "Reset CHanges" buttons when no flaw changes have been made (`OSIDB-4973`)
+* Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
 
 ### Changed
 * Update error message on failed logging (`OSIDB-5011`)
