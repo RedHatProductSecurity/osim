@@ -18,6 +18,7 @@ const {
   isNewLabel,
   isUpdatedLabel,
   labels,
+  loadBuLabels,
   loadContextLabels,
   newLabels,
   updatedLabels,
@@ -26,9 +27,15 @@ const {
 const isCreatingLabel = ref(false);
 const isUpdatingLabel = ref<string>();
 const contextLabels = computedAsync(loadContextLabels, []);
+const buLabels = computedAsync(loadBuLabels, []);
 const availableLabels = computed(() =>
   contextLabels.value.filter(contextLabel =>
     !Object.values(labels.value).some(({ label }) => label === contextLabel),
+  ),
+);
+const availableBuLabels = computed(() =>
+  buLabels.value.filter(buLabel =>
+    !Object.values(labels.value).some(({ label }) => label === buLabel),
   ),
 );
 
@@ -89,6 +96,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
         >
           <FlawLabelTableEditingRow
             v-if="isUpdatingLabel === label.label"
+            :buLabels="buLabels"
             :contextLabels="contextLabels"
             :initalLabel="label"
             @save="handleUpdateLabel"
@@ -144,6 +152,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
         </tr>
         <tr v-if="isCreatingLabel">
           <FlawLabelTableEditingRow
+            :buLabels="availableBuLabels"
             :contextLabels="availableLabels"
             @save="handleNewLabel"
             @cancel="isCreatingLabel = false"

@@ -8,7 +8,8 @@ import { watchedRef } from '@/utils/helpers';
 
 import FlawLabelsContributor from './FlawLabelsContributor.vue';
 
-const { contextLabels, initalLabel } = defineProps<{
+const { buLabels, contextLabels, initalLabel } = defineProps<{
+  buLabels?: string[];
   contextLabels?: string[];
   initalLabel?: NonNullable<ZodFlawType['labels']>[number];
 }>();
@@ -27,6 +28,7 @@ const [labelType, hasTypeChanged] = watchedRef<FlawLabelTypeEnum>(
 
 const isNewLabel = computed(() => !initalLabel);
 const isAliasType = computed(() => labelType.value === FlawLabelTypeEnum.ALIAS);
+const isBuType = computed(() => labelType.value === FlawLabelTypeEnum.BU);
 
 const emitSave = () => {
   // if nothing changed, do not emit save
@@ -73,8 +75,9 @@ const emitSave = () => {
       class="form-select"
       title="Label type"
     >
-      <option :value="FlawLabelTypeEnum.CONTEXT_BASED">context_based</option>
       <option :value="FlawLabelTypeEnum.ALIAS">alias</option>
+      <option :value="FlawLabelTypeEnum.BU">bu</option>
+      <option :value="FlawLabelTypeEnum.CONTEXT_BASED">context_based</option>
     </select>
     <template v-else>
       {{ initalLabel?.type }}
@@ -99,6 +102,20 @@ const emitSave = () => {
         placeholder="Enter alias name"
         required
       >
+    </template>
+    <!-- BU labels use dropdown -->
+    <template v-else-if="isBuType">
+      <select
+        v-model="labelName"
+        class="form-select"
+        required
+      >
+        <option
+          v-for="label in buLabels"
+          :key="label"
+          :value="label"
+        >{{ label }}</option>
+      </select>
     </template>
     <!-- Context-based labels use dropdown -->
     <template v-else>
