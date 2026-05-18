@@ -1,7 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Fixed
-* Disable "Save Changes" and "Reset CHanges" buttons when no flaw changes have been made (`OSIDB-4973`)
+* Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
 
 ## [2026.5.0]
 ### Added
