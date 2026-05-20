@@ -74,6 +74,7 @@ const {
   addBlankAcknowledgment,
   addBlankReference,
   addFlawComment,
+  areLabelsUpdated,
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
@@ -103,16 +104,29 @@ const {
   isFetchingAffects,
   totalAffectCount,
 } = useFetchFlaw();
-const { flaw, initialFlaw } = useFlaw();
+const { flaw, initialFlaw, isFlawUpdated } = useFlaw();
 
 const {
   highlightedNvdCvssString,
   nvdCvssString,
   rhCvssString,
   shouldDisplayEmailNistForm,
+  wasFlawCvssModified,
 } = useCvssScores();
 
 const { draftFlaw } = useDraftFlawStore();
+
+const {
+  state: { removedAffects, wereAffectsEditedOrAdded },
+} = useAffectsModel();
+
+const hasAnyChanges = computed(() => {
+  return isFlawUpdated.value
+    || wereAffectsEditedOrAdded.value
+    || wasFlawCvssModified.value
+    || removedAffects.size > 0
+    || areLabelsUpdated.value;
+});
 
 onMounted(() => {
   if (flaw.value.cve_id) {
@@ -125,7 +139,7 @@ onMounted(() => {
   }
 });
 
-watch(() => flaw.value, () => { // Shallow watch so as to avoid reseting on any change (though that shouldn't happen)
+watch(() => flaw.value, () => {
   isEmbargoed.value = initialFlaw.value?.embargoed;
   shouldCreateJiraTask.value = false;
 });
@@ -672,12 +686,21 @@ const toggleComponentsTooltip = () => {
     </div>
     <div class="osim-action-buttons sticky-bottom d-flex justify-content-end">
       <template v-if="mode === 'edit'">
-        <button type="button" class="btn btn-secondary" @click="onReset">Reset Changes</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          :disabled="!hasAnyChanges"
+          :title="hasAnyChanges ? '' : 'No changes to reset'"
+          @click="onReset"
+        >
+          Reset Changes
+        </button>
         <button
           v-osim-loading.grow="isSaving"
           type="submit"
           class="btn btn-primary ms-3"
-          :disabled="isSaving"
+          :disabled="isSaving || (!hasAnyChanges && !shouldCreateJiraTask)"
+          :title="isSaving ? 'Saving...' : ((!hasAnyChanges && !shouldCreateJiraTask) ? 'No changes to save' : '')"
         >
           Save Changes
         </button>
