@@ -74,6 +74,7 @@ const {
   addBlankAcknowledgment,
   addBlankReference,
   addFlawComment,
+  areLabelsUpdated,
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
@@ -123,7 +124,8 @@ const hasAnyChanges = computed(() => {
   return isFlawUpdated.value
     || wereAffectsEditedOrAdded.value
     || wasFlawCvssModified.value
-    || removedAffects.size > 0;
+    || removedAffects.size > 0
+    || areLabelsUpdated.value;
 });
 
 onMounted(() => {
@@ -697,8 +699,8 @@ const toggleComponentsTooltip = () => {
           v-osim-loading.grow="isSaving"
           type="submit"
           class="btn btn-primary ms-3"
-          :disabled="isSaving || !hasAnyChanges"
-          :title="isSaving ? 'Saving...' : (!hasAnyChanges ? 'No changes to save' : '')"
+          :disabled="isSaving || (!hasAnyChanges && !shouldCreateJiraTask)"
+          :title="isSaving ? 'Saving...' : ((!hasAnyChanges && !shouldCreateJiraTask) ? 'No changes to save' : '')"
         >
           Save Changes
         </button>
