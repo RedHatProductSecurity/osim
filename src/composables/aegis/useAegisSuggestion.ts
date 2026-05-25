@@ -252,7 +252,8 @@ export function useAegisSuggestion(
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
   async function sendFeedback(kind: 'negative' | 'positive', comment?: string) {
-    const actualValue = currentSuggestion.value ?? valueRef.value;
+    // For components, always use the full array from valueRef, not individual currentSuggestion
+    const actualValue = fieldName === 'components' ? valueRef.value : (currentSuggestion.value ?? valueRef.value);
     const result = await sendFeedbackApi(
       fieldName, actualValue, kind, comment || '', FeatureNameForFeedback[fieldName],
     );

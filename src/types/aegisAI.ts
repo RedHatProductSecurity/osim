@@ -8,6 +8,7 @@ import type { ImpactEnumWithBlankType } from './zodShared';
 export type AegisAIComponentFeatureNameType =
   | 'cvss-diff-explainer'
   | 'identify-pii'
+  | 'suggest-affected-components'
   | 'suggest-cwe'
   | 'suggest-description'
   | 'suggest-impact'
@@ -90,6 +91,10 @@ export type StatementSuggestionDetails = {
   suggested_statement: Nullable<string>;
 } & SuggestionDetailOptionals;
 
+export type ComponentsSuggestionDetails = {
+  components: Nullable<string[]>;
+} & SuggestionDetailOptionals;
+
 // HTTP Validation Error
 export type AegisAIHTTPValidationErrorType = {
   detail?: AegisAIValidationErrorType[];
@@ -108,6 +113,7 @@ export type AegisMetadata = {
 };
 
 export type AegisFeatureResponseMap = {
+  'suggest-affected-components': ComponentsSuggestionDetails;
   'suggest-cvss': CvssSuggestionDetails;
   'suggest-cwe': CweSuggestionDetails;
   'suggest-description': DescriptionSuggestionDetails;
