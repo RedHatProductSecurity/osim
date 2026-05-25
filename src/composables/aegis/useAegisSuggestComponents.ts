@@ -104,7 +104,10 @@ export function useAegisSuggestComponents(
     if (!details.value?.components || !allSuggestions.value?.[index]) return;
 
     selectedSuggestionIndex.value = index;
-    previousValue.value = valueRef.value ? [...valueRef.value] : null;
+
+    if (!hasAppliedSuggestion.value) {
+      previousValue.value = valueRef.value ? [...valueRef.value] : valueRef.value;
+    }
 
     const suggestionToApply = allSuggestions.value[index];
     valueRef.value = suggestionToApply ? [...suggestionToApply] : null;

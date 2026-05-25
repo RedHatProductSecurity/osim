@@ -52,12 +52,13 @@ export type AegisAIValidationErrorType = {
 };
 
 // AEGIS AI Fields Types
-export type SuggestableFlawFields = '_cvss3_vector' | 'cwe_id' | 'impact' | 'mitigation' | 'statement';
+export type SuggestableFlawFields = '_cvss3_vector' | 'components' | 'cwe_id' | 'impact' | 'mitigation' | 'statement';
 
 export type SuggestionDetails = CvssSuggestionDetails
   & CweSuggestionDetails
   & ImpactSuggestionDetails
   & MitigationSuggestionDetails
+  & Partial<ComponentsSuggestionDetails>
   & StatementSuggestionDetails;
 
 export type CvssSuggestionDetails = {

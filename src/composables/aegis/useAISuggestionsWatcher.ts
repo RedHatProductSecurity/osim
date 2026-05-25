@@ -2,39 +2,56 @@ import { ref, readonly, watch, type Ref } from 'vue';
 
 import { useAegisMetadataTracking } from './useAegisMetadataTracking';
 
-export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string | undefined>) {
+const isValueEqual = (a: unknown, b: unknown): boolean => {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((item, index) => item === b[index]);
+  }
+  return a === b;
+};
+
+export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string | string[] | undefined>) {
   const { trackAIChange, untrackAIChange } = useAegisMetadataTracking();
 
   const hasAppliedSuggestion = ref(false);
-  const originalSuggestion = ref<null | string>(null);
-  const originalFieldValue = ref<null | string | undefined>(null);
+  const originalSuggestion = ref<null | string | string[]>(null);
+  const originalFieldValue = ref<null | string | string[] | undefined>(null);
   const hasPartialModification = ref(false);
   const hasTrackedPartialChange = ref(false);
 
   watch(valueRef, (newValue, oldValue) => {
-    if (hasAppliedSuggestion.value && newValue !== originalSuggestion.value && newValue !== oldValue) {
+    if (hasAppliedSuggestion.value
+      && !isValueEqual(newValue, originalSuggestion.value)
+      && !isValueEqual(newValue, oldValue)) {
       hasPartialModification.value = true;
       if (!hasTrackedPartialChange.value) {
-        trackAIChange(fieldName, 'Partial AI', newValue || undefined);
+        const metadataValue = Array.isArray(newValue) ? JSON.stringify(newValue) : (newValue || undefined);
+        trackAIChange(fieldName, 'Partial AI', metadataValue);
         hasTrackedPartialChange.value = true;
       }
     }
   });
 
-  const applyAISuggestion = (suggestion: string) => {
+  const applyAISuggestion = (suggestion: string | string[]) => {
     if (!hasAppliedSuggestion.value) {
-      originalFieldValue.value = valueRef.value;
+      originalFieldValue.value = Array.isArray(valueRef.value) ? [...valueRef.value] : valueRef.value;
     }
     hasAppliedSuggestion.value = true;
-    originalSuggestion.value = suggestion;
-    valueRef.value = suggestion;
+    // Store copies for arrays to prevent reference issues
+    originalSuggestion.value = Array.isArray(suggestion) ? [...suggestion] : suggestion;
+    valueRef.value = Array.isArray(suggestion) ? [...suggestion] : suggestion;
     hasPartialModification.value = false;
     hasTrackedPartialChange.value = false;
-    trackAIChange(fieldName, 'AI', suggestion);
+
+    // For arrays, serialize for metadata storage
+    const metadataValue = Array.isArray(suggestion) ? JSON.stringify(suggestion) : suggestion;
+    trackAIChange(fieldName, 'AI', metadataValue);
   };
 
   const revertAISuggestion = () => {
-    valueRef.value = originalFieldValue.value;
+    // Restore using copy for arrays
+    valueRef.value = Array.isArray(originalFieldValue.value)
+      ? [...originalFieldValue.value]
+      : originalFieldValue.value;
     untrackAIChange(fieldName);
     hasAppliedSuggestion.value = false;
     originalSuggestion.value = null;

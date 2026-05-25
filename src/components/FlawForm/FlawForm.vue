@@ -24,7 +24,7 @@ import FlawMitigation from '@/components/FlawForm/FlawMitigation.vue';
 import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
-import AegisFeedbackModal from '@/components/Aegis/AegisFeedbackModal.vue';
+import AegisComponentActions from '@/components/Aegis/AegisComponentActions.vue';
 import IncidentRequestButton from '@/components/IncidentRequestDialog/IncidentRequestButton.vue';
 import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
 
@@ -39,7 +39,6 @@ import {
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
 import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
-import { useComponentsFeedback, AegisFeedback } from '@/composables/aegis/useComponentsFeedback';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -229,32 +228,13 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
   descriptionRef: descriptionRefForAegis,
 });
 
-const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
-
-const {
-  canShowComponentsFeedback,
-  handleComponentsFeedback,
-  handleFeedbackCancel: handleComponentsFeedbackCancel,
-  handleFeedbackSubmit: handleComponentsFeedbackSubmit,
-  showComponentsFeedbackModal,
-} = useComponentsFeedback(computed(() => flaw.value.components));
+const { isFieldValueAIBot } = useAegisMetadataTracking();
 
 // Helper function to check if an array field was populated by AI-Bot
 const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[] | undefined): boolean => {
   if (!currentValue) return false;
 
   return isFieldValueAIBot(fieldName, currentValue);
-};
-
-// Tooltip state for components field
-const showComponentsTooltip = ref(false);
-const componentsTooltipText = computed(() => {
-  if (!isArrayFieldValueAIBot('components', flaw.value.components)) return '';
-  const tooltip = getAIBotTooltip('components');
-  return tooltip.replace(/<br><br>/g, '\n\n');
-});
-const toggleComponentsTooltip = () => {
-  showComponentsTooltip.value = !showComponentsTooltip.value;
 };
 </script>
 
@@ -322,54 +302,18 @@ const toggleComponentsTooltip = () => {
             :highlighted="isArrayFieldValueAIBot('components', flaw.components)"
           >
             <template #label>
-              <div
-                class="d-flex align-items-center flex-wrap justify-content-end"
-                @click="showComponentsTooltip = false"
-              >
+              <div class="d-flex align-items-center">
                 <i
                   v-if="isArrayFieldValueAIBot('components', flaw.components)"
                   class="bi bi-robot text-primary me-1"
                 ></i>
-                <!-- Info icon for AI-Bot tooltip -->
-                <span
-                  v-if="isArrayFieldValueAIBot('components', flaw.components)"
-                  class="position-relative me-1"
-                  @click.stop
-                >
-                  <i
-                    class="bi bi-info-circle"
-                    style="color: #6c757d; cursor: pointer; font-size: 0.9em;"
-                    title="Show explanation"
-                    role="button"
-                    tabindex="0"
-                    @click.stop.prevent="toggleComponentsTooltip"
-                    @blur="showComponentsTooltip = false"
-                    @keydown.enter.space.stop.prevent="toggleComponentsTooltip"
-                  ></i>
-                  <!-- eslint-disable vue/no-v-html -->
-                  <div
-                    v-if="showComponentsTooltip"
-                    class="aegis-tooltip"
-                    v-html="componentsTooltipText.replace(/\n/g, '<br>')"
-                  ></div>
-                  <!-- eslint-enable vue/no-v-html -->
-                </span>
-                <!-- Feedback buttons for Aegis-AI-Bot highlighted components -->
-                <template v-if="canShowComponentsFeedback">
-                  <i
-                    class="bi-hand-thumbs-up me-1"
-                    style="color: gray; cursor: pointer; font-size: 0.9em;"
-                    title="Mark suggestion helpful"
-                    @click.prevent.stop="handleComponentsFeedback(AegisFeedback.POSITIVE, '')"
-                  />
-                  <i
-                    class="bi-hand-thumbs-down me-1"
-                    style="color: gray; cursor: pointer; font-size: 0.9em;"
-                    title="Mark suggestion unhelpful"
-                    @click.prevent.stop="showComponentsFeedbackModal = true"
-                  />
-                </template>
-                <span style="font-size: 0.95em; white-space: nowrap;">Source Component</span>
+                <AegisComponentActions
+                  v-if="osimRuntime.flags?.aiComponentSuggestions ||
+                    isArrayFieldValueAIBot('components', flaw.components)"
+                  v-model="flaw.components"
+                  :aegisContext="aegisContext"
+                />
+                Source Component
               </div>
             </template>
           </LabelTagsInput>
@@ -694,13 +638,6 @@ const toggleComponentsTooltip = () => {
       </template>
     </div>
   </form>
-
-  <!-- Components Feedback Modal -->
-  <AegisFeedbackModal
-    :show="showComponentsFeedbackModal"
-    @submit="handleComponentsFeedbackSubmit"
-    @cancel="handleComponentsFeedbackCancel"
-  />
 </template>
 
 <style scoped lang="scss">

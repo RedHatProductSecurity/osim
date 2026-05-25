@@ -16,16 +16,24 @@ import type {
   SuggestionDetails,
   SuggestableFlawFields,
   MitigationSuggestionDetails,
+  ComponentsSuggestionDetails,
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
-type DetailsFeatureField = 'cvss3_vector' | 'cwe' | 'impact' | 'suggested_mitigation' | 'suggested_statement';
+type DetailsFeatureField =
+  | 'components'
+  | 'cvss3_vector'
+  | 'cwe'
+  | 'impact'
+  | 'suggested_mitigation'
+  | 'suggested_statement';
 const DetailsFieldFromSuggestionField: Record<SuggestableFlawFields, DetailsFeatureField> = {
   cwe_id: 'cwe',
   impact: 'impact',
   _cvss3_vector: 'cvss3_vector',
   statement: 'suggested_statement',
   mitigation: 'suggested_mitigation',
+  components: 'components',
 };
 
 // Map field names to feature values for feedback API
@@ -35,6 +43,7 @@ const FeatureNameForFeedback: Record<SuggestableFlawFields, string> = {
   _cvss3_vector: 'suggest-cvss',
   statement: 'suggest-statement',
   mitigation: 'suggest-mitigation',
+  components: 'suggest-affected-components',
 };
 
 export function defaultDetails(): SuggestionDetails {
@@ -44,18 +53,19 @@ export function defaultDetails(): SuggestionDetails {
     impact: null,
     suggested_mitigation: null,
     suggested_statement: null,
+    components: null,
   };
 }
 
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
-  valueRef: Ref<ImpactEnumWithBlankType | null | string>,
+  valueRef: Ref<ImpactEnumWithBlankType | null | string | string[] | undefined>,
   fieldName: SuggestableFlawFields,
 ) {
   const toastStore = useToastStore();
   const service = new AegisAIService();
   const aegisSuggestionWatcher = useAISuggestionsWatcher(fieldName, valueRef);
-  const previousValue = ref<null | string>(null);
+  const previousValue = ref<null | string | string[]>(null);
   const selectedSuggestionIndex = ref(0);
   const detailsField = DetailsFieldFromSuggestionField[fieldName];
 
@@ -84,7 +94,7 @@ export function useAegisSuggestion(
     applySuggestion(data.cwe[0]);
   }
 
-  async function applySuggestion(suggestion: string) {
+  async function applySuggestion(suggestion: string | string[]) {
     aegisSuggestionWatcher.applyAISuggestion(suggestion);
     userFeedbackSent.value = false; // Reset feedback state for new suggestion
     successToast();
@@ -157,6 +167,26 @@ export function useAegisSuggestion(
     applySuggestion(data.suggested_mitigation || '');
   }
 
+  async function suggestComponents() {
+    const data = await getSuggestion();
+    if (!data) return;
+    const hasValidField = ('components' in data)
+      && data.components !== null
+      && data.components !== undefined
+      && Array.isArray(data.components)
+      && data.components.length > 0;
+
+    if (!hasValidField) {
+      toastStore.addToast({
+        title: 'AI Components Suggestions',
+        body: 'No valid component suggestions received.',
+      });
+      return;
+    }
+    details.value.components = data.components;
+    applySuggestion(data.components || []);
+  }
+
   async function getSuggestion() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
@@ -164,11 +194,12 @@ export function useAegisSuggestion(
     }
     try {
       if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value === null) {
-        previousValue.value = valueRef.value;
+        previousValue.value = valueRef.value ?? null;
       }
       const contextData = serializeAegisContext(context);
 
       let data:
+        | ComponentsSuggestionDetails
         | CweSuggestionDetails
         | ImpactSuggestionDetails
         | MitigationSuggestionDetails
@@ -189,6 +220,23 @@ export function useAegisSuggestion(
           feature: 'suggest-statement',
           ...contextData,
         });
+      } else if (fieldName === 'components') {
+        const response = await service.analyzeCVEWithContext({
+          feature: 'suggest-affected-components',
+          detail: true,
+          ...contextData,
+        });
+
+        const rawData = (response as any)?.output || response;
+        const isValidComponents = (comp: unknown): comp is string[] =>
+          Array.isArray(comp) && comp.every(item => typeof item === 'string');
+
+        data = {
+          components: isValidComponents(rawData.components) ? rawData.components : null,
+          confidence: rawData.confidence,
+          explanation: rawData.explanation,
+          tools_used: rawData.tools_used,
+        } as ComponentsSuggestionDetails;
       }
 
       if (!data) return;
@@ -199,6 +247,7 @@ export function useAegisSuggestion(
         impact: null,
         suggested_statement: null,
         suggested_mitigation: null,
+        components: null,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -222,6 +271,7 @@ export function useAegisSuggestion(
       impact: null,
       suggested_mitigation: null,
       suggested_statement: null,
+      components: null,
     };
     selectedSuggestionIndex.value = 0;
     userFeedbackSent.value = false; // Reset feedback state
@@ -281,5 +331,6 @@ export function useAegisSuggestion(
     suggestCvss,
     suggestStatement,
     suggestMitigation,
+    suggestComponents,
   };
 }
