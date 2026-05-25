@@ -23,6 +23,7 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     sendFeedback: vi.fn(),
     suggestMitigation: vi.fn(),
     suggestStatement: vi.fn(),
+    suggestComponents: vi.fn(),
   })),
 }));
 
@@ -100,6 +101,7 @@ describe('aegisStatementActions', () => {
       suggestImpact: vi.fn(),
       suggestStatement: vi.fn(),
       suggestMitigation: vi.fn(),
+      suggestComponents: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisStatementActions, {

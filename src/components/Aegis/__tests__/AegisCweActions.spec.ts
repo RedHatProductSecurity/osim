@@ -110,6 +110,7 @@ describe('aegisCweActions', () => {
       suggestCvss: vi.fn(),
       suggestStatement: vi.fn(),
       suggestMitigation: vi.fn(),
+      suggestComponents: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCweActions, {
