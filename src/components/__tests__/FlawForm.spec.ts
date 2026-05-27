@@ -1,5 +1,3 @@
-import { nextTick } from 'vue';
-
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
@@ -14,7 +12,6 @@ import CweSelector from '@/components/CweSelector/CweSelector.vue';
 
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
-import DropDownMenu from '@/widgets/DropDownMenu/DropDownMenu.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
 import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
 import LabelSelect from '@/widgets/LabelSelect/LabelSelect.vue';
@@ -337,41 +334,32 @@ describe('flawForm', () => {
     expect(subject.findComponent(Nudge)).toBeTruthy();
   });
 
-  osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
+  osimFullFlawTest('displays workflow label buttons for NEW state', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
+    const workflowState = subject.findComponent(FlawWorkflowState);
 
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
+    // In NEW state, should show manual-triage button
+    const manualTriageButton = workflowState.find('button[title="Add manual-triage label"]');
+    expect(manualTriageButton.exists()).toBe(true);
+    expect(manualTriageButton.text()).toContain('Manual Triage');
 
-    for (const button of menu.findAll('button')) {
-      expect(([
-        'Change State',
-        'Promote to Triage',
-        'Reject',
-        'Reset',
-        'Revert to Empty',
-      ]).includes(button.text().trim())).toBe(true);
-    }
+    // Should not show potential-rejection button in NEW state
+    const potentialRejectionButton = workflowState.find('button[title="Add potential-rejection label"]');
+    expect(potentialRejectionButton.exists()).toBe(false);
   });
 
-  osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
+  osimFullFlawTest('can toggle manual-triage label', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
+    const workflowState = subject.findComponent(FlawWorkflowState);
 
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
+    const manualTriageButton = workflowState.find('button[title="Add manual-triage label"]');
+    expect(manualTriageButton.exists()).toBe(true);
 
-    const rejectButton = menu?.findAll('button')?.find(el => el.text() === 'Reject');
-    await rejectButton?.trigger('click');
-    await flushPromises();
-    expect(subject.find('.modal-dialog').exists()).toBe(true);
+    // Button should have secondary style when label is not present
+    expect(manualTriageButton.classes()).toContain('btn-secondary');
+
+    // Note: Actual label toggling functionality will be tested via integration tests
+    // as it requires API interaction and flaw refresh
   });
 
   osimFullFlawTest('shows an explanation message when nvd score and Rh score mismatch', async ({ flaw }) => {

@@ -446,6 +446,7 @@ const toggleComponentsTooltip = () => {
             v-if="mode === 'edit'"
             :classification="flaw.classification"
             :flawId="flaw.uuid"
+            :flawLabels="flaw.labels ?? []"
             :shouldCreateJiraTask
             @refresh:flaw="emit('refresh:flaw')"
             @create:jiraTask="toggleShouldCreateJiraTask()"
