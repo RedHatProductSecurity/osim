@@ -3,6 +3,9 @@
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 
+### Changed
+* Update error message on failed logging (`OSIDB-5011`)
+
 ## [2026.5.1]
 ### Added
 * Add support for Business Unit (BU) label type for flaw triage (`OSIDB-4982`)
