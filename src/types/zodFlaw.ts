@@ -149,6 +149,7 @@ export const ZodHistoryItemSchema = z.object({
 
 export enum FlawLabelTypeEnum {
   ALIAS = 'alias',
+  BU = 'bu',
   CONTEXT_BASED = 'context_based',
   PRODUCT_FAMILY = 'product_family',
 }

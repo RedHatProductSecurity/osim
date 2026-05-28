@@ -13,6 +13,7 @@ vi.mock('@/services/LabelsService', () => ({
   fetchLabels: vi.fn().mockResolvedValue([
     { type: 'context_based', name: 'test' },
     { type: 'context_based', name: 'test1' },
+    { type: 'bu', name: 'core_bu' },
   ]),
 }));
 
@@ -81,6 +82,24 @@ describe('flawLabelsTable', () => {
 
     expect(areLabelsUpdated.value).toBe(true);
     expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  it('should handle add BU label', async () => {
+    const wrapper = mountFlawLabelsTable();
+    const { areLabelsUpdated } = useFlawLabels();
+    await flushPromises();
+
+    await wrapper.find('.table-new-row td').trigger('click');
+    const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
+    editRow.vm.$emit('save', {
+      type: FlawLabelTypeEnum.BU,
+      label: 'core_bu',
+      contributor: '',
+      state: StateEnum.New,
+    });
+    await flushPromises();
+
+    expect(areLabelsUpdated.value).toBe(true);
   });
 
   it('should handle undo delete label', async () => {

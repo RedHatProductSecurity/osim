@@ -44,9 +44,20 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
   return a.label.localeCompare(b.label);
 }) ?? []);
 
+function hashLabelColor(label: string): string {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = label.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return `hsl(${Math.abs(hash) % 360}, 55%, 82%)`;
+}
+
 function getLabelColor(label: string, type: string): string {
   if (type === 'context_based') {
     return '#B9BCCB';
+  }
+  if (type === 'bu') {
+    return hashLabelColor(label);
   }
   return labelColorMap[label] || '#FFFFFF';
 }

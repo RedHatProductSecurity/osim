@@ -93,4 +93,19 @@ describe('useFlawLabels', () => {
 
     expect(labels).toEqual(['context-label']);
   });
+
+  it('loads BU labels correctly', async () => {
+    const { useFlawLabels } = await useMocks();
+    const { loadBuLabels } = useFlawLabels();
+    const mockLabels = [
+      { ...baseLabel, name: 'core_bu', type: FlawLabelTypeEnum.BU },
+      { ...baseLabel, name: 'context-label', type: FlawLabelTypeEnum.CONTEXT_BASED },
+    ];
+
+    vi.mocked(fetchLabels).mockResolvedValue(mockLabels);
+
+    const labels = await loadBuLabels();
+
+    expect(labels).toEqual(['core_bu']);
+  });
 });

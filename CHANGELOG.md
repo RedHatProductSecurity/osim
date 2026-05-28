@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Add support for Business Unit (BU) label type for flaw triage (`OSIDB-4982`)
+
 ## [2026.5.0]
 ### Added
 * Make Aegis title and description suggestions atomic (`AEGIS-293`)
