@@ -84,6 +84,8 @@ OSIM_BACKENDS_JIRA="http://jira-service:8002"
 OSIM_BACKENDS_ERRATA="http://errata-service:8003"
 OSIM_BACKENDS_JIRA_DISPLAY="http://jira-service:8002"
 OSIM_BACKENDS_MITRE="http://mitre-service:8084"
+OSIM_BACKENDS_AEGISAI="http://aegis-ai-service:8005"
+OSIM_READONLY_MODE="false"
 OSIM_NGINX_PROXY_MITRE=
 OSIM_NGINX_PROXY_JIRA=
 OSIM_NGINX_PROXY_CA=
@@ -96,6 +98,22 @@ OSIM_NGINX_PROXY_CA=
 * `OSIM_NGINX_PROXY_MITRE`: If set, creates a /proxy/mitre/ endpoint in the OSIM
   server, to simplify CORS configuration. `OSIM_BACKENDS_MITRE` should be updated
   to point to OSIM's proxy.
+
+**Feature Flags:**
+
+Feature flags use `OSIM_FLAG_` prefix and are auto-converted to camelCase (e.g., `OSIM_FLAG_AI_CWE_SUGGESTIONS` → `flags.aiCweSuggestions`):
+
+```
+OSIM_FLAG_AI_CWE_SUGGESTIONS="true"
+OSIM_FLAG_AI_CVSS_SUGGESTIONS="true"
+OSIM_FLAG_AI_IMPACT_SUGGESTIONS="true"
+OSIM_FLAG_AI_TITLE_SUGGESTIONS="true"
+OSIM_FLAG_AI_DESCRIPTION_SUGGESTIONS="true"
+OSIM_FLAG_AI_STATEMENT_SUGGESTIONS="true"
+OSIM_FLAG_AI_MITIGATION_SUGGESTIONS="true"
+OSIM_FLAG_AFFECTS_V2="true"
+OSIM_FLAG_HISTORY="false"
+```
 
 ## Local Configuration
 
@@ -110,15 +128,18 @@ OSIM_NGINX_PROXY_CA=
         "jira": "http://localhost:8002",
         "errata": "http://localhost:8003",
         "jiraDisplay": "http://localhost:8002",
-        "mitre": "https://localhost:8004"
+        "mitre": "https://localhost:8004",
+        "aegisai": "http://localhost:8005"
       },
       "osimVersion": {
         "rev":"dev",
         "tag":"dev",
         "timestamp":"1970-01-01T00:00:00Z"
-      }
+      },
+      "readOnly": false,
+      "flags": {}
     }
   ```
-  * **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate agains OSIDB backend.
+  * **osidbAuth** (default `kerberos`) - authentication method which should be used to authenticate against OSIDB backend.
                                          `kerberos` is generally used for stage/prod OSIDB instances,
                                          `credentials` is generally used for local OSIDB instances.
