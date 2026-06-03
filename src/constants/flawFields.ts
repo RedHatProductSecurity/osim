@@ -11,9 +11,9 @@ const fieldsMapping: Record<string, string | string[]> = {
   ],
   acknowledgments: 'acknowledgments__name',
   trackers: [
-    'affects__trackers__errata__advisory_name',
-    'affects__trackers__ps_update_stream',
-    'affects__trackers__external_system_id',
+    'affects__tracker__errata__advisory_name',
+    'affects__tracker__ps_update_stream',
+    'affects__tracker__external_system_id',
   ],
   references: [],
   comments: [],
