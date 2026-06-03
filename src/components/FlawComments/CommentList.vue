@@ -48,8 +48,13 @@ watch(() => props.commentList, async (comments) => {
 
   parsedComments.value = comments.map((c) => {
     if (c.type === CommentType.Internal) {
-      // renderedBody is pre-rendered HTML from Jira — only sanitize
-      return sanitizeHtml(c.text ?? '');
+      // Convert <p> tags to simple line breaks
+      const html = sanitizeHtml(c.text ?? '')
+        .replace(/<\/p>\s*<p[^>]*>/gi, '<br>')  // Convert paragraph breaks to <br>
+        .replace(/<\/?p[^>]*>/gi, '')             // Strip remaining <p> tags
+        .replace(/(<br\s*\/?>[\s\n]*)+/gi, '<br>') // Collapse multiple <br>
+        .trim();
+      return html;
     }
     return linkify(sanitizeHtml(c.text ?? ''));
   });
