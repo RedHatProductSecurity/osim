@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, type Ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 
 import AegisActions from '@/components/Aegis/AegisActions.vue';
 
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
-import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
+import { useSimpleFeedback } from '@/composables/aegis/useUnifiedAegisFeedback';
 
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
@@ -34,19 +34,41 @@ const {
   'components',
 );
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { sendFeedback: sendBotFeedback } = useSimpleFeedback();
 
-const {
-  canShowFeedbackExtended,
-  handleFieldFeedback: handleComponentsFeedback,
-  isFieldAIBot: isComponentsAIBot,
-} = useAegisFieldFeedback(
-  'components',
-  modelValue,
-  canShowFeedback,
-  hasAppliedSuggestion,
-  sendFeedback,
-);
+const isComponentsAIBot = computed(() => isFieldValueAIBot('components', modelValue.value));
+const botFeedbackSent = ref(false);
+
+// Combined feedback logic for both user suggestions and bot suggestions
+const canShowFeedbackCombined = computed(() => {
+  // Prioritize user suggestion feedback when there's a manual suggestion applied
+  if (hasAppliedSuggestion.value) {
+    return canShowFeedback.value;
+  }
+
+  // Otherwise, show bot feedback if applicable
+  if (isComponentsAIBot.value && modelValue.value && !botFeedbackSent.value) {
+    return true;
+  }
+
+  return false;
+});
+
+const handleFeedback = async (kind: 'negative' | 'positive', comment = '') => {
+  // Prioritize user suggestion feedback when there's a manual suggestion applied
+  if (hasAppliedSuggestion.value) {
+    // Handle user suggestion feedback
+    return sendFeedback(kind, comment);
+  } else if (isComponentsAIBot.value) {
+    // Handle AI-Bot feedback - use same feature name and data format as user suggestions
+    // Ensure components are always sent as array for consistency
+    const actualValue = Array.isArray(modelValue.value) ? modelValue.value : [modelValue.value].filter(Boolean);
+    const result = await sendBotFeedback('components', actualValue, kind, comment, 'suggest-affected-components');
+    if (result) botFeedbackSent.value = true;
+    return result;
+  }
+};
 
 defineExpose({
   isFetchingSuggestion,
@@ -71,7 +93,7 @@ const suggestionTooltip = computed(() => {
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="false"
     :isFetchingSuggestion="isFetchingSuggestion"
-    :canShowFeedback="canShowFeedbackExtended"
+    :canShowFeedback="canShowFeedbackCombined"
     :isFieldAIBot="isComponentsAIBot"
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
@@ -79,7 +101,7 @@ const suggestionTooltip = computed(() => {
     @suggest="suggestComponents"
     @selectSuggestion="selectSuggestion"
     @revert="revertComponents"
-    @feedback="handleComponentsFeedback"
+    @feedback="handleFeedback"
   >
     <template #suggestion-item="{ suggestions, selectedIndex, selectSuggestion: selectSuggestionFn }">
       <li v-for="(suggestionItem, index) in suggestions" :key="index">
