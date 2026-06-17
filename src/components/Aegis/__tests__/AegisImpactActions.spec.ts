@@ -1,4 +1,4 @@
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -26,6 +26,7 @@ vi.mock('@/composables/aegis/useAegisSuggestion', () => ({
     suggestImpact: vi.fn(),
     suggestMitigation: vi.fn(),
     suggestStatement: vi.fn(),
+    suggestComponents: vi.fn(),
   })),
 }));
 
@@ -92,6 +93,7 @@ describe('aegisImpactActions', () => {
       })),
       hasAppliedSuggestion: computed(() => true),
       hasPartialModification: computed(() => false),
+      originalSuggestion: ref(null),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
       revert: vi.fn(),
@@ -103,6 +105,7 @@ describe('aegisImpactActions', () => {
       suggestImpact: vi.fn(),
       suggestStatement: vi.fn(),
       suggestMitigation: vi.fn(),
+      suggestComponents: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisImpactActions, {

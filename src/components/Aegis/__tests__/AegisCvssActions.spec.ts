@@ -1,4 +1,4 @@
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -92,6 +92,7 @@ describe('aegisCvssActions', () => {
       })),
       hasAppliedSuggestion: computed(() => true),
       hasPartialModification: computed(() => false),
+      originalSuggestion: ref(null),
       hasMultipleSuggestions: computed(() => true),
       isFetchingSuggestion: computed(() => false),
       revert: vi.fn(),
@@ -103,6 +104,7 @@ describe('aegisCvssActions', () => {
       suggestMitigation: vi.fn(),
       suggestCvss: vi.fn(),
       suggestStatement: vi.fn(),
+      suggestComponents: vi.fn(),
     });
 
     const wrapper = mountWithConfig(AegisCvssActions, {

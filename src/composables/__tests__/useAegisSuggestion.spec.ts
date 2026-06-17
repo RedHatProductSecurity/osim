@@ -135,6 +135,7 @@ describe('useAegisSuggestion', () => {
       cvss3_vector: null,
       suggested_statement: null,
       suggested_mitigation: null,
+      components: null,
       tools_used: ['cwe_tool'],
     });
     expect(composable.hasAppliedSuggestion.value).toBe(true);
@@ -173,6 +174,7 @@ describe('useAegisSuggestion', () => {
       cvss3_vector: null,
       suggested_statement: null,
       suggested_mitigation: null,
+      components: null,
     });
   });
 
@@ -509,6 +511,7 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
       cvss3_vector: null,
       suggested_statement: null,
       suggested_mitigation: null,
+      components: null,
     });
     expect(valueRef.value).toBe('CWE-79');
   });

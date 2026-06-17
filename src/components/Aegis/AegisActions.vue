@@ -45,6 +45,17 @@ function handleFeedbackSubmit(comment: string) {
 function handleFeedbackCancel() {
   showFeedbackModal.value = false;
 }
+
+const safeTooltipText = computed(() => {
+  if (!props.tooltipText) return '';
+  return props.tooltipText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\n/g, '<br>');
+});
 </script>
 
 <template>
@@ -76,7 +87,7 @@ function handleFeedbackCancel() {
       <div
         v-if="showSuggestionTooltip"
         class="aegis-tooltip"
-        v-html="tooltipText.replace(/\n/g, '<br>')"
+        v-html="safeTooltipText"
       ></div>
       <!-- eslint-enable vue/no-v-html -->
     </span>
@@ -120,7 +131,10 @@ function handleFeedbackCancel() {
         </slot>
       </ul>
     </div>
-    <span v-if="(hasAppliedSuggestion || canShowFeedback) && !isFetchingSuggestion">
+    <span
+      v-if="(hasAppliedSuggestion || canShowFeedback) && !isFetchingSuggestion"
+      style="display: inline-flex; align-items: center;"
+    >
       <i
         v-if="hasAppliedSuggestion"
         class="bi-arrow-counterclockwise label-icon"
