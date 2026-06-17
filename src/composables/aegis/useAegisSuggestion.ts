@@ -302,8 +302,8 @@ export function useAegisSuggestion(
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
   async function sendFeedback(kind: 'negative' | 'positive', comment?: string) {
-    // For components, always use the full array from valueRef, not individual currentSuggestion
-    const actualValue = fieldName === 'components' ? valueRef.value : (currentSuggestion.value ?? valueRef.value);
+    // Always send the original AI suggestion for feedback, not the modified value
+    const actualValue = aegisSuggestionWatcher.originalSuggestion.value ?? valueRef.value;
     const result = await sendFeedbackApi(
       fieldName, actualValue, kind, comment || '', FeatureNameForFeedback[fieldName],
     );
@@ -321,6 +321,7 @@ export function useAegisSuggestion(
     hasMultipleSuggestions,
     hasAppliedSuggestion: aegisSuggestionWatcher.hasAppliedSuggestion,
     hasPartialModification: aegisSuggestionWatcher.hasPartialModification,
+    originalSuggestion: aegisSuggestionWatcher.originalSuggestion,
     isFetchingSuggestion: service.isFetching,
     revert,
     selectSuggestion,

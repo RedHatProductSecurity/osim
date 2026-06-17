@@ -1,4 +1,4 @@
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -114,6 +114,7 @@ describe('aegisComponentActions', () => {
       hasAppliedSuggestion: computed(() => true),
       hasMultipleSuggestions: computed(() => false),
       hasPartialModification: computed(() => false),
+      originalSuggestion: ref(null),
       isFetchingSuggestion: computed(() => false),
       revert: vi.fn(),
       selectedSuggestionIndex: computed(() => 0),

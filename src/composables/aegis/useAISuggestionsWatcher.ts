@@ -63,6 +63,7 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   return {
     hasAppliedSuggestion: readonly(hasAppliedSuggestion),
     hasPartialModification: readonly(hasPartialModification),
+    originalSuggestion: readonly(originalSuggestion),
     applyAISuggestion,
     revertAISuggestion,
   };
