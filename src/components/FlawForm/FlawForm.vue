@@ -32,6 +32,7 @@ import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useCvssScores } from '@/composables/useCvssScores';
+import { useFlawLabels } from '@/composables/useFlawLabels';
 import {
   aegisSuggestionRequestBody,
   type AegisSuggestionContextRefs,
@@ -165,10 +166,19 @@ const onSubmit = async () => {
 };
 
 const onReset = () => {
-  // is deepCopyFromRaw needed?
+  // Reset flaw data
   flaw.value = deepCopyFromRaw(initialFlaw.value) as ZodFlawType;
+
+  // Reset affects
   useAffectsModel().actions.initializeAffects(flaw.value.affects);
 
+  // Reset CVSS changes
+  useCvssScores().reset();
+
+  // Reset label changes
+  useFlawLabels(initialFlaw.value?.labels ? [...initialFlaw.value.labels] : []);
+
+  // Reset Jira task flag
   shouldCreateJiraTask.value = false;
 };
 
