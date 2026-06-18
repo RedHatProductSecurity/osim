@@ -81,7 +81,7 @@ def step_impl(context):
     sort_fields = ['id', 'impact', 'created', 'title', 'state', 'owner']
     value_dict = {}
     for field in sort_fields:
-        # skip title sort,  https://issues.redhat.com/browse/OSIDB-2903
+        # skip title sort,  https://redhat.atlassian.net/browse/OSIDB-2903
         if field == 'title':
             continue
         fieldbtn = field + "Btn"
