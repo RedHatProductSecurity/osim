@@ -180,6 +180,7 @@ const tabsTooltips = computed(() => {
 
   :deep(.osim-flaw-comment) {
     white-space: pre-wrap;
+    line-height: 1.4;
   }
 }
 </style>
