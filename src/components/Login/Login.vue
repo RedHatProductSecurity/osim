@@ -67,12 +67,16 @@ function login() {
       console.error('Login::login() Error logging in', e);
       if (osimRuntime.value.backends.osidbAuth === 'kerberos') {
         error.value = [
-          'Error logging in.',
-          'Ensure that your system has krb5 configured.',
-          'Ensure that your browser has the correct trusted URIs for Negotiate authentication.',
-          'Ensure that you have logged into Kerberos on your system.',
-          'More info: <a class="alert-link" target="_blank" rel="noopener noreferrer nofollow"href="https://people.redhat.com/mikeb/negotiate/">https://people.redhat.com/mikeb/negotiate/</a>',
-        ].join('\n');
+          '<strong>Kerberos authentication failed.</strong>',
+          '<strong>Troubleshooting steps:</strong>',
+          '1. Run <code>kinit</code> to refresh/ensure you have a valid Kerberos token.',
+          '2. Verify your browser trusts this site for Negotiate authentication:',
+          '   • <strong>CSB users:</strong> Verify your CSB configuration is correct. '
+          + 'If settings appear incorrect, contact the IT Endpoint team for support.',
+          '   • <strong>Firefox:</strong> Ensure <code>network.negotiate-auth.trusted-uris</code> '
+          + 'in <code>about:config</code> includes "redhat.com".',
+          '   • <strong>Chrome:</strong> Launch with <code>--auth-server-whitelist="*.redhat.com"</code>',
+        ].join('<br>');
       } else if (osimRuntime.value.backends.osidbAuth === 'credentials') {
         password.value = '';
         error.value = 'Error logging in. Wrong username or password.';
