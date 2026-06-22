@@ -37,7 +37,8 @@ const { isFieldValueAIBot } = useAegisMetadataTracking();
           class="bi bi-robot text-primary me-1"
         ></i>
         <AegisMitigationActions
-          v-if="osimRuntime.flags?.aiMitigationSuggestions"
+          v-if="osimRuntime.flags?.aiMitigationSuggestions ||
+            isFieldValueAIBot('mitigation', modelValue)"
           v-model="modelValue"
           :aegisContext="aegisContext"
         />

@@ -6,6 +6,7 @@ import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import { getMitreUrl, loadCweData } from '@/services/CweService';
 import type { CWEMemberType } from '@/types/mitreCwe';
 import EditableTextWithSuggestions from '@/widgets/EditableTextWithSuggestions/EditableTextWithSuggestions.vue';
@@ -119,6 +120,8 @@ function parseDisplayValue(value: null | string) {
         class="bi bi-robot text-primary me-1"
       ></i>
       <AegisCweActions
+        v-if="osimRuntime.flags?.aiCweSuggestions ||
+          isFieldValueAIBot('cwe_id', modelValue)"
         ref="aegisCweActionsRef"
         v-model="modelValue"
         :aegisContext="aegisContext"

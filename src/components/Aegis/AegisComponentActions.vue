@@ -8,6 +8,8 @@ import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSug
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useSimpleFeedback } from '@/composables/aegis/useUnifiedAegisFeedback';
 
+import { osimRuntime } from '@/stores/osimRuntime';
+
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
 }>(), {
@@ -89,7 +91,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiComponentSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="false"
     :isFetchingSuggestion="isFetchingSuggestion"

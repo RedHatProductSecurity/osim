@@ -6,6 +6,8 @@ import AegisActions from '@/components/Aegis/AegisActions.vue';
 import { useAegisSuggestion } from '@/composables/aegis/useAegisSuggestion';
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 
+import { osimRuntime } from '@/stores/osimRuntime';
+
 const props = withDefaults(defineProps<{
   aegisContext?: AegisSuggestionContextRefs | null;
 }>(), {
@@ -50,7 +52,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiMitigationSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"

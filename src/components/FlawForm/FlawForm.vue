@@ -284,6 +284,8 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                   class="bi bi-robot text-primary me-1"
                 ></i>
                 <AegisTitleActions
+                  v-if="osimRuntime.flags?.aiTitleSuggestions ||
+                    isFieldValueAIBot('title', flaw.title)"
                   :composable="aegisSuggestTitleComposable"
                   :titleValue="flaw.title"
                 />
@@ -483,6 +485,8 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                     class="bi bi-robot text-primary me-1"
                   ></i>
                   <AegisDescriptionActions
+                    v-if="osimRuntime.flags?.aiDescriptionSuggestions ||
+                      isFieldValueAIBot('cve_description', flaw.cve_description)"
                     :composable="aegisSuggestDescriptionComposable"
                     :descriptionValue="flaw.cve_description"
                   />
@@ -513,6 +517,8 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                     class="bi bi-robot text-primary me-1"
                   ></i>
                   <AegisStatementActions
+                    v-if="osimRuntime.flags?.aiStatementSuggestions ||
+                      isFieldValueAIBot('statement', flaw.statement)"
                     v-model="flaw.statement"
                     :aegisContext="aegisContext"
                   />
