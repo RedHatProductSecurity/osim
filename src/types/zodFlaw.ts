@@ -152,6 +152,7 @@ export enum FlawLabelTypeEnum {
   BU = 'bu',
   CONTEXT_BASED = 'context_based',
   PRODUCT_FAMILY = 'product_family',
+  WORKFLOW = 'workflow',
 }
 export type ZodFlawLabelType = NonNullable<ZodFlawType['labels']>[number];
 export type ZodFlawType = z.infer<typeof ZodFlawSchema>;
