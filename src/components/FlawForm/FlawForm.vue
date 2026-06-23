@@ -415,9 +415,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           <FlawWorkflowState
             v-if="mode === 'edit'"
             :classification="flaw.classification"
-            :flawId="flaw.uuid"
             :shouldCreateJiraTask
-            @refresh:flaw="emit('refresh:flaw')"
             @create:jiraTask="toggleShouldCreateJiraTask()"
           />
           <div class="osim-incident-state-container mb-2">
