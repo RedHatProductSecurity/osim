@@ -1,5 +1,3 @@
-import { nextTick } from 'vue';
-
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
@@ -337,41 +335,11 @@ describe('flawForm', () => {
     expect(subject.findComponent(Nudge)).toBeTruthy();
   });
 
-  osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
+  osimFullFlawTest('displays state as read-only with no change-state buttons', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
-
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
-
-    for (const button of menu.findAll('button')) {
-      expect(([
-        'Change State',
-        'Promote to Triage',
-        'Reject',
-        'Reset',
-        'Revert to Empty',
-      ]).includes(button.text().trim())).toBe(true);
-    }
-  });
-
-  osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
-    const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
-
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
-
-    const rejectButton = menu?.findAll('button')?.find(el => el.text() === 'Reject');
-    await rejectButton?.trigger('click');
-    await flushPromises();
-    expect(subject.find('.modal-dialog').exists()).toBe(true);
+    const workflowState = subject.findComponent(FlawWorkflowState);
+    expect(workflowState.findComponent(DropDownMenu).exists()).toBe(false);
+    expect(workflowState.find('span.form-control').text()).toBe(flaw.classification?.state);
   });
 
   osimFullFlawTest('shows an explanation message when nvd score and Rh score mismatch', async ({ flaw }) => {
