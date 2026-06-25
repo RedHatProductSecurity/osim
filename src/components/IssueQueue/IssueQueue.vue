@@ -57,8 +57,8 @@ const filteredStates = computed(() => {
 const params = computed(() => {
   const paramsObj: Record<string, any> = {};
 
-  if (isMyIssuesSelected.value && userStore.jiraUsername !== '') {
-    paramsObj.owner = userStore.jiraUsername;
+  if (isMyIssuesSelected.value && userStore.userEmail !== '') {
+    paramsObj.owner = userStore.userEmail;
   }
 
   if (isOpenIssuesSelected.value) {
