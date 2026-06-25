@@ -661,7 +661,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   </div>
-  <div data-v-76e7a15d="" class="osim-action-buttons sticky-bottom d-flex justify-content-end"><button data-v-76e7a15d="" type="button" class="btn btn-secondary">Reset Changes</button><button data-v-76e7a15d="" type="submit" class="btn btn-primary ms-3">
+  <div data-v-76e7a15d="" class="osim-action-buttons sticky-bottom d-flex justify-content-end"><button data-v-76e7a15d="" type="button" class="btn btn-secondary" disabled="" title="No changes to reset"> Reset Changes </button><button data-v-76e7a15d="" type="submit" class="btn btn-primary ms-3" disabled="" title="No changes to save">
       <div style="max-height: 1rem; max-width: 1rem;" role="status"></div> Save Changes
     </button></div>
 </form>"

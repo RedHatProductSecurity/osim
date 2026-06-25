@@ -383,6 +383,7 @@ export function useFlawModel() {
     flawIncidentStates,
     osimLink,
     bugzillaLink,
+    areLabelsUpdated,
     shouldCreateJiraTask,
     toggleShouldCreateJiraTask,
     createFlaw,

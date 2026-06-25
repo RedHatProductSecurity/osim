@@ -11,11 +11,16 @@ const updatedLabels = ref<Set<string>>(new Set<string>());
 const deletedLabels = ref<Set<string>>(new Set<string>());
 
 export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
-  if (initialLabels && toValue(initialLabels)?.length) {
-    labels.value = toValue(initialLabels).reduce((acc: Record<string, ZodFlawLabelType>, label) => {
-      acc[label.label] = label;
-      return acc;
-    }, {});
+  if (initialLabels !== undefined) {
+    const labelArray = toValue(initialLabels);
+    if (labelArray && labelArray.length > 0) {
+      labels.value = labelArray.reduce((acc: Record<string, ZodFlawLabelType>, label) => {
+        acc[label.label] = label;
+        return acc;
+      }, {});
+    } else {
+      labels.value = {};
+    }
     newLabels.value = new Set();
     updatedLabels.value = new Set();
     deletedLabels.value = new Set();
