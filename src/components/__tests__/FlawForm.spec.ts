@@ -339,7 +339,7 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowState = subject.findComponent(FlawWorkflowState);
     expect(workflowState.findComponent(DropDownMenu).exists()).toBe(false);
-    const { workflow, state } = flaw.classification!;
+    const { state, workflow } = flaw.classification!;
     const expectedLabel = workflow ? `${workflow} / ${state}` : state;
     expect(workflowState.find('span.form-control').text()).toBe(expectedLabel);
   });

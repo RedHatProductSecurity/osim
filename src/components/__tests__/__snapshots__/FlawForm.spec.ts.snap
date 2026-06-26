@@ -329,7 +329,7 @@ exports[`flawForm > mounts and renders 1`] = `
         <div data-v-0e2ae48e="" data-v-79158bda="" class="osim-input ps-3 osim-workflow-state-display mb-2">
           <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
             <div data-v-0e2ae48e="" class="col-9">
-              <div data-v-79158bda="" class="d-flex align-items-center gap-2"><span data-v-79158bda="" class="form-control osim-state-field">NEW</span>
+              <div data-v-79158bda="" class="d-flex align-items-center gap-2"><span data-v-79158bda="" class="form-control osim-state-field">DEFAULT / NEW </span>
                 <!--v-if-->
               </div>
             </div>
