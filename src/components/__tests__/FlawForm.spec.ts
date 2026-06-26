@@ -339,7 +339,9 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowState = subject.findComponent(FlawWorkflowState);
     expect(workflowState.findComponent(DropDownMenu).exists()).toBe(false);
-    expect(workflowState.find('span.form-control').text()).toBe(flaw.classification?.state);
+    const { workflow, state } = flaw.classification!;
+    const expectedLabel = workflow ? `${workflow} / ${state}` : state;
+    expect(workflowState.find('span.form-control').text()).toBe(expectedLabel);
   });
 
   osimFullFlawTest('shows an explanation message when nvd score and Rh score mismatch', async ({ flaw }) => {
