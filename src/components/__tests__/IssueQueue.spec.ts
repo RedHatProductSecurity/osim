@@ -12,7 +12,7 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 
 vi.mock('@/stores/UserStore', () => ({
   useUserStore: () => ({
-    jiraUsername: 'skynet',
+    userEmail: 'skynet@example.com',
   }),
 }));
 
@@ -82,7 +82,7 @@ describe('issueQueue', () => {
     expect(fetchEvents).toHaveProperty('flaws:fetch');
     expect(fetchEvents['flaws:fetch'][0]).toEqual([
       expect.objectContaining({
-        _value: { order: '-created_dt', owner: 'skynet' },
+        _value: { order: '-created_dt', owner: 'skynet@example.com' },
       }),
     ]);
     expect(issues.length).toBe(1);

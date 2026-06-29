@@ -22,9 +22,11 @@ const { flaw } = useFlaw();
 const userStore = useUserStore();
 
 async function selfAssign() {
-  await userStore.updateJiraUsername();
-  modelValue.value = userStore.jiraUsername;
-  contributor.value = userStore.jiraUsername;
+  if (!userStore.userEmail) {
+    return;
+  }
+  modelValue.value = userStore.userEmail;
+  contributor.value = userStore.userEmail;
 }
 
 const cacheJiraUsers = useMemoize(async (query: string) => {
@@ -49,7 +51,10 @@ const onQueryChange = async (query: string) => {
 };
 
 const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
-  contributor.value = toValue(user.emailAddress ?? user.name ?? '');
+  contributor.value = toValue(user.emailAddress ?? '');
+  if (!contributor.value) {
+    return;
+  }
   modelValue.value = contributor.value;
   results.value = [];
 };
