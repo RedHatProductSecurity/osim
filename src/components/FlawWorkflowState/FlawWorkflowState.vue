@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import type { z } from 'zod';
 
-import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
+import { FlawClassificationStateEnum } from '@/generated-client';
 import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
 import type { ZodFlawClassification } from '@/types/zodShared';
-import { FlawClassificationStateEnum } from '@/generated-client';
+import LabelDiv from '@/widgets/LabelDiv/LabelDiv.vue';
+
+import FlawNextStatePanel from './FlawNextStatePanel.vue';
 
 const props = defineProps<{
   classification?: null | z.infer<typeof ZodFlawClassification>;
+  flawUuid: string;
   labels?: null | ZodFlawLabelType[];
   shouldCreateJiraTask: boolean;
 }>();
 
 const emit = defineEmits<{ 'create:jiraTask': [] }>();
+
+const isNextStateOpen = ref(false);
 
 const workflowPrefix = computed(() => props.classification?.workflow ?? null);
 const stateValue = computed(() => props.classification?.state || null);
@@ -28,10 +33,6 @@ const workflowLabels = computed(() =>
 const shouldShowCreateJiraTaskButton = computed(
   () => props.classification?.state === FlawClassificationStateEnum.Empty,
 );
-
-function toggleCreateJiraTask() {
-  emit('create:jiraTask');
-}
 </script>
 
 <template>
@@ -57,18 +58,29 @@ function toggleCreateJiraTask() {
           </template>
           <template v-else>Legacy Flaw without Jira task</template>
         </span>
+        <button
+          type="button"
+          class="btn btn-sm osim-next-state-btn"
+          :class="{ active: isNextStateOpen }"
+          title="Next state requirements"
+          @click="isNextStateOpen = !isNextStateOpen"
+        >
+          <i class="bi bi-info-circle" />
+        </button>
         <div v-if="shouldShowCreateJiraTaskButton" class="flex-shrink-0">
           <button
             type="button"
             class="btn btn-warning osim-last-field-button"
             title="Creates Jira task when flaw is saved"
-            @click="toggleCreateJiraTask"
+            @click="emit('create:jiraTask')"
           >
             <i :class="{ 'bi-square': !shouldCreateJiraTask, 'bi-check-square': shouldCreateJiraTask }" />
             Create Jira task
           </button>
         </div>
       </div>
+
+      <FlawNextStatePanel v-if="isNextStateOpen" :flawUuid />
     </LabelDiv>
   </div>
 </template>
@@ -120,6 +132,22 @@ function toggleCreateJiraTask() {
     background-color: #6c757d;
     color: #fff;
     border-radius: 0.25rem !important;
+  }
+
+  .osim-next-state-btn {
+    flex-shrink: 0;
+    color: #6c757d;
+    font-size: 1rem;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+
+    &:hover,
+    &.active {
+      color: #0d6efd;
+      background-color: #e7f1ff;
+      border-color: #b6d4fe;
+    }
   }
 }
 </style>
