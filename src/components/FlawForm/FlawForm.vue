@@ -415,6 +415,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           <FlawWorkflowState
             v-if="mode === 'edit'"
             :classification="flaw.classification"
+            :flawUuid="flaw.uuid!"
             :labels="flaw.labels"
             :shouldCreateJiraTask
             @create:jiraTask="toggleShouldCreateJiraTask()"
