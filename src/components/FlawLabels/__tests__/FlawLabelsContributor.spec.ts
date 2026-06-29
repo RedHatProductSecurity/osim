@@ -8,14 +8,15 @@ import FlawLabelsContributor from '../FlawLabelsContributor.vue';
 
 vi.mock('@/stores/UserStore', () => ({
   useUserStore: () => ({
-    jiraUsername: 'skynet',
-    updateJiraUsername: vi.fn(),
+    userEmail: 'skynet@example.com',
   }),
 }));
 
 vi.mock('@/services/JiraService', () => ({
   searchJiraUsers: () => {
-    return Promise.resolve({ data: [{ accountId: 'skynet-id', displayName: 'SkyNet', name: 'skynet' }] });
+    return Promise.resolve({
+      data: [{ accountId: 'skynet-id', displayName: 'SkyNet', name: 'skynet', emailAddress: 'skynet@example.com' }],
+    });
   },
 }));
 
@@ -58,7 +59,7 @@ describe('flawLabelsContributor', () => {
 
     await wrapper.find('button').trigger('click');
 
-    expect(wrapper.props('modelValue')).toBe('skynet');
+    expect(wrapper.props('modelValue')).toBe('skynet@example.com');
   });
 
   it('should assign the contributor on click', async () => {
@@ -70,7 +71,7 @@ describe('flawLabelsContributor', () => {
     await flushPromises();
     await wrapper.find('div.item').trigger('click');
 
-    expect(wrapper.props('modelValue')).toBe('skynet');
+    expect(wrapper.props('modelValue')).toBe('skynet@example.com');
   });
 
   it('should not allow arbitrary input', async () => {
