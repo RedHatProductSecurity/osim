@@ -92,7 +92,7 @@ onMounted(() => {
 <template>
   <AegisActions
     v-if="osimRuntime.flags?.aiCweSuggestions === true || isCweAIBot"
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiCweSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"

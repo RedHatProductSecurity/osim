@@ -72,7 +72,7 @@ const suggestionTooltip = computed(() => {
 <template>
   <AegisActions
     v-if="osimRuntime.flags?.aiStatementSuggestions || isStatementAIBot"
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiStatementSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"

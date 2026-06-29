@@ -7,6 +7,8 @@ import type { UseAegisSuggestDescriptionReturn } from '@/composables/aegis/useAe
 import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
+import { osimRuntime } from '@/stores/osimRuntime';
+
 const props = defineProps<{
   composable: UseAegisSuggestDescriptionReturn;
   descriptionValue?: null | string;
@@ -60,7 +62,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiDescriptionSuggestions"
     :hasAppliedSuggestion="hasAppliedDescriptionSuggestion"
     :hasMultipleSuggestions="false"
     :isFetchingSuggestion="isSuggesting"

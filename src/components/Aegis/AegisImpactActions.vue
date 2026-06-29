@@ -8,6 +8,7 @@ import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSug
 import { useAegisFieldFeedback } from '@/composables/aegis/useAegisFieldFeedback';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
+import { osimRuntime } from '@/stores/osimRuntime';
 import type { ImpactEnumWithBlankType } from '@/types/zodShared';
 
 const props = withDefaults(defineProps<{
@@ -83,7 +84,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    :canSuggest="canSuggest"
+    :canSuggest="canSuggest && !!osimRuntime.flags?.aiImpactSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
     :isFetchingSuggestion="isFetchingSuggestion"
