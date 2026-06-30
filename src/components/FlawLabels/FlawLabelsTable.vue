@@ -72,7 +72,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
 <template>
   <LabelCollapsible :isExpanded @toggle-expanded="toggleExpanded()">
     <template #label>
-      <span class="section-label">Contributors</span>
+      <span class="section-label">Labels</span>
     </template>
     <table class="table table-striped table-hover">
       <thead class="table-dark">
