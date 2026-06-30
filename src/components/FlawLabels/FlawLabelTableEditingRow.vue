@@ -29,6 +29,7 @@ const [labelType, hasTypeChanged] = watchedRef<FlawLabelTypeEnum>(
 const isNewLabel = computed(() => !initalLabel);
 const isAliasType = computed(() => labelType.value === FlawLabelTypeEnum.ALIAS);
 const isBuType = computed(() => labelType.value === FlawLabelTypeEnum.BU);
+const isWorkflowType = computed(() => labelType.value === FlawLabelTypeEnum.WORKFLOW);
 
 const emitSave = () => {
   // if nothing changed, do not emit save
@@ -78,6 +79,7 @@ const emitSave = () => {
       <option :value="FlawLabelTypeEnum.ALIAS">alias</option>
       <option :value="FlawLabelTypeEnum.BU">bu</option>
       <option :value="FlawLabelTypeEnum.CONTEXT_BASED">context_based</option>
+      <option :value="FlawLabelTypeEnum.WORKFLOW">workflow</option>
     </select>
     <template v-else>
       {{ initalLabel?.type }}
@@ -93,13 +95,13 @@ const emitSave = () => {
     <template v-if="initalLabel?.type === FlawLabelTypeEnum.PRODUCT_FAMILY">
       {{ initalLabel?.label }}
     </template>
-    <!-- Alias labels use free text input -->
-    <template v-else-if="isAliasType">
+    <!-- Alias and workflow labels use free text input -->
+    <template v-else-if="isAliasType || isWorkflowType">
       <input
         v-model="labelName"
         type="text"
         class="form-control"
-        placeholder="Enter alias name"
+        :placeholder="isWorkflowType ? 'Enter workflow label name' : 'Enter alias name'"
         required
       >
     </template>

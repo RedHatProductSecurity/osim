@@ -2953,7 +2953,8 @@ export interface FlawCollaboratorPostRequest {
  */
 export const FlawCollaboratorPostTypeEnum = {
     Alias: 'alias',
-    ContextBased: 'context_based'
+    ContextBased: 'context_based',
+    Workflow: 'workflow'
 } as const;
 export type FlawCollaboratorPostTypeEnum = typeof FlawCollaboratorPostTypeEnum[keyof typeof FlawCollaboratorPostTypeEnum];
 
@@ -3124,9 +3125,10 @@ export interface FlawLabel {
  */
 export const FlawLabelType = {
     Alias: 'alias',
+    Bu: 'bu',
     ContextBased: 'context_based',
     ProductFamily: 'product_family',
-    Bu: 'bu'
+    Workflow: 'workflow'
 } as const;
 export type FlawLabelType = typeof FlawLabelType[keyof typeof FlawLabelType];
 

@@ -12774,6 +12774,7 @@ components:
       enum:
       - alias
       - context_based
+      - workflow
       type: string
     FlawCollaboratorRequest:
       type: object
@@ -12889,6 +12890,7 @@ components:
       - context_based
       - product_family
       - bu
+      - workflow
       type: string
     FlawPackageVersion:
       type: object
