@@ -1,4 +1,4 @@
-import { computed, ref, toValue, type MaybeRef } from 'vue';
+import { computed, ref, toValue, watch, type MaybeRef } from 'vue';
 
 import { useFlaw } from '@/composables/useFlaw';
 
@@ -10,20 +10,23 @@ const newLabels = ref<Set<string>>(new Set<string>());
 const updatedLabels = ref<Set<string>>(new Set<string>());
 const deletedLabels = ref<Set<string>>(new Set<string>());
 
+function initLabels(labelArray: null | undefined | ZodFlawLabelType[]) {
+  labels.value = Array.isArray(labelArray)
+    ? labelArray.reduce((acc: Record<string, ZodFlawLabelType>, label) => {
+      acc[label.label] = label;
+      return acc;
+    }, {})
+    : {};
+  newLabels.value = new Set();
+  updatedLabels.value = new Set();
+  deletedLabels.value = new Set();
+}
+
 export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
   if (initialLabels !== undefined) {
-    const labelArray = toValue(initialLabels);
-    if (labelArray && labelArray.length > 0) {
-      labels.value = labelArray.reduce((acc: Record<string, ZodFlawLabelType>, label) => {
-        acc[label.label] = label;
-        return acc;
-      }, {});
-    } else {
-      labels.value = {};
-    }
-    newLabels.value = new Set();
-    updatedLabels.value = new Set();
-    deletedLabels.value = new Set();
+    initLabels(toValue(initialLabels));
+    // Re-initialize when the prop changes (e.g. after a flaw refetch discards pending edits)
+    watch(() => toValue(initialLabels), initLabels);
   }
 
   const { flaw } = useFlaw();

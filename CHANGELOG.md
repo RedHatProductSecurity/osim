@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
+* Add workflow label type support in Labels section (`OSIDB-5019`)
 
 ### Fixed
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
@@ -9,6 +10,7 @@
 
 ### Changed
 * Update error message on failed logging (`OSIDB-5011`)
+* Rename 'Contributors' section to 'Labels' and remove workflow state change buttons (`OSIDB-5019`)
 
 ## [2026.5.1]
 ### Added
