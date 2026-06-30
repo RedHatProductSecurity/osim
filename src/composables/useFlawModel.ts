@@ -13,6 +13,7 @@ import { useFlawLabels } from '@/composables/useFlawLabels';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import {
+  getFlaw,
   getFlawBugzillaLink,
   getFlawOsimLink,
   postFlaw,
@@ -31,7 +32,6 @@ import {
   type DeepMapValues,
   type DeepNullable,
   type ZodFlawType,
-  type ZodFlawLabelType,
   type ZodAffectType,
 } from '@/types';
 
@@ -330,11 +330,10 @@ export function useFlawModel() {
       queue.push(async () => {
         const response = await updateLabels();
         if (response && Array.isArray(response)) {
-          const labels = response
-            .filter((result): result is PromiseFulfilledResult<{ data: any; response: Response }> =>
-              result.status === 'fulfilled' && result.value?.data)
-            .map(result => result.value.data);
-          afterSuccessQueue.push(() => setFlaw(labels as ZodFlawLabelType[], 'labels', false));
+          // Re-fetch the full flaw so side-effects on the backend (e.g. classification.state
+          // changing to DONE when approved/rejected label is added) are reflected immediately.
+          const updatedFlaw = await getFlaw(flaw.value.uuid);
+          afterSuccessQueue.push(() => setFlaw({ ...updatedFlaw, affects: flaw.value.affects }));
         }
       });
     }

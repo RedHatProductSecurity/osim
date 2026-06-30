@@ -80,7 +80,7 @@ const shouldShowCreateJiraTaskButton = computed(
         </div>
       </div>
 
-      <FlawNextStatePanel v-if="isNextStateOpen" :flawUuid />
+      <FlawNextStatePanel v-if="isNextStateOpen" :key="stateValue ?? ''" :flawUuid />
     </LabelDiv>
   </div>
 </template>
