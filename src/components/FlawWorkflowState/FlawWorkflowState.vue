@@ -16,11 +16,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'create:jiraTask': [] }>();
 
-const workflowStateLabel = computed(() => {
-  const { state, workflow } = props.classification;
-  if (!state) return 'Legacy Flaw without Jira task';
-  return workflow ? `${workflow} / ${state}` : state;
-});
+const workflowPrefix = computed(() => props.classification.workflow ?? null);
+const stateValue = computed(() => props.classification.state || null);
 
 const workflowLabels = computed(() =>
   (props.labels ?? []).filter(
@@ -42,13 +39,23 @@ function toggleCreateJiraTask() {
     <LabelDiv label="State" class="osim-workflow-state-display mb-2">
       <div class="d-flex align-items-center gap-2">
         <span class="form-control osim-state-field">
-          {{ workflowStateLabel }}
-          <span
-            v-for="wfLabel in workflowLabels"
-            :key="wfLabel.label"
-            class="badge osim-workflow-label-badge ms-1"
-            title="workflow label"
-          >{{ wfLabel.label }}</span>
+          <template v-if="stateValue">
+            <span class="osim-state-line">
+              <span class="osim-workflow-prefix">State: <span class="osim-state-value">{{ stateValue }}</span></span>
+              <span v-if="workflowPrefix" class="osim-workflow-prefix">
+                / Workflow: <span class="osim-workflow-value">{{ workflowPrefix }}</span>
+              </span>
+            </span>
+            <span v-if="workflowLabels.length" class="osim-badges-line">
+              <span
+                v-for="wfLabel in workflowLabels"
+                :key="wfLabel.label"
+                class="badge osim-workflow-label-badge me-1"
+                title="workflow label"
+              >{{ wfLabel.label }}</span>
+            </span>
+          </template>
+          <template v-else>Legacy Flaw without Jira task</template>
         </span>
         <div v-if="shouldShowCreateJiraTaskButton" class="flex-shrink-0">
           <button
@@ -76,7 +83,33 @@ function toggleCreateJiraTask() {
     flex: 1 1 auto;
     width: auto;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .osim-state-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+
+  .osim-state-value {
+    font-weight: 600;
+  }
+
+  .osim-workflow-prefix {
+    color: #000;
+    font-size: 0.85em;
+
+    .osim-state-value,
+    .osim-workflow-value {
+      font-weight: 600;
+      color: #000;
+    }
+  }
+
+  .osim-badges-line {
+    display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
@@ -86,6 +119,7 @@ function toggleCreateJiraTask() {
     font-weight: 500;
     background-color: #6c757d;
     color: #fff;
+    border-radius: 0.25rem !important;
   }
 }
 </style>
