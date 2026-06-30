@@ -322,14 +322,14 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
-    expect(workflowStateField?.props().classification.state).toBe('NEW');
+    expect(workflowStateField?.props().classification?.state).toBe('NEW');
   });
 
   osimFullFlawTest('displays with impact nudge when workflow state is after triage', async ({ flaw }) => {
     flaw.classification!.state = FlawClassificationStateEnum.PreSecondaryAssessment;
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject.findComponent(FlawWorkflowState);
-    expect(workflowStateField?.props().classification.state).toBe('PRE_SECONDARY_ASSESSMENT');
+    expect(workflowStateField?.props().classification?.state).toBe('PRE_SECONDARY_ASSESSMENT');
     (subject.vm as any).flaw.impact = 'CRITICAL';
     await flushPromises();
     expect(subject.findComponent(Nudge)).toBeTruthy();

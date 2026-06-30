@@ -9,15 +9,15 @@ import type { ZodFlawClassification } from '@/types/zodShared';
 import { FlawClassificationStateEnum } from '@/generated-client';
 
 const props = defineProps<{
-  classification: z.infer<typeof ZodFlawClassification>;
+  classification?: null | z.infer<typeof ZodFlawClassification>;
   labels?: null | ZodFlawLabelType[];
   shouldCreateJiraTask: boolean;
 }>();
 
 const emit = defineEmits<{ 'create:jiraTask': [] }>();
 
-const workflowPrefix = computed(() => props.classification.workflow ?? null);
-const stateValue = computed(() => props.classification.state || null);
+const workflowPrefix = computed(() => props.classification?.workflow ?? null);
+const stateValue = computed(() => props.classification?.state || null);
 
 const workflowLabels = computed(() =>
   (props.labels ?? []).filter(
@@ -26,7 +26,7 @@ const workflowLabels = computed(() =>
 );
 
 const shouldShowCreateJiraTaskButton = computed(
-  () => props.classification.state === FlawClassificationStateEnum.Empty,
+  () => props.classification?.state === FlawClassificationStateEnum.Empty,
 );
 
 function toggleCreateJiraTask() {
