@@ -104,7 +104,9 @@ const aegisBuildVersions = computed(() => uniques(
 const versionSelections = ref<Record<string, boolean>>({});
 watch(aegisBuildVersions, () => {
   aegisBuildVersions.value.forEach((version: string) => {
-    versionSelections.value[version] = false;
+    if (!(version in versionSelections.value)) {
+      versionSelections.value[version] = false;
+    }
   });
 });
 
