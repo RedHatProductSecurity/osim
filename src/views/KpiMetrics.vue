@@ -243,7 +243,7 @@ const hasActiveVersionFilters = computed(() =>
             <button
               v-for="aegisBuildVersion in aegisBuildVersions"
               :key="aegisBuildVersion"
-              class="btn"
+              class="btn me-2"
               :class="{
                 'btn-outline-secondary': !versionSelections[aegisBuildVersion],
                 'btn-secondary': versionSelections[aegisBuildVersion]
