@@ -141,6 +141,7 @@ export type AegisKpiFeatureParamType =
   | 'suggest-cwe'
   | 'suggest-description'
   | 'suggest-impact'
+  | 'suggest-mitigation'
   | 'suggest-statement'
   | 'suggest-title';
 export type AegisFeedbackPayload = {
