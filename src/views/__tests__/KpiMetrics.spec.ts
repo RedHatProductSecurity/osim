@@ -824,4 +824,36 @@ describe('kpiMetrics', () => {
       });
     });
   });
+
+  it('should handle filter deselection by clicking', async () => {
+    wrapper = mountKpiMetrics();
+    await flushPromises();
+
+    wrapper.vm.versionSelections = { '1.0.0': false };
+    await wrapper.vm.$nextTick();
+
+    const buttons = wrapper.findAll('button');
+    const filterButton = buttons.find(btn => btn.text() === '1.0.0');
+
+    await filterButton!.trigger('click');
+    expect(wrapper.vm.hasActiveVersionFilters).toBe(true);
+
+    await filterButton!.trigger('click');
+    expect(wrapper.vm.hasActiveVersionFilters).toBe(false);
+  });
+
+  it('should clear all filters when clicking clear button', async () => {
+    wrapper = mountKpiMetrics();
+    await flushPromises();
+
+    wrapper.vm.versionSelections = { '1.0.0': true, '2.0.0': true };
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.hasActiveVersionFilters).toBe(true);
+
+    const buttons = wrapper.findAll('button');
+    const clearButton = buttons.find(btn => btn.text() === 'Clear All Filters');
+
+    await clearButton!.trigger('click');
+    expect(wrapper.vm.hasActiveVersionFilters).toBe(false);
+  });
 });
