@@ -29,13 +29,17 @@ export function useWorkflowNextState(flawUuid: string) {
     try {
       const data = await getFlawWorkflowClassification(flawUuid);
       const { state, workflow } = data.classification;
-      const currentWorkflow = data.workflows.find(w => w.name === workflow);
+      const currentWorkflow = data.workflows.find(({ name }) => name === workflow);
       if (!currentWorkflow) {
         error.value = 'Current workflow not found';
         return;
       }
-      const currentIndex = currentWorkflow.states.findIndex(s => s.name === state);
-      nextState.value = currentIndex >= 0 && currentIndex < currentWorkflow.states.length - 1
+      const currentIndex = currentWorkflow.states.findIndex(({ name }) => name === state);
+      if (currentIndex === -1) {
+        error.value = `Unknown state "${state}" in workflow "${workflow}"`;
+        return;
+      }
+      nextState.value = currentIndex < currentWorkflow.states.length - 1
         ? currentWorkflow.states[currentIndex + 1]
         : null;
       isFetched.value = true;

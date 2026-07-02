@@ -59,6 +59,7 @@ const shouldShowCreateJiraTaskButton = computed(
           <template v-else>Legacy Flaw without Jira task</template>
         </span>
         <button
+          v-if="stateValue"
           type="button"
           class="btn btn-sm osim-next-state-btn"
           :class="{ active: isNextStateOpen }"
@@ -80,7 +81,7 @@ const shouldShowCreateJiraTaskButton = computed(
         </div>
       </div>
 
-      <FlawNextStatePanel v-if="isNextStateOpen" :flawUuid />
+      <FlawNextStatePanel v-if="isNextStateOpen" :key="stateValue ?? ''" :flawUuid />
     </LabelDiv>
   </div>
 </template>

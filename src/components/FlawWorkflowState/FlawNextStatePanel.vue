@@ -19,14 +19,15 @@ const {
 
 onMounted(fetchNextState);
 
-const CONDITION_LABELS: Record<string, string> = {
+type BoolOp = 'AND' | 'OR';
+const CONDITION_LABELS: Record<BoolOp, string> = {
   AND: 'All of:',
   OR: 'Any of:',
 };
 
 function requirementLabel(req: WorkflowRequirement): string {
   if (isWorkflowCondition(req)) {
-    return CONDITION_LABELS[req.condition.toUpperCase()] ?? req.condition;
+    return CONDITION_LABELS[req.condition.toUpperCase() as BoolOp] ?? req.condition;
   }
   return req.name;
 }
@@ -57,16 +58,16 @@ function requirementLabel(req: WorkflowRequirement): string {
 
       <ul v-if="unsatisfiedRequirements.length" class="osim-requirements-list mt-1">
         <li
-          v-for="req in unsatisfiedRequirements"
-          :key="requirementLabel(req)"
+          v-for="(req, index) in unsatisfiedRequirements"
+          :key="`${requirementLabel(req)}-${index}`"
           class="osim-requirement osim-requirement--unmet"
         >
           <i class="bi bi-x-circle-fill me-1 text-danger" />
           <span>{{ requirementLabel(req) }}</span>
           <ul v-if="isWorkflowCondition(req)" class="osim-requirements-list mt-1">
             <li
-              v-for="child in req.requirements"
-              :key="requirementLabel(child)"
+              v-for="(child, childIndex) in req.requirements"
+              :key="`${requirementLabel(child)}-${childIndex}`"
               class="osim-requirement"
               :class="child.accepts ? 'osim-requirement--met' : 'osim-requirement--unmet'"
             >
@@ -84,12 +85,28 @@ function requirementLabel(req: WorkflowRequirement): string {
 
       <ul v-if="satisfiedRequirements.length" class="osim-requirements-list mt-1">
         <li
-          v-for="req in satisfiedRequirements"
-          :key="requirementLabel(req)"
+          v-for="(req, index) in satisfiedRequirements"
+          :key="`${requirementLabel(req)}-${index}`"
           class="osim-requirement osim-requirement--met"
         >
           <i class="bi bi-check-circle-fill me-1 text-success" />
           <span>{{ requirementLabel(req) }}</span>
+          <ul v-if="isWorkflowCondition(req)" class="osim-requirements-list mt-1">
+            <li
+              v-for="(child, childIndex) in req.requirements"
+              :key="`${requirementLabel(child)}-${childIndex}`"
+              class="osim-requirement"
+              :class="child.accepts ? 'osim-requirement--met' : 'osim-requirement--unmet'"
+            >
+              <i
+                class="me-1"
+                :class="child.accepts
+                  ? 'bi bi-check-circle-fill text-success'
+                  : 'bi bi-x-circle-fill text-danger'"
+              />
+              {{ requirementLabel(child) }}
+            </li>
+          </ul>
         </li>
       </ul>
     </template>
