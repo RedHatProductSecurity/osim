@@ -18,14 +18,14 @@ const { issue, showLabels } = defineProps<{
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 //       and update the CSS for the column width in IssueQueue
 
-const nonIdFields: Exclude<keyof FilteredIssue, 'flaw' | 'id'>[] =
-  ['impact', 'formattedDate', 'title', 'workflowState', 'owner'];
+const nonIdFields: Exclude<keyof FilteredIssue, 'cve_id' | 'uuid'>[] =
+  ['impact', 'formattedDate', 'title', 'classification', 'owner'];
 
 const { isFlawUnprocessed } = useUnprocessedFlawDetection();
 
 const hasBadges = computed(() =>
   issue.embargoed
-  || (showLabels && (!!issue.labels?.length || (issue.flaw && isFlawUnprocessed(issue.flaw)))),
+  || (showLabels && (!!issue.labels?.length || isFlawUnprocessed(issue))),
 );
 const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
   if (
@@ -72,8 +72,8 @@ function getLabelColor(label: string, type: string): string {
       class="osim-issue-title"
       :class="{ 'pb-0': hasBadges }"
     >
-      <RouterLink :to="{ name: 'flaw-details', params: { id: issue.id } }">
-        {{ issue.id }}
+      <RouterLink :to="{ name: 'flaw-details', params: { id: issue.cve_id || issue.uuid } }">
+        {{ issue.cve_id || issue.uuid }}
       </RouterLink>
     </td>
     <td
@@ -81,7 +81,7 @@ function getLabelColor(label: string, type: string): string {
       :key="field"
       :class="{ 'pb-0': hasBadges }"
     >
-      {{ issue[field] }}
+      {{ field === 'classification' ? issue[field]?.state : issue[field] }}
     </td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>
@@ -97,7 +97,7 @@ function getLabelColor(label: string, type: string): string {
           class="badge rounded-pill text-bg-danger border border-primary"
         >Embargoed</span>
         <template v-if="showLabels">
-          <UnprocessedFlawLabel v-if="issue.flaw" :flaw="issue.flaw" variant="badge" />
+          <UnprocessedFlawLabel v-if="isFlawUnprocessed(issue)" :flaw="issue" variant="badge" />
           <template
             v-for="label in sortedLabels"
             :key="label.label"
