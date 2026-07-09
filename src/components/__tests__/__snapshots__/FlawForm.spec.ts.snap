@@ -329,27 +329,10 @@ exports[`flawForm > mounts and renders 1`] = `
         <div data-v-0e2ae48e="" data-v-79158bda="" class="osim-input ps-3 osim-workflow-state-display mb-2">
           <div data-v-0e2ae48e="" class="row"><span data-v-0e2ae48e="" class="form-label col-3 position-relative"><!--v-if--> State <!--attrs: {{ $attrs }}--></span>
             <div data-v-0e2ae48e="" class="col-9">
-              <div data-v-79158bda="" class="d-flex"><span data-v-79158bda="" class="form-control rounded-0">NEW</span>
-                <div data-v-79158bda="" class="col-auto">
-                  <div data-v-79158bda="" class="osim-workflow-state-buttons">
-                    <div data-v-846ac2ce="" data-v-79158bda="" class="dropdown-container">
-                      <div data-v-846ac2ce="" class="dropdown-trigger px-1"><button data-v-79158bda="" type="button" class="btn btn-secondary dropdown-toggle"> Change State
-                          <!--v-if-->
-                        </button></div>
-                      <teleport-stub data-v-846ac2ce="" to="#app">
-                        <!--v-if-->
-                      </teleport-stub>
-                      <!--v-if-->
-                    </div>
-                  </div>
-                </div>
+              <div data-v-79158bda="" class="d-flex align-items-center gap-2"><span data-v-79158bda="" class="form-control osim-state-field"><span data-v-79158bda="" class="osim-state-line"><span data-v-79158bda="" class="osim-workflow-prefix">State: <span data-v-79158bda="" class="osim-state-value">NEW</span></span><span data-v-79158bda="" class="osim-workflow-prefix"> / Workflow: <span data-v-79158bda="" class="osim-workflow-value">DEFAULT</span></span></span>
+                <!--v-if--></span>
+                <!--v-if-->
               </div>
-              <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
-                <!--v-if-->
-              </transition-stub>
-              <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
-                <!--v-if-->
-              </transition-stub>
             </div>
           </div>
         </div>
@@ -590,7 +573,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="row osim-flaw-form-section">
-    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-5d530569="" class="section-label">Contributors</span></button>
+    <div data-v-4715e8e2="" data-v-5d530569="" data-v-76e7a15d="" class="osim-collapsible-label"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-plus-square-dotted"></i><span data-v-5d530569="" class="section-label">Labels</span></button>
       <div data-v-4715e8e2="" class="ps-3 border-start">
         <div data-v-4715e8e2="" class="visually-hidden">
           <table data-v-5d530569="" class="table table-striped table-hover">

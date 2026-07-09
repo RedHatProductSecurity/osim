@@ -1,5 +1,3 @@
-import { nextTick } from 'vue';
-
 import { describe, it, expect, vi } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
@@ -324,54 +322,27 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject.findComponent(FlawWorkflowState);
     expect(workflowStateField?.findComponent(LabelDiv).props().label).toBe('State');
-    expect(workflowStateField?.props().classification.state).toBe('NEW');
+    expect(workflowStateField?.props().classification?.state).toBe('NEW');
   });
 
   osimFullFlawTest('displays with impact nudge when workflow state is after triage', async ({ flaw }) => {
     flaw.classification!.state = FlawClassificationStateEnum.PreSecondaryAssessment;
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const workflowStateField = subject.findComponent(FlawWorkflowState);
-    expect(workflowStateField?.props().classification.state).toBe('PRE_SECONDARY_ASSESSMENT');
+    expect(workflowStateField?.props().classification?.state).toBe('PRE_SECONDARY_ASSESSMENT');
     (subject.vm as any).flaw.impact = 'CRITICAL';
     await flushPromises();
     expect(subject.findComponent(Nudge)).toBeTruthy();
   });
 
-  osimFullFlawTest('displays promote and reject buttons for state', async ({ flaw }) => {
+  osimFullFlawTest('displays state as read-only with no change-state buttons', async ({ flaw }) => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
-
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
-
-    for (const button of menu.findAll('button')) {
-      expect(([
-        'Change State',
-        'Promote to Triage',
-        'Reject',
-        'Reset',
-        'Revert to Empty',
-      ]).includes(button.text().trim())).toBe(true);
-    }
-  });
-
-  osimFullFlawTest('shows a modal for reject button clicks', async ({ flaw }) => {
-    const subject = mountWithProps(flaw, { mode: 'edit' });
-    const menu = subject
-      .findComponent(FlawWorkflowState)
-      .findComponent(DropDownMenu);
-
-    const menuButton = menu.find('button[type="button"]');
-    await menuButton.trigger('click');
-    await nextTick();
-
-    const rejectButton = menu?.findAll('button')?.find(el => el.text() === 'Reject');
-    await rejectButton?.trigger('click');
-    await flushPromises();
-    expect(subject.find('.modal-dialog').exists()).toBe(true);
+    const workflowState = subject.findComponent(FlawWorkflowState);
+    expect(workflowState.findComponent(DropDownMenu).exists()).toBe(false);
+    const { state, workflow } = flaw.classification!;
+    const stateField = workflowState.find('span.form-control');
+    expect(stateField.text()).toContain(state ?? '');
+    if (workflow) expect(stateField.text()).toContain(workflow);
   });
 
   osimFullFlawTest('shows an explanation message when nvd score and Rh score mismatch', async ({ flaw }) => {

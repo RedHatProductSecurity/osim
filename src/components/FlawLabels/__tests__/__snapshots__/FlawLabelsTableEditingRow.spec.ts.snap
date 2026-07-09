@@ -12,6 +12,7 @@ exports[`flawLabelsTableEditingRow > should render 1`] = `
     <option data-v-627548cb="" value="alias">alias</option>
     <option data-v-627548cb="" value="bu">bu</option>
     <option data-v-627548cb="" value="context_based">context_based</option>
+    <option data-v-627548cb="" value="workflow">workflow</option>
   </select>
 </td>
 <td data-v-627548cb="" class="text-decoration-line-through">

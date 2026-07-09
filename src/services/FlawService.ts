@@ -2,11 +2,9 @@ import { createCatchHandler, createSuccessHandler } from '@/composables/service-
 
 import type { ZodFlawCVSSType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
-import { useToastStore } from '@/stores/ToastStore';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
-import { getDisplayedOsidbError } from '@/services/osidb-errors-helpers';
 
 export async function beforeFetch(options: OsidbFetchOptions) {
   if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
@@ -157,107 +155,6 @@ export async function postFlawComment(
   }).then(createSuccessHandler({ title: 'Success!', body: `${type} comment saved.` }))
     .then(response => response.data)
     .catch(createCatchHandler(`Error saving ${type} comment`));
-}
-
-// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/promote`
-export async function promoteFlawWorkflow(uuid: string) {
-  const { addToast } = useToastStore();
-  return osidbFetch({
-    method: 'post',
-    url: `/osidb/api/v1/flaws/${uuid}/promote`,
-  })
-    .then((response) => {
-      addToast({
-        title: 'Flaw Promoted',
-        body: `Flaw promoted to ${response.data.classification.state}`,
-        css: 'success',
-      });
-      return response.data;
-    })
-    .catch((error) => {
-      const displayedError = getDisplayedOsidbError(error);
-      addToast({
-        title: 'Error Promoting Flaw',
-        body: displayedError,
-        css: 'warning',
-      });
-      console.error('FlawService::promoteFlawWorkflow() Problem promoting flaw:', error);
-      throw error;
-    });
-}
-// Source openapi.yaml schema definition for `/osidb/api/v1/flaws/{flaw_id}/reject`
-export async function rejectFlawWorkflow(uuid: string, data: Record<'reason', string>) {
-  const { addToast } = useToastStore();
-  return osidbFetch({
-    method: 'post',
-    url: `/osidb/api/v1/flaws/${uuid}/reject`,
-    data,
-  })
-    .then((response) => {
-      addToast({
-        title: 'Flaw Rejected',
-        body: response.data.classification.state,
-        css: 'success',
-      });
-      return response.data;
-    })
-    .catch((error) => {
-      const { addToast } = useToastStore();
-      const displayedError = getDisplayedOsidbError(error);
-      addToast({
-        title: 'Error Rejecting Flaw',
-        body: displayedError,
-        css: 'warning',
-      });
-      console.error('FlawService::rejectFlawWorkflow() Problem rejecting flaw:', error);
-      throw error;
-    });
-}
-
-export async function revertFlawWorkflow(uuid: string) {
-  const { addToast } = useToastStore();
-  try {
-    const response = await osidbFetch({
-      method: 'post',
-      url: `/osidb/api/v1/flaws/${uuid}/revert`,
-    });
-    addToast({
-      title: 'Workflow State Reverted',
-      body: response.data.classification.state,
-      css: 'success',
-    });
-    return response.data;
-  } catch (error) {
-    addToast({
-      title: 'Error Reverting Workflow State',
-      body: getDisplayedOsidbError(error),
-      css: 'warning',
-    });
-    throw error;
-  }
-}
-
-export async function resetFlawWorkflow(uuid: string) {
-  const { addToast } = useToastStore();
-  try {
-    const response = await osidbFetch({
-      method: 'post',
-      url: `/osidb/api/v1/flaws/${uuid}/reset`,
-    });
-    addToast({
-      title: 'Workflow State Reset',
-      body: response.data.classification.state,
-      css: 'success',
-    });
-    return response.data;
-  } catch (error) {
-    addToast({
-      title: 'Error Resetting Workflow State',
-      body: getDisplayedOsidbError(error),
-      css: 'warning',
-    });
-    throw error;
-  }
 }
 
 // TODO paginate search results page
