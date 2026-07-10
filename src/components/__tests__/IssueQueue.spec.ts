@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { Settings } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 
 import IssueQueueItem from '@/components/IssueQueue/IssueQueueItem.vue';
@@ -194,6 +194,21 @@ describe('issueQueue', () => {
     const dateEl = wrapper.findAll('td')[2];
     expect(dateEl.exists()).toBeTruthy();
     expect(dateEl.text()).toBe('2021-07-29 22:50');
+  });
+
+  it('should render unprocessed label for a bare flaw with no content fields', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        uuid: 'bare-uuid',
+        cve_id: 'CVE-2024-9999',
+        classification: { workflow: 'DEFAULT', state: 'NEW' },
+        created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
+        aegis_meta: null,
+      } as unknown as ZodFlawType],
+    });
+
+    const label = wrapper.findComponent(IssueQueueItem).find('.unprocessed-flaw-label');
+    expect(label.exists()).toBe(true);
   });
 
   it('should render flaw labels', () => {
