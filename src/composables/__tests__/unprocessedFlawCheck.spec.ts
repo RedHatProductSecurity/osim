@@ -200,4 +200,42 @@ describe('useUnprocessedFlawDetection', () => {
 
     expect(isFlawUnprocessed(flaw)).toBe(true);
   });
+
+  it('returns false for flaw with manual-triage label', () => {
+    const flaw = {
+      uuid: 'test-uuid',
+      classification: { state: FlawClassificationStateEnum.New, workflow: 'test' },
+      cve_id: 'CVE-2024-1234',
+      created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
+      aegis_meta: null,
+      labels: [{ label: 'manual-triage', state: 'NEW', contributor: '' }],
+    } as ZodFlawType;
+
+    expect(isFlawUnprocessed(flaw)).toBe(false);
+  });
+
+  it('returns true for flaw with whitespace-only cve_description', () => {
+    const flaw = {
+      uuid: 'test-uuid',
+      classification: { state: FlawClassificationStateEnum.New, workflow: 'test' },
+      cve_id: 'CVE-2024-1234',
+      created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
+      aegis_meta: null,
+      cve_description: '   ',
+    } as ZodFlawType;
+
+    expect(isFlawUnprocessed(flaw)).toBe(true);
+  });
+
+  it('returns true for flaw in EMPTY classification state', () => {
+    const flaw = {
+      uuid: 'test-uuid',
+      classification: { state: FlawClassificationStateEnum.Empty, workflow: 'test' },
+      cve_id: 'CVE-2024-1234',
+      created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
+      aegis_meta: null,
+    } as ZodFlawType;
+
+    expect(isFlawUnprocessed(flaw)).toBe(true);
+  });
 });

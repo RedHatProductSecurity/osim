@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import type { FilteredIssue } from '@/components/IssueQueue/IssueQueue.vue';
+
 import { useUnprocessedFlawDetection } from '@/composables/unprocessedFlawCheck';
 
 import type { ZodFlawType } from '@/types';
 
 const props = defineProps<{
-  flaw: ZodFlawType;
+  flaw: FilteredIssue | ZodFlawType;
   variant?: 'badge' | 'inline';
 }>();
 

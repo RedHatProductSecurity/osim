@@ -45,7 +45,8 @@ export function useUnprocessedFlawDetection() {
       || flaw.classification?.state === FlawClassificationStateEnum.Empty)
       && !!flaw.cve_id && isCveValid(flaw.cve_id)
       && !isOlderThanThreshold(flaw.created_dt)
-      && areRequiredFieldsEmpty(flaw);
+      && areRequiredFieldsEmpty(flaw)
+      && !flaw.labels?.some(label => label.label === 'manual-triage');
   }
 
   return {

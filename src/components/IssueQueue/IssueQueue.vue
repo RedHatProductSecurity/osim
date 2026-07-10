@@ -24,14 +24,20 @@ const emit = defineEmits(['flaws:fetch', 'flaws:load-more']);
 const userStore = useUserStore();
 const { settings } = storeToRefs(useSettingsStore());
 
-export type FilteredIssue = ReturnType<typeof relevantFields>;
+export type FilteredIssue = {
+  formattedDate: string;
+} & ZodFlawType;
 
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 // type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
 type ColumnField = 'created_dt' | 'id' | 'impact' | 'owner' | 'state' | 'title';
 
-const issues = computed<FilteredIssue[]>(() => props.issues.map(relevantFields));
+const issues = computed<FilteredIssue[]>(() => props.issues.map(issue => ({
+  formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd HH:mm'),
+  ...issue,
+})));
+
 const selectedSortField = ref<ColumnField | null>('created_dt');
 const isSortedByAscending = ref(false);
 const isMyIssuesSelected = ref(false);
@@ -102,23 +108,6 @@ function selectSortField(field: ColumnField) {
   }
 }
 
-function relevantFields(issue: ZodFlawType) {
-  return {
-    id: issue.cve_id || issue.uuid,
-    impact: issue.impact,
-    // source: issue.source,
-    created_dt: issue.created_dt,
-    title: issue.title,
-    workflowState: issue.classification?.state,
-    unembargo_dt: issue.unembargo_dt,
-    embargoed: issue.embargoed,
-    owner: issue.owner,
-    formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd HH:mm'),
-    labels: issue.labels,
-    flaw: issue, // Include full flaw object for UnprocessedFlawLabel
-  };
-}
-
 function emitLoadMore() {
   emit('flaws:load-more', params);
 }
@@ -183,7 +172,7 @@ watch(isButtonVisible, (isVisible) => {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <template v-for="(relevantIssue, index) of issues" :key="relevantIssue.id">
+          <template v-for="(relevantIssue, index) of issues" :key="relevantIssue.cve_id || relevantIssue.uuid">
             <IssueQueueItem
               :issue="relevantIssue"
               :showLabels="!settings.isHidingLabels"

@@ -36,6 +36,13 @@ const FLAW_LIST_FIELDS = [
   'owner',
   'labels',
   'aegis_meta',
+  // Required fields for UnprocessedFlawLabel logic
+  'cve_description',
+  'affects',
+  'statement',
+  'mitigation',
+  'cwe_id',
+  'cvss_scores',
 ];
 
 export async function getFlaws(offset = 0, limit = 20, args = {}) {
