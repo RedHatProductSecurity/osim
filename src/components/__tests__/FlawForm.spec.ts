@@ -43,6 +43,15 @@ vi.mock('@/composables/useTrackers', () => {
 
 vi.mock('@/services/LabelsService');
 
+vi.mock('@/services/WorkflowService', () => ({
+  getFlawWorkflowClassification: vi.fn(() => Promise.resolve({
+    flaw: 'test-uuid',
+    classification: { workflow: 'DEFAULT', state: 'NEW' },
+    workflows: [],
+  })),
+  isWorkflowCondition: vi.fn((req: any) => 'condition' in req),
+}));
+
 vi.mock('@/composables/useJiraContributors', () => {
   return {
     default: vi.fn(() => ({
