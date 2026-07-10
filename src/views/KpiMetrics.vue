@@ -106,7 +106,9 @@ const aegisBuildVersions = computed(() => uniques(
 const versionSelections = ref<Record<string, boolean>>({});
 watch(aegisBuildVersions, () => {
   aegisBuildVersions.value.forEach((version: string) => {
-    versionSelections.value[version] = false;
+    if (!(version in versionSelections.value)) {
+      versionSelections.value[version] = false;
+    }
   });
 });
 
@@ -182,6 +184,10 @@ function handleFeatureChange() {
   fetchKpiMetrics(chosenFeature.value as FeatureLabel);
 }
 
+function clearVersionFilters() {
+  versionSelections.value = {};
+}
+
 onMounted(async () => {
   await fetchKpiMetrics(chosenFeature.value);
   document.querySelector('input.range-left')?.addEventListener('change', (event) => {
@@ -211,6 +217,10 @@ const overallAcceptancePercentage = computed(
   () => Object.values(metricsToDisplay.value).reduce(
     (acc, { acceptance_percentage }) => acc + acceptance_percentage, 0,
   ) / Object.values(metricsToDisplay.value).length);
+
+const hasActiveVersionFilters = computed(() =>
+  Object.values(versionSelections.value).some(Boolean),
+);
 </script>
 
 <template>
@@ -235,7 +245,7 @@ const overallAcceptancePercentage = computed(
             <button
               v-for="aegisBuildVersion in aegisBuildVersions"
               :key="aegisBuildVersion"
-              class="btn"
+              class="btn me-2"
               :class="{
                 'btn-outline-secondary': !versionSelections[aegisBuildVersion],
                 'btn-secondary': versionSelections[aegisBuildVersion]
@@ -244,6 +254,14 @@ const overallAcceptancePercentage = computed(
               @click="versionSelections[aegisBuildVersion] = !versionSelections[aegisBuildVersion]"
             >
               {{ aegisBuildVersion }}
+            </button>
+            <button
+              v-if="hasActiveVersionFilters"
+              class="btn btn-outline-secondary btn-sm"
+              type="button"
+              @click="clearVersionFilters"
+            >
+              Clear All Filters
             </button>
           </section>
           <h3>Mean Acceptance Rates</h3>
