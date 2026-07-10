@@ -15,7 +15,8 @@ const FeatureLabels: Record<AegisKpiFeatureParamType, string> = {
   'suggest-title': 'Suggest Title',
   'suggest-cvss': 'Suggest CVSS',
   'suggest-impact': 'Suggest Impact',
-  'suggest-statement': 'Suggest Statement Mitigation',
+  'suggest-mitigation': 'Suggest Mitigation',
+  'suggest-statement': 'Suggest Statement',
 };
 
 type FeatureLabel = keyof typeof FeatureLabels;
@@ -31,6 +32,7 @@ async function fetchKpiMetrics(feature: AegisKpiFeatureParamType = 'all') {
       'suggest-cwe',
       'suggest-description',
       'suggest-impact',
+      'suggest-mitigation',
       'suggest-statement',
       'suggest-title',
       'suggest-cvss',

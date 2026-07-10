@@ -111,6 +111,16 @@ const createMockKpiMetrics = () => {
         },
       ],
     },
+    'suggest-mitigation': {
+      acceptance_percentage: 73.0,
+      entries: [
+        {
+          datetime: '2025-01-15 10:00:00.000',
+          accepted: true,
+          aegis_version: '1.0.0',
+        },
+      ],
+    },
     'suggest-statement': {
       acceptance_percentage: 85.0,
       entries: [
@@ -165,7 +175,7 @@ describe('kpiMetrics', () => {
     const select = wrapper.find('select#feature-select');
     const options = select.findAll('option');
 
-    expect(options.length).toBe(7); // 'all' + 6 features
+    expect(options.length).toBe(8); // 'all' + 7 features
     expect(options[0].text()).toBe('All');
     expect(options[0].attributes('value')).toBe('all');
     expect(options[1].text()).toBe('Suggest CWE');
@@ -178,8 +188,10 @@ describe('kpiMetrics', () => {
     expect(options[4].attributes('value')).toBe('suggest-cvss');
     expect(options[5].text()).toBe('Suggest Impact');
     expect(options[5].attributes('value')).toBe('suggest-impact');
-    expect(options[6].text()).toBe('Suggest Statement Mitigation');
-    expect(options[6].attributes('value')).toBe('suggest-statement');
+    expect(options[6].text()).toBe('Suggest Mitigation');
+    expect(options[6].attributes('value')).toBe('suggest-mitigation');
+    expect(options[7].text()).toBe('Suggest Statement');
+    expect(options[7].attributes('value')).toBe('suggest-statement');
   });
 
   it('should fetch metrics when feature selection changes', async () => {
@@ -270,6 +282,10 @@ describe('kpiMetrics', () => {
         acceptance_percentage: 100.0,
         entries: [],
       },
+      'suggest-mitigation': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
       'suggest-statement': {
         acceptance_percentage: 100.0,
         entries: [],
@@ -333,7 +349,8 @@ describe('kpiMetrics', () => {
         'Suggest Title',
         'Suggest CVSS',
         'Suggest Impact',
-        'Suggest Statement Mitigation',
+        'Suggest Mitigation',
+        'Suggest Statement',
       ]).toContain(series.name);
       expect(Array.isArray(series.series)).toBe(true);
     });
@@ -372,6 +389,10 @@ describe('kpiMetrics', () => {
         acceptance_percentage: 70.0,
         entries: [],
       },
+      'suggest-mitigation': {
+        acceptance_percentage: 75.0,
+        entries: [],
+      },
       'suggest-statement': {
         acceptance_percentage: 85.0,
         entries: [],
@@ -401,6 +422,7 @@ describe('kpiMetrics', () => {
     expect(vm.kpiMetrics).toHaveProperty('suggest-title');
     expect(vm.kpiMetrics).toHaveProperty('suggest-cvss');
     expect(vm.kpiMetrics).toHaveProperty('suggest-impact');
+    expect(vm.kpiMetrics).toHaveProperty('suggest-mitigation');
     expect(vm.kpiMetrics).toHaveProperty('suggest-statement');
   });
 
@@ -423,6 +445,10 @@ describe('kpiMetrics', () => {
         entries: [],
       },
       'suggest-impact': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-mitigation': {
         acceptance_percentage: 0,
         entries: [],
       },
@@ -504,6 +530,10 @@ describe('kpiMetrics', () => {
         acceptance_percentage: 100.0,
         entries: [],
       },
+      'suggest-mitigation': {
+        acceptance_percentage: 100.0,
+        entries: [],
+      },
       'suggest-statement': {
         acceptance_percentage: 100.0,
         entries: [],
@@ -550,6 +580,10 @@ describe('kpiMetrics', () => {
         entries: [],
       },
       'suggest-impact': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
+      'suggest-mitigation': {
         acceptance_percentage: 0,
         entries: [],
       },
@@ -604,6 +638,10 @@ describe('kpiMetrics', () => {
         acceptance_percentage: 0,
         entries: [],
       },
+      'suggest-mitigation': {
+        acceptance_percentage: 0,
+        entries: [],
+      },
       'suggest-statement': {
         acceptance_percentage: 0,
         entries: [],
@@ -648,8 +686,8 @@ describe('kpiMetrics', () => {
 
       const vm = wrapper.vm;
       const expectedOverall = (
-        75.0 + 80.0 + 78.0 + 82.0 + 70.0 + 85.0
-      ) / 6; // Average of all feature acceptance percentages
+        75.0 + 80.0 + 78.0 + 82.0 + 70.0 + 73.0 + 85.0
+      ) / 7; // Average of all feature acceptance percentages
 
       expect(vm.overallAcceptancePercentage).toBeCloseTo(expectedOverall, 1);
 
@@ -677,8 +715,8 @@ describe('kpiMetrics', () => {
       const vm = wrapper.vm;
       const features = Object.keys(vm.metricsToDisplay);
 
-      // Should have 6 features (excluding 'all')
-      expect(features.length).toBe(6);
+      // Should have 7 features (excluding 'all')
+      expect(features.length).toBe(7);
 
       // Check that each feature is displayed
       const text = wrapper.text();
@@ -687,7 +725,8 @@ describe('kpiMetrics', () => {
       expect(text).toContain('78% Acceptance Rate for Suggest Title');
       expect(text).toContain('82% Acceptance Rate for Suggest CVSS');
       expect(text).toContain('70% Acceptance Rate for Suggest Impact');
-      expect(text).toContain('85% Acceptance Rate for Suggest Statement Mitigation');
+      expect(text).toContain('73% Acceptance Rate for Suggest Mitigation');
+      expect(text).toContain('85% Acceptance Rate for Suggest Statement');
     });
 
     it('should display all features with correct labels', async () => {
@@ -698,7 +737,7 @@ describe('kpiMetrics', () => {
         p.text().includes('Acceptance Rate for'),
       );
 
-      expect(featureParagraphs.length).toBe(6);
+      expect(featureParagraphs.length).toBe(7);
 
       const featureLabels = [
         'Suggest CWE',
@@ -706,7 +745,8 @@ describe('kpiMetrics', () => {
         'Suggest Title',
         'Suggest CVSS',
         'Suggest Impact',
-        'Suggest Statement Mitigation',
+        'Suggest Mitigation',
+        'Suggest Statement',
       ];
 
       featureLabels.forEach((label) => {
@@ -734,6 +774,10 @@ describe('kpiMetrics', () => {
           entries: [],
         },
         'suggest-impact': {
+          acceptance_percentage: 0,
+          entries: [],
+        },
+        'suggest-mitigation': {
           acceptance_percentage: 0,
           entries: [],
         },
@@ -789,6 +833,10 @@ describe('kpiMetrics', () => {
           acceptance_percentage: 85.0,
           entries: [],
         },
+        'suggest-mitigation': {
+          acceptance_percentage: 88.0,
+          entries: [],
+        },
         'suggest-statement': {
           acceptance_percentage: 93.0,
           entries: [],
@@ -803,7 +851,7 @@ describe('kpiMetrics', () => {
       await flushPromises();
 
       const updatedOverall = wrapper.vm.overallAcceptancePercentage;
-      const expectedUpdated = (90.0 + 95.0 + 88.0 + 92.0 + 85.0 + 93.0) / 6;
+      const expectedUpdated = (90.0 + 95.0 + 88.0 + 92.0 + 85.0 + 88.0 + 93.0) / 7;
 
       expect(updatedOverall).toBeCloseTo(expectedUpdated, 1);
       expect(updatedOverall).not.toBe(initialOverall);

@@ -294,6 +294,16 @@ describe('aegisAIService', () => {
           },
         ],
       },
+      'suggest-mitigation': {
+        acceptance_percentage: 73.0,
+        entries: [
+          {
+            datetime: '2025-01-15 10:00:00.000',
+            accepted: true,
+            aegis_version: '1.0.0',
+          },
+        ],
+      },
       'suggest-statement': {
         acceptance_percentage: 85.0,
         entries: [
