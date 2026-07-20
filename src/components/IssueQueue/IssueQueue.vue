@@ -31,7 +31,7 @@ export type FilteredIssue = {
 // Temporarily hiding 'Source' column to avoid displaying incorrect information.
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 // type ColumnField = 'id' | 'impact' | 'source' | 'created_dt' | 'title' | 'state' | 'owner';
-type ColumnField = 'created_dt' | 'id' | 'impact' | 'owner' | 'state' | 'title';
+type ColumnField = 'created_dt' | 'id' | 'impact' | 'owner' | 'srp_status' | 'state' | 'title';
 
 const issues = computed<FilteredIssue[]>(() => props.issues.map(issue => ({
   formattedDate: DateTime.fromISO(issue.created_dt!).toUTC().toFormat('yyyy-MM-dd HH:mm'),
@@ -84,13 +84,14 @@ const params = computed(() => {
 });
 
 const columnsFieldsMap: Record<string, ColumnField> = {
-  ID: 'id',
-  Impact: 'impact',
+  'ID': 'id',
+  'Impact': 'impact',
   // Source: 'source',
-  Created: 'created_dt',
-  Title: 'title',
-  State: 'state',
-  Owner: 'owner',
+  'Created': 'created_dt',
+  'Title': 'title',
+  'SRP Status': 'srp_status',
+  'State': 'state',
+  'Owner': 'owner',
 };
 
 function selectSortField(field: ColumnField) {
@@ -255,27 +256,31 @@ watch(isButtonVisible, (isVisible) => {
       padding: 1ch;
 
       &:nth-of-type(1) {
-        width: 20%;
+        width: 18%;
       }
 
       &:nth-of-type(2) {
-        width: 8%;
+        width: 7%;
       }
 
       &:nth-of-type(3) {
-        width: 9.5%;
+        width: 9%;
       }
 
       &:nth-of-type(4) {
-        width: 27.5%;
+        width: 22%;
       }
 
       &:nth-of-type(5) {
-        width: 17.5%;
+        width: 15%;
       }
 
       &:nth-of-type(6) {
-        width: 17.5%;
+        width: 14%;
+      }
+
+      &:nth-of-type(7) {
+        width: 15%;
       }
     }
 

@@ -36,6 +36,8 @@ const FLAW_LIST_FIELDS = [
   'owner',
   'labels',
   'aegis_meta',
+  'srp_status',
+  'srp_overdue_milestones',
   // Required fields for UnprocessedFlawLabel logic
   'cve_description',
   'affects',
