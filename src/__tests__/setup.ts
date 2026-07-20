@@ -3,6 +3,11 @@ import { setupServer } from 'msw/node';
 
 import { OsimRuntimeStatus, type OsimRuntimeType } from '@/types/zodOsim';
 
+// Keep snapshots stable across Vite/Vitest asset inlining changes.
+vi.mock('@/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg', () => ({
+  default: '/src/assets/Logo-Red_Hat-Hat_icon-Standard-RGB.svg',
+}));
+
 vi.mock('@/stores/osimRuntime', async (importOriginal) => {
   const { ref } = await import('vue');
   const osimRuntime = await importOriginal<typeof import('@/stores/osimRuntime')>();
