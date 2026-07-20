@@ -88,6 +88,7 @@ const nameForOption = (fieldName: string) => {
     cve_description: 'CVE Description',
     requires_cve_description: 'CVE Description Review',
     major_incident_state: 'Incident State',
+    srp_status: 'SRP Status',
   };
   let name =
     mappings[fieldName]
@@ -127,6 +128,16 @@ const optionsFor = (field: string) =>
     ],
     major_incident_state: flawIncidentStates,
     affects__affectedness: affectAffectedness,
+    srp_status: [
+      'blocked',
+      'deferred',
+      'failed',
+      'not_applicable',
+      'not_required',
+      'prepared',
+      'required',
+      'submitted',
+    ],
   })[field] || null;
 
 const shouldShowAdvanced = ref(true);

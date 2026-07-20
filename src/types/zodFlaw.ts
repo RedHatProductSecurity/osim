@@ -209,6 +209,8 @@ export const ZodFlawSchema = z.object({
   affects: z.array(ZodAffectSchema), // read-only
   comments: z.array(ZodFlawCommentSchema),
   cvss_scores: z.array(FlawCVSSSchema),
+  srp_status: z.string().nullish(), // read-only
+  srp_overdue_milestones: z.number().nullish(), // read-only
   labels: z.array(z.object({
     uuid: z.string().optional(),
     label: z.string(),

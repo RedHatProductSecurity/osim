@@ -27,6 +27,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
         <option data-v-b86992a8="" value="mitigation">Mitigation</option>
         <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="srp_status">SRP Status</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
         <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
@@ -53,6 +54,7 @@ exports[`issueSearchAdvanced > should add new facet when last facet is populated
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
         <option data-v-b86992a8="" value="mitigation">Mitigation</option>
         <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="srp_status">SRP Status</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
         <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
@@ -127,6 +129,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is false 1`] = `
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
         <option data-v-b86992a8="" value="mitigation">Mitigation</option>
         <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="srp_status">SRP Status</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
         <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
@@ -201,6 +204,7 @@ exports[`issueSearchAdvanced > should render when \`isLoading\` is true 1`] = `
         <option data-v-b86992a8="" value="major_incident_state">Incident State</option>
         <option data-v-b86992a8="" value="mitigation">Mitigation</option>
         <option data-v-b86992a8="" value="owner">Owner</option>
+        <option data-v-b86992a8="" value="srp_status">SRP Status</option>
         <option data-v-b86992a8="" value="statement">Statement</option>
         <option data-v-b86992a8="" value="title">Title</option>
         <option data-v-b86992a8="" value="affects__tracker__external_system_id">Tracker External System ID</option>
