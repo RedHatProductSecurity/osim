@@ -8,6 +8,7 @@
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
 * Fix my issues flaw list filter to use email instead username (`OSIDB-5143`)
 * Fix "Pending Bot Processing" label incorrectly shown on processed flaws (`OSIDB-5216`)
+* Fix missing error notifications on affect updates (`OSIDB-5196`)
 
 ### Changed
 * Update error message on failed logging (`OSIDB-5011`)

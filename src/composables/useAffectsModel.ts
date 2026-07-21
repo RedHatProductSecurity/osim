@@ -2,7 +2,11 @@ import { computed, reactive, readonly, toRaw, shallowRef, triggerRef } from 'vue
 
 import { createSharedComposable } from '@vueuse/core';
 
-import { executeOperationsInParallel, showSuccessToast } from '@/composables/service-helpers';
+import {
+  createCatchHandler,
+  executeOperationsInParallel,
+  showSuccessToast,
+} from '@/composables/service-helpers';
 
 import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import {
@@ -46,6 +50,12 @@ function useAffects() {
   }
 
   function resetSavedAffects(savedAffects: ZodAffectType[]) {
+    // Sync server data (e.g. updated_dt) so later edits don't 409
+    if (savedAffects.length) {
+      currentAffects.value = mergeBy(currentAffects.value, savedAffects, 'uuid');
+      initialAffects.value = mergeBy(initialAffects.value, savedAffects, 'uuid');
+    }
+
     // Create a set of saved affect UUIDs for quick lookup
     const savedUuids = new Set(savedAffects.map(affect => affect.uuid));
 
@@ -253,32 +263,49 @@ function useAffects() {
   async function saveAffects() {
     const { toCreate, toUpdate } = buildAffectOperations();
 
-    const operations = [
-      ...(toCreate.length ? [postAffects(toCreate)] : []),
-      ...(toUpdate.length ? [putAffects(toUpdate)] : []),
+    // OSIDB bulk endpoints return 200 with per-item failures in `failed`
+    const bulkOps = [
+      ...(toCreate.length
+        ? [{ errorTitle: 'Error creating Affects:', operation: 'created', request: postAffects(toCreate) }]
+        : []),
+      ...(toUpdate.length
+        ? [{ errorTitle: 'Error updating Affects:', operation: 'updated', request: putAffects(toUpdate) }]
+        : []),
     ];
 
-    const { hasErrors, successful: results } = await executeOperationsInParallel(operations);
+    // Keep index alignment with bulkOps (unlike executeOperationsInParallel's compacted successful[])
+    const settled = await Promise.allSettled(bulkOps.map(({ request }) => request));
 
-    // Flatten successful results
-    const savedAffects: ZodAffectType[] = results.flatMap(result => result?.data.results ?? []);
+    const savedAffects: ZodAffectType[] = [];
+    let hasErrors = false;
+    let hasBulkFailures = false;
 
-    // Show separate toast for each operation type (based on order in operations array)
-    let resultIndex = 0;
-    if (toCreate.length && results[resultIndex]) {
-      const createdCount = results[resultIndex]?.data.results?.length ?? 0;
-      showSuccessToast(createdCount, 'affect', 'created');
-      resultIndex++;
+    for (const [index, { errorTitle, operation }] of bulkOps.entries()) {
+      const settledResult = settled[index];
+      if (settledResult.status === 'rejected' || !settledResult.value?.data) {
+        hasErrors = true;
+        continue;
+      }
+
+      const { data } = settledResult.value;
+      const successfulAffects = data.results ?? [];
+      savedAffects.push(...successfulAffects);
+      showSuccessToast(successfulAffects.length, 'affect', operation);
+
+      const failures = data.failed ?? [];
+      if (failures.length) {
+        hasBulkFailures = true;
+        createCatchHandler(errorTitle, false)(
+          failures.flatMap((f: { errors?: Record<string, string | string[]> }) =>
+            Object.values(f.errors ?? {}).flat(),
+          ).join('\n'),
+        );
+      }
     }
-    if (toUpdate.length && results[resultIndex]) {
-      const updatedCount = results[resultIndex]?.data.results?.length ?? 0;
-      showSuccessToast(updatedCount, 'affect', 'updated');
-    }
 
-    // Save CVSS scores (this also updates the affects)
     const cvssHasErrors = await saveCvssScores(savedAffects);
 
-    return { savedAffects, hasErrors: hasErrors || cvssHasErrors };
+    return { savedAffects, hasErrors: hasErrors || hasBulkFailures || cvssHasErrors };
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
