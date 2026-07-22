@@ -233,6 +233,7 @@ export function useAegisSuggestion(
 
         data = {
           components: isValidComponents(rawData.components) ? rawData.components : null,
+          ecosystems: rawData.ecosystems,
           confidence: rawData.confidence,
           explanation: rawData.explanation,
           tools_used: rawData.tools_used,
@@ -248,6 +249,7 @@ export function useAegisSuggestion(
         suggested_statement: null,
         suggested_mitigation: null,
         components: null,
+        ecosystems: data.ecosystems,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -272,6 +274,7 @@ export function useAegisSuggestion(
       suggested_mitigation: null,
       suggested_statement: null,
       components: null,
+      ecosystems: null,
     };
     selectedSuggestionIndex.value = 0;
     userFeedbackSent.value = false; // Reset feedback state

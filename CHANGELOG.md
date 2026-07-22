@@ -3,6 +3,7 @@
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 * Add workflow label type support in Labels section (`OSIDB-5019`)
+* Show ecosystem information in Aegis component suggestion tooltips (`OSIDB-5252`)
 
 ### Fixed
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
