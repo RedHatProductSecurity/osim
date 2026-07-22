@@ -24,6 +24,7 @@ export function useAegisSuggestComponents(
 
   const details = ref<ComponentsSuggestionDetails>({
     components: null,
+    ecosystems: null,
     confidence: undefined,
     explanation: undefined,
     tools_used: undefined,
@@ -54,6 +55,7 @@ export function useAegisSuggestComponents(
 
     details.value = {
       components: data.components,
+      ecosystems: data.ecosystems,
       confidence: data.confidence,
       explanation: data.explanation,
       tools_used: data.tools_used,
@@ -82,6 +84,7 @@ export function useAegisSuggestComponents(
 
       return {
         components: isValidComponents(data.components) ? data.components : null,
+        ecosystems: data.ecosystems,
         confidence: data.confidence,
         explanation: data.explanation,
         tools_used: data.tools_used,
@@ -127,6 +130,7 @@ export function useAegisSuggestComponents(
 
     details.value = {
       components: null,
+      ecosystems: null,
       confidence: undefined,
       explanation: undefined,
       tools_used: undefined,

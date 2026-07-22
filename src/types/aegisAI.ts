@@ -79,6 +79,7 @@ export type MitigationSuggestionDetails = {
 
 export type SuggestionDetailOptionals = {
   confidence?: number | string;
+  ecosystems?: Nullable<string[]>;
   explanation?: string;
   tools_used?: string[];
 };
