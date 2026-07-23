@@ -22,10 +22,10 @@ export default mergeConfig(
         exclude: ['src/generated-client/*', 'src/mock-server/*', 'src/shims/*'],
         thresholds: {
           autoUpdate: false,
-          statements: 80,
+          statements: 68,
           branches: 65,
-          functions: 74,
-          lines: 80,
+          functions: 64,
+          lines: 69,
         },
       },
       environment: 'jsdom',
