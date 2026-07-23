@@ -26,6 +26,7 @@ export const mockSRPReport: SRPReport = {
     updated_dt: '2026-01-05T00:00:00Z',
     uuid: 'milestone-1',
   }],
+  missing_required_fields: '',
   reportable_event_type: 'actively_exploited_vulnerability',
   responsibility_scope: 'manufacturer',
   srp_reference_id: 'SRP-123',

@@ -599,7 +599,7 @@ exports[`flawForm > mounts and renders 1`] = `
     </div>
   </div>
   <div data-v-76e7a15d="" class="row border-top osim-flaw-form-section">
-    <div data-v-4715e8e2="" data-v-e7c807d0="" data-v-76e7a15d="" class="osim-collapsible-label my-2"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-e7c807d0="" class="section-label">CRA: SRP Reporting</span>
+    <div data-v-4715e8e2="" data-v-e7c807d0="" class="osim-collapsible-label my-2"><button data-v-4715e8e2="" type="button" class="me-2 osim-collapsible-toggle"><i data-v-4715e8e2="" class="bi me-1 bi-dash-square-dotted"></i><span data-v-e7c807d0="" class="section-label">CRA: SRP Reporting</span>
         <!--v-if-->
       </button>
       <div data-v-4715e8e2="" class="ps-3 border-start">
@@ -608,6 +608,24 @@ exports[`flawForm > mounts and renders 1`] = `
         </div>
       </div>
     </div>
+    <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
   </div>
   <div data-v-76e7a15d="" class="row border-top osim-flaw-form-section">
     <section data-v-0b679fcf="" data-v-76e7a15d="" class="osim-comments">

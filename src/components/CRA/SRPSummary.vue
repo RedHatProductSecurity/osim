@@ -1,8 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import type { SRPReport, SRPReportSummary, SRPReportStatus } from '@/types/cra';
-import { fetchSRPReports } from '@/services/SRPService';
+import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
+import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
+import SRPReportDetails from '@/components/CRA/SRPReportDetails.vue';
+import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
+
+import { useSRPDialogs } from '@/composables/useSRPDialogs';
+
+import type { SRPReport, SRPReportMilestone, SRPReportSummary, SRPReportStatus } from '@/types/cra';
+import {
+  createAdditionalInfoMilestone,
+  fetchSRPReports,
+  updateSRPMilestone,
+  updateSRPReport,
+} from '@/services/SRPService';
 import { formatDate } from '@/utils/helpers';
 import LabelCollapsible from '@/widgets/LabelCollapsible/LabelCollapsible.vue';
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
@@ -26,6 +38,25 @@ const srpReports = ref<SRPReport[]>([]);
 const isLoading = ref(false);
 const error = ref(false);
 const isExpanded = ref(true);
+const expandedReports = ref<Set<string>>(new Set());
+
+const {
+  closeMilestoneDialog,
+  closePayloadDialog,
+  closeReportDialog,
+  editingMilestone,
+  editingReport,
+  editingReportUuid,
+  openAddMilestoneDialog,
+  openAddReportDialog,
+  openEditMilestoneDialog,
+  openEditReportDialog,
+  openViewPayload,
+  showMilestoneDialog,
+  showPayloadDialog,
+  showReportDialog,
+  viewPayloadReport,
+} = useSRPDialogs();
 
 onMounted(async () => {
   await loadSRPReports();
@@ -115,6 +146,38 @@ function formatEventType(eventType: null | string): string {
 function formatStatus(status: null | string | undefined): string {
   return status?.replace('_', ' ') ?? '';
 }
+
+function toggleReportExpanded(reportUuid: string) {
+  if (expandedReports.value.has(reportUuid)) {
+    expandedReports.value.delete(reportUuid);
+  } else {
+    expandedReports.value.add(reportUuid);
+  }
+}
+
+function isReportExpanded(reportUuid: string): boolean {
+  return expandedReports.value.has(reportUuid);
+}
+
+async function handleSaveReport(data: Partial<SRPReport>) {
+  if (editingReport.value) {
+    await updateSRPReport(editingReport.value.uuid, data);
+    await loadSRPReports();
+  }
+}
+
+async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
+  if (editingMilestone.value) {
+    await updateSRPMilestone(editingMilestone.value.uuid, data);
+  } else {
+    await createAdditionalInfoMilestone(editingReportUuid.value, data);
+  }
+  await loadSRPReports();
+}
+
+function hasMissingFields(report: SRPReport): boolean {
+  return Boolean(report.missing_required_fields && report.missing_required_fields.trim());
+}
 </script>
 
 <template>
@@ -145,41 +208,124 @@ function formatStatus(status: null | string | undefined): string {
     </div>
 
     <div v-else class="p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">SRP Reports</h6>
+        <button type="button" class="btn btn-sm btn-primary" @click="openAddReportDialog">
+          <i class="bi bi-plus-circle me-1"></i>
+          Add Report
+        </button>
+      </div>
       <div class="table-responsive">
         <table class="table table-sm table-hover">
           <thead>
             <tr>
+              <th style="width: 40px"></th>
               <th>Status</th>
               <th>Event Type</th>
               <th>Next Due Date</th>
               <th>Overdue</th>
+              <th style="width: 100px">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="report in srpReports" :key="report.uuid">
-              <td>
-                <span class="badge" :class="STATUS_BADGE_MAP[report.status]">
-                  {{ formatStatus(report.status) }}
-                </span>
-              </td>
-              <td>{{ formatEventType(report.reportable_event_type) }}</td>
-              <td>{{ formatDateDisplay(getNextDueDate(report)) }}</td>
-              <td>
-                <span v-if="getOverdueMilestones(report) > 0" class="badge bg-danger">
-                  {{ getOverdueMilestones(report) }}
-                </span>
-                <span v-else class="text-muted">-</span>
-              </td>
-            </tr>
+            <template v-for="report in srpReports" :key="report.uuid">
+              <tr class="report-row" @click="toggleReportExpanded(report.uuid)">
+                <td>
+                  <i
+                    class="bi"
+                    :class="isReportExpanded(report.uuid) ? 'bi-chevron-down' : 'bi-chevron-right'"
+                  ></i>
+                </td>
+                <td>
+                  <span class="badge" :class="STATUS_BADGE_MAP[report.status]">
+                    {{ formatStatus(report.status) }}
+                  </span>
+                </td>
+                <td>{{ formatEventType(report.reportable_event_type) }}</td>
+                <td>{{ formatDateDisplay(getNextDueDate(report)) }}</td>
+                <td>
+                  <span v-if="getOverdueMilestones(report) > 0" class="badge bg-danger">
+                    {{ getOverdueMilestones(report) }}
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                  <span
+                    v-if="hasMissingFields(report)"
+                    class="badge bg-warning text-dark ms-1"
+                    title="Missing required fields"
+                  >
+                    <i class="bi bi-exclamation-triangle"></i>
+                  </span>
+                </td>
+                <td @click.stop>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary me-1"
+                    title="View Payload"
+                    @click="openViewPayload(report)"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    @click="openEditReportDialog(report)"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="isReportExpanded(report.uuid)" class="milestone-details">
+                <td colspan="6" class="p-0">
+                  <SRPReportDetails
+                    :report="report"
+                    @add-milestone="openAddMilestoneDialog"
+                    @edit-milestone="openEditMilestoneDialog"
+                    @refresh="loadSRPReports"
+                  />
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
     </div>
   </LabelCollapsible>
+
+  <SRPReportDialog
+    :report="editingReport"
+    :show="showReportDialog"
+    @close="closeReportDialog"
+    @save="handleSaveReport"
+  />
+
+  <SRPMilestoneDialog
+    :milestone="editingMilestone"
+    :show="showMilestoneDialog"
+    @close="closeMilestoneDialog"
+    @save="handleSaveMilestone"
+  />
+
+  <SRPPayloadDialog
+    :report="viewPayloadReport"
+    :show="showPayloadDialog"
+    @close="closePayloadDialog"
+  />
 </template>
 
 <style scoped>
 .section-label {
   font-weight: 600;
+}
+
+.report-row {
+  cursor: pointer;
+}
+
+.report-row:hover {
+  background-color: rgb(0 0 0 / 2.5%);
+}
+
+.milestone-details td {
+  border-top: none;
 }
 </style>

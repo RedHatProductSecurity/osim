@@ -55,6 +55,7 @@ export interface SRPReport {
   manufacturer_or_steward_name: string;
   member_states_available: string[];
   milestones: SRPReportMilestone[];
+  missing_required_fields: string;
   reportable_event_type: SRPEventType;
   responsibility_scope: SRPResponsibilityScope;
   srp_reference_id: string;
