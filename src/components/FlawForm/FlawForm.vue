@@ -27,6 +27,7 @@ import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue'
 import AegisComponentActions from '@/components/Aegis/AegisComponentActions.vue';
 import IncidentRequestButton from '@/components/IncidentRequestDialog/IncidentRequestButton.vue';
 import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
+import SRPSummary from '@/components/CRA/SRPSummary.vue';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useFlaw } from '@/composables/useFlaw';
@@ -620,6 +621,9 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
       </div>
       <div class="row osim-flaw-form-section">
         <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
+      </div>
+      <div v-if="mode === 'edit' && flaw.uuid" class="row border-top osim-flaw-form-section">
+        <SRPSummary :flawId="flaw.uuid" />
       </div>
       <div v-if="mode === 'edit'" class="row border-top osim-flaw-form-section">
         <FlawComments
