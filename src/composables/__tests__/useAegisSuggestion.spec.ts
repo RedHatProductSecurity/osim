@@ -175,6 +175,7 @@ describe('useAegisSuggestion', () => {
       suggested_statement: null,
       suggested_mitigation: null,
       components: null,
+      ecosystems: null,
     });
   });
 
@@ -512,6 +513,7 @@ describe('useAegisSuggestion - Multiple Suggestions', () => {
       suggested_statement: null,
       suggested_mitigation: null,
       components: null,
+      ecosystems: null,
     });
     expect(valueRef.value).toBe('CWE-79');
   });
