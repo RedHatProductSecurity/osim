@@ -143,6 +143,17 @@ export const ZodAffectSchema = z.object({
   ps_update_stream: z.string(),
   tracker: TrackerSchema.nullable(),
   labels: z.array(z.string()),
+}).superRefine((affect, ctx) => {
+  if (
+    affect.affectedness === AffectednessEnum.Notaffected
+    && !affect.not_affected_justification
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'A justification is required when the affect status is NOTAFFECTED.',
+      path: ['not_affected_justification'],
+    });
+  }
 });
 
 export type StreamComponent = {
