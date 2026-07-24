@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 
 import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
+import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 
 import { useUnprocessedFlawDetection } from '@/composables/unprocessedFlawCheck';
 
@@ -19,7 +20,7 @@ const { issue, showLabels } = defineProps<{
 //       and update the CSS for the column width in IssueQueue
 
 const nonIdFields: Exclude<keyof FilteredIssue, 'cve_id' | 'uuid'>[] =
-  ['impact', 'formattedDate', 'title', 'classification', 'owner'];
+  ['impact', 'formattedDate', 'title', 'srp_status', 'classification', 'owner'];
 
 const { isFlawUnprocessed } = useUnprocessedFlawDetection();
 
@@ -81,7 +82,14 @@ function getLabelColor(label: string, type: string): string {
       :key="field"
       :class="{ 'pb-0': hasBadges }"
     >
-      {{ field === 'classification' ? issue[field]?.state : issue[field] }}
+      <SRPStatusBadge
+        v-if="field === 'srp_status'"
+        :status="issue.srp_status as any"
+        :overdueMilestones="issue.srp_overdue_milestones ?? undefined"
+      />
+      <template v-else>
+        {{ field === 'classification' ? issue[field]?.state : issue[field] }}
+      </template>
     </td>
     <!--<td>{{ issue.assigned }}</td>-->
   </tr>

@@ -43,6 +43,13 @@ vi.mock('@/composables/useTrackers', () => {
 
 vi.mock('@/services/LabelsService');
 
+vi.mock('@/services/SRPService', () => {
+  return {
+    fetchSRPReports: vi.fn(() => Promise.resolve([])),
+    updateSRPReport: vi.fn(() => Promise.resolve({})),
+  };
+});
+
 vi.mock('@/services/WorkflowService', () => ({
   getFlawWorkflowClassification: vi.fn(() => Promise.resolve({
     flaw: 'test-uuid',
