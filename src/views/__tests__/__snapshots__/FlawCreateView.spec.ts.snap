@@ -402,6 +402,7 @@ exports[`flawCreateView > should render 1`] = `
       <!--v-if-->
     </div>
     <!--v-if-->
+    <!--v-if-->
     <div data-v-76e7a15d="" class="row border-top">
       <div data-v-76e7a15d="" class="col">
         <!--v-if-->

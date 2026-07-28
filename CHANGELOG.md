@@ -4,6 +4,7 @@
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 * Add workflow label type support in Labels section (`OSIDB-5019`)
 * Show ecosystem information in Aegis component suggestion tooltips (`OSIDB-5252`)
+* Add SRP (Single Reporting Platform) summary section to flaw detail page for CRA compliance (`OSIDB-5091`)
 
 ### Fixed
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
