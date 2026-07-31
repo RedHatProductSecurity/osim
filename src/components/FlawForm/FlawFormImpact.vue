@@ -20,7 +20,7 @@ const props = defineProps<{
   aegisContext: AegisSuggestionContextRefs;
   error: null | string;
   initialImpact: ImpactEnumWithBlankType | null;
-  workflowState: FlawClassificationStateEnum;
+  workflowState: string;
 }>();
 
 const modelValue = defineModel<ImpactEnumWithBlankType | null | undefined>('modelValue');
@@ -29,7 +29,7 @@ function handleImpactChange(value: null | string | undefined) {
   modelValue.value = value as ImpactEnumWithBlankType | null | undefined;
 }
 
-const postTriageStates: FlawClassificationStateEnum[] = [
+const postTriageStates: string[] = [
   FlawClassificationStateEnum.Rejected,
   FlawClassificationStateEnum.PreSecondaryAssessment,
   FlawClassificationStateEnum.SecondaryAssessment,

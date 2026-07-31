@@ -15,12 +15,11 @@ import type {
   AffectCVSSSchemaType,
 } from './zodAffect';
 import {
-  FlawClassificationStateEnum,
 } from '../generated-client';
 
 export const ZodFlawClassification = z.object({
   workflow: z.string(),
-  state: z.nativeEnum(FlawClassificationStateEnum),
+  state: z.string(),
 });
 
 export const ImpactEnumWithBlank = { None: '', ...ImpactEnum } as const;
