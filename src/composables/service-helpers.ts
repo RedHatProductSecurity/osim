@@ -3,12 +3,15 @@ import { useToastStore } from '@/stores/ToastStore';
 
 export function createCatchHandler(title: string = 'Error', shouldThrow: boolean = true) {
   return (error: any) => {
-    const displayedError = Array.isArray(error)
-      ? parseOsidbErrors(error)
-      : getDisplayedOsidbError(error);
+    const isConflict = error?.response?.status === 409;
+    const displayedError = isConflict
+      ? 'This entity was modified by someone else. Reload to see the latest changes, then re-apply your edits.'
+      : Array.isArray(error)
+        ? parseOsidbErrors(error)
+        : getDisplayedOsidbError(error);
     const { addToast } = useToastStore();
     addToast({
-      title,
+      title: isConflict ? 'Mid-air collision detected' : title,
       body: displayedError,
       css: 'warning',
     });

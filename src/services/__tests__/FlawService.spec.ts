@@ -38,4 +38,29 @@ describe('flawService', () => {
 
     expect(createSuccessHandler).toHaveBeenCalled();
   });
+
+  it('should send client updated_dt on PUT without fetching a fresh one first', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const clientUpdatedDt = '2024-01-01T00:00:00Z';
+
+    await putFlaw('1', {
+      ...blankFlaw(),
+      title: 'Test',
+      updated_dt: clientUpdatedDt,
+    }, false);
+
+    const putCalls = fetchSpy.mock.calls.filter(([, init]) =>
+      String(init?.method ?? '').toUpperCase() === 'PUT',
+    );
+    const getCallsForUpdatedDt = fetchSpy.mock.calls.filter(([url, init]) =>
+      String(init?.method ?? 'GET').toUpperCase() === 'GET'
+      && String(url).includes('include_fields=updated_dt'),
+    );
+
+    expect(putCalls.length).toBeGreaterThan(0);
+    expect(getCallsForUpdatedDt).toHaveLength(0);
+
+    const putBody = JSON.parse(String(putCalls[0][1]?.body));
+    expect(putBody.updated_dt).toBe(clientUpdatedDt);
+  });
 });

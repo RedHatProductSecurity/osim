@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Restore OSIDB mid-air collision detection on PUT (`OSIDB-5285`)
+
 ## [2026.8.1]
 ### Fixed
 * Allow empty Source Component on flaws in NEW state (`OSIDB-5273`)
