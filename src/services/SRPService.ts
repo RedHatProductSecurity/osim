@@ -12,6 +12,19 @@ export async function fetchSRPReports(flawId: string): Promise<SRPReport[]> {
   return (response.data?.results || response.data || []) as SRPReport[];
 }
 
+export async function createSRPReport(
+  flawId: string,
+  data: Partial<SRPReport>,
+) {
+  return osidbFetch({
+    method: 'POST',
+    url: `/regulatory-reporting/api/v1/flaws/${flawId}/srp-reports`,
+    data,
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'SRP report created successfully.' }))
+    .catch(createCatchHandler('Error creating SRP report:'));
+}
+
 export async function updateSRPReport(
   reportUuid: string,
   data: Partial<SRPReport>,
