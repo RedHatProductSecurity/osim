@@ -5,6 +5,7 @@ import { createSuccessHandler } from '@/composables/service-helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import {
   createAdditionalInfoMilestone,
+  createSRPReport,
   fetchSRPReports,
   updateSRPMilestone,
   updateSRPReport,
@@ -42,6 +43,14 @@ describe('sRPService', () => {
     vi.mocked(osidbFetch).mockRejectedValue(new Error('Network error'));
 
     await expect(fetchSRPReports('flaw-789')).rejects.toThrow('Network error');
+  });
+
+  it('creates SRP report', async () => {
+    vi.mocked(osidbFetch).mockResolvedValue({ data: {} } as any);
+
+    await createSRPReport('flaw-123', { title: 'New Report' });
+
+    expect(createSuccessHandler).toHaveBeenCalled();
   });
 
   it('updates SRP report', async () => {
