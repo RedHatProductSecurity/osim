@@ -17,6 +17,7 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -27,6 +28,7 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
           <td data-v-15d9c71d="" class="pb-0">MODERATE</td>
           <td data-v-15d9c71d="" class="pb-0">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="pb-0">title</td>
+          <td data-v-15d9c71d="" class="pb-0"><span data-v-15d9c71d="" class="text-muted">—</span></td>
           <td data-v-15d9c71d="" class="pb-0">NEW</td>
           <td data-v-15d9c71d="" class="pb-0">test@redhat.com</td>
           <!--<td>{{ issue.assigned }}</td>-->
@@ -69,6 +71,7 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -79,6 +82,7 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
           <td data-v-15d9c71d="" class="">MODERATE</td>
           <td data-v-15d9c71d="" class="">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="">title</td>
+          <td data-v-15d9c71d="" class=""><span data-v-15d9c71d="" class="text-muted">—</span></td>
           <td data-v-15d9c71d="" class="">NEW</td>
           <td data-v-15d9c71d="" class="">test@redhat.com</td>
           <!--<td>{{ issue.assigned }}</td>-->
@@ -111,6 +115,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -121,6 +126,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
           <td data-v-15d9c71d="" class="pb-0">MODERATE</td>
           <td data-v-15d9c71d="" class="pb-0">2021-07-29 14:50</td>
           <td data-v-15d9c71d="" class="pb-0">title</td>
+          <td data-v-15d9c71d="" class="pb-0"><span data-v-15d9c71d="" class="text-muted">—</span></td>
           <td data-v-15d9c71d="" class="pb-0">NEW</td>
           <td data-v-15d9c71d="" class="pb-0">test@redhat.com</td>
           <!--<td>{{ issue.assigned }}</td>-->
