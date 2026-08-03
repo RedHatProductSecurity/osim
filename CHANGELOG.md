@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.8.0]
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 * Add workflow label type support in Labels section (`OSIDB-5019`)
@@ -690,7 +690,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0...HEAD
+[2026.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...v2026.8.0
 [2026.5.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.0...v2026.5.1
 [2026.5.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.1...v2026.5.0
 [2026.4.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.0...v2026.4.1
