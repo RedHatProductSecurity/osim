@@ -15,6 +15,7 @@ import { allowedEmptyFieldMapping, flawFields } from '@/constants/flawFields';
 import { affectAffectedness } from '@/types/zodAffect';
 import { useSearchStore } from '@/stores/SearchStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   isLoading: boolean;
@@ -38,6 +39,13 @@ const {
 
 const queryGuideModal = useModal();
 const savingSearchModal = useModal();
+
+const availableFlawFields = computed(() => {
+  if (osimRuntime.value.flags?.srpReporting) {
+    return flawFields;
+  }
+  return flawFields.filter(field => field !== 'srp_status');
+});
 
 const loadedSearchIndex = ref<number>(-1);
 const newSearchName = ref('');
@@ -88,8 +96,12 @@ const nameForOption = (fieldName: string) => {
     cve_description: 'CVE Description',
     requires_cve_description: 'CVE Description Review',
     major_incident_state: 'Incident State',
-    srp_status: 'SRP Status',
   };
+
+  if (osimRuntime.value.flags?.srpReporting) {
+    mappings.srp_status = 'SRP Status';
+  }
+
   let name =
     mappings[fieldName]
     || fieldName.replace(/__[a-z]/g, label => `: ${label.charAt(2).toUpperCase()}`);
@@ -111,10 +123,14 @@ const fieldNamesSorted = sort((fieldA: string, fieldB: string) =>
 const chosenFields = computed(() => facets.value.map(({ field }) => field));
 
 const unchosenFields = (chosenField: string) =>
-  fieldNamesSorted(flawFields.filter(field => !chosenFields.value.includes(field) || field === chosenField));
+  fieldNamesSorted(
+    availableFlawFields.value.filter(
+      field => !chosenFields.value.includes(field) || field === chosenField,
+    ),
+  );
 
-const optionsFor = (field: string) =>
-  ({
+const optionsFor = (field: string) => {
+  const options: Record<string, string[]> = {
     source: flawSources,
     impact: flawImpacts,
     embargoed: ['true', 'false'],
@@ -127,8 +143,11 @@ const optionsFor = (field: string) =>
       'TRIAGE',
     ],
     major_incident_state: flawIncidentStates,
-    affects__affectedness: affectAffectedness,
-    srp_status: [
+    affects__affectedness: Object.values(affectAffectedness),
+  };
+
+  if (osimRuntime.value.flags?.srpReporting) {
+    options.srp_status = [
       'blocked',
       'deferred',
       'failed',
@@ -137,8 +156,11 @@ const optionsFor = (field: string) =>
       'prepared',
       'required',
       'submitted',
-    ],
-  })[field] || null;
+    ];
+  }
+
+  return options[field] || null;
+};
 
 const shouldShowAdvanced = ref(true);
 const showSavedSearches = ref(true);

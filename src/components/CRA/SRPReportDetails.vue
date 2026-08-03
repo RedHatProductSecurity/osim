@@ -30,7 +30,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
     defer: 'deferred',
     submit: 'submitted',
   };
-  await updateSRPMilestone(milestone.uuid, { status: statusMap[action] as any });
+  await updateSRPMilestone(milestone.srp_report, milestone.uuid, { status: statusMap[action] as any });
   emit('refresh');
 }
 </script>
