@@ -10,7 +10,6 @@ import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
 import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
-import { isMilestoneActionable } from '@/types/cra';
 import {
   createAdditionalInfoMilestone,
   fetchSRPReports,
@@ -84,7 +83,11 @@ const summary = computed<SRPReportSummary>(() => {
 
   for (const report of srpReports.value) {
     if (report.milestones) {
-      totalOverdue += report.milestones.filter(isMilestoneActionable).length;
+      totalOverdue += report.milestones.filter(m =>
+        m.is_overdue
+        && m.status !== 'submitted'
+        && m.status !== 'not_required',
+      ).length;
     }
   }
 
@@ -102,7 +105,12 @@ function getNextDueDate(report: SRPReport): Date | null {
 
   const now = new Date();
   const upcomingMilestones = report.milestones
-    .filter(m => m.due_at && new Date(m.due_at) > now)
+    .filter(m =>
+      m.due_at
+      && new Date(m.due_at) > now
+      && m.status !== 'submitted'
+      && m.status !== 'not_required',
+    )
     .sort((a, b) => new Date(a.due_at!).getTime() - new Date(b.due_at!).getTime());
 
   return upcomingMilestones[0]?.due_at ? new Date(upcomingMilestones[0].due_at) : null;
@@ -111,7 +119,11 @@ function getNextDueDate(report: SRPReport): Date | null {
 function getOverdueMilestones(report: SRPReport): number {
   if (!report.milestones) return 0;
 
-  return report.milestones.filter(isMilestoneActionable).length;
+  return report.milestones.filter(m =>
+    m.is_overdue
+    && m.status !== 'submitted'
+    && m.status !== 'not_required',
+  ).length;
 }
 
 function formatDateDisplay(date: Date | null): string {
@@ -157,16 +169,12 @@ async function handleSaveReport(data: Partial<SRPReport>) {
 }
 
 async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
-  try {
-    if (editingMilestone.value) {
-      await updateSRPMilestone(editingMilestone.value.uuid, data);
-    } else {
-      await createAdditionalInfoMilestone(editingReportUuid.value, data);
-    }
-    await loadSRPReports();
-  } catch (err) {
-    console.error('Failed to save SRP milestone:', err);
+  if (editingMilestone.value) {
+    await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
+  } else {
+    await createAdditionalInfoMilestone(editingReportUuid.value, data);
   }
+  await loadSRPReports();
 }
 
 function hasMissingFields(report: SRPReport): boolean {

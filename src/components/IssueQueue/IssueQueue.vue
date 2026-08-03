@@ -12,6 +12,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import type { ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 const props = defineProps<{
   isFinalPageFetched: boolean;
@@ -83,16 +84,25 @@ const params = computed(() => {
   return paramsObj;
 });
 
-const columnsFieldsMap: Record<string, ColumnField> = {
-  'ID': 'id',
-  'Impact': 'impact',
-  // Source: 'source',
-  'Created': 'created_dt',
-  'Title': 'title',
-  'SRP Status': 'srp_status',
-  'State': 'state',
-  'Owner': 'owner',
-};
+const columnsFieldsMap = computed<Record<string, ColumnField>>(() => {
+  const baseColumns: Record<string, ColumnField> = {
+    ID: 'id',
+    Impact: 'impact',
+    // Source: 'source',
+    Created: 'created_dt',
+    Title: 'title',
+  };
+
+  if (osimRuntime.value.flags?.srpReporting) {
+    baseColumns['SRP Status'] = 'srp_status';
+  }
+
+  return {
+    ...baseColumns,
+    State: 'state',
+    Owner: 'owner',
+  };
+});
 
 function selectSortField(field: ColumnField) {
   // Toggle between descending, ascending and no ordering
