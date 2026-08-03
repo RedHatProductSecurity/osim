@@ -622,7 +622,10 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
       <div class="row osim-flaw-form-section">
         <FlawLabelsTable v-if="flaw.uuid" v-model="flaw.labels!" />
       </div>
-      <div v-if="mode === 'edit' && flaw.uuid" class="row border-top osim-flaw-form-section">
+      <div
+        v-if="mode === 'edit' && flaw.uuid && osimRuntime.flags?.srpReporting"
+        class="row border-top osim-flaw-form-section"
+      >
         <SRPSummary :flawId="flaw.uuid" />
       </div>
       <div v-if="mode === 'edit'" class="row border-top osim-flaw-form-section">

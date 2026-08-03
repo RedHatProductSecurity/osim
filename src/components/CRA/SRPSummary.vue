@@ -105,7 +105,12 @@ function getNextDueDate(report: SRPReport): Date | null {
 
   const now = new Date();
   const upcomingMilestones = report.milestones
-    .filter(m => m.due_at && new Date(m.due_at) > now)
+    .filter(m =>
+      m.due_at
+      && new Date(m.due_at) > now
+      && m.status !== 'submitted'
+      && m.status !== 'not_required',
+    )
     .sort((a, b) => new Date(a.due_at!).getTime() - new Date(b.due_at!).getTime());
 
   return upcomingMilestones[0]?.due_at ? new Date(upcomingMilestones[0].due_at) : null;
@@ -165,7 +170,7 @@ async function handleSaveReport(data: Partial<SRPReport>) {
 
 async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
   if (editingMilestone.value) {
-    await updateSRPMilestone(editingMilestone.value.uuid, data);
+    await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
   } else {
     await createAdditionalInfoMilestone(editingReportUuid.value, data);
   }
