@@ -55,7 +55,7 @@ describe('sRPService', () => {
   it('updates SRP milestone', async () => {
     vi.mocked(osidbFetch).mockResolvedValue({ data: {} } as any);
 
-    await updateSRPMilestone('milestone-1', { status: 'submitted' });
+    await updateSRPMilestone('report-1', 'milestone-1', { status: 'submitted' });
 
     expect(createSuccessHandler).toHaveBeenCalled();
   });

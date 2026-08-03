@@ -23,6 +23,7 @@ const formData = ref({
   srp_reference_id: props.report?.srp_reference_id || '',
   srp_reference_url: props.report?.srp_reference_url || '',
   title: props.report?.title || '',
+  updated_dt: props.report?.updated_dt || '',
 });
 
 watch(() => props.show, (newShow) => {
@@ -34,6 +35,7 @@ watch(() => props.show, (newShow) => {
         srp_reference_id: props.report.srp_reference_id,
         srp_reference_url: props.report.srp_reference_url,
         title: props.report.title,
+        updated_dt: props.report.updated_dt,
       };
     } else {
       formData.value = {
@@ -42,6 +44,7 @@ watch(() => props.show, (newShow) => {
         srp_reference_id: '',
         srp_reference_url: '',
         title: '',
+        updated_dt: '',
       };
     }
   }

@@ -20,15 +20,17 @@ const formData = ref({
   manual_completion_notes: props.milestone?.manual_completion_notes || '',
   milestone_type: props.milestone?.milestone_type || '24h',
   status: props.milestone?.status || 'prepared',
+  updated_dt: props.milestone?.updated_dt || '',
 });
 
 watch(() => props.show, (newShow) => {
   if (newShow && props.milestone) {
     formData.value = {
       due_at: props.milestone.due_at || '',
-      manual_completion_notes: props.milestone.manual_completion_notes || '',
-      milestone_type: props.milestone.milestone_type || '24h',
-      status: props.milestone.status || 'prepared',
+      manual_completion_notes: props.milestone.manual_completion_notes,
+      milestone_type: props.milestone.milestone_type,
+      status: props.milestone.status,
+      updated_dt: props.milestone.updated_dt,
     };
   }
 });
@@ -82,8 +84,6 @@ function handleClose() {
           <option value="prepared">Prepared</option>
           <option value="submitted">Submitted</option>
           <option value="not_required">Not Required</option>
-          <option value="blocked">Blocked</option>
-          <option value="deferred">Deferred</option>
         </select>
       </div>
       <div class="mb-3">
