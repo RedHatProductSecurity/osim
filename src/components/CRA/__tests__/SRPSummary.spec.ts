@@ -25,13 +25,14 @@ describe('sRPSummary', () => {
     expect(wrapper.text()).toContain('Failed to load SRP reports');
   });
 
-  it('displays no report message', async () => {
+  it('displays empty state with add button', async () => {
     vi.mocked(SRPService.fetchSRPReports).mockResolvedValue([]);
 
     const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
     await flushPromises();
 
-    expect(wrapper.text()).toContain('No SRP reporting required');
+    expect(wrapper.text()).toContain('No reports yet');
+    expect(wrapper.text()).toContain('Add Report');
   });
 
   it('renders report table', async () => {

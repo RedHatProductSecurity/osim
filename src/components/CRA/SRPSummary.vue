@@ -12,6 +12,7 @@ import { useSRPDialogs } from '@/composables/useSRPDialogs';
 import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
 import {
   createAdditionalInfoMilestone,
+  createSRPReport,
   fetchSRPReports,
   updateSRPMilestone,
   updateSRPReport,
@@ -161,6 +162,8 @@ async function handleSaveReport(data: Partial<SRPReport>) {
   try {
     if (editingReport.value) {
       await updateSRPReport(editingReport.value.uuid, data);
+    } else {
+      await createSRPReport(props.flawId, data);
     }
     await loadSRPReports();
   } catch (err) {
@@ -204,11 +207,6 @@ function hasMissingFields(report: SRPReport): boolean {
       Failed to load SRP reports. The feature may not be available yet.
     </div>
 
-    <div v-else-if="!summary.hasReport" class="p-3 text-muted">
-      <i class="bi bi-info-circle me-2"></i>
-      No SRP reporting required for this flaw.
-    </div>
-
     <div v-else class="p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="mb-0">SRP Reports</h6>
@@ -217,7 +215,13 @@ function hasMissingFields(report: SRPReport): boolean {
           Add Report
         </button>
       </div>
-      <div class="table-responsive">
+
+      <div v-if="!summary.hasReport" class="text-muted">
+        <i class="bi bi-info-circle me-2"></i>
+        No reports yet. Click "Add Report" to create one.
+      </div>
+
+      <div v-else class="table-responsive">
         <table class="table table-sm table-hover">
           <thead>
             <tr>
