@@ -30,7 +30,10 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
     defer: 'deferred',
     submit: 'submitted',
   };
-  await updateSRPMilestone(milestone.srp_report, milestone.uuid, { status: statusMap[action] as any });
+  await updateSRPMilestone(milestone.srp_report, milestone.uuid, {
+    status: statusMap[action] as any,
+    updated_dt: milestone.updated_dt,
+  });
   emit('refresh');
 }
 </script>
@@ -41,7 +44,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
       <h6 class="mb-0">Milestones</h6>
       <button
         type="button"
-        class="btn btn-sm btn-outline-primary"
+        class="btn btn-sm btn-secondary"
         @click="emit('add-milestone', report.uuid)"
       >
         <i class="bi bi-plus-circle me-1"></i>
@@ -66,8 +69,8 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
           Edit to update before submission.
         </small>
       </div>
-      <table class="table table-sm table-bordered bg-white mb-0">
-        <thead>
+      <table class="table table-striped table-hover table-sm mb-0">
+        <thead class="table-dark">
           <tr>
             <th>Type</th>
             <th>Status</th>
@@ -95,7 +98,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
                 <button
                   v-if="milestone.status !== 'submitted'"
                   type="button"
-                  class="btn btn-outline-success"
+                  class="btn btn-success"
                   title="Mark Submitted"
                   @click="handleQuickAction(milestone, 'submit')"
                 >
@@ -104,7 +107,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
                 <button
                   v-if="milestone.status !== 'deferred'"
                   type="button"
-                  class="btn btn-outline-warning"
+                  class="btn btn-warning"
                   title="Defer"
                   @click="handleQuickAction(milestone, 'defer')"
                 >
@@ -113,7 +116,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
                 <button
                   v-if="milestone.status !== 'blocked'"
                   type="button"
-                  class="btn btn-outline-danger"
+                  class="btn btn-danger"
                   title="Block"
                   @click="handleQuickAction(milestone, 'block')"
                 >
@@ -122,7 +125,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
               </div>
               <button
                 type="button"
-                class="btn btn-sm btn-outline-secondary"
+                class="btn btn-sm btn-dark"
                 title="Edit"
                 @click="emit('edit-milestone', milestone)"
               >
@@ -135,3 +138,9 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
     </div>
   </div>
 </template>
+
+<style scoped>
+.btn:hover {
+  opacity: 0.85;
+}
+</style>

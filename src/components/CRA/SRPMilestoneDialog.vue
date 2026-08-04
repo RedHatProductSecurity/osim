@@ -20,6 +20,7 @@ const formData = ref({
   manual_completion_notes: props.milestone?.manual_completion_notes || '',
   milestone_type: props.milestone?.milestone_type || '24h',
   status: props.milestone?.status || 'prepared',
+  updated_dt: props.milestone?.updated_dt || '',
 });
 
 watch(() => props.show, (newShow) => {
@@ -29,6 +30,7 @@ watch(() => props.show, (newShow) => {
       manual_completion_notes: props.milestone.manual_completion_notes,
       milestone_type: props.milestone.milestone_type,
       status: props.milestone.status,
+      updated_dt: props.milestone.updated_dt,
     };
   }
 });
