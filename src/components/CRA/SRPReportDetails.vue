@@ -85,7 +85,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
             :key="milestone.uuid"
             :class="{ 'table-danger': milestone.is_overdue && milestone.status !== 'submitted' }"
           >
-            <td>{{ milestone.milestone_type }}</td>
+            <td class="ps-4">{{ milestone.milestone_type }}</td>
             <td>
               <span class="badge bg-secondary">{{ formatStatus(milestone.status) }}</span>
             </td>

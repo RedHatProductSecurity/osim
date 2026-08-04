@@ -210,7 +210,7 @@ function hasMissingFields(report: SRPReport): boolean {
     <div v-else class="p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="mb-0">SRP Reports</h6>
-        <button type="button" class="btn btn-sm btn-primary" @click="openAddReportDialog">
+        <button type="button" class="btn btn-sm btn-dark" @click="openAddReportDialog">
           <i class="bi bi-plus-circle me-1"></i>
           Add Report
         </button>
@@ -222,15 +222,15 @@ function hasMissingFields(report: SRPReport): boolean {
       </div>
 
       <div v-else class="table-responsive">
-        <table class="table table-sm table-hover">
-          <thead>
+        <table class="table table-striped table-hover table-sm">
+          <thead class="table-dark">
             <tr>
               <th style="width: 40px"></th>
               <th>Status</th>
               <th>Event Type</th>
               <th>Next Due Date</th>
               <th>Overdue</th>
-              <th style="width: 100px">Actions</th>
+              <th style="width: 150px">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -258,19 +258,12 @@ function hasMissingFields(report: SRPReport): boolean {
                   <span v-if="getOverdueMilestones(report) > 0" class="badge bg-danger">
                     {{ getOverdueMilestones(report) }}
                   </span>
-                  <span v-else class="text-muted">-</span>
-                  <span
-                    v-if="hasMissingFields(report)"
-                    class="badge bg-warning text-dark ms-1"
-                    title="Missing required fields"
-                  >
-                    <i class="bi bi-exclamation-triangle"></i>
-                  </span>
+                  <span v-else class="text-muted d-inline-block ms-1" style="line-height: 1.5;">—</span>
                 </td>
-                <td @click.stop>
+                <td class="text-nowrap" @click.stop>
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-primary me-1"
+                    class="btn btn-sm btn-dark me-1"
                     title="View Payload"
                     @click="openViewPayload(report)"
                   >
@@ -278,11 +271,22 @@ function hasMissingFields(report: SRPReport): boolean {
                   </button>
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-secondary"
+                    class="btn btn-sm btn-dark me-1"
                     @click="openEditReportDialog(report)"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
+                  <span
+                    v-if="hasMissingFields(report)"
+                    title="Missing required fields"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-warning"
+                    >
+                      <i class="bi bi-exclamation-triangle"></i>
+                    </button>
+                  </span>
                 </td>
               </tr>
               <tr v-if="isReportExpanded(report.uuid)" class="milestone-details">
@@ -332,11 +336,11 @@ function hasMissingFields(report: SRPReport): boolean {
   cursor: pointer;
 }
 
-.report-row:hover {
-  background-color: rgb(0 0 0 / 2.5%);
-}
-
 .milestone-details td {
   border-top: none;
+}
+
+.btn-dark:hover {
+  opacity: 0.85;
 }
 </style>
