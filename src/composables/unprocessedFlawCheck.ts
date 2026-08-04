@@ -8,8 +8,7 @@ function areRequiredFieldsEmpty(flaw: ZodFlawType): boolean {
   if (flaw.aegis_meta?.processed === true) return false;
 
   return !(
-    (flaw.affects && flaw.affects.length > 0)
-    || (flaw.owner && flaw.owner.trim().length > 0)
+    (flaw.owner && flaw.owner.trim().length > 0)
     || (flaw.cve_description && flaw.cve_description.trim().length > 0)
     || (flaw.statement && flaw.statement.trim().length > 0)
     || (flaw.mitigation && flaw.mitigation.trim().length > 0)
