@@ -9,6 +9,7 @@
 * Add expandable SRP report table with Add/Edit dialogs for managing reports and milestones (`OSIDB-5092`)
 
 ### Fixed
+* Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
 * Fix my issues flaw list filter to use email instead username (`OSIDB-5143`)
 * Fix "Pending Bot Processing" label incorrectly shown on processed flaws (`OSIDB-5216`)
