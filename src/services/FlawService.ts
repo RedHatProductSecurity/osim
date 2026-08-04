@@ -36,9 +36,8 @@ const FLAW_LIST_FIELDS = [
   'owner',
   'labels',
   'aegis_meta',
-  // Required fields for UnprocessedFlawLabel logic
+  // Required fields for UnprocessedFlawLabel logic (`affects` omitted for list/search perf)
   'cve_description',
-  'affects',
   'statement',
   'mitigation',
   'cwe_id',

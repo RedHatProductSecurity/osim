@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [2026.8.1]
+### Fixed
+* Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
+
 ## [2026.8.0]
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
