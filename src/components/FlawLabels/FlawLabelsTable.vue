@@ -119,15 +119,29 @@ function handleUndoDelete(label: ZodFlawLabelType) {
             <td>{{ label.contributor }}</td>
             <td>
               <div class="actions">
-                <button
-                  v-if="!isDeletedLabel(label)"
-                  type="button"
-                  title="Edit label"
-                  class="btn btn-sm btn-dark"
-                  @click="isUpdatingLabel = label.label"
-                >
-                  <i class="bi bi-pencil" />
-                </button>
+                <template v-if="!isDeletedLabel(label)">
+                  <span
+                    v-if="label.type === FlawLabelTypeEnum.WORKFLOW && !isNewLabel(label)"
+                    title="Workflow labels are not editable"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-dark"
+                      disabled
+                    >
+                      <i class="bi bi-pencil" />
+                    </button>
+                  </span>
+                  <button
+                    v-else
+                    type="button"
+                    title="Edit label"
+                    class="btn btn-sm btn-dark"
+                    @click="isUpdatingLabel = label.label"
+                  >
+                    <i class="bi bi-pencil" />
+                  </button>
+                </template>
                 <button
                   v-if="isDeletedLabel(label)"
                   type="button"

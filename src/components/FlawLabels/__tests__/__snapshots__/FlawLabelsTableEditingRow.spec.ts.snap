@@ -16,8 +16,8 @@ exports[`flawLabelsTableEditingRow > should render 1`] = `
   </select>
 </td>
 <td data-v-627548cb="" class="text-decoration-line-through">
-  <!-- Product family labels are read-only -->
-  <!-- Context-based labels use dropdown --><select data-v-627548cb="" class="form-select" required=""></select>
+  <!-- Existing labels: name is immutable in OSIDB -->
+  <!-- New context-based labels use dropdown --><select data-v-627548cb="" class="form-select" required=""></select>
 </td>
 <td data-v-627548cb="">
   <flaw-labels-contributor-stub data-v-627548cb="" modelvalue=""></flaw-labels-contributor-stub>

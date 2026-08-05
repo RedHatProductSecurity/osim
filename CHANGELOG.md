@@ -1,5 +1,9 @@
 # OSIM Changelog
-## [2026.8.1]
+## [v2026.8.0-patch-workflow-labels]
+### Fixed
+* Make workflow labels not editable (`OSIDB-5310`)
+
+## [v2026.8.0-hotfix]
 ### Fixed
 * Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
 
