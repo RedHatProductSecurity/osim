@@ -1,5 +1,9 @@
 # OSIM Changelog
 ## [Unreleased]
+### Fixed
+* Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
+
+## [2026.8.0]
 ### Added
 * Add manual component suggestions for Source Component field (`OSIDB-4996`)
 * Add workflow label type support in Labels section (`OSIDB-5019`)

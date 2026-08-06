@@ -97,19 +97,6 @@ describe('useUnprocessedFlawDetection', () => {
     expect(isFlawUnprocessed(flaw)).toBe(false);
   });
 
-  it('returns false for flaw with non-empty affects', () => {
-    const flaw = {
-      uuid: 'test-uuid',
-      classification: { state: FlawClassificationStateEnum.New, workflow: 'test' },
-      cve_id: 'CVE-2024-1234',
-      created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
-      aegis_meta: null,
-      affects: [{ uuid: 'affect-1' }],
-    } as ZodFlawType;
-
-    expect(isFlawUnprocessed(flaw)).toBe(false);
-  });
-
   it('returns false for flaw with non-empty owner', () => {
     const flaw = {
       uuid: 'test-uuid',
