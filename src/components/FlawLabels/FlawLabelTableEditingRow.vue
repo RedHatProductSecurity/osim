@@ -91,11 +91,11 @@ const emitSave = () => {
       'text-decoration-line-through': !initalLabel?.relevant,
     }"
   >
-    <!-- Product family labels are read-only -->
-    <template v-if="initalLabel?.type === FlawLabelTypeEnum.PRODUCT_FAMILY">
+    <!-- Existing labels: name is immutable in OSIDB -->
+    <template v-if="!isNewLabel">
       {{ initalLabel?.label }}
     </template>
-    <!-- Alias and workflow labels use free text input -->
+    <!-- New alias and workflow labels use free text input -->
     <template v-else-if="isAliasType || isWorkflowType">
       <input
         v-model="labelName"
@@ -105,7 +105,7 @@ const emitSave = () => {
         required
       >
     </template>
-    <!-- BU labels use dropdown -->
+    <!-- New BU labels use dropdown -->
     <template v-else-if="isBuType">
       <select
         v-model="labelName"
@@ -119,7 +119,7 @@ const emitSave = () => {
         >{{ label }}</option>
       </select>
     </template>
-    <!-- Context-based labels use dropdown -->
+    <!-- New context-based labels use dropdown -->
     <template v-else>
       <select
         v-model="labelName"

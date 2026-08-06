@@ -12,6 +12,7 @@
 * Add SRP status column and filtering in flaw list for CRA compliance (`OSIDB-5125`)
 
 ### Fixed
+* Make workflow labels not editable (`OSIDB-5310`)
 * Disable "Save Changes" and "Reset Changes" buttons when no flaw changes have been made (`OSIDB-4973`)
 * Fix my issues flaw list filter to use email instead username (`OSIDB-5143`)
 * Fix "Pending Bot Processing" label incorrectly shown on processed flaws (`OSIDB-5216`)
