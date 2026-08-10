@@ -1,6 +1,8 @@
 import { createTestingPinia } from '@pinia/testing';
 import { http, HttpResponse } from 'msw';
 
+import { createCatchHandler } from '@/composables/service-helpers';
+
 import { server } from '@/__tests__/setup';
 import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
 import { StateEnum } from '@/generated-client';
@@ -9,7 +11,22 @@ import { handlers } from '@/mock-server/handlers';
 
 import { createLabel, deleteLabel, fetchLabels, updateLabel } from '../LabelsService';
 
-vi.mock('@/composables/service-helpers');
+function passThroughResponse(response: unknown) {
+  return response;
+}
+
+// Mirrors the real createCatchHandler's default (shouldThrow: true) so rejections still
+// propagate, while letting assertions confirm the error actually routed through the handler.
+function rethrowIfShouldThrow(_title: string, shouldThrow = true) {
+  return (error: unknown) => {
+    if (shouldThrow) throw error;
+  };
+}
+
+vi.mock('@/composables/service-helpers', () => ({
+  createSuccessHandler: vi.fn(() => passThroughResponse),
+  createCatchHandler: vi.fn(rethrowIfShouldThrow),
+}));
 
 describe('labelsService', () => {
   beforeAll(() => {
@@ -80,7 +97,10 @@ describe('labelsService', () => {
     };
 
     await expect(updateLabel(flawUUID, label)).rejects.toThrow('missing a UUID');
+    expect(createCatchHandler).toHaveBeenCalledWith('Error updating label no uuid');
+
     await expect(deleteLabel(flawUUID, label)).rejects.toThrow('missing a UUID');
+    expect(createCatchHandler).toHaveBeenCalledWith('Error deleting label no uuid');
   });
 
   it('handles errors when creating a label', async () => {

@@ -19,6 +19,15 @@ export async function fetchLabels() {
   }
 }
 
+function assertLabelUuid(
+  label: ZodFlawLabelType,
+  action: 'deleting' | 'updating',
+): asserts label is { uuid: string } & ZodFlawLabelType {
+  if (!label.uuid) {
+    createCatchHandler(`Error ${action} label ${label.name}`)(new Error(`Label ${label.name} is missing a UUID`));
+  }
+}
+
 export async function createLabel(flawUUID: string, label: ZodFlawLabelType) {
   return osidbFetch({
     method: 'post',
@@ -30,10 +39,7 @@ export async function createLabel(flawUUID: string, label: ZodFlawLabelType) {
 }
 
 export async function deleteLabel(flawUUID: string, label: ZodFlawLabelType) {
-  if (!label.uuid) {
-    return Promise.reject(new Error(`Label ${label.name} is missing a UUID`))
-      .catch(createCatchHandler(`Error deleting label ${label.name}`));
-  }
+  assertLabelUuid(label, 'deleting');
 
   return osidbFetch({
     method: 'delete',
@@ -44,10 +50,7 @@ export async function deleteLabel(flawUUID: string, label: ZodFlawLabelType) {
 }
 
 export async function updateLabel(flawUUID: string, label: ZodFlawLabelType) {
-  if (!label.uuid) {
-    return Promise.reject(new Error(`Label ${label.name} is missing a UUID`))
-      .catch(createCatchHandler(`Error updating label ${label.name}`));
-  }
+  assertLabelUuid(label, 'updating');
 
   return osidbFetch({
     method: 'put',
