@@ -45,7 +45,7 @@ export function useUnprocessedFlawDetection() {
       && !!flaw.cve_id && isCveValid(flaw.cve_id)
       && !isOlderThanThreshold(flaw.created_dt)
       && areRequiredFieldsEmpty(flaw)
-      && !flaw.labels?.some(label => label.label === 'manual-triage');
+      && !flaw.labels?.some(label => label.name === 'manual-triage');
   }
 
   return {

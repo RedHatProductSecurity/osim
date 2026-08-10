@@ -42,7 +42,7 @@ const sortedLabels = computed(() => issue.labels?.toSorted((a, b) => {
     return 1;
   }
 
-  return a.label.localeCompare(b.label);
+  return a.name.localeCompare(b.name);
 }) ?? []);
 
 function hashLabelColor(label: string): string {
@@ -108,11 +108,11 @@ function getLabelColor(label: string, type: string): string {
           <UnprocessedFlawLabel v-if="isFlawUnprocessed(issue)" :flaw="issue" variant="badge" />
           <template
             v-for="label in sortedLabels"
-            :key="label.label"
+            :key="label.name"
           >
             <span
               v-if="!label.contributor"
-              :style="{ backgroundColor: getLabelColor(label.label, label.type) }"
+              :style="{ backgroundColor: getLabelColor(label.name, label.type) }"
               class="badge rounded-pill border"
               :class="{
                 'text-bg-warning fw-bold border-warning': label.state == 'REQ',
@@ -120,7 +120,7 @@ function getLabelColor(label: string, type: string): string {
                 'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
               }"
               :title="label.state === 'REQ' ? 'Requested' : ''"
-            >{{ label.label }}</span>
+            >{{ label.name }}</span>
           </template>
         </template>
       </div>

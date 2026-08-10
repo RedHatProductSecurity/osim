@@ -20,7 +20,7 @@ const emit = defineEmits<{
 }>();
 
 const [labelState, hasStateChanged] = watchedRef<StateEnum>(initalLabel?.state ?? StateEnum.New);
-const [labelName, hasNameChanged] = watchedRef(initalLabel?.label ?? '');
+const [labelName, hasNameChanged] = watchedRef(initalLabel?.name ?? '');
 const [labelContributor, hasContributorChanged] = watchedRef(initalLabel?.contributor ?? '');
 const [labelType, hasTypeChanged] = watchedRef<FlawLabelTypeEnum>(
   initalLabel?.type ?? FlawLabelTypeEnum.CONTEXT_BASED,
@@ -50,7 +50,7 @@ const emitSave = () => {
   emit('save', {
     ...initalLabel,
     state: labelState.value,
-    label: labelName.value,
+    name: labelName.value,
     contributor: labelContributor.value,
     relevant: initalLabel?.relevant ?? true,
     type: labelType.value,
@@ -93,7 +93,7 @@ const emitSave = () => {
   >
     <!-- Existing labels: name is immutable in OSIDB -->
     <template v-if="!isNewLabel">
-      {{ initalLabel?.label }}
+      {{ initalLabel?.name }}
     </template>
     <!-- New alias and workflow labels use free text input -->
     <template v-else-if="isAliasType || isWorkflowType">

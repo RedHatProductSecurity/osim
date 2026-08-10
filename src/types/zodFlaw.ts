@@ -222,10 +222,11 @@ export const ZodFlawSchema = z.object({
   srp_overdue_milestones: z.number().nullish(), // read-only
   labels: z.array(z.object({
     uuid: z.string().optional(),
-    label: z.string(),
-    state: z.nativeEnum(StateEnum),
+    name: z.string(),
+    // Only 'name' and 'uuid' are guaranteed by OSIDB; the rest vary per label type.
+    state: z.nativeEnum(StateEnum).optional(),
     contributor: z.string().optional(),
-    relevant: z.boolean(),
+    relevant: z.boolean().optional(),
     type: z.nativeEnum(FlawLabelTypeEnum),
   })).nullish(),
   references: z.array(FlawReferenceSchema),

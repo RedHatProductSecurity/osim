@@ -31,7 +31,7 @@ describe('labelsService', () => {
   it('can create a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test create',
+      name: 'test create',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -44,7 +44,8 @@ describe('labelsService', () => {
   it('can update a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test update',
+      uuid: 'test-uuid',
+      name: 'test update',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -57,7 +58,8 @@ describe('labelsService', () => {
   it('can delete a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test delete',
+      uuid: 'test-uuid',
+      name: 'test delete',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -67,10 +69,24 @@ describe('labelsService', () => {
     await expect(deleteLabel(flawUUID, label)).resolves.not.toBeUndefined();
   });
 
+  it('rejects updating/deleting a label without a uuid instead of hitting the API', async () => {
+    const flawUUID = '123';
+    const label: ZodFlawLabelType = {
+      name: 'no uuid',
+      state: StateEnum.New,
+      type: FlawLabelTypeEnum.CONTEXT_BASED,
+      relevant: true,
+      contributor: '',
+    };
+
+    await expect(updateLabel(flawUUID, label)).rejects.toThrow('missing a UUID');
+    await expect(deleteLabel(flawUUID, label)).rejects.toThrow('missing a UUID');
+  });
+
   it('handles errors when creating a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test error',
+      name: 'test error',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -79,7 +95,7 @@ describe('labelsService', () => {
 
     server.use(
       http.post(
-        `${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/${flawUUID}/labels`, () => {
+        `${osimRuntime.value.backends.osidb}/osidb/api/v2/flaws/${flawUUID}/labels`, () => {
           return HttpResponse.text('Error', { status: 500 });
         },
         { once: true },
@@ -92,7 +108,8 @@ describe('labelsService', () => {
   it('handles errors when updating a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test error',
+      uuid: 'test-uuid',
+      name: 'test error',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -101,7 +118,7 @@ describe('labelsService', () => {
 
     server.use(
       http.put(
-        `${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/${flawUUID}/labels/${label.uuid}`, () => {
+        `${osimRuntime.value.backends.osidb}/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`, () => {
           return HttpResponse.text('Error', { status: 500 });
         },
         { once: true },
@@ -114,7 +131,8 @@ describe('labelsService', () => {
   it('handles errors when deleting a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
-      label: 'test error',
+      uuid: 'test-uuid',
+      name: 'test error',
       state: StateEnum.New,
       type: FlawLabelTypeEnum.CONTEXT_BASED,
       relevant: true,
@@ -123,7 +141,7 @@ describe('labelsService', () => {
 
     server.use(
       http.delete(
-        `${osimRuntime.value.backends.osidb}/osidb/api/v1/flaws/${flawUUID}/labels/${label.uuid}`, () => {
+        `${osimRuntime.value.backends.osidb}/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`, () => {
           return HttpResponse.text('Error', { status: 500 });
         },
         { once: true },

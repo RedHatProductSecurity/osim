@@ -17,7 +17,7 @@ type UseFlawLabels = MockTypes['useFlawLabels'];
 
 describe('useFlawLabels', () => {
   const baseLabel: ZodFlawLabelType = {
-    label: 'test-label',
+    name: 'test-label',
     type: FlawLabelTypeEnum.CONTEXT_BASED,
     state: StateEnum.New,
     relevant: true,
@@ -28,7 +28,7 @@ describe('useFlawLabels', () => {
     const { useFlawLabels } = await useMocks();
     const { areLabelsUpdated, deletedLabels, labels, newLabels, updatedLabels } = useFlawLabels(initialLabels);
 
-    expect(labels.value).toEqual({ [baseLabel.label]: baseLabel });
+    expect(labels.value).toEqual({ [baseLabel.name]: baseLabel });
     expect(newLabels.value).toEqual(new Set());
     expect(updatedLabels.value).toEqual(new Set());
     expect(deletedLabels.value).toEqual(new Set());
@@ -55,17 +55,17 @@ describe('useFlawLabels', () => {
     updatedLabels.value.add('updated-label');
     deletedLabels.value.add('deleted-label');
 
-    expect(isNewLabel({ ...baseLabel, label: 'new-label' })).toBe(true);
-    expect(isUpdatedLabel({ ...baseLabel, label: 'updated-label' })).toBe(true);
-    expect(isDeletedLabel({ ...baseLabel, label: 'deleted-label' })).toBe(true);
+    expect(isNewLabel({ ...baseLabel, name: 'new-label' })).toBe(true);
+    expect(isUpdatedLabel({ ...baseLabel, name: 'updated-label' })).toBe(true);
+    expect(isDeletedLabel({ ...baseLabel, name: 'deleted-label' })).toBe(true);
   });
 
   it('updates labels correctly', async () => {
     const { useFlawLabels } = await useMocks();
     const { deletedLabels, newLabels, updatedLabels, updateLabels } = useFlawLabels([
-      { ...baseLabel, label: 'new-label' },
-      { ...baseLabel, label: 'updated-label' },
-      { ...baseLabel, label: 'deleted-label' },
+      { ...baseLabel, name: 'new-label' },
+      { ...baseLabel, name: 'updated-label' },
+      { ...baseLabel, name: 'deleted-label' },
     ]);
 
     newLabels.value.add('new-label');
@@ -74,9 +74,9 @@ describe('useFlawLabels', () => {
     const testUuid = sampleFlawRequired.uuid;
     await updateLabels();
 
-    expect(createLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'new-label' });
-    expect(updateLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'updated-label' });
-    expect(deleteLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, label: 'deleted-label' });
+    expect(createLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, name: 'new-label' });
+    expect(updateLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, name: 'updated-label' });
+    expect(deleteLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, name: 'deleted-label' });
   });
 
   it('loads context labels correctly', async () => {

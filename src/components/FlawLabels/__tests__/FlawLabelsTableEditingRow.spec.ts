@@ -30,6 +30,6 @@ describe('flawLabelsTableEditingRow', () => {
     await wrapper.find('button[title="Save"]').trigger('click');
 
     expect(wrapper.emitted()).toHaveProperty('save');
-    expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({ label: 'test' })]]);
+    expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({ name: 'test' })]]);
   });
 });

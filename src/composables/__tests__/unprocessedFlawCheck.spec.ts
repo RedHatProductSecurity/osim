@@ -195,7 +195,7 @@ describe('useUnprocessedFlawDetection', () => {
       cve_id: 'CVE-2024-1234',
       created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
       aegis_meta: null,
-      labels: [{ label: 'manual-triage', state: 'NEW', contributor: '' }],
+      labels: [{ name: 'manual-triage', state: 'NEW', contributor: '' }],
     } as ZodFlawType;
 
     expect(isFlawUnprocessed(flaw)).toBe(false);

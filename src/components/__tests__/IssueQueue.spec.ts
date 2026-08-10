@@ -216,9 +216,9 @@ describe('issueQueue', () => {
       issues: [{
         ...mockData[0],
         labels: [
-          { label: 'test', state: 'NEW', contributor: '' },
-          { label: 'test-2', state: 'NEW', contributor: '' },
-          { label: 'test-3', state: 'REQ', contributor: '' },
+          { name: 'test', state: 'NEW', contributor: '' },
+          { name: 'test-2', state: 'NEW', contributor: '' },
+          { name: 'test-3', state: 'REQ', contributor: '' },
         ],
       } as ZodFlawType],
     });
@@ -235,8 +235,8 @@ describe('issueQueue', () => {
       issues: [{
         ...mockData[0],
         labels: [
-          { label: 'test', state: 'REQ', contributor: 'test' },
-          { label: 'test-2', state: 'NEW', contributor: 'test-2' },
+          { name: 'test', state: 'REQ', contributor: 'test' },
+          { name: 'test-2', state: 'NEW', contributor: 'test-2' },
         ],
       } as ZodFlawType],
     });
@@ -251,7 +251,7 @@ describe('issueQueue', () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
-        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', contributor: '' })),
+        labels: Array.from({ length: 10 }).map((_, i) => ({ name: `test-${i}`, state: 'NEW', contributor: '' })),
       } as ZodFlawType],
     });
 
@@ -268,7 +268,7 @@ describe('issueQueue', () => {
     const wrapper = mountIssueQueue({
       issues: [{
         ...mockData[0],
-        labels: Array.from({ length: 10 }).map((_, i) => ({ label: `test-${i}`, state: 'NEW', contributor: '' })),
+        labels: Array.from({ length: 10 }).map((_, i) => ({ name: `test-${i}`, state: 'NEW', contributor: '' })),
       } as ZodFlawType],
     });
     const store = useSettingsStore();
