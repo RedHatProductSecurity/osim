@@ -10,6 +10,7 @@ import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType, ZodAffectType } from '@/types';
+import { FlawLabelTypeEnum } from '@/types/zodFlaw';
 import { postFlaw, putFlaw } from '@/services/FlawService';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
@@ -214,6 +215,23 @@ describe('useFlawModel', () => {
 
       expect(flaw.value.affects[0].purl).toBe('pkg:rpm/redhat/kernel@5.14.0');
       expect(currentAffects.value[0].purl).toBe('pkg:oci/namespace/image@1.0.0');
+    });
+  });
+
+  describe('labels validation', () => {
+    it('is valid when labels omit optional fields like state and relevant', () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+
+      // OSIDB only guarantees 'uuid' and 'name'; state/relevant/contributor vary per label type.
+      flawData.labels = [{ uuid: 'uuid-1', name: 'core_bu', type: FlawLabelTypeEnum.BU }];
+      setFlaw(flawData);
+
+      const { isValid } = mountFlawModel();
+      const { initializeAffects } = useAffectsModel().actions;
+      initializeAffects(flaw.value.affects);
+
+      expect(isValid()).toBe(true);
     });
   });
 

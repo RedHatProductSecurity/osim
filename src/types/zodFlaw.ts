@@ -223,9 +223,10 @@ export const ZodFlawSchema = z.object({
   labels: z.array(z.object({
     uuid: z.string().optional(),
     name: z.string(),
-    state: z.nativeEnum(StateEnum),
+    // Only 'name' and 'uuid' are guaranteed by OSIDB; the rest vary per label type.
+    state: z.nativeEnum(StateEnum).optional(),
     contributor: z.string().optional(),
-    relevant: z.boolean(),
+    relevant: z.boolean().optional(),
     type: z.nativeEnum(FlawLabelTypeEnum),
   })).nullish(),
   references: z.array(FlawReferenceSchema),
