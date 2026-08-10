@@ -30,12 +30,12 @@ const contextLabels = computedAsync(loadContextLabels, []);
 const buLabels = computedAsync(loadBuLabels, []);
 const availableLabels = computed(() =>
   contextLabels.value.filter(contextLabel =>
-    !Object.values(labels.value).some(({ label }) => label === contextLabel),
+    !Object.values(labels.value).some(({ name }) => name === contextLabel),
   ),
 );
 const availableBuLabels = computed(() =>
   buLabels.value.filter(buLabel =>
-    !Object.values(labels.value).some(({ label }) => label === buLabel),
+    !Object.values(labels.value).some(({ name }) => name === buLabel),
   ),
 );
 
@@ -43,30 +43,30 @@ const isExpandedDefault = labelsFromProps.value.some(label => label.contributor 
 const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
 
 function handleNewLabel(label: ZodFlawLabelType) {
-  newLabels.value.add(label.label);
-  labels.value[label.label] = label;
+  newLabels.value.add(label.name);
+  labels.value[label.name] = label;
   isCreatingLabel.value = false;
 }
 
 function handleUpdateLabel(label: ZodFlawLabelType) {
-  updatedLabels.value.add(label.label);
-  labels.value[label.label] = label;
+  updatedLabels.value.add(label.name);
+  labels.value[label.name] = label;
   isUpdatingLabel.value = undefined;
 }
 
 function handleDeleteLabel(label: ZodFlawLabelType) {
   // if label is new, we can just remove it from the newLabels array
-  if (newLabels.value.has(label.label)) {
-    newLabels.value.delete(label.label);
-    delete labels.value[label.label];
+  if (newLabels.value.has(label.name)) {
+    newLabels.value.delete(label.name);
+    delete labels.value[label.name];
     return;
   }
 
-  deletedLabels.value.add(label.label);
+  deletedLabels.value.add(label.name);
 }
 
 function handleUndoDelete(label: ZodFlawLabelType) {
-  deletedLabels.value.delete(label.label);
+  deletedLabels.value.delete(label.name);
 }
 </script>
 <template>
@@ -87,7 +87,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
       <tbody>
         <tr
           v-for="label in labels"
-          :key="label.label"
+          :key="label.name"
           :class="{
             'new': isNewLabel(label),
             'updated': isUpdatedLabel(label),
@@ -95,7 +95,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
           }"
         >
           <FlawLabelTableEditingRow
-            v-if="isUpdatingLabel === label.label"
+            v-if="isUpdatingLabel === label.name"
             :buLabels="buLabels"
             :contextLabels="contextLabels"
             :initalLabel="label"
@@ -115,7 +115,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                 'text-decoration-line-through': !label.relevant,
               }"
               :title="!label.relevant ? 'Associated affect was removed' : undefined"
-            >{{ label.label }}</td>
+            >{{ label.name }}</td>
             <td>{{ label.contributor }}</td>
             <td>
               <div class="actions">
@@ -137,7 +137,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                     type="button"
                     title="Edit label"
                     class="btn btn-sm btn-dark"
-                    @click="isUpdatingLabel = label.label"
+                    @click="isUpdatingLabel = label.name"
                   >
                     <i class="bi bi-pencil" />
                   </button>

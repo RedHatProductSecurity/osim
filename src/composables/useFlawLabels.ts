@@ -13,7 +13,7 @@ const deletedLabels = ref<Set<string>>(new Set<string>());
 function initLabels(labelArray: null | undefined | ZodFlawLabelType[]) {
   labels.value = Array.isArray(labelArray)
     ? labelArray.reduce((acc: Record<string, ZodFlawLabelType>, label) => {
-      acc[label.label] = label;
+      acc[label.name] = label;
       return acc;
     }, {})
     : {};
@@ -35,9 +35,9 @@ export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
     newLabels.value.size > 0 || updatedLabels.value.size > 0 || deletedLabels.value.size > 0,
   );
 
-  const isNewLabel = (label: ZodFlawLabelType) => newLabels.value.has(label.label);
-  const isUpdatedLabel = (label: ZodFlawLabelType) => updatedLabels.value.has(label.label);
-  const isDeletedLabel = (label: ZodFlawLabelType) => deletedLabels.value.has(label.label);
+  const isNewLabel = (label: ZodFlawLabelType) => newLabels.value.has(label.name);
+  const isUpdatedLabel = (label: ZodFlawLabelType) => updatedLabels.value.has(label.name);
+  const isDeletedLabel = (label: ZodFlawLabelType) => deletedLabels.value.has(label.name);
 
   const updateLabels = async () => {
     if (!flaw.value) {

@@ -222,7 +222,7 @@ export const ZodFlawSchema = z.object({
   srp_overdue_milestones: z.number().nullish(), // read-only
   labels: z.array(z.object({
     uuid: z.string().optional(),
-    label: z.string(),
+    name: z.string(),
     state: z.nativeEnum(StateEnum),
     contributor: z.string().optional(),
     relevant: z.boolean(),

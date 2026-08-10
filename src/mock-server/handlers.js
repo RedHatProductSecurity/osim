@@ -188,35 +188,35 @@ export const handlers = [
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.get(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
+  http.get(`${baseURL}/osidb/api/v2/flaws/*/labels`, async () => {
     const resultArray = [
       [await getOsidbApiV1FlawsLabelsList200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.post(`${baseURL}/osidb/api/v1/flaws/*/labels`, async () => {
+  http.post(`${baseURL}/osidb/api/v2/flaws/*/labels`, async () => {
     const resultArray = [
       [await getOsidbApiV1FlawsLabelsCreate201Response(), { status: 201 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.get(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+  http.get(`${baseURL}/osidb/api/v2/flaws/*/labels/*`, async () => {
     const resultArray = [
       [await getOsidbApiV1FlawsLabelsRetrieve200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.put(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+  http.put(`${baseURL}/osidb/api/v2/flaws/*/labels/*`, async () => {
     const resultArray = [
       [await getOsidbApiV1FlawsLabelsUpdate200Response(), { status: 200 }],
     ];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.delete(`${baseURL}/osidb/api/v1/flaws/*/labels/*`, async () => {
+  http.delete(`${baseURL}/osidb/api/v2/flaws/*/labels/*`, async () => {
     const resultArray = [[undefined, { status: 204 }]];
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
@@ -1011,7 +1011,7 @@ export function getOsidbApiV1FlawsList200Response() {
         ).keys(),
       ].map((_) => ({
         uuid: faker.string.uuid(),
-        label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        name: faker.string.alpha({ length: { min: 0, max: 255 } }),
         state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
         contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
         relevant: faker.datatype.boolean(),
@@ -1467,7 +1467,7 @@ export function getOsidbApiV1FlawsCreate201Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -1889,7 +1889,7 @@ export function getOsidbApiV1FlawsLabelsList200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -1905,7 +1905,7 @@ export function getOsidbApiV1FlawsLabelsList200Response() {
 export function getOsidbApiV1FlawsLabelsCreate201Response() {
   return {
     uuid: faker.string.uuid(),
-    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    name: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
     relevant: faker.datatype.boolean(),
@@ -1920,7 +1920,7 @@ export function getOsidbApiV1FlawsLabelsCreate201Response() {
 export function getOsidbApiV1FlawsLabelsRetrieve200Response() {
   return {
     uuid: faker.string.uuid(),
-    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    name: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
     relevant: faker.datatype.boolean(),
@@ -1935,7 +1935,7 @@ export function getOsidbApiV1FlawsLabelsRetrieve200Response() {
 export function getOsidbApiV1FlawsLabelsUpdate200Response() {
   return {
     uuid: faker.string.uuid(),
-    label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+    name: faker.string.alpha({ length: { min: 0, max: 255 } }),
     state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
     contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
     relevant: faker.datatype.boolean(),
@@ -2693,7 +2693,7 @@ export function getOsidbApiV1FlawsRetrieve200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -3189,7 +3189,7 @@ export function getOsidbApiV1FlawsUpdate200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -3894,7 +3894,7 @@ export function getOsidbApiV2FlawsList200Response() {
         ).keys(),
       ].map((_) => ({
         uuid: faker.string.uuid(),
-        label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+        name: faker.string.alpha({ length: { min: 0, max: 255 } }),
         state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
         contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
         relevant: faker.datatype.boolean(),
@@ -4393,7 +4393,7 @@ export function getOsidbApiV2FlawsCreate201Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -5033,7 +5033,7 @@ export function getOsidbApiV2FlawsRetrieve200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),
@@ -5529,7 +5529,7 @@ export function getOsidbApiV2FlawsUpdate200Response() {
       ...new Array(faker.number.int({ min: 1, max: MAX_ARRAY_LENGTH })).keys(),
     ].map((_) => ({
       uuid: faker.string.uuid(),
-      label: faker.string.alpha({ length: { min: 0, max: 255 } }),
+      name: faker.string.alpha({ length: { min: 0, max: 255 } }),
       state: faker.helpers.arrayElement(["NEW", "REQ", "SKIP", "DONE"]),
       contributor: faker.string.alpha({ length: { min: 0, max: 255 } }),
       relevant: faker.datatype.boolean(),

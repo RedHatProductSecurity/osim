@@ -22,28 +22,38 @@ export async function fetchLabels() {
 export async function createLabel(flawUUID: string, label: ZodFlawLabelType) {
   return osidbFetch({
     method: 'post',
-    url: `/osidb/api/v1/flaws/${flawUUID}/labels`,
+    url: `/osidb/api/v2/flaws/${flawUUID}/labels`,
     data: label,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.label} created.` }))
-    .catch(createCatchHandler(`Error creating label ${label.label}`));
+    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.name} created.` }))
+    .catch(createCatchHandler(`Error creating label ${label.name}`));
 }
 
 export async function deleteLabel(flawUUID: string, label: ZodFlawLabelType) {
+  if (!label.uuid) {
+    return Promise.reject(new Error(`Label ${label.name} is missing a UUID`))
+      .catch(createCatchHandler(`Error deleting label ${label.name}`));
+  }
+
   return osidbFetch({
     method: 'delete',
-    url: `/osidb/api/v1/flaws/${flawUUID}/labels/${label.uuid}`,
+    url: `/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.label} deleted.` }))
-    .catch(createCatchHandler(`Error deleting label ${label.label}`));
+    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.name} deleted.` }))
+    .catch(createCatchHandler(`Error deleting label ${label.name}`));
 }
 
 export async function updateLabel(flawUUID: string, label: ZodFlawLabelType) {
+  if (!label.uuid) {
+    return Promise.reject(new Error(`Label ${label.name} is missing a UUID`))
+      .catch(createCatchHandler(`Error updating label ${label.name}`));
+  }
+
   return osidbFetch({
     method: 'put',
-    url: `/osidb/api/v1/flaws/${flawUUID}/labels/${label.uuid}`,
+    url: `/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`,
     data: label,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.label} updated.` }))
-    .catch(createCatchHandler(`Error updating label ${label.label}`));
+    .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.name} updated.` }))
+    .catch(createCatchHandler(`Error updating label ${label.name}`));
 }

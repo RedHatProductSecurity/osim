@@ -50,10 +50,10 @@ const shouldShowCreateJiraTaskButton = computed(
             <span v-if="workflowLabels.length" class="osim-badges-line">
               <span
                 v-for="wfLabel in workflowLabels"
-                :key="wfLabel.label"
+                :key="wfLabel.name"
                 class="badge osim-workflow-label-badge me-1"
                 title="workflow label"
-              >{{ wfLabel.label }}</span>
+              >{{ wfLabel.name }}</span>
             </span>
           </template>
           <template v-else>Legacy Flaw without Jira task</template>

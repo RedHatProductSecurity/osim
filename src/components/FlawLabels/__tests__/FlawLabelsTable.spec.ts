@@ -20,7 +20,7 @@ vi.mock('@/services/LabelsService', () => ({
 const mountFlawLabelsTable = (props = {}) => mountWithConfig(FlawLabelsTable, {
   props: {
     modelValue: [
-      { type: FlawLabelTypeEnum.CONTEXT_BASED, label: 'test', contributor: 'skynet', state: StateEnum.New },
+      { type: FlawLabelTypeEnum.CONTEXT_BASED, name: 'test', contributor: 'skynet', state: StateEnum.New },
     ],
     ...props,
   },
@@ -43,7 +43,7 @@ describe('flawLabelsTable', () => {
     const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
     editRow.vm.$emit('save', {
       type: FlawLabelTypeEnum.CONTEXT_BASED,
-      label: 'test1',
+      name: 'test1',
       contributor: 'skynet',
       state: StateEnum.New,
     });
@@ -62,7 +62,7 @@ describe('flawLabelsTable', () => {
     const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
     editRow.vm.$emit('save', {
       type: FlawLabelTypeEnum.CONTEXT_BASED,
-      label: 'test1',
+      name: 'test1',
       contributor: 'skynet',
       state: StateEnum.New,
     });
@@ -93,7 +93,7 @@ describe('flawLabelsTable', () => {
     const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
     editRow.vm.$emit('save', {
       type: FlawLabelTypeEnum.BU,
-      label: 'core_bu',
+      name: 'core_bu',
       contributor: '',
       state: StateEnum.New,
     });
