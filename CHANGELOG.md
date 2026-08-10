@@ -1,7 +1,10 @@
 # OSIM Changelog
 ## [Unreleased]
+
+## [2026.8.0-hotfix]
 ### Fixed
 * Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
+* New labels can now be displayed on flaw page and queried on advanced search
 
 ## [2026.8.0]
 ### Added
