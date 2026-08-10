@@ -328,13 +328,16 @@ export function useFlawModel() {
 
     if (areLabelsUpdated.value) {
       queue.push(async () => {
-        const response = await updateLabels();
-        if (response && Array.isArray(response)) {
-          // Re-fetch the full flaw so side-effects on the backend (e.g. classification.state
-          // changing to DONE when approved/rejected label is added) are reflected immediately.
-          const updatedFlaw = await getFlaw(flaw.value.uuid, true);
-          afterSuccessQueue.push(() => setFlaw({ ...updatedFlaw, affects: flaw.value.affects }));
-        }
+        const { hasErrors } = await updateLabels();
+        // Re-fetch the full flaw so side-effects on the backend (e.g. classification.state
+        // changing to DONE when approved/rejected label is added) are reflected immediately.
+        const updatedFlaw = await getFlaw(flaw.value.uuid, true);
+        afterSuccessQueue.push(() => setFlaw({
+          ...updatedFlaw,
+          affects: flaw.value.affects,
+          // On partial failure, keep the local labels so unsaved/failed edits stay queued for retry
+          ...(hasErrors ? { labels: flaw.value.labels } : {}),
+        }));
       });
     }
 
