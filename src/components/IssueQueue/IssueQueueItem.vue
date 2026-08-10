@@ -108,7 +108,7 @@ function getLabelColor(label: string, type: string): string {
           <UnprocessedFlawLabel v-if="isFlawUnprocessed(issue)" :flaw="issue" variant="badge" />
           <template
             v-for="label in sortedLabels"
-            :key="label.name"
+            :key="`${label.name}-${label.contributor ?? ''}`"
           >
             <span
               v-if="!label.contributor"
