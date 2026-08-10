@@ -79,6 +79,31 @@ describe('useFlawLabels', () => {
     expect(deleteLabel).toHaveBeenCalledWith(testUuid, { ...baseLabel, name: 'deleted-label' });
   });
 
+  it('reports hasErrors and only prunes the labels that settled successfully', async () => {
+    const { useFlawLabels } = await useMocks();
+    const { deletedLabels, labels, newLabels, updatedLabels, updateLabels } = useFlawLabels([
+      { ...baseLabel, name: 'new-label' },
+      { ...baseLabel, name: 'updated-label' },
+      { ...baseLabel, name: 'deleted-label' },
+    ]);
+
+    newLabels.value.add('new-label');
+    updatedLabels.value.add('updated-label');
+    deletedLabels.value.add('deleted-label');
+
+    vi.mocked(createLabel).mockResolvedValueOnce(undefined);
+    vi.mocked(updateLabel).mockRejectedValueOnce(new Error('boom'));
+    vi.mocked(deleteLabel).mockResolvedValueOnce(undefined);
+
+    const result = await updateLabels();
+
+    expect(result).toEqual({ hasErrors: true });
+    expect(newLabels.value.has('new-label')).toBe(false);
+    expect(updatedLabels.value.has('updated-label')).toBe(true);
+    expect(deletedLabels.value.has('deleted-label')).toBe(false);
+    expect(labels.value['deleted-label']).toBeUndefined();
+  });
+
   it('loads context labels correctly', async () => {
     const { useFlawLabels } = await useMocks();
     const { loadContextLabels } = useFlawLabels();
