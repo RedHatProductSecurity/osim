@@ -1,5 +1,13 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.8.0-patch-missing-labels]
+### Fixed
+* New labels can now be displayed on flaw page and queried on advanced search
+
+## [2026.8.0-patch-workflow-labels]
+### Fixed
+* Make workflow labels not editable (`OSIDB-5310`)
+
+## [2026.8.0-hotfix]
 ### Fixed
 * Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
 
@@ -698,6 +706,11 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 * Early repo layout & Flaw template
 
 [Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...HEAD
+[v2026.8.0-patch-missing-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-workflow-labels...v2026.8.0-patch-missing-labels
+[v2026.8.0-patch-workflow-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-hotfix...v2026.8.0-patch-workflow-labels
+[v2026.8.0-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0...v2026.8.0-hotfix
+[2026.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...v2026.8.0
 [2026.5.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.0...v2026.5.1
 [2026.5.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.1...v2026.5.0
 [2026.4.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.0...v2026.4.1
