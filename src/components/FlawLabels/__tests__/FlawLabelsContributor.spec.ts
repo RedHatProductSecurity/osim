@@ -74,13 +74,13 @@ describe('flawLabelsContributor', () => {
     expect(wrapper.props('modelValue')).toBe('skynet@example.com');
   });
 
-  it('should not allow arbitrary input', async () => {
+  it('should persist typed input that was not selected from suggestions on blur', async () => {
     const wrapper = mountFlawLabelsContributor({ modelValue: 'skynet' });
 
     await wrapper.find('input').setValue('not-skynet');
     await wrapper.find('input').trigger('blur');
 
-    expect(wrapper.props('modelValue')).toBe('skynet');
+    expect(wrapper.props('modelValue')).toBe('not-skynet');
   });
 
   it('should allow empty input', async () => {
