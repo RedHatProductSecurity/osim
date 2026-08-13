@@ -55,6 +55,7 @@ export interface SRPReport {
   manufacturer_or_steward_name: string;
   member_states_available: string[];
   milestones: SRPReportMilestone[];
+  missing_required_fields: string;
   reportable_event_type: SRPEventType;
   responsibility_scope: SRPResponsibilityScope;
   srp_reference_id: string;
@@ -72,4 +73,11 @@ export interface SRPReportSummary {
   nextDueDate: Date | null;
   overdueMilestones: number;
   status: null | SRPReportStatus;
+}
+
+// Helper function to determine if a milestone should be counted as actionable/overdue
+export function isMilestoneActionable(milestone: SRPReportMilestone): boolean {
+  return milestone.is_overdue
+    && milestone.status !== 'submitted'
+    && milestone.status !== 'not_required';
 }

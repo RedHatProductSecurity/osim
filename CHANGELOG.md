@@ -18,6 +18,7 @@
 * Show ecosystem information in Aegis component suggestion tooltips (`OSIDB-5252`)
 * Add SRP (Single Reporting Platform) summary section to flaw detail page for CRA compliance (`OSIDB-5091`)
 * Add SRP status column and filtering in flaw list for CRA compliance (`OSIDB-5125`)
+* Add expandable SRP report table with Add/Edit dialogs for managing reports and milestones (`OSIDB-5092`)
 
 ### Fixed
 * Make workflow labels not editable (`OSIDB-5310`)
