@@ -25,7 +25,8 @@ function areRequiredFieldsEmpty(flaw: ZodFlawType): boolean {
  * 2. It has a valid CVE ID assigned
  * 3. It's newer than the processing threshold (24 hours or less)
  * 4. Processed meta false
- * 5. Fields are empty:
+ * 5. Fields are empty
+ * 6. Not on MANUAL workflow (or manual-triage label)
  */
 export function useUnprocessedFlawDetection() {
   const PROCESSING_THRESHOLD_HOURS = 24;
@@ -42,6 +43,7 @@ export function useUnprocessedFlawDetection() {
   function isFlawUnprocessed(flaw: ZodFlawType): boolean {
     return (flaw.classification?.state === FlawClassificationStateEnum.New
       || flaw.classification?.state === FlawClassificationStateEnum.Empty)
+      && flaw.classification?.workflow !== 'MANUAL'
       && !!flaw.cve_id && isCveValid(flaw.cve_id)
       && !isOlderThanThreshold(flaw.created_dt)
       && areRequiredFieldsEmpty(flaw)
