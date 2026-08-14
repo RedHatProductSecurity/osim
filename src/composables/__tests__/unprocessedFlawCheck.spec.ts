@@ -201,6 +201,18 @@ describe('useUnprocessedFlawDetection', () => {
     expect(isFlawUnprocessed(flaw)).toBe(false);
   });
 
+  it('returns false for flaw on MANUAL workflow', () => {
+    const flaw = {
+      uuid: 'test-uuid',
+      classification: { state: FlawClassificationStateEnum.New, workflow: 'MANUAL' },
+      cve_id: 'CVE-2024-1234',
+      created_dt: DateTime.now().minus({ hours: 1 }).toISO(),
+      aegis_meta: null,
+    } as ZodFlawType;
+
+    expect(isFlawUnprocessed(flaw)).toBe(false);
+  });
+
   it('returns true for flaw with whitespace-only cve_description', () => {
     const flaw = {
       uuid: 'test-uuid',
