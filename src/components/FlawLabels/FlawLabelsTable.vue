@@ -39,6 +39,13 @@ const availableBuLabels = computed(() =>
   ),
 );
 
+const nonEditableLabelTypes: FlawLabelTypeEnum[] = [
+  FlawLabelTypeEnum.WORKFLOW,
+  FlawLabelTypeEnum.PRODUCT_FAMILY,
+  FlawLabelTypeEnum.ALIAS,
+];
+const isNonEditableLabelType = (type: FlawLabelTypeEnum) => nonEditableLabelTypes.includes(type);
+
 const isExpandedDefault = labelsFromProps.value.some(label => label.contributor || label.state === 'NEW');
 const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
 
@@ -121,8 +128,8 @@ function handleUndoDelete(label: ZodFlawLabelType) {
               <div class="actions">
                 <template v-if="!isDeletedLabel(label)">
                   <span
-                    v-if="label.type === FlawLabelTypeEnum.WORKFLOW && !isNewLabel(label)"
-                    title="Workflow labels are not editable"
+                    v-if="isNonEditableLabelType(label.type)"
+                    :title="`${label.type} labels are not editable`"
                   >
                     <button
                       type="button"

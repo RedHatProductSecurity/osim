@@ -116,4 +116,61 @@ describe('flawLabelsTable', () => {
     expect(areLabelsUpdated.value).toBe(false);
     expect(wrapper.html()).toMatchSnapshot();
   });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.PRODUCT_FAMILY,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should disable edit button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const editButton = wrapper.find('.actions button');
+    expect(editButton.attributes('disabled')).toBeDefined();
+  });
+
+  it.each([
+    FlawLabelTypeEnum.CONTEXT_BASED,
+    FlawLabelTypeEnum.BU,
+  ])('should enable edit button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const editButton = wrapper.find('button[title="Edit label"]');
+    expect(editButton.exists()).toBe(true);
+    expect(editButton.attributes('disabled')).toBeUndefined();
+  });
+
+  it('should not show delete button for product_family labels', async () => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type: FlawLabelTypeEnum.PRODUCT_FAMILY, name: 'test-pf', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Delete label"]').exists()).toBe(false);
+  });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should show delete button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Delete label"]').exists()).toBe(true);
+  });
 });
