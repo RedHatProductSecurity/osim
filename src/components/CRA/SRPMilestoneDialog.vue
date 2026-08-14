@@ -2,8 +2,7 @@
 import { ref, watch } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import type { SRPReportMilestone } from '@/types/cra';
-import { formatDate } from '@/utils/helpers';
+import type { SRPMilestoneType, SRPReportMilestone, SRPReportStatus } from '@/types/cra';
 
 const props = defineProps<{
   milestone?: SRPReportMilestone;
@@ -16,27 +15,51 @@ const emit = defineEmits<{
 }>();
 
 const formData = ref({
-  due_at: props.milestone?.due_at || '',
-  manual_completion_notes: props.milestone?.manual_completion_notes || '',
-  milestone_type: props.milestone?.milestone_type || '24h',
-  status: props.milestone?.status || 'prepared',
-  updated_dt: props.milestone?.updated_dt || '',
+  due_at: '',
+  manual_completion_notes: '',
+  milestone_type: 'additional_information_response',
+  request_received_at: '',
+  request_source: '',
+  request_text: '',
+  status: 'prepared',
+  updated_dt: '',
 });
 
 watch(() => props.show, (newShow) => {
-  if (newShow && props.milestone) {
+  if (newShow) {
     formData.value = {
-      due_at: props.milestone.due_at || '',
-      manual_completion_notes: props.milestone.manual_completion_notes,
-      milestone_type: props.milestone.milestone_type,
-      status: props.milestone.status,
-      updated_dt: props.milestone.updated_dt,
+      due_at: props.milestone?.due_at || '',
+      manual_completion_notes: props.milestone?.manual_completion_notes || '',
+      milestone_type: props.milestone?.milestone_type || 'additional_information_response',
+      request_received_at: props.milestone?.request_received_at || '',
+      request_source: props.milestone?.request_source || '',
+      request_text: props.milestone?.request_text || '',
+      status: props.milestone?.status || 'prepared',
+      updated_dt: props.milestone?.updated_dt || '',
     };
   }
 });
 
 function handleSave() {
-  emit('save', formData.value);
+  const payload: Partial<SRPReportMilestone> = {
+    manual_completion_notes: formData.value.manual_completion_notes,
+    request_received_at: formData.value.request_received_at,
+    request_source: formData.value.request_source,
+    request_text: formData.value.request_text,
+    status: formData.value.status as SRPReportStatus,
+  };
+
+  if (!props.milestone) {
+    payload.milestone_type = formData.value.milestone_type as SRPMilestoneType;
+  } else {
+    payload.updated_dt = formData.value.updated_dt;
+  }
+
+  if (formData.value.due_at) {
+    payload.due_at = formData.value.due_at;
+  }
+
+  emit('save', payload);
   emit('close');
 }
 
@@ -51,45 +74,88 @@ function handleClose() {
       {{ milestone ? 'Edit' : 'Add' }} Milestone
     </template>
     <template #body>
-      <div
-        v-if="milestone?.milestone_type === 'additional_information_response'"
-        class="mb-3 p-3 border rounded bg-light"
-      >
-        <h6 class="mb-2">Request Details</h6>
-        <div class="mb-2">
-          <small class="text-muted">Received:</small>
-          <div>{{ milestone.request_received_at ? formatDate(milestone.request_received_at, false) : 'N/A' }}</div>
-        </div>
-        <div class="mb-2">
-          <small class="text-muted">Source:</small>
-          <div>{{ milestone.request_source || 'N/A' }}</div>
-        </div>
-        <div v-if="milestone.request_text" class="mb-0">
-          <small class="text-muted">Request Text:</small>
-          <div class="text-break">{{ milestone.request_text }}</div>
-        </div>
+      <div v-if="!milestone" class="alert alert-info mb-3">
+        <i class="bi bi-info-circle me-2"></i>
+        <small>
+          Additional Information Request milestones are created when CRA requests more details.
+          The due date will be calculated automatically based on the received date (30 days).
+        </small>
       </div>
-      <div class="mb-3">
+
+      <div v-if="milestone" class="mb-3">
         <label class="form-label">Milestone Type</label>
-        <select v-model="formData.milestone_type" class="form-select">
-          <option value="24h">24h</option>
-          <option value="72h">72h</option>
-          <option value="additional_information_response">Additional Information Response</option>
-          <option value="final">Final</option>
-        </select>
+        <input
+          :value="milestone.milestone_type"
+          type="text"
+          class="form-control"
+          disabled
+        />
+        <small class="text-muted">Milestone type cannot be changed</small>
       </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Received Date
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <input
+          v-model="formData.request_received_at"
+          type="datetime-local"
+          class="form-control"
+          :required="!milestone"
+        />
+        <small class="text-muted">When the additional information request was received</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Source
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <input
+          v-model="formData.request_source"
+          type="text"
+          class="form-control"
+          placeholder="e.g., ENISA Portal"
+          :required="!milestone"
+        />
+        <small class="text-muted">Where the request came from</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Text
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <textarea
+          v-model="formData.request_text"
+          class="form-control"
+          :rows="milestone ? 3 : 4"
+          placeholder="Enter the details of what information was requested..."
+          :required="!milestone"
+        ></textarea>
+        <small class="text-muted">Description of the additional information requested</small>
+      </div>
+
+      <hr class="my-3" />
+
       <div class="mb-3">
         <label class="form-label">Status</label>
         <select v-model="formData.status" class="form-select">
           <option value="prepared">Prepared</option>
           <option value="submitted">Submitted</option>
           <option value="not_required">Not Required</option>
+          <option value="blocked">Blocked</option>
+          <option value="deferred">Deferred</option>
         </select>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Due Date</label>
+        <label class="form-label">Due Date (Optional)</label>
         <input v-model="formData.due_at" type="datetime-local" class="form-control" />
+        <small class="text-muted">Leave empty to use automatically calculated due date</small>
       </div>
+
       <div class="mb-3">
         <label class="form-label">Notes</label>
         <textarea v-model="formData.manual_completion_notes" class="form-control" rows="3"></textarea>
