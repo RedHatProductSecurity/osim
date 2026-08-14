@@ -41,23 +41,46 @@ export function useFlawLabels(initialLabels?: MaybeRef<ZodFlawLabelType[]>) {
 
   const updateLabels = async () => {
     if (!flaw.value) {
-      return;
+      return { hasErrors: false };
     }
 
-    const requests = [];
+    const operations: { onSuccess: () => void; request: Promise<unknown> }[] = [];
     for (const newLabel of newLabels.value) {
-      requests.push(createLabel(flaw.value.uuid, labels.value[newLabel]));
+      operations.push({
+        request: createLabel(flaw.value.uuid, labels.value[newLabel]),
+        onSuccess: () => newLabels.value.delete(newLabel),
+      });
     }
 
     for (const updatedLabel of updatedLabels.value) {
-      requests.push(updateLabel(flaw.value.uuid, labels.value[updatedLabel]));
+      operations.push({
+        request: updateLabel(flaw.value.uuid, labels.value[updatedLabel]),
+        onSuccess: () => updatedLabels.value.delete(updatedLabel),
+      });
     }
 
     for (const deletedLabel of deletedLabels.value) {
-      requests.push(deleteLabel(flaw.value.uuid, labels.value[deletedLabel]));
+      operations.push({
+        request: deleteLabel(flaw.value.uuid, labels.value[deletedLabel]),
+        onSuccess: () => {
+          deletedLabels.value.delete(deletedLabel);
+          delete labels.value[deletedLabel];
+        },
+      });
     }
 
-    return await Promise.allSettled(requests);
+    const settled = await Promise.allSettled(operations.map(({ request }) => request));
+
+    let hasErrors = false;
+    settled.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        operations[index].onSuccess();
+      } else {
+        hasErrors = true;
+      }
+    });
+
+    return { hasErrors };
   };
 
   return {

@@ -49,7 +49,11 @@ function handleNewLabel(label: ZodFlawLabelType) {
 }
 
 function handleUpdateLabel(label: ZodFlawLabelType) {
-  updatedLabels.value.add(label.name);
+  // a label that hasn't been created yet only needs its local value refreshed;
+  // marking it "updated" too would queue a redundant update request with no uuid
+  if (!newLabels.value.has(label.name)) {
+    updatedLabels.value.add(label.name);
+  }
   labels.value[label.name] = label;
   isUpdatingLabel.value = undefined;
 }

@@ -10,6 +10,7 @@
 ## [2026.8.0-hotfix]
 ### Fixed
 * Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
+* Fix flaw labels for OSIDB v2 API (label names rendering as `undefined`, create/update/delete hitting deprecated endpoints, unsaved/failed edits being silently discarded, duplicate issue queue label badge keys) (`OSIDB-5349`)
 
 ## [2026.8.0]
 ### Added
