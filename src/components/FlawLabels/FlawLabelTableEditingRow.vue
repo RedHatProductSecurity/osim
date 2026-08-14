@@ -92,7 +92,7 @@ const emitSave = () => {
   <td
     :class="{
       'fw-bold': labelState === 'REQ',
-      'text-decoration-line-through': !initalLabel?.relevant,
+      'text-decoration-line-through': initalLabel?.relevant === false,
     }"
   >
     <!-- Existing labels: name is immutable in OSIDB -->

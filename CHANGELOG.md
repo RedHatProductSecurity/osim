@@ -2,6 +2,7 @@
 ## [Unreleased]
 ### Fixed
 * Make workflow, product_family and alias labels non-editable (`OSIDB-5385`)
+* Fix strikethrough incorrectly applied to labels without relevant field (`OSIDB-5375`)
 
 ## [2026.8.0-patch-missing-labels]
 ### Fixed

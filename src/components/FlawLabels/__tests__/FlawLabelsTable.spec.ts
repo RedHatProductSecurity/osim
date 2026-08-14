@@ -173,4 +173,34 @@ describe('flawLabelsTable', () => {
 
     expect(wrapper.find('button[title="Delete label"]').exists()).toBe(true);
   });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.PRODUCT_FAMILY,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should not apply strikethrough to %s labels without relevant field', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const nameTd = wrapper.findAll('td')[2];
+    expect(nameTd.classes()).not.toContain('text-decoration-line-through');
+    expect(nameTd.attributes('title')).toBeUndefined();
+  });
+
+  it('should apply strikethrough to labels with relevant explicitly false', async () => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type: FlawLabelTypeEnum.CONTEXT_BASED, name: 'test', contributor: '', state: StateEnum.New, relevant: false },
+      ],
+    });
+    await flushPromises();
+
+    const nameTd = wrapper.findAll('td')[2];
+    expect(nameTd.classes()).toContain('text-decoration-line-through');
+    expect(nameTd.attributes('title')).toBe('Associated affect was removed');
+  });
 });

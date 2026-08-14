@@ -116,8 +116,8 @@ function getLabelColor(label: string, type: string): string {
               class="badge rounded-pill border"
               :class="{
                 'text-bg-warning fw-bold border-warning': label.state == 'REQ',
-                'text-black': label.state != 'REQ' && label.relevant,
-                'text-decoration-line-through text-bg-gray border-secondary': !label.relevant,
+                'text-black': label.state != 'REQ' && label.relevant !== false,
+                'text-decoration-line-through text-bg-gray border-secondary': label.relevant === false,
               }"
               :title="label.state === 'REQ' ? 'Requested' : ''"
             >{{ label.name }}</span>

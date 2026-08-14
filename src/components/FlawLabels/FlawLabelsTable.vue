@@ -119,9 +119,9 @@ function handleUndoDelete(label: ZodFlawLabelType) {
             <td
               :class="{
                 'fw-bold': label.state === 'REQ',
-                'text-decoration-line-through': !label.relevant,
+                'text-decoration-line-through': label.relevant === false,
               }"
-              :title="!label.relevant ? 'Associated affect was removed' : undefined"
+              :title="label.relevant === false ? 'Associated affect was removed' : undefined"
             >{{ label.name }}</td>
             <td>{{ label.contributor }}</td>
             <td>
