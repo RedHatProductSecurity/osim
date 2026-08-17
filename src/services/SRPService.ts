@@ -18,8 +18,11 @@ export async function createSRPReport(
 ) {
   return osidbFetch({
     method: 'POST',
-    url: `/regulatory-reporting/api/v1/flaws/${flawId}/srp-reports`,
-    data,
+    url: '/regulatory-reporting/api/v1/srp-reports',
+    data: {
+      ...data,
+      flaw_id: flawId,
+    },
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'SRP report created successfully.' }))
     .catch(createCatchHandler('Error creating SRP report:'));

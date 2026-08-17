@@ -30,11 +30,15 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
     defer: 'deferred',
     submit: 'submitted',
   };
-  await updateSRPMilestone(milestone.srp_report, milestone.uuid, {
-    status: statusMap[action] as any,
-    updated_dt: milestone.updated_dt,
-  });
-  emit('refresh');
+  try {
+    await updateSRPMilestone(milestone.srp_report, milestone.uuid, {
+      status: statusMap[action] as any,
+      updated_dt: milestone.updated_dt,
+    });
+    emit('refresh');
+  } catch (err) {
+    console.error('Failed to update SRP milestone status:', err);
+  }
 }
 </script>
 

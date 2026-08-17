@@ -13,9 +13,9 @@ export type SRPReportStatus =
   | 'submitted';
 
 export type SRPEventType =
-  | 'actively_exploited_vulnerability'
-  | 'additional_information_request'
-  | 'severe_incident';
+  | 'ADDITIONAL_INFORMATION_REQUEST'
+  | 'EXPLOITS_KEV_APPROVED'
+  | 'MAJOR_INCIDENT_APPROVED';
 
 export type SRPResponsibilityScope =
   | 'manufacturer'
@@ -51,6 +51,7 @@ export interface SRPReport {
   created_dt: string;
   designated_csirt_country: string;
   designated_csirt_source: string;
+  evidence: string;
   flaw_id: string;
   manufacturer_or_steward_name: string;
   member_states_available: string[];
