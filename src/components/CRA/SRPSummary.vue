@@ -172,12 +172,16 @@ async function handleSaveReport(data: Partial<SRPReport>) {
 }
 
 async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
-  if (editingMilestone.value) {
-    await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
-  } else {
-    await createAdditionalInfoMilestone(editingReportUuid.value, data);
+  try {
+    if (editingMilestone.value) {
+      await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
+    } else {
+      await createAdditionalInfoMilestone(editingReportUuid.value, data);
+    }
+    await loadSRPReports();
+  } catch (err) {
+    console.error('Failed to save SRP milestone:', err);
   }
-  await loadSRPReports();
 }
 
 function hasMissingFields(report: SRPReport): boolean {

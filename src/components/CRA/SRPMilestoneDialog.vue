@@ -25,13 +25,29 @@ const formData = ref({
   updated_dt: '',
 });
 
+function toISO8601(datetimeLocal: string): string {
+  if (!datetimeLocal) return '';
+  // datetime-local format: "2026-08-19T10:30" (no timezone, treated as local)
+  // Force it to be interpreted as UTC by appending 'Z'
+  // Then convert to ISO 8601: "2026-08-19T10:30:00.000Z"
+  const date = new Date(datetimeLocal + 'Z');
+  return date.toISOString();
+}
+
+function fromISO8601(iso: null | string): string {
+  if (!iso) return '';
+  // ISO 8601 format: "2026-08-19T10:30:00.000Z"
+  // datetime-local format: "2026-08-19T10:30"
+  return iso.substring(0, 16);
+}
+
 watch(() => props.show, (newShow) => {
   if (newShow) {
     formData.value = {
-      due_at: props.milestone?.due_at || '',
+      due_at: fromISO8601(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
-      request_received_at: props.milestone?.request_received_at || '',
+      request_received_at: fromISO8601(props.milestone?.request_received_at || ''),
       request_source: props.milestone?.request_source || '',
       request_text: props.milestone?.request_text || '',
       status: props.milestone?.status || 'prepared',
@@ -43,11 +59,15 @@ watch(() => props.show, (newShow) => {
 function handleSave() {
   const payload: Partial<SRPReportMilestone> = {
     manual_completion_notes: formData.value.manual_completion_notes,
-    request_received_at: formData.value.request_received_at,
     request_source: formData.value.request_source,
     request_text: formData.value.request_text,
     status: formData.value.status as SRPReportStatus,
   };
+
+  // Only include request_received_at if it has a value
+  if (formData.value.request_received_at) {
+    payload.request_received_at = toISO8601(formData.value.request_received_at);
+  }
 
   if (!props.milestone) {
     payload.milestone_type = formData.value.milestone_type as SRPMilestoneType;
@@ -56,7 +76,7 @@ function handleSave() {
   }
 
   if (formData.value.due_at) {
-    payload.due_at = formData.value.due_at;
+    payload.due_at = toISO8601(formData.value.due_at);
   }
 
   emit('save', payload);

@@ -43,4 +43,21 @@ describe('sRPReportDetails', () => {
     await editButton?.trigger('click');
     expect(wrapper.emitted('edit-milestone')).toBeTruthy();
   });
+
+  it('handles quick action errors', async () => {
+    const { updateSRPMilestone } = await import('@/services/SRPService');
+    vi.mocked(updateSRPMilestone).mockRejectedValue(new Error('Network error'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = mount(SRPReportDetails, {
+      props: {
+        report: mockSRPReport,
+      },
+    });
+
+    const submitButton = wrapper.findAll('button').find(btn => btn.html().includes('bi-check-circle'));
+    await submitButton?.trigger('click');
+
+    expect(console.error).toHaveBeenCalledWith('Failed to update SRP milestone status:', expect.any(Error));
+  });
 });
