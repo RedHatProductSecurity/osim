@@ -30,6 +30,10 @@ const isNewLabel = computed(() => !initalLabel);
 const isAliasType = computed(() => labelType.value === FlawLabelTypeEnum.ALIAS);
 const isBuType = computed(() => labelType.value === FlawLabelTypeEnum.BU);
 const isWorkflowType = computed(() => labelType.value === FlawLabelTypeEnum.WORKFLOW);
+const isProductFamilyType = computed(() => labelType.value === FlawLabelTypeEnum.PRODUCT_FAMILY);
+const isNonEditableType = computed(() =>
+  isWorkflowType.value || isProductFamilyType.value || isAliasType.value,
+);
 
 const emitSave = () => {
   // if nothing changed, do not emit save
@@ -49,10 +53,10 @@ const emitSave = () => {
 
   emit('save', {
     ...initalLabel,
-    state: labelState.value,
+    state: isNonEditableType.value ? undefined : labelState.value,
     name: labelName.value,
-    contributor: labelContributor.value,
-    relevant: initalLabel?.relevant ?? true,
+    contributor: isNonEditableType.value ? undefined : labelContributor.value,
+    relevant: isNonEditableType.value ? undefined : (initalLabel?.relevant ?? true),
     type: labelType.value,
   });
 };
@@ -60,7 +64,7 @@ const emitSave = () => {
 
 <template>
   <td>
-    <select v-model="labelState" class="form-select">
+    <select v-if="!isNonEditableType" v-model="labelState" class="form-select">
       <option
         v-for="state in StateEnum"
         :key="state"
@@ -88,7 +92,7 @@ const emitSave = () => {
   <td
     :class="{
       'fw-bold': labelState === 'REQ',
-      'text-decoration-line-through': !initalLabel?.relevant,
+      'text-decoration-line-through': initalLabel?.relevant === false,
     }"
   >
     <!-- Existing labels: name is immutable in OSIDB -->
@@ -135,7 +139,7 @@ const emitSave = () => {
     </template>
   </td>
   <td>
-    <FlawLabelsContributor v-model="labelContributor" />
+    <FlawLabelsContributor v-if="!isNonEditableType" v-model="labelContributor" />
   </td>
   <td>
     <div class="actions">

@@ -15,7 +15,7 @@ exports[`flawLabelsTableEditingRow > should render 1`] = `
     <option data-v-627548cb="" value="workflow">workflow</option>
   </select>
 </td>
-<td data-v-627548cb="" class="text-decoration-line-through">
+<td data-v-627548cb="" class="">
   <!-- Existing labels: name is immutable in OSIDB -->
   <!-- New context-based labels use dropdown --><select data-v-627548cb="" class="form-select" required=""></select>
 </td>

@@ -18,7 +18,7 @@ exports[`flawLabelsTable > should handle add label 1`] = `
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="" class="">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
@@ -29,7 +29,7 @@ exports[`flawLabelsTable > should handle add label 1`] = `
           <tr data-v-5d530569="" class="new">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
+            <td data-v-5d530569="" class="">test1</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
@@ -66,7 +66,7 @@ exports[`flawLabelsTable > should handle delete label 1`] = `
           <tr data-v-5d530569="" class="deleted">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="" class="">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions">
@@ -104,7 +104,7 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="" class="">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
@@ -115,7 +115,7 @@ exports[`flawLabelsTable > should handle edit label 1`] = `
           <tr data-v-5d530569="" class="updated">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test1</td>
+            <td data-v-5d530569="" class="">test1</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
@@ -152,7 +152,7 @@ exports[`flawLabelsTable > should handle undo delete label 1`] = `
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="" class="">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>
@@ -189,7 +189,7 @@ exports[`flawLabelsTable > should render flaw labels table 1`] = `
           <tr data-v-5d530569="" class="">
             <td data-v-5d530569="" class="">NEW</td>
             <td data-v-5d530569="">context_based</td>
-            <td data-v-5d530569="" class="text-decoration-line-through" title="Associated affect was removed">test</td>
+            <td data-v-5d530569="" class="">test</td>
             <td data-v-5d530569="">skynet</td>
             <td data-v-5d530569="">
               <div data-v-5d530569="" class="actions"><button data-v-5d530569="" type="button" title="Edit label" class="btn btn-sm btn-dark"><i data-v-5d530569="" class="bi bi-pencil"></i></button>

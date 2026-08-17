@@ -230,6 +230,28 @@ describe('issueQueue', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
+  it('should not apply strikethrough to labels without relevant field', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: [
+          { name: 'wf-label', type: 'workflow', state: 'NEW', contributor: '' },
+          { name: 'alias-label', type: 'alias', state: 'NEW', contributor: '' },
+          { name: 'irrelevant-label', type: 'context_based', state: 'NEW', contributor: '', relevant: false },
+        ],
+      } as ZodFlawType],
+    });
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+    const wfLabel = labels.find(l => l.text() === 'wf-label')!;
+    const aliasLabel = labels.find(l => l.text() === 'alias-label')!;
+    const irrelevantLabel = labels.find(l => l.text() === 'irrelevant-label')!;
+
+    expect(wfLabel.classes()).not.toContain('text-decoration-line-through');
+    expect(aliasLabel.classes()).not.toContain('text-decoration-line-through');
+    expect(irrelevantLabel.classes()).toContain('text-decoration-line-through');
+  });
+
   it('should not render flaw labels that are already assigned', () => {
     const wrapper = mountIssueQueue({
       issues: [{

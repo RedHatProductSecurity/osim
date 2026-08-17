@@ -26,7 +26,7 @@ const stateValue = computed(() => props.classification?.state || null);
 
 const workflowLabels = computed(() =>
   (props.labels ?? []).filter(
-    l => l.type === FlawLabelTypeEnum.WORKFLOW && l.relevant,
+    l => l.type === FlawLabelTypeEnum.WORKFLOW,
   ),
 );
 

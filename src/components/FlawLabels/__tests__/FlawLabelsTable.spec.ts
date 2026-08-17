@@ -116,4 +116,91 @@ describe('flawLabelsTable', () => {
     expect(areLabelsUpdated.value).toBe(false);
     expect(wrapper.html()).toMatchSnapshot();
   });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.PRODUCT_FAMILY,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should disable edit button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const editButton = wrapper.find('.actions button');
+    expect(editButton.attributes('disabled')).toBeDefined();
+  });
+
+  it.each([
+    FlawLabelTypeEnum.CONTEXT_BASED,
+    FlawLabelTypeEnum.BU,
+  ])('should enable edit button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const editButton = wrapper.find('button[title="Edit label"]');
+    expect(editButton.exists()).toBe(true);
+    expect(editButton.attributes('disabled')).toBeUndefined();
+  });
+
+  it('should not show delete button for product_family labels', async () => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type: FlawLabelTypeEnum.PRODUCT_FAMILY, name: 'test-pf', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Delete label"]').exists()).toBe(false);
+  });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should show delete button for %s labels', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Delete label"]').exists()).toBe(true);
+  });
+
+  it.each([
+    FlawLabelTypeEnum.WORKFLOW,
+    FlawLabelTypeEnum.PRODUCT_FAMILY,
+    FlawLabelTypeEnum.ALIAS,
+  ])('should not apply strikethrough to %s labels without relevant field', async (type) => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
+      ],
+    });
+    await flushPromises();
+
+    const nameTd = wrapper.findAll('td')[2];
+    expect(nameTd.classes()).not.toContain('text-decoration-line-through');
+    expect(nameTd.attributes('title')).toBeUndefined();
+  });
+
+  it('should apply strikethrough to labels with relevant explicitly false', async () => {
+    const wrapper = mountFlawLabelsTable({
+      modelValue: [
+        { type: FlawLabelTypeEnum.CONTEXT_BASED, name: 'test', contributor: '', state: StateEnum.New, relevant: false },
+      ],
+    });
+    await flushPromises();
+
+    const nameTd = wrapper.findAll('td')[2];
+    expect(nameTd.classes()).toContain('text-decoration-line-through');
+    expect(nameTd.attributes('title')).toBe('Associated affect was removed');
+  });
 });
