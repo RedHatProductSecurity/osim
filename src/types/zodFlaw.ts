@@ -250,7 +250,9 @@ export const ZodFlawSchema = z.object({
       raiseIssue('You must select an impact before saving the Flaw.', ['impact']);
     }
 
-    if (zodFlaw.components.length === 0) {
+    // OSIDB allows empty components in NEW, REJECTED, and empty workflow states
+    const { state } = zodFlaw.classification ?? {};
+    if (state !== 'NEW' && state !== '' && zodFlaw.components.length === 0) {
       raiseIssue('Components cannot be empty.', ['components']);
     }
   }

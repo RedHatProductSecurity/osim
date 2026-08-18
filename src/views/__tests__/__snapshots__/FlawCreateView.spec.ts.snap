@@ -35,9 +35,9 @@ exports[`flawCreateView > should render 1`] = `
           </div><label data-v-76f6bf34="" data-v-76e7a15d="" class="osim-input ps-3 mb-2 input-group">
             <div data-v-76f6bf34="" class="row"><span data-v-76f6bf34="" class="form-label col-3"><div data-v-76e7a15d="" class="d-flex align-items-center"><!--v-if--><!--v-if--> Source Component </div></span>
               <div data-v-76f6bf34="" class="col-9">
-                <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control is-invalid">
+                <div data-v-8bc603c3="" data-v-76f6bf34="" class="osim-pill-list form-control">
                   <transition-group-stub data-v-8bc603c3="" appear="false" persisted="false" css="true"></transition-group-stub><input data-v-8bc603c3="" class="osim-pill-list-input no-drag" type="text">
-                  <div data-v-8bc603c3="" class="invalid-tooltip no-drag">Components cannot be empty.</div>
+                  <!--v-if-->
                 </div>
               </div>
             </div>
