@@ -77,12 +77,20 @@ describe('useFlawModel', () => {
 
     expect(errors.value).toEqual(expect.objectContaining({
       comment_zero: expect.any(String),
-      components: expect.any(String),
       impact: expect.any(String),
       source: expect.any(String),
       title: expect.any(String),
       unembargo_dt: expect.any(String),
     }));
+    expect(errors.value.components).toBeNull();
+  });
+
+  it('requires components outside NEW and REJECTED states', () => {
+    const { flaw } = useFlaw();
+    flaw.value.classification = { state: 'TRIAGE', workflow: 'DEFAULT' };
+    const { errors } = mountFlawModel();
+
+    expect(errors.value.components).toEqual(expect.any(String));
   });
 
   it('calls onSaveSuccess and resets isSaving in afterSaveSuccess', () => {

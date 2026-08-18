@@ -276,7 +276,7 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'create' });
     const vm = subject.findComponent(FlawForm).vm as any;
     expect(vm.errors.title).not.toBe(null);
-    expect(vm.errors.component).not.toBe(null);
+    expect(vm.errors.components).toBe(null);
     expect(vm.errors.impact).not.toBe(null);
     expect(vm.errors.source).not.toBe(null);
     expect(vm.errors.comment_zero).not.toBe(null);
@@ -291,7 +291,7 @@ describe('flawForm', () => {
       .findAllComponents(LabelTagsInput)
       .find(component => component.props().label === 'Source Component')
       ?.find('.is-invalid');
-    expect(componentsField?.exists()).toBe(true);
+    expect(componentsField?.exists()).toBe(false);
 
     const invalidImpactField = subject
       .findAllComponents(LabelSelect)
