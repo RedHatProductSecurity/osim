@@ -25,29 +25,28 @@ const formData = ref({
   updated_dt: '',
 });
 
-function toISO8601(datetimeLocal: string): string {
-  if (!datetimeLocal) return '';
-  // datetime-local format: "2026-08-19T10:30" (no timezone, treated as local)
-  // Force it to be interpreted as UTC by appending 'Z'
-  // Then convert to ISO 8601: "2026-08-19T10:30:00.000Z"
-  const date = new Date(datetimeLocal + 'Z');
+function toISO8601Date(dateString: string): string {
+  if (!dateString) return '';
+  // date format: "2026-08-19"
+  // Convert to ISO 8601 with time set to midnight UTC: "2026-08-19T00:00:00.000Z"
+  const date = new Date(dateString + 'T00:00:00Z');
   return date.toISOString();
 }
 
-function fromISO8601(iso: null | string): string {
+function fromISO8601Date(iso: null | string): string {
   if (!iso) return '';
   // ISO 8601 format: "2026-08-19T10:30:00.000Z"
-  // datetime-local format: "2026-08-19T10:30"
-  return iso.substring(0, 16);
+  // date format: "2026-08-19"
+  return iso.substring(0, 10);
 }
 
 watch(() => props.show, (newShow) => {
   if (newShow) {
     formData.value = {
-      due_at: fromISO8601(props.milestone?.due_at || ''),
+      due_at: fromISO8601Date(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
-      request_received_at: fromISO8601(props.milestone?.request_received_at || ''),
+      request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
       request_source: props.milestone?.request_source || '',
       request_text: props.milestone?.request_text || '',
       status: props.milestone?.status || 'prepared',
@@ -66,7 +65,7 @@ function handleSave() {
 
   // Only include request_received_at if it has a value
   if (formData.value.request_received_at) {
-    payload.request_received_at = toISO8601(formData.value.request_received_at);
+    payload.request_received_at = toISO8601Date(formData.value.request_received_at);
   }
 
   if (!props.milestone) {
@@ -76,7 +75,7 @@ function handleSave() {
   }
 
   if (formData.value.due_at) {
-    payload.due_at = toISO8601(formData.value.due_at);
+    payload.due_at = toISO8601Date(formData.value.due_at);
   }
 
   emit('save', payload);
@@ -120,7 +119,7 @@ function handleClose() {
         </label>
         <input
           v-model="formData.request_received_at"
-          type="datetime-local"
+          type="date"
           class="form-control"
           :required="!milestone"
         />
@@ -172,7 +171,7 @@ function handleClose() {
 
       <div class="mb-3">
         <label class="form-label">Due Date (Optional)</label>
-        <input v-model="formData.due_at" type="datetime-local" class="form-control" />
+        <input v-model="formData.due_at" type="date" class="form-control" />
         <small class="text-muted">Leave empty to use automatically calculated due date</small>
       </div>
 

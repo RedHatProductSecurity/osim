@@ -14,13 +14,13 @@ const emit = defineEmits<{
   save: [report: Partial<SRPReport>];
 }>();
 
-function toISO8601(datetimeLocal: string): string {
+function toISO8601DateTime(datetimeLocal: string): string {
   if (!datetimeLocal) return '';
   const date = new Date(datetimeLocal + 'Z');
   return date.toISOString();
 }
 
-function fromISO8601(iso: null | string): string {
+function fromISO8601DateTime(iso: null | string): string {
   if (!iso) return '';
   return iso.substring(0, 16);
 }
@@ -48,7 +48,7 @@ watch(() => props.show, (newShow) => {
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,
         srp_reference_url: props.report.srp_reference_url,
-        timer_started_at: fromISO8601(props.report.timer_started_at || ''),
+        timer_started_at: fromISO8601DateTime(props.report.timer_started_at || ''),
         title: props.report.title,
         updated_dt: props.report.updated_dt,
       };
@@ -72,7 +72,7 @@ function handleSave() {
 
   // Convert datetime-local to ISO 8601 format
   if (payload.timer_started_at) {
-    payload.timer_started_at = toISO8601(payload.timer_started_at);
+    payload.timer_started_at = toISO8601DateTime(payload.timer_started_at);
   }
 
   emit('save', payload);
