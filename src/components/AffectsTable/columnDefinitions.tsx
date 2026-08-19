@@ -36,6 +36,8 @@ declare module '@tanstack/vue-table' {
     extraColumn?: DeepKeys<TData>;
     filter?: boolean;
     onValueChange?: (newValue: TValue, row: Row<TData>, table: Table<TData>) => void;
+    readonly?: boolean;
+    staleWhenChanged?: DeepKeys<TData>;
     validate?: (value: TValue) => null | string | string[];
   }
 }
@@ -163,8 +165,9 @@ export default function AffectColumnDefinitions() {
       header: 'Module',
       sortingFn: 'alphanumeric',
       meta: {
-        bulkEditable: true,
         clearable: false,
+        readonly: true,
+        staleWhenChanged: 'ps_update_stream',
       },
     }),
     columnHelper.accessor('ps_component', {

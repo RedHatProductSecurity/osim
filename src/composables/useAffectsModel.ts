@@ -67,7 +67,8 @@ function useAffects() {
     }
 
     // Remove successfully created affects from newAffects tracking
-    // Match by comparing ps_update_stream, ps_module, and ps_component
+    // Match by comparing ps_update_stream and ps_component (ps_module is empty
+    // locally until OSIDB derives it from ps_update_stream on creation)
     for (const affect of savedAffects) {
       // Find if this saved affect was previously tracked as new
       const wasNew = currentAffects.value.find(
@@ -75,7 +76,6 @@ function useAffects() {
           currentAffect._uuid
           && newAffects.has(currentAffect._uuid)
           && currentAffect.ps_update_stream === affect.ps_update_stream
-          && currentAffect.ps_module === affect.ps_module
           && currentAffect.ps_component === affect.ps_component,
       );
 
@@ -180,9 +180,10 @@ function useAffects() {
         }
       } else if (affect._uuid && newAffects.has(affect._uuid) && rhCvss3Score?.score) {
         // Find corresponding saved affect for new affects
+        // Match by ps_update_stream and ps_component (ps_module is empty
+        // locally until OSIDB derives it from ps_update_stream on creation)
         const matchingUpdatedAffect = updatedAffects.find(updatedAffect =>
           updatedAffect.ps_update_stream === affect.ps_update_stream
-          && updatedAffect.ps_module === affect.ps_module
           && updatedAffect.ps_component === affect.ps_component,
         );
 
