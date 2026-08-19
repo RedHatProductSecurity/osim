@@ -1,10 +1,11 @@
 # OSIM Changelog
 ## [Unreleased]
-### Fixed
-* Restore OSIDB mid-air collision detection on PUT (`OSIDB-5285`)
+### Changed
+* Make `ps_module` field read-only in the affects table; OSIDB determines the module from `ps_update_stream`. Changed values now show a strikethrough until the flaw is saved (`OSIDB-4704`)
 
 ## [2026.8.1]
 ### Fixed
+* Restore OSIDB mid-air collision detection on PUT (`OSIDB-5285`)
 * Allow empty Source Component on flaws in NEW state (`OSIDB-5273`)
 * Make workflow, product_family and alias labels non-editable (`OSIDB-5385`)
 * Fix strikethrough incorrectly applied to labels without relevant field (`OSIDB-5375`)
