@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 
 import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
+import SRPMilestoneIcons from '@/components/CRA/SRPMilestoneIcons.vue';
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
 import SRPReportDetails from '@/components/CRA/SRPReportDetails.vue';
 import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
@@ -254,7 +255,7 @@ function hasMissingFields(report: SRPReport): boolean {
                   ></i>
                 </td>
                 <td>
-                  <SRPStatusBadge :status="report.status" />
+                  <SRPMilestoneIcons :report="report" />
                 </td>
                 <td>{{ formatEventType(report.reportable_event_type) }}</td>
                 <td>{{ formatDateDisplay(getNextDueDate(report)) }}</td>
