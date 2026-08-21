@@ -119,6 +119,30 @@ describe('useFlawModel', () => {
       expect(putFlaw).not.toHaveBeenCalled();
     });
 
+    it('should not apply affects from the putFlaw response', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      const localAffects = [{ ...flawData.affects[0], uuid: 'local-affect' }];
+      flawData.affects = localAffects;
+      setFlaw(flawData);
+
+      vi.mocked(putFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'from-put',
+        affects: [{ ...flawData.affects[0], uuid: 'stale-from-put' }],
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      flaw.value.title = 'altered';
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenCalled();
+      expect(flaw.value.title).toBe('from-put');
+      expect(flaw.value.affects).toEqual(localAffects);
+    });
+
     it('should call postFlaw on createFlaw', () => {
       const { flaw } = useFlaw();
       flaw.value = sampleFlawRequired as ZodFlawType;
