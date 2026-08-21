@@ -20,10 +20,6 @@ function formatTimeRemaining(milestone: any): string {
   return `${milestone.days_remaining}d${hours}`;
 }
 
-function formatStatus(status: null | string | undefined): string {
-  return status?.replace('_', ' ') ?? '';
-}
-
 async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' | 'defer' | 'submit') {
   const statusMap = {
     block: 'blocked',
@@ -91,7 +87,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
           >
             <td class="ps-4">{{ milestone.milestone_type }}</td>
             <td>
-              <span class="badge bg-secondary">{{ formatStatus(milestone.status) }}</span>
+              <SRPStatusBadge :status="milestone.status" />
             </td>
             <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
             <td :class="{ 'text-danger': milestone.is_overdue }">
