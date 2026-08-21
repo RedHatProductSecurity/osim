@@ -22,6 +22,12 @@ describe('sRPMilestoneDialog', () => {
     const wrapper = mount(SRPMilestoneDialog, {
       props: { show: true },
     });
+
+    // Fill required fields for new milestone
+    await wrapper.find('input[type="date"]').setValue('2026-08-21');
+    await wrapper.findAll('input[type="text"]').at(0)?.setValue('ENISA Portal');
+    await wrapper.find('textarea').setValue('Request for additional information');
+
     await wrapper.findAll('.btn-primary').at(0)?.trigger('click');
     expect(wrapper.emitted('save')).toBeTruthy();
     expect(wrapper.emitted('close')).toBeTruthy();

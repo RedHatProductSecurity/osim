@@ -56,6 +56,22 @@ watch(() => props.show, (newShow) => {
 });
 
 function handleSave() {
+  // Validate required fields for new milestones
+  if (!props.milestone) {
+    if (!formData.value.request_received_at) {
+      console.error('Request Received Date is required');
+      return;
+    }
+    if (!formData.value.request_source || !formData.value.request_source.trim()) {
+      console.error('Request Source is required');
+      return;
+    }
+    if (!formData.value.request_text || !formData.value.request_text.trim()) {
+      console.error('Request Text is required');
+      return;
+    }
+  }
+
   const payload: Partial<SRPReportMilestone> = {
     manual_completion_notes: formData.value.manual_completion_notes,
     request_source: formData.value.request_source,

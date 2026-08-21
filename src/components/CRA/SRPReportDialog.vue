@@ -16,12 +16,23 @@ const emit = defineEmits<{
 
 function toISO8601DateTime(datetimeLocal: string): string {
   if (!datetimeLocal) return '';
-  const date = new Date(datetimeLocal + 'Z');
-  return date.toISOString();
+  // Parse datetime-local as local time (not UTC)
+  // datetime-local format: "2026-08-19T10:30"
+  const date = new Date(datetimeLocal);
+  // Get local time components
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  // Return ISO 8601 format in local timezone
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
 function fromISO8601DateTime(iso: null | string): string {
   if (!iso) return '';
+  // ISO format may include timezone, extract just date and time
   return iso.substring(0, 16);
 }
 
@@ -68,6 +79,12 @@ watch(() => props.show, (newShow) => {
 });
 
 function handleSave() {
+  // Validate required fields
+  if (!formData.value.evidence || !formData.value.evidence.trim()) {
+    console.error('Evidence is required');
+    return;
+  }
+
   const payload = { ...formData.value };
 
   // Convert datetime-local to ISO 8601 format

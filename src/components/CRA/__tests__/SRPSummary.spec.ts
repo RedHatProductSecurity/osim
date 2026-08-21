@@ -8,6 +8,7 @@ import * as SRPService from '@/services/SRPService';
 
 vi.mock('@/services/SRPService', () => ({
   createAdditionalInfoMilestone: vi.fn(() => Promise.resolve({})),
+  createSRPReport: vi.fn(() => Promise.resolve({})),
   fetchSRPReports: vi.fn(),
   updateSRPMilestone: vi.fn(() => Promise.resolve({})),
   updateSRPReport: vi.fn(() => Promise.resolve({})),

@@ -59,15 +59,24 @@ const changedSlot = computed(() =>
   ),
 );
 
-const facetsParsed = computed(() => facets.value.reduce(
-  (fields, { field, value }) => {
-    if (field && (value || allowedEmptyFieldMapping[field])) {
-      fields[field] = value;
-    }
-    return fields;
-  },
-  {} as Record<string, string>,
-));
+const facetsParsed = computed(() => {
+  const fields = facets.value.reduce(
+    (fields, { field, value }) => {
+      if (field && (value || allowedEmptyFieldMapping[field])) {
+        fields[field] = value;
+      }
+      return fields;
+    },
+    {} as Record<string, string>,
+  );
+
+  // Remove disabled SRP facets when feature flag is off
+  if (!osimRuntime.value.flags?.srpReporting && fields.srp_status) {
+    delete fields.srp_status;
+  }
+
+  return fields;
+});
 
 const invalidSearcName = computed(() =>
   newSearchName.value === '' || searchStore.savedSearches.some(search => search.name === newSearchName.value),

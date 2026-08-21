@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
+
 import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import { isMilestoneActionable } from '@/types/cra';
 import { updateSRPMilestone } from '@/services/SRPService';
 import { formatDate } from '@/utils/helpers';
 
@@ -83,14 +86,14 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
           <tr
             v-for="milestone in report.milestones"
             :key="milestone.uuid"
-            :class="{ 'table-danger': milestone.is_overdue && milestone.status !== 'submitted' }"
+            :class="{ 'table-danger': isMilestoneActionable(milestone) }"
           >
             <td class="ps-4">{{ milestone.milestone_type }}</td>
             <td>
               <SRPStatusBadge :status="milestone.status" />
             </td>
             <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
-            <td :class="{ 'text-danger': milestone.is_overdue }">
+            <td :class="{ 'text-danger': isMilestoneActionable(milestone) }">
               {{ formatTimeRemaining(milestone) }}
             </td>
             <td>
