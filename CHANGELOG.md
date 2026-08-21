@@ -4,6 +4,7 @@
 * Allow empty Source Component on flaws in NEW state (`OSIDB-5273`)
 * Make workflow, product_family and alias labels non-editable (`OSIDB-5385`)
 * Fix strikethrough incorrectly applied to labels without relevant field (`OSIDB-5375`)
+* Do not update affects from Flaw PUT response (OSIDB-5297)
 
 ## [2026.8.0-patch-missing-labels]
 ### Fixed
