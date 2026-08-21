@@ -6,10 +6,26 @@ import { osidbFetch } from '@/services/OsidbAuthService';
 export async function fetchSRPReports(flawId: string): Promise<SRPReport[]> {
   const response = await osidbFetch({
     method: 'GET',
-    url: `/osidb/api/v2/flaws/${flawId}/srp-reports`,
+    url: `/regulatory-reporting/api/v1/flaws/${flawId}/srp-reports`,
   });
 
   return (response.data?.results || response.data || []) as SRPReport[];
+}
+
+export async function createSRPReport(
+  flawId: string,
+  data: Partial<SRPReport>,
+) {
+  return osidbFetch({
+    method: 'POST',
+    url: '/regulatory-reporting/api/v1/srp-reports',
+    data: {
+      ...data,
+      flaw_id: flawId,
+    },
+  })
+    .then(createSuccessHandler({ title: 'Success!', body: 'SRP report created successfully.' }))
+    .catch(createCatchHandler('Error creating SRP report:'));
 }
 
 export async function updateSRPReport(
@@ -18,7 +34,7 @@ export async function updateSRPReport(
 ) {
   return osidbFetch({
     method: 'PUT',
-    url: `/osidb/api/v2/srp-reports/${reportUuid}`,
+    url: `/regulatory-reporting/api/v1/srp-reports/${reportUuid}`,
     data,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'SRP report updated successfully.' }))
@@ -26,12 +42,13 @@ export async function updateSRPReport(
 }
 
 export async function updateSRPMilestone(
+  reportUuid: string,
   milestoneUuid: string,
   data: Partial<SRPReportMilestone>,
 ) {
   return osidbFetch({
     method: 'PUT',
-    url: `/osidb/api/v2/srp-milestones/${milestoneUuid}`,
+    url: `/regulatory-reporting/api/v1/srp-reports/${reportUuid}/milestones/${milestoneUuid}`,
     data,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'SRP milestone updated successfully.' }))
@@ -44,7 +61,7 @@ export async function createAdditionalInfoMilestone(
 ) {
   return osidbFetch({
     method: 'POST',
-    url: `/osidb/api/v2/srp-reports/${reportUuid}/milestones`,
+    url: `/regulatory-reporting/api/v1/srp-reports/${reportUuid}/milestones`,
     data,
   })
     .then(createSuccessHandler({ title: 'Success!', body: 'Additional information request created successfully.' }))

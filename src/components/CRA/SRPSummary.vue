@@ -10,9 +10,9 @@ import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
 import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
-import { isMilestoneActionable } from '@/types/cra';
 import {
   createAdditionalInfoMilestone,
+  createSRPReport,
   fetchSRPReports,
   updateSRPMilestone,
   updateSRPReport,
@@ -84,7 +84,11 @@ const summary = computed<SRPReportSummary>(() => {
 
   for (const report of srpReports.value) {
     if (report.milestones) {
-      totalOverdue += report.milestones.filter(isMilestoneActionable).length;
+      totalOverdue += report.milestones.filter(m =>
+        m.is_overdue
+        && m.status !== 'submitted'
+        && m.status !== 'not_required',
+      ).length;
     }
   }
 
@@ -102,7 +106,12 @@ function getNextDueDate(report: SRPReport): Date | null {
 
   const now = new Date();
   const upcomingMilestones = report.milestones
-    .filter(m => m.due_at && new Date(m.due_at) > now)
+    .filter(m =>
+      m.due_at
+      && new Date(m.due_at) > now
+      && m.status !== 'submitted'
+      && m.status !== 'not_required',
+    )
     .sort((a, b) => new Date(a.due_at!).getTime() - new Date(b.due_at!).getTime());
 
   return upcomingMilestones[0]?.due_at ? new Date(upcomingMilestones[0].due_at) : null;
@@ -111,7 +120,11 @@ function getNextDueDate(report: SRPReport): Date | null {
 function getOverdueMilestones(report: SRPReport): number {
   if (!report.milestones) return 0;
 
-  return report.milestones.filter(isMilestoneActionable).length;
+  return report.milestones.filter(m =>
+    m.is_overdue
+    && m.status !== 'submitted'
+    && m.status !== 'not_required',
+  ).length;
 }
 
 function formatDateDisplay(date: Date | null): string {
@@ -149,6 +162,8 @@ async function handleSaveReport(data: Partial<SRPReport>) {
   try {
     if (editingReport.value) {
       await updateSRPReport(editingReport.value.uuid, data);
+    } else {
+      await createSRPReport(props.flawId, data);
     }
     await loadSRPReports();
   } catch (err) {
@@ -159,7 +174,7 @@ async function handleSaveReport(data: Partial<SRPReport>) {
 async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
   try {
     if (editingMilestone.value) {
-      await updateSRPMilestone(editingMilestone.value.uuid, data);
+      await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
     } else {
       await createAdditionalInfoMilestone(editingReportUuid.value, data);
     }
@@ -196,29 +211,30 @@ function hasMissingFields(report: SRPReport): boolean {
       Failed to load SRP reports. The feature may not be available yet.
     </div>
 
-    <div v-else-if="!summary.hasReport" class="p-3 text-muted">
-      <i class="bi bi-info-circle me-2"></i>
-      No SRP reporting required for this flaw.
-    </div>
-
     <div v-else class="p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="mb-0">SRP Reports</h6>
-        <button type="button" class="btn btn-sm btn-primary" @click="openAddReportDialog">
+        <button type="button" class="btn btn-sm btn-dark" @click="openAddReportDialog">
           <i class="bi bi-plus-circle me-1"></i>
           Add Report
         </button>
       </div>
-      <div class="table-responsive">
-        <table class="table table-sm table-hover">
-          <thead>
+
+      <div v-if="!summary.hasReport" class="text-muted">
+        <i class="bi bi-info-circle me-2"></i>
+        No reports yet. Click "Add Report" to create one.
+      </div>
+
+      <div v-else class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+          <thead class="table-dark">
             <tr>
               <th style="width: 40px"></th>
               <th>Status</th>
               <th>Event Type</th>
               <th>Next Due Date</th>
               <th>Overdue</th>
-              <th style="width: 100px">Actions</th>
+              <th style="width: 150px">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -246,19 +262,12 @@ function hasMissingFields(report: SRPReport): boolean {
                   <span v-if="getOverdueMilestones(report) > 0" class="badge bg-danger">
                     {{ getOverdueMilestones(report) }}
                   </span>
-                  <span v-else class="text-muted">-</span>
-                  <span
-                    v-if="hasMissingFields(report)"
-                    class="badge bg-warning text-dark ms-1"
-                    title="Missing required fields"
-                  >
-                    <i class="bi bi-exclamation-triangle"></i>
-                  </span>
+                  <span v-else class="text-muted d-inline-block ms-1" style="line-height: 1.5;">—</span>
                 </td>
-                <td @click.stop>
+                <td class="text-nowrap" @click.stop>
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-primary me-1"
+                    class="btn btn-sm btn-dark me-1"
                     title="View Payload"
                     @click="openViewPayload(report)"
                   >
@@ -266,11 +275,22 @@ function hasMissingFields(report: SRPReport): boolean {
                   </button>
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-secondary"
+                    class="btn btn-sm btn-dark me-1"
                     @click="openEditReportDialog(report)"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
+                  <span
+                    v-if="hasMissingFields(report)"
+                    title="Missing required fields"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-warning"
+                    >
+                      <i class="bi bi-exclamation-triangle"></i>
+                    </button>
+                  </span>
                 </td>
               </tr>
               <tr v-if="isReportExpanded(report.uuid)" class="milestone-details">
@@ -320,11 +340,11 @@ function hasMissingFields(report: SRPReport): boolean {
   cursor: pointer;
 }
 
-.report-row:hover {
-  background-color: rgb(0 0 0 / 2.5%);
-}
-
 .milestone-details td {
   border-top: none;
+}
+
+.btn-dark:hover {
+  opacity: 0.85;
 }
 </style>

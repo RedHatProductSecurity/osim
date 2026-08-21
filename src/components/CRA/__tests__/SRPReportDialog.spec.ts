@@ -22,6 +22,10 @@ describe('sRPReportDialog', () => {
     const wrapper = mount(SRPReportDialog, {
       props: { show: true },
     });
+
+    // Fill required evidence field
+    await wrapper.find('textarea').setValue('Sample evidence for the report');
+
     await wrapper.findAll('.btn-primary').at(0)?.trigger('click');
     expect(wrapper.emitted('save')).toBeTruthy();
     expect(wrapper.emitted('close')).toBeTruthy();

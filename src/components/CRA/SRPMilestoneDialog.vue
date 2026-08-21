@@ -2,8 +2,7 @@
 import { ref, watch } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import type { SRPReportMilestone } from '@/types/cra';
-import { formatDate } from '@/utils/helpers';
+import type { SRPMilestoneType, SRPReportMilestone, SRPReportStatus } from '@/types/cra';
 
 const props = defineProps<{
   milestone?: SRPReportMilestone;
@@ -16,25 +15,86 @@ const emit = defineEmits<{
 }>();
 
 const formData = ref({
-  due_at: props.milestone?.due_at || '',
-  manual_completion_notes: props.milestone?.manual_completion_notes || '',
-  milestone_type: props.milestone?.milestone_type || '24h',
-  status: props.milestone?.status || 'prepared',
+  due_at: '',
+  manual_completion_notes: '',
+  milestone_type: 'additional_information_response',
+  request_received_at: '',
+  request_source: '',
+  request_text: '',
+  status: 'prepared',
+  updated_dt: '',
 });
 
+function toISO8601Date(dateString: string): string {
+  if (!dateString) return '';
+  // date format: "2026-08-19"
+  // Convert to ISO 8601 with time set to midnight UTC: "2026-08-19T00:00:00.000Z"
+  const date = new Date(dateString + 'T00:00:00Z');
+  return date.toISOString();
+}
+
+function fromISO8601Date(iso: null | string): string {
+  if (!iso) return '';
+  // ISO 8601 format: "2026-08-19T10:30:00.000Z"
+  // date format: "2026-08-19"
+  return iso.substring(0, 10);
+}
+
 watch(() => props.show, (newShow) => {
-  if (newShow && props.milestone) {
+  if (newShow) {
     formData.value = {
-      due_at: props.milestone.due_at || '',
-      manual_completion_notes: props.milestone.manual_completion_notes || '',
-      milestone_type: props.milestone.milestone_type || '24h',
-      status: props.milestone.status || 'prepared',
+      due_at: fromISO8601Date(props.milestone?.due_at || ''),
+      manual_completion_notes: props.milestone?.manual_completion_notes || '',
+      milestone_type: props.milestone?.milestone_type || 'additional_information_response',
+      request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
+      request_source: props.milestone?.request_source || '',
+      request_text: props.milestone?.request_text || '',
+      status: props.milestone?.status || 'prepared',
+      updated_dt: props.milestone?.updated_dt || '',
     };
   }
 });
 
 function handleSave() {
-  emit('save', formData.value);
+  // Validate required fields for new milestones
+  if (!props.milestone) {
+    if (!formData.value.request_received_at) {
+      console.error('Request Received Date is required');
+      return;
+    }
+    if (!formData.value.request_source || !formData.value.request_source.trim()) {
+      console.error('Request Source is required');
+      return;
+    }
+    if (!formData.value.request_text || !formData.value.request_text.trim()) {
+      console.error('Request Text is required');
+      return;
+    }
+  }
+
+  const payload: Partial<SRPReportMilestone> = {
+    manual_completion_notes: formData.value.manual_completion_notes,
+    request_source: formData.value.request_source,
+    request_text: formData.value.request_text,
+    status: formData.value.status as SRPReportStatus,
+  };
+
+  // Only include request_received_at if it has a value
+  if (formData.value.request_received_at) {
+    payload.request_received_at = toISO8601Date(formData.value.request_received_at);
+  }
+
+  if (!props.milestone) {
+    payload.milestone_type = formData.value.milestone_type as SRPMilestoneType;
+  } else {
+    payload.updated_dt = formData.value.updated_dt;
+  }
+
+  if (formData.value.due_at) {
+    payload.due_at = toISO8601Date(formData.value.due_at);
+  }
+
+  emit('save', payload);
   emit('close');
 }
 
@@ -49,33 +109,71 @@ function handleClose() {
       {{ milestone ? 'Edit' : 'Add' }} Milestone
     </template>
     <template #body>
-      <div
-        v-if="milestone?.milestone_type === 'additional_information_response'"
-        class="mb-3 p-3 border rounded bg-light"
-      >
-        <h6 class="mb-2">Request Details</h6>
-        <div class="mb-2">
-          <small class="text-muted">Received:</small>
-          <div>{{ milestone.request_received_at ? formatDate(milestone.request_received_at, false) : 'N/A' }}</div>
-        </div>
-        <div class="mb-2">
-          <small class="text-muted">Source:</small>
-          <div>{{ milestone.request_source || 'N/A' }}</div>
-        </div>
-        <div v-if="milestone.request_text" class="mb-0">
-          <small class="text-muted">Request Text:</small>
-          <div class="text-break">{{ milestone.request_text }}</div>
-        </div>
+      <div v-if="!milestone" class="alert alert-info mb-3">
+        <i class="bi bi-info-circle me-2"></i>
+        <small>
+          Additional Information Request milestones are created when CRA requests more details.
+          The due date will be calculated automatically based on the received date (30 days).
+        </small>
       </div>
-      <div class="mb-3">
+
+      <div v-if="milestone" class="mb-3">
         <label class="form-label">Milestone Type</label>
-        <select v-model="formData.milestone_type" class="form-select">
-          <option value="24h">24h</option>
-          <option value="72h">72h</option>
-          <option value="additional_information_response">Additional Information Response</option>
-          <option value="final">Final</option>
-        </select>
+        <input
+          :value="milestone.milestone_type"
+          type="text"
+          class="form-control"
+          disabled
+        />
+        <small class="text-muted">Milestone type cannot be changed</small>
       </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Received Date
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <input
+          v-model="formData.request_received_at"
+          type="date"
+          class="form-control"
+          :required="!milestone"
+        />
+        <small class="text-muted">When the additional information request was received</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Source
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <input
+          v-model="formData.request_source"
+          type="text"
+          class="form-control"
+          placeholder="e.g., ENISA Portal"
+          :required="!milestone"
+        />
+        <small class="text-muted">Where the request came from</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">
+          Request Text
+          <span v-if="!milestone" class="text-danger">*</span>
+        </label>
+        <textarea
+          v-model="formData.request_text"
+          class="form-control"
+          :rows="milestone ? 3 : 4"
+          placeholder="Enter the details of what information was requested..."
+          :required="!milestone"
+        ></textarea>
+        <small class="text-muted">Description of the additional information requested</small>
+      </div>
+
+      <hr class="my-3" />
+
       <div class="mb-3">
         <label class="form-label">Status</label>
         <select v-model="formData.status" class="form-select">
@@ -86,10 +184,13 @@ function handleClose() {
           <option value="deferred">Deferred</option>
         </select>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Due Date</label>
-        <input v-model="formData.due_at" type="datetime-local" class="form-control" />
+        <label class="form-label">Due Date (Optional)</label>
+        <input v-model="formData.due_at" type="date" class="form-control" />
+        <small class="text-muted">Leave empty to use automatically calculated due date</small>
       </div>
+
       <div class="mb-3">
         <label class="form-label">Notes</label>
         <textarea v-model="formData.manual_completion_notes" class="form-control" rows="3"></textarea>

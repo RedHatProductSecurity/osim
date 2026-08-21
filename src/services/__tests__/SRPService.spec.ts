@@ -1,10 +1,9 @@
 import { createTestingPinia } from '@pinia/testing';
 
-import { createSuccessHandler } from '@/composables/service-helpers';
-
 import { osidbFetch } from '@/services/OsidbAuthService';
 import {
   createAdditionalInfoMilestone,
+  createSRPReport,
   fetchSRPReports,
   updateSRPMilestone,
   updateSRPReport,
@@ -12,11 +11,6 @@ import {
 
 vi.mock('@/services/OsidbAuthService', () => ({
   osidbFetch: vi.fn(),
-}));
-
-vi.mock('@/composables/service-helpers', () => ({
-  createCatchHandler: vi.fn().mockReturnValue(vi.fn()),
-  createSuccessHandler: vi.fn().mockReturnValue(vi.fn()),
 }));
 
 describe('sRPService', () => {
@@ -44,20 +38,52 @@ describe('sRPService', () => {
     await expect(fetchSRPReports('flaw-789')).rejects.toThrow('Network error');
   });
 
+  it('creates SRP report', async () => {
+    vi.mocked(osidbFetch).mockResolvedValue({ data: {} } as any);
+
+    await createSRPReport('flaw-123', { title: 'New Report' });
+
+    expect(osidbFetch).toHaveBeenCalledWith({
+      method: 'POST',
+      url: '/regulatory-reporting/api/v1/srp-reports',
+      data: { title: 'New Report', flaw_id: 'flaw-123' },
+    });
+  });
+
+  it('handles createSRPReport error', async () => {
+    vi.mocked(osidbFetch).mockRejectedValue(new Error('Create failed'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(createSRPReport('flaw-123', { title: 'New Report' })).rejects.toThrow('Create failed');
+
+    expect(console.error).toHaveBeenCalledWith(
+      'service-helpers::createCatchHandler() Error creating SRP report:',
+      expect.any(Error),
+    );
+  });
+
   it('updates SRP report', async () => {
     vi.mocked(osidbFetch).mockResolvedValue({ data: {} } as any);
 
     await updateSRPReport('report-1', { status: 'submitted' });
 
-    expect(createSuccessHandler).toHaveBeenCalled();
+    expect(osidbFetch).toHaveBeenCalledWith({
+      method: 'PUT',
+      url: '/regulatory-reporting/api/v1/srp-reports/report-1',
+      data: { status: 'submitted' },
+    });
   });
 
   it('updates SRP milestone', async () => {
     vi.mocked(osidbFetch).mockResolvedValue({ data: {} } as any);
 
-    await updateSRPMilestone('milestone-1', { status: 'submitted' });
+    await updateSRPMilestone('report-1', 'milestone-1', { status: 'submitted' });
 
-    expect(createSuccessHandler).toHaveBeenCalled();
+    expect(osidbFetch).toHaveBeenCalledWith({
+      method: 'PUT',
+      url: '/regulatory-reporting/api/v1/srp-reports/report-1/milestones/milestone-1',
+      data: { status: 'submitted' },
+    });
   });
 
   it('creates additional info milestone', async () => {
@@ -65,6 +91,10 @@ describe('sRPService', () => {
 
     await createAdditionalInfoMilestone('report-1', { milestone_type: 'additional_information_response' });
 
-    expect(createSuccessHandler).toHaveBeenCalled();
+    expect(osidbFetch).toHaveBeenCalledWith({
+      method: 'POST',
+      url: '/regulatory-reporting/api/v1/srp-reports/report-1/milestones',
+      data: { milestone_type: 'additional_information_response' },
+    });
   });
 });

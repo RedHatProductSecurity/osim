@@ -17,7 +17,6 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -71,7 +70,6 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -115,7 +113,6 @@ exports[`issueQueue > should render flaw labels 1`] = `
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
-          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>

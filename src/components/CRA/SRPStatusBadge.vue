@@ -14,7 +14,7 @@ const STATUS_BADGE_MAP: Record<SRPReportStatus, string> = {
   not_required: 'bg-light text-dark',
   prepared: 'bg-info text-dark',
   required: 'bg-warning text-dark',
-  submitted: 'bg-success text-white',
+  submitted: 'bg-success text-dark',
 };
 
 function getBadgeClass(status: null | SRPReportStatus | undefined): string {
