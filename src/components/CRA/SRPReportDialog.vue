@@ -41,6 +41,7 @@ function fromISO8601DateTime(iso: null | string): string {
 // To change the report status, update individual milestone statuses instead.
 const formData = ref({
   evidence: props.report?.evidence || '',
+  manufacturer_or_steward_name: props.report?.manufacturer_or_steward_name || '',
   reportable_event_type: props.report?.reportable_event_type || 'EXPLOITS_KEV_APPROVED',
   responsibility_scope: props.report?.responsibility_scope || 'manufacturer',
   srp_reference_id: props.report?.srp_reference_id || '',
@@ -55,6 +56,7 @@ watch(() => props.show, (newShow) => {
     if (props.report) {
       formData.value = {
         evidence: props.report.evidence || '',
+        manufacturer_or_steward_name: props.report.manufacturer_or_steward_name || '',
         reportable_event_type: props.report.reportable_event_type,
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,
@@ -66,6 +68,7 @@ watch(() => props.show, (newShow) => {
     } else {
       formData.value = {
         evidence: '',
+        manufacturer_or_steward_name: '',
         reportable_event_type: 'EXPLOITS_KEV_APPROVED',
         responsibility_scope: 'manufacturer',
         srp_reference_id: '',
@@ -141,6 +144,16 @@ function handleClose() {
           <option value="manufacturer">Manufacturer</option>
           <option value="steward">Steward</option>
         </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Organization Name</label>
+        <input
+          v-model="formData.manufacturer_or_steward_name"
+          type="text"
+          class="form-control"
+          placeholder="e.g., Red Hat, Inc."
+        />
+        <small class="text-muted">Name of the manufacturer or steward organization</small>
       </div>
       <div class="mb-3">
         <label class="form-label">SRP Reference ID</label>
