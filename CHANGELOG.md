@@ -5,6 +5,9 @@
 * Link an existing Jira or Bugzilla tracker to another flaw's affect on demand, so one tracker can cover multiple flaws without a manual sync (`OSIDB-5471`)
 * Show related entities audit entries in flaw history (`OSIDB-5687`)
 * Choose a resolution, applicable VEX justification, and optional comment when bulk-closing Jira trackers; show per-tracker failures and keep failed trackers selected for retry (`OSIDB-5739`)
+* Avoids overriding the affect when there was an error and the affect was not saved. (`OSIDB-5297`)
+
+
 
 ### Changed
 * Replace Full Flaw Suggestions with a Multi Suggest split button beside the Bugzilla/Jira links, with field selection, empty-field defaults, override indicators, and a select/unselect-all toggle; apply AI suggestions only to checked fields (`AEGIS-527`)
@@ -35,6 +38,7 @@
 ## [2026.9.0]
 ### Added
 * Add bulk close functionality for Jira trackers in affects table with confirmation dialog
+
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 
