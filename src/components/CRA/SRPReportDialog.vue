@@ -36,12 +36,24 @@ function fromISO8601DateTime(iso: null | string): string {
   return iso.substring(0, 16);
 }
 
+function memberStatesToString(states: string[]): string {
+  return states.join(', ');
+}
+
+function stringToMemberStates(value: string): string[] {
+  return value
+    .split(',')
+    .map(s => s.trim().toUpperCase())
+    .filter(s => s.length > 0);
+}
+
 // Note: 'status' field is not included in the form because it's a computed property
 // in the backend, derived automatically from the milestone statuses.
 // To change the report status, update individual milestone statuses instead.
 const formData = ref({
   evidence: props.report?.evidence || '',
   manufacturer_or_steward_name: props.report?.manufacturer_or_steward_name || '',
+  member_states_available_text: memberStatesToString(props.report?.member_states_available || []),
   reportable_event_type: props.report?.reportable_event_type || 'EXPLOITS_KEV_APPROVED',
   responsibility_scope: props.report?.responsibility_scope || 'manufacturer',
   srp_reference_id: props.report?.srp_reference_id || '',
@@ -57,6 +69,7 @@ watch(() => props.show, (newShow) => {
       formData.value = {
         evidence: props.report.evidence || '',
         manufacturer_or_steward_name: props.report.manufacturer_or_steward_name || '',
+        member_states_available_text: memberStatesToString(props.report.member_states_available || []),
         reportable_event_type: props.report.reportable_event_type,
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,
@@ -69,6 +82,7 @@ watch(() => props.show, (newShow) => {
       formData.value = {
         evidence: '',
         manufacturer_or_steward_name: '',
+        member_states_available_text: '',
         reportable_event_type: 'EXPLOITS_KEV_APPROVED',
         responsibility_scope: 'manufacturer',
         srp_reference_id: '',
@@ -88,7 +102,11 @@ function handleSave() {
     return;
   }
 
-  const payload = { ...formData.value };
+  const payload: any = { ...formData.value };
+
+  // Convert member states text to array
+  payload.member_states_available = stringToMemberStates(formData.value.member_states_available_text);
+  delete payload.member_states_available_text;
 
   // Convert datetime-local to ISO 8601 format
   if (payload.timer_started_at) {
@@ -154,6 +172,18 @@ function handleClose() {
           placeholder="e.g., Red Hat, Inc."
         />
         <small class="text-muted">Name of the manufacturer or steward organization</small>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">EU Member States Where Product is Available</label>
+        <input
+          v-model="formData.member_states_available_text"
+          type="text"
+          class="form-control"
+          placeholder="e.g., ES, FR, DE, IT"
+        />
+        <small class="text-muted">
+          Enter 2-letter country codes separated by commas (e.g., ES, FR, DE)
+        </small>
       </div>
       <div class="mb-3">
         <label class="form-label">SRP Reference ID</label>
