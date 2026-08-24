@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { SRPMilestoneType, SRPReportMilestone, SRPReportStatus } from '@/types/cra';
+import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
   milestone?: SRPReportMilestone;
@@ -14,10 +15,13 @@ const emit = defineEmits<{
   save: [milestone: Partial<SRPReportMilestone>];
 }>();
 
+const userStore = useUserStore();
+
 const formData = ref({
   due_at: '',
   manual_completion_notes: '',
   milestone_type: 'additional_information_response',
+  owner: null as null | string,
   request_received_at: '',
   request_source: '',
   request_text: '',
@@ -40,12 +44,23 @@ function fromISO8601Date(iso: null | string): string {
   return iso.substring(0, 10);
 }
 
+function selfAssign() {
+  if (userStore.userEmail) {
+    formData.value.owner = userStore.userEmail;
+  }
+}
+
+const isAssignedToMe = computed(() =>
+  formData.value.owner === userStore.userEmail && userStore.userEmail !== '',
+);
+
 watch(() => props.show, (newShow) => {
   if (newShow) {
     formData.value = {
       due_at: fromISO8601Date(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
+      owner: props.milestone?.owner || null,
       request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
       request_source: props.milestone?.request_source || '',
       request_text: props.milestone?.request_text || '',
@@ -74,6 +89,7 @@ function handleSave() {
 
   const payload: Partial<SRPReportMilestone> = {
     manual_completion_notes: formData.value.manual_completion_notes,
+    owner: formData.value.owner,
     request_source: formData.value.request_source,
     request_text: formData.value.request_text,
     status: formData.value.status as SRPReportStatus,
@@ -129,8 +145,7 @@ function handleClose() {
       </div>
 
       <div class="mb-3">
-        <label class="form-label">
-          Request Received Date
+        <label class="form-label">Request Received Date
           <span v-if="!milestone" class="text-danger">*</span>
         </label>
         <input
@@ -140,6 +155,27 @@ function handleClose() {
           :required="!milestone"
         />
         <small class="text-muted">When the additional information request was received</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Owner</label>
+        <div class="d-flex gap-2 align-items-start">
+          <input
+            v-model="formData.owner"
+            type="email"
+            class="form-control"
+            placeholder="owner@example.com"
+          />
+          <button
+            v-if="!isAssignedToMe"
+            type="button"
+            class="btn btn-primary text-nowrap"
+            @click="selfAssign"
+          >
+            Self Assign
+          </button>
+        </div>
+        <small class="text-muted">Person responsible for this milestone</small>
       </div>
 
       <div class="mb-3">

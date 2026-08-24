@@ -38,6 +38,7 @@ export interface SRPReportMilestone {
   manual_completion_notes: string;
   milestone_type: SRPMilestoneType;
   missing_required_fields: string;
+  owner?: null | string;
   request_received_at: null | string;
   request_source: string;
   request_text: string;

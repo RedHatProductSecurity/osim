@@ -129,6 +129,9 @@ function parseDetailsJson(detailsJson: any): Record<string, any> {
           <div class="mb-2">
             <strong>UUID:</strong> <code class="small">{{ milestone.uuid }}</code>
           </div>
+          <div v-if="milestone.owner" class="mb-2">
+            <strong>Owner:</strong> {{ milestone.owner }}
+          </div>
           <div class="mb-2">
             <strong>Created:</strong> {{ formatDate(new Date(milestone.created_dt), true) }}
           </div>
