@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import SRPMilestoneExpandable from '@/components/CRA/SRPMilestoneExpandable.vue';
 
 import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import { sortMilestones } from '@/types/cra';
 
-defineProps<{
+const props = defineProps<{
   report: SRPReport;
 }>();
 
@@ -12,6 +15,8 @@ const emit = defineEmits<{
   'edit-milestone': [milestone: SRPReportMilestone];
   'refresh': [];
 }>();
+
+const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
 </script>
 
 <template>
@@ -58,7 +63,7 @@ const emit = defineEmits<{
         </thead>
         <tbody>
           <SRPMilestoneExpandable
-            v-for="milestone in report.milestones"
+            v-for="milestone in sortedMilestones"
             :key="milestone.uuid"
             :milestone="milestone"
             @edit-milestone="emit('edit-milestone', $event)"

@@ -3,6 +3,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { describe, expect, it, vi } from 'vitest';
 
 import SRPMilestoneExpandable from '@/components/CRA/SRPMilestoneExpandable.vue';
+
 import type { SRPReportMilestone } from '@/types/cra';
 import * as SRPService from '@/services/SRPService';
 

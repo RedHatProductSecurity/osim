@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import { computed } from 'vue';
 
-defineProps<{
+import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import { sortMilestones } from '@/types/cra';
+
+const props = defineProps<{
   report: SRPReport;
 }>();
+
+const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
 
 function getMilestoneIcon(milestone: SRPReportMilestone): string {
   // Special icon for additional information request milestones
@@ -48,7 +53,7 @@ function getMilestoneTooltip(milestone: SRPReportMilestone): string {
 <template>
   <div class="d-flex gap-1 align-items-center">
     <i
-      v-for="milestone in report.milestones"
+      v-for="milestone in sortedMilestones"
       :key="milestone.uuid"
       class="bi"
       :class="getMilestoneIcon(milestone)"

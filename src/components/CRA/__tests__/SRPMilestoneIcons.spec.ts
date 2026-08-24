@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import SRPMilestoneIcons from '@/components/CRA/SRPMilestoneIcons.vue';
+
 import type { SRPReport, SRPReportMilestone } from '@/types/cra';
 
 const createMilestone = (overrides: Partial<SRPReportMilestone>): SRPReportMilestone => ({

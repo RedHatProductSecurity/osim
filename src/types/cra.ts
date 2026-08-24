@@ -83,3 +83,30 @@ export function isMilestoneActionable(milestone: SRPReportMilestone): boolean {
     && milestone.status !== 'submitted'
     && milestone.status !== 'not_required';
 }
+
+// Helper function to sort milestones in display order
+// Order: 24h, 72h, final, then additional_information_response milestones
+export function sortMilestones(milestones: SRPReportMilestone[]): SRPReportMilestone[] {
+  const milestoneOrder: Record<string, number> = {
+    '24h': 1,
+    '72h': 2,
+    'final': 3,
+  };
+
+  return [...milestones].sort((a, b) => {
+    const aIsAdditional = a.milestone_type === 'additional_information_response';
+    const bIsAdditional = b.milestone_type === 'additional_information_response';
+
+    // If both are main milestones, sort by predefined order
+    if (!aIsAdditional && !bIsAdditional) {
+      return (milestoneOrder[a.milestone_type] || 99) - (milestoneOrder[b.milestone_type] || 99);
+    }
+
+    // Main milestones come before additional requests
+    if (!aIsAdditional && bIsAdditional) return -1;
+    if (aIsAdditional && !bIsAdditional) return 1;
+
+    // Both are additional requests - sort by creation date (older first)
+    return new Date(a.created_dt).getTime() - new Date(b.created_dt).getTime();
+  });
+}
