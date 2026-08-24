@@ -2,6 +2,8 @@
 // Note: These are manually defined because the generated OSIDB client types use 'any' for all fields.
 // Once the OSIDB schema is finalized and the generator produces proper types, we can switch to using those.
 
+// TODO: OSIDB-5423 - Backend pending: Update report statuses to: 'in_progress' | 'submitted' (or empty)
+// Currently using old statuses that will be removed
 export type SRPReportStatus =
   | 'blocked'
   | 'deferred'
@@ -38,11 +40,13 @@ export interface SRPReportMilestone {
   manual_completion_notes: string;
   milestone_type: SRPMilestoneType;
   missing_required_fields: string;
-  owner?: null | string;
+  owner?: null | string; // TODO: OSIDB-5423 - Backend pending: Add owner field (email)
   request_received_at: null | string;
   request_source: string;
   request_text: string;
   srp_report: string;
+  // TODO: OSIDB-5423 - Backend pending: Update milestone statuses to:
+  // 'required' (default) | 'in_progress' | 'in_review' | 'submitted' | 'obsolete'
   status: SRPReportStatus;
   updated_dt: string;
   uuid: string;
@@ -60,8 +64,8 @@ export interface SRPReport {
   missing_required_fields: string;
   reportable_event_type: SRPEventType;
   responsibility_scope: SRPResponsibilityScope;
-  srp_reference_id: string;
-  srp_reference_url: string;
+  srp_reference_id: string; // TODO: OSIDB-5423 - Backend pending: Make optional (not required on creation)
+  srp_reference_url: string; // TODO: OSIDB-5423 - Backend pending: Make optional (not required on creation)
   status: SRPReportStatus;
   timer_started_at: null | string;
   title: string;

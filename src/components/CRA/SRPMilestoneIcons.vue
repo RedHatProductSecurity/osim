@@ -16,6 +16,8 @@ function getMilestoneIcon(milestone: SRPReportMilestone): string {
     return 'bi-info-circle-fill';
   }
 
+  // TODO: OSIDB-5423 - Backend pending: Update cases for new milestone statuses:
+  // required (default), in_progress, in_review, submitted, obsolete
   // Status-based icons for regular milestones
   switch (milestone.status) {
     case 'required':

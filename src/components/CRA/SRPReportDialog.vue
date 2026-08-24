@@ -185,6 +185,7 @@ function handleClose() {
           Enter 2-letter country codes separated by commas (e.g., ES, FR, DE)
         </small>
       </div>
+      <!-- TODO: OSIDB-5423 - Backend pending: These fields should not be required on report creation -->
       <div class="mb-3">
         <label class="form-label">SRP Reference ID</label>
         <input v-model="formData.srp_reference_id" type="text" class="form-control" />

@@ -212,6 +212,8 @@ function handleClose() {
 
       <div class="mb-3">
         <label class="form-label">Status</label>
+        <!-- TODO: OSIDB-5423 - Backend pending: Update options to new milestone statuses:
+             required (default), in_progress, in_review, submitted, obsolete -->
         <select v-model="formData.status" class="form-select">
           <option value="prepared">Prepared</option>
           <option value="submitted">Submitted</option>
