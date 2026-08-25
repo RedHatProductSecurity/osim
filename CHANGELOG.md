@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.8.1]
 ### Fixed
 * Allow empty Source Component on flaws in NEW state (`OSIDB-5273`)
 * Make workflow, product_family and alias labels non-editable (`OSIDB-5385`)
@@ -712,11 +712,11 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...HEAD
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...HEAD
-[v2026.8.0-patch-missing-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-workflow-labels...v2026.8.0-patch-missing-labels
-[v2026.8.0-patch-workflow-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-hotfix...v2026.8.0-patch-workflow-labels
-[v2026.8.0-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0...v2026.8.0-hotfix
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.1...HEAD
+[2026.8.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-missing-labels...v2026.8.1
+[2026.8.0-patch-missing-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-workflow-labels...v2026.8.0-patch-missing-labels
+[2026.8.0-patch-workflow-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-hotfix...v2026.8.0-patch-workflow-labels
+[2026.8.0-hotfix]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0...v2026.8.0-hotfix
 [2026.8.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.1...v2026.8.0
 [2026.5.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.5.0...v2026.5.1
 [2026.5.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.4.1...v2026.5.0
