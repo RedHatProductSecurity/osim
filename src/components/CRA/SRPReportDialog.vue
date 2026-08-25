@@ -120,6 +120,17 @@ function handleSave() {
 function handleClose() {
   emit('close');
 }
+
+function setTimerToday() {
+  const now = new Date();
+  // Format as datetime-local (YYYY-MM-DDTHH:MM)
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  formData.value.timer_started_at = `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 </script>
 
 <template>
@@ -151,10 +162,26 @@ function handleClose() {
         ></textarea>
         <small class="text-muted">Required: Evidence supporting this report</small>
       </div>
-      <div v-if="report" class="mb-3">
-        <label class="form-label">Timer Started At</label>
-        <input v-model="formData.timer_started_at" type="datetime-local" class="form-control" />
-        <small class="text-muted">Start time to kick off the SLA for milestones</small>
+      <div class="mb-3">
+        <label class="form-label">14-Day Timer Start</label>
+        <div class="d-flex gap-2 align-items-start">
+          <input
+            v-model="formData.timer_started_at"
+            type="datetime-local"
+            class="form-control"
+            placeholder="Not started"
+          />
+          <button
+            type="button"
+            class="btn btn-primary text-nowrap"
+            @click="setTimerToday"
+          >
+            Set Today
+          </button>
+        </div>
+        <small class="text-muted">
+          Start the 14-day countdown for final report (set when mitigation/patch is available)
+        </small>
       </div>
       <div class="mb-3">
         <label class="form-label">Responsibility Scope</label>
