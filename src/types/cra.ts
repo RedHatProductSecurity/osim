@@ -2,6 +2,8 @@
 // Note: These are manually defined because the generated OSIDB client types use 'any' for all fields.
 // Once the OSIDB schema is finalized and the generator produces proper types, we can switch to using those.
 
+// TODO: OSIDB-5423 - Backend pending: Update report statuses to: 'in_progress' | 'submitted' (or empty)
+// Currently using old statuses that will be removed
 export type SRPReportStatus =
   | 'blocked'
   | 'deferred'
@@ -38,10 +40,13 @@ export interface SRPReportMilestone {
   manual_completion_notes: string;
   milestone_type: SRPMilestoneType;
   missing_required_fields: string;
+  owner?: null | string; // TODO: OSIDB-5423 - Backend pending: Add owner field (email)
   request_received_at: null | string;
   request_source: string;
   request_text: string;
   srp_report: string;
+  // TODO: OSIDB-5423 - Backend pending: Update milestone statuses to:
+  // 'required' (default) | 'in_progress' | 'in_review' | 'submitted' | 'obsolete'
   status: SRPReportStatus;
   updated_dt: string;
   uuid: string;
@@ -59,8 +64,8 @@ export interface SRPReport {
   missing_required_fields: string;
   reportable_event_type: SRPEventType;
   responsibility_scope: SRPResponsibilityScope;
-  srp_reference_id: string;
-  srp_reference_url: string;
+  srp_reference_id: string; // TODO: OSIDB-5423 - Backend pending: Make optional (not required on creation)
+  srp_reference_url: string; // TODO: OSIDB-5423 - Backend pending: Make optional (not required on creation)
   status: SRPReportStatus;
   timer_started_at: null | string;
   title: string;
@@ -81,4 +86,31 @@ export function isMilestoneActionable(milestone: SRPReportMilestone): boolean {
   return milestone.is_overdue
     && milestone.status !== 'submitted'
     && milestone.status !== 'not_required';
+}
+
+// Helper function to sort milestones in display order
+// Order: 24h, 72h, final, then additional_information_response milestones
+export function sortMilestones(milestones: SRPReportMilestone[]): SRPReportMilestone[] {
+  const milestoneOrder: Record<string, number> = {
+    '24h': 1,
+    '72h': 2,
+    'final': 3,
+  };
+
+  return [...milestones].sort((a, b) => {
+    const aIsAdditional = a.milestone_type === 'additional_information_response';
+    const bIsAdditional = b.milestone_type === 'additional_information_response';
+
+    // If both are main milestones, sort by predefined order
+    if (!aIsAdditional && !bIsAdditional) {
+      return (milestoneOrder[a.milestone_type] || 99) - (milestoneOrder[b.milestone_type] || 99);
+    }
+
+    // Main milestones come before additional requests
+    if (!aIsAdditional && bIsAdditional) return -1;
+    if (aIsAdditional && !bIsAdditional) return 1;
+
+    // Both are additional requests - sort by creation date (older first)
+    return new Date(a.created_dt).getTime() - new Date(b.created_dt).getTime();
+  });
 }

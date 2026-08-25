@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
 
 import SRPSummary from '@/components/CRA/SRPSummary.vue';
 import { mockSRPReport } from '@/components/CRA/__tests__/fixtures';
@@ -19,11 +20,17 @@ describe('sRPSummary', () => {
     vi.clearAllMocks();
   });
 
+  const mountOptions = {
+    global: {
+      plugins: [createTestingPinia()],
+    },
+  };
+
   it('displays error when fetch fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(SRPService.fetchSRPReports).mockRejectedValue(new Error('API Error'));
 
-    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
     expect(wrapper.text()).toContain('Failed to load SRP reports');
@@ -32,7 +39,7 @@ describe('sRPSummary', () => {
   it('displays empty state with add button', async () => {
     vi.mocked(SRPService.fetchSRPReports).mockResolvedValue([]);
 
-    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
     expect(wrapper.text()).toContain('No reports yet');
@@ -42,7 +49,7 @@ describe('sRPSummary', () => {
   it('renders report table', async () => {
     vi.mocked(SRPService.fetchSRPReports).mockResolvedValue([mockSRPReport]);
 
-    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
     expect(wrapper.text()).toContain('Status');
@@ -50,7 +57,7 @@ describe('sRPSummary', () => {
   });
 
   it('does not fetch without flawId', async () => {
-    mount(SRPSummary, { props: { flawId: '' } });
+    mount(SRPSummary, { ...mountOptions, props: { flawId: '' } });
     await flushPromises();
 
     expect(SRPService.fetchSRPReports).not.toHaveBeenCalled();
@@ -61,7 +68,7 @@ describe('sRPSummary', () => {
     vi.mocked(SRPService.createAdditionalInfoMilestone).mockRejectedValue(new Error('Update failed'));
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
     // Set editingReportUuid so the function executes the create path
@@ -77,7 +84,7 @@ describe('sRPSummary', () => {
     vi.mocked(SRPService.updateSRPReport).mockRejectedValue(new Error('Save failed'));
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
     // Set editingReport to trigger the update path

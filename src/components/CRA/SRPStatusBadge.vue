@@ -6,6 +6,8 @@ defineProps<{
   status: null | SRPReportStatus | undefined;
 }>();
 
+// TODO: OSIDB-5423 - Backend pending: Update badge map for new report statuses (in_progress, submitted)
+// and milestone statuses (required, in_progress, in_review, submitted, obsolete)
 const STATUS_BADGE_MAP: Record<SRPReportStatus, string> = {
   blocked: 'bg-danger text-white',
   deferred: 'bg-secondary text-white',

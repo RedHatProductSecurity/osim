@@ -36,11 +36,24 @@ function fromISO8601DateTime(iso: null | string): string {
   return iso.substring(0, 16);
 }
 
+function memberStatesToString(states: string[]): string {
+  return states.join(', ');
+}
+
+function stringToMemberStates(value: string): string[] {
+  return value
+    .split(',')
+    .map(s => s.trim().toUpperCase())
+    .filter(s => s.length > 0);
+}
+
 // Note: 'status' field is not included in the form because it's a computed property
 // in the backend, derived automatically from the milestone statuses.
 // To change the report status, update individual milestone statuses instead.
 const formData = ref({
   evidence: props.report?.evidence || '',
+  manufacturer_or_steward_name: props.report?.manufacturer_or_steward_name || '',
+  member_states_available_text: memberStatesToString(props.report?.member_states_available || []),
   reportable_event_type: props.report?.reportable_event_type || 'EXPLOITS_KEV_APPROVED',
   responsibility_scope: props.report?.responsibility_scope || 'manufacturer',
   srp_reference_id: props.report?.srp_reference_id || '',
@@ -55,6 +68,8 @@ watch(() => props.show, (newShow) => {
     if (props.report) {
       formData.value = {
         evidence: props.report.evidence || '',
+        manufacturer_or_steward_name: props.report.manufacturer_or_steward_name || '',
+        member_states_available_text: memberStatesToString(props.report.member_states_available || []),
         reportable_event_type: props.report.reportable_event_type,
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,
@@ -66,6 +81,8 @@ watch(() => props.show, (newShow) => {
     } else {
       formData.value = {
         evidence: '',
+        manufacturer_or_steward_name: '',
+        member_states_available_text: '',
         reportable_event_type: 'EXPLOITS_KEV_APPROVED',
         responsibility_scope: 'manufacturer',
         srp_reference_id: '',
@@ -85,7 +102,11 @@ function handleSave() {
     return;
   }
 
-  const payload = { ...formData.value };
+  const payload: any = { ...formData.value };
+
+  // Convert member states text to array
+  payload.member_states_available = stringToMemberStates(formData.value.member_states_available_text);
+  delete payload.member_states_available_text;
 
   // Convert datetime-local to ISO 8601 format
   if (payload.timer_started_at) {
@@ -98,6 +119,17 @@ function handleSave() {
 
 function handleClose() {
   emit('close');
+}
+
+function setTimerToday() {
+  const now = new Date();
+  // Format as datetime-local (YYYY-MM-DDTHH:MM)
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  formData.value.timer_started_at = `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 </script>
 
@@ -130,10 +162,26 @@ function handleClose() {
         ></textarea>
         <small class="text-muted">Required: Evidence supporting this report</small>
       </div>
-      <div v-if="report" class="mb-3">
-        <label class="form-label">Timer Started At</label>
-        <input v-model="formData.timer_started_at" type="datetime-local" class="form-control" />
-        <small class="text-muted">Start time to kick off the SLA for milestones</small>
+      <div class="mb-3">
+        <label class="form-label">14-Day Timer Start</label>
+        <div class="d-flex gap-2 align-items-start">
+          <input
+            v-model="formData.timer_started_at"
+            type="datetime-local"
+            class="form-control"
+            placeholder="Not started"
+          />
+          <button
+            type="button"
+            class="btn btn-primary text-nowrap"
+            @click="setTimerToday"
+          >
+            Set Today
+          </button>
+        </div>
+        <small class="text-muted">
+          Start the 14-day countdown for final report (set when mitigation/patch is available)
+        </small>
       </div>
       <div class="mb-3">
         <label class="form-label">Responsibility Scope</label>
@@ -142,6 +190,29 @@ function handleClose() {
           <option value="steward">Steward</option>
         </select>
       </div>
+      <div class="mb-3">
+        <label class="form-label">Organization Name</label>
+        <input
+          v-model="formData.manufacturer_or_steward_name"
+          type="text"
+          class="form-control"
+          placeholder="e.g., Red Hat, Inc."
+        />
+        <small class="text-muted">Name of the manufacturer or steward organization</small>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">EU Member States Where Product is Available</label>
+        <input
+          v-model="formData.member_states_available_text"
+          type="text"
+          class="form-control"
+          placeholder="e.g., ES, FR, DE, IT"
+        />
+        <small class="text-muted">
+          Enter 2-letter country codes separated by commas (e.g., ES, FR, DE)
+        </small>
+      </div>
+      <!-- TODO: OSIDB-5423 - Backend pending: These fields should not be required on report creation -->
       <div class="mb-3">
         <label class="form-label">SRP Reference ID</label>
         <input v-model="formData.srp_reference_id" type="text" class="form-control" />
