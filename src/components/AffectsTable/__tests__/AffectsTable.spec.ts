@@ -631,6 +631,63 @@ describe('affectsTable', () => {
       });
     });
 
+    describe('ps_module field', () => {
+      beforeEach(() => {
+        // Ensure ps_module column is visible (a prior test may have hidden it)
+        const { settings } = useSettingsStore();
+        settings.affectsVisibility = { ...settings.affectsVisibility, ps_module: true };
+      });
+
+      it('should not enter edit mode when any ps_module cell is double-clicked', async () => {
+        const wrapper = await mountAffectsTable();
+
+        // Double-click every span in every data row; none should open a text input
+        const allSpans = wrapper.findAll('tbody td span');
+        expect(allSpans.length).toBeGreaterThan(0);
+
+        for (const span of allSpans) {
+          await span.trigger('dblclick');
+          await flushPromises();
+        }
+
+        // No text input should be open inside any ps_module cell specifically
+        // (ps_component and others CAN open inputs, but we verify ps_module cells don't)
+        // Verify by checking none of the inputs match the ps_module column value
+        const psModuleValue = SampleFlawFull.affects[0].ps_module;
+        const openInputs = wrapper.findAll('tbody td input[type="text"]');
+        const matchingInput = openInputs.find(
+          input => (input.element as HTMLInputElement).value === psModuleValue,
+        );
+        expect(matchingInput).toBeUndefined();
+      });
+
+      it('should show strikethrough on ps_module when ps_update_stream changes', async () => {
+        const wrapper = await mountAffectsTable();
+        const {
+          actions: { markModified },
+          state: { currentAffects },
+        } = useAffectsModel();
+
+        // Confirm no strikethrough initially
+        expect(wrapper.find('tbody s').exists()).toBe(false);
+
+        // Mutate ps_update_stream and mark affected — modifiedAffects (reactive Set) drives re-render
+        currentAffects.value[0].ps_update_stream = 'changed-stream';
+        markModified(currentAffects.value[0].uuid!);
+        await flushPromises();
+
+        // A strikethrough should now appear on the stale ps_module value
+        expect(wrapper.find('tbody s').exists()).toBe(true);
+        expect(wrapper.find('tbody s').text()).toBe(SampleFlawFull.affects[0].ps_module);
+      });
+
+      it('should not show strikethrough on ps_module when ps_update_stream is unchanged', async () => {
+        const wrapper = await mountAffectsTable();
+
+        expect(wrapper.find('tbody s').exists()).toBe(false);
+      });
+    });
+
     describe('bulk edit', () => {
       beforeEach(async () => {
         const { settings } = useSettingsStore();
