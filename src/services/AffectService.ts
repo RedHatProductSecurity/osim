@@ -4,8 +4,6 @@ import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
 
-import { beforeFetch } from './FlawService';
-
 type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
 export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
 Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
@@ -68,7 +66,7 @@ export async function putAffect(uuid: string, affectObject: any) {
     method: 'put',
     url: `/osidb/api/v1/affects/${uuid}`,
     data: affectObject,
-  }, { beforeFetch });
+  });
 }
 
 export async function putAffectWithHandlers(uuid: string, affectObject: any) {
@@ -130,7 +128,7 @@ export async function putAffectCvssScore(
     method: 'put',
     url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
     data: putObject,
-  }, { beforeFetch })
+  })
     .then(response => response.data)
     .catch(createCatchHandler('Problem updating affect CVSS scores:'));
 }

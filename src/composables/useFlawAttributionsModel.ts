@@ -28,8 +28,18 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function updateReference(reference: { uuid: string } & ZodFlawReferenceType) {
     isSaving.value = true;
-    await putFlawReference(flaw.value.uuid, reference.uuid, reference as any)
-      .finally(() => isSaving.value = false);
+    try {
+      const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
+      // Sync concurrency token from response for subsequent edits
+      if (response?.data) {
+        const index = flawReferences.value.findIndex(ref => ref.uuid === reference.uuid);
+        if (index !== -1) {
+          flawReferences.value[index] = { ...flawReferences.value[index], ...response.data };
+        }
+      }
+    } finally {
+      isSaving.value = false;
+    }
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
@@ -105,8 +115,18 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function updateAcknowledgment(acknowlegdment: any) {
     isSaving.value = true;
-    await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any)
-      .finally(() => isSaving.value = false);
+    try {
+      const response = await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
+      // Sync concurrency token from response for subsequent edits
+      if (response?.data) {
+        const index = flawAcknowledgments.value.findIndex(ack => ack.uuid === acknowlegdment.uuid);
+        if (index !== -1) {
+          flawAcknowledgments.value[index] = { ...flawAcknowledgments.value[index], ...response.data };
+        }
+      }
+    } finally {
+      isSaving.value = false;
+    }
   }
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {

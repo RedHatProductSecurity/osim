@@ -270,6 +270,10 @@ export function useFlawModel() {
           ...validatedFlaw.data,
           ...getAegisMetadataIfChanged(),
         }, shouldCreateJiraTask.value);
+        // Sync concurrency token immediately so later edits/saves use the server value
+        if (response?.updated_dt) {
+          flaw.value.updated_dt = response.updated_dt;
+        }
         afterSuccessQueue.push(() => setFlaw(response));
       },
       );

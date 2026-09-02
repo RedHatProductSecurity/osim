@@ -4,24 +4,6 @@ import type { ZodFlawCVSSType, ZodFlawType } from '@/types';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
-import type { OsidbFetchOptions } from '@/services/OsidbAuthService';
-
-export async function beforeFetch(options: OsidbFetchOptions) {
-  if (options.data && ['PUT'].includes(options.method.toUpperCase())) {
-    try {
-      const updated_dt = await getUpdatedDt(options.url);
-
-      (options.data as Record<string, any>).updated_dt = updated_dt;
-
-      if (!updated_dt) {
-        throw new Error('An updated_dt could not be fetched');
-      }
-    } catch (error) {
-      console.error('FlawService::beforeFetch() Problem on fetch preparation. ', (error as Error).message);
-      throw new Error('Problem on fetch preparation. ' + (error as Error).message);
-    }
-  }
-}
 
 const FLAW_LIST_FIELDS = [
   'cve_id',
@@ -73,16 +55,6 @@ export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<
   }).then(response => response.data);
 }
 
-export async function getUpdatedDt(url: string): Promise<string> {
-  return osidbFetch({
-    method: 'get',
-    url: url,
-    params: {
-      include_fields: 'updated_dt',
-    },
-  }).then(response => response.data.updated_dt);
-}
-
 export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false): Promise<ZodFlawType> {
   try {
     const response = await osidbFetch({
@@ -92,7 +64,7 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
       params: {
         ...(createJiraTask && { create_jira_task: true }),
       },
-    }, { beforeFetch });
+    });
 
     const result = response.data;
     createSuccessHandler({ title: 'Success!', body: 'Flaw saved' })({ data: result });
@@ -116,7 +88,7 @@ export async function putFlawCvssScores(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
     data: putObject,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
     .then(response => response.data)
     .catch(createCatchHandler('CVSS Scores Update Error'));
@@ -247,7 +219,7 @@ export function putFlawReference(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Reference updated.' }))
     .catch(createCatchHandler('Error updating Reference:'));
 }
@@ -294,7 +266,7 @@ export async function putFlawAcknowledgment(
     method: 'put',
     url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
     data: requestBody,
-  }, { beforeFetch })
+  })
     .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' }))
     .catch(createCatchHandler('Error updating Acknowledgment:'));
 }

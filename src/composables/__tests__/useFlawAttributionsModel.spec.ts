@@ -26,16 +26,20 @@ describe('useFlawAttributionsModel', () => {
       type: 'ARTICLE',
       url: 'http://example.com',
       embargoed: false,
-      updated_dt: null,
+      updated_dt: '2024-01-01T00:00:00Z',
       alerts: [] };
-    vi.mocked(putFlawReference).mockResolvedValue();
+    flaw.value.references = [reference];
+    vi.mocked(putFlawReference).mockResolvedValue({
+      data: { ...reference, updated_dt: '2024-01-02T00:00:00Z' },
+    } as any);
 
-    const { updateReference } = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
+    const { flawReferences, updateReference } = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
 
     await updateReference(reference);
     await flushPromises();
 
     expect(putFlawReference).toHaveBeenCalledWith('uuid-123', 'ref-123', reference);
+    expect(flawReferences.value[0].updated_dt).toBe('2024-01-02T00:00:00Z');
     expect(isSaving.value).toBe(false);
   });
 
