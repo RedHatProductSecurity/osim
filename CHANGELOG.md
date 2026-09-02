@@ -1,5 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
+
+## [2026.8.2]
 ### Fixed
 * Restore OSIDB mid-air collision detection on PUT (`OSIDB-5285`)
 
@@ -716,7 +718,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...HEAD
+[2026.8.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.1...v2026.8.2
 [2026.8.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-missing-labels...v2026.8.1
 [2026.8.0-patch-missing-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-workflow-labels...v2026.8.0-patch-missing-labels
 [2026.8.0-patch-workflow-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-hotfix...v2026.8.0-patch-workflow-labels
