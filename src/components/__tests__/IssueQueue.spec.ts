@@ -1,4 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { type Ref } from 'vue';
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DateTime, Settings } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 
@@ -8,7 +10,9 @@ import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 import { mountWithConfig } from '@/__tests__/helpers';
 import LabelCheckbox from '@/widgets/LabelCheckbox/LabelCheckbox.vue';
 import type { ZodFlawType } from '@/types';
+import { type OsimRuntimeType } from '@/types/zodOsim';
 import { useSettingsStore } from '@/stores/SettingsStore';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 vi.mock('@/stores/UserStore', () => ({
   useUserStore: () => ({
@@ -17,6 +21,21 @@ vi.mock('@/stores/UserStore', () => ({
 }));
 
 describe('issueQueue', () => {
+  // setup.ts mocks osimRuntime as a writable ref; cast once here for type safety.
+  const runtimeMock = osimRuntime as unknown as Ref<OsimRuntimeType>;
+
+  beforeEach(() => {
+    // srpReporting is slated for removal once SRP reporting is fully rolled out;
+    // tests run with it on to match the eventual always-on state.
+    runtimeMock.value = {
+      ...runtimeMock.value,
+      flags: {
+        ...runtimeMock.value.flags,
+        srpReporting: true,
+      },
+    };
+  });
+
   const mockData: Partial<ZodFlawType>[] = [
     {
       uuid: '709e9ea1-ed0f-49b8-a7ad-9164d4034849',
@@ -284,6 +303,53 @@ describe('issueQueue', () => {
     const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
     expect(labels.length).toBe(0);
     expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  describe('with srpReporting disabled', () => {
+    beforeEach(() => {
+      runtimeMock.value = {
+        ...runtimeMock.value,
+        flags: { ...runtimeMock.value.flags, srpReporting: false },
+      };
+      useSettingsStore().settings.isHidingLabels = false;
+    });
+
+    it('should not render SRP Status column in header', () => {
+      const wrapper = mountIssueQueue();
+      const headers = wrapper.findAll('th').map(th => th.text().replace(/\s+/g, ' ').trim());
+      expect(headers).not.toContain('SRP Status');
+      expect(headers).toContain('Owner');
+    });
+
+    it('should render 6 cells per data row without srp_status cell', () => {
+      const wrapper = mountIssueQueue();
+      const dataRow = wrapper.find('tbody tr');
+      expect(dataRow.findAll('td').length).toBe(6);
+    });
+
+    it('badge row filler td colspan matches nonIdFields length (5)', () => {
+      const wrapper = mountIssueQueue({
+        issues: [{ ...mockData[0], labels: [{ name: 'test', state: 'NEW', contributor: '' }] } as ZodFlawType],
+      });
+      const badgeRow = wrapper.find('tr.osim-badge-lane');
+      expect(badgeRow.exists()).toBe(true);
+      expect(badgeRow.findAll('td')[1].attributes('colspan')).toBe('5');
+    });
+
+    it('should still render flaw labels without SRP Status column', () => {
+      const wrapper = mountIssueQueue({
+        issues: [{
+          ...mockData[0],
+          labels: [
+            { name: 'label-a', state: 'NEW', contributor: '' },
+            { name: 'label-b', state: 'REQ', contributor: '' },
+          ],
+        } as ZodFlawType],
+      });
+      const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+      expect(labels.length).toBe(2);
+      expect(labels[0].text()).toBe('label-b'); // REQ sorts first
+    });
   });
 
   it('should render flaw labels when isHidingLabels is toggled', async () => {
