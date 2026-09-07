@@ -140,11 +140,11 @@ function setTimerToday() {
     </template>
     <template #body>
       <div class="mb-3">
-        <label class="form-label">Title</label>
+        <label class="form-label">Title <span class="text-danger">*</span></label>
         <input v-model="formData.title" type="text" class="form-control" />
       </div>
       <div class="mb-3">
-        <label class="form-label">Event Type</label>
+        <label class="form-label">Event Type <span class="text-danger">*</span></label>
         <select v-model="formData.reportable_event_type" class="form-select">
           <option value="EXPLOITS_KEV_APPROVED">Actively Exploited Vulnerability</option>
           <option value="MAJOR_INCIDENT_APPROVED">Severe Incident</option>

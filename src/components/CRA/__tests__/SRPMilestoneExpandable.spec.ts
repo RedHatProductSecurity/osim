@@ -47,6 +47,7 @@ describe('sRPMilestoneExpandable', () => {
 
     expect(wrapper.text()).toContain('additional_information_response');
     expect(wrapper.text()).toContain('5d');
+    expect(wrapper.text()).toContain('test@example.com');
   });
 
   it('expands milestone when clicked', async () => {
@@ -83,6 +84,16 @@ describe('sRPMilestoneExpandable', () => {
     });
 
     expect(wrapper.text()).toContain('-');
+  });
+
+  it('shows "Unassigned" when owner is null', () => {
+    const milestone = { ...mockMilestone, owner: null };
+    const wrapper = mount(SRPMilestoneExpandable, {
+      ...mountOptions,
+      props: { milestone },
+    });
+
+    expect(wrapper.text()).toContain('Unassigned');
   });
 
   it('emits edit-milestone event', async () => {

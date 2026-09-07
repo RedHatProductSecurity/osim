@@ -75,6 +75,10 @@ function parseDetailsJson(detailsJson: any): Record<string, any> {
     <td>
       <SRPStatusBadge :status="milestone.status" />
     </td>
+    <td>
+      <span v-if="milestone.owner">{{ milestone.owner }}</span>
+      <span v-else class="text-muted">Unassigned</span>
+    </td>
     <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
     <td :class="{ 'text-danger': isMilestoneActionable(milestone) }">
       {{ formatTimeRemaining() }}
@@ -102,7 +106,7 @@ function parseDetailsJson(detailsJson: any): Record<string, any> {
     </td>
   </tr>
   <tr v-if="isExpanded" class="milestone-details-expanded">
-    <td colspan="6" class="p-3 bg-white">
+    <td colspan="7" class="p-3 bg-white">
       <div class="row">
         <div class="col-md-6">
           <h6 class="mb-3">Milestone Information</h6>

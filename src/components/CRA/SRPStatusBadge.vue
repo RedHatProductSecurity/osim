@@ -1,29 +1,35 @@
 <script setup lang="ts">
-import type { SRPReportStatus } from '@/types/cra';
+import type { SRPMilestoneStatus, SRPReportStatus } from '@/types/cra';
 
 defineProps<{
   overdueMilestones?: null | number | undefined;
-  status: null | SRPReportStatus | undefined;
+  status: null | SRPMilestoneStatus | SRPReportStatus | string | undefined;
 }>();
 
-const STATUS_BADGE_MAP: Record<SRPReportStatus, string> = {
-  blocked: 'bg-danger text-white',
-  deferred: 'bg-secondary text-white',
-  failed: 'bg-danger text-white',
-  not_applicable: 'bg-light text-dark',
-  not_required: 'bg-light text-dark',
-  prepared: 'bg-info text-dark',
-  required: 'bg-warning text-dark',
-  submitted: 'bg-success text-dark',
+// Updated for OSIDB-5442: New report and milestone statuses
+const STATUS_BADGE_MAP: Record<string, string> = {
+  // Report statuses
+  empty: 'bg-light text-dark',
+  in_progress: 'bg-warning text-dark',
+  submitted: 'bg-success text-white',
+
+  // Milestone statuses
+  required: 'bg-danger text-white',
+  in_review: 'bg-info text-dark',
+  obsolete: 'bg-secondary text-white',
 };
 
-function getBadgeClass(status: null | SRPReportStatus | undefined): string {
+function getBadgeClass(
+  status: null | SRPMilestoneStatus | SRPReportStatus | string | undefined,
+): string {
   if (!status) return '';
   // Fallback for unknown statuses
   return STATUS_BADGE_MAP[status] ?? 'bg-secondary text-white';
 }
 
-function formatStatus(status: null | SRPReportStatus | undefined): string {
+function formatStatus(
+  status: null | SRPMilestoneStatus | SRPReportStatus | string | undefined,
+): string {
   return status?.replace(/_/g, ' ') ?? '';
 }
 </script>
