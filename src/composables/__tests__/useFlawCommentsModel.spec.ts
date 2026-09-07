@@ -115,6 +115,21 @@ describe('useFlawCommentsModel', () => {
     expect(isSaving.value).toBe(false);
   });
 
+  it('should append the saved comment to flaw.value.comments', async () => {
+    flaw.value.comments = [];
+    const savedComment = {
+      uuid: 'c1', text: 'new note', is_private: false, creator: 'creator', created_dt: '2026-01-01T00:00:00Z',
+    };
+    vi.mocked(postFlawComment).mockResolvedValue(savedComment as any);
+    const { addFlawComment } = useFlawCommentsModel(flaw, isSaving, afterSaveSuccess);
+
+    addFlawComment('new note', 'creator', 'Public');
+    await flushPromises();
+
+    expect(flaw.value.comments).toHaveLength(1);
+    expect(flaw.value.comments[0]).toMatchObject({ text: 'new note', is_private: false });
+  });
+
   it('should add an internal comment', async () => {
     vi.mocked(postJiraComment).mockResolvedValue({});
     const { addFlawComment } = useFlawCommentsModel(flaw, isSaving, afterSaveSuccess);
