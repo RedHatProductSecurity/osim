@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
+import { computed } from 'vue';
+
+import SRPMilestoneExpandable from '@/components/CRA/SRPMilestoneExpandable.vue';
 
 import type { SRPReport, SRPReportMilestone } from '@/types/cra';
-import { isMilestoneActionable } from '@/types/cra';
-import { updateSRPMilestone } from '@/services/SRPService';
-import { formatDate } from '@/utils/helpers';
+import { sortMilestones } from '@/types/cra';
 
-defineProps<{
+const props = defineProps<{
   report: SRPReport;
 }>();
 
@@ -16,29 +16,7 @@ const emit = defineEmits<{
   'refresh': [];
 }>();
 
-function formatTimeRemaining(milestone: any): string {
-  if (milestone.is_overdue) return 'Overdue';
-  if (milestone.days_remaining === null) return '-';
-  const hours = milestone.hours_remaining ? ` ${milestone.hours_remaining % 24}h` : '';
-  return `${milestone.days_remaining}d${hours}`;
-}
-
-async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' | 'defer' | 'submit') {
-  const statusMap = {
-    block: 'blocked',
-    defer: 'deferred',
-    submit: 'submitted',
-  };
-  try {
-    await updateSRPMilestone(milestone.srp_report, milestone.uuid, {
-      status: statusMap[action] as any,
-      updated_dt: milestone.updated_dt,
-    });
-    emit('refresh');
-  } catch (err) {
-    console.error('Failed to update SRP milestone status:', err);
-  }
-}
+const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
 </script>
 
 <template>
@@ -75,6 +53,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
       <table class="table table-striped table-hover table-sm mb-0">
         <thead class="table-dark">
           <tr>
+            <th style="width: 40px"></th>
             <th>Type</th>
             <th>Status</th>
             <th>Due Date</th>
@@ -83,59 +62,13 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="milestone in report.milestones"
+          <SRPMilestoneExpandable
+            v-for="milestone in sortedMilestones"
             :key="milestone.uuid"
-            :class="{ 'table-danger': isMilestoneActionable(milestone) }"
-          >
-            <td class="ps-4">{{ milestone.milestone_type }}</td>
-            <td>
-              <SRPStatusBadge :status="milestone.status" />
-            </td>
-            <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
-            <td :class="{ 'text-danger': isMilestoneActionable(milestone) }">
-              {{ formatTimeRemaining(milestone) }}
-            </td>
-            <td>
-              <div class="btn-group btn-group-sm me-1" role="group">
-                <button
-                  v-if="milestone.status !== 'submitted'"
-                  type="button"
-                  class="btn btn-success"
-                  title="Mark Submitted"
-                  @click="handleQuickAction(milestone, 'submit')"
-                >
-                  <i class="bi bi-check-circle"></i>
-                </button>
-                <button
-                  v-if="milestone.status !== 'deferred'"
-                  type="button"
-                  class="btn btn-warning"
-                  title="Defer"
-                  @click="handleQuickAction(milestone, 'defer')"
-                >
-                  <i class="bi bi-clock"></i>
-                </button>
-                <button
-                  v-if="milestone.status !== 'blocked'"
-                  type="button"
-                  class="btn btn-danger"
-                  title="Block"
-                  @click="handleQuickAction(milestone, 'block')"
-                >
-                  <i class="bi bi-slash-circle"></i>
-                </button>
-              </div>
-              <button
-                type="button"
-                class="btn btn-sm btn-dark"
-                title="Edit"
-                @click="emit('edit-milestone', milestone)"
-              >
-                <i class="bi bi-pencil"></i>
-              </button>
-            </td>
-          </tr>
+            :milestone="milestone"
+            @edit-milestone="emit('edit-milestone', $event)"
+            @refresh="emit('refresh')"
+          />
         </tbody>
       </table>
     </div>
