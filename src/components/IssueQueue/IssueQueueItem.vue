@@ -7,6 +7,7 @@ import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 import { useUnprocessedFlawDetection } from '@/composables/unprocessedFlawCheck';
 
 import { labelColorMap } from '@/constants';
+import { osimRuntime } from '@/stores/osimRuntime';
 
 import type { FilteredIssue } from './IssueQueue.vue';
 
@@ -19,8 +20,14 @@ const { issue, showLabels } = defineProps<{
 // TODO: unhide it once final issue sources are defined. [OSIDB-2424]
 //       and update the CSS for the column width in IssueQueue
 
-const nonIdFields: Exclude<keyof FilteredIssue, 'cve_id' | 'uuid'>[] =
-  ['impact', 'formattedDate', 'title', 'srp_status', 'classification', 'owner'];
+const nonIdFields = computed<Exclude<keyof FilteredIssue, 'cve_id' | 'uuid'>[]>(() => [
+  'impact',
+  'formattedDate',
+  'title',
+  ...(osimRuntime.value.flags?.srpReporting ? ['srp_status' as const] : []),
+  'classification',
+  'owner',
+]);
 
 const { isFlawUnprocessed } = useUnprocessedFlawDetection();
 
@@ -125,7 +132,7 @@ function getLabelColor(label: string, type: string): string {
         </template>
       </div>
     </td>
-    <td colspan="90%"></td>
+    <td :colspan="nonIdFields.length"></td>
   </tr>
 </template>
 

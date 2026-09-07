@@ -17,6 +17,7 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -41,7 +42,7 @@ exports[`issueQueue > should not render flaw labels that are already assigned 1`
               <!--v-if-->
             </div>
           </td>
-          <td data-v-15d9c71d="" colspan="90%"></td>
+          <td data-v-15d9c71d="" colspan="6"></td>
         </tr>
       </tbody>
     </table><button data-v-48717bcb="" class="btn btn-primary" type="button">
@@ -70,6 +71,7 @@ exports[`issueQueue > should not render flaw labels when isHidingLabels is true 
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -113,6 +115,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
           <th data-v-48717bcb="">Impact <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Created <i data-v-48717bcb="" class="bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Title <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
+          <th data-v-48717bcb="">SRP Status <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">State <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
           <th data-v-48717bcb="">Owner <i data-v-48717bcb="" class="opacity-0 bi-caret-down-fill bi"></i></th>
         </tr>
@@ -135,7 +138,7 @@ exports[`issueQueue > should render flaw labels 1`] = `
               <!--v-if--><span data-v-15d9c71d="" style="background-color: rgb(255, 255, 255);" class="badge rounded-pill border text-bg-warning fw-bold border-warning" title="Requested">test-3</span><span data-v-15d9c71d="" style="background-color: rgb(255, 255, 255);" class="badge rounded-pill border text-black" title="">test</span><span data-v-15d9c71d="" style="background-color: rgb(255, 255, 255);" class="badge rounded-pill border text-black" title="">test-2</span>
             </div>
           </td>
-          <td data-v-15d9c71d="" colspan="90%"></td>
+          <td data-v-15d9c71d="" colspan="6"></td>
         </tr>
       </tbody>
     </table><button data-v-48717bcb="" class="btn btn-primary" type="button">
