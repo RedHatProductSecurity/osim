@@ -104,4 +104,37 @@ describe('useAffectsModel', () => {
 
     expect(newAffects.has(localAffect._uuid!)).toBe(false);
   });
+
+  it('adopts the server identity so later edits to a saved new affect are persisted', async () => {
+    const {
+      actions: { markModified, markNew, resetSavedAffects, saveAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+
+    const localAffect = newLocalAffect({ cvss_scores: [] });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+
+    resetSavedAffects([savedAffectFromOsidb({ cvss_scores: [] })]);
+
+    // The saved affect replaces the local one in place (no duplicate row) and
+    // carries the server-derived uuid and ps_module.
+    expect(currentAffects.value).toHaveLength(1);
+    const [reconciled] = currentAffects.value;
+    expect(reconciled.uuid).toBe('saved-uuid');
+    expect(reconciled.ps_module).toBe('my-module');
+
+    // A later edit must be classified as an update (PUT) rather than dropped.
+    markModified(reconciled.uuid!);
+    vi.mocked(AffectService.putAffects).mockResolvedValue({
+      data: { results: [savedAffectFromOsidb({ cvss_scores: [] })], failed: [] },
+    } as any);
+
+    await saveAffects();
+
+    expect(AffectService.postAffects).not.toHaveBeenCalled();
+    expect(AffectService.putAffects).toHaveBeenCalledWith([
+      expect.objectContaining({ uuid: 'saved-uuid' }),
+    ]);
+  });
 });

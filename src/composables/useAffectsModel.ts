@@ -50,37 +50,42 @@ function useAffects() {
   }
 
   function resetSavedAffects(savedAffects: ZodAffectType[]) {
-    // Sync server data (e.g. updated_dt) so later edits don't 409
-    if (savedAffects.length) {
-      currentAffects.value = mergeBy(currentAffects.value, savedAffects, 'uuid');
-      initialAffects.value = mergeBy(initialAffects.value, savedAffects, 'uuid');
+    if (!savedAffects.length) {
+      return;
     }
 
-    // Create a set of saved affect UUIDs for quick lookup
-    const savedUuids = new Set(savedAffects.map(affect => affect.uuid));
-
-    // Remove successfully saved modified affects from tracking
-    for (const uuid of modifiedAffects) {
-      if (savedUuids.has(uuid)) {
-        modifiedAffects.delete(uuid);
-      }
-    }
-
-    // Remove successfully created affects from newAffects tracking
-    // Match by comparing ps_update_stream and ps_component (ps_module is empty
-    // locally until OSIDB derives it from ps_update_stream on creation)
+    // Adopt the server identity for successfully created affects before merging.
+    // New affects are tracked by a local _uuid and have no server uuid or
+    // ps_module yet (OSIDB derives ps_module from ps_update_stream on creation),
+    // so match them by ps_update_stream + ps_component. Assigning the saved uuid
+    // and ps_module lets mergeBy replace the local affect in place (rather than
+    // duplicating it) and ensures later edits are classified as updates.
     for (const affect of savedAffects) {
-      // Find if this saved affect was previously tracked as new
       const wasNew = currentAffects.value.find(
         currentAffect =>
           currentAffect._uuid
           && newAffects.has(currentAffect._uuid)
+          && !currentAffect.uuid
           && currentAffect.ps_update_stream === affect.ps_update_stream
           && currentAffect.ps_component === affect.ps_component,
       );
 
       if (wasNew?._uuid) {
+        wasNew.uuid = affect.uuid;
+        wasNew.ps_module = affect.ps_module;
         newAffects.delete(wasNew._uuid);
+      }
+    }
+
+    // Sync server data (e.g. updated_dt, ps_module) so later edits don't 409
+    currentAffects.value = mergeBy(currentAffects.value, savedAffects, 'uuid');
+    initialAffects.value = mergeBy(initialAffects.value, savedAffects, 'uuid');
+
+    // Remove successfully saved modified affects from tracking
+    const savedUuids = new Set(savedAffects.map(affect => affect.uuid));
+    for (const uuid of modifiedAffects) {
+      if (savedUuids.has(uuid)) {
+        modifiedAffects.delete(uuid);
       }
     }
   }
