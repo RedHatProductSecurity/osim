@@ -34,6 +34,7 @@ export type SRPMilestoneType =
 export interface SRPReportMilestone {
   acl_read: string[];
   acl_write: string[];
+  additional_details?: Record<string, any>; // Added in OSIDB-5482
   created_dt: string;
   days_remaining: null | number;
   due_at: null | string;

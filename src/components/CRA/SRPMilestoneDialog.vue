@@ -22,6 +22,7 @@ const emit = defineEmits<{
 const userStore = useUserStore();
 
 const formData = ref({
+  additional_details: '',
   due_at: '',
   manual_completion_notes: '',
   milestone_type: 'additional_information_response',
@@ -60,7 +61,11 @@ const isAssignedToMe = computed(() =>
 
 watch(() => props.show, (newShow) => {
   if (newShow) {
+    const additionalDetails = props.milestone?.additional_details;
     formData.value = {
+      additional_details: additionalDetails
+        ? JSON.stringify(additionalDetails, null, 2)
+        : '',
       due_at: fromISO8601Date(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
@@ -91,6 +96,21 @@ function handleSave() {
     }
   }
 
+  // Validate additional_details JSON if provided
+  let additionalDetailsObj: Record<string, any> | undefined;
+  if (formData.value.additional_details.trim()) {
+    try {
+      additionalDetailsObj = JSON.parse(formData.value.additional_details);
+      if (typeof additionalDetailsObj !== 'object' || Array.isArray(additionalDetailsObj)) {
+        console.error('Additional details must be a JSON object');
+        return;
+      }
+    } catch (e) {
+      console.error('Invalid JSON in additional details');
+      return;
+    }
+  }
+
   const payload: Partial<SRPReportMilestone> = {
     manual_completion_notes: formData.value.manual_completion_notes,
     owner: formData.value.owner,
@@ -98,6 +118,11 @@ function handleSave() {
     request_text: formData.value.request_text,
     status: formData.value.status as SRPMilestoneStatus,
   };
+
+  // Include additional_details if provided
+  if (additionalDetailsObj) {
+    payload.additional_details = additionalDetailsObj;
+  }
 
   // Only include request_received_at if it has a value
   if (formData.value.request_received_at) {
@@ -213,6 +238,19 @@ function handleClose() {
       </div>
 
       <hr class="my-3" />
+
+      <div v-if="milestone" class="mb-3">
+        <label class="form-label">Additional Details (JSON)</label>
+        <textarea
+          v-model="formData.additional_details"
+          class="form-control font-monospace"
+          rows="6"
+          placeholder='{"field_name": "value", "member_states_available": ["ES", "FR"]}'
+        ></textarea>
+        <small class="text-muted">
+          Optional coordinator-provided fields as JSON object. Values here override auto-derived payload fields.
+        </small>
+      </div>
 
       <div class="mb-3">
         <label class="form-label">Status</label>

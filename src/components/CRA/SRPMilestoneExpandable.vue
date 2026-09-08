@@ -45,16 +45,12 @@ async function handleQuickAction(action: 'submit') {
   }
 }
 
-function parseDetailsJson(detailsJson: any): Record<string, any> {
-  if (!detailsJson) return {};
-  if (typeof detailsJson === 'string') {
-    try {
-      return JSON.parse(detailsJson);
-    } catch {
-      return {};
-    }
-  }
-  return detailsJson;
+function formatKey(key: string): string {
+  // Convert snake_case to Title Case
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 </script>
 
@@ -147,15 +143,17 @@ function parseDetailsJson(detailsJson: any): Record<string, any> {
           <div v-if="milestone.missing_required_fields" class="alert alert-warning alert-sm mb-2">
             <strong>Missing Fields:</strong> {{ milestone.missing_required_fields }}
           </div>
-          <!-- TODO: OSIDB-5423 - Backend pending: details_json field implementation in progress -->
-          <div v-if="(milestone as any).details_json">
+          <div v-if="milestone.additional_details && Object.keys(milestone.additional_details).length > 0">
             <div
-              v-for="(value, key) in parseDetailsJson((milestone as any).details_json)"
+              v-for="(value, key) in milestone.additional_details"
               :key="key"
               class="mb-2"
             >
-              <strong>{{ key }}:</strong>
-              <span v-if="typeof value === 'object'" class="ms-1">
+              <strong>{{ formatKey(key) }}:</strong>
+              <span v-if="Array.isArray(value)" class="ms-1">
+                {{ value.join(', ') }}
+              </span>
+              <span v-else-if="typeof value === 'object'" class="ms-1">
                 <pre class="small mb-0 mt-1 p-2 bg-light border rounded">{{ JSON.stringify(value, null, 2) }}</pre>
               </span>
               <span v-else class="ms-1">{{ value }}</span>

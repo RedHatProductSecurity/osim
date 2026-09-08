@@ -169,11 +169,15 @@ describe('sRPMilestoneExpandable', () => {
     expect(wrapper.text()).toContain('field1, field2');
   });
 
-  it('parses and displays details_json', async () => {
+  it('displays and formats additional_details', async () => {
     const milestoneWithDetails = {
       ...mockMilestone,
-      details_json: { key1: 'value1', key2: { nested: 'value' } },
-    } as any;
+      additional_details: {
+        custom_field: 'value1',
+        member_states_available: ['ES', 'FR', 'DE'],
+        nested_object: { key: 'value' },
+      },
+    };
 
     const wrapper = mount(SRPMilestoneExpandable, {
       ...mountOptions,
@@ -182,29 +186,14 @@ describe('sRPMilestoneExpandable', () => {
 
     await wrapper.find('.milestone-row').trigger('click');
 
-    expect(wrapper.text()).toContain('key1:');
+    expect(wrapper.text()).toContain('Custom Field:');
     expect(wrapper.text()).toContain('value1');
-    expect(wrapper.text()).toContain('key2:');
+    expect(wrapper.text()).toContain('Member States Available:');
+    expect(wrapper.text()).toContain('ES, FR, DE');
+    expect(wrapper.text()).toContain('Nested Object:');
   });
 
-  it('handles string details_json', async () => {
-    const milestoneWithDetails = {
-      ...mockMilestone,
-      details_json: '{"key":"value"}',
-    } as any;
-
-    const wrapper = mount(SRPMilestoneExpandable, {
-      ...mountOptions,
-      props: { milestone: milestoneWithDetails },
-    });
-
-    await wrapper.find('.milestone-row').trigger('click');
-
-    expect(wrapper.text()).toContain('key:');
-    expect(wrapper.text()).toContain('value');
-  });
-
-  it('shows no details message when details_json is absent', async () => {
+  it('shows no details message when additional_details is absent', async () => {
     const wrapper = mount(SRPMilestoneExpandable, {
       ...mountOptions,
       props: { milestone: mockMilestone },
