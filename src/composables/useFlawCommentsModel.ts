@@ -94,7 +94,10 @@ export function useFlawCommentsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boole
   function addOsidbComment(comment: string, creator: string, isPrivate: boolean) {
     isSaving.value = true;
     postFlawComment(flaw.value.uuid, comment, creator, isPrivate, flaw.value.embargoed)
-      .then(afterSaveSuccess)
+      .then((newComment) => {
+        flaw.value.comments.push(newComment);
+        afterSaveSuccess();
+      })
       .finally(() => isSaving.value = false);
   }
 
