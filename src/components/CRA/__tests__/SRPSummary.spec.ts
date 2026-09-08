@@ -49,6 +49,33 @@ describe('sRPSummary', () => {
     expect(wrapper.text()).toContain('Event Type');
   });
 
+  it('shows top-level overdue count from the latest report only', async () => {
+    vi.mocked(SRPService.fetchSRPReports).mockResolvedValue([
+      {
+        ...mockSRPReport,
+        created_dt: '2026-01-01T00:00:00Z',
+        milestones: [
+          {
+            ...mockSRPReport.milestones[0],
+            is_overdue: true,
+            status: 'required',
+          },
+        ],
+        uuid: 'older-report',
+      },
+      {
+        ...mockSRPReport,
+        created_dt: '2026-01-02T00:00:00Z',
+        uuid: 'latest-report',
+      },
+    ]);
+
+    const wrapper = mount(SRPSummary, { props: { flawId: 'flaw-123' } });
+    await flushPromises();
+
+    expect(wrapper.find('.section-label + .badge.bg-danger.ms-2').exists()).toBe(false);
+  });
+
   it('does not fetch without flawId', async () => {
     mount(SRPSummary, { props: { flawId: '' } });
     await flushPromises();

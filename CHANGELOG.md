@@ -1,5 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
+### Fixed
+* Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 
 ## [2026.8.2]
 ### Fixed

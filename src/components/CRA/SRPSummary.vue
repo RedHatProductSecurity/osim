@@ -80,26 +80,24 @@ const summary = computed<SRPReportSummary>(() => {
     };
   }
 
-  let totalOverdue = 0;
-
-  for (const report of srpReports.value) {
-    if (report.milestones) {
-      totalOverdue += report.milestones.filter(m =>
-        m.is_overdue
-        && m.status !== 'submitted'
-        && m.status !== 'not_required',
-      ).length;
-    }
-  }
+  const latestReport = getLatestReport(srpReports.value);
 
   return {
     hasReport: true,
     status: null,
     eventType: null,
     nextDueDate: null,
-    overdueMilestones: totalOverdue,
+    overdueMilestones: latestReport ? getOverdueMilestones(latestReport) : 0,
   };
 });
+
+function getLatestReport(reports: SRPReport[]): SRPReport | undefined {
+  return reports.reduce<SRPReport | undefined>((latest, report) => {
+    if (!latest) return report;
+
+    return new Date(report.created_dt) > new Date(latest.created_dt) ? report : latest;
+  }, undefined);
+}
 
 function getNextDueDate(report: SRPReport): Date | null {
   if (!report.milestones) return null;
