@@ -14,6 +14,12 @@ vi.mock('@/services/SRPService', () => ({
   updateSRPReport: vi.fn(() => Promise.resolve({})),
 }));
 
+vi.mock('@/stores/UserStore', () => ({
+  useUserStore: () => ({
+    userEmail: 'skynet@redhat.com',
+  }),
+}));
+
 describe('sRPSummary', () => {
   beforeEach(() => {
     vi.clearAllMocks();

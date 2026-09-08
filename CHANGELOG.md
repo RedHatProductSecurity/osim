@@ -1,5 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Add SRP milestone owner display, editing, and self-assignment (`OSIDB-5494`)
 
 ## [2026.8.2]
 ### Fixed

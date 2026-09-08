@@ -77,6 +77,7 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
           <tr>
             <th>Type</th>
             <th>Status</th>
+            <th>Owner</th>
             <th>Due Date</th>
             <th>Time Remaining</th>
             <th style="width: 200px">Actions</th>
@@ -91,6 +92,10 @@ async function handleQuickAction(milestone: SRPReportMilestone, action: 'block' 
             <td class="ps-4">{{ milestone.milestone_type }}</td>
             <td>
               <SRPStatusBadge :status="milestone.status" />
+            </td>
+            <td>
+              <span v-if="milestone.owner">{{ milestone.owner }}</span>
+              <span v-else class="text-muted">Unassigned</span>
             </td>
             <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
             <td :class="{ 'text-danger': isMilestoneActionable(milestone) }">

@@ -19,6 +19,7 @@ export const mockSRPReport: SRPReport = {
     manual_completion_notes: '',
     milestone_type: '24h',
     missing_required_fields: '',
+    owner: '',
     request_received_at: null,
     request_source: '',
     request_text: '',

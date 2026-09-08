@@ -21,6 +21,23 @@ describe('sRPReportDetails', () => {
     expect(wrapper.text()).toContain('24h');
   });
 
+  it('renders milestone owner', () => {
+    const wrapper = mount(SRPReportDetails, {
+      props: {
+        report: {
+          ...mockSRPReport,
+          milestones: [{
+            ...mockSRPReport.milestones[0],
+            owner: 'analyst@redhat.com',
+          }],
+        },
+      },
+    });
+
+    expect(wrapper.text()).toContain('Owner');
+    expect(wrapper.text()).toContain('analyst@redhat.com');
+  });
+
   it('emits add-milestone event', async () => {
     const wrapper = mount(SRPReportDetails, {
       props: {
