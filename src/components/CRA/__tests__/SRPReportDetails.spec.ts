@@ -19,6 +19,7 @@ describe('sRPReportDetails', () => {
 
     expect(wrapper.text()).toContain('Milestones');
     expect(wrapper.text()).toContain('24h');
+    expect(wrapper.text()).toContain('Owner');
   });
 
   it('emits add-milestone event', async () => {

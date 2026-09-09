@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
-import type { SRPMilestoneType, SRPReportMilestone, SRPReportStatus } from '@/types/cra';
+import type {
+  SRPMilestoneStatus,
+  SRPMilestoneType,
+  SRPReportMilestone,
+} from '@/types/cra';
+import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
   milestone?: SRPReportMilestone;
@@ -14,14 +19,18 @@ const emit = defineEmits<{
   save: [milestone: Partial<SRPReportMilestone>];
 }>();
 
+const userStore = useUserStore();
+
 const formData = ref({
+  additional_details: '',
   due_at: '',
   manual_completion_notes: '',
   milestone_type: 'additional_information_response',
+  owner: null as null | string,
   request_received_at: '',
   request_source: '',
   request_text: '',
-  status: 'prepared',
+  status: 'required',
   updated_dt: '',
 });
 
@@ -40,16 +49,31 @@ function fromISO8601Date(iso: null | string): string {
   return iso.substring(0, 10);
 }
 
+function selfAssign() {
+  if (userStore.userEmail) {
+    formData.value.owner = userStore.userEmail;
+  }
+}
+
+const isAssignedToMe = computed(() =>
+  formData.value.owner === userStore.userEmail && userStore.userEmail !== '',
+);
+
 watch(() => props.show, (newShow) => {
   if (newShow) {
+    const additionalDetails = props.milestone?.additional_details;
     formData.value = {
+      additional_details: additionalDetails
+        ? JSON.stringify(additionalDetails, null, 2)
+        : '',
       due_at: fromISO8601Date(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
+      owner: props.milestone?.owner || null,
       request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
       request_source: props.milestone?.request_source || '',
       request_text: props.milestone?.request_text || '',
-      status: props.milestone?.status || 'prepared',
+      status: props.milestone?.status || 'required',
       updated_dt: props.milestone?.updated_dt || '',
     };
   }
@@ -72,12 +96,36 @@ function handleSave() {
     }
   }
 
+  // Validate additional_details JSON if provided
+  let additionalDetailsObj: Record<string, any> | undefined;
+  if (formData.value.additional_details.trim()) {
+    try {
+      additionalDetailsObj = JSON.parse(formData.value.additional_details);
+      if (typeof additionalDetailsObj !== 'object' || Array.isArray(additionalDetailsObj)) {
+        console.error('Additional details must be a JSON object');
+        return;
+      }
+    } catch (e) {
+      console.error('Invalid JSON in additional details');
+      return;
+    }
+  } else if (props.milestone?.additional_details) {
+    // If field is empty but milestone had details, send empty object to clear them
+    additionalDetailsObj = {};
+  }
+
   const payload: Partial<SRPReportMilestone> = {
     manual_completion_notes: formData.value.manual_completion_notes,
+    owner: formData.value.owner,
     request_source: formData.value.request_source,
     request_text: formData.value.request_text,
-    status: formData.value.status as SRPReportStatus,
+    status: formData.value.status as SRPMilestoneStatus,
   };
+
+  // Include additional_details if provided or if clearing existing details
+  if (additionalDetailsObj !== undefined) {
+    payload.additional_details = additionalDetailsObj;
+  }
 
   // Only include request_received_at if it has a value
   if (formData.value.request_received_at) {
@@ -129,8 +177,7 @@ function handleClose() {
       </div>
 
       <div class="mb-3">
-        <label class="form-label">
-          Request Received Date
+        <label class="form-label">Request Received Date
           <span v-if="!milestone" class="text-danger">*</span>
         </label>
         <input
@@ -140,6 +187,27 @@ function handleClose() {
           :required="!milestone"
         />
         <small class="text-muted">When the additional information request was received</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Owner</label>
+        <div class="d-flex gap-2 align-items-start">
+          <input
+            v-model="formData.owner"
+            type="email"
+            class="form-control"
+            placeholder="owner@example.com"
+          />
+          <button
+            v-if="!isAssignedToMe"
+            type="button"
+            class="btn btn-primary text-nowrap"
+            @click="selfAssign"
+          >
+            Self Assign
+          </button>
+        </div>
+        <small class="text-muted">Person responsible for this milestone</small>
       </div>
 
       <div class="mb-3">
@@ -174,14 +242,27 @@ function handleClose() {
 
       <hr class="my-3" />
 
+      <div v-if="milestone" class="mb-3">
+        <label class="form-label">Additional Details (JSON)</label>
+        <textarea
+          v-model="formData.additional_details"
+          class="form-control font-monospace"
+          rows="6"
+          placeholder='{"field_name": "value", "member_states_available": ["ES", "FR"]}'
+        ></textarea>
+        <small class="text-muted">
+          Optional coordinator-provided fields as JSON object. Values here override auto-derived payload fields.
+        </small>
+      </div>
+
       <div class="mb-3">
         <label class="form-label">Status</label>
         <select v-model="formData.status" class="form-select">
-          <option value="prepared">Prepared</option>
+          <option value="required">Required</option>
+          <option value="in_progress">In Progress</option>
+          <option value="in_review">In Review</option>
           <option value="submitted">Submitted</option>
-          <option value="not_required">Not Required</option>
-          <option value="blocked">Blocked</option>
-          <option value="deferred">Deferred</option>
+          <option value="obsolete">Obsolete</option>
         </select>
       </div>
 

@@ -73,16 +73,8 @@ function isSafeUrl(url: string): boolean {
           </div>
         </div>
         <div class="row mb-1">
-          <div class="col-4 text-muted">Manufacturer/Steward</div>
+          <div class="col-4 text-muted">Organization Name</div>
           <div class="col-8">{{ formatValue(report.manufacturer_or_steward_name) }}</div>
-        </div>
-        <div class="row mb-1">
-          <div class="col-4 text-muted">CSIRT Country</div>
-          <div class="col-8">{{ formatValue(report.designated_csirt_country) }}</div>
-        </div>
-        <div class="row mb-1">
-          <div class="col-4 text-muted">CSIRT Source</div>
-          <div class="col-8">{{ formatValue(report.designated_csirt_source) }}</div>
         </div>
         <div class="row mb-1">
           <div class="col-4 text-muted">Member States Available</div>

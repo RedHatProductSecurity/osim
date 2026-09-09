@@ -2,10 +2,10 @@
 import { computed, onMounted, ref } from 'vue';
 
 import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
+import SRPMilestoneIcons from '@/components/CRA/SRPMilestoneIcons.vue';
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
 import SRPReportDetails from '@/components/CRA/SRPReportDetails.vue';
 import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
-import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
@@ -108,7 +108,7 @@ function getNextDueDate(report: SRPReport): Date | null {
       m.due_at
       && new Date(m.due_at) > now
       && m.status !== 'submitted'
-      && m.status !== 'not_required',
+      && m.status !== 'obsolete',
     )
     .sort((a, b) => new Date(a.due_at!).getTime() - new Date(b.due_at!).getTime());
 
@@ -121,7 +121,7 @@ function getOverdueMilestones(report: SRPReport): number {
   return report.milestones.filter(m =>
     m.is_overdue
     && m.status !== 'submitted'
-    && m.status !== 'not_required',
+    && m.status !== 'obsolete',
   ).length;
 }
 
@@ -252,7 +252,7 @@ function hasMissingFields(report: SRPReport): boolean {
                   ></i>
                 </td>
                 <td>
-                  <SRPStatusBadge :status="report.status" />
+                  <SRPMilestoneIcons :report="report" />
                 </td>
                 <td>{{ formatEventType(report.reportable_event_type) }}</td>
                 <td>{{ formatDateDisplay(getNextDueDate(report)) }}</td>
