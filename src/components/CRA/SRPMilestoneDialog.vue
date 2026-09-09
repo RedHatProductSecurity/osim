@@ -30,7 +30,7 @@ const formData = ref({
   request_received_at: '',
   request_source: '',
   request_text: '',
-  status: 'prepared',
+  status: 'required',
   updated_dt: '',
 });
 
@@ -73,7 +73,7 @@ watch(() => props.show, (newShow) => {
       request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
       request_source: props.milestone?.request_source || '',
       request_text: props.milestone?.request_text || '',
-      status: props.milestone?.status || 'prepared',
+      status: props.milestone?.status || 'required',
       updated_dt: props.milestone?.updated_dt || '',
     };
   }
@@ -109,6 +109,9 @@ function handleSave() {
       console.error('Invalid JSON in additional details');
       return;
     }
+  } else if (props.milestone?.additional_details) {
+    // If field is empty but milestone had details, send empty object to clear them
+    additionalDetailsObj = {};
   }
 
   const payload: Partial<SRPReportMilestone> = {
@@ -119,8 +122,8 @@ function handleSave() {
     status: formData.value.status as SRPMilestoneStatus,
   };
 
-  // Include additional_details if provided
-  if (additionalDetailsObj) {
+  // Include additional_details if provided or if clearing existing details
+  if (additionalDetailsObj !== undefined) {
     payload.additional_details = additionalDetailsObj;
   }
 

@@ -140,7 +140,10 @@ function formatKey(key: string): string {
         </div>
         <div class="col-md-6">
           <h6 class="mb-3">Additional Details</h6>
-          <div v-if="milestone.missing_required_fields" class="alert alert-warning alert-sm mb-2">
+          <div
+            v-if="milestone.missing_required_fields && milestone.missing_required_fields.trim()"
+            class="alert alert-warning alert-sm mb-2"
+          >
             <strong>Missing Fields:</strong> {{ milestone.missing_required_fields }}
           </div>
           <div v-if="milestone.additional_details && Object.keys(milestone.additional_details).length > 0">

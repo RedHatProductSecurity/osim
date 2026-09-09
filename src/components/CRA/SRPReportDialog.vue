@@ -97,6 +97,10 @@ watch(() => props.show, (newShow) => {
 
 function handleSave() {
   // Validate required fields
+  if (!formData.value.title || !formData.value.title.trim()) {
+    console.error('Title is required');
+    return;
+  }
   if (!formData.value.evidence || !formData.value.evidence.trim()) {
     console.error('Evidence is required');
     return;

@@ -23,6 +23,9 @@ describe('sRPReportDialog', () => {
       props: { show: true },
     });
 
+    // Fill required title field
+    await wrapper.find('input[type="text"]').setValue('Sample SRP Report Title');
+
     // Fill required evidence field
     await wrapper.find('textarea').setValue('Sample evidence for the report');
 
