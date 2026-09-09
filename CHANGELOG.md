@@ -3,6 +3,9 @@
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 
+### Changed
+* Make `ps_module` field read-only in the affects table; OSIDB determines the module from `ps_update_stream`. Changed values now show a strikethrough until the flaw is saved (`OSIDB-4704`)
+
 ## [2026.8.2]
 ### Fixed
 * Restore OSIDB mid-air collision detection on PUT (`OSIDB-5285`)

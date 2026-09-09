@@ -116,7 +116,8 @@ const onBlur = () => {
 };
 
 const toggleEditMode = () => {
-  if (tableMeta?.filingTracker.has(props.row.id) || (metaEnum.value && !Object.keys(metaEnum.value).length)) {
+  if (columnMeta?.readonly || tableMeta?.filingTracker.has(props.row.id)
+    || (metaEnum.value && !Object.keys(metaEnum.value).length)) {
     return;
   }
   editMode.value = !editMode.value;
@@ -126,7 +127,27 @@ const toggleEditMode = () => {
 };
 
 // Watch currentAffects from the model to detect data changes (including reverts)
-const { state: { currentAffects } } = useAffectsModel();
+const { state: { currentAffects, initialAffects, modifiedAffects, newAffects } } = useAffectsModel();
+
+const isStale = computed(() => {
+  const siblingField = columnMeta?.staleWhenChanged as keyof ZodAffectType | undefined;
+  if (!siblingField) return false;
+
+  const uuid = props.row.original.uuid;
+  // New (unsaved) affects have no initial state to compare against
+  if (!uuid || newAffects.has(uuid)) return false;
+
+  // Only stale when the affect has been modified (modifiedAffects is a reactive Set)
+  if (!modifiedAffects.has(uuid)) return false;
+
+  const initial = initialAffects.value.find(a => a.uuid === uuid);
+  if (!initial) return false;
+
+  const current = currentAffects.value.find(a => a.uuid === uuid);
+  if (!current) return false;
+
+  return current[siblingField] !== initial[siblingField];
+});
 
 watch(currentAffects, () => {
   // Only update if not in edit mode to avoid losing user edits
@@ -148,11 +169,14 @@ watch(currentAffects, () => {
   <span
     v-if="!editMode"
     tabindex="0"
-    :title="tooltipValue"
-    :class="{ 'text-danger': hasError }"
+    :title="isStale ? 'Module will be updated by OSIDB after saving' : tooltipValue"
+    :class="{ 'text-danger': hasError, 'text-muted': isStale }"
     @dblclick="toggleEditMode"
     @keyup.tab="toggleEditMode"
-  >{{ displayValue || '&nbsp;' }}</span>
+  >
+    <s v-if="isStale">{{ displayValue || '&nbsp;' }}</s>
+    <template v-else>{{ displayValue || '&nbsp;' }}</template>
+  </span>
   <template v-else>
     <template v-if="metaEnum">
       <select
