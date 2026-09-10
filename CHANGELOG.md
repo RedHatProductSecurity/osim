@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.9.0]
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 
@@ -723,7 +723,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.9.0...HEAD
+[2026.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...v2026.9.0
 [2026.8.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.1...v2026.8.2
 [2026.8.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-missing-labels...v2026.8.1
 [2026.8.0-patch-missing-labels]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-workflow-labels...v2026.8.0-patch-missing-labels
