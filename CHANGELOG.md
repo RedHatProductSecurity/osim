@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [2026.9.0]
+### Added
+* Add Creation Date column to SRP milestones table for tracking when milestones were created (`OSIDB-5492`)
+
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 

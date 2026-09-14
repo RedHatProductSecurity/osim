@@ -248,7 +248,9 @@ function handleClose() {
           v-model="formData.additional_details"
           class="form-control font-monospace"
           rows="6"
-          placeholder='{"field_name": "value", "member_states_available": ["ES", "FR"]}'
+          :placeholder="
+            '{&quot;field_name&quot;: &quot;value&quot;, &quot;member_states_available&quot;: [&quot;ES&quot;]}'
+          "
         ></textarea>
         <small class="text-muted">
           Optional coordinator-provided fields as JSON object. Values here override auto-derived payload fields.
