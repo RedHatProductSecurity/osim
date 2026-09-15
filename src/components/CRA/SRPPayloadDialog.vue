@@ -111,7 +111,7 @@ function isRowEditable(row: SRPPayloadFieldRow) {
 }
 
 function shouldShowRequirement(row: SRPPayloadFieldRow) {
-  return row.requirement !== 'copied_or_updated';
+  return row.requirement !== 'not_applicable';
 }
 
 function formatFieldInputValue(row: SRPPayloadFieldRow): FieldValue {

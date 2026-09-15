@@ -77,7 +77,7 @@ export function parseFieldList(value: unknown): string[] {
 export function formatRequirement(requirement: SRPRequirement): string {
   switch (requirement) {
     case 'copied_or_updated':
-      return 'Copied/updateable';
+      return 'Inherited';
     case 'optional':
       return 'Optional';
     case 'required':
