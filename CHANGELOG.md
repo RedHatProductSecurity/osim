@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Added
+* Add Submission Date and Time column to SRP milestones table for tracking when reports were submitted (`OSIDB-5493`)
+
 ## [2026.9.0]
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
