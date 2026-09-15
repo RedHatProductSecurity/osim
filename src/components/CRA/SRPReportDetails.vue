@@ -14,6 +14,7 @@ const emit = defineEmits<{
   'add-milestone': [reportUuid: string];
   'edit-milestone': [milestone: SRPReportMilestone];
   'refresh': [];
+  'view-payload': [milestone: SRPReportMilestone];
 }>();
 
 const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
@@ -70,6 +71,7 @@ const sortedMilestones = computed(() => sortMilestones(props.report.milestones |
             :milestone="milestone"
             @edit-milestone="emit('edit-milestone', $event)"
             @refresh="emit('refresh')"
+            @view-payload="emit('view-payload', $event)"
           />
         </tbody>
       </table>

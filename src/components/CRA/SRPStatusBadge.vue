@@ -19,6 +19,15 @@ const STATUS_BADGE_MAP: Record<string, string> = {
   obsolete: 'bg-secondary text-white',
 };
 
+const STATUS_LABEL_MAP: Record<string, string> = {
+  empty: 'Empty',
+  in_progress: 'In Progress',
+  in_review: 'In Review',
+  obsolete: 'Obsolete',
+  required: 'Not Started',
+  submitted: 'Submitted',
+};
+
 function getBadgeClass(
   status: null | SRPMilestoneStatus | SRPReportStatus | string | undefined,
 ): string {
@@ -30,7 +39,8 @@ function getBadgeClass(
 function formatStatus(
   status: null | SRPMilestoneStatus | SRPReportStatus | string | undefined,
 ): string {
-  return status?.replace(/_/g, ' ') ?? '';
+  if (!status) return '';
+  return STATUS_LABEL_MAP[status] ?? status.replace(/_/g, ' ');
 }
 </script>
 

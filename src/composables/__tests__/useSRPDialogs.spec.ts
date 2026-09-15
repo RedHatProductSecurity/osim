@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SRPReport } from '@/types/cra';
+import type { SRPReport, SRPReportMilestone } from '@/types/cra';
 
 import { useSRPDialogs } from '../useSRPDialogs';
 
@@ -50,13 +50,19 @@ describe('useSRPDialogs', () => {
       closePayloadDialog,
       openViewPayload,
       showPayloadDialog,
+      viewPayloadMilestone,
+      viewPayloadReport,
     } = useSRPDialogs();
 
     const mockReport = { uuid: 'report-1' } as SRPReport;
-    openViewPayload(mockReport);
+    const mockMilestone = { uuid: 'milestone-1' } as SRPReportMilestone;
+    openViewPayload(mockReport, mockMilestone);
     expect(showPayloadDialog.value).toBe(true);
+    expect(viewPayloadReport.value?.uuid).toBe(mockReport.uuid);
+    expect(viewPayloadMilestone.value?.uuid).toBe(mockMilestone.uuid);
 
     closePayloadDialog();
     expect(showPayloadDialog.value).toBe(false);
+    expect(viewPayloadMilestone.value).toBeUndefined();
   });
 });

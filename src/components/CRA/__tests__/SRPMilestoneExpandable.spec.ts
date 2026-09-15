@@ -108,6 +108,21 @@ describe('sRPMilestoneExpandable', () => {
     expect(wrapper.emitted('edit-milestone')?.[0]).toEqual([mockMilestone]);
   });
 
+  it('uses combined payload action for payload milestones', async () => {
+    const payloadMilestone = { ...mockMilestone, milestone_type: '24h' as const };
+    const wrapper = mount(SRPMilestoneExpandable, {
+      ...mountOptions,
+      props: { milestone: payloadMilestone },
+    });
+
+    expect(wrapper.find('[title="Edit"]').exists()).toBe(false);
+
+    await wrapper.find('[title="View/Edit Payload"]').trigger('click');
+
+    expect(wrapper.emitted('view-payload')).toBeTruthy();
+    expect(wrapper.emitted('view-payload')?.[0]).toEqual([payloadMilestone]);
+  });
+
   it('handles quick action submit', async () => {
     const wrapper = mount(SRPMilestoneExpandable, {
       ...mountOptions,

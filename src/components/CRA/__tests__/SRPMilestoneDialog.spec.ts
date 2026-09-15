@@ -3,6 +3,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { describe, expect, it } from 'vitest';
 
 import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
+import { mockSRPReport } from '@/components/CRA/__tests__/fixtures';
 
 import { mockSRPReport } from './fixtures';
 
@@ -153,5 +154,26 @@ describe('sRPMilestoneDialog', () => {
 
     expect(wrapper.emitted('save')).toBeTruthy();
     expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('shows payload field guide for existing milestone', () => {
+    const wrapper = mount(SRPMilestoneDialog, {
+      props: {
+        milestone: mockSRPReport.milestones[0],
+        report: mockSRPReport,
+        show: true,
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    expect(wrapper.text()).toContain('Payload Field Guide');
+    expect(wrapper.find('.payload-field-guide').findAll('th').map(header => header.text()))
+      .toEqual(['Field', 'Effective Value']);
+    expect(wrapper.text()).toContain('Notification Type');
+    expect(wrapper.text()).not.toContain('Read-only generated field');
+    expect(wrapper.text()).not.toContain('notification_type');
+    expect(wrapper.text()).toContain('Date and Time When You Become Aware of the Actively Exploited Vulnerability');
   });
 });
