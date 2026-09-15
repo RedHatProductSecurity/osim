@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { SRPReport } from '@/types/cra';
+import { EU_MEMBER_STATES } from '@/constants/cra';
 
 const props = defineProps<{
   report?: SRPReport;
@@ -45,6 +46,10 @@ function stringToMemberStates(value: string): string[] {
     .split(',')
     .map(s => s.trim().toUpperCase())
     .filter(s => s.length > 0);
+}
+
+function selectAllEUStates() {
+  formData.value.member_states_available_text = EU_MEMBER_STATES.join(', ');
 }
 
 // Note: 'status' field is not included in the form because it's a computed property
@@ -206,12 +211,21 @@ function setTimerToday() {
       </div>
       <div class="mb-3">
         <label class="form-label">EU Member States Where Product is Available</label>
-        <input
-          v-model="formData.member_states_available_text"
-          type="text"
-          class="form-control"
-          placeholder="e.g., ES, FR, DE, IT"
-        />
+        <div class="d-flex gap-2 align-items-start">
+          <input
+            v-model="formData.member_states_available_text"
+            type="text"
+            class="form-control"
+            placeholder="e.g., ES, FR, DE, IT"
+          />
+          <button
+            type="button"
+            class="btn btn-secondary text-nowrap"
+            @click="selectAllEUStates"
+          >
+            Select All
+          </button>
+        </div>
         <small class="text-muted">
           Enter 2-letter country codes separated by commas (e.g., ES, FR, DE)
         </small>
