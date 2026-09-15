@@ -1,6 +1,8 @@
 import { IssuerEnum } from '@/generated-client';
 import type { Dict } from '@/types';
 
+export * from './cra';
+
 export const SYSTEM_EMAIL = 'bugzilla@redhat.com';
 
 export enum CvssVersions {
