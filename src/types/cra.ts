@@ -4,7 +4,7 @@
 // "required" | "required_if_available" | "optional" | "na"
 // Columns: 24h, 72h, final
 export type SRPFieldRequirement = 'na' | 'optional' | 'required' | 'required_if_available';
-export type SRPFieldType = 'date' | 'text' | 'textarea';
+export type SRPFieldType = 'date' | 'datetime-local' | 'text' | 'textarea';
 
 export interface SRPFieldSpec {
   '24h': SRPFieldRequirement;

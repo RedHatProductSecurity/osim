@@ -64,6 +64,21 @@ function fromISO8601Date(iso: null | string): string {
   return iso.substring(0, 10);
 }
 
+// datetime-local helpers: preserve the full timestamp (seconds precision).
+const DATETIME_LOCAL_KEYS = new Set(['aev_detected_at', 'incident_detected_at', 'incident_occurred_at']);
+
+function toISO8601DateTime(local: string): string {
+  if (!local) return '';
+  // datetime-local value is "YYYY-MM-DDTHH:mm" — append seconds + Z for UTC ISO
+  return new Date(local + ':00Z').toISOString();
+}
+
+function fromISO8601DateTime(iso: null | string): string {
+  if (!iso) return '';
+  // Slice to "YYYY-MM-DDTHH:mm" (drop seconds and timezone suffix)
+  return iso.substring(0, 16);
+}
+
 function selfAssign() {
   if (userStore.userEmail) {
     formData.value.owner = userStore.userEmail;
@@ -134,6 +149,8 @@ watch(() => props.show, (newShow) => {
       if (Array.isArray(v)) {
         originalArrayKeys.value.add(k);
         details[k] = v.join(', ');
+      } else if (DATETIME_LOCAL_KEYS.has(k)) {
+        details[k] = fromISO8601DateTime(v as null | string);
       } else {
         details[k] = String(v ?? '');
       }
@@ -207,6 +224,8 @@ function handleSave() {
         // New value or edited — split by comma
         additionalDetailsObj[k] = v.split(',').map((s: string) => s.trim()).filter(Boolean);
       }
+    } else if (DATETIME_LOCAL_KEYS.has(k)) {
+      additionalDetailsObj[k] = toISO8601DateTime(v);
     } else {
       additionalDetailsObj[k] = v;
     }

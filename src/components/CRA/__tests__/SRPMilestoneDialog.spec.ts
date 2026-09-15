@@ -122,6 +122,25 @@ describe('sRPMilestoneDialog', () => {
     expect(savedEdited?.additional_details?.member_states_available).toEqual(['DE', 'PL', 'IT']);
   });
 
+  it('round-trips aev_detected_at as a full ISO timestamp (datetime-local)', async () => {
+    const milestone24h = {
+      ...mockMilestone,
+      milestone_type: '24h' as const,
+      additional_details: {
+        aev_detected_at: '2026-03-15T09:30:00Z',
+        manufacturer_or_steward_name: 'Red Hat',
+      },
+    };
+    const wrapper = await mountAndOpen({ milestone: milestone24h, eventType: 'EXPLOITS_KEV_APPROVED' });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    const saved = wrapper.emitted('save')?.[0]?.[0] as Record<string, any>;
+    // Must be a full ISO string containing the time component, not just a date
+    expect(saved?.additional_details?.aev_detected_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
+    expect(saved?.additional_details?.aev_detected_at).not.toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
   it('emits save and close events when save button clicked', async () => {
     const wrapper = await mountAndOpen({});
 
