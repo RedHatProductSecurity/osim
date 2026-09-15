@@ -64,7 +64,8 @@ describe('sRPMilestoneDialog', () => {
     await wrapper.find('.modal-footer .btn-primary').trigger('click');
 
     expect(wrapper.emitted('save')).toBeFalsy();
-    // corrective_measures_taken, corrective_measures_for_users, aev_general_information required at 72h
+    // corrective_or_mitigating_measures_taken, corrective_or_mitigating_measures_users_can_take,
+    // general_information required at 72h
     expect(wrapper.findAll('.is-invalid').length).toBeGreaterThan(0);
   });
 
@@ -87,9 +88,9 @@ describe('sRPMilestoneDialog', () => {
     // member_states_available behaviour is under test.
     const requiredDetails = {
       member_states_available: ['ES', 'FR'],
-      corrective_measures_taken: 'done',
-      corrective_measures_for_users: 'update now',
-      measure_available_date: '2026-01-01',
+      corrective_or_mitigating_measures_taken: 'done',
+      corrective_or_mitigating_measures_users_can_take: 'update now',
+      corrective_or_mitigating_measure_available_at: '2026-01-01',
       vulnerability_severity: 'high',
       vulnerability_impact: 'remote code execution',
     };
