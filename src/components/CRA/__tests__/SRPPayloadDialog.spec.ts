@@ -1,11 +1,25 @@
+import { type Directive } from 'vue';
+
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
+import { IMaskDirective } from 'vue-imask';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
 import { mockSIPayloadFields, mockSRPReport } from '@/components/CRA/__tests__/fixtures';
 
 import { useUserStore } from '@/stores/UserStore';
+
+function mountDialog(props: InstanceType<typeof SRPPayloadDialog>['$props']) {
+  return mount(SRPPayloadDialog, {
+    props,
+    global: {
+      directives: {
+        imask: IMaskDirective as Directive,
+      },
+    },
+  });
+}
 
 describe('sRPPayloadDialog', () => {
   beforeEach(() => {
@@ -18,31 +32,23 @@ describe('sRPPayloadDialog', () => {
   });
 
   it('renders when show is true', () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     expect(wrapper.find('.modal').exists()).toBe(true);
   });
 
   it('does not render when show is false', () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: false },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: false });
     expect(wrapper.find('.modal').exists()).toBe(false);
   });
 
   it('emits close event when close button clicked', async () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     await wrapper.find('.btn-close').trigger('click');
     expect(wrapper.emitted('close')).toBeTruthy();
   });
 
   it('renders milestone-specific payload fields', () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
 
     expect(wrapper.text()).toContain('24h Early Warning');
     expect(wrapper.text()).toContain('Edit 24h AEV report');
@@ -55,6 +61,15 @@ describe('sRPPayloadDialog', () => {
     expect(wrapper.text()).not.toContain('Max 255 characters');
   });
 
+  it('uses OSIM date editor for datetime payload fields', () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const dateRow = wrapper.findAll('tr')
+      .find(row => row.text().includes('Date and Time When You Become Aware'));
+
+    expect(dateRow?.find('.payload-date-control').exists()).toBe(true);
+    expect(dateRow?.find('.osim-date-edit-field').exists()).toBe(true);
+  });
+
   it('renders fields in SRP form order without grouping by generated source', () => {
     const severeIncidentReport = {
       ...mockSRPReport,
@@ -64,9 +79,7 @@ describe('sRPPayloadDialog', () => {
       ...severeIncidentReport.milestones[0],
       payload_fields: mockSIPayloadFields,
     };
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone, report: severeIncidentReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone, report: severeIncidentReport, show: true });
     const labels = wrapper.findAll('.payload-field-name').map(cell => cell.find('div').text());
 
     expect(labels.indexOf('Notification Type'))
@@ -89,9 +102,7 @@ describe('sRPPayloadDialog', () => {
       ...mockSRPReport.milestones[0],
       milestone_type: '72h' as const,
     };
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone, report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
     const headers = wrapper.findAll('th').map(header => header.text());
 
     expect(headers).toEqual(['Field', 'Value', 'Actions']);
@@ -109,9 +120,7 @@ describe('sRPPayloadDialog', () => {
       ...severeIncidentReport.milestones[0],
       payload_fields: mockSIPayloadFields,
     };
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone, report: severeIncidentReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone, report: severeIncidentReport, show: true });
 
     expect(wrapper.text()).toContain('Severe Incident');
     expect(wrapper.text()).toContain('Incident Is Suspected of Unlawful or Malicious Acts');
@@ -125,9 +134,7 @@ describe('sRPPayloadDialog', () => {
       configurable: true,
       value: { writeText },
     });
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     const copyButton = wrapper.findAll('button').find(button => button.text() === 'Copy field');
 
     await copyButton?.trigger('click');
@@ -142,9 +149,7 @@ describe('sRPPayloadDialog', () => {
   });
 
   it('emits editable payload fields as additional details on save', async () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     const euvdRow = wrapper.findAll('tr').find(row => row.text().includes('EUVD ID'));
     const ownerInput = wrapper.find('input[type="email"]');
 
@@ -163,9 +168,7 @@ describe('sRPPayloadDialog', () => {
   });
 
   it('selects all member states in the milestone payload editor', async () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     const memberStatesRow = wrapper.findAll('tr')
       .find(row => row.text().includes('Member States Where Product Available'));
 
@@ -191,9 +194,7 @@ describe('sRPPayloadDialog', () => {
       profile: null,
       username: 'current-user',
     });
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
 
     await wrapper.findAll('button').find(button => button.text() === 'Self Assign')?.trigger('click');
     await wrapper.find('.modal-footer .btn-primary').trigger('click');

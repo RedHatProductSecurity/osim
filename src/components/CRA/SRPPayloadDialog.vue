@@ -17,6 +17,7 @@ import {
 import { useUserStore } from '@/stores/UserStore';
 import type { SRPMilestoneStatus, SRPReport, SRPReportMilestone } from '@/types/cra';
 import { formatDate } from '@/utils/helpers';
+import EditableDate from '@/widgets/EditableDate/EditableDate.vue';
 import Modal from '@/widgets/Modal/Modal.vue';
 
 const props = defineProps<{
@@ -39,7 +40,7 @@ const rows = computed(() => {
 
 const missingRows = computed(() => rows.value.filter(row => row.isMissing));
 
-type FieldValue = string | string[];
+type FieldValue = string | string[] | undefined;
 
 const payloadJson = computed(() => {
   if (!props.report || !props.milestone) return '{}';
@@ -130,11 +131,6 @@ function copyValueForRow(row: SRPPayloadFieldRow): string {
   return formatPayloadValue(row.value);
 }
 
-function editableInputType(row: SRPPayloadFieldRow): string {
-  if (row.input_type === 'datetime') return 'text';
-  return 'text';
-}
-
 function parseFieldValue(row: SRPPayloadFieldRow): string | string[] {
   const value = fieldValues.value[row.key] || '';
   if (row.input_type === 'multi-select') {
@@ -147,6 +143,15 @@ function selectAllFieldOptions(row: SRPPayloadFieldRow) {
   if (row.options) {
     fieldValues.value[row.key] = [...row.options];
   }
+}
+
+function dateFieldValue(key: string): string | undefined {
+  const value = fieldValues.value[key];
+  return Array.isArray(value) ? undefined : value || undefined;
+}
+
+function setDateFieldValue(key: string, value: string | undefined) {
+  fieldValues.value[key] = value || '';
 }
 
 function buildAdditionalDetails() {
@@ -223,7 +228,7 @@ watch(
 </script>
 
 <template>
-  <Modal class="modal-xl" :show="show" @close="emit('close')">
+  <Modal class="modal-xl modal-dialog-scrollable srp-payload-dialog" :show="show" @close="emit('close')">
     <template #title>
       {{ dialogTitle }}
     </template>
@@ -241,7 +246,6 @@ watch(
           <span v-if="milestone.payload_prepared_at" class="badge bg-success">
             Prepared: {{ formatDate(milestone.payload_prepared_at, true) }}
           </span>
-          <span v-else class="badge bg-warning text-dark">Payload snapshot not prepared</span>
         </div>
 
         <div class="row g-2 mb-3">
@@ -303,7 +307,12 @@ watch(
         </div>
 
         <div class="table-responsive">
-          <table class="table table-striped table-hover table-sm align-middle mb-0">
+          <table class="table table-striped table-hover table-sm align-middle mb-0 payload-table">
+            <colgroup>
+              <col class="payload-field-column" />
+              <col class="payload-value-column" />
+              <col class="payload-actions-column" />
+            </colgroup>
             <thead class="table-light">
               <tr>
                 <th>Field</th>
@@ -327,7 +336,7 @@ watch(
                     {{ formatRequirement(row.requirement) }}
                   </small>
                 </td>
-                <td>
+                <td class="payload-value-cell">
                   <select
                     v-if="isRowEditable(row) && row.input_type === 'multi-select' && row.options"
                     v-model="fieldValues[row.key]"
@@ -369,10 +378,18 @@ watch(
                     class="form-control form-control-sm payload-edit-control"
                     rows="2"
                   ></textarea>
+                  <EditableDate
+                    v-else-if="isRowEditable(row) && row.input_type === 'datetime'"
+                    :modelValue="dateFieldValue(row.key)"
+                    :includesTime="true"
+                    :editing="true"
+                    class="payload-date-control"
+                    @update:modelValue="setDateFieldValue(row.key, $event)"
+                  />
                   <input
                     v-else-if="isRowEditable(row)"
                     v-model="fieldValues[row.key]"
-                    :type="editableInputType(row)"
+                    type="text"
                     class="form-control form-control-sm"
                   />
                   <pre v-else class="payload-value mb-0">{{ formatPayloadValue(row.value) }}</pre>
@@ -427,8 +444,26 @@ watch(
 </template>
 
 <style scoped>
+.payload-table {
+  table-layout: fixed;
+  min-width: 52rem;
+}
+
+.payload-field-column {
+  width: clamp(12rem, 28%, 18rem);
+}
+
+.payload-actions-column {
+  width: 9.5rem;
+}
+
 .payload-field-name {
-  min-width: 14rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.payload-value-cell :is(.form-control, .form-select) {
+  width: 100%;
 }
 
 .payload-value {
@@ -439,7 +474,12 @@ watch(
 }
 
 .payload-edit-control {
-  min-width: 16rem;
+  min-width: 0;
+}
+
+.payload-date-control {
+  width: 100%;
+  max-width: 100%;
 }
 
 .requirement-badge {
@@ -469,5 +509,33 @@ watch(
   100% {
     transform: scale(1);
   }
+}
+</style>
+
+<style>
+.srp-payload-dialog {
+  height: calc(100vh - 3.5rem);
+  max-height: calc(100vh - 3.5rem);
+}
+
+.srp-payload-dialog .modal-content {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.srp-payload-dialog .modal-body {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.srp-payload-dialog .modal-header,
+.srp-payload-dialog .modal-footer {
+  flex-shrink: 0;
+}
+
+.srp-payload-dialog .payload-date-control {
+  width: 100%;
+  max-width: 100%;
 }
 </style>
