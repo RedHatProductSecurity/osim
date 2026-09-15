@@ -50,10 +50,10 @@ describe('sRPPayloadDialog', () => {
   it('renders milestone-specific payload fields', () => {
     const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
 
-    expect(wrapper.text()).toContain('24h Early Warning');
     expect(wrapper.text()).toContain('Edit 24h AEV report');
     expect(wrapper.text()).toContain('Report Type');
-    expect(wrapper.text()).toContain('Actively Exploited Vulnerability');
+    expect(wrapper.text()).not.toContain('24h Early Warning');
+    expect(wrapper.text()).not.toContain('Status:');
     expect(wrapper.text()).toContain('Notification Type');
     expect(wrapper.text()).toContain('Date and Time When You Become Aware of the Actively Exploited Vulnerability');
     expect(wrapper.text()).not.toContain('Incident Is Suspected of Unlawful or Malicious Acts');

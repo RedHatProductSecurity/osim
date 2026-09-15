@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue';
 
 import {
   buildPayloadRows,
-  formatEventTypeLabel,
   formatMilestoneTypeLabel,
   formatPayloadValue,
   formatRequirement,
@@ -16,7 +15,6 @@ import {
 
 import { useUserStore } from '@/stores/UserStore';
 import type { SRPMilestoneStatus, SRPReport, SRPReportMilestone } from '@/types/cra';
-import { formatDate } from '@/utils/helpers';
 import EditableDate from '@/widgets/EditableDate/EditableDate.vue';
 import Modal from '@/widgets/Modal/Modal.vue';
 
@@ -89,15 +87,6 @@ function formatReportTypeValue() {
   if (props.milestone?.milestone_type === '72h') return '72h';
   if (props.milestone?.milestone_type === 'final') return 'Final';
   return formatMilestoneTypeLabel(props.milestone?.milestone_type);
-}
-
-function formatStatusValue(status: SRPMilestoneStatus) {
-  if (status === 'required') return 'Not Started';
-  if (status === 'in_progress') return 'In Progress';
-  if (status === 'in_review') return 'In Review';
-  if (status === 'submitted') return 'Submitted';
-  if (status === 'obsolete') return 'Obsolete';
-  return status;
 }
 
 function selfAssign() {
@@ -239,15 +228,6 @@ watch(
         milestones do not have a generated ENISA 24h/72h/final payload template.
       </div>
       <div v-else>
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <span class="badge bg-dark">{{ formatEventTypeLabel(report.reportable_event_type) }}</span>
-          <span class="badge bg-primary">{{ formatMilestoneTypeLabel(milestone.milestone_type) }}</span>
-          <span class="badge bg-secondary">Status: {{ formatStatusValue(milestone.status) }}</span>
-          <span v-if="milestone.payload_prepared_at" class="badge bg-success">
-            Prepared: {{ formatDate(milestone.payload_prepared_at, true) }}
-          </span>
-        </div>
-
         <div class="row g-2 mb-3">
           <div class="col-md-3">
             <label class="form-label">Report Type</label>
