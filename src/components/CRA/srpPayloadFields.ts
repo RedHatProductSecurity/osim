@@ -51,7 +51,9 @@ export function isPayloadMilestoneType(milestoneType?: SRPMilestoneType): milest
   return milestoneType === '24h' || milestoneType === '72h' || milestoneType === 'final';
 }
 
-export function buildPayloadRows(milestone: { payload_fields?: SRPReportMilestonePayloadField[] }): SRPPayloadFieldRow[] {
+export function buildPayloadRows(
+  milestone: { payload_fields?: SRPReportMilestonePayloadField[] },
+): SRPPayloadFieldRow[] {
   return (milestone.payload_fields || []).map(row => ({
     ...row,
     input_type: row.input_type === 'multi_select' ? 'multi-select' : row.input_type,

@@ -39,8 +39,6 @@ const rows = computed(() => {
 
 const missingRows = computed(() => rows.value.filter(row => row.isMissing));
 
-const hasBackendGeneratedPayload = computed(() => Boolean(props.milestone?.generated_payload));
-
 type FieldValue = string | string[];
 
 const payloadJson = computed(() => {
@@ -295,11 +293,6 @@ watch(
             class="form-control form-control-sm"
             rows="2"
           ></textarea>
-        </div>
-
-        <div v-if="!hasBackendGeneratedPayload" class="alert alert-info">
-          OSIDB has not exposed a prepared milestone payload snapshot yet. This view shows the
-          effective payload fields returned by the milestone API.
         </div>
 
         <div v-if="missingRows.length" class="alert alert-warning">
