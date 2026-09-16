@@ -76,6 +76,7 @@ function formatKey(key: string): string {
       <span v-else class="text-muted">Unassigned</span>
     </td>
     <td>{{ milestone.due_at ? formatDate(new Date(milestone.due_at), false) : 'N/A' }}</td>
+    <td>{{ milestone.submitted_at ? formatDate(new Date(milestone.submitted_at), true) : '-' }}</td>
     <td :class="{ 'text-danger': isMilestoneActionable(milestone) }">
       {{ formatTimeRemaining() }}
     </td>
@@ -102,7 +103,7 @@ function formatKey(key: string): string {
     </td>
   </tr>
   <tr v-if="isExpanded" class="milestone-details-expanded">
-    <td colspan="7" class="p-3 bg-white">
+    <td colspan="8" class="p-3 bg-white">
       <div class="row">
         <div class="col-md-6">
           <h6 class="mb-3">Milestone Information</h6>

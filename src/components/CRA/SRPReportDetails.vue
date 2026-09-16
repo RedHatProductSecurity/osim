@@ -58,6 +58,7 @@ const sortedMilestones = computed(() => sortMilestones(props.report.milestones |
             <th>Status</th>
             <th>Owner</th>
             <th>Due Date</th>
+            <th>Submitted</th>
             <th>Time Remaining</th>
             <th style="width: 200px">Actions</th>
           </tr>
