@@ -9,7 +9,7 @@ import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
 
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
-import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
+import type { SRPEventType, SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
 import {
   createAdditionalInfoMilestone,
   createSRPReport,
@@ -48,6 +48,13 @@ const {
   showReportDialog,
   viewPayloadReport,
 } = useSRPDialogs();
+
+const editingEventType = ref<null | SRPEventType>(null);
+
+function openEditMilestoneDialogWithEventType(milestone: SRPReportMilestone, eventType: null | SRPEventType) {
+  editingEventType.value = eventType;
+  openEditMilestoneDialog(milestone);
+}
 
 onMounted(async () => {
   await loadSRPReports();
@@ -296,7 +303,7 @@ function hasMissingFields(report: SRPReport): boolean {
                   <SRPReportDetails
                     :report="report"
                     @add-milestone="openAddMilestoneDialog"
-                    @edit-milestone="openEditMilestoneDialog"
+                    @edit-milestone="(m) => openEditMilestoneDialogWithEventType(m, report.reportable_event_type)"
                     @refresh="loadSRPReports"
                   />
                 </td>
@@ -316,6 +323,7 @@ function hasMissingFields(report: SRPReport): boolean {
   />
 
   <SRPMilestoneDialog
+    :event-type="editingEventType"
     :milestone="editingMilestone"
     :show="showMilestoneDialog"
     @close="closeMilestoneDialog"

@@ -1,4 +1,22 @@
 // SRP types for CRA compliance
+
+// ── SRP field spec types ─────────────────────────────────────────────────────
+// "required" | "required_if_available" | "optional" | "na"
+// Columns: 24h, 72h, final
+export type SRPFieldRequirement = 'na' | 'optional' | 'required' | 'required_if_available';
+export type SRPFieldType = 'date' | 'datetime-local' | 'text' | 'textarea';
+
+export interface SRPFieldSpec {
+  '24h': SRPFieldRequirement;
+  '72h': SRPFieldRequirement;
+  'final': SRPFieldRequirement;
+  'isList'?: true;   // value is a comma-separated list → saved as string[]
+  'key': string;
+  'label': string;
+  'scope': 'aev' | 'common' | 'si';
+  'type': SRPFieldType;
+}
+
 // Note: These are manually defined because the generated OSIDB client types use 'any' for all fields.
 // Once the OSIDB schema is finalized and the generator produces proper types, we can switch to using those.
 
