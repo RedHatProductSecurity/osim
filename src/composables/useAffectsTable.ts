@@ -373,6 +373,8 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
         // HTTP errors are toasted by jiraFetch; surface logic errors (e.g. no close transition) here
         if (e instanceof Error) {
           errors.push(`${affect.tracker!.external_system_id}: ${e.message}`);
+        } else {
+          errors.push(`${affect.tracker!.external_system_id}: close failed`);
         }
       }
     }

@@ -616,7 +616,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
               </div>
             </template>
           </div>
-          <AffectsTable v-else />
+          <AffectsTable v-else @refresh:flaw="emit('refresh:flaw')" />
         </div>
       </div>
       <div class="row osim-flaw-form-section">
