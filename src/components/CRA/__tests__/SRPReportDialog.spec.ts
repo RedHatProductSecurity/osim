@@ -60,26 +60,24 @@ describe('sRPReportDialog', () => {
       props: { show: true },
     });
 
-    // Find the member states input field
-    const memberStatesInput = wrapper.findAll('input[type="text"]')
-      .find(input => input.element.placeholder.includes('ES, FR'));
-    expect(memberStatesInput).toBeDefined();
-    expect(memberStatesInput?.element.value).toBe('');
+    // Find the "Select All" button in the EUStatesSelector component
+    const selectAllButton = wrapper.findAll('button')
+      .find(btn => btn.text().includes('Select All'));
+    expect(selectAllButton).toBeDefined();
 
     // Click "Select All" button
-    const selectAllButton = wrapper.findAll('.btn-secondary')
-      .find(btn => btn.text().includes('Select All'));
     await selectAllButton?.trigger('click');
 
-    // Check that all EU states are now in the input
-    const value = memberStatesInput?.element.value;
-    expect(value).toBeTruthy();
-    expect(value).toContain('ES');
-    expect(value).toContain('FR');
-    expect(value).toContain('DE');
-    expect(value).toContain('EL'); // Greece
-    // Check that it has 27 codes (27 EU member states)
-    const codes = value?.split(',').map(s => s.trim());
-    expect(codes?.length).toBe(27);
+    // Check that the form emits correct data when saved
+    await wrapper.find('input[type="text"]').setValue('Sample SRP Report Title');
+    await wrapper.find('textarea').setValue('Sample evidence');
+    const footer = wrapper.find('.modal-footer');
+    await footer.findAll('.btn-primary').at(0)?.trigger('click');
+
+    const savedData = wrapper.emitted('save')?.[0]?.[0] as any;
+    expect(savedData.member_states_available).toBeDefined();
+    expect(savedData.member_states_available.length).toBe(27);
+    expect(savedData.member_states_available).toContain('ES');
+    expect(savedData.member_states_available).toContain('EL');
   });
 });
