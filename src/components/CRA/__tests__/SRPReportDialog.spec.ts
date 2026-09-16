@@ -54,4 +54,30 @@ describe('sRPReportDialog', () => {
     expect(value).toBeTruthy();
     expect(value).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
   });
+
+  it('fills all EU member states when "Select All" button is clicked', async () => {
+    const wrapper = mount(SRPReportDialog, {
+      props: { show: true },
+    });
+
+    // Find the "Select All" button in the EUStatesSelector component
+    const selectAllButton = wrapper.findAll('button')
+      .find(btn => btn.text().includes('Select All'));
+    expect(selectAllButton).toBeDefined();
+
+    // Click "Select All" button
+    await selectAllButton?.trigger('click');
+
+    // Check that the form emits correct data when saved
+    await wrapper.find('input[type="text"]').setValue('Sample SRP Report Title');
+    await wrapper.find('textarea').setValue('Sample evidence');
+    const footer = wrapper.find('.modal-footer');
+    await footer.findAll('.btn-primary').at(0)?.trigger('click');
+
+    const savedData = wrapper.emitted('save')?.[0]?.[0] as any;
+    expect(savedData.member_states_available).toBeDefined();
+    expect(savedData.member_states_available.length).toBe(27);
+    expect(savedData.member_states_available).toContain('ES');
+    expect(savedData.member_states_available).toContain('EL');
+  });
 });

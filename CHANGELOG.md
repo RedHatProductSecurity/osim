@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [2026.9.0]
+### Added
+* Replace EU member states text input with interactive multi-select dropdown to prevent invalid country codes (`OSIDB-5552`)
+
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 
