@@ -156,6 +156,35 @@ export async function postJiraComment(taskId: string, comment: string) {
     .catch(createCatchHandler('Error saving internal Jira comment'));
 }
 
+export async function getJiraTransitions(issueKey: string) {
+  return jiraFetch<{ transitions: Array<{ id: string; name: string }> }>({
+    method: 'get',
+    url: `/rest/api/3/issue/${issueKey}/transitions`,
+  });
+}
+
+export async function postJiraTransition(issueKey: string, transitionId: string) {
+  return jiraFetch({
+    method: 'post',
+    url: `/rest/api/3/issue/${issueKey}/transitions`,
+    data: {
+      transition: { id: transitionId },
+    },
+  });
+}
+
+export async function closeJiraIssue(issueKey: string) {
+  const { data } = await getJiraTransitions(issueKey);
+  if (!data) {
+    throw new Error(`No transitions found for ${issueKey}`);
+  }
+  const closeTransition = data.transitions?.find(t => /close|done/i.test(t.name));
+  if (!closeTransition) {
+    throw new Error(`No close transition available for ${issueKey}`);
+  }
+  return postJiraTransition(issueKey, closeTransition.id);
+}
+
 export async function getJiraUsername() {
   return jiraFetch({
     method: 'get',
