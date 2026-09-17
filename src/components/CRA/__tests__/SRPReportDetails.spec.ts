@@ -34,16 +34,16 @@ describe('sRPReportDetails', () => {
     expect(wrapper.emitted('add-milestone')).toBeTruthy();
   });
 
-  it('emits edit-milestone event', async () => {
+  it('emits view-payload event for payload milestones', async () => {
     const wrapper = mount(SRPReportDetails, {
       props: {
         report: mockSRPReport,
       },
     });
 
-    const editButton = wrapper.findAll('button').find(btn => btn.html().includes('bi-pencil'));
+    const editButton = wrapper.findAll('button').find(btn => btn.html().includes('bi-pencil-square'));
     await editButton?.trigger('click');
-    expect(wrapper.emitted('edit-milestone')).toBeTruthy();
+    expect(wrapper.emitted('view-payload')).toBeTruthy();
   });
 
   it('handles quick action errors', async () => {
