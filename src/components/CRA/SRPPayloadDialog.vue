@@ -6,6 +6,7 @@ import {
   formatMilestoneTypeLabel,
   formatPayloadValue,
   formatRequirement,
+  isEmptyPayloadValue,
   isPayloadMilestoneType,
   isPayloadRowEditable,
   parseFieldList,
@@ -36,9 +37,8 @@ const rows = computed(() => {
   return buildPayloadRows(props.milestone);
 });
 
-const missingRows = computed(() => rows.value.filter(row => row.isMissing));
-
 type FieldValue = string | string[] | undefined;
+type DetailValue = string | string[];
 
 const payloadJson = computed(() => {
   if (!props.report || !props.milestone) return '{}';
@@ -104,12 +104,7 @@ function shouldShowRequirement(row: SRPPayloadFieldRow) {
 }
 
 function formatFieldInputValue(row: SRPPayloadFieldRow): FieldValue {
-  const value = row.value;
-  if (row.input_type === 'multi-select') return parseFieldList(value);
-  if (value === null || value === undefined || value === '[]') return '';
-  if (Array.isArray(value)) return value.join(', ');
-  if (typeof value === 'object') return JSON.stringify(value, null, 2);
-  return String(value);
+  return normaliseEditableValue(row, row.value);
 }
 
 function copyValueForRow(row: SRPPayloadFieldRow): string {
@@ -120,13 +115,47 @@ function copyValueForRow(row: SRPPayloadFieldRow): string {
   return formatPayloadValue(row.value);
 }
 
-function parseFieldValue(row: SRPPayloadFieldRow): string | string[] {
-  const value = fieldValues.value[row.key] || '';
+function parseFieldValue(row: SRPPayloadFieldRow): DetailValue {
+  const value = fieldValues.value[row.key] ?? '';
   if (row.input_type === 'multi-select') {
     return parseFieldList(value);
   }
   return Array.isArray(value) ? value.join(', ') : value;
 }
+
+function normaliseEditableValue(row: SRPPayloadFieldRow, value: unknown): DetailValue {
+  if (row.input_type === 'multi-select') return parseFieldList(value);
+  if (value === null || value === undefined || value === '[]') return '';
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object') return JSON.stringify(value, null, 2);
+  return String(value);
+}
+
+function normaliseExistingDetailValue(value: unknown): DetailValue {
+  if (Array.isArray(value)) return value.filter(item => typeof item === 'string');
+  return String(value ?? '');
+}
+
+function valuesEqual(left: DetailValue, right: DetailValue) {
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left)
+      && Array.isArray(right)
+      && left.length === right.length
+      && left.every((value, index) => value === right[index]);
+  }
+  return left === right;
+}
+
+function currentPayloadValue(row: SRPPayloadFieldRow): unknown {
+  return isRowEditable(row) ? parseFieldValue(row) : row.value;
+}
+
+function isRowMissing(row: SRPPayloadFieldRow) {
+  const empty = isEmptyPayloadValue(currentPayloadValue(row));
+  return (row.isMissing && empty) || (row.requirement === 'required' && empty);
+}
+
+const missingRows = computed(() => rows.value.filter(isRowMissing));
 
 function selectAllFieldOptions(row: SRPPayloadFieldRow) {
   if (row.options) {
@@ -144,19 +173,29 @@ function setDateFieldValue(key: string, value: string | undefined) {
 }
 
 function buildAdditionalDetails() {
-  const allowedKeys = new Set(rows.value.filter(row => isRowEditable(row)).map(row => row.key));
-  const details: Record<string, string | string[]> = {};
+  const editableRows = rows.value.filter(row => isRowEditable(row));
+  const allowedKeys = new Set(editableRows.map(row => row.key));
+  const details: Record<string, DetailValue> = {};
   const existingDetails = props.milestone?.additional_details || {};
 
   for (const [key, value] of Object.entries(existingDetails)) {
     if (allowedKeys.has(key)) {
-      details[key] = Array.isArray(value) ? value.filter(item => typeof item === 'string') : String(value ?? '');
+      details[key] = normaliseExistingDetailValue(value);
     }
   }
 
-  for (const row of rows.value) {
-    if (isRowEditable(row)) {
-      details[row.key] = parseFieldValue(row);
+  for (const row of editableRows) {
+    const currentValue = parseFieldValue(row);
+    const initialValue = normaliseEditableValue(row, row.value);
+
+    if (valuesEqual(currentValue, initialValue)) {
+      if (row.source === 'manual_override') {
+        details[row.key] = currentValue;
+      } else {
+        delete details[row.key];
+      }
+    } else {
+      details[row.key] = currentValue;
     }
   }
 
@@ -164,9 +203,9 @@ function buildAdditionalDetails() {
 }
 
 function getCurrentPayload() {
-  const payload: Record<string, string | string[]> = {};
+  const payload: Record<string, unknown> = {};
   for (const row of rows.value) {
-    payload[row.key] = isRowEditable(row) ? parseFieldValue(row) : copyValueForRow(row);
+    payload[row.key] = currentPayloadValue(row);
   }
   return payload;
 }
@@ -262,6 +301,7 @@ watch(
             <select v-model="formData.status" class="form-select form-select-sm">
               <option value="required">Not Started</option>
               <option value="in_progress">In Progress</option>
+              <option value="in_review">In Review</option>
               <option value="submitted">Submitted</option>
               <option value="obsolete">Obsolete</option>
             </select>
@@ -304,7 +344,7 @@ watch(
               <tr
                 v-for="row in rows"
                 :key="row.key"
-                :class="{ 'table-warning': row.isMissing }"
+                :class="{ 'table-warning': isRowMissing(row) }"
               >
                 <td class="payload-field-name fw-semibold">
                   <div>{{ row.label }}</div>
@@ -379,7 +419,7 @@ watch(
                     type="button"
                     class="btn btn-sm copy-button"
                     :class="copyButtonClass(`field:${row.key}`)"
-                    :disabled="row.isMissing"
+                    :disabled="isRowMissing(row)"
                     @click="copyText(copyValueForRow(row), `field:${row.key}`)"
                   >
                     {{ isCopied(`field:${row.key}`) ? 'Copied' : 'Copy field' }}

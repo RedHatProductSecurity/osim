@@ -61,6 +61,16 @@ describe('sRPPayloadDialog', () => {
     expect(wrapper.text()).not.toContain('Max 255 characters');
   });
 
+  it('offers all editable milestone statuses', () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const statusSelect = wrapper.findAll('select').find(select => select.text().includes('Not Started'));
+
+    expect(statusSelect?.text()).toContain('In Progress');
+    expect(statusSelect?.text()).toContain('In Review');
+    expect(statusSelect?.text()).toContain('Submitted');
+    expect(statusSelect?.text()).toContain('Obsolete');
+  });
+
   it('uses OSIM date editor for datetime payload fields', () => {
     const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     const dateRow = wrapper.findAll('tr')
@@ -151,6 +161,58 @@ describe('sRPPayloadDialog', () => {
     expect(copyButton?.text()).toBe('Copy field');
   });
 
+  it('copies raw payload values as JSON', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'notification_type'
+          ? { ...row, input_type: 'boolean', value: false }
+          : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+
+    await wrapper.findAll('button').find(button => button.text() === 'Copy JSON')?.trigger('click');
+
+    expect(JSON.parse(writeText.mock.calls[0][0])).toMatchObject({
+      notification_type: false,
+    });
+  });
+
+  it('does not emit unchanged generated payload values as additional details', async () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      additional_details: {},
+    }));
+  });
+
+  it('preserves existing manual payload overrides on save', async () => {
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      additional_details: { euvd_id: 'EUVD-1234' },
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'euvd_id'
+          ? { ...row, source: 'manual_override' as const, value: 'EUVD-1234' }
+          : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      additional_details: { euvd_id: 'EUVD-1234' },
+    }));
+  });
+
   it('emits editable payload fields as additional details on save', async () => {
     const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     const euvdRow = wrapper.findAll('tr').find(row => row.text().includes('EUVD ID'));
@@ -167,7 +229,27 @@ describe('sRPPayloadDialog', () => {
         euvd_id: 'EUVD-1234',
       }),
     }));
+    expect((wrapper.emitted('save')?.[0][0] as any).additional_details).not.toHaveProperty('report_title');
     expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('updates missing-required warnings when fields are filled locally', async () => {
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'report_title' ? { ...row, missing: true, value: '' } : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+    const titleRow = wrapper.findAll('tr').find(row => row.text().includes('Title'));
+
+    expect(wrapper.find('.alert-warning').text()).toContain('Title');
+    expect(titleRow?.classes()).toContain('table-warning');
+
+    await titleRow?.find('input').setValue('Filled title');
+
+    expect(wrapper.find('.alert-warning').exists()).toBe(false);
+    expect(titleRow?.classes()).not.toContain('table-warning');
   });
 
   it('selects all member states in the milestone payload editor', async () => {
