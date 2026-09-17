@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { EU_MEMBER_STATES } from '@/components/CRA/srpPayloadFields';
+import EUStatesSelector from '@/components/CRA/EUStatesSelector.vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { SRPReport } from '@/types/cra';
@@ -93,10 +93,6 @@ function handleSave() {
 function handleClose() {
   emit('close');
 }
-
-function selectAllMemberStates() {
-  formData.value.member_states_available = [...EU_MEMBER_STATES];
-}
 </script>
 
 <template>
@@ -146,28 +142,7 @@ function selectAllMemberStates() {
       </div>
       <div class="mb-3">
         <label class="form-label">EU Member States Where Product is Available</label>
-        <div class="d-flex gap-2 align-items-start">
-          <select
-            v-model="formData.member_states_available"
-            class="form-select"
-            multiple
-            size="7"
-          >
-            <option v-for="state in EU_MEMBER_STATES" :key="state" :value="state">
-              {{ state }}
-            </option>
-          </select>
-          <button
-            type="button"
-            class="btn btn-primary text-nowrap"
-            @click="selectAllMemberStates"
-          >
-            Select All
-          </button>
-        </div>
-        <small class="text-muted">
-          Hold Ctrl/Cmd to select multiple member states. Use EL for Greece.
-        </small>
+        <EUStatesSelector v-model="formData.member_states_available" />
       </div>
       <!-- Optional fields (OSIDB-5436) -->
       <div class="mb-3">

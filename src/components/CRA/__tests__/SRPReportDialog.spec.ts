@@ -56,7 +56,7 @@ describe('sRPReportDialog', () => {
 
     await wrapper.find('input[type="text"]').setValue('Sample SRP Report Title');
     await wrapper.find('textarea').setValue('Sample evidence for the report');
-    await wrapper.findAll('button').find(button => button.text() === 'Select All')?.trigger('click');
+    await wrapper.findAll('button').find(button => button.text().includes('Select All'))?.trigger('click');
     await wrapper.find('.modal-footer .btn-primary').trigger('click');
 
     expect(wrapper.find('input[type="datetime-local"]').exists()).toBe(false);
