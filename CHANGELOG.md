@@ -1,7 +1,7 @@
 # OSIM Changelog
 ## [Unreleased]
 ### Added
-* Add CRA SRP reportable event and payload edit dialogs for 24h AEV, 24h SI, 72h SI, and final SI reports (`OSIDB-5614`, `OSIDB-5615`, `OSIDB-5617`, `OSIDB-5618`, `OSIDB-5620`)
+* Add CRA SRP reportable event and payload edit dialogs for 24h AEV, 72h AEV, final AEV, 24h SI, 72h SI, and final SI reports (`OSIDB-5614`, `OSIDB-5615`, `OSIDB-5616`, `OSIDB-5617`, `OSIDB-5618`, `OSIDB-5619`, `OSIDB-5620`)
 * Add Submission Date and Time column to SRP milestones table for tracking when reports were submitted (`OSIDB-5493`)
 
 ## [2026.9.0]
