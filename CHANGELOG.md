@@ -4,6 +4,9 @@
 * Add Submission Date and Time column to SRP milestones table for tracking when reports were submitted (`OSIDB-5493`)
 
 ## [2026.9.0]
+### Added
+* Add bulk close functionality for Jira trackers in affects table with confirmation dialog
+
 ### Fixed
 * Show top-level SRP overdue information from the latest report (`OSIDB-5480`)
 

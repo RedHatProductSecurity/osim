@@ -19,6 +19,10 @@ import ColumnOptions from './ColumnOptions.vue';
 import BulkEditCell from './BulkEditCell.vue';
 import MultiFlawTracker from './MultiFlawTracker.vue';
 
+const emit = defineEmits<{
+  (e: 'refresh:flaw'): void;
+}>();
+
 const { settings } = storeToRefs(useSettingsStore());
 
 const { flaw } = useFlaw();
@@ -31,6 +35,7 @@ const {
   actions: {
     changeItemsPerPage,
     changePage,
+    closeSelectedTrackers,
     commitBulkEdits,
     deleteSelectedRows,
     enterBulkEditMode,
@@ -51,6 +56,7 @@ const {
     currentPage,
     globalFilter,
     isBulkEditMode,
+    isClosingTrackers,
     isFetchingSuggestedTrackers,
     modifiedAffects,
     newAffects,
@@ -60,7 +66,7 @@ const {
     table,
     totalPages,
   },
-} = useAffectsTable();
+} = useAffectsTable(() => emit('refresh:flaw'));
 
 watch(() => initialAffects.value, () => refreshData());
 
@@ -101,6 +107,19 @@ onMounted(() => {
         @click="fileSelectedTrackers()"
       >
         Create trackers
+      </button>
+      <button
+        v-if="(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())
+          && table.getSelectedRowModel().flatRows.some(row => row.original.tracker?.type === 'JIRA')"
+        v-osim-loading="isClosingTrackers"
+        :disabled="isClosingTrackers"
+        class="btn btn-warning text-nowrap"
+        type="button"
+        title="Close Jira trackers for selected affects"
+        @click="closeSelectedTrackers()"
+      >
+        <i v-if="!isClosingTrackers" class="bi-x-circle"></i>
+        Close trackers
       </button>
       <button
         v-if="!isBulkEditMode && (table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())"

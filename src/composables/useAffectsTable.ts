@@ -28,6 +28,7 @@ import { showSuccessToast } from '@/composables/service-helpers';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getTrackersForFlaws } from '@/services/TrackerService';
+import { closeJiraIssue } from '@/services/JiraService';
 import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
 import { affectUUID } from '@/utils/helpers';
 
@@ -62,7 +63,7 @@ function createChangeHandler<T, K extends keyof T>(stateRef: MaybeRef<T>, key?: 
   };
 }
 
-export function useAffectsTable() {
+export function useAffectsTable(onRefreshFlaw?: () => void) {
   const { settings } = storeToRefs(useSettingsStore());
 
   const {
@@ -132,6 +133,7 @@ export function useAffectsTable() {
   const bulkEditData = ref<Partial<ZodAffectType>>({});
   const bulkEditChangedFields = ref<Set<keyof ZodAffectType>>(new Set());
   const bulkEditSelectedRowIds = ref<string[]>([]);
+  const isClosingTrackers = ref(false);
 
   // Virtual row for bulk edit - represents the current bulk edit state
   // This allows enum functions and validations to work correctly
@@ -348,6 +350,50 @@ export function useAffectsTable() {
     await table.options.meta?.fileTrackers(affectsWithoutTracker);
   }
 
+  async function closeSelectedTrackers() {
+    const affectsWithJiraTracker = table.getSelectedRowModel().flatRows
+      .filter(row => row.original.tracker?.type === 'JIRA'
+      && row.original.tracker?.external_system_id)
+      .map(row => row.original);
+
+    if (!affectsWithJiraTracker.length) return;
+
+    const count = affectsWithJiraTracker.length;
+    if (!confirm(`Close ${count} Jira tracker(s)? This cannot be undone.`)) return;
+
+    isClosingTrackers.value = true;
+    let successCount = 0;
+
+    const errors: string[] = [];
+    for (const affect of affectsWithJiraTracker) {
+      try {
+        await closeJiraIssue(affect.tracker!.external_system_id);
+        successCount++;
+      } catch (e) {
+        // HTTP errors are toasted by jiraFetch; surface logic errors (e.g. no close transition) here
+        if (e instanceof Error) {
+          errors.push(`${affect.tracker!.external_system_id}: ${e.message}`);
+        } else {
+          errors.push(`${affect.tracker!.external_system_id}: close failed`);
+        }
+      }
+    }
+
+    if (errors.length) {
+      useToastStore().addToast({
+        title: 'Some trackers could not be closed',
+        body: errors.join('\n'),
+        css: 'warning',
+      });
+    }
+    if (successCount > 0) {
+      showSuccessToast(successCount, 'tracker', 'closed');
+      table.resetRowSelection();
+      onRefreshFlaw?.();
+    }
+    isClosingTrackers.value = false;
+  }
+
   function fitColumnWidth(column: Column<ZodAffectType>) {
     const FONT_SIZE = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
     const HEADER_CHAR_WIDTH = FONT_SIZE - 4; // Bold monospace
@@ -478,10 +524,12 @@ export function useAffectsTable() {
       bulkEditChangedFields,
       bulkEditSelectedRowIds,
       bulkEditVirtualRow,
+      isClosingTrackers,
     },
     actions: {
       changeItemsPerPage,
       changePage,
+      closeSelectedTrackers,
       deleteSelectedRows,
       fileSelectedTrackers,
       fitColumnWidth,
