@@ -22,18 +22,18 @@ const sortedMilestones = computed(() => sortMilestones(props.report.milestones |
 <template>
   <div class="p-3 bg-light">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="mb-0">Milestones</h6>
+      <h6 class="mb-0">SRP Reports</h6>
       <button
         type="button"
         class="btn btn-sm btn-secondary"
         @click="emit('add-milestone', report.uuid)"
       >
         <i class="bi bi-plus-circle me-1"></i>
-        Add Milestone
+        Add Additional Information Response
       </button>
     </div>
     <div v-if="!report.milestones || report.milestones.length === 0" class="text-muted">
-      No milestones defined.
+      No SRP reports defined.
     </div>
     <div v-else>
       <div
@@ -46,7 +46,7 @@ const sortedMilestones = computed(() => sortMilestones(props.report.milestones |
       >
         <i class="bi bi-info-circle me-1"></i>
         <small>
-          72h and Final milestones copy data from previous stages.
+          72h and Final reports copy data from previous stages.
           Edit to update before submission.
         </small>
       </div>

@@ -140,7 +140,7 @@ function setTimerToday() {
 <template>
   <Modal class="modal-lg" :show="show" @close="handleClose">
     <template #title>
-      {{ report ? 'Edit' : 'Add' }} SRP Report
+      {{ report ? 'Edit' : 'Add' }} SRP Reportable Event
     </template>
     <template #body>
       <div class="mb-3">
