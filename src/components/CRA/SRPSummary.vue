@@ -6,10 +6,11 @@ import SRPMilestoneIcons from '@/components/CRA/SRPMilestoneIcons.vue';
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
 import SRPReportDetails from '@/components/CRA/SRPReportDetails.vue';
 import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
+import { isPayloadMilestoneType } from '@/components/CRA/srpPayloadFields';
 
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
-import type { SRPEventType, SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
+import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
 import {
   createAdditionalInfoMilestone,
   createSRPReport,
@@ -46,15 +47,9 @@ const {
   showMilestoneDialog,
   showPayloadDialog,
   showReportDialog,
+  viewPayloadMilestone,
   viewPayloadReport,
 } = useSRPDialogs();
-
-const editingEventType = ref<null | SRPEventType>(null);
-
-function openEditMilestoneDialogWithEventType(milestone: SRPReportMilestone, eventType: null | SRPEventType) {
-  editingEventType.value = eventType;
-  openEditMilestoneDialog(milestone);
-}
 
 onMounted(async () => {
   await loadSRPReports();
@@ -189,6 +184,28 @@ async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
   }
 }
 
+async function handleSavePayloadMilestone(data: Partial<SRPReportMilestone>) {
+  if (!viewPayloadMilestone.value) return;
+  try {
+    await updateSRPMilestone(
+      viewPayloadMilestone.value.srp_report,
+      viewPayloadMilestone.value.uuid,
+      data,
+    );
+    await loadSRPReports();
+  } catch (err) {
+    console.error('Failed to save SRP milestone payload:', err);
+  }
+}
+
+function handleEditMilestone(report: SRPReport, milestone: SRPReportMilestone) {
+  if (isPayloadMilestoneType(milestone.milestone_type)) {
+    openViewPayload(report, milestone);
+    return;
+  }
+  openEditMilestoneDialog(report, milestone);
+}
+
 function hasMissingFields(report: SRPReport): boolean {
   return Boolean(report.missing_required_fields && report.missing_required_fields.trim());
 }
@@ -273,14 +290,6 @@ function hasMissingFields(report: SRPReport): boolean {
                   <button
                     type="button"
                     class="btn btn-sm btn-dark me-1"
-                    title="View Payload"
-                    @click="openViewPayload(report)"
-                  >
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-dark me-1"
                     @click="openEditReportDialog(report)"
                   >
                     <i class="bi bi-pencil"></i>
@@ -303,8 +312,9 @@ function hasMissingFields(report: SRPReport): boolean {
                   <SRPReportDetails
                     :report="report"
                     @add-milestone="openAddMilestoneDialog"
-                    @edit-milestone="(m) => openEditMilestoneDialogWithEventType(m, report.reportable_event_type)"
+                    @edit-milestone="handleEditMilestone(report, $event)"
                     @refresh="loadSRPReports"
+                    @view-payload="openViewPayload(report, $event)"
                   />
                 </td>
               </tr>
@@ -323,7 +333,6 @@ function hasMissingFields(report: SRPReport): boolean {
   />
 
   <SRPMilestoneDialog
-    :event-type="editingEventType"
     :milestone="editingMilestone"
     :show="showMilestoneDialog"
     @close="closeMilestoneDialog"
@@ -331,9 +340,11 @@ function hasMissingFields(report: SRPReport): boolean {
   />
 
   <SRPPayloadDialog
+    :milestone="viewPayloadMilestone"
     :report="viewPayloadReport"
     :show="showPayloadDialog"
     @close="closePayloadDialog"
+    @save="handleSavePayloadMilestone"
   />
 </template>
 

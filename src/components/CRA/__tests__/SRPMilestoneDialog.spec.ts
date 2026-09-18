@@ -3,8 +3,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { describe, expect, it } from 'vitest';
 
 import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
-
-import { mockSRPReport } from './fixtures';
+import { mockSRPReport } from '@/components/CRA/__tests__/fixtures';
 
 const mockMilestone = mockSRPReport.milestones[0];
 
@@ -153,5 +152,23 @@ describe('sRPMilestoneDialog', () => {
 
     expect(wrapper.emitted('save')).toBeTruthy();
     expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('shows structured SRP fields for existing typed milestone', () => {
+    const wrapper = mount(SRPMilestoneDialog, {
+      props: {
+        eventType: 'EXPLOITS_KEV_APPROVED',
+        milestone: mockSRPReport.milestones[0],
+        show: true,
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    expect(wrapper.text()).toContain('Additional Details');
+    expect(wrapper.text()).toContain('Manufacturer Name');
+    expect(wrapper.text()).toContain('Required');
+    expect(wrapper.text()).toContain('Date/Time When You Became Aware of the AEV');
   });
 });
