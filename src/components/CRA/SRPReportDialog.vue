@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 
 import EUStatesSelector from '@/components/CRA/EUStatesSelector.vue';
 
+import { normalizeEUStateCodes } from '@/constants/cra';
 import Modal from '@/widgets/Modal/Modal.vue';
 import type { SRPReport } from '@/types/cra';
 
@@ -44,7 +45,7 @@ function fromISO8601DateTime(iso: null | string): string {
 const formData = ref({
   evidence: props.report?.evidence || '',
   manufacturer_or_steward_name: props.report?.manufacturer_or_steward_name || '',
-  member_states_available: props.report?.member_states_available || [],
+  member_states_available: normalizeEUStateCodes(props.report?.member_states_available || []),
   reportable_event_type: props.report?.reportable_event_type || 'EXPLOITS_KEV_APPROVED',
   responsibility_scope: props.report?.responsibility_scope || 'manufacturer',
   srp_reference_id: props.report?.srp_reference_id || '',
@@ -60,7 +61,7 @@ watch(() => props.show, (newShow) => {
       formData.value = {
         evidence: props.report.evidence || '',
         manufacturer_or_steward_name: props.report.manufacturer_or_steward_name || '',
-        member_states_available: props.report.member_states_available || [],
+        member_states_available: normalizeEUStateCodes(props.report.member_states_available || []),
         reportable_event_type: props.report.reportable_event_type,
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,

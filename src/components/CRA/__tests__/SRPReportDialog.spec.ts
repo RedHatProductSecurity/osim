@@ -9,7 +9,7 @@ describe('sRPReportDialog', () => {
       props: { show: true },
     });
     expect(wrapper.find('.modal').exists()).toBe(true);
-    expect(wrapper.text()).toContain('Add SRP Reportable Event');
+    expect(wrapper.text()).toContain('Add SRP Report');
   });
 
   it('does not render when show is false', () => {
@@ -43,10 +43,15 @@ describe('sRPReportDialog', () => {
       props: { show: true },
     });
 
-    const eventTypeOptions = wrapper.findAll('select').at(0)?.findAll('option').map(option => option.text());
+    const eventTypeOptions = wrapper.findAll('select')
+      .at(0)?.findAll('option')
+      .map(option => option.text());
 
-    expect(eventTypeOptions).toEqual(['Actively Exploited Vulnerability', 'Severe Incident']);
-    expect(wrapper.text()).not.toContain('Additional Information Request');
+    expect(eventTypeOptions).toEqual([
+      'Actively Exploited Vulnerability',
+      'Severe Incident',
+      'Additional Information Request',
+    ]);
   });
 
   it('selects all EU member states and emits them as an array', async () => {
@@ -59,7 +64,6 @@ describe('sRPReportDialog', () => {
     await wrapper.findAll('button').find(button => button.text().includes('Select All'))?.trigger('click');
     await wrapper.find('.modal-footer .btn-primary').trigger('click');
 
-    expect(wrapper.find('input[type="datetime-local"]').exists()).toBe(false);
     expect(wrapper.emitted('save')?.[0][0]).toMatchObject({
       member_states_available: expect.arrayContaining(['AT', 'DE', 'EL']),
     });

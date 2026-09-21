@@ -272,3 +272,15 @@ export const EU_MEMBER_STATES: Record<string, string> = {
  * Array of EU member state codes (derived from EU_MEMBER_STATES keys)
  */
 export const EU_STATE_CODES = Object.keys(EU_MEMBER_STATES) as string[];
+
+/**
+ * Normalize EU member state codes array:
+ * - Filter valid codes only
+ * - Remove duplicates
+ * - Sort alphabetically
+ */
+export function normalizeEUStateCodes(codes: string[]): string[] {
+  const validCodes = codes.filter(code => EU_STATE_CODES.includes(code));
+  const uniqueCodes = [...new Set(validCodes)];
+  return uniqueCodes.sort();
+}
