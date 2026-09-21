@@ -504,5 +504,30 @@ describe('useFlawModel', () => {
 
       expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
     });
+
+    it('should not send feedback when the flaw is embargoed', async () => {
+      const { flaw } = useFlaw();
+      flaw.value = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      flaw.value.embargoed = true;
+      flaw.value.unembargo_dt = '2099-01-01T00:00:00Z';
+
+      setAegisMetadata({
+        cwe_id: [{
+          type: 'AI',
+          timestamp: new Date().toISOString(),
+          value: 'CWE-79',
+        }],
+      });
+
+      flaw.value.cwe_id = 'CWE-79';
+      flaw.value.title = 'altered title';
+
+      const { updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+
+      expect(putFlaw).toHaveBeenCalled();
+      expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
+    });
   });
 });
