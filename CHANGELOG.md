@@ -3,6 +3,9 @@
 ### Added
 * Add Submission Date and Time column to SRP milestones table for tracking when reports were submitted (`OSIDB-5493`)
 
+### Changed
+* Clarify CRA/SRP terminology: top-level entities are now "SRP Reportable Events", internal reports are "SRP Reports", and additional information requests are "Additional Information Responses" (`OSIDB-5555`)
+
 ## [2026.9.0]
 ### Added
 * Add bulk close functionality for Jira trackers in affects table with confirmation dialog

@@ -17,7 +17,7 @@ describe('sRPReportDetails', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Milestones');
+    expect(wrapper.text()).toContain('SRP Reports');
     expect(wrapper.text()).toContain('24h');
     expect(wrapper.text()).toContain('Owner');
     expect(wrapper.text()).toContain('Submitted');

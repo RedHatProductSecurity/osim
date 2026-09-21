@@ -106,7 +106,7 @@ function formatKey(key: string): string {
     <td colspan="8" class="p-3 bg-white">
       <div class="row">
         <div class="col-md-6">
-          <h6 class="mb-3">Milestone Information</h6>
+          <h6 class="mb-3">SRP Report Information</h6>
           <div class="mb-2">
             <strong>UUID:</strong> <code class="small">{{ milestone.uuid }}</code>
           </div>

@@ -218,10 +218,10 @@ function hasMissingFields(report: SRPReport): boolean {
 
     <div v-else class="p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h6 class="mb-0">SRP Reports</h6>
+        <h6 class="mb-0">SRP Reportable Events</h6>
         <button type="button" class="btn btn-sm btn-dark" @click="openAddReportDialog">
           <i class="bi bi-plus-circle me-1"></i>
-          Add Report
+          Add Reportable Event
         </button>
       </div>
 

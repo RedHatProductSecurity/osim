@@ -271,26 +271,26 @@ function handleClose() {
 <template>
   <Modal :show="show" @close="handleClose">
     <template #title>
-      {{ milestone ? 'Edit' : 'Add' }} Milestone
+      {{ milestone ? 'Edit SRP Report' : 'Add Additional Information Response' }}
     </template>
     <template #body>
       <div v-if="!milestone" class="alert alert-info mb-3">
         <i class="bi bi-info-circle me-2"></i>
         <small>
-          Additional Information Request milestones are created when CRA requests more details.
+          Additional Information Responses are created when CRA requests more details.
           The due date will be calculated automatically based on the received date (30 days).
         </small>
       </div>
 
       <div v-if="milestone" class="mb-3">
-        <label class="form-label">Milestone Type</label>
+        <label class="form-label">Report Type</label>
         <input
           :value="milestone.milestone_type"
           type="text"
           class="form-control"
           disabled
         />
-        <small class="text-muted">Milestone type cannot be changed</small>
+        <small class="text-muted">Report type cannot be changed</small>
       </div>
 
       <div class="mb-3">
@@ -326,7 +326,7 @@ function handleClose() {
             Self Assign
           </button>
         </div>
-        <small class="text-muted">Person responsible for this milestone</small>
+        <small class="text-muted">Person responsible for this report</small>
       </div>
 
       <div class="mb-3">
