@@ -76,6 +76,8 @@ export function useFlawModel() {
   }
 
   async function maybeReportProgrammaticFeedback() {
+    if (flaw.value.embargoed) return;
+
     const aegisMetadata = getAegisMetadata();
     if (Object.keys(aegisMetadata).length === 0) return;
 

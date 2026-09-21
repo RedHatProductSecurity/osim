@@ -2,11 +2,25 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import AegisActions from '@/components/Aegis/AegisActions.vue';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import { mountWithConfig } from '@/__tests__/helpers';
 import { osimRuntime } from '@/stores/osimRuntime';
 
+const feedbackProps = {
+  canShowFeedback: true,
+  canSuggest: false,
+  hasAppliedSuggestion: true,
+  hasMultipleSuggestions: false,
+  isFetchingSuggestion: false,
+  selectedIndex: 0,
+  suggestions: ['CWE-79'],
+  tooltipText: 'AI Suggestions',
+};
+
 describe('aegisActions', () => {
   beforeEach(() => {
+    useFlaw().resetFlaw();
     // @ts-expect-error - osimRuntime is readonly in tests
     osimRuntime.value = {
       ...osimRuntime.value,
@@ -89,16 +103,7 @@ describe('aegisActions', () => {
 
   it('shows feedback actions when suggestion applied', () => {
     const wrapper = mountWithConfig(AegisActions, {
-      props: {
-        canShowFeedback: true,
-        canSuggest: false,
-        hasAppliedSuggestion: true,
-        hasMultipleSuggestions: false,
-        isFetchingSuggestion: false,
-        selectedIndex: 0,
-        suggestions: ['CWE-79'],
-        tooltipText: 'AI Suggestions',
-      },
+      props: feedbackProps,
     });
 
     expect(wrapper.find('.bi-arrow-counterclockwise').exists()).toBe(true);
@@ -108,16 +113,7 @@ describe('aegisActions', () => {
 
   it('emits feedback events', async () => {
     const wrapper = mountWithConfig(AegisActions, {
-      props: {
-        canShowFeedback: true,
-        canSuggest: false,
-        hasAppliedSuggestion: true,
-        hasMultipleSuggestions: false,
-        isFetchingSuggestion: false,
-        selectedIndex: 0,
-        suggestions: ['CWE-79'],
-        tooltipText: 'AI Suggestions',
-      },
+      props: feedbackProps,
     });
 
     await wrapper.find('.bi-arrow-counterclockwise').trigger('click');
@@ -155,5 +151,30 @@ describe('aegisActions', () => {
 
     const starIcon = wrapper.find('.bi-stars');
     expect(starIcon.classes()).toContain('disabled');
+  });
+
+  it('disables feedback buttons with a tooltip when the flaw is embargoed', async () => {
+    useFlaw().flaw.value.embargoed = true;
+
+    const wrapper = mountWithConfig(AegisActions, {
+      props: feedbackProps,
+    });
+
+    const thumbsUp = wrapper.find('.bi-hand-thumbs-up');
+    const thumbsDown = wrapper.find('.bi-hand-thumbs-down');
+    const embargoedTooltip = 'Aegis feedback is not allowed on embargoed flaws';
+
+    expect(thumbsUp.classes()).toContain('disabled');
+    expect(thumbsDown.classes()).toContain('disabled');
+    expect(thumbsUp.attributes('title')).toBe(embargoedTooltip);
+    expect(thumbsDown.attributes('title')).toBe(embargoedTooltip);
+    expect(thumbsUp.attributes('aria-disabled')).toBe('true');
+    expect(thumbsDown.attributes('aria-disabled')).toBe('true');
+
+    await thumbsUp.trigger('click');
+    expect(wrapper.emitted('feedback')).toBeUndefined();
+
+    await thumbsDown.trigger('click');
+    expect(wrapper.find('.modal').exists()).toBe(false);
   });
 });

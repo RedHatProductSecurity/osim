@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import AegisFeedbackModal from './AegisFeedbackModal.vue';
 
 const props = defineProps<{
@@ -22,6 +24,11 @@ const emit = defineEmits<{
   suggest: [];
 }>();
 
+const EMBARGOED_FEEDBACK_TOOLTIP = 'Aegis feedback is not allowed on embargoed flaws';
+
+const { flaw } = useFlaw();
+const isEmbargoed = computed(() => Boolean(flaw.value.embargoed));
+
 const showFeedbackModal = ref(false);
 const showSuggestionTooltip = ref(false);
 
@@ -33,7 +40,13 @@ function toggleSuggestionTooltip() {
   showSuggestionTooltip.value = !showSuggestionTooltip.value;
 }
 
+function handleThumbsUp() {
+  if (isEmbargoed.value) return;
+  emit('feedback', 'positive', '');
+}
+
 function handleThumbsDown() {
+  if (isEmbargoed.value) return;
   showFeedbackModal.value = true;
 }
 
@@ -144,12 +157,16 @@ const safeTooltipText = computed(() => {
       <template v-if="canShowFeedback">
         <i
           class="bi-hand-thumbs-up label-icon me-1"
-          title="Mark helpful"
-          @click.prevent.stop="emit('feedback', 'positive', '')"
+          :class="{ disabled: isEmbargoed }"
+          :title="isEmbargoed ? EMBARGOED_FEEDBACK_TOOLTIP : 'Mark helpful'"
+          :aria-disabled="isEmbargoed"
+          @click.prevent.stop="handleThumbsUp"
         />
         <i
           class="bi-hand-thumbs-down label-icon me-1"
-          title="Mark unhelpful"
+          :class="{ disabled: isEmbargoed }"
+          :title="isEmbargoed ? EMBARGOED_FEEDBACK_TOOLTIP : 'Mark unhelpful'"
+          :aria-disabled="isEmbargoed"
           @click.prevent.stop="handleThumbsDown"
         />
       </template>
