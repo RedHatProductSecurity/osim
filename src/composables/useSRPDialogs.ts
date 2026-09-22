@@ -11,8 +11,10 @@ export function useSRPDialogs() {
   // Editing state
   const editingReport = ref<SRPReport | undefined>();
   const editingMilestone = ref<SRPReportMilestone | undefined>();
+  const editingMilestoneReport = ref<SRPReport | undefined>();
   const editingReportUuid = ref<string>('');
   const viewPayloadReport = ref<SRPReport | undefined>();
+  const viewPayloadMilestone = ref<SRPReportMilestone | undefined>();
 
   // Report dialog actions
   function openAddReportDialog() {
@@ -33,10 +35,12 @@ export function useSRPDialogs() {
   function openAddMilestoneDialog(reportUuid: string) {
     editingReportUuid.value = reportUuid;
     editingMilestone.value = undefined;
+    editingMilestoneReport.value = undefined;
     showMilestoneDialog.value = true;
   }
 
-  function openEditMilestoneDialog(milestone: SRPReportMilestone) {
+  function openEditMilestoneDialog(report: SRPReport, milestone: SRPReportMilestone) {
+    editingMilestoneReport.value = report;
     editingMilestone.value = milestone;
     showMilestoneDialog.value = true;
   }
@@ -46,13 +50,15 @@ export function useSRPDialogs() {
   }
 
   // Payload dialog actions
-  function openViewPayload(report: SRPReport) {
+  function openViewPayload(report: SRPReport, milestone: SRPReportMilestone) {
     viewPayloadReport.value = report;
+    viewPayloadMilestone.value = milestone;
     showPayloadDialog.value = true;
   }
 
   function closePayloadDialog() {
     showPayloadDialog.value = false;
+    viewPayloadMilestone.value = undefined;
   }
 
   return {
@@ -62,6 +68,7 @@ export function useSRPDialogs() {
     closeReportDialog,
     // State
     editingMilestone,
+    editingMilestoneReport,
     editingReport,
     editingReportUuid,
     // Open functions
@@ -74,6 +81,7 @@ export function useSRPDialogs() {
     showMilestoneDialog,
     showPayloadDialog,
     showReportDialog,
+    viewPayloadMilestone,
     viewPayloadReport,
   };
 }

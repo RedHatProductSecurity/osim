@@ -1,5 +1,9 @@
 import type { SRPFieldSpec } from '@/types/cra';
 
+/**
+ * CRA (Cyber Resilience Act) / SRP (Single Reporting Platform) related constants
+ */
+
 // SRP field definitions for CRA milestone reporting.
 // Keys match the backend additional_details field names defined in
 // osidb/apps/regulatory_reporting/services.py (OVERRIDABLE_*_KEYS).
@@ -229,3 +233,42 @@ export const SRP_FIELDS: SRPFieldSpec[] = [
     'final': 'optional',
     'scope': 'si' },
 ];
+
+/**
+ * EU member state codes with their full country names
+ * Note: Use 'EL' for Greece (not 'GR')
+ */
+export const EU_MEMBER_STATES: Record<string, string> = {
+  AT: 'Austria',
+  BE: 'Belgium',
+  BG: 'Bulgaria',
+  CY: 'Cyprus',
+  CZ: 'Czech Republic',
+  DE: 'Germany',
+  DK: 'Denmark',
+  EE: 'Estonia',
+  EL: 'Greece',
+  ES: 'Spain',
+  FI: 'Finland',
+  FR: 'France',
+  HR: 'Croatia',
+  HU: 'Hungary',
+  IE: 'Ireland',
+  IT: 'Italy',
+  LT: 'Lithuania',
+  LU: 'Luxembourg',
+  LV: 'Latvia',
+  MT: 'Malta',
+  NL: 'Netherlands',
+  PL: 'Poland',
+  PT: 'Portugal',
+  RO: 'Romania',
+  SE: 'Sweden',
+  SI: 'Slovenia',
+  SK: 'Slovakia',
+};
+
+/**
+ * Array of EU member state codes (derived from EU_MEMBER_STATES keys)
+ */
+export const EU_STATE_CODES = Object.keys(EU_MEMBER_STATES) as string[];

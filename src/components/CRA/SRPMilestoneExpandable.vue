@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
+import { isPayloadMilestoneType } from '@/components/CRA/srpPayloadFields';
 
 import type { SRPReportMilestone } from '@/types/cra';
 import { isMilestoneActionable } from '@/types/cra';
@@ -15,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'edit-milestone': [milestone: SRPReportMilestone];
   'refresh': [];
+  'view-payload': [milestone: SRPReportMilestone];
 }>();
 
 const isExpanded = ref(false);
@@ -93,6 +95,16 @@ function formatKey(key: string): string {
         </button>
       </div>
       <button
+        v-if="isPayloadMilestoneType(milestone.milestone_type)"
+        type="button"
+        class="btn btn-sm btn-outline-dark me-1"
+        title="View/Edit Payload"
+        @click.stop="emit('view-payload', milestone)"
+      >
+        <i class="bi bi-pencil-square"></i>
+      </button>
+      <button
+        v-if="!isPayloadMilestoneType(milestone.milestone_type)"
         type="button"
         class="btn btn-sm btn-dark"
         title="Edit"

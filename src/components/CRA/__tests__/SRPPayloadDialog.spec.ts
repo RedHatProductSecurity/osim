@@ -1,29 +1,291 @@
+import { type Directive } from 'vue';
+
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { IMaskDirective } from 'vue-imask';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
-import { mockSRPReport } from '@/components/CRA/__tests__/fixtures';
+import { mockSIPayloadFields, mockSRPReport } from '@/components/CRA/__tests__/fixtures';
+
+import { useUserStore } from '@/stores/UserStore';
+
+function mountDialog(props: InstanceType<typeof SRPPayloadDialog>['$props']) {
+  return mount(SRPPayloadDialog, {
+    props,
+    global: {
+      directives: {
+        imask: IMaskDirective as Directive,
+      },
+    },
+  });
+}
 
 describe('sRPPayloadDialog', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
   it('renders when show is true', () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     expect(wrapper.find('.modal').exists()).toBe(true);
   });
 
   it('does not render when show is false', () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { report: mockSRPReport, show: false },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: false });
     expect(wrapper.find('.modal').exists()).toBe(false);
   });
 
   it('emits close event when close button clicked', async () => {
-    const wrapper = mount(SRPPayloadDialog, {
-      props: { report: mockSRPReport, show: true },
-    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
     await wrapper.find('.btn-close').trigger('click');
     expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('renders milestone-specific payload fields', () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+
+    expect(wrapper.text()).toContain('Edit 24h AEV report');
+    expect(wrapper.text()).toContain('Report Type');
+    expect(wrapper.text()).not.toContain('24h Early Warning');
+    expect(wrapper.text()).not.toContain('Status:');
+    expect(wrapper.text()).toContain('Notification Type');
+    expect(wrapper.text()).toContain('Date and Time When You Become Aware of the Actively Exploited Vulnerability');
+    expect(wrapper.text()).not.toContain('Incident Is Suspected of Unlawful or Malicious Acts');
+    expect(wrapper.text()).not.toContain('aev_detected_at');
+    expect(wrapper.text()).not.toContain('Max 255 characters');
+  });
+
+  it('offers all editable milestone statuses', () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const statusSelect = wrapper.findAll('select').find(select => select.text().includes('Not Started'));
+
+    expect(statusSelect?.text()).toContain('In Progress');
+    expect(statusSelect?.text()).toContain('In Review');
+    expect(statusSelect?.text()).toContain('Submitted');
+    expect(statusSelect?.text()).toContain('Obsolete');
+  });
+
+  it('uses OSIM date editor for datetime payload fields', () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const dateRow = wrapper.findAll('tr')
+      .find(row => row.text().includes('Date and Time When You Become Aware'));
+
+    expect(dateRow?.find('.payload-date-control').exists()).toBe(true);
+    expect(dateRow?.find('.osim-date-edit-field').exists()).toBe(true);
+  });
+
+  it('renders fields in SRP form order without grouping by generated source', () => {
+    const severeIncidentReport = {
+      ...mockSRPReport,
+      reportable_event_type: 'MAJOR_INCIDENT_APPROVED' as const,
+    };
+    const milestone = {
+      ...severeIncidentReport.milestones[0],
+      payload_fields: mockSIPayloadFields,
+    };
+    const wrapper = mountDialog({ milestone, report: severeIncidentReport, show: true });
+    const labels = wrapper.findAll('.payload-field-name').map(cell => cell.find('div').text());
+
+    expect(labels.indexOf('Notification Type'))
+      .toBeLessThan(labels.indexOf('Title'));
+    expect(labels.indexOf('Title')).toBeLessThan(labels.indexOf('Summary'));
+    expect(labels.indexOf('Summary')).toBeLessThan(labels.indexOf('Manufacturer Name'));
+    expect(labels.indexOf('Manufacturer Name'))
+      .toBeLessThan(labels.indexOf('Member States Where Product Available (Concerned CSIRT)'));
+    expect(labels.indexOf('Product Name')).toBeLessThan(labels.indexOf('Product Version'));
+    expect(labels.indexOf('Product Version')).toBeLessThan(labels.indexOf('Product Type'));
+    expect(labels.indexOf('End of Support Indicator')).toBeLessThan(labels.indexOf('Component Name'));
+    expect(labels.indexOf('Mitigating Measure Expected Shortly'))
+      .toBeLessThan(labels.indexOf('Incident Is Suspected of Unlawful or Malicious Acts'));
+    expect(wrapper.text()).not.toContain('Read-only Generated Fields');
+    expect(wrapper.text()).not.toContain('Generated by OSIDB');
+  });
+
+  it('renders inherited badges for copied/updateable fields', () => {
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      milestone_type: '72h' as const,
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'report_title' ? { ...row, requirement: 'copied_or_updated' as const } : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+    const headers = wrapper.findAll('th').map(header => header.text());
+
+    expect(headers).toEqual(['Field', 'Value', 'Actions']);
+    expect(wrapper.findAll('.requirement-badge').some(badge => badge.text() === 'Inherited'))
+      .toBe(true);
+    expect(wrapper.text()).not.toContain('Copied/updateable');
+  });
+
+  it('renders severe incident fields for severe incident reports', () => {
+    const severeIncidentReport = {
+      ...mockSRPReport,
+      reportable_event_type: 'MAJOR_INCIDENT_APPROVED' as const,
+    };
+    const milestone = {
+      ...severeIncidentReport.milestones[0],
+      payload_fields: mockSIPayloadFields,
+    };
+    const wrapper = mountDialog({ milestone, report: severeIncidentReport, show: true });
+
+    expect(wrapper.text()).toContain('Severe Incident');
+    expect(wrapper.text()).toContain('Incident Is Suspected of Unlawful or Malicious Acts');
+    expect(wrapper.text()).not.toContain('CVE ID');
+  });
+
+  it('temporarily confirms copied field values', async () => {
+    vi.useFakeTimers();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const copyButton = wrapper.findAll('button').find(button => button.text() === 'Copy field');
+
+    await copyButton?.trigger('click');
+
+    expect(writeText).toHaveBeenCalledTimes(1);
+    expect(copyButton?.text()).toBe('Copied');
+
+    await vi.advanceTimersByTimeAsync(1600);
+    await wrapper.vm.$nextTick();
+
+    expect(copyButton?.text()).toBe('Copy field');
+  });
+
+  it('copies raw payload values as JSON', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'notification_type'
+          ? { ...row, input_type: 'boolean', value: false }
+          : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+
+    await wrapper.findAll('button').find(button => button.text() === 'Copy JSON')?.trigger('click');
+
+    expect(JSON.parse(writeText.mock.calls[0][0])).toMatchObject({
+      notification_type: false,
+    });
+  });
+
+  it('does not emit unchanged generated payload values as additional details', async () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      additional_details: {},
+    }));
+  });
+
+  it('preserves existing manual payload overrides on save', async () => {
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      additional_details: { euvd_id: 'EUVD-1234' },
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'euvd_id'
+          ? { ...row, source: 'manual_override' as const, value: 'EUVD-1234' }
+          : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      additional_details: { euvd_id: 'EUVD-1234' },
+    }));
+  });
+
+  it('emits editable payload fields as additional details on save', async () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const euvdRow = wrapper.findAll('tr').find(row => row.text().includes('EUVD ID'));
+    const ownerInput = wrapper.find('input[type="email"]');
+
+    await ownerInput.setValue('owner@example.com');
+    await euvdRow?.find('input').setValue('EUVD-1234');
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      owner: 'owner@example.com',
+      updated_dt: mockSRPReport.milestones[0].updated_dt,
+      additional_details: expect.objectContaining({
+        euvd_id: 'EUVD-1234',
+      }),
+    }));
+    expect((wrapper.emitted('save')?.[0][0] as any).additional_details).not.toHaveProperty('report_title');
+    expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('updates missing-required warnings when fields are filled locally', async () => {
+    const milestone = {
+      ...mockSRPReport.milestones[0],
+      payload_fields: mockSRPReport.milestones[0].payload_fields!.map(row => (
+        row.key === 'report_title' ? { ...row, missing: true, value: '' } : row
+      )),
+    };
+    const wrapper = mountDialog({ milestone, report: mockSRPReport, show: true });
+    const titleRow = wrapper.findAll('tr').find(row => row.text().includes('Title'));
+
+    expect(wrapper.find('.alert-warning').text()).toContain('Title');
+    expect(titleRow?.classes()).toContain('table-warning');
+
+    await titleRow?.find('input').setValue('Filled title');
+
+    expect(wrapper.find('.alert-warning').exists()).toBe(false);
+    expect(titleRow?.classes()).not.toContain('table-warning');
+  });
+
+  it('selects all member states in the milestone payload editor', async () => {
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+    const memberStatesRow = wrapper.findAll('tr')
+      .find(row => row.text().includes('Member States Where Product Available'));
+
+    expect(memberStatesRow?.find('select[multiple]').exists()).toBe(true);
+
+    await memberStatesRow?.findAll('button').find(button => button.text() === 'Select All')?.trigger('click');
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      additional_details: expect.objectContaining({
+        member_states_available: expect.arrayContaining(['AT', 'DE', 'EL']),
+      }),
+    }));
+    expect((wrapper.emitted('save')?.[0][0] as any).additional_details.member_states_available)
+      .toHaveLength(3);
+  });
+
+  it('self-assigns the current user as owner', async () => {
+    const userStore = useUserStore();
+    userStore.setWhoami({
+      email: 'current.user@example.com',
+      groups: [],
+      profile: null,
+      username: 'current-user',
+    });
+    const wrapper = mountDialog({ milestone: mockSRPReport.milestones[0], report: mockSRPReport, show: true });
+
+    await wrapper.findAll('button').find(button => button.text() === 'Self Assign')?.trigger('click');
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
+      owner: 'current.user@example.com',
+    }));
   });
 });

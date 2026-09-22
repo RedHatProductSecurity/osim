@@ -8,7 +8,7 @@ describe('srpStatusBadge', () => {
       props: { status: 'required' },
     });
 
-    expect(wrapper.find('.badge').text()).toBe('required');
+    expect(wrapper.find('.badge').text()).toBe('Not Started');
   });
 
   it('renders overdue badge', () => {

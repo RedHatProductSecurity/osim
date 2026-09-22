@@ -49,6 +49,19 @@ export type SRPMilestoneType =
   | 'additional_information_response'
   | 'final';
 
+export interface SRPReportMilestonePayloadField {
+  editable: boolean;
+  input_type: string;
+  key: string;
+  label: string;
+  missing: boolean;
+  options?: string[];
+  requirement: 'copied_or_updated' | 'not_applicable' | 'optional' | 'required' | 'required_if_available';
+  section: string;
+  source: 'generated' | 'manual_override';
+  value: unknown;
+}
+
 export interface SRPReportMilestone {
   acl_read: string[];
   acl_write: string[];
@@ -56,12 +69,17 @@ export interface SRPReportMilestone {
   created_dt: string;
   days_remaining: null | number;
   due_at: null | string;
+  generated_payload?: null | Record<string, any>;
   hours_remaining: null | number;
   is_overdue: boolean;
   manual_completion_notes: string;
   milestone_type: SRPMilestoneType;
+  missing_conditionally_required_fields?: string[];
   missing_required_fields: string;
   owner?: null | string; // Added in OSIDB-5439
+  payload_fields?: SRPReportMilestonePayloadField[];
+  payload_prepared_at?: null | string;
+  rejected_override_keys?: string[];
   request_received_at: null | string;
   request_source: string;
   request_text: string;

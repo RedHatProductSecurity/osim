@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 
-import Modal from '@/widgets/Modal/Modal.vue';
+import { SRP_FIELDS } from '@/constants/cra';
+import { useUserStore } from '@/stores/UserStore';
 import type {
   SRPEventType,
   SRPFieldSpec,
@@ -9,8 +10,7 @@ import type {
   SRPMilestoneType,
   SRPReportMilestone,
 } from '@/types/cra';
-import { SRP_FIELDS } from '@/constants/cra';
-import { useUserStore } from '@/stores/UserStore';
+import Modal from '@/widgets/Modal/Modal.vue';
 
 const props = defineProps<{
   eventType?: null | SRPEventType;
@@ -136,7 +136,6 @@ function requirementClass(field: SRPFieldSpec): string {
 }
 
 // ── Lifecycle ────────────────────────────────────────────────────────────────
-
 watch(() => props.show, (newShow) => {
   if (newShow) {
     const existing = props.milestone?.additional_details || {};
@@ -400,7 +399,7 @@ function handleClose() {
       <div class="mb-3">
         <label class="form-label">Status</label>
         <select v-model="formData.status" class="form-select">
-          <option value="required">Required</option>
+          <option value="required">Not Started</option>
           <option value="in_progress">In Progress</option>
           <option value="in_review">In Review</option>
           <option value="submitted">Submitted</option>
