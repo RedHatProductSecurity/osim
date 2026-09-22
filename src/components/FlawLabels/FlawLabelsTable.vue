@@ -39,15 +39,12 @@ const availableBuLabels = computed(() =>
   ),
 );
 
-const nonEditableLabelTypes: FlawLabelTypeEnum[] = [
-  FlawLabelTypeEnum.WORKFLOW,
-  FlawLabelTypeEnum.PRODUCT_FAMILY,
-  FlawLabelTypeEnum.ALIAS,
-];
-const isNonEditableLabelType = (type: FlawLabelTypeEnum) => nonEditableLabelTypes.includes(type);
-
 const isExpandedDefault = labelsFromProps.value.some(label => label.contributor || label.state === 'NEW');
 const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
+
+function isFieldEditable(label: ZodFlawLabelType) {
+  return label.type === FlawLabelTypeEnum.CONTEXT_BASED || label.type === FlawLabelTypeEnum.BU;
+}
 
 function handleNewLabel(label: ZodFlawLabelType) {
   newLabels.value.add(label.name);
@@ -106,7 +103,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
           }"
         >
           <FlawLabelTableEditingRow
-            v-if="isUpdatingLabel === label.name"
+            v-if="isFieldEditable(label) && isUpdatingLabel === label.name"
             :buLabels="buLabels"
             :contextLabels="contextLabels"
             :initalLabel="label"
@@ -132,8 +129,8 @@ function handleUndoDelete(label: ZodFlawLabelType) {
               <div class="actions">
                 <template v-if="!isDeletedLabel(label)">
                   <span
-                    v-if="isNonEditableLabelType(label.type)"
-                    :title="`${label.type} labels are not editable`"
+                    v-if="!isFieldEditable(label)"
+                    title="Only context_based and bu labels are field-editable"
                   >
                     <button
                       type="button"

@@ -159,24 +159,27 @@ describe('flawLabelsTableEditingRow', () => {
     expect(stateTd.text()).toBe('');
   });
 
-  it('should save an updated contributor instead of reverting it', async () => {
-    const wrapper = mountWithConfig(FlawLabelTableEditingRow, {
-      props: {
-        initalLabel: {
-          type: FlawLabelTypeEnum.CONTEXT_BASED,
-          name: 'test',
-          contributor: 'skynet',
-          state: StateEnum.New,
+  it.each([FlawLabelTypeEnum.CONTEXT_BASED, FlawLabelTypeEnum.BU])(
+    'should save an updated %s contributor instead of reverting it',
+    async (type) => {
+      const wrapper = mountWithConfig(FlawLabelTableEditingRow, {
+        props: {
+          initalLabel: {
+            type,
+            name: 'test',
+            contributor: 'skynet',
+            state: StateEnum.New,
+          },
         },
-      },
-    });
+      });
 
-    await wrapper.find('input').setValue('agent-smith');
-    await wrapper.find('input').trigger('blur');
-    await wrapper.find('button[title="Save"]').trigger('click');
+      await wrapper.find('input').setValue('agent-smith');
+      await wrapper.find('input').trigger('blur');
+      await wrapper.find('button[title="Save"]').trigger('click');
 
-    expect(wrapper.emitted()).not.toHaveProperty('cancel');
-    expect(wrapper.emitted()).toHaveProperty('save');
-    expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({ contributor: 'agent-smith' })]]);
-  });
+      expect(wrapper.emitted()).not.toHaveProperty('cancel');
+      expect(wrapper.emitted()).toHaveProperty('save');
+      expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({ contributor: 'agent-smith' })]]);
+    },
+  );
 });

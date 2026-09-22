@@ -105,6 +105,57 @@ describe('flawLabelsTable', () => {
     expect(updatedLabels.value.has('test1')).toBe(false);
   });
 
+  it.each([FlawLabelTypeEnum.CONTEXT_BASED, FlawLabelTypeEnum.BU])(
+    'should allow editing fields on a %s label',
+    async (type) => {
+      const label = { uuid: 'test-uuid', type, name: 'test', contributor: 'skynet', state: StateEnum.New };
+      const wrapper = mountFlawLabelsTable({ modelValue: [label] });
+      const { labels, updatedLabels } = useFlawLabels();
+      await flushPromises();
+
+      await wrapper.find('button[title="Edit label"]').trigger('click');
+      const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
+      await editRow.find('input').setValue('agent-smith');
+      await editRow.find('input').trigger('blur');
+      await editRow.find('button[title="Save"]').trigger('click');
+
+      expect(labels.value.test).toEqual(expect.objectContaining({ ...label, contributor: 'agent-smith' }));
+      expect(updatedLabels.value.has('test')).toBe(true);
+    },
+  );
+
+  it.each([FlawLabelTypeEnum.WORKFLOW, FlawLabelTypeEnum.ALIAS, FlawLabelTypeEnum.PRODUCT_FAMILY])(
+    'should not allow editing fields on a %s label',
+    async (type) => {
+      const wrapper = mountFlawLabelsTable({
+        modelValue: [{ uuid: 'test-uuid', type, name: 'test', state: StateEnum.New }],
+      });
+      await flushPromises();
+
+      expect(wrapper.find('button[title="Edit label"]').exists()).toBe(false);
+      const editButton = wrapper.find('button:disabled');
+      expect(editButton.exists()).toBe(true);
+      await editButton.trigger('click');
+      expect(wrapper.findComponent(FlawLabelTableEditingRow).exists()).toBe(false);
+    },
+  );
+
+  it('should not allow field editing of a newly added workflow label', async () => {
+    const wrapper = mountFlawLabelsTable({ modelValue: [] });
+    await flushPromises();
+
+    await wrapper.find('.table-new-row td').trigger('click');
+    const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
+    await editRow.find('select[title="Label type"]').setValue(FlawLabelTypeEnum.WORKFLOW);
+    await editRow.find('input[placeholder="Enter workflow label name"]').setValue('approved');
+    await editRow.find('button[title="Save"]').trigger('click');
+
+    expect(useFlawLabels().newLabels.value.has('approved')).toBe(true);
+    expect(wrapper.find('button[title="Edit label"]').exists()).toBe(false);
+    expect(wrapper.find('button:disabled').exists()).toBe(true);
+    expect(wrapper.findComponent(FlawLabelTableEditingRow).exists()).toBe(false);
+  });
+
   it('should handle delete label', async () => {
     const wrapper = mountFlawLabelsTable();
     const { areLabelsUpdated } = useFlawLabels();
