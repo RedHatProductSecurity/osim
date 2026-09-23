@@ -83,6 +83,7 @@ export interface SRPReportMilestone {
   request_received_at: null | string;
   request_source: string;
   request_text: string;
+  response_text?: string; // Added in OSIDB-5621
   srp_report: string;
   status: SRPMilestoneStatus; // Updated in OSIDB-5442
   submitted_at?: null | string; // Added in OSIDB-5439
