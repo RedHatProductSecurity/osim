@@ -39,15 +39,12 @@ const availableBuLabels = computed(() =>
   ),
 );
 
-const nonEditableLabelTypes: FlawLabelTypeEnum[] = [
-  FlawLabelTypeEnum.WORKFLOW,
-  FlawLabelTypeEnum.PRODUCT_FAMILY,
-  FlawLabelTypeEnum.ALIAS,
-];
-const isNonEditableLabelType = (type: FlawLabelTypeEnum) => nonEditableLabelTypes.includes(type);
-
 const isExpandedDefault = labelsFromProps.value.some(label => label.contributor || label.state === 'NEW');
 const [isExpanded, toggleExpanded] = useToggle(isExpandedDefault);
+
+function isFieldEditable(label: ZodFlawLabelType) {
+  return label.type === FlawLabelTypeEnum.CONTEXT_BASED || label.type === FlawLabelTypeEnum.BU;
+}
 
 function handleNewLabel(label: ZodFlawLabelType) {
   newLabels.value.add(label.name);
@@ -56,7 +53,11 @@ function handleNewLabel(label: ZodFlawLabelType) {
 }
 
 function handleUpdateLabel(label: ZodFlawLabelType) {
-  updatedLabels.value.add(label.name);
+  // a label that hasn't been created yet only needs its local value refreshed;
+  // marking it "updated" too would queue a redundant update request with no uuid
+  if (!newLabels.value.has(label.name)) {
+    updatedLabels.value.add(label.name);
+  }
   labels.value[label.name] = label;
   isUpdatingLabel.value = undefined;
 }
@@ -102,7 +103,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
           }"
         >
           <FlawLabelTableEditingRow
-            v-if="isUpdatingLabel === label.name"
+            v-if="isFieldEditable(label) && isUpdatingLabel === label.name"
             :buLabels="buLabels"
             :contextLabels="contextLabels"
             :initalLabel="label"
@@ -128,8 +129,8 @@ function handleUndoDelete(label: ZodFlawLabelType) {
               <div class="actions">
                 <template v-if="!isDeletedLabel(label)">
                   <span
-                    v-if="isNonEditableLabelType(label.type)"
-                    :title="`${label.type} labels are not editable`"
+                    v-if="!isFieldEditable(label)"
+                    title="Only context_based and bu labels are field-editable"
                   >
                     <button
                       type="button"

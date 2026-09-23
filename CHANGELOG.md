@@ -38,6 +38,7 @@
 ## [2026.8.0-hotfix]
 ### Fixed
 * Remove `affects` from flaw list/search `include_fields` to improve Advanced Search performance (`OSIDB-5314`)
+* Preserve unsaved/failed label edits and typed contributors for `context_based` and `bu` labels; restrict label field editing to those types (`OSIDB-5349`)
 
 ## [2026.8.0]
 ### Added
