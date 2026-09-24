@@ -45,7 +45,6 @@ const {
   editingMilestone,
   editingReport,
   editingReportUuid,
-  openAddMilestoneDialog: _openAddMilestoneDialog, // Unused: using openAddAdditionalInfoDialog instead
   openAddReportDialog,
   openEditMilestoneDialog,
   openEditReportDialog,

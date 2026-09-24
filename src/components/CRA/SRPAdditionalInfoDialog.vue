@@ -25,6 +25,8 @@ const userStore = useUserStore();
 
 // ── Form state ───────────────────────────────────────────────────────────────
 
+const isSaving = ref(false);
+
 const formData = ref({
   milestone_type: 'additional_information_response',
   request_source: '',
@@ -66,15 +68,16 @@ const isAssignedToMe = computed(() =>
 
 watch(() => props.show, (newShow) => {
   if (newShow) {
+    isSaving.value = false;
     if (props.milestone) {
       // Edit mode
       formData.value = {
         milestone_type: 'additional_information_response',
         request_source: props.milestone.request_source || '',
         request_text: props.milestone.request_text || '',
-        request_received_at: fromISO8601Date(props.milestone.request_received_at || ''),
+        request_received_at: fromISO8601Date(props.milestone.request_received_at),
         response_text: props.milestone.response_text || '',
-        due_at: fromISO8601Date(props.milestone.due_at || ''),
+        due_at: fromISO8601Date(props.milestone.due_at),
         owner: props.milestone.owner || null,
         status: (props.milestone.status || 'required') as any,
         manual_completion_notes: props.milestone.manual_completion_notes || '',
@@ -97,6 +100,24 @@ watch(() => props.show, (newShow) => {
 });
 
 function handleSave() {
+  // Validate required fields
+  if (!formData.value.request_source?.trim()) {
+    return;
+  }
+  if (!formData.value.request_text?.trim()) {
+    return;
+  }
+  if (!formData.value.request_received_at) {
+    return;
+  }
+
+  // Prevent concurrent saves
+  if (isSaving.value) {
+    return;
+  }
+
+  isSaving.value = true;
+
   const payload: Partial<SRPReportMilestone> = {
     milestone_type: 'additional_information_response',
     request_source: formData.value.request_source,
@@ -118,6 +139,7 @@ function handleSave() {
 }
 
 function handleClose() {
+  isSaving.value = false;
   emit('close');
 }
 </script>
@@ -226,6 +248,7 @@ function handleClose() {
               type="button"
               class="btn btn-outline-secondary"
               :disabled="isAssignedToMe || !userStore.userEmail"
+              :title="!userStore.userEmail ? 'You must be logged in to self-assign' : ''"
               @click="selfAssign"
             >
               <i class="bi bi-person-check me-1"></i>
@@ -282,10 +305,11 @@ function handleClose() {
       <button
         type="button"
         class="btn btn-primary"
+        :disabled="isSaving"
         @click="handleSave"
       >
         <i class="bi bi-save me-1"></i>
-        Save
+        {{ isSaving ? 'Saving...' : 'Save' }}
       </button>
     </template>
   </Modal>
