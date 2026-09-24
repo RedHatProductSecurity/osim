@@ -249,10 +249,12 @@ async function handleSaveAdditionalInfo(data: Partial<SRPReportMilestone>) {
       // Create new
       await createAdditionalInfoMilestone(editingAdditionalInfoReportUuid.value, data);
     }
-    closeAdditionalInfoDialog();
     await loadSRPReports();
   } catch (err) {
     console.error('Failed to save additional info milestone:', err);
+  } finally {
+    // Always close dialog to reset isSaving state
+    closeAdditionalInfoDialog();
   }
 }
 
