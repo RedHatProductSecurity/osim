@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
+import SRPAdditionalInfoDialog from '@/components/CRA/SRPAdditionalInfoDialog.vue';
 import SRPMilestoneDialog from '@/components/CRA/SRPMilestoneDialog.vue';
 import SRPMilestoneIcons from '@/components/CRA/SRPMilestoneIcons.vue';
 import SRPPayloadDialog from '@/components/CRA/SRPPayloadDialog.vue';
@@ -32,6 +33,11 @@ const error = ref(false);
 const isExpanded = ref(true);
 const expandedReports = ref<Set<string>>(new Set());
 
+// Additional Info Dialog state
+const showAdditionalInfoDialog = ref(false);
+const editingAdditionalInfo = ref<SRPReportMilestone | undefined>();
+const editingAdditionalInfoReportUuid = ref<string>('');
+
 const {
   closeMilestoneDialog,
   closePayloadDialog,
@@ -39,7 +45,6 @@ const {
   editingMilestone,
   editingReport,
   editingReportUuid,
-  openAddMilestoneDialog,
   openAddReportDialog,
   openEditMilestoneDialog,
   openEditReportDialog,
@@ -203,7 +208,54 @@ function handleEditMilestone(report: SRPReport, milestone: SRPReportMilestone) {
     openViewPayload(report, milestone);
     return;
   }
+
+  // Check if it's an additional_information_response
+  if (milestone.milestone_type === 'additional_information_response') {
+    openEditAdditionalInfoDialog(report, milestone);
+    return;
+  }
+
   openEditMilestoneDialog(report, milestone);
+}
+
+function openEditAdditionalInfoDialog(report: SRPReport, milestone: SRPReportMilestone) {
+  editingAdditionalInfo.value = milestone;
+  editingAdditionalInfoReportUuid.value = report.uuid;
+  showAdditionalInfoDialog.value = true;
+}
+
+function openAddAdditionalInfoDialog(reportUuid: string) {
+  editingAdditionalInfo.value = undefined;
+  editingAdditionalInfoReportUuid.value = reportUuid;
+  showAdditionalInfoDialog.value = true;
+}
+
+function closeAdditionalInfoDialog() {
+  showAdditionalInfoDialog.value = false;
+  editingAdditionalInfo.value = undefined;
+  editingAdditionalInfoReportUuid.value = '';
+}
+
+async function handleSaveAdditionalInfo(data: Partial<SRPReportMilestone>) {
+  try {
+    if (editingAdditionalInfo.value) {
+      // Update existing
+      await updateSRPMilestone(
+        editingAdditionalInfoReportUuid.value,
+        editingAdditionalInfo.value.uuid,
+        data,
+      );
+    } else {
+      // Create new
+      await createAdditionalInfoMilestone(editingAdditionalInfoReportUuid.value, data);
+    }
+    await loadSRPReports();
+  } catch (err) {
+    console.error('Failed to save additional info milestone:', err);
+  } finally {
+    // Always close dialog to reset isSaving state
+    closeAdditionalInfoDialog();
+  }
 }
 
 function hasMissingFields(report: SRPReport): boolean {
@@ -311,7 +363,7 @@ function hasMissingFields(report: SRPReport): boolean {
                 <td colspan="6" class="p-0">
                   <SRPReportDetails
                     :report="report"
-                    @add-milestone="openAddMilestoneDialog"
+                    @add-milestone="openAddAdditionalInfoDialog"
                     @edit-milestone="handleEditMilestone(report, $event)"
                     @refresh="loadSRPReports"
                     @view-payload="openViewPayload(report, $event)"
@@ -337,6 +389,14 @@ function hasMissingFields(report: SRPReport): boolean {
     :show="showMilestoneDialog"
     @close="closeMilestoneDialog"
     @save="handleSaveMilestone"
+  />
+
+  <SRPAdditionalInfoDialog
+    :milestone="editingAdditionalInfo"
+    :report-uuid="editingAdditionalInfoReportUuid"
+    :show="showAdditionalInfoDialog"
+    @close="closeAdditionalInfoDialog"
+    @save="handleSaveAdditionalInfo"
   />
 
   <SRPPayloadDialog
