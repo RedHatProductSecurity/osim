@@ -8,9 +8,10 @@ import { mockSRPReport } from '@/components/CRA/__tests__/fixtures';
 import * as SRPService from '@/services/SRPService';
 
 vi.mock('@/services/SRPService', () => ({
-  createAdditionalInfoMilestone: vi.fn(() => Promise.resolve({})),
+  createAdditionalInfoRequest: vi.fn(() => Promise.resolve({})),
   createSRPReport: vi.fn(() => Promise.resolve({})),
   fetchSRPReports: vi.fn(),
+  updateAdditionalInfoRequest: vi.fn(() => Promise.resolve({})),
   updateSRPMilestone: vi.fn(() => Promise.resolve({})),
   updateSRPReport: vi.fn(() => Promise.resolve({})),
 }));
@@ -92,18 +93,19 @@ describe('sRPSummary', () => {
 
   it('handles save milestone errors', async () => {
     vi.mocked(SRPService.fetchSRPReports).mockResolvedValue([mockSRPReport]);
-    vi.mocked(SRPService.createAdditionalInfoMilestone).mockRejectedValue(new Error('Update failed'));
+    vi.mocked(SRPService.createAdditionalInfoRequest).mockRejectedValue(new Error('Create failed'));
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(SRPSummary, { ...mountOptions, props: { flawId: 'flaw-123' } });
     await flushPromises();
 
-    // Set editingReportUuid so the function executes the create path
-    (wrapper.vm as any).editingReportUuid = 'report-uuid-123';
-    await (wrapper.vm as any).handleSaveMilestone({ status: 'submitted' });
+    // Set editingAdditionalInfoReportUuid and editingAdditionalInfoMilestoneUuid for the create path
+    (wrapper.vm as any).editingAdditionalInfoReportUuid = 'report-uuid-123';
+    (wrapper.vm as any).editingAdditionalInfoMilestoneUuid = 'milestone-uuid-456';
+    await (wrapper.vm as any).handleSaveAdditionalInfo({ request_source: 'ENISA', request_text: 'Info' });
     await flushPromises();
 
-    expect(console.error).toHaveBeenCalledWith('Failed to save SRP milestone:', expect.any(Error));
+    expect(console.error).toHaveBeenCalledWith('Failed to save additional info request:', expect.any(Error));
   });
 
   it('handles save report errors', async () => {
