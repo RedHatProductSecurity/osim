@@ -96,16 +96,19 @@ describe('sRPMilestoneExpandable', () => {
     expect(wrapper.text()).toContain('Unassigned');
   });
 
-  it('emits edit-milestone event', async () => {
+  it('emits edit-milestone event for non-payload milestones', async () => {
+    // Since all current milestone types (24h, 72h, final) are payload types,
+    // we use an arbitrary non-payload type for testing
+    const nonPayloadMilestone = { ...mockMilestone, milestone_type: 'custom' as any };
     const wrapper = mount(SRPMilestoneExpandable, {
       ...mountOptions,
-      props: { milestone: mockMilestone },
+      props: { milestone: nonPayloadMilestone },
     });
 
-    await wrapper.find('.btn-dark').trigger('click');
+    await wrapper.find('[title="Edit"]').trigger('click');
 
     expect(wrapper.emitted('edit-milestone')).toBeTruthy();
-    expect(wrapper.emitted('edit-milestone')?.[0]).toEqual([mockMilestone]);
+    expect(wrapper.emitted('edit-milestone')?.[0]).toEqual([nonPayloadMilestone]);
   });
 
   it('uses combined payload action for payload milestones', async () => {
