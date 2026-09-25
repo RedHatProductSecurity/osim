@@ -3,6 +3,7 @@
 ### Added
 * Add CRA SRP reportable event and payload edit dialogs for 24h AEV, 72h AEV, final AEV, 24h SI, 72h SI, and final SI reports (`OSIDB-5614`, `OSIDB-5615`, `OSIDB-5616`, `OSIDB-5617`, `OSIDB-5618`, `OSIDB-5619`, `OSIDB-5620`)
 * Add Submission Date and Time column to SRP milestones table for tracking when reports were submitted (`OSIDB-5493`)
+* Add Creation Date column to SRP milestones table for tracking when milestones were created (`OSIDB-5492`)
 * Replace EU member states text input with interactive multi-select dropdown to prevent invalid country codes (`OSIDB-5552`)
 * Add specialized dialog for Additional Information Response (`OSIDB-5621`)
 

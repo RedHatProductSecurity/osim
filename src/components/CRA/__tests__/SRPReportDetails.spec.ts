@@ -20,7 +20,19 @@ describe('sRPReportDetails', () => {
     expect(wrapper.text()).toContain('SRP Reports');
     expect(wrapper.text()).toContain('24h');
     expect(wrapper.text()).toContain('Owner');
+    expect(wrapper.text()).toContain('Created');
     expect(wrapper.text()).toContain('Submitted');
+  });
+
+  it('renders created date or N/A in milestone rows', () => {
+    const wrapper = mount(SRPReportDetails, {
+      props: {
+        report: mockSRPReport,
+      },
+    });
+
+    // Should display formatted created_dt (2026-01-01T00:00:00Z as "2026-01-01 00:00 UTC")
+    expect(wrapper.text()).toContain('2026-01-01 00:00');
   });
 
   it('emits add-milestone event', async () => {
