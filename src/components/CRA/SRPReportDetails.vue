@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import SRPMilestoneExpandable from '@/components/CRA/SRPMilestoneExpandable.vue';
 
-import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import type { AdditionalInformationRequest, SRPReport, SRPReportMilestone } from '@/types/cra';
 import { sortMilestones } from '@/types/cra';
 
 const props = defineProps<{
@@ -11,27 +11,53 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'add-milestone': [reportUuid: string];
+  'add-milestone': [milestoneUuid: string];
+  'edit-air': [air: AdditionalInformationRequest, milestoneUuid: string];
   'edit-milestone': [milestone: SRPReportMilestone];
   'refresh': [];
   'view-payload': [milestone: SRPReportMilestone];
 }>();
 
 const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
+const showMilestoneDropdown = ref(false);
+
+function handleAddAIR(milestoneUuid: string) {
+  emit('add-milestone', milestoneUuid);
+  showMilestoneDropdown.value = false;
+}
+
+function handleEditAIR(air: AdditionalInformationRequest, milestone: SRPReportMilestone) {
+  emit('edit-air', air, milestone.uuid);
+}
 </script>
 
 <template>
   <div class="p-3 bg-light">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h6 class="mb-0">SRP Reports</h6>
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary"
-        @click="emit('add-milestone', report.uuid)"
-      >
-        <i class="bi bi-plus-circle me-1"></i>
-        Add Additional Information Response
-      </button>
+      <div class="dropdown">
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary dropdown-toggle"
+          :disabled="!report.milestones || report.milestones.length === 0"
+          @click="showMilestoneDropdown = !showMilestoneDropdown"
+        >
+          <i class="bi bi-plus-circle me-1"></i>
+          Add Additional Information Response
+        </button>
+        <ul
+          v-if="showMilestoneDropdown"
+          class="dropdown-menu show"
+          style="cursor: pointer"
+        >
+          <li v-for="milestone in sortedMilestones" :key="milestone.uuid">
+            <a class="dropdown-item" @click.prevent="handleAddAIR(milestone.uuid)">
+              <strong>{{ milestone.milestone_type }}</strong>
+              <small class="text-muted ms-2">({{ milestone.status }})</small>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
     <div v-if="!report.milestones || report.milestones.length === 0" class="text-muted">
       No SRP reports defined.
@@ -70,6 +96,7 @@ const sortedMilestones = computed(() => sortMilestones(props.report.milestones |
             v-for="milestone in sortedMilestones"
             :key="milestone.uuid"
             :milestone="milestone"
+            @edit-air="handleEditAIR($event, milestone)"
             @edit-milestone="emit('edit-milestone', $event)"
             @refresh="emit('refresh')"
             @view-payload="emit('view-payload', $event)"

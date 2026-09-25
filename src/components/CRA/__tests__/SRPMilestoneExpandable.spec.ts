@@ -20,7 +20,7 @@ const mockMilestone: SRPReportMilestone = {
   hours_remaining: 120,
   is_overdue: false,
   manual_completion_notes: 'Test notes',
-  milestone_type: 'additional_information_response',
+  milestone_type: '24h',
   missing_required_fields: '',
   owner: 'test@example.com',
   request_received_at: '2026-08-20T10:00:00Z',
@@ -45,7 +45,7 @@ describe('sRPMilestoneExpandable', () => {
       props: { milestone: mockMilestone },
     });
 
-    expect(wrapper.text()).toContain('additional_information_response');
+    expect(wrapper.text()).toContain('24h');
     expect(wrapper.text()).toContain('5d');
     expect(wrapper.text()).toContain('test@example.com');
   });
@@ -96,16 +96,19 @@ describe('sRPMilestoneExpandable', () => {
     expect(wrapper.text()).toContain('Unassigned');
   });
 
-  it('emits edit-milestone event', async () => {
+  it('emits edit-milestone event for non-payload milestones', async () => {
+    // Since all current milestone types (24h, 72h, final) are payload types,
+    // we use an arbitrary non-payload type for testing
+    const nonPayloadMilestone = { ...mockMilestone, milestone_type: 'custom' as any };
     const wrapper = mount(SRPMilestoneExpandable, {
       ...mountOptions,
-      props: { milestone: mockMilestone },
+      props: { milestone: nonPayloadMilestone },
     });
 
-    await wrapper.find('.btn-dark').trigger('click');
+    await wrapper.find('[title="Edit"]').trigger('click');
 
     expect(wrapper.emitted('edit-milestone')).toBeTruthy();
-    expect(wrapper.emitted('edit-milestone')?.[0]).toEqual([mockMilestone]);
+    expect(wrapper.emitted('edit-milestone')?.[0]).toEqual([nonPayloadMilestone]);
   });
 
   it('uses combined payload action for payload milestones', async () => {

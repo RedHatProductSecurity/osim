@@ -2,23 +2,26 @@
 import { ref, watch, computed } from 'vue';
 
 import { useUserStore } from '@/stores/UserStore';
-import type { SRPReportMilestone } from '@/types/cra';
+import type { AdditionalInformationRequest } from '@/types/cra';
 import Modal from '@/widgets/Modal/Modal.vue';
 
 const props = withDefaults(
   defineProps<{
-    milestone?: SRPReportMilestone;
-    reportUuid: string;
+    air?: AdditionalInformationRequest;
+    // eslint-disable-next-line vue/no-unused-properties
+    milestoneUuid: string; // Parent milestone UUID (used by parent for API calls)
+    // eslint-disable-next-line vue/no-unused-properties
+    reportUuid: string; // Parent report UUID (used by parent for API calls)
     show: boolean;
   }>(),
   {
-    milestone: undefined,
+    air: undefined,
   },
 );
 
 const emit = defineEmits<{
   close: [];
-  save: [milestone: Partial<SRPReportMilestone>];
+  save: [air: Partial<AdditionalInformationRequest>];
 }>();
 
 const userStore = useUserStore();
@@ -28,13 +31,12 @@ const userStore = useUserStore();
 const isSaving = ref(false);
 
 const formData = ref({
-  milestone_type: 'additional_information_response',
   request_source: '',
   request_text: '',
   request_received_at: '',
   response_text: '',
-  due_at: '',
-  owner: null as null | string,
+  manual_due_at: '',
+  owner: '',
   status: 'required' as const,
   manual_completion_notes: '',
 });
@@ -69,29 +71,27 @@ const isAssignedToMe = computed(() =>
 watch(() => props.show, (newShow) => {
   if (newShow) {
     isSaving.value = false;
-    if (props.milestone) {
+    if (props.air) {
       // Edit mode
       formData.value = {
-        milestone_type: 'additional_information_response',
-        request_source: props.milestone.request_source || '',
-        request_text: props.milestone.request_text || '',
-        request_received_at: fromISO8601Date(props.milestone.request_received_at),
-        response_text: props.milestone.response_text || '',
-        due_at: fromISO8601Date(props.milestone.due_at),
-        owner: props.milestone.owner || null,
-        status: (props.milestone.status || 'required') as any,
-        manual_completion_notes: props.milestone.manual_completion_notes || '',
+        request_source: props.air.request_source || '',
+        request_text: props.air.request_text || '',
+        request_received_at: fromISO8601Date(props.air.request_received_at),
+        response_text: props.air.response_text || '',
+        manual_due_at: fromISO8601Date(props.air.manual_due_at),
+        owner: props.air.owner || '',
+        status: (props.air.status || 'required') as any,
+        manual_completion_notes: props.air.manual_completion_notes || '',
       };
     } else {
       // Add mode - reset to defaults
       formData.value = {
-        milestone_type: 'additional_information_response',
         request_source: '',
         request_text: '',
         request_received_at: '',
         response_text: '',
-        due_at: '',
-        owner: null,
+        manual_due_at: '',
+        owner: '',
         status: 'required',
         manual_completion_notes: '',
       };
@@ -110,6 +110,9 @@ function handleSave() {
   if (!formData.value.request_received_at) {
     return;
   }
+  if (!formData.value.owner?.trim()) {
+    return;
+  }
 
   // Prevent concurrent saves
   if (isSaving.value) {
@@ -118,21 +121,19 @@ function handleSave() {
 
   isSaving.value = true;
 
-  const payload: Partial<SRPReportMilestone> = {
-    milestone_type: 'additional_information_response',
+  const payload: Partial<AdditionalInformationRequest> = {
     request_source: formData.value.request_source,
     request_text: formData.value.request_text,
     request_received_at: toISO8601Date(formData.value.request_received_at),
-    srp_report: props.reportUuid,
     response_text: formData.value.response_text,
     owner: formData.value.owner,
     status: formData.value.status,
     manual_completion_notes: formData.value.manual_completion_notes,
   };
 
-  // Due date is optional
-  if (formData.value.due_at) {
-    payload.due_at = toISO8601Date(formData.value.due_at);
+  // Manual due date is optional
+  if (formData.value.manual_due_at) {
+    payload.manual_due_at = toISO8601Date(formData.value.manual_due_at);
   }
 
   emit('save', payload);
@@ -147,7 +148,7 @@ function handleClose() {
 <template>
   <Modal class="modal-lg" :show="show" @close="handleClose">
     <template #title>
-      {{ milestone ? 'Edit Additional Information Response' : 'Add Additional Information Response' }}
+      {{ air ? 'Edit Additional Information Response' : 'Add Additional Information Response' }}
     </template>
     <template #body>
       <form @submit.prevent="handleSave">
@@ -215,26 +216,26 @@ function handleClose() {
           ></textarea>
         </div>
 
-        <!-- Due Date (Optional) -->
+        <!-- Manual Due Date (Optional) -->
         <div class="mb-3">
-          <label for="due_at" class="form-label">
-            Due Date (Optional)
+          <label for="manual_due_at" class="form-label">
+            Manual Due Date (Optional)
           </label>
           <input
-            id="due_at"
-            v-model="formData.due_at"
+            id="manual_due_at"
+            v-model="formData.manual_due_at"
             type="date"
             class="form-control"
           />
           <small class="form-text text-muted">
-            Custom due date (if different from the default 30-day calculation)
+            Override for the automatic due date calculation
           </small>
         </div>
 
         <!-- Owner -->
         <div class="mb-3">
           <label for="owner" class="form-label">
-            Owner
+            Owner <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <input
@@ -243,6 +244,7 @@ function handleClose() {
               type="text"
               class="form-control"
               placeholder="email@example.com"
+              required
             />
             <button
               type="button"
