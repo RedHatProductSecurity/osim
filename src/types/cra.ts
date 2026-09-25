@@ -46,7 +46,6 @@ export type SRPResponsibilityScope =
 export type SRPMilestoneType =
   | '24h'
   | '72h'
-  | 'additional_information_response'
   | 'final';
 
 export interface SRPReportMilestonePayloadField {
@@ -66,6 +65,7 @@ export interface SRPReportMilestone {
   acl_read: string[];
   acl_write: string[];
   additional_details?: Record<string, any>; // Added in OSIDB-5482
+  additional_information_requests?: AdditionalInformationRequest[]; // Nested AIRs
   created_dt: string;
   days_remaining: null | number;
   due_at: null | string;
@@ -87,6 +87,28 @@ export interface SRPReportMilestone {
   srp_report: string;
   status: SRPMilestoneStatus; // Updated in OSIDB-5442
   submitted_at?: null | string; // Added in OSIDB-5439
+  updated_dt: string;
+  uuid: string;
+}
+
+// Additional Information Request - nested under milestones (OSIDB refactor)
+export interface AdditionalInformationRequest {
+  acl_read: string[];
+  acl_write: string[];
+  created_dt: string;
+  days_remaining: null | number;
+  due_at: null | string;
+  hours_remaining: null | number;
+  is_overdue: boolean;
+  manual_completion_notes: string;
+  manual_due_at: null | string;
+  milestone: string; // UUID of parent milestone (read-only)
+  owner: string;
+  request_received_at: null | string;
+  request_source: string;
+  request_text: string;
+  response_text: string;
+  status: SRPMilestoneStatus;
   updated_dt: string;
   uuid: string;
 }
@@ -128,7 +150,7 @@ export function isMilestoneActionable(milestone: SRPReportMilestone): boolean {
 }
 
 // Helper function to sort milestones in display order
-// Order: 24h, 72h, final, then additional_information_response milestones
+// Order: 24h, 72h, final (AIRs are now nested within each milestone)
 export function sortMilestones(milestones: SRPReportMilestone[]): SRPReportMilestone[] {
   const milestoneOrder: Record<string, number> = {
     '24h': 1,
@@ -137,19 +159,13 @@ export function sortMilestones(milestones: SRPReportMilestone[]): SRPReportMiles
   };
 
   return [...milestones].sort((a, b) => {
-    const aIsAdditional = a.milestone_type === 'additional_information_response';
-    const bIsAdditional = b.milestone_type === 'additional_information_response';
-
-    // If both are main milestones, sort by predefined order
-    if (!aIsAdditional && !bIsAdditional) {
-      return (milestoneOrder[a.milestone_type] || 99) - (milestoneOrder[b.milestone_type] || 99);
-    }
-
-    // Main milestones come before additional requests
-    if (!aIsAdditional && bIsAdditional) return -1;
-    if (aIsAdditional && !bIsAdditional) return 1;
-
-    // Both are additional requests - sort by creation date (older first)
-    return new Date(a.created_dt).getTime() - new Date(b.created_dt).getTime();
+    return (milestoneOrder[a.milestone_type] || 99) - (milestoneOrder[b.milestone_type] || 99);
   });
+}
+
+// Helper function to sort AIRs within a milestone by creation date
+export function sortAIRs(airs: AdditionalInformationRequest[]): AdditionalInformationRequest[] {
+  return [...airs].sort((a, b) =>
+    new Date(a.created_dt).getTime() - new Date(b.created_dt).getTime(),
+  );
 }

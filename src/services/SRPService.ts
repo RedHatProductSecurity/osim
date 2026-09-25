@@ -1,6 +1,6 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
-import type { SRPReport, SRPReportMilestone } from '@/types/cra';
+import type { AdditionalInformationRequest, SRPReport, SRPReportMilestone } from '@/types/cra';
 import { osidbFetch } from '@/services/OsidbAuthService';
 
 export async function fetchSRPReports(flawId: string): Promise<SRPReport[]> {
@@ -55,15 +55,61 @@ export async function updateSRPMilestone(
     .catch(createCatchHandler('Error updating SRP milestone:'));
 }
 
-export async function createAdditionalInfoMilestone(
+// ── Additional Information Request (AIR) endpoints ──────────────────────────
+
+export async function fetchAdditionalInfoRequests(
   reportUuid: string,
-  data: Partial<SRPReportMilestone>,
+  milestoneUuid: string,
+): Promise<AdditionalInformationRequest[]> {
+  const response = await osidbFetch({
+    method: 'GET',
+    url:
+      `/regulatory-reporting/api/v1/srp-reports/${reportUuid}` +
+      `/milestones/${milestoneUuid}/additional-information-requests`,
+  });
+
+  return (response.data?.results || response.data || []) as AdditionalInformationRequest[];
+}
+
+export async function createAdditionalInfoRequest(
+  reportUuid: string,
+  milestoneUuid: string,
+  data: Partial<AdditionalInformationRequest>,
 ) {
   return osidbFetch({
     method: 'POST',
-    url: `/regulatory-reporting/api/v1/srp-reports/${reportUuid}/milestones`,
+    url:
+      `/regulatory-reporting/api/v1/srp-reports/${reportUuid}` +
+      `/milestones/${milestoneUuid}/additional-information-requests`,
     data,
   })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Additional information request created successfully.' }))
+    .then(
+      createSuccessHandler({
+        title: 'Success!',
+        body: 'Additional information request created successfully.',
+      }),
+    )
     .catch(createCatchHandler('Error creating additional information request:'));
+}
+
+export async function updateAdditionalInfoRequest(
+  reportUuid: string,
+  milestoneUuid: string,
+  airUuid: string,
+  data: Partial<AdditionalInformationRequest>,
+) {
+  return osidbFetch({
+    method: 'PUT',
+    url:
+      `/regulatory-reporting/api/v1/srp-reports/${reportUuid}` +
+      `/milestones/${milestoneUuid}/additional-information-requests/${airUuid}`,
+    data,
+  })
+    .then(
+      createSuccessHandler({
+        title: 'Success!',
+        body: 'Additional information request updated successfully.',
+      }),
+    )
+    .catch(createCatchHandler('Error updating additional information request:'));
 }
