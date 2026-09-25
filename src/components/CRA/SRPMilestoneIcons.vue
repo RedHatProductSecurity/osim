@@ -11,12 +11,7 @@ const props = defineProps<{
 const sortedMilestones = computed(() => sortMilestones(props.report.milestones || []));
 
 function getMilestoneIcon(milestone: SRPReportMilestone): string {
-  // Special icon for additional information request milestones
-  if (milestone.milestone_type === 'additional_information_response') {
-    return 'bi-info-circle-fill';
-  }
-
-  // Status-based icons for regular milestones (OSIDB-5442)
+  // Status-based icons for milestones (OSIDB-5442)
   switch (milestone.status) {
     case 'required':
       return 'bi-circle-fill text-danger';
