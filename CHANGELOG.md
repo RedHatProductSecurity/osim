@@ -10,6 +10,9 @@
 ### Changed
 * Clarify CRA/SRP terminology: top-level entities are now "SRP Reportable Events", internal reports are "SRP Reports", and additional information requests are "Additional Information Responses" (`OSIDB-5555`)
 
+### Fixed
+* Fix timezone handling in SRP timer start date to prevent off-by-one-hour errors in due date calculations (`OSIDB-5624`)
+
 ## [2026.9.0]
 ### Added
 * Add bulk close functionality for Jira trackers in affects table with confirmation dialog
