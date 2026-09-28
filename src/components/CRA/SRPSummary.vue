@@ -72,18 +72,27 @@ async function loadSRPReports() {
   try {
     srpReports.value = await fetchSRPReports(props.flawId);
 
-    // Fetch AIRs for each milestone since backend doesn't include them in the report response
+    // Fetch AIRs for each milestone concurrently since backend doesn't include them in the report response
+    const airFetchPromises: Promise<void>[] = [];
+
     for (const report of srpReports.value) {
       for (const milestone of report.milestones || []) {
-        try {
-          const airs = await fetchAdditionalInfoRequests(report.uuid, milestone.uuid);
-          milestone.additional_information_requests = airs;
-        } catch (err) {
-          console.error(`Failed to load AIRs for milestone ${milestone.uuid}:`, err);
-          milestone.additional_information_requests = [];
-        }
+        const fetchPromise = fetchAdditionalInfoRequests(report.uuid, milestone.uuid)
+          .then((airs) => {
+            milestone.additional_information_requests = airs;
+          })
+          .catch((err) => {
+            console.error(`Failed to load AIRs for milestone ${milestone.uuid}:`, err);
+            // Set to undefined to distinguish fetch failure from empty collection
+            milestone.additional_information_requests = undefined;
+          });
+
+        airFetchPromises.push(fetchPromise);
       }
     }
+
+    // Wait for all AIR fetches to complete
+    await Promise.all(airFetchPromises);
   } catch (err) {
     console.error('Failed to load SRP reports:', err);
     error.value = true;

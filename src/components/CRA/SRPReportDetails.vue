@@ -48,13 +48,16 @@ function handleEditAIR(air: AdditionalInformationRequest, milestone: SRPReportMi
         <ul
           v-if="showMilestoneDropdown"
           class="dropdown-menu show"
-          style="cursor: pointer"
         >
           <li v-for="milestone in sortedMilestones" :key="milestone.uuid">
-            <a class="dropdown-item" @click.prevent="handleAddAIR(milestone.uuid)">
+            <button
+              type="button"
+              class="dropdown-item"
+              @click="handleAddAIR(milestone.uuid)"
+            >
               <strong>{{ milestone.milestone_type }}</strong>
               <small class="text-muted ms-2">({{ milestone.status }})</small>
-            </a>
+            </button>
           </li>
         </ul>
       </div>

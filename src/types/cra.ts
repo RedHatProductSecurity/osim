@@ -109,6 +109,7 @@ export interface AdditionalInformationRequest {
   request_text: string;
   response_text: string;
   status: SRPMilestoneStatus;
+  submitted_at: null | string;
   updated_dt: string;
   uuid: string;
 }
