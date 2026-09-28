@@ -19,17 +19,23 @@ const emit = defineEmits<{
 
 function toISO8601DateTime(datetimeLocal: string): string {
   if (!datetimeLocal) return '';
-  return new Date(datetimeLocal).toISOString();
+  // datetime-local format: "2026-08-19T10:30"
+  // Convert to UTC ISO 8601 with 'Z' suffix
+  const date = new Date(datetimeLocal);
+  return date.toISOString();
 }
 
 function fromISO8601DateTime(iso: null | string): string {
   if (!iso) return '';
+  // Parse ISO 8601 UTC string (e.g., "2026-09-16T13:14:00Z")
+  // and convert to local datetime for datetime-local input
   const date = new Date(iso);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
+  // Return format for datetime-local: "YYYY-MM-DDTHH:MM"
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
