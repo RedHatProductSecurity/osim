@@ -11,11 +11,13 @@ import { isPayloadMilestoneType } from '@/components/CRA/srpPayloadFields';
 
 import { useSRPDialogs } from '@/composables/useSRPDialogs';
 
-import type { SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
+import type { AdditionalInformationRequest, SRPReport, SRPReportMilestone, SRPReportSummary } from '@/types/cra';
 import {
-  createAdditionalInfoMilestone,
+  createAdditionalInfoRequest,
   createSRPReport,
+  fetchAdditionalInfoRequests,
   fetchSRPReports,
+  updateAdditionalInfoRequest,
   updateSRPMilestone,
   updateSRPReport,
 } from '@/services/SRPService';
@@ -35,8 +37,9 @@ const expandedReports = ref<Set<string>>(new Set());
 
 // Additional Info Dialog state
 const showAdditionalInfoDialog = ref(false);
-const editingAdditionalInfo = ref<SRPReportMilestone | undefined>();
+const editingAdditionalInfo = ref<AdditionalInformationRequest | undefined>();
 const editingAdditionalInfoReportUuid = ref<string>('');
+const editingAdditionalInfoMilestoneUuid = ref<string>(''); // Parent milestone UUID
 
 const {
   closeMilestoneDialog,
@@ -44,7 +47,7 @@ const {
   closeReportDialog,
   editingMilestone,
   editingReport,
-  editingReportUuid,
+  editingReportUuid: _editingReportUuid,
   openAddReportDialog,
   openEditMilestoneDialog,
   openEditReportDialog,
@@ -68,6 +71,28 @@ async function loadSRPReports() {
 
   try {
     srpReports.value = await fetchSRPReports(props.flawId);
+
+    // Fetch AIRs for each milestone concurrently since backend doesn't include them in the report response
+    const airFetchPromises: Promise<void>[] = [];
+
+    for (const report of srpReports.value) {
+      for (const milestone of report.milestones || []) {
+        const fetchPromise = fetchAdditionalInfoRequests(report.uuid, milestone.uuid)
+          .then((airs) => {
+            milestone.additional_information_requests = airs;
+          })
+          .catch((err) => {
+            console.error(`Failed to load AIRs for milestone ${milestone.uuid}:`, err);
+            // Set to undefined to distinguish fetch failure from empty collection
+            milestone.additional_information_requests = undefined;
+          });
+
+        airFetchPromises.push(fetchPromise);
+      }
+    }
+
+    // Wait for all AIR fetches to complete
+    await Promise.all(airFetchPromises);
   } catch (err) {
     console.error('Failed to load SRP reports:', err);
     error.value = true;
@@ -180,10 +205,9 @@ async function handleSaveMilestone(data: Partial<SRPReportMilestone>) {
   try {
     if (editingMilestone.value) {
       await updateSRPMilestone(editingMilestone.value.srp_report, editingMilestone.value.uuid, data);
-    } else {
-      await createAdditionalInfoMilestone(editingReportUuid.value, data);
+      await loadSRPReports();
     }
-    await loadSRPReports();
+    // Note: Milestones (24h, 72h, final) are auto-created by backend signals, not manually created
   } catch (err) {
     console.error('Failed to save SRP milestone:', err);
   }
@@ -209,24 +233,24 @@ function handleEditMilestone(report: SRPReport, milestone: SRPReportMilestone) {
     return;
   }
 
-  // Check if it's an additional_information_response
-  if (milestone.milestone_type === 'additional_information_response') {
-    openEditAdditionalInfoDialog(report, milestone);
-    return;
-  }
-
   openEditMilestoneDialog(report, milestone);
 }
 
-function openEditAdditionalInfoDialog(report: SRPReport, milestone: SRPReportMilestone) {
-  editingAdditionalInfo.value = milestone;
+function openEditAdditionalInfoDialog(
+  report: SRPReport,
+  milestoneUuid: string,
+  air: AdditionalInformationRequest,
+) {
+  editingAdditionalInfo.value = air;
   editingAdditionalInfoReportUuid.value = report.uuid;
+  editingAdditionalInfoMilestoneUuid.value = milestoneUuid;
   showAdditionalInfoDialog.value = true;
 }
 
-function openAddAdditionalInfoDialog(reportUuid: string) {
+function openAddAdditionalInfoDialog(reportUuid: string, milestoneUuid: string) {
   editingAdditionalInfo.value = undefined;
   editingAdditionalInfoReportUuid.value = reportUuid;
+  editingAdditionalInfoMilestoneUuid.value = milestoneUuid;
   showAdditionalInfoDialog.value = true;
 }
 
@@ -234,24 +258,30 @@ function closeAdditionalInfoDialog() {
   showAdditionalInfoDialog.value = false;
   editingAdditionalInfo.value = undefined;
   editingAdditionalInfoReportUuid.value = '';
+  editingAdditionalInfoMilestoneUuid.value = '';
 }
 
-async function handleSaveAdditionalInfo(data: Partial<SRPReportMilestone>) {
+async function handleSaveAdditionalInfo(data: Partial<AdditionalInformationRequest>) {
   try {
     if (editingAdditionalInfo.value) {
-      // Update existing
-      await updateSRPMilestone(
+      // Update existing AIR
+      await updateAdditionalInfoRequest(
         editingAdditionalInfoReportUuid.value,
+        editingAdditionalInfoMilestoneUuid.value,
         editingAdditionalInfo.value.uuid,
         data,
       );
     } else {
-      // Create new
-      await createAdditionalInfoMilestone(editingAdditionalInfoReportUuid.value, data);
+      // Create new AIR under the specified milestone
+      await createAdditionalInfoRequest(
+        editingAdditionalInfoReportUuid.value,
+        editingAdditionalInfoMilestoneUuid.value,
+        data,
+      );
     }
     await loadSRPReports();
   } catch (err) {
-    console.error('Failed to save additional info milestone:', err);
+    console.error('Failed to save additional info request:', err);
   } finally {
     // Always close dialog to reset isSaving state
     closeAdditionalInfoDialog();
@@ -363,7 +393,8 @@ function hasMissingFields(report: SRPReport): boolean {
                 <td colspan="6" class="p-0">
                   <SRPReportDetails
                     :report="report"
-                    @add-milestone="openAddAdditionalInfoDialog"
+                    @add-milestone="(milestoneUuid: string) => openAddAdditionalInfoDialog(report.uuid, milestoneUuid)"
+                    @edit-air="(air, milestoneUuid) => openEditAdditionalInfoDialog(report, milestoneUuid, air)"
                     @edit-milestone="handleEditMilestone(report, $event)"
                     @refresh="loadSRPReports"
                     @view-payload="openViewPayload(report, $event)"
@@ -392,7 +423,8 @@ function hasMissingFields(report: SRPReport): boolean {
   />
 
   <SRPAdditionalInfoDialog
-    :milestone="editingAdditionalInfo"
+    :air="editingAdditionalInfo"
+    :milestone-uuid="editingAdditionalInfoMilestoneUuid"
     :report-uuid="editingAdditionalInfoReportUuid"
     :show="showAdditionalInfoDialog"
     @close="closeAdditionalInfoDialog"

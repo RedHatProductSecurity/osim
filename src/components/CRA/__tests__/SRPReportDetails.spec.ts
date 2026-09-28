@@ -35,15 +35,21 @@ describe('sRPReportDetails', () => {
     expect(wrapper.text()).toContain('2026-01-01 00:00');
   });
 
-  it('emits add-milestone event', async () => {
+  it('emits add-milestone event when AIR dropdown item clicked', async () => {
     const wrapper = mount(SRPReportDetails, {
       props: {
         report: mockSRPReport,
       },
     });
 
-    await wrapper.find('button').trigger('click');
+    // Click dropdown toggle
+    await wrapper.find('.dropdown-toggle').trigger('click');
+
+    // Click first dropdown item
+    await wrapper.find('.dropdown-item').trigger('click');
+
     expect(wrapper.emitted('add-milestone')).toBeTruthy();
+    expect(wrapper.emitted('add-milestone')?.[0][0]).toBe(mockSRPReport.milestones[0].uuid);
   });
 
   it('emits view-payload event for payload milestones', async () => {

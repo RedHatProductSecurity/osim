@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import SRPStatusBadge from '@/components/CRA/SRPStatusBadge.vue';
 import { isPayloadMilestoneType } from '@/components/CRA/srpPayloadFields';
 
-import type { SRPReportMilestone } from '@/types/cra';
-import { isMilestoneActionable } from '@/types/cra';
+import type { AdditionalInformationRequest, SRPReportMilestone } from '@/types/cra';
+import { isMilestoneActionable, sortAIRs } from '@/types/cra';
 import { updateSRPMilestone } from '@/services/SRPService';
 import { formatDate } from '@/utils/helpers';
 
@@ -14,12 +14,26 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  'edit-air': [air: AdditionalInformationRequest];
   'edit-milestone': [milestone: SRPReportMilestone];
   'refresh': [];
   'view-payload': [milestone: SRPReportMilestone];
 }>();
 
 const isExpanded = ref(false);
+
+const sortedAIRs = computed(() =>
+  props.milestone.additional_information_requests
+    ? sortAIRs(props.milestone.additional_information_requests)
+    : [],
+);
+
+function formatAIRTimeRemaining(air: AdditionalInformationRequest): string {
+  if (air.is_overdue) return 'Overdue';
+  if (air.days_remaining === null) return '-';
+  const hours = air.hours_remaining ? ` ${air.hours_remaining % 24}h` : '';
+  return `${air.days_remaining}d${hours}`;
+}
 
 function toggleExpanded() {
   isExpanded.value = !isExpanded.value;
@@ -84,17 +98,6 @@ function formatKey(key: string): string {
       {{ formatTimeRemaining() }}
     </td>
     <td @click.stop>
-      <div class="btn-group btn-group-sm me-1" role="group">
-        <button
-          v-if="milestone.status !== 'submitted'"
-          type="button"
-          class="btn btn-success"
-          title="Mark Submitted"
-          @click.stop="handleQuickAction('submit')"
-        >
-          <i class="bi bi-check-circle"></i>
-        </button>
-      </div>
       <button
         v-if="isPayloadMilestoneType(milestone.milestone_type)"
         type="button"
@@ -107,11 +110,20 @@ function formatKey(key: string): string {
       <button
         v-if="!isPayloadMilestoneType(milestone.milestone_type)"
         type="button"
-        class="btn btn-sm btn-dark"
+        class="btn btn-sm btn-dark me-1"
         title="Edit"
         @click.stop="emit('edit-milestone', milestone)"
       >
         <i class="bi bi-pencil"></i>
+      </button>
+      <button
+        v-if="milestone.status !== 'submitted'"
+        type="button"
+        class="btn btn-sm btn-success"
+        title="Mark Submitted"
+        @click.stop="handleQuickAction('submit')"
+      >
+        <i class="bi bi-check-circle"></i>
       </button>
     </td>
   </tr>
@@ -183,6 +195,58 @@ function formatKey(key: string): string {
       </div>
     </td>
   </tr>
+
+  <!-- AIR rows (displayed as regular table rows below parent milestone) -->
+  <tr
+    v-for="air in sortedAIRs"
+    :key="air.uuid"
+    class="air-row"
+    :class="{ 'table-warning': air.is_overdue }"
+  >
+    <td></td>
+    <td class="ps-4">
+      <i class="bi bi-arrow-return-right me-1 text-muted"></i>
+      <small class="text-muted">Additional Information Response</small>
+    </td>
+    <td>
+      <SRPStatusBadge :status="air.status" />
+    </td>
+    <td>
+      <span v-if="air.owner">{{ air.owner }}</span>
+      <span v-else class="text-muted">Unassigned</span>
+    </td>
+    <td>
+      {{ air.created_dt ? formatDate(new Date(air.created_dt), true) : 'N/A' }}
+    </td>
+    <td>
+      {{
+        air.manual_due_at
+          ? formatDate(new Date(air.manual_due_at), false)
+          : air.due_at
+            ? formatDate(new Date(air.due_at), false)
+            : 'N/A'
+      }}
+    </td>
+    <td>
+      {{ air.submitted_at ? formatDate(new Date(air.submitted_at), true) : '-' }}
+    </td>
+    <td :class="{ 'text-danger': air.is_overdue }">
+      <span v-if="air.days_remaining !== null || air.is_overdue">
+        {{ formatAIRTimeRemaining(air) }}
+      </span>
+      <span v-else class="text-muted">N/A</span>
+    </td>
+    <td @click.stop>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-dark"
+        title="Edit Additional Information Response"
+        @click.stop="emit('edit-air', air)"
+      >
+        <i class="bi bi-pencil-square"></i>
+      </button>
+    </td>
+  </tr>
 </template>
 
 <style scoped>
@@ -196,5 +260,13 @@ function formatKey(key: string): string {
 
 .milestone-details-expanded {
   background-color: #f8f9fa;
+}
+
+.air-row {
+  background-color: rgb(0 0 0 / 1.5%);
+}
+
+.air-row:hover {
+  background-color: rgb(0 0 0 / 4%);
 }
 </style>

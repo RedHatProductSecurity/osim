@@ -121,18 +121,6 @@ describe('sRPMilestoneIcons', () => {
     expect(wrapper.find('.bi-circle-fill.text-info').exists()).toBe(true);
   });
 
-  it('shows info-circle-fill for additional_information_response', () => {
-    const report = createReport([
-      createMilestone({ milestone_type: 'additional_information_response', status: 'in_progress' }),
-    ]);
-
-    const wrapper = mount(SRPMilestoneIcons, {
-      props: { report },
-    });
-
-    expect(wrapper.find('.bi-info-circle-fill').exists()).toBe(true);
-  });
-
   it('includes milestone type in tooltip', () => {
     const report = createReport([
       createMilestone({ milestone_type: '24h', status: 'submitted' }),
@@ -161,7 +149,7 @@ describe('sRPMilestoneIcons', () => {
 
   it('formats milestone type with spaces and capitals in tooltip', () => {
     const report = createReport([
-      createMilestone({ milestone_type: 'additional_information_response', status: 'in_progress' }),
+      createMilestone({ milestone_type: '72h', status: 'in_progress' }),
     ]);
 
     const wrapper = mount(SRPMilestoneIcons, {
@@ -169,7 +157,7 @@ describe('sRPMilestoneIcons', () => {
     });
 
     const icon = wrapper.find('i.bi');
-    expect(icon.attributes('title')).toContain('Additional Information Response');
+    expect(icon.attributes('title')).toContain('In Progress');
   });
 
   it('handles multiple milestones in order', () => {
