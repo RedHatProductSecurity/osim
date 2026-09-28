@@ -20,6 +20,8 @@ import type {
 } from '@/types/aegisAI';
 import type { ImpactEnumWithBlankType } from '@/types';
 
+import { useFullFlawSuggestionField, type AegisSuggestionData } from './useFullFlawSuggestions';
+
 type DetailsFeatureField =
   | 'components'
   | 'cvss3_vector'
@@ -57,6 +59,7 @@ export function defaultDetails(): SuggestionDetails {
   };
 }
 
+/** Creates suggestion actions for one flaw field and connects them to bulk requests. */
 export function useAegisSuggestion(
   context: AegisSuggestionContextRefs,
   valueRef: Ref<ImpactEnumWithBlankType | null | string | string[] | undefined>,
@@ -71,6 +74,21 @@ export function useAegisSuggestion(
 
   const details = ref<SuggestionDetails>(defaultDetails());
 
+  const { isBulkBusy, isBulkFetching } = useFullFlawSuggestionField({
+    field: fieldName,
+    value: valueRef,
+    isFetching: service.isFetching,
+    apply: data => ({
+      cwe_id: suggestCwe,
+      impact: suggestImpact,
+      _cvss3_vector: suggestCvss,
+      statement: suggestStatement,
+      mitigation: suggestMitigation,
+      components: suggestComponents,
+    })[fieldName](data),
+  });
+  const isFetchingSuggestion = computed(() => service.isFetching.value || isBulkFetching.value);
+
   // Track suggestion session ID for feedback system
   const { sendFeedback: sendFeedbackApi } = useSimpleFeedback();
   const userFeedbackSent = ref(false);
@@ -81,10 +99,11 @@ export function useAegisSuggestion(
     return /^CVE-\d{4}-\d{4,7}$/i.test(cveId);
   });
 
-  const canSuggest = computed(() => isCveIdValid.value && !service.isFetching.value);
+  const canSuggest = computed(() => isCveIdValid.value && !service.isFetching.value && !isBulkBusy.value);
 
-  async function suggestCwe() {
-    const data = await getSuggestion();
+  /** Applies the returned CWE candidates and selects the first candidate. */
+  async function suggestCwe(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return; // Error already handled by getSuggestion
     if (!('cwe' in data) || !data.cwe || data.cwe.length === 0) {
       toastStore.addToast({ title: 'AI CWE Suggestions', body: 'No valid CWE suggestions received.' });
@@ -94,13 +113,16 @@ export function useAegisSuggestion(
     applySuggestion(data.cwe[0]);
   }
 
+  /** Applies a suggestion through the shared AI change tracker. */
   async function applySuggestion(suggestion: string | string[]) {
     aegisSuggestionWatcher.applyAISuggestion(suggestion);
     userFeedbackSent.value = false; // Reset feedback state for new suggestion
     successToast();
   }
 
+  /** Shows the normal single-field success notification when appropriate. */
   function successToast() {
+    if (isBulkBusy.value) return;
     toastStore.addToast({
       title: 'AI Suggestion Applied',
       body: 'Suggestion applied. Always review AI generated responses prior to use.',
@@ -109,8 +131,9 @@ export function useAegisSuggestion(
     });
   }
 
-  async function suggestImpact() {
-    const data = await getSuggestion();
+  /** Applies the returned impact value. */
+  async function suggestImpact(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return;
     if (!('impact' in data) || !data.impact) {
       toastStore.addToast({ title: 'AI Impact Suggestions', body: 'No valid impact suggestion received.' });
@@ -120,8 +143,9 @@ export function useAegisSuggestion(
     applySuggestion(data.impact);
   }
 
-  async function suggestCvss() {
-    const data = await getSuggestion();
+  /** Applies the returned CVSS vector suggestion. */
+  async function suggestCvss(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return;
     if (!('cvss3_vector' in data) || !data.cvss3_vector || typeof data.cvss3_vector !== 'string') {
       toastStore.addToast({ title: 'AI CVSS Vector Suggestions', body: 'No valid CVSS vector suggestion received.' });
@@ -131,8 +155,9 @@ export function useAegisSuggestion(
     applySuggestion(data.cvss3_vector);
   }
 
-  async function suggestStatement() {
-    const data = await getSuggestion();
+  /** Applies the returned statement suggestion. */
+  async function suggestStatement(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return;
     const hasValidField = ('suggested_statement' in data)
       && data.suggested_statement !== null
@@ -149,8 +174,9 @@ export function useAegisSuggestion(
     applySuggestion(data.suggested_statement || '');
   }
 
-  async function suggestMitigation() {
-    const data = await getSuggestion();
+  /** Applies the returned mitigation suggestion. */
+  async function suggestMitigation(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return;
     const hasValidField = ('suggested_mitigation' in data)
       && data.suggested_mitigation !== null
@@ -167,8 +193,9 @@ export function useAegisSuggestion(
     applySuggestion(data.suggested_mitigation || '');
   }
 
-  async function suggestComponents() {
-    const data = await getSuggestion();
+  /** Applies the returned affected-component suggestions. */
+  async function suggestComponents(response?: AegisSuggestionData) {
+    const data = response ? receiveSuggestion(response) : await getSuggestion();
     if (!data) return;
     const hasValidField = ('components' in data)
       && data.components !== null
@@ -187,6 +214,7 @@ export function useAegisSuggestion(
     applySuggestion(data.components || []);
   }
 
+  /** Fetches and normalizes a single-field suggestion response. */
   async function getSuggestion() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
@@ -242,19 +270,7 @@ export function useAegisSuggestion(
 
       if (!data) return;
 
-      details.value = {
-        cwe: null,
-        cvss3_vector: null,
-        impact: null,
-        suggested_statement: null,
-        suggested_mitigation: null,
-        components: null,
-        ecosystems: data.ecosystems,
-        confidence: data.confidence,
-        explanation: data.explanation,
-        tools_used: data.tools_used,
-      };
-      return data;
+      return receiveSuggestion(data);
     } catch (e: any) {
       const msg = e?.message ?? e?.data?.detail ?? 'Request failed';
       toastStore.addToast({ title: 'AI Suggestion Error', body: msg });
@@ -262,6 +278,23 @@ export function useAegisSuggestion(
     }
   }
 
+  /** Stores shared response details before a field-specific value is applied. */
+  function receiveSuggestion(data: AegisSuggestionData) {
+    if (!aegisSuggestionWatcher.hasAppliedSuggestion.value && previousValue.value === null) {
+      previousValue.value = valueRef.value ?? null;
+    }
+    selectedSuggestionIndex.value = 0;
+    details.value = {
+      ...defaultDetails(),
+      ecosystems: data.ecosystems,
+      confidence: data.confidence,
+      explanation: data.explanation,
+      tools_used: data.tools_used,
+    };
+    return data;
+  }
+
+  /** Restores the field value from before the current AI suggestion session. */
   function revert() {
     if (previousValue.value !== null || fieldName === '_cvss3_vector') {
       valueRef.value = previousValue.value;
@@ -281,6 +314,7 @@ export function useAegisSuggestion(
     aegisSuggestionWatcher.revertAISuggestion();
   }
 
+  /** Selects one of the returned alternatives and applies it. */
   function selectSuggestion(index: number) {
     if (!allSuggestions.value?.[index]) return;
     selectedSuggestionIndex.value = index;
@@ -297,13 +331,14 @@ export function useAegisSuggestion(
 
   const canShowFeedback = computed(() => {
     const hasApplied = aegisSuggestionWatcher.hasAppliedSuggestion.value;
-    const notFetching = !service.isFetching.value;
+    const notFetching = !isFetchingSuggestion.value;
     const feedbackNotSent = !userFeedbackSent.value;
     return hasApplied && notFetching && feedbackNotSent;
   });
 
   const hasMultipleSuggestions = computed(() => allSuggestions.value.length > 1);
 
+  /** Sends feedback for the original suggestion, rather than a later edit. */
   async function sendFeedback(kind: 'negative' | 'positive', comment?: string) {
     // Always send the original AI suggestion for feedback, not the modified value
     const actualValue = aegisSuggestionWatcher.originalSuggestion.value ?? valueRef.value;
@@ -325,7 +360,7 @@ export function useAegisSuggestion(
     hasAppliedSuggestion: aegisSuggestionWatcher.hasAppliedSuggestion,
     hasPartialModification: aegisSuggestionWatcher.hasPartialModification,
     originalSuggestion: aegisSuggestionWatcher.originalSuggestion,
-    isFetchingSuggestion: service.isFetching,
+    isFetchingSuggestion,
     revert,
     selectSuggestion,
     selectedSuggestionIndex: readonly(selectedSuggestionIndex),

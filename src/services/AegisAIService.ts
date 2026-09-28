@@ -10,6 +10,8 @@ import type {
   AegisKpiMetrics,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
+  AegisMultiAnalysisParams,
+  AegisMultiAnalysisResponse,
 } from '@/types/aegisAI';
 import { osimRuntime } from '@/stores/osimRuntime';
 
@@ -199,6 +201,16 @@ export class AegisAIService {
       console.error('AegisAIService::analyzeCVE() Error:', error);
       throw error;
     }
+  }
+
+  /** Requests multiple CVE analyses in one backend call. */
+  async analyzeCVEMultipleFeatures(params: AegisMultiAnalysisParams): Promise<AegisMultiAnalysisResponse> {
+    const result = await this.fetch({
+      method: 'POST',
+      url: '/analysis/cve',
+      data: params,
+    });
+    return result.data;
   }
 
   /**

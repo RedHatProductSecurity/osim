@@ -125,6 +125,15 @@ export type AegisFeatureResponseMap = {
 
 export type AegisFeature = keyof AegisFeatureResponseMap;
 
+export type AegisMultiAnalysisParams = {
+  features?: AegisAIComponentFeatureNameType[];
+} & Omit<AegisAICVEAnalysisWithContextParamsType, 'detail' | 'feature'>;
+
+export type AegisMultiAnalysisResponse = {
+  errors: Partial<Record<AegisAIComponentFeatureNameType, { detail: string; error: string }>>;
+  results: { [Feature in keyof AegisFeatureResponseMap]?: AegisFeatureResponseMap[Feature] | null };
+};
+
 export type AegisKpiMetricsFeature = {
   acceptance_percentage: number;
   entries: {
