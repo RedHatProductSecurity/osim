@@ -6,13 +6,14 @@ exports[`flawCreateView > should render 1`] = `
     <div data-v-76e7a15d="" class="">
       <div data-v-76e7a15d="" class="row justify-content-end">
         <!--v-if-->
-        <div data-v-76e7a15d="" class="text-end osim-flaw-header-link">
+        <div data-v-76e7a15d="" class="text-end osim-flaw-header-link order-2">
           <div data-v-76e7a15d="" class="d-flex justify-content-end align-items-center gap-2 mb-1">
             <!--v-if-->
             <!--v-if-->
           </div>
           <!--v-if-->
         </div>
+        <!--v-if-->
       </div>
       <div data-v-76e7a15d="" class="row osim-flaw-form-section">
         <div data-v-76e7a15d="" id="" class="col-6">

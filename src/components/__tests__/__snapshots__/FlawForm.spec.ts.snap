@@ -68,12 +68,13 @@ exports[`flawForm > mounts and renders 1`] = `
   </div>
   </div>
   </div>
-  <div data-v-76e7a15d="" class="text-end osim-flaw-header-link">
+  <div data-v-76e7a15d="" class="text-end osim-flaw-header-link order-2">
     <div data-v-76e7a15d="" class="d-flex justify-content-end align-items-center gap-2 mb-1">
       <!--v-if--><a data-v-76e7a15d="" href="/show_bug.cgi?id=1984541" target="_blank" rel="noopener noreferrer"> Open in Bugzilla <i data-v-76e7a15d="" class="bi-box-arrow-up-right ms-2"></i></a>
     </div>
     <!--v-if-->
   </div>
+  <!--v-if-->
   </div>
   <div data-v-76e7a15d="" class="row osim-flaw-form-section">
     <div data-v-76e7a15d="" id="734e9a1a-80d9-4ff5-a5b9-e2214da66dc0" class="col-6">

@@ -256,3 +256,71 @@ it('clears loading state on request failure and allows retry', async () => {
   await coordinator.suggestAll();
   expect(title.value).toBe('AI title');
 });
+
+it('reports missing results without clearing fields or blocking successful suggestions', async () => {
+  multiAnalysis.mockResolvedValueOnce({
+    results: { 'suggest-description': response.results['suggest-description'] },
+    errors: {},
+  });
+  const { actions, coordinator, title, values } = setup();
+  await coordinator.suggestAll();
+
+  expect(title.value).toBe('AI title');
+  expect(values.components.value).toEqual(['original']);
+  for (const field of fields.filter(field => field !== 'components')) expect(values[field].value).toBe('original');
+  expect(actions.impact.hasAppliedSuggestion.value).toBe(false);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({
+    css: 'warning', body: expect.stringContaining('suggest-impact: No suggestion returned.'),
+  }));
+});
+
+it('skips fields whose feature flag is disabled while a request is pending', async () => {
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+  const { coordinator, description, title, titleActions } = setup();
+  const pending = coordinator.suggestAll();
+  runtime.value.flags!.aiTitleSuggestions = false;
+  resolve(response);
+  await pending;
+
+  expect(title.value).toBe('Original title');
+  expect(titleActions.hasAppliedTitleSuggestion.value).toBe(false);
+  expect(description.value).toBe('AI description');
+});
+
+it('continues applying other fields if a field handler fails', async () => {
+  trackAIChange.mockImplementationOnce(() => { throw new Error('Tracking failed'); });
+  const { coordinator, description, values } = setup();
+  await coordinator.suggestAll();
+
+  expect(description.value).toBe('AI description');
+  expect(values.impact.value).toBe('IMPORTANT');
+  expect(values.mitigation.value).toBe('AI mitigation');
+  expect(coordinator.isFetching.value).toBe(false);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({
+    css: 'warning', body: expect.stringContaining('title: Unable to apply suggestion.'),
+  }));
+});
+
+it('reverts to the original values after multiple bulk requests and resets CWE selection', async () => {
+  const { actions, coordinator, title, titleActions, values } = setup();
+  await coordinator.suggestAll();
+  actions.cwe_id.selectSuggestion(1);
+  multiAnalysis.mockResolvedValueOnce({
+    ...response,
+    results: {
+      ...response.results,
+      'suggest-description': { suggested_title: 'Second AI title', suggested_description: 'Second AI description' },
+      'suggest-cwe': { cwe: ['CWE-20', 'CWE-22'] },
+    },
+  });
+  await coordinator.suggestAll();
+
+  expect(title.value).toBe('Second AI title');
+  expect(values.cwe_id.value).toBe('CWE-20');
+  expect(actions.cwe_id.selectedSuggestionIndex.value).toBe(0);
+  titleActions.revertTitle();
+  actions.cwe_id.revert();
+  expect(title.value).toBe('Original title');
+  expect(values.cwe_id.value).toBe('original');
+});
