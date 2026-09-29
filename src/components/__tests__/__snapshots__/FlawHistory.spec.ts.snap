@@ -9,10 +9,11 @@ exports[`flawHistory > is shown if history present on flaw 1`] = `
       <div data-v-f4fcc8d4="" class="d-flex mb-2 gap-2"><button data-v-f4fcc8d4="" tabindex="-1" type="button" disabled="" class="input-group-text"><i data-v-f4fcc8d4="" class="bi bi-eraser"></i></button>
         <editable-date-stub data-v-f4fcc8d4="" placeholder="[Start date]" editing="false" includestime="false" readonly="false" style="width: 225px;"></editable-date-stub>
         <editable-date-stub data-v-f4fcc8d4="" placeholder="[End date]" editing="false" includestime="false" readonly="false" style="width: 225px;"></editable-date-stub>
+        <!--v-if-->
       </div>
       <div data-v-f4fcc8d4="" class="mt-2">
         <div data-v-f4fcc8d4="" class="mt-2">
-          <div data-v-f4fcc8d4="" class="alert alert-info mb-1 p-2"><span data-v-f4fcc8d4="">2024-10-04 15:06:56 UTC - 1</span>
+          <div data-v-f4fcc8d4="" class="alert alert-info mb-1 p-2"><span data-v-f4fcc8d4=""><!--v-if--> 2024-10-04 15:06:56 UTC - 1</span>
             <ul data-v-f4fcc8d4="" class="mb-2">
               <li data-v-f4fcc8d4="">
                 <div data-v-f4fcc8d4="" class="ms-3 pb-0">
