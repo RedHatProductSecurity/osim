@@ -39,6 +39,7 @@ const formData = ref({
   owner: '',
   status: 'required' as const,
   manual_completion_notes: '',
+  updated_dt: '',
 });
 
 // ── Date helpers ─────────────────────────────────────────────────────────────
@@ -82,6 +83,7 @@ watch(() => props.show, (newShow) => {
         owner: props.air.owner || '',
         status: (props.air.status || 'required') as any,
         manual_completion_notes: props.air.manual_completion_notes || '',
+        updated_dt: props.air.updated_dt || '',
       };
     } else {
       // Add mode - reset to defaults
@@ -94,6 +96,7 @@ watch(() => props.show, (newShow) => {
         owner: '',
         status: 'required',
         manual_completion_notes: '',
+        updated_dt: '',
       };
     }
   }
@@ -134,6 +137,11 @@ function handleSave() {
   // Manual due date is optional
   if (formData.value.manual_due_at) {
     payload.manual_due_at = toISO8601Date(formData.value.manual_due_at);
+  }
+
+  // Include updated_dt for edit mode (optimistic locking)
+  if (props.air) {
+    payload.updated_dt = formData.value.updated_dt;
   }
 
   emit('save', payload);
