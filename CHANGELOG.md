@@ -8,6 +8,7 @@
 * Add specialized dialog for Additional Information Response (`OSIDB-5621`)
 
 ### Changed
+* Highlight unmodified Aegis bot suggestions, including their explanation, in every flaw state (`AEGIS-470`)
 * Clarify CRA/SRP terminology: top-level entities are now "SRP Reportable Events", internal reports are "SRP Reports", and additional information requests are "Additional Information Responses" (`OSIDB-5555`)
 
 ## [2026.9.0]
