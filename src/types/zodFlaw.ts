@@ -142,9 +142,16 @@ export type ZodFlawHistoryItemType = z.infer<typeof ZodHistoryItemSchema>;
 export const ZodHistoryItemSchema = z.object({
   pgh_created_at: zodOsimDateTime().nullish(),
   pgh_slug: z.string().nullish(),
+  pgh_obj_model: z.string().nullish(),
+  pgh_obj_id: z.string().nullish(),
   pgh_label: z.string(),
-  pgh_context: z.object({ url: z.string(), user: z.number() }).nullable(),
+  pgh_context: z.object({
+    path: z.string().optional(),
+    url: z.string().optional(),
+    user: z.union([z.number(), z.string()]).optional(),
+  }).nullable().nullish(),
   pgh_diff: z.record(z.array(z.any())).nullable(),
+  pgh_data: z.record(z.any()).nullish(),
 });
 
 export enum FlawLabelTypeEnum {
