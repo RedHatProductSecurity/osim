@@ -60,9 +60,7 @@ const handleSuggestionClick = (user: ZodJiraUserAssignableType) => {
 };
 
 const onBlur = () => {
-  if (contributor.value === '') {
-    modelValue.value = '';
-  }
+  modelValue.value = contributor.value;
 };
 
 watchDebounced(contributor, onQueryChange, { debounce: 300 });
