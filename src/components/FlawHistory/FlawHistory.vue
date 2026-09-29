@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { usePagination } from '@/composables/usePagination';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
@@ -25,9 +25,59 @@ const isLoading = computed(() => !props.disabled && (props.history === undefined
 
 const startDate = ref<null | string | undefined>(null);
 const endDate = ref<null | string | undefined>(null);
+const selectedHistoryModels = ref<string[]>([]);
+
+const historyModelLabels: Record<string, string> = {
+  'osidb.Flaw': 'Flaw',
+  'osidb.FlawLabel': 'Label',
+  'osidb.FlawCVSS': 'Flaw CVSS',
+  'osidb.Affect': 'Affect',
+  'osidb.AffectCVSS': 'Affect CVSS',
+  'osidb.Tracker': 'Tracker',
+};
+
+const historyModelOrder = Object.keys(historyModelLabels);
 
 const emptyFilters = computed(() => {
-  return !startDate.value && !endDate.value;
+  return !startDate.value && !endDate.value && allHistoryModelsSelected.value;
+});
+
+const availableHistoryModels = computed(() => {
+  const models = new Set(props.history?.map(historyModelKey) ?? []);
+
+  return [...models].sort((first, second) => {
+    const firstIndex = historyModelOrder.indexOf(first);
+    const secondIndex = historyModelOrder.indexOf(second);
+    if (firstIndex !== -1 || secondIndex !== -1) {
+      return (firstIndex === -1 ? Number.MAX_SAFE_INTEGER : firstIndex)
+        - (secondIndex === -1 ? Number.MAX_SAFE_INTEGER : secondIndex);
+    }
+    return historyModelLabel(first).localeCompare(historyModelLabel(second));
+  });
+});
+
+watch(availableHistoryModels, (models, previousModels = []) => {
+  const previousModelSet = new Set(previousModels);
+  const selectedModelSet = new Set(selectedHistoryModels.value);
+  const stillSelectedModels = models.filter(model => selectedModelSet.has(model));
+  const newModels = models.filter(model => !previousModelSet.has(model));
+
+  selectedHistoryModels.value = [...new Set([...stillSelectedModels, ...newModels])];
+}, { immediate: true });
+
+const selectedHistoryModelSet = computed(() => new Set(selectedHistoryModels.value));
+
+const allHistoryModelsSelected = computed(() => {
+  return availableHistoryModels.value.length === selectedHistoryModels.value.length;
+});
+
+const historyTypeFilterLabel = computed(() => {
+  const selectedCount = selectedHistoryModels.value.length;
+  const availableCount = availableHistoryModels.value.length;
+
+  if (selectedCount === availableCount) return 'All history types';
+  if (selectedCount === 0) return 'No history types';
+  return `${selectedCount}/${availableCount} history types`;
 });
 
 const validDateRange = computed(() => {
@@ -42,21 +92,23 @@ const validDateRange = computed(() => {
 });
 
 const filteredHistoryItems = computed(() => {
+  const modelFilteredHistory = props.history?.filter(item => selectedHistoryModelSet.value.has(historyModelKey(item)));
+
   if (!validDateRange.value) {
-    return props.history;
+    return modelFilteredHistory?.filter(hasVisibleHistoryDiff);
   }
 
   const start = new Date(startDate.value!);
   const end = new Date(endDate.value!);
   end.setDate(end.getDate() + 1);
 
-  return props.history?.filter((item) => {
+  return modelFilteredHistory?.filter((item) => {
     if (!item.pgh_created_at) return false;
 
     const itemDate = new Date(item.pgh_created_at);
 
     return itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime();
-  });
+  }).filter(hasVisibleHistoryDiff);
 });
 
 const historyExpanded = ref(true);
@@ -75,23 +127,103 @@ const {
 const paginatedHistoryItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  // Filter out history entries that only contain last_validated_dt or aegis_meta changes
-  return filteredHistoryItems.value?.slice(start, end).filter((item) => {
-    if (!item.pgh_diff) return false;
-    const visibleKeys = Object.keys(item.pgh_diff).filter(
-      key => key !== 'last_validated_dt' && key !== 'aegis_meta',
-    );
-    return visibleKeys.length > 0;
-  });
+  return filteredHistoryItems.value?.slice(start, end);
 });
+
+function historyModelKey(historyEntry: ZodFlawHistoryItemType) {
+  return historyEntry.pgh_obj_model || 'osidb.Flaw';
+}
+
+function historyModelLabel(model: string) {
+  const entityName = model.split('.').pop() || model;
+  return historyModelLabels[model] || entityName.replaceAll('CVSS', ' CVSS').trim();
+}
+
+function hasVisibleHistoryDiff(historyEntry: ZodFlawHistoryItemType) {
+  if (!historyEntry.pgh_diff) return false;
+  return Object.keys(historyEntry.pgh_diff).some(
+    key => key !== 'last_validated_dt' && key !== 'aegis_meta',
+  );
+}
 
 function isDateField(field: string) {
   return field.includes('_dt');
 }
 
+function isRelatedHistoryEntry(historyEntry: ZodFlawHistoryItemType) {
+  return Boolean(historyEntry.pgh_obj_model && historyEntry.pgh_obj_model !== 'osidb.Flaw');
+}
+
+function historyEntityName(historyEntry: ZodFlawHistoryItemType) {
+  return historyModelLabel(historyModelKey(historyEntry));
+}
+
+function historyEntityDetails(historyEntry: ZodFlawHistoryItemType) {
+  const data = historyEntry.pgh_data || {};
+
+  if (historyEntry.pgh_obj_model === 'osidb.Affect') {
+    const streamOrModule = data.ps_update_stream || data.ps_module;
+    const component = data.ps_component;
+    return [streamOrModule, component].filter(Boolean).join(' / ') || historyEntry.pgh_obj_id || '';
+  }
+
+  if (historyEntry.pgh_obj_model === 'osidb.Tracker') {
+    return data.external_system_id || data.ps_update_stream || historyEntry.pgh_obj_id || '';
+  }
+
+  if (historyEntry.pgh_obj_model === 'osidb.FlawLabel') {
+    return data.name || data.type || historyEntry.pgh_obj_id || '';
+  }
+
+  if (
+    historyEntry.pgh_obj_model === 'osidb.FlawCVSS'
+    || historyEntry.pgh_obj_model === 'osidb.AffectCVSS'
+  ) {
+    return [data.issuer, data.version].filter(Boolean).join(' ') || historyEntry.pgh_obj_id || '';
+  }
+
+  return historyEntry.pgh_obj_id || '';
+}
+
+function historyEntityLabel(historyEntry: ZodFlawHistoryItemType) {
+  const details = historyEntityDetails(historyEntry);
+  return details ? `${historyEntityName(historyEntry)}: ${details}` : historyEntityName(historyEntry);
+}
+
+function fieldLabel(field: string) {
+  return flawFieldNamesMapping[field] || capitalize(field.replaceAll('_', ' '));
+}
+
+function formatHistoryValue(value: any, field: string): string {
+  if (isDateField(field) && value) return formatDateWithTimezone(value);
+  if (value === null || value === undefined) return '';
+  if (Array.isArray(value)) return value.map(item => formatHistoryValue(item, field)).filter(Boolean).join(', ');
+  if (typeof value === 'object') return JSON.stringify(value);
+  return value.toString();
+}
+
+function isHistoryModelSelected(model: string) {
+  return selectedHistoryModelSet.value.has(model);
+}
+
+function selectAllHistoryModels() {
+  selectedHistoryModels.value = [...availableHistoryModels.value];
+}
+
+function toggleHistoryModel(model: string) {
+  const selectedModelSet = new Set(selectedHistoryModels.value);
+  if (selectedModelSet.has(model)) {
+    selectedModelSet.delete(model);
+  } else {
+    selectedModelSet.add(model);
+  }
+  selectedHistoryModels.value = availableHistoryModels.value.filter(item => selectedModelSet.has(item));
+}
+
 function clearFilters() {
   startDate.value = null;
   endDate.value = null;
+  selectAllHistoryModels();
 }
 </script>
 
@@ -152,6 +284,41 @@ function clearFilters() {
           style="width: 225px;"
           placeholder="[End date]"
         />
+        <div v-if="availableHistoryModels.length > 1" class="dropdown">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ historyTypeFilterLabel }}
+          </button>
+          <div class="dropdown-menu history-type-filter-menu p-2" @click.stop>
+            <button
+              type="button"
+              class="dropdown-item px-2 py-1"
+              :disabled="allHistoryModelsSelected"
+              @click="selectAllHistoryModels"
+            >
+              Select all
+            </button>
+            <div class="dropdown-divider"></div>
+            <label
+              v-for="model in availableHistoryModels"
+              :key="model"
+              class="dropdown-item d-flex align-items-center gap-2 mb-0"
+            >
+              <input
+                class="form-check-input history-type-filter-checkbox m-0"
+                type="checkbox"
+                :value="model"
+                :checked="isHistoryModelSelected(model)"
+                @change="toggleHistoryModel(model)"
+              >
+              <span>{{ historyModelLabel(model) }}</span>
+            </label>
+          </div>
+        </div>
       </div>
       <template v-if="!filteredHistoryItems?.length">
         <span>There are no results for current filter.</span>
@@ -161,6 +328,9 @@ function clearFilters() {
           <template v-for="historyEntry in paginatedHistoryItems" :key="historyEntry.pgh_slug">
             <div v-if="historyEntry.pgh_diff" class="alert alert-info mb-1 p-2">
               <span>
+                <span v-if="isRelatedHistoryEntry(historyEntry)" class="badge bg-secondary me-2">
+                  {{ historyEntityLabel(historyEntry) }}
+                </span>
                 {{ formatDateWithTimezone(historyEntry.pgh_created_at || '', true) }}
                 - {{ historyEntry.pgh_context?.user || 'System' }}
               </span>
@@ -185,18 +355,10 @@ function clearFilters() {
                       <i class="bi bi-robot"></i> {{ getFieldAegisType(historyEntry, diffKey) }}
                     </span>
                     <span>{{ capitalize(historyEntry.pgh_label) }}</span>
-                    <span class="fw-bold">{{ ' ' + (flawFieldNamesMapping[diffKey] || diffKey) }}</span>
-                    <span>{{ ': ' +
-                      (isDateField(diffKey) && diffEntry[0]
-                        ? formatDateWithTimezone(diffEntry[0])
-                        : (diffEntry[0]?.toString() || '')
-                      ) + ' '
-                    }}</span>
+                    <span class="fw-bold">{{ ' ' + fieldLabel(diffKey) }}</span>
+                    <span>{{ ': ' + formatHistoryValue(diffEntry[0], diffKey) + ' ' }}</span>
                     <i class="bi bi-arrow-right" />
-                    {{ (isDateField(diffKey) && diffEntry[1]
-                      ? formatDateWithTimezone(diffEntry[1])
-                      : (diffEntry[1]?.toString() || '')
-                    ) }}
+                    {{ formatHistoryValue(diffEntry[1], diffKey) }}
                   </div>
                 </li>
               </ul>

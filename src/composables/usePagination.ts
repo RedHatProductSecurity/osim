@@ -25,8 +25,10 @@ export function usePagination(totalPages: Ref<number>, maxPagesToShow = 7) {
   }
 
   watch(pages, () => {
-    if (currentPage.value > totalPages.value && pages.value.length > 1) {
-      currentPage.value = totalPages.value;
+    const lastAvailablePage = Math.max(1, totalPages.value);
+
+    if (currentPage.value > lastAvailablePage) {
+      currentPage.value = lastAvailablePage;
     }
   });
 

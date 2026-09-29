@@ -83,5 +83,78 @@
         }
       ]
     }
+  },
+  "relatedAffectHistoryItem": {
+    "pgh_created_at": "2024-10-04T18:00:00.000000Z",
+    "pgh_slug": "osidb.AffectAudit:123460",
+    "pgh_obj_model": "osidb.Affect",
+    "pgh_obj_id": "9c893d86-c31e-4f81-b7f7-3c8f3b6761be",
+    "pgh_label": "update",
+    "pgh_context": {
+      "url": "osidb/api/v1/affects/9c893d86-c31e-4f81-b7f7-3c8f3b6761be",
+      "user": 1
+    },
+    "pgh_diff": {
+      "affectedness": ["NEW", "AFFECTED"]
+    },
+    "pgh_data": {
+      "ps_update_stream": "rhel-9",
+      "ps_component": "kernel"
+    }
+  },
+  "relatedTrackerHistoryItem": {
+    "pgh_created_at": "2024-10-04T19:00:00.000000Z",
+    "pgh_slug": "osidb.TrackerAudit:123461",
+    "pgh_obj_model": "osidb.Tracker",
+    "pgh_obj_id": "db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1a",
+    "pgh_label": "update",
+    "pgh_context": {
+      "url": "osidb/api/v1/trackers/db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1a",
+      "user": 1
+    },
+    "pgh_diff": {
+      "status": ["NEW", "CLOSED"]
+    },
+    "pgh_data": {
+      "external_system_id": "LOCALHIST-910000",
+      "ps_update_stream": "rhel-9"
+    }
+  },
+  "relatedFlawLabelHistoryItem": {
+    "pgh_created_at": "2024-10-04T19:30:00.000000Z",
+    "pgh_slug": "osidb.FlawLabelV2Audit:123463",
+    "pgh_obj_model": "osidb.FlawLabel",
+    "pgh_obj_id": "db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1c",
+    "pgh_label": "insert",
+    "pgh_context": {
+      "url": "osidb/api/v1/flaws/test/labels/db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1c",
+      "user": 1
+    },
+    "pgh_diff": {
+      "name": [null, "incident-123"]
+    },
+    "pgh_data": {
+      "flaw_id": "12d3820a-a43b-417c-a22e-46e47c232a63",
+      "name": "incident-123",
+      "type": "alias"
+    }
+  },
+  "relatedFlawCvssHistoryItem": {
+    "pgh_created_at": "2024-10-04T20:00:00.000000Z",
+    "pgh_slug": "osidb.FlawCVSSAudit:123462",
+    "pgh_obj_model": "osidb.FlawCVSS",
+    "pgh_obj_id": "db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1b",
+    "pgh_label": "update",
+    "pgh_context": {
+      "url": "osidb/api/v1/flaws/test/cvss_scores/db5ddecd-d02a-4d1e-8b1a-e71f34ec5d1b",
+      "user": 1
+    },
+    "pgh_diff": {
+      "vector": ["CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:L", "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"]
+    },
+    "pgh_data": {
+      "issuer": "RH",
+      "version": "V3"
+    }
   }
 }

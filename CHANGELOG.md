@@ -3,6 +3,7 @@
 ### Added
 * Show optional Aegis suggestion metadata in tooltips (`OSIDB-5272`)
 * Link an existing Jira or Bugzilla tracker to another flaw's affect on demand, so one tracker can cover multiple flaws without a manual sync (`OSIDB-5471`)
+* Show related entities audit entries in flaw history (`OSIDB-5687`)
 
 ### Changed
 * Widen SRP dialogs for better readability: forms to 1200px/85vw, payload editor to 1400px/90vw with vertical textarea resizing (`OSIDB-5597`)
