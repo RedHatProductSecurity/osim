@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 
 import { describe, it, expect } from 'vitest';
 
@@ -66,5 +66,34 @@ describe('usePagination', () => {
 
     expect(pages.value).toEqual([1]);
     expect(currentPage.value).toBe(1);
+  });
+
+  it('should clamp currentPage when totalPages changes to 1', async () => {
+    const totalPages = ref(3);
+    const { changePage, currentPage } = usePagination(totalPages, 7);
+
+    changePage(3);
+    totalPages.value = 1;
+    await nextTick();
+
+    expect(currentPage.value).toBe(1);
+  });
+
+  it('should keep currentPage at 1 when totalPages changes to 0', async () => {
+    const totalPages = ref(3);
+    const { changePage, currentPage, pages } = usePagination(totalPages, 7);
+
+    changePage(3);
+    totalPages.value = 0;
+    await nextTick();
+
+    expect(currentPage.value).toBe(1);
+    expect(pages.value).toEqual([]);
+
+    totalPages.value = 2;
+    await nextTick();
+
+    expect(currentPage.value).toBe(1);
+    expect(pages.value).toEqual([1, 2]);
   });
 });

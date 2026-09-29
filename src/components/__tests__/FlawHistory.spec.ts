@@ -61,6 +61,62 @@ describe('flawHistory', () => {
     expect(historyListItem?.text()).includes('Update Owner:');
   });
 
+  osimFullFlawTest('displays related entity history items', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push(historyFixtures.relatedAffectHistoryItem as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+
+    expect(subject.text()).toContain('Affect: rhel-9 / kernel');
+    expect(subject.text()).toContain('Update Affectedness: NEW');
+    expect(subject.text()).toContain('AFFECTED');
+  });
+
+  osimFullFlawTest('filters history items by entity type', async ({ flaw }) => {
+    flaw.history = [
+      historyFixtures.regularHistoryItem,
+      historyFixtures.relatedAffectHistoryItem,
+      historyFixtures.relatedTrackerHistoryItem,
+      historyFixtures.relatedFlawCvssHistoryItem,
+    ] as ZodFlawHistoryItemType[];
+
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+
+    expect(subject.findAll('.alert-info').length).toBe(4);
+    expect(subject.text()).toContain('Affect: rhel-9 / kernel');
+    expect(subject.text()).toContain('Tracker: LOCALHIST-910000');
+    expect(subject.text()).toContain('Flaw CVSS: RH V3');
+
+    await subject.find('input[value="osidb.Affect"]').setValue(false);
+
+    expect(subject.findAll('.alert-info').length).toBe(3);
+    expect(subject.text()).not.toContain('Affect: rhel-9 / kernel');
+    expect(subject.text()).toContain('Tracker: LOCALHIST-910000');
+    expect(subject.text()).toContain('Flaw CVSS: RH V3');
+
+    await subject.find('button.dropdown-item').trigger('click');
+
+    expect(subject.findAll('.alert-info').length).toBe(4);
+    expect(subject.text()).toContain('Affect: rhel-9 / kernel');
+  });
+
   osimFullFlawTest('shows seconds, minutes, hours in timestamp', async ({ flaw }) => {
     flaw.history = [];
     flaw.history.push(historyFixtures.regularHistoryItem as ZodFlawHistoryItemType);
