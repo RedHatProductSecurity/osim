@@ -173,6 +173,40 @@ describe('aegisAIService', () => {
     });
   });
 
+  describe('analyzeCVEMultipleFeatures', () => {
+    it('posts the current context and features and preserves partial failures', async () => {
+      const params = {
+        cve_id: 'CVE-2024-1234',
+        features: ['suggest-impact', 'suggest-cwe'] as AegisAIComponentFeatureNameType[],
+        title: 'Unsaved title',
+        comment_zero: 'Current description',
+        components: ['kernel'],
+      };
+      const response = {
+        results: { 'suggest-impact': { impact: 'IMPORTANT' }, 'suggest-cwe': null },
+        errors: { 'suggest-cwe': { error: 'RuntimeError', detail: 'Feature failed' } },
+      };
+      server.use(http.post(`${mockBaseUrl}/analysis/cve`, async ({ request }) => {
+        expect(new URL(request.url).search).toBe('');
+        expect(await request.json()).toEqual(params);
+        return HttpResponse.json(response);
+      }));
+
+      expect(await service.analyzeCVEMultipleFeatures(params)).toEqual(response);
+      expect(service.isFetching.value).toBe(false);
+    });
+
+    it('propagates request failures and clears loading state', async () => {
+      server.use(http.post(`${mockBaseUrl}/analysis/cve`, () =>
+        HttpResponse.json({ detail: 'Rate limit exceeded' }, { status: 429 }),
+      ));
+
+      await expect(service.analyzeCVEMultipleFeatures({ cve_id: 'CVE-2024-1234' }))
+        .rejects.toMatchObject({ response: { status: 429 } });
+      expect(service.isFetching.value).toBe(false);
+    });
+  });
+
   describe('generateResponse', () => {
     it('should make correct API call with prompt', async () => {
       const mockResponse = { response: 'Generated AI response' };

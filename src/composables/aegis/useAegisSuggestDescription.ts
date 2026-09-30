@@ -7,24 +7,34 @@ import type { AegisAIComponentFeatureNameType, DescriptionSuggestionDetails } fr
 
 import { useAISuggestionsWatcher } from './useAISuggestionsWatcher';
 import { serializeAegisContext, type AegisSuggestionContextRefs } from './useAegisSuggestionContext';
+import { useFullFlawSuggestionField, type FullFlawSuggestions } from './useFullFlawSuggestions';
 
 export type UseAegisSuggestDescriptionOptions = {
   context: AegisSuggestionContextRefs;
+  coordinator?: FullFlawSuggestions;
   descriptionRef: Ref<null | string | undefined>;
 };
 
 export type UseAegisSuggestDescriptionReturn = ReturnType<typeof useAegisSuggestDescription>;
 
+/** Creates description suggestion actions for a flaw description ref. */
 export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOptions) {
   const toastStore = useToastStore();
   const userStore = useUserStore();
   const service = new AegisAIService();
   const aegisDescriptionSuggestionWatcher = useAISuggestionsWatcher('cve_description', options.descriptionRef);
-  const isSuggesting = ref(false);
+  const isFetching = ref(false);
   const previousDescriptionValue = ref<null | string | undefined>(null);
   const details = ref<DescriptionSuggestionDetails | null>(null);
   const requestDuration = ref<null | number>(null);
   const descriptionFeedbackSubmitted = ref<Set<string>>(new Set());
+  const { isBulkBusy, isBulkFetching } = useFullFlawSuggestionField({
+    field: 'cve_description',
+    value: options.descriptionRef,
+    isFetching,
+    apply: applyDescriptionSuggestion,
+  }, options.coordinator);
+  const isSuggesting = computed(() => isFetching.value || isBulkFetching.value);
 
   const canShowDescriptionFeedback = computed(() => {
     const hasApplied = aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value;
@@ -41,14 +51,15 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     return /^CVE-\d{4}-\d{4,7}$/i.test(cveId);
   });
 
-  const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value);
+  const canSuggest = computed(() => isCveIdValid.value && !isSuggesting.value && !isBulkBusy.value);
 
+  /** Requests and applies an AI-generated description. */
   async function suggestDescription() {
     if (!canSuggest.value) {
       toastStore.addToast({ title: 'AI Suggestion', body: 'Valid CVE ID required for suggestions.' });
       return;
     }
-    isSuggesting.value = true;
+    isFetching.value = true;
     const requestStartTime = Date.now();
     try {
       // Store previous value if not already stored
@@ -61,40 +72,44 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
         feature,
         ...serializeAegisContext(options.context),
       });
-      // An incoming service logic can be used here
-      requestDuration.value = Date.now() - requestStartTime;
+      applyDescriptionSuggestion(data, Date.now() - requestStartTime);
+    } catch (e: any) {
+      const msg = e?.message ?? e?.data?.detail ?? 'Request failed';
+      toastStore.addToast({ title: 'AI Suggestion Error', body: msg });
+    } finally {
+      isFetching.value = false;
+    }
+  }
 
-      const description = data.suggested_description ?? '';
-
-      if (!description) {
-        toastStore.addToast({ title: 'AI Suggestion', body: 'No valid description suggestion received.' });
-        return;
-      }
-
-      details.value = {
-        suggested_description: description,
-        confidence: data.confidence,
-        explanation: data.explanation,
-        tools_used: data.tools_used,
-      };
-
-      // Apply only description suggestion
-      aegisDescriptionSuggestionWatcher.applyAISuggestion(description);
-
+  /** Applies description data returned by either a single-field or bulk request. */
+  function applyDescriptionSuggestion(data: DescriptionSuggestionDetails, duration: number) {
+    const description = data.suggested_description ?? '';
+    if (!description) {
+      toastStore.addToast({ title: 'AI Suggestion', body: 'No valid description suggestion received.' });
+      return;
+    }
+    if (!aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value && previousDescriptionValue.value == null) {
+      previousDescriptionValue.value = options.descriptionRef.value;
+    }
+    requestDuration.value = duration;
+    details.value = {
+      suggested_description: description,
+      confidence: data.confidence,
+      explanation: data.explanation,
+      tools_used: data.tools_used,
+    };
+    aegisDescriptionSuggestionWatcher.applyAISuggestion(description);
+    if (!isBulkBusy.value) {
       toastStore.addToast({
         title: 'AI Suggestion Applied',
         body: 'Description suggestion applied. Always review AI generated responses prior to use.',
         css: 'info',
         timeoutMs: 8000,
       });
-    } catch (e: any) {
-      const msg = e?.message ?? e?.data?.detail ?? 'Request failed';
-      toastStore.addToast({ title: 'AI Suggestion Error', body: msg });
-    } finally {
-      isSuggesting.value = false;
     }
   }
 
+  /** Restores the description value from before the suggestion session. */
   function revertDescription() {
     if (previousDescriptionValue.value !== null) {
       options.descriptionRef.value = previousDescriptionValue.value;
@@ -104,6 +119,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     details.value = null;
   }
 
+  /** Sends feedback for the current description suggestion. */
   async function sendDescriptionFeedback(kind: 'negative' | 'positive', comment?: string) {
     try {
       const cveId = (options.context as any)?.cveId?.value ?? (options.context as any)?.cveId;

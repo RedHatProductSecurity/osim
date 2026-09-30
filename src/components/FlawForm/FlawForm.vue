@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRef, watch, onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 
 import { DateTime } from 'luxon';
 
@@ -40,6 +40,7 @@ import {
 } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
 import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
+import { provideFullFlawSuggestions } from '@/composables/aegis/useFullFlawSuggestions';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
@@ -239,17 +240,23 @@ const createdDate = computed(() => {
 });
 
 const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw);
+const fullFlawSuggestions = provideFullFlawSuggestions(aegisContext, () => flaw.value);
 
-const titleRefForAegis = toRef(flaw.value, 'title');
-const descriptionRefForAegis = toRef(flaw.value, 'cve_description');
+const titleRefForAegis = computed({ get: () => flaw.value.title, set: (value) => { flaw.value.title = value; } });
+const descriptionRefForAegis = computed({
+  get: () => flaw.value.cve_description,
+  set: (value) => { flaw.value.cve_description = value; },
+});
 
 const aegisSuggestTitleComposable = useAegisSuggestTitle({
   context: aegisContext,
+  coordinator: fullFlawSuggestions,
   titleRef: titleRefForAegis,
 });
 
 const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
   context: aegisContext,
+  coordinator: fullFlawSuggestions,
   descriptionRef: descriptionRefForAegis,
 });
 
@@ -272,7 +279,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           class="col-12 osim-alerts-banner"
           @expandFocusedComponent="expandFocusedComponent"
         />
-        <div class="text-end osim-flaw-header-link">
+        <div class="text-end osim-flaw-header-link order-2">
           <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
             <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
             <a
@@ -292,6 +299,19 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           >
             Open in Jira <i class="bi-box-arrow-up-right ms-2" />
           </a>
+        </div>
+        <div v-if="fullFlawSuggestions.isVisible.value" class="col-6 me-auto order-1 align-self-end ps-2 pt-2 pb-0">
+          <button
+            type="button"
+            class="ms-2 my-0 btn btn-primary"
+            :disabled="!fullFlawSuggestions.canSuggest.value || isSaving || formDisabled"
+            :aria-busy="fullFlawSuggestions.isFetching.value"
+            @click="fullFlawSuggestions.suggestAll"
+          >
+            <LoadingSpinner v-if="fullFlawSuggestions.isFetching.value" type="border" class="me-2" />
+            <i v-else class="bi bi-stars me-2" aria-hidden="true" />
+            Full Flaw Suggestions
+          </button>
         </div>
       </div>
       <div class="row osim-flaw-form-section">
