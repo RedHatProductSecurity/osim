@@ -11,6 +11,9 @@
 * Clarify CRA/SRP terminology: top-level entities are now "SRP Reportable Events", internal reports are "SRP Reports", and additional information requests are "Additional Information Responses" (`OSIDB-5555`)
 * Preserve unsaved/failed label edits and typed contributors for `context_based` and `bu` labels; restrict label field editing to those types (`OSIDB-5349`)
 
+### Fixed
+* Remove "Additional Information Request" from reportable event creation form as AIRs are now created as sub-entities under milestones (`OSIDB-5544`)
+
 ## [2026.9.0]
 ### Added
 * Add bulk close functionality for Jira trackers in affects table with confirmation dialog

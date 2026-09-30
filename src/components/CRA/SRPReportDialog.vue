@@ -140,7 +140,6 @@ function setTimerToday() {
         <select v-model="formData.reportable_event_type" class="form-select">
           <option value="EXPLOITS_KEV_APPROVED">Actively Exploited Vulnerability</option>
           <option value="MAJOR_INCIDENT_APPROVED">Severe Incident</option>
-          <option value="ADDITIONAL_INFORMATION_REQUEST">Additional Information Request</option>
         </select>
       </div>
       <div class="mb-3">

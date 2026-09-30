@@ -50,7 +50,6 @@ describe('sRPReportDialog', () => {
     expect(eventTypeOptions).toEqual([
       'Actively Exploited Vulnerability',
       'Severe Incident',
-      'Additional Information Request',
     ]);
   });
 
