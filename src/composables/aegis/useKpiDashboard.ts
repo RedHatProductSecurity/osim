@@ -4,7 +4,9 @@ import { DateTime } from 'luxon';
 
 import type { AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiQuery } from '@/types/aegisAI';
 import { AegisAIService } from '@/services/AegisAIService';
-import { botObservations, canonicalKpiFeature, feedbackObservations, KpiFeatureLabels } from '@/utils/kpi';
+import {
+  botObservations, canonicalKpiFeature, compareKpiVersions, feedbackObservations, KpiFeatureLabels,
+} from '@/utils/kpi';
 
 export function useKpiDashboard() {
   const feature = ref('all');
@@ -40,7 +42,7 @@ export function useKpiDashboard() {
       ...availableVersions.value,
       ...feedbackMetrics.flatMap(value => value.available_versions ?? value.entries.map(entry => entry.aegis_version)),
       ...(bot.value?.entries.map(entry => entry.aegis_version) ?? []),
-    ])];
+    ])].sort(compareKpiVersions);
     availableComponents.value = [...new Set([
       ...availableComponents.value,
       ...(bot.value?.available_components ?? []),
