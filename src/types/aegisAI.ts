@@ -136,17 +136,59 @@ export type AegisMultiAnalysisResponse = {
 
 export type AegisKpiMetricsFeature = {
   acceptance_percentage: number;
+  available_versions?: string[];
   entries: {
     accepted: boolean;
     aegis_version: string;
+    components?: { suggested_components?: string[] };
+    cve_id?: string;
     datetime: string;
+    feedback_source?: 'manual' | 'programmatic';
   }[];
 };
 
-export type AegisKpiMetrics = Record<AegisKpiFeatureParamType, AegisKpiMetricsFeature>;
+export type AegisKpiMetrics = Record<string, AegisKpiMetricsFeature>;
+
+export type AegisKpiQuery = {
+  aegis_version?: string[];
+  component?: string;
+  detail?: boolean;
+  recorded_after?: string;
+  recorded_before?: string;
+};
+
+export type AegisBotKpiEntry = {
+  aegis_version: string;
+  confidence: null | number;
+  cve_id: string;
+  data_quality: null | number;
+  datetime: null | string;
+  deviation: null | number;
+  feature: string;
+  type: string;
+};
+
+export type AegisBotFeatureKpi = {
+  acceptance_rate: number;
+  avg_confidence: null | number;
+  avg_data_quality: null | number;
+  avg_suggestion_deviation: null | number;
+  kept: number;
+  modified: number;
+  skipped: number;
+  suggested: number;
+};
+
+export type AegisBotKpiMetrics = {
+  available_components: string[];
+  entries: AegisBotKpiEntry[];
+  features: Record<string, AegisBotFeatureKpi>;
+  total_flaws_processed: number;
+};
 
 export type AegisKpiFeatureParamType =
   'all'
+  | 'suggest-affected-components'
   | 'suggest-cvss'
   | 'suggest-cwe'
   | 'suggest-description'
