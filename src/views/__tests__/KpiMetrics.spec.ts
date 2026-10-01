@@ -5,8 +5,12 @@ import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
 import type { AegisBotKpiMetrics, AegisKpiMetrics } from '@/types/aegisAI';
+import { downloadKpiCsv } from '@/utils/kpiReport';
 
 vi.mock('@/services/AegisAIService');
+vi.mock('@/utils/kpiReport', async importOriginal => ({
+  ...await importOriginal<typeof import('@/utils/kpiReport')>(), downloadKpiCsv: vi.fn(),
+}));
 vi.mock('vue-data-ui/vue-ui-xy', () => ({
   VueUiXy: { name: 'VueUiXy', props: ['dataset', 'config'], template: '<div class="chart-stub"></div>' },
 }));
@@ -67,6 +71,7 @@ describe('kPI dashboard', () => {
   const button = (text: string) => wrapper.findAll('button').find(item => item.text() === text)!;
 
   beforeEach(() => {
+    vi.mocked(downloadKpiCsv).mockClear();
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
     vi.mocked(AegisAIService).mockImplementation(() => ({
@@ -86,6 +91,43 @@ describe('kPI dashboard', () => {
     expect(wrapper.text()).toContain('programmatic: 0.0%');
     expect(wrapper.text()).toContain('osidb-bot: 100.0%');
     expect(wrapper.get('tbody').text()).toContain('0.80');
+  });
+
+  it('offers unique component suggestions and applies arbitrary component names to both sources', async () => {
+    await mount();
+    expect(wrapper.findAll('#kpi-components option').map(option => option.attributes('value')))
+      .toEqual(['kernel', 'openssl']);
+    await wrapper.get('#kpi-component').setValue('  kernel  ');
+    await flushPromises();
+    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({ component: 'kernel' }));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }));
+    await wrapper.get('#kpi-component').setValue('custom-component');
+    await flushPromises();
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'custom-component' }));
+    await wrapper.get('#kpi-component').setValue('');
+    await flushPromises();
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: undefined }));
+  });
+
+  it('downloads the same scoped counts displayed on the dashboard', async () => {
+    await mount();
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await wrapper.get('#feature-select').setValue('suggest-impact');
+    await flushPromises();
+    await button('Download CSV').trigger('click');
+    expect(downloadKpiCsv).toHaveBeenCalledOnce();
+    const csv = vi.mocked(downloadKpiCsv).mock.calls[0][0];
+    expect(csv).toContain('"kernel","suggest-impact"');
+    expect(csv).toContain('"2","3","66.7"');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+  });
+
+  it('disables complete-report downloads while loading or when either source fails', async () => {
+    getBot.mockRejectedValue(new Error('Offline'));
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
+    await flushPromises();
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
   });
 
   it('shows a feature with no observations as empty, not a zero acceptance rate', async () => {
