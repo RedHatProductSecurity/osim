@@ -126,6 +126,17 @@ export function kpiWeek(datetime: null | string): null | string {
   return parseKpiDate(datetime).startOf('week').toISODate();
 }
 
+export function completeKpiWeeks(weeks: string[]): string[] {
+  if (!weeks.length) return [];
+  const sorted = [...weeks].sort();
+  const result: string[] = [];
+  const end = parseKpiDate(sorted[sorted.length - 1]);
+  for (let week = parseKpiDate(sorted[0]); week <= end; week = week.plus({ weeks: 1 })) {
+    result.push(week.toISODate()!);
+  }
+  return result;
+}
+
 export function kpiHistory(observations: KpiObservation[]) {
   const weekSet = new Set<string>();
   const counts = new Map<string, Map<string, { accepted: number; total: number }>>();
@@ -142,7 +153,7 @@ export function kpiHistory(observations: KpiObservation[]) {
     }
     featureCounts.set(week, bucket);
   }
-  const weeks = [...weekSet].sort();
+  const weeks = completeKpiWeeks([...weekSet]);
   const features = [...new Set(observations.map(entry => entry.feature))];
   const dataset = features.map((feature) => {
     const buckets = weeks.map(week => counts.get(feature)?.get(week) ?? { accepted: 0, total: 0 });

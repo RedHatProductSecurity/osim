@@ -50,9 +50,15 @@ describe('kPI aggregation', () => {
       record({ cve_id: 'CVE-2025-1005', datetime: '2025-12-31 23:30:00-02:00' }),
     ]);
     const history = kpiHistory(observations);
-    expect(history.weeks).toEqual(['2025-12-29', '2026-04-27', '2026-05-11', '2026-06-29']);
-    expect(history.dataset[0].series).toEqual([100, null, 100, 100]);
-    expect(history.dataset[1].series).toEqual([0, 100, null, null]);
+    expect(history.weeks[0]).toBe('2025-12-29');
+    expect(history.weeks.at(-1)).toBe('2026-06-29');
+    expect(history.weeks).toEqual([...history.weeks].sort());
+    const populatedWeeks = ['2025-12-29', '2026-04-27', '2026-05-11', '2026-06-29'];
+    expect(populatedWeeks.map(week => history.dataset[0].series[history.weeks.indexOf(week)]))
+      .toEqual([100, null, 100, 100]);
+    expect(populatedWeeks.map(week => history.dataset[1].series[history.weeks.indexOf(week)]))
+      .toEqual([0, 100, null, null]);
+    expect(history.dataset[0].series[history.weeks.indexOf('2026-05-04')]).toBeNull();
   });
 
   it('orders mixed semantic and custom build formats consistently regardless of arrival order', () => {
