@@ -28,6 +28,40 @@ export const canonicalKpiFeature = (feature: string) => featureAliases[feature] 
 export const kpiFeatureLabel = (feature: string) => KpiFeatureLabels[feature] ?? feature;
 export const kpiVersionLabel = (version: string) => version || 'Unknown version';
 
+const versionCollator = new Intl.Collator('en', { numeric: true });
+
+export function compareKpiVersions(left: string, right: string): number {
+  if (left === right) return 0;
+  if (!left || !right) return left ? -1 : 1;
+  const pattern = /^v?(\d+\.\d+\.\d+)(?:-([^+]+))?(?:\+(.+))?$/;
+  const a = left.match(pattern);
+  const b = right.match(pattern);
+  if (!a || !b) {
+    // Keep legacy/custom build strings in a separate, naturally sorted group.
+    // Mixing natural and semantic comparisons between groups creates cycles.
+    if (!!a !== !!b) return a ? -1 : 1;
+    return versionCollator.compare(left, right);
+  }
+  const core = versionCollator.compare(a[1], b[1]);
+  if (core) return core;
+  if (!a[2] || !b[2]) {
+    if (a[2] !== b[2]) return a[2] ? -1 : 1;
+    return versionCollator.compare(left, right);
+  }
+  const aPre = a[2].split('.');
+  const bPre = b[2].split('.');
+  for (let index = 0; index < Math.max(aPre.length, bPre.length); index++) {
+    const x = aPre[index];
+    const y = bPre[index];
+    if (x === y) continue;
+    if (x === undefined || y === undefined) return x === undefined ? -1 : 1;
+    if (/^\d+$/.test(x) !== /^\d+$/.test(y)) return /^\d+$/.test(x) ? -1 : 1;
+    const part = versionCollator.compare(x, y);
+    if (part) return part;
+  }
+  return versionCollator.compare(left, right);
+}
+
 export type KpiObservation = {
   accepted: boolean | null;
   cveId?: string;
@@ -108,7 +142,7 @@ export function kpiHistory(observations: KpiObservation[]) {
     }
     featureCounts.set(week, bucket);
   }
-  const weeks = [...weekSet];
+  const weeks = [...weekSet].sort();
   const features = [...new Set(observations.map(entry => entry.feature))];
   const dataset = features.map((feature) => {
     const buckets = weeks.map(week => counts.get(feature)?.get(week) ?? { accepted: 0, total: 0 });
