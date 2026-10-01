@@ -68,6 +68,17 @@ function formatKey(key: string): string {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
+
+function hasMissingRequiredFields(): boolean {
+  const raw = props.milestone.missing_required_fields?.trim();
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.length > 0 : Boolean(parsed);
+  } catch {
+    return true;
+  }
+}
 </script>
 
 <template>
@@ -167,7 +178,7 @@ function formatKey(key: string): string {
         <div class="col-md-6">
           <h6 class="mb-3">Additional Details</h6>
           <div
-            v-if="milestone.missing_required_fields && milestone.missing_required_fields.trim()"
+            v-if="hasMissingRequiredFields()"
             class="alert alert-warning alert-sm mb-2"
           >
             <strong>Missing Fields:</strong> {{ milestone.missing_required_fields }}

@@ -289,7 +289,14 @@ async function handleSaveAdditionalInfo(data: Partial<AdditionalInformationReque
 }
 
 function hasMissingFields(report: SRPReport): boolean {
-  return Boolean(report.missing_required_fields && report.missing_required_fields.trim());
+  const raw = report.missing_required_fields?.trim();
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.length > 0 : Boolean(parsed);
+  } catch {
+    return true;
+  }
 }
 </script>
 

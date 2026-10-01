@@ -76,6 +76,8 @@ export interface SRPReportMilestone {
   milestone_type: SRPMilestoneType;
   missing_conditionally_required_fields?: string[];
   missing_required_fields: string;
+  mitigation_created_at?: null | string;
+  mitigation_link?: string;
   owner?: null | string; // Added in OSIDB-5439
   payload_fields?: SRPReportMilestonePayloadField[];
   payload_prepared_at?: null | string;

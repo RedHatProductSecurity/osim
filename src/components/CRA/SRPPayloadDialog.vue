@@ -13,6 +13,7 @@ import {
   requirementBadgeClass,
   type SRPPayloadFieldRow,
 } from '@/components/CRA/srpPayloadFields';
+import EUStatesSelector from '@/components/CRA/EUStatesSelector.vue';
 
 import { useUserStore } from '@/stores/UserStore';
 import type { SRPMilestoneStatus, SRPReport, SRPReportMilestone } from '@/types/cra';
@@ -47,11 +48,20 @@ const payloadJson = computed(() => {
 
 const fieldValues = ref<Record<string, FieldValue>>({});
 const formData = ref({
+  due_at: '',
   manual_completion_notes: '',
+  mitigation_created_at: '',
+  mitigation_link: '',
   owner: null as null | string,
   status: 'required' as SRPMilestoneStatus,
   updated_dt: '',
 });
+const initialTrackingFields = ref({
+  due_at: '',
+  mitigation_created_at: '',
+  mitigation_link: '',
+});
+const dueAtManuallyEdited = ref(false);
 
 const dialogTitle = computed(() => {
   if (!props.report || !props.milestone || !isPayloadMilestoneType(props.milestone.milestone_type)) {
@@ -87,6 +97,50 @@ function formatReportTypeValue() {
   if (props.milestone?.milestone_type === '72h') return '72h';
   if (props.milestone?.milestone_type === 'final') return 'Final';
   return formatMilestoneTypeLabel(props.milestone?.milestone_type);
+}
+
+function fromISO8601Date(iso?: null | string): string {
+  if (!iso) return '';
+  return iso.substring(0, 10);
+}
+
+function toISO8601Date(dateString: string): string {
+  if (!dateString) return '';
+  return new Date(`${dateString}T00:00:00Z`).toISOString();
+}
+
+function addDays(dateString: string, days: number): string {
+  const date = new Date(`${dateString}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().substring(0, 10);
+}
+
+const showAEVMitigationFields = computed(() =>
+  props.report?.reportable_event_type === 'EXPLOITS_KEV_APPROVED'
+  && (
+    props.milestone?.milestone_type === '24h'
+    || props.milestone?.milestone_type === '72h'
+    || props.milestone?.milestone_type === 'final'
+  ),
+);
+
+const showAEVFinalMitigationInheritanceHint = computed(() =>
+  showAEVMitigationFields.value && props.milestone?.milestone_type === 'final',
+);
+
+function handleDueAtInput() {
+  dueAtManuallyEdited.value = true;
+}
+
+function handleMitigationCreatedAtInput() {
+  if (
+    props.milestone?.milestone_type === 'final'
+    && !dueAtManuallyEdited.value
+  ) {
+    formData.value.due_at = formData.value.mitigation_created_at
+      ? addDays(formData.value.mitigation_created_at, 14)
+      : '';
+  }
 }
 
 function selfAssign() {
@@ -157,12 +211,6 @@ function isRowMissing(row: SRPPayloadFieldRow) {
 
 const missingRows = computed(() => rows.value.filter(isRowMissing));
 
-function selectAllFieldOptions(row: SRPPayloadFieldRow) {
-  if (row.options) {
-    fieldValues.value[row.key] = [...row.options];
-  }
-}
-
 function dateFieldValue(key: string): string | undefined {
   const value = fieldValues.value[key];
   return Array.isArray(value) ? undefined : value || undefined;
@@ -170,6 +218,16 @@ function dateFieldValue(key: string): string | undefined {
 
 function setDateFieldValue(key: string, value: string | undefined) {
   fieldValues.value[key] = value || '';
+}
+
+function multiSelectTextValue(key: string): string {
+  const value = fieldValues.value[key];
+  return Array.isArray(value) ? value.join('\n') : value || '';
+}
+
+function handleMultiSelectTextInput(key: string, event: Event) {
+  const target = event.target as HTMLTextAreaElement;
+  fieldValues.value[key] = target.value;
 }
 
 function buildAdditionalDetails() {
@@ -225,13 +283,27 @@ function copyHumanReadablePayload() {
 
 function handleSave() {
   if (!props.milestone) return;
-  emit('save', {
+  const payload: Partial<SRPReportMilestone> = {
     additional_details: buildAdditionalDetails(),
     manual_completion_notes: formData.value.manual_completion_notes,
     owner: formData.value.owner,
     status: formData.value.status,
     updated_dt: formData.value.updated_dt,
-  });
+  };
+
+  if (formData.value.due_at !== initialTrackingFields.value.due_at) {
+    payload.due_at = formData.value.due_at ? toISO8601Date(formData.value.due_at) : null;
+  }
+  if (formData.value.mitigation_created_at !== initialTrackingFields.value.mitigation_created_at) {
+    payload.mitigation_created_at = formData.value.mitigation_created_at
+      ? toISO8601Date(formData.value.mitigation_created_at)
+      : null;
+  }
+  if (formData.value.mitigation_link !== initialTrackingFields.value.mitigation_link) {
+    payload.mitigation_link = formData.value.mitigation_link;
+  }
+
+  emit('save', payload);
   emit('close');
 }
 
@@ -239,11 +311,20 @@ watch(
   () => [props.show, props.milestone, props.report] as const,
   () => {
     if (!props.show || !props.milestone || !props.report) return;
+    dueAtManuallyEdited.value = false;
     formData.value = {
+      due_at: fromISO8601Date(props.milestone.due_at),
       manual_completion_notes: props.milestone.manual_completion_notes || '',
+      mitigation_created_at: fromISO8601Date(props.milestone.mitigation_created_at),
+      mitigation_link: props.milestone.mitigation_link || '',
       owner: props.milestone.owner || null,
       status: props.milestone.status,
       updated_dt: props.milestone.updated_dt,
+    };
+    initialTrackingFields.value = {
+      due_at: formData.value.due_at,
+      mitigation_created_at: formData.value.mitigation_created_at,
+      mitigation_link: formData.value.mitigation_link,
     };
     fieldValues.value = Object.fromEntries(
       rows.value
@@ -277,7 +358,7 @@ watch(
               disabled
             />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-9">
             <label class="form-label">Owner</label>
             <div class="d-flex gap-2 align-items-start">
               <input
@@ -296,28 +377,9 @@ watch(
               </button>
             </div>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Status</label>
-            <select v-model="formData.status" class="form-select form-select-sm">
-              <option value="required">Not Started</option>
-              <option value="in_progress">In Progress</option>
-              <option value="in_review">In Review</option>
-              <option value="submitted">Submitted</option>
-              <option value="obsolete">Obsolete</option>
-            </select>
-          </div>
         </div>
 
         <hr class="my-3" />
-
-        <div class="mb-3">
-          <label class="form-label">Notes</label>
-          <textarea
-            v-model="formData.manual_completion_notes"
-            class="form-control form-control-sm"
-            rows="2"
-          ></textarea>
-        </div>
 
         <div v-if="missingRows.length" class="alert alert-warning">
           <div class="fw-bold mb-1">Missing required fields for this milestone</div>
@@ -341,93 +403,144 @@ watch(
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="row in rows"
-                :key="row.key"
-                :class="{ 'table-warning': isRowMissing(row) }"
-              >
-                <td class="payload-field-name fw-semibold">
-                  <div>{{ row.label }}</div>
-                  <small
-                    v-if="shouldShowRequirement(row)"
-                    class="badge requirement-badge mt-1"
-                    :class="requirementBadgeClass(row.requirement)"
-                  >
-                    {{ formatRequirement(row.requirement) }}
-                  </small>
-                </td>
-                <td class="payload-value-cell">
-                  <select
-                    v-if="isRowEditable(row) && row.input_type === 'multi-select' && row.options"
-                    v-model="fieldValues[row.key]"
-                    class="form-select form-select-sm payload-edit-control"
-                    multiple
-                    size="7"
-                  >
-                    <option v-for="option in row.options" :key="option" :value="option">
-                      {{ option }}
-                    </option>
-                  </select>
-                  <button
-                    v-if="isRowEditable(row) && row.input_type === 'multi-select' && row.options"
-                    type="button"
-                    class="btn btn-sm btn-primary mt-2"
-                    @click="selectAllFieldOptions(row)"
-                  >
-                    Select All
-                  </button>
-                  <small
-                    v-if="isRowEditable(row) && row.input_type === 'multi-select' && row.options"
-                    class="d-block text-muted mt-1"
-                  >
-                    Hold Ctrl/Cmd to select multiple member states. Use EL for Greece.
-                  </small>
-                  <select
-                    v-else-if="isRowEditable(row) && row.options"
-                    v-model="fieldValues[row.key]"
-                    class="form-select form-select-sm"
-                  >
-                    <option value=""></option>
-                    <option v-for="option in row.options" :key="option" :value="option">
-                      {{ option }}
-                    </option>
-                  </select>
-                  <textarea
-                    v-else-if="isRowEditable(row) && row.input_type === 'textarea'"
-                    v-model="fieldValues[row.key]"
-                    class="form-control form-control-sm payload-edit-control"
-                    rows="2"
-                  ></textarea>
-                  <EditableDate
-                    v-else-if="isRowEditable(row) && row.input_type === 'datetime'"
-                    :modelValue="dateFieldValue(row.key)"
-                    :includesTime="true"
-                    :editing="true"
-                    class="payload-date-control"
-                    @update:modelValue="setDateFieldValue(row.key, $event)"
-                  />
-                  <input
-                    v-else-if="isRowEditable(row)"
-                    v-model="fieldValues[row.key]"
-                    type="text"
-                    class="form-control form-control-sm"
-                  />
-                  <pre v-else class="payload-value mb-0">{{ formatPayloadValue(row.value) }}</pre>
-                </td>
-                <td class="text-end text-nowrap">
-                  <button
-                    type="button"
-                    class="btn btn-sm copy-button"
-                    :class="copyButtonClass(`field:${row.key}`)"
-                    :disabled="isRowMissing(row)"
-                    @click="copyText(copyValueForRow(row), `field:${row.key}`)"
-                  >
-                    {{ isCopied(`field:${row.key}`) ? 'Copied' : 'Copy field' }}
-                  </button>
-                </td>
-              </tr>
+              <template v-for="row in rows" :key="row.key">
+                <tr
+                  :class="{ 'table-warning': isRowMissing(row) }"
+                >
+                  <td class="payload-field-name fw-semibold">
+                    <div>{{ row.label }}</div>
+                    <small
+                      v-if="shouldShowRequirement(row)"
+                      class="badge requirement-badge mt-1"
+                      :class="requirementBadgeClass(row.requirement)"
+                    >
+                      {{ formatRequirement(row.requirement) }}
+                    </small>
+                  </td>
+                  <td class="payload-value-cell">
+                    <EUStatesSelector
+                      v-if="isRowEditable(row) && row.input_type === 'multi-select' && row.options"
+                      :modelValue="parseFieldList(fieldValues[row.key])"
+                      :options="row.options"
+                      @update:modelValue="fieldValues[row.key] = $event"
+                    />
+                    <select
+                      v-else-if="isRowEditable(row) && row.options"
+                      v-model="fieldValues[row.key]"
+                      class="form-select form-select-sm"
+                    >
+                      <option value=""></option>
+                      <option v-for="option in row.options" :key="option" :value="option">
+                        {{ option }}
+                      </option>
+                    </select>
+                    <textarea
+                      v-else-if="isRowEditable(row) && row.input_type === 'multi-select'"
+                      :value="multiSelectTextValue(row.key)"
+                      class="form-control form-control-sm payload-edit-control"
+                      rows="2"
+                      placeholder="Enter one value per line"
+                      @input="handleMultiSelectTextInput(row.key, $event)"
+                    ></textarea>
+                    <textarea
+                      v-else-if="isRowEditable(row) && row.input_type === 'textarea'"
+                      v-model="fieldValues[row.key]"
+                      class="form-control form-control-sm payload-edit-control"
+                      rows="2"
+                    ></textarea>
+                    <EditableDate
+                      v-else-if="isRowEditable(row) && row.input_type === 'datetime'"
+                      :modelValue="dateFieldValue(row.key)"
+                      :includesTime="true"
+                      :editing="true"
+                      class="payload-date-control"
+                      @update:modelValue="setDateFieldValue(row.key, $event)"
+                    />
+                    <input
+                      v-else-if="isRowEditable(row)"
+                      v-model="fieldValues[row.key]"
+                      type="text"
+                      class="form-control form-control-sm"
+                    />
+                    <pre v-else class="payload-value mb-0">{{ formatPayloadValue(row.value) }}</pre>
+                  </td>
+                  <td class="text-end text-nowrap">
+                    <button
+                      type="button"
+                      class="btn btn-sm copy-button"
+                      :class="copyButtonClass(`field:${row.key}`)"
+                      :disabled="isRowMissing(row)"
+                      @click="copyText(copyValueForRow(row), `field:${row.key}`)"
+                    >
+                      {{ isCopied(`field:${row.key}`) ? 'Copied' : 'Copy field' }}
+                    </button>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
+        </div>
+
+        <hr class="my-3" />
+
+        <div class="milestone-tracking-section">
+          <div v-if="showAEVMitigationFields" class="row g-2 align-items-end mb-3 mitigation-tracking-fields">
+            <div class="col-md-4">
+              <label class="form-label">Mitigation Created Date</label>
+              <small v-if="showAEVFinalMitigationInheritanceHint" class="text-muted d-block mb-1">
+                Inherited from the 72h report
+              </small>
+              <input
+                v-model="formData.mitigation_created_at"
+                type="date"
+                class="form-control form-control-sm"
+                @input="handleMitigationCreatedAtInput"
+              />
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Mitigation Link</label>
+              <small v-if="showAEVFinalMitigationInheritanceHint" class="text-muted d-block mb-1">
+                Inherited from the 72h report
+              </small>
+              <input
+                v-model="formData.mitigation_link"
+                type="url"
+                class="form-control form-control-sm"
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-3">
+              <label class="form-label">Due Date</label>
+              <input
+                v-model="formData.due_at"
+                type="date"
+                class="form-control form-control-sm"
+                @input="handleDueAtInput"
+              />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status</label>
+              <select v-model="formData.status" class="form-select form-select-sm">
+                <option value="required">Not Started</option>
+                <option value="in_progress">In Progress</option>
+                <option value="in_review">In Review</option>
+                <option value="submitted">Submitted</option>
+                <option value="obsolete">Obsolete</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea
+              v-model="formData.manual_completion_notes"
+              class="form-control form-control-sm"
+              rows="2"
+            ></textarea>
+          </div>
         </div>
       </div>
     </template>

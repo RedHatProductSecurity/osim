@@ -19,24 +19,18 @@ const emit = defineEmits<{
 
 function toISO8601DateTime(datetimeLocal: string): string {
   if (!datetimeLocal) return '';
-  // Parse datetime-local as local time (not UTC)
-  // datetime-local format: "2026-08-19T10:30"
-  const date = new Date(datetimeLocal);
-  // Get local time components
+  return new Date(datetimeLocal).toISOString();
+}
+
+function fromISO8601DateTime(iso: null | string): string {
+  if (!iso) return '';
+  const date = new Date(iso);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  // Return ISO 8601 format in local timezone
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-}
-
-function fromISO8601DateTime(iso: null | string): string {
-  if (!iso) return '';
-  // ISO format may include timezone, extract just date and time
-  return iso.substring(0, 16);
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 // Note: 'status' field is not included in the form because it's a computed property
@@ -50,14 +44,18 @@ const formData = ref({
   responsibility_scope: props.report?.responsibility_scope || 'manufacturer',
   srp_reference_id: props.report?.srp_reference_id || '',
   srp_reference_url: props.report?.srp_reference_url || '',
-  timer_started_at: props.report?.timer_started_at || '',
+  timer_started_at: fromISO8601DateTime(props.report?.timer_started_at || null),
   title: props.report?.title || '',
   updated_dt: props.report?.updated_dt || '',
 });
+const originalTimerStartedAt = ref(props.report?.timer_started_at || '');
+const initialTimerStartedAtInput = ref(fromISO8601DateTime(props.report?.timer_started_at || null));
 
 watch(() => props.show, (newShow) => {
   if (newShow) {
     if (props.report) {
+      originalTimerStartedAt.value = props.report.timer_started_at || '';
+      initialTimerStartedAtInput.value = fromISO8601DateTime(props.report.timer_started_at || null);
       formData.value = {
         evidence: props.report.evidence || '',
         manufacturer_or_steward_name: props.report.manufacturer_or_steward_name || '',
@@ -66,11 +64,13 @@ watch(() => props.show, (newShow) => {
         responsibility_scope: props.report.responsibility_scope,
         srp_reference_id: props.report.srp_reference_id,
         srp_reference_url: props.report.srp_reference_url,
-        timer_started_at: fromISO8601DateTime(props.report.timer_started_at || ''),
+        timer_started_at: initialTimerStartedAtInput.value,
         title: props.report.title,
         updated_dt: props.report.updated_dt,
       };
     } else {
+      originalTimerStartedAt.value = '';
+      initialTimerStartedAtInput.value = '';
       formData.value = {
         evidence: '',
         manufacturer_or_steward_name: '',
@@ -100,9 +100,17 @@ function handleSave() {
 
   const payload: any = { ...formData.value };
 
-  // Convert datetime-local to ISO 8601 format
-  if (payload.timer_started_at) {
+  // Preserve unchanged timestamps exactly; datetime-local drops seconds and offsets.
+  if (payload.timer_started_at === initialTimerStartedAtInput.value) {
+    if (originalTimerStartedAt.value) {
+      payload.timer_started_at = originalTimerStartedAt.value;
+    } else {
+      delete payload.timer_started_at;
+    }
+  } else if (payload.timer_started_at) {
     payload.timer_started_at = toISO8601DateTime(payload.timer_started_at);
+  } else {
+    payload.timer_started_at = null;
   }
 
   emit('save', payload);
@@ -140,7 +148,6 @@ function setTimerToday() {
         <select v-model="formData.reportable_event_type" class="form-select">
           <option value="EXPLOITS_KEV_APPROVED">Actively Exploited Vulnerability</option>
           <option value="MAJOR_INCIDENT_APPROVED">Severe Incident</option>
-          <option value="ADDITIONAL_INFORMATION_REQUEST">Additional Information Request</option>
         </select>
       </div>
       <div class="mb-3">
@@ -155,7 +162,7 @@ function setTimerToday() {
         <small class="text-muted">Required: Evidence supporting this report</small>
       </div>
       <div class="mb-3">
-        <label class="form-label">14-Day Timer Start</label>
+        <label class="form-label">Timer Start</label>
         <div class="d-flex gap-2 align-items-start">
           <input
             v-model="formData.timer_started_at"
@@ -172,7 +179,7 @@ function setTimerToday() {
           </button>
         </div>
         <small class="text-muted">
-          Start the 14-day countdown for final report (set when mitigation/patch is available)
+          Start the countdown for the 24h and 72h report due dates
         </small>
       </div>
       <div class="mb-3">

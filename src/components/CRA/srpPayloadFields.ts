@@ -69,9 +69,9 @@ export function parseFieldList(value: unknown): string[] {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) return parsed.filter(item => typeof item === 'string');
   } catch {
-    // Existing API values may be comma-separated plain text.
+    // Existing API values may be comma- or line-separated plain text.
   }
-  return value.split(',').map(item => item.trim()).filter(Boolean);
+  return value.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
 }
 
 export function formatRequirement(requirement: SRPRequirement): string {
