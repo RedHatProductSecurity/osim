@@ -8,10 +8,11 @@ import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 import {
   canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiVersionLabel, parseKpiDate, summarizeKpi,
 } from '@/utils/kpi';
+import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableFeatures, availableVersions, bot, errors, feature, fromDate, invalidRange, loading,
-  observations, refresh, toDate, toggleVersion, versions,
+  availableComponents, availableFeatures, availableVersions, bot, component, errors, feature, fromDate,
+  invalidRange, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
 const history = computed(() => kpiHistory(observations.value));
@@ -38,12 +39,44 @@ const config = computed(() => ({
 }));
 const percentage = (value: null | number) => value === null ? 'N/A' : `${value.toFixed(1)}%`;
 const quality = (value: null | number) => value === null ? 'N/A' : value.toFixed(2);
+
+function downloadReport() {
+  downloadKpiCsv(createKpiCsv(observations.value, {
+    bot: bot.value,
+    component: component.value,
+    feature: feature.value,
+    versions: versions.value,
+    fromDate: fromDate.value,
+    toDate: toDate.value,
+  }));
+}
+
+function applyComponent(event: Event) {
+  component.value = (event.target as HTMLInputElement).value.trim();
+}
 </script>
 
 <template>
   <main class="mt-3">
     <h1>KPI Metrics</h1>
     <div class="kpi-controls d-flex flex-wrap gap-3 align-items-end mb-3">
+      <div>
+        <label for="kpi-component" class="form-label">Component:</label>
+        <input
+          id="kpi-component"
+          v-model.lazy.trim="component"
+          type="text"
+          list="kpi-components"
+          class="form-control"
+          placeholder="All components"
+          aria-describedby="component-help"
+          @keydown.enter="applyComponent"
+        />
+        <datalist id="kpi-components">
+          <option v-for="name in availableComponents" :key="name" :value="name" />
+        </datalist>
+        <small id="component-help">Press Enter or leave the field to apply.</small>
+      </div>
       <div>
         <label for="feature-select" class="form-label">Feature:</label>
         <select id="feature-select" v-model="feature" class="form-select">
@@ -74,7 +107,14 @@ const quality = (value: null | number) => value === null ? 'N/A' : value.toFixed
         :disabled="loading"
         @click="refresh"
       >Refresh</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        :disabled="loading || invalidRange || !!errors.length || (!observations.length && !botFeatures.length)"
+        @click="downloadReport"
+      >Download CSV</button>
     </div>
+    <p v-if="component">Showing flaws affecting component: <strong>{{ component }}</strong></p>
     <section class="mb-3" aria-labelledby="version-heading">
       <h2 id="version-heading" class="h5">Filter By Version / Build</h2>
       <button
